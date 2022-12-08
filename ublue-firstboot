@@ -1,0 +1,153 @@
+#!/bin/sh
+
+if test -e "$HOME"/.config/ublue/firstboot-done; then
+    echo "Already ran"
+    exit 0
+fi
+
+(
+echo "# Waiting for Internet connection"
+until /usr/bin/ping -q -c 1 flathub.org; do sleep 1; done
+echo "00"
+
+echo "# Removing Filtered Flathub Repository"
+/usr/bin/flatpak remote-delete flathub --force ||:
+if [ "$?" != 0 ] ; then
+        zenity --error \
+          --text="Removing Filtered Flathub Repo Failed"
+        exit 1
+fi
+echo "3"
+
+echo "# Enabling Flathub Repository"
+/usr/bin/flatpak remote-add --user --if-not-exists flathub https://flathub.org/repo/flathub.flatpakrepo
+if [ "$?" != 0 ] ; then
+        zenity --error \
+          --text="Adding Flathub Repo Failed"
+        exit 1
+fi
+echo "5"
+
+echo "# Removing Fedora Flatpak Repository"
+/usr/bin/flatpak remote-delete fedora --force ||:
+if [ "$?" != 0 ] ; then
+        zenity --error \
+          --text="Removing Fedora Flatpak Repo Failed"
+        exit 1
+fi
+echo "7"
+
+echo "# Installing Firefox"
+/usr/bin/flatpak install --user --noninteractive flathub org.mozilla.firefox
+if [ "$?" != 0 ] ; then
+        zenity --error \
+          --text="Installing Firefox Failed"
+        exit 1
+fi
+echo "10"
+
+echo "# Installing Thunderbird"
+/usr/bin/flatpak install --user --noninteractive flathub org.mozilla.Thunderbird
+if [ "$?" != 0 ] ; then
+        zenity --error \
+          --text="Installing Thunderbird Failed"
+        exit 1
+fi
+echo "20"
+
+echo "# Installing GNOME Applications"
+/usr/bin/flatpak install --user --noninteractive flathub \
+        org.gnome.Calculator \
+        org.gnome.Calendar \
+        org.gnome.Characters \
+        org.gnome.Connections \
+        org.gnome.Contacts \
+        org.gnome.Evince \
+        org.gnome.Firmware \
+        org.gnome.Logs 
+if [ "$?" != 0 ] ; then
+        zenity --error \
+          --text="Installing GNOME Applications Failed"
+        exit 1
+fi
+echo "30"
+
+echo "# Installing more GNOME Applications"
+/usr/bin/flatpak install --user --noninteractive flathub \
+        org.gnome.Maps \
+        org.gnome.NautilusPreviewer \
+        org.gnome.TextEditor \
+        org.gnome.Weather \
+        org.gnome.baobab \
+        org.gnome.clocks \
+        org.gnome.eog \
+        org.gnome.font-viewer
+if [ "$?" != 0 ] ; then
+        zenity --error \
+          --text="Installing GNOME more Applications Failed"
+        exit 1
+fi
+echo "40"
+
+echo "# Installing Extension Manager"
+/usr/bin/flatpak install --user --noninteractive flathub com.mattjakeman.ExtensionManager
+if [ "$?" != 0 ] ; then
+        zenity --error \
+          --text="Installing Extension Manager Failed"
+        exit 1
+fi
+echo "50"
+
+echo "# Installing LibreOffice"
+/usr/bin/flatpak install --user --noninteractive flathub org.libreoffice.LibreOffice
+if [ "$?" != 0 ] ; then
+        zenity --error \
+          --text="Installing LibreOffice Failed"
+        exit 1
+fi
+echo "70"
+
+echo "# Installing DejaDup Backup"
+/usr/bin/flatpak install --user --noninteractive flathub org.gnome.DejaDup
+if [ "$?" != 0 ] ; then
+        zenity --error \
+          --text="Installing DejaDup Failed"
+        exit 1
+fi
+echo "80"
+
+echo "# Installing Font Downloader"
+/usr/bin/flatpak install --user --noninteractive flathub org.gustavoperedo.FontDownloader
+if [ "$?" != 0 ] ; then
+        zenity --error \
+          --text="Installing FontDownloader Failed"
+        exit 1
+fi
+echo "85"
+
+echo "# Installing Flatseal"
+/usr/bin/flatpak install --user --noninteractive flathub com.github.tchx84.Flatseal
+if [ "$?" != 0 ] ; then
+        zenity --error \
+          --text="Installing Flatseal Failed"
+        exit 1
+fi
+echo "90"
+
+echo "# Installing Celluloid Media Player"
+/usr/bin/flatpak install --user --noninteractive flathub io.github.celluloid_player.Celluloid
+if [ "$?" != 0 ] ; then
+        zenity --error \
+          --text="Installing Celluloid Failed"
+        exit 1
+fi
+echo "100"
+
+echo "# Reticulating Final Splines"
+mkdir -p "$HOME"/.config/ublue/
+touch "$HOME"/.config/ublue/firstboot-done
+
+if [ "$?" != 0 ] ; then
+        zenity --error \
+          --text="Firstboot Configuration Error"
+fi

@@ -5,7 +5,6 @@ if test -e "$HOME"/.config/ublue/firstboot-done; then
     exit 0
 fi
 
-(
 echo "# Waiting for Internet connection"
 until /usr/bin/ping -q -c 1 flathub.org; do sleep 1; done
 echo "00"

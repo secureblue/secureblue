@@ -5,6 +5,7 @@ if test -e "$HOME"/.config/ublue/firstboot-done; then
     exit 0
 fi
 
+(
 echo "# Waiting for Internet connection"
 until /usr/bin/ping -q -c 1 flathub.org; do sleep 1; done
 echo "00"
@@ -145,6 +146,10 @@ echo "100"
 echo "# Reticulating Final Splines"
 mkdir -p "$HOME"/.config/ublue/
 touch "$HOME"/.config/ublue/firstboot-done
+
+) | 
+     
+   zenity --progress --title="uBlue Desktop Firstboot" --percentage=0 --auto-close --no-cancel --width=300
 
 if [ "$?" != 0 ] ; then
         zenity --error \

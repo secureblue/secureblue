@@ -28,6 +28,16 @@ if [ "$?" != 0 ] ; then
 fi
 echo "5"
 
+echo "# Replacing Fedora Flatpaks with Flathub Ones"
+/usr/bin/flatpak install --user --noninteractive org.gnome.Platform//43
+/usr/bin/flatpak install --user --noninteractive --reinstall flathub $(flatpak list --app-runtime=org.fedoraproject.Platform --columns=application | tail -n +1 )
+if [ "$?" != 0 ] ; then
+        zenity --error \
+          --text="Replacing Fedora Flatpaks Failed"
+        exit 1
+fi
+echo "20"
+
 echo "# Removing Fedora Flatpak Repository"
 /usr/bin/flatpak remote-delete fedora --force ||:
 if [ "$?" != 0 ] ; then
@@ -35,7 +45,7 @@ if [ "$?" != 0 ] ; then
           --text="Removing Fedora Flatpak Repo Failed"
         exit 1
 fi
-echo "7"
+echo "25"
 
 echo "# Installing Firefox"
 /usr/bin/flatpak install --user --noninteractive flathub org.mozilla.firefox
@@ -44,47 +54,13 @@ if [ "$?" != 0 ] ; then
           --text="Installing Firefox Failed"
         exit 1
 fi
-echo "10"
+echo "30"
 
 echo "# Installing Thunderbird"
 /usr/bin/flatpak install --user --noninteractive flathub org.mozilla.Thunderbird
 if [ "$?" != 0 ] ; then
         zenity --error \
           --text="Installing Thunderbird Failed"
-        exit 1
-fi
-echo "20"
-
-echo "# Installing GNOME Applications"
-/usr/bin/flatpak install --user --noninteractive flathub \
-        org.gnome.Calculator \
-        org.gnome.Calendar \
-        org.gnome.Characters \
-        org.gnome.Connections \
-        org.gnome.Contacts \
-        org.gnome.Evince \
-        org.gnome.Firmware \
-        org.gnome.Logs 
-if [ "$?" != 0 ] ; then
-        zenity --error \
-          --text="Installing GNOME Applications Failed"
-        exit 1
-fi
-echo "30"
-
-echo "# Installing more GNOME Applications"
-/usr/bin/flatpak install --user --noninteractive flathub \
-        org.gnome.Maps \
-        org.gnome.NautilusPreviewer \
-        org.gnome.TextEditor \
-        org.gnome.Weather \
-        org.gnome.baobab \
-        org.gnome.clocks \
-        org.gnome.eog \
-        org.gnome.font-viewer
-if [ "$?" != 0 ] ; then
-        zenity --error \
-          --text="Installing GNOME more Applications Failed"
         exit 1
 fi
 echo "40"

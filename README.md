@@ -4,7 +4,7 @@ A base image with a (mostly) stock Fedora Silverblue.
 
 ## Usage
 
-Warning: This is an experimental feature and should not be used in production
+Warning: This is an experimental feature and should not be used in production, try it in a VM for a while, you have been warned!
 
     sudo rpm-ostree rebase --experimental ostree-unverified-registry:ghcr.io/ublue-os/base:latest
   

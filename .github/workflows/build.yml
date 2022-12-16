@@ -10,7 +10,7 @@ on:
     - cron: '0 0 * * *'  # every day at midnight
 env:
     IMAGE_NAME: base
-    IMAGE_TAGS: latest ${{ github.sha }}
+    IMAGE_TAGS: latest ${{ github.sha }} 
     IMAGE_REGISTRY: ghcr.io/${{ github.repository_owner }}
     REGISTRY_USER: ${{ github.actor }}
     REGISTRY_PASSWORD: ${{ github.token }}
@@ -25,7 +25,8 @@ jobs:
       # Checkout push-to-registry action github repository
       - name: Checkout Push to Registry action
         uses: actions/checkout@v2
-
+      - name: set env
+        run: echo "::set-env name=NOW::$(date +'%Y%m%d')"
       # Build image using Buildah action
       - name: Build Image
         id: build_image
@@ -34,7 +35,7 @@ jobs:
           containerfiles: |
             ./Containerfile
           image: ${{ env.IMAGE_NAME }}
-          tags: ${{ env.IMAGE_TAGS }}
+          tags: ${{ env.IMAGE_TAGS }} ${{ env.NOW }} 
           oci: true
 
       # Workaround bug where capital letters in your GitHub user name make it impossible to push to GHCR.

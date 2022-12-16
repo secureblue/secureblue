@@ -7,7 +7,7 @@ on:
     - cron: '0 0 * * *'  # every day at midnight
 env:
     IMAGE_NAME: base
-    IMAGE_TAGS: latest ${{ github.sha }} 
+    IMAGE_TAGS: 37 latest ${{ github.sha }} 
     IMAGE_REGISTRY: ghcr.io/${{ github.repository_owner }}
     REGISTRY_USER: ${{ github.actor }}
     REGISTRY_PASSWORD: ${{ github.token }}

@@ -4,7 +4,7 @@ on:
     branches:
       - main
   schedule:
-    - cron: '0 0 * * *'  # every day at midnight
+    - cron: '20 20 * * *'  # 8:20pm everyday
 env:
     IMAGE_NAME: base
     IMAGE_TAGS: 37 latest ${{ github.sha }} 

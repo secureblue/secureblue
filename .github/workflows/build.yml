@@ -5,6 +5,9 @@ on:
       - main
   schedule:
     - cron: '20 20 * * *'  # 8:20pm everyday
+  push:
+    branches:
+      - main
 env:
     IMAGE_NAME: base
     IMAGE_TAGS: 37 latest ${{ github.sha }} 
@@ -21,7 +24,7 @@ jobs:
     steps: 
       # Checkout push-to-registry action github repository
       - name: Checkout Push to Registry action
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
       - name: set env
         run: echo "DATE=$(date +'%Y%m%d')" >> $GITHUB_ENV
              

@@ -35,7 +35,7 @@ jobs:
         run: |
           echo "date=$(date +%Y%m%d)" >> $GITHUB_OUTPUT
           echo "sha_short=$(git rev-parse --short HEAD)" >> $GITHUB_OUTPUT
-          echo "release=${{ matrix.fedora_major_version }}" >> $GITHUB_OUTPUT
+
           alias_tags=()
           if [[ "${{ matrix.is_latest }}" == "true" ]]; then
             alias_tags+=("latest")
@@ -55,9 +55,9 @@ jobs:
           image: ${{ env.IMAGE_NAME }}
           tags: |
             ${{ steps.generate-tags.outputs.alias_tags }}
-            ${{ steps.generate-tags.outputs.release }}
             ${{ steps.generate-tags.outputs.date }}
             ${{ steps.generate-tags.outputs.sha_short }}
+            ${{ matrix.major_version }}
           build-args: |
             FEDORA_MAJOR_VERSION=${{ matrix.major_version }}
           oci: true

@@ -1,4 +1,6 @@
-FROM ghcr.io/cgwalters/fedora-silverblue:37
+ARG FEDORA_MAJOR_VERSION=37
+
+FROM ghcr.io/cgwalters/fedora-silverblue:${FEDORA_MAJOR_VERSION}
 # See https://pagure.io/releng/issue/11047 for final location
 
 COPY etc /etc

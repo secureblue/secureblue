@@ -26,9 +26,6 @@ jobs:
       - name: Checkout Push to Registry action
         uses: actions/checkout@v2
 
-      - name: set env
-        run: echo "DATE=$(date +'%Y%m%d')" >> $GITHUB_ENV
-
       - name: Generate tags
         id: generate-tags
         shell: bash

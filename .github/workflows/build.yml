@@ -5,6 +5,9 @@ on:
       - main
   schedule:
     - cron: '20 20 * * *'  # 8:20pm everyday
+  push:
+    branches:
+      - main
 env:
     IMAGE_NAME: base
     IMAGE_REGISTRY: ghcr.io/${{ github.repository_owner }}
@@ -24,7 +27,7 @@ jobs:
     steps: 
       # Checkout push-to-registry action GitHub repository
       - name: Checkout Push to Registry action
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
 
       - name: Generate tags
         id: generate-tags

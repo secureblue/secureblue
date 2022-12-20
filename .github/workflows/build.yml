@@ -10,10 +10,7 @@ on:
       - main
 env:
     IMAGE_NAME: base
-    IMAGE_TAGS: 37 latest ${{ github.sha }} 
     IMAGE_REGISTRY: ghcr.io/${{ github.repository_owner }}
-    REGISTRY_USER: ${{ github.actor }}
-    REGISTRY_PASSWORD: ${{ github.token }}
 
 jobs:
   push-ghcr:
@@ -21,12 +18,32 @@ jobs:
     runs-on: ubuntu-22.04
     strategy:
       fail-fast: false
+      matrix:
+        major_version: [37]
+        include:
+          - major_version: 37
+            is_latest: true
+            is_stable: true
     steps: 
-      # Checkout push-to-registry action github repository
+      # Checkout push-to-registry action GitHub repository
       - name: Checkout Push to Registry action
         uses: actions/checkout@v3
-      - name: set env
-        run: echo "DATE=$(date +'%Y%m%d')" >> $GITHUB_ENV
+
+      - name: Generate tags
+        id: generate-tags
+        shell: bash
+        run: |
+          echo "date=$(date +%Y%m%d)" >> $GITHUB_OUTPUT
+          echo "sha_short=$(git rev-parse --short HEAD)" >> $GITHUB_OUTPUT
+
+          alias_tags=()
+          if [[ "${{ matrix.is_latest }}" == "true" ]]; then
+            alias_tags+=("latest")
+          fi
+          if [[ "${{ matrix.is_stable }}" == "true" ]]; then
+            alias_tags+=("stable")
+          fi
+          echo "alias_tags=${alias_tags[*]}" >> $GITHUB_OUTPUT
              
       # Build image using Buildah action
       - name: Build Image
@@ -36,10 +53,16 @@ jobs:
           containerfiles: |
             ./Containerfile
           image: ${{ env.IMAGE_NAME }}
-          tags: ${{ env.IMAGE_TAGS }} ${{ env.DATE }} 
+          tags: |
+            ${{ steps.generate-tags.outputs.alias_tags }}
+            ${{ steps.generate-tags.outputs.date }}
+            ${{ steps.generate-tags.outputs.sha_short }}
+            ${{ matrix.major_version }}
+          build-args: |
+            FEDORA_MAJOR_VERSION=${{ matrix.major_version }}
           oci: true
 
-      # Workaround bug where capital letters in your GitHub user name make it impossible to push to GHCR.
+      # Workaround bug where capital letters in your GitHub username make it impossible to push to GHCR.
       # https://github.com/macbre/push-to-ghcr/issues/12
       - name: Lowercase Registry
         id: registry_case
@@ -51,6 +74,9 @@ jobs:
       - name: Push To GHCR
         uses: redhat-actions/push-to-registry@v2
         id: push
+        env:
+          REGISTRY_USER: ${{ github.actor }}
+          REGISTRY_PASSWORD: ${{ github.token }}
         with:
           image: ${{ steps.build_image.outputs.image }}
           tags: ${{ steps.build_image.outputs.tags }}
@@ -63,4 +89,3 @@ jobs:
       - name: Echo outputs
         run: |
           echo "${{ toJSON(steps.push.outputs) }}"
-

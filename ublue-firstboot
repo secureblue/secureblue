@@ -38,6 +38,14 @@ if [ "$?" != 0 ] ; then
 fi
 echo "20"
 
+echo "Removing all preinstalled Flatpaks"
+/usr/bin/flatpak remove --system --noninteractive --all ||:
+if [ "$?" != 0 ] ; then
+        zenity --error \
+          --text="Removing all preinstalled flatpaks failed"
+        exit 1
+fi
+
 echo "# Removing Fedora Flatpak Repository"
 /usr/bin/flatpak remote-delete fedora --force ||:
 if [ "$?" != 0 ] ; then

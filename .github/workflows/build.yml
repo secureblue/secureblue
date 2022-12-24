@@ -33,18 +33,24 @@ jobs:
         id: generate-tags
         shell: bash
         run: |
-          echo "date=$(date +%Y%m%d)" >> $GITHUB_OUTPUT
           echo "sha_short=$(git rev-parse --short HEAD)" >> $GITHUB_OUTPUT
-
           alias_tags=()
-          if [[ "${{ matrix.is_latest }}" == "true" ]]; then
-            alias_tags+=("latest")
-          fi
-          if [[ "${{ matrix.is_stable }}" == "true" ]]; then
-            alias_tags+=("stable")
+          # Only perform the follow code when the action is spawned from a Pull Request
+          if [[ "${{ github.event_name }}" == "pull_request" ]]; then
+            alias_tags+=("pr-${{ github.event.number }}")
+          else
+            # The following is run when the timer is triggered or a merge/push to main
+            echo "date=$(date +%Y%m%d)" >> $GITHUB_OUTPUT
+            alias_tags+=("${{ matrix.major_version }}")
+            if [[ "${{ matrix.is_latest }}" == "true" ]]; then
+              alias_tags+=("latest")
+            fi
+            if [[ "${{ matrix.is_stable }}" == "true" ]]; then
+              alias_tags+=("stable")
+            fi
           fi
           echo "alias_tags=${alias_tags[*]}" >> $GITHUB_OUTPUT
-             
+
       # Build image using Buildah action
       - name: Build Image
         id: build_image
@@ -57,7 +63,6 @@ jobs:
             ${{ steps.generate-tags.outputs.alias_tags }}
             ${{ steps.generate-tags.outputs.date }}
             ${{ steps.generate-tags.outputs.sha_short }}
-            ${{ matrix.major_version }}
           build-args: |
             FEDORA_MAJOR_VERSION=${{ matrix.major_version }}
           oci: true

@@ -108,7 +108,7 @@ jobs:
         env:
           TAGS: ${{ steps.push.outputs.digest }}
           COSIGN_PRIVATE_KEY: ${{secrets.SIGNING_SECRET}}
-          COSIGN_EXPERIMENTAL: true
+          COSIGN_EXPERIMENTAL: false
       - name: Echo outputs
         run: |
           echo "${{ toJSON(steps.push.outputs) }}"

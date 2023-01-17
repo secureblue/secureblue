@@ -32,6 +32,26 @@ The `latest` tag will automatically point to the latest build.
 - Mozilla Firefox, Mozilla Thunderbird, Extension Manager, Libreoffice, DejaDup, FontDownloader, Flatseal, and the Celluloid Media Player
 - Core GNOME Applications installed from Flathub
   - GNOME Calculator, Calendar, Characters, Connections, Contacts, Evince, Firmware, Logs, Maps, NautilusPreviewer, TextEditor, Weather, baobab, clocks, eog, and font-viewer
+
+## Further Customization
+
+The `just` task runner is included for further customization after first boot.
+It will copy the template from `/etc/justfile` to your home directory.
+After that run the following commands:
+
+- `just` - Show all tasks, more will be added in the future
+- `just bios` - Reboot into the system bios (Useful for dualbooting)
+- Set up distroboxes for the following images:
+  - `just distrobox-boxkit`
+  - `just distrobox-debian`
+  - `just distrobox-opensuse`
+  - `just distrobox-ubuntu`
+- `just setup-flatpaks` - Install a selection of flatpaks, use this section to add your own apps
+- `just setup-gaming` - Install Steam, Heroic Game Launcher, OBS Studio, Discord, Boatswain, Bottles, and ProtonUp-Qt. MangoHud is installed and enabled by default, hit right Shift-F12 to toggle
+- `just update` - Update rpm-ostree, flatpaks, and distroboxes in one command
+
+Check the [just website](https://just.systems) for tips on modifying and adding your own recipes. 
+  
   
 ## Verification
 
@@ -39,4 +59,4 @@ These images are signed with sisgstore's [cosign](https://docs.sigstore.dev/cosi
 
     cosign verify --key cosign.pub ghcr.io/ublue-os/base
     
-If you're forking this repo you should [read the docs](https://docs.github.com/en/actions/security-guides/encrypted-secrets) on keeping secrets in github. You need to [generate a new keypair](https://docs.sigstore.dev/cosign/overview/) with cosign. The public key can be in your public repo (your users need it to check the signatures), and you can paste the private key in Settings -> Secrets -> Actions. 
+If you're forking this repo you should [read the docs](https://docs.github.com/en/actions/security-guides/encrypted-secrets) on keeping secrets in github. You need to [generate a new keypair](https://docs.sigstore.dev/cosign/overview/) with cosign. The public key can be in your public repo (your users need it to check the signatures), and you can paste the private key in Settings -> Secrets -> Actions.

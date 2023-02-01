@@ -41,6 +41,7 @@ After that run the following commands:
 
 - `just` - Show all tasks, more will be added in the future
 - `just bios` - Reboot into the system bios (Useful for dualbooting)
+- `just changelogs` - Show the changelogs of the pending update
 - Set up distroboxes for the following images:
   - `just distrobox-boxkit`
   - `just distrobox-debian`

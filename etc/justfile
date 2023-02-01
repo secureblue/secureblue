@@ -4,6 +4,9 @@ default:
 bios:
   systemctl reboot --firmware-setup
 
+changelogs:
+  rpm-ostree db diff --changelogs
+
 distrobox-boxkit:
   echo 'Creating Boxkit distrobox ...'
   distrobox create --image ghcr.io/ublue-os/boxkit -n boxkit -Y

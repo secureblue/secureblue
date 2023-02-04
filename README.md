@@ -2,11 +2,21 @@
 
 [![build-ublue](https://github.com/ublue-os/base/actions/workflows/build.yml/badge.svg)](https://github.com/ublue-os/base/actions/workflows/build.yml)
 
-A base image with a (mostly) stock Fedora Silverblue. Help us make a sweet base image: Pull requests and improvements appreciated and encouraged! Scroll to the bottom to see how to make your own!  
+A base image with a (mostly) stock Fedora Silverblue. Help us make a sweet base image: Pull requests and improvements appreciated and encouraged! Scroll to the bottom to see how to make your own!
+
+## What is this?
+
+This is a base Fedora Silverblue image designed to be customized to whatever you want, have GitHub build it for you, and then host it for you. You then just tell your computer to boot off of that image. GitHub keeps 90 days worth image backups for you, thanks Microsoft! 
+
+Check out the [spec for Fedora](https://fedoraproject.org/wiki/Changes/OstreeNativeContainerStable) for more information and proper explanation.
+
+Check out our [organization page](https://github.com/ublue-os) for images with MATE, XFCE, and an Ubuntu-like flavor. Or go right to the [Nvidia image](https://github.com/ublue-os/nvidia), your pathway to a more reliable experience. Some of these are examples that build off of this base image, so build whatever you'd like!
+
+These github actions and methods are meant to be shared and improved upon, [so come on in](https://github.com/orgs/ublue-os/discussions) and help out!
 
 ## Usage
 
-Warning: This is an experimental feature and should not be used in production, try it in a VM for a while, you have been warned!
+Warning: This is an experimental feature and should not be used in production (yet), however it's pretty close)
 
     sudo rpm-ostree rebase ostree-unverified-registry:ghcr.io/ublue-os/base:latest
     

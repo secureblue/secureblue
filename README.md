@@ -16,15 +16,17 @@ These github actions and methods are meant to be shared and improved upon, [so c
 
 ## Usage
 
-Warning: This is an experimental feature and should not be used in production (yet), however it's pretty close)
+Warning: This is an experimental feature and should not be used in production (yet), however it's pretty close) Depending on the version of rpm-ostree on your system you might need to pass an additional `--experimental` flag
 
-    sudo rpm-ostree rebase ostree-unverified-registry:ghcr.io/ublue-os/base:latest
+To rebase an existing Silverblue/Kinoite machine to the latest release (37): 
+
+    sudo rpm-ostree rebase ostree-unverified-registry:ghcr.io/ublue-os/base:37
     
 We build date tags as well, so if you want to rebase to a particular day's release:
   
     sudo rpm-ostree rebase ostree-unverified-registry:ghcr.io/ublue-os/base:20221217 
 
-The `latest` tag will automatically point to the latest build. 
+The `latest` tag will automatically point to the latest build. Note that when a new version of Fedora is released that the `latest` tag will get updated to that latest release automatically. 
 
 ## Features
 

@@ -6,9 +6,7 @@ Please refer to our [Code of Conduct](https://github.com/ublue-os/base/blob/main
 
 Feel free to report issues as you find them, and [helping others in the discussions]() is always appreciated.
 
-# Contributing to CONTRIBUTING.md
-
-First off, thanks for taking the time to contribute! 
+# Contributing
 
 All types of contributions are encouraged and valued. See the [Table of Contents](#table-of-contents) for different ways to help and details about how this project handles them. Please make sure to read the relevant section before making your contribution. It will make it a lot easier for us maintainers and smooth out the experience for all involved. The community looks forward to your contributions. 
 
@@ -44,6 +42,11 @@ to jorge.castro@gmail.com
 
 > ### Legal Notice 
 > When contributing to this project, you must agree that you have authored 100% of the content, that you have the necessary rights to the content and that the content you contribute may be provided under the project license.
+
+Generally speaking we try to follow the [Lazy Concensus](http://lazyconcens.us/) model of development to keep the builds healthy and ourselves happy. 
+   - If you're looking for concensus to make a decision post an issue for feedback and remember to account for timezones and weekends/holidays/work time. 
+   - We want people to be opinionated in their builds so we're more of a loose confederation of repos than a top-down org.
+   - Try not to merge your own stuff, ask for a review. At some point when we have enough reviewers we'll be turning on branch protection. 
 
 ### Reporting Bugs
 

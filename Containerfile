@@ -17,5 +17,8 @@ RUN rpm-ostree override remove firefox firefox-langpacks && \
     sed -i 's/#AutomaticUpdatePolicy.*/AutomaticUpdatePolicy=stage/' /etc/rpm-ostreed.conf && \
     systemctl enable rpm-ostreed-automatic.timer && \
     systemctl enable flatpak-automatic.timer && \
-    rm -f /etc/yum.repos.d/_copr_ublue-os-vanilla-first-setup.repo && \
+    sed -i 's@enabled=1@enabled=0@g' /etc/yum.repos.d/_copr_ublue-os-vanilla-first-setup.repo && \
+    rm -rf \
+        /tmp/* \
+        /var/* && \
     ostree container commit

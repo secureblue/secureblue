@@ -1,5 +1,5 @@
 [Unit]
-Description=flatpak Automatic Update Trigger
+Description=Flatpak Automatic Update Trigger
 Documentation=man:flatpak(1)
 
 [Timer]

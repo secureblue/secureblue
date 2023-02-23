@@ -125,7 +125,17 @@ if [ "$?" != 0 ] ; then
           --text="Installing Celluloid Failed"
         exit 1
 fi
+echo "95"
+
+echo "Enabling Flatpak auto update"
+/usr/bin/systemctl --user enable --now flatpak-user-update.timer
+if [ "$?" != 0 ] ; then
+        zenity --error \
+          --text="Setting Flatpak Autoupdate Failed"
+        exit 1
+fi
 echo "100"
+
 
 echo "# Reticulating Final Splines"
 mkdir -p "$HOME"/.config/ublue/

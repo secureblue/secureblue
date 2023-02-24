@@ -22,6 +22,7 @@ All types of contributions are encouraged and valued. See the [Table of Contents
 - [I Have a Question](#i-have-a-question)
 - [I Want To Contribute](#i-want-to-contribute)
 - [Reporting Bugs](#reporting-bugs)
+- [How to test incoming changes](#how-to-test-incoming-changes)
 - [Building Locally](#building-locally)
 - [Styleguides](#styleguides)
 - [Commit Messages](#commit-messages)
@@ -61,6 +62,24 @@ A good bug report should describe the issue in detail. Generally speaking:
 - Image and Version 
 - Possibly your input and the output
 - Can you reliably reproduce the issue? And can you also reproduce it with older versions?
+
+### How to test incoming changes
+
+One of the nice things about the image model is that we can generate an entire OS image for every change we want to commit, so this makes testing way easier than in the past. You can rebase to it, see if it works, and then move back. This also means we can increase the amount of testers! 
+
+We strive towards a model where proposed changes are more thoroughly reviewed and tested by the community. So here's how to do it. If you see a pull request that is opened up on an image you're following you can leave a review on how it's working for you. At the bottom of every PR you'll see something like this: 
+
+![image](https://user-images.githubusercontent.com/1264109/221305388-3860fc07-212c-4eb9-80d9-5d7a35a77f46.png)
+
+Click on "Add your review", and then you'll see this: 
+
+![image](https://user-images.githubusercontent.com/1264109/221307636-5e312e48-821f-4206-848f-7fbc2c91cd78.png)
+
+Don't worry, you can't mess anything up, all the merging and stuff will be done by the maintainer, what this does is lets us gather information in a more formal manner than just shoving everything in a forum thread. The more people are reviewing and testing images, the better off we'll be, especially for images that are new like Sericea.
+
+At some point we'll have a bot that will leave you instructions on how to rebase to the image and all that stuff, but in the meantime we'll leave instructions manually. 
+
+Here's an example: https://github.com/ublue-os/nvidia/pull/49
 
 ## Building Locally
 

@@ -77,4 +77,4 @@ If you're forking this repo you should [read the docs](https://docs.github.com/e
 
 ## Making your own
 
-See [the documentation](https://ublue.it/making-your-own/) on how to clone and use this repo foor your own projects.
+See [the documentation](https://ublue.it/making-your-own/) on how to clone and use this repo for your own projects.

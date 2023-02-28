@@ -17,9 +17,27 @@ jobs:
       github.event.workflow_run.event == 'pull_request' &&
       github.event.workflow_run.conclusion == 'success'
     steps:
-      - uses: actions/download-artifact@v3
+      - name: 'Download artifact'
+        uses: actions/github-script@v3.1.0
         with:
-          name: output
+          script: |
+            var artifacts = await github.actions.listWorkflowRunArtifacts({
+               owner: context.repo.owner,
+               repo: context.repo.repo,
+               run_id: ${{github.event.workflow_run.id }},
+            });
+            var matchArtifact = artifacts.data.artifacts.filter((artifact) => {
+              return artifact.name == "output"
+            })[0];
+            var download = await github.actions.downloadArtifact({
+               owner: context.repo.owner,
+               repo: context.repo.repo,
+               artifact_id: matchArtifact.id,
+               archive_format: 'zip',
+            });
+            var fs = require('fs');
+            fs.writeFileSync('${{github.workspace}}/output.zip', Buffer.from(download.data));
+      - run: unzip output.zip
 
       - name: Load Container Image
         id: load_image
@@ -29,7 +47,12 @@ jobs:
           cat tags
           podman load -i image.tar
           echo image="$(cat image)" >> $GITHUB_OUTPUT
-          echo tags="$(cat tags)" >> $GITHUB_OUTPUT
+          delimiter="$(openssl rand -hex 8)"
+          {
+            echo "tags<<${delimiter}"
+            cat tags
+            echo "${delimiter}"
+          } >> $GITHUB_OUTPUT
 
       - name: Lowercase Registry
         id: registry_case

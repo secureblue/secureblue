@@ -1,7 +1,8 @@
 name: build-ublue
 on:
-  pull_request_target:
-    types: [labeled]
+  pull_request:
+    types:
+      - labeled
     branches:
       - main
     paths-ignore:
@@ -23,7 +24,7 @@ jobs:
   push-ghcr:
     name: Build and push image
     runs-on: ubuntu-22.04
-    if: contains(github.event.pull_request.labels.*.name, 'ok-to-build')
+    if: contains(github.event.pull_request.labels.*.name, 'ok-to-build') || github.event_name != 'pull_request'
     permissions:
       contents: read
       packages: write
@@ -103,6 +104,7 @@ jobs:
       - name: Push To GHCR
         uses: redhat-actions/push-to-registry@v2
         id: push
+        if: github.event_name != 'pull_request'
         env:
           REGISTRY_USER: ${{ github.actor }}
           REGISTRY_PASSWORD: ${{ github.token }}
@@ -117,9 +119,11 @@ jobs:
 
       # Sign container
       - uses: sigstore/cosign-installer@main
+        if: github.event_name != 'pull_request'
 
       # Only needed when running `cosign sign` using a key
       - name: Write signing key to disk
+        if: github.event_name != 'pull_request'
         run: |
           echo "${{ env.COSIGN_PRIVATE_KEY }}" > cosign.key
           # DEBUG: get character count of key
@@ -129,12 +133,14 @@ jobs:
 
       - name: Login to GitHub Container Registry
         uses: docker/login-action@v2
+        if: github.event_name != 'pull_request'
         with:
           registry: ghcr.io
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Sign container image
+        if: github.event_name != 'pull_request'
         run: |
           cosign sign --key cosign.key ${{ steps.registry_case.outputs.lowercase }}/${{ env.IMAGE_NAME }}@${TAGS}
         env:
@@ -142,5 +148,22 @@ jobs:
           COSIGN_EXPERIMENTAL: false
 
       - name: Echo outputs
+        if: github.event_name != 'pull_request'
         run: |
           echo "${{ toJSON(steps.push.outputs) }}"
+
+      - name: Upload Container Export
+        if: github.event_name == 'pull_request'
+        run: |
+          mkdir -p output
+          podman save -o output/image.tar ${{ steps.build_image.outputs.image }}
+          echo "image=${{ steps.build_image.outputs.image }}" >> output/meta
+          echo "tags=${{ steps.build_image.outputs.tags }}" >> output/meta
+      
+      - name: Publish Artifact
+        uses: actions/upload-artifact@v2
+        if: github.event_name == 'pull_request'
+        with:
+          name: output
+          path: output
+

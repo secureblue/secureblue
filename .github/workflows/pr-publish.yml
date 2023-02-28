@@ -46,6 +46,10 @@ jobs:
           cat image
           cat tags
           podman load -i image.tar
+          image_name="localhost/$(head -n1 image):$(head -n1 tags)"
+          for t in $(cat tags); do
+            podman tag $image_name $(head -n1 image):$t
+          done
           echo image="$(cat image)" >> $GITHUB_OUTPUT
           delimiter="$(openssl rand -hex 8)"
           {

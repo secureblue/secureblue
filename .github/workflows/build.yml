@@ -157,8 +157,8 @@ jobs:
         run: |
           mkdir -p output
           podman save -o output/image.tar ${{ steps.build_image.outputs.image }}
-          echo "image=${{ steps.build_image.outputs.image }}" >> output/meta
-          echo "tags=${{ steps.build_image.outputs.tags }}" >> output/meta
+          echo "${{ steps.build_image.outputs.image }}" >> output/image
+          echo "${{ steps.build_image.outputs.tags }}" >> output/tags
       
       - name: Publish Artifact
         uses: actions/upload-artifact@v2

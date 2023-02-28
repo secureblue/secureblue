@@ -55,77 +55,24 @@ if [ "$?" != 0 ] ; then
 fi
 echo "25"
 
-echo "# Installing Firefox"
-/usr/bin/flatpak install --user --noninteractive flathub org.mozilla.firefox
-if [ "$?" != 0 ] ; then
-        zenity --error \
-          --text="Installing Firefox Failed"
-        exit 1
-fi
-echo "30"
+echo "# Installing flatpaks from recipe"
+flatpaks=$(yq '.flatpaks[]' < /etc/ublue-recipe.yml)
+flatpaks_count=$(yq '.flatpaks[]' < /etc/ublue-recipe.yml | wc -l)
+i=0
+for pkg in $flatpaks; do
+  echo "# Installing ${pkg}"
+  /usr/bin/flatpak install --user --noninteractive flathub $pkg
+  if [ "$?" != 0 ] ; then
+          zenity --error \
+            --text="Installing ${pkg} Failed"
+          exit 1
+  fi
+  i=$((i+1))
+  # Automatically calculates evenly spaced progess using bc, cuts everything after decimal point.
+  echo "${i}/${flatpaks_count} * (95-30) + 30" | bc -l | cut -d "." -f1 
+done
 
-echo "# Installing Thunderbird"
-/usr/bin/flatpak install --user --noninteractive flathub org.mozilla.Thunderbird
-if [ "$?" != 0 ] ; then
-        zenity --error \
-          --text="Installing Thunderbird Failed"
-        exit 1
-fi
-echo "40"
 
-echo "# Installing Extension Manager"
-/usr/bin/flatpak install --user --noninteractive flathub com.mattjakeman.ExtensionManager
-if [ "$?" != 0 ] ; then
-        zenity --error \
-          --text="Installing Extension Manager Failed"
-        exit 1
-fi
-echo "50"
-
-echo "# Installing LibreOffice"
-/usr/bin/flatpak install --user --noninteractive flathub org.libreoffice.LibreOffice
-if [ "$?" != 0 ] ; then
-        zenity --error \
-          --text="Installing LibreOffice Failed"
-        exit 1
-fi
-echo "70"
-
-echo "# Installing DejaDup Backup"
-/usr/bin/flatpak install --user --noninteractive flathub org.gnome.DejaDup
-if [ "$?" != 0 ] ; then
-        zenity --error \
-          --text="Installing DejaDup Failed"
-        exit 1
-fi
-echo "80"
-
-echo "# Installing Font Downloader"
-/usr/bin/flatpak install --user --noninteractive flathub org.gustavoperedo.FontDownloader
-if [ "$?" != 0 ] ; then
-        zenity --error \
-          --text="Installing FontDownloader Failed"
-        exit 1
-fi
-echo "85"
-
-echo "# Installing Flatseal"
-/usr/bin/flatpak install --user --noninteractive flathub com.github.tchx84.Flatseal
-if [ "$?" != 0 ] ; then
-        zenity --error \
-          --text="Installing Flatseal Failed"
-        exit 1
-fi
-echo "90"
-
-echo "# Installing Celluloid Media Player"
-/usr/bin/flatpak install --user --noninteractive flathub io.github.celluloid_player.Celluloid
-if [ "$?" != 0 ] ; then
-        zenity --error \
-          --text="Installing Celluloid Failed"
-        exit 1
-fi
-echo "95"
 
 echo "Enabling Flatpak auto update"
 /usr/bin/systemctl --user enable --now flatpak-user-update.timer

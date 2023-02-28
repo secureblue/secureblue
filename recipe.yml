@@ -1,0 +1,13 @@
+rpms:
+  - distrobox
+  - gnome-tweaks
+  - just
+flatpaks:
+  - org.mozilla.firefox
+  - org.mozilla.Thunderbird
+  - com.mattjakeman.ExtensionManager
+  - org.libreoffice.LibreOffice
+  - org.gnome.DejaDup
+  - org.gustavoperedo.FontDownloader
+  - com.github.tchx84.Flatseal
+  - io.github.celluloid_player.Celluloid

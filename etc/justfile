@@ -22,22 +22,16 @@ distrobox-opensuse:
 distrobox-ubuntu:
   echo 'Creating Ubuntu distrobox ...'
   distrobox create --image quay.io/toolbx-images/ubuntu-toolbox:22.04 -n ubuntu -Y
-  
+
 setup-flatpaks:
-  echo 'Setting up your flatpaks...'
-  flatpak install -y --user \\
-  com.discordapp.Discord \\
-  com.mastermindzh.tidal-hifi \\
-  com.microsoft.Edge \\
-  com.plexamp.Plexamp \\
-  com.slack.Slack \\
-  com.todoist.Todoist \\
-  com.visualstudio.code \\
-  im.riot.Riot \\
-  no.mifi.losslesscut \\
-  org.standardnotes.standardnotes \\
-  tv.plex.PlexDesktop \\
-  us.zoom.Zoom  
+  echo 'Installing flatpaks from the ublue recipe ...'
+  flatpaks=$(dasel -f /etc/ublue-recipe.yml -r yaml -w json -s 'flatpaks')
+  flatpaks_count=$(echo $flatpaks | dasel -r json -s 'len()')
+  for i in $(seq 0 $(($flatpaks_count-1))); do
+    pkg=$(echo $flatpaks | dasel -r json "[${i}]" | tr -d '"')
+    echo "# Installing ${pkg}"
+    flatpak install --user --noninteractive flathub $pkg
+  done
   
 setup-pwa:
   echo 'Giving browser permission to create PWAs (Progressive Web Apps)'

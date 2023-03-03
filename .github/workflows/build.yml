@@ -29,7 +29,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        image_name: [silverblue]
+        image_name: [base]
         major_version: [37]
         include:
           - major_version: 37
@@ -42,7 +42,7 @@ jobs:
 
       - name: Matrix Variables
         run: |
-          echo "IMAGE_NAME=${{ format('{0}-{1}', matrix.image_name, env.IMAGE_BASE_NAME) }}" >> $GITHUB_ENV
+          echo "IMAGE_NAME=${{ format('{1}', matrix.image_name, env.IMAGE_BASE_NAME) }}" >> $GITHUB_ENV
 
       - name: Generate tags
         id: generate-tags

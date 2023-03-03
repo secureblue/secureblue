@@ -175,17 +175,3 @@ jobs:
       - name: Echo outputs
         run: |
           echo "${{ toJSON(steps.push.outputs) }}"
-
-      - name: Upload Container Export
-        run: |
-          mkdir -p output
-          podman save -o output/image.tar ${{ steps.build_image.outputs.image }}
-          echo "${{ steps.build_image.outputs.image }}" >> output/image
-          echo "${{ steps.build_image.outputs.tags }}" >> output/tags
-      
-      - name: Publish Artifact
-        uses: actions/upload-artifact@v2
-        if: github.event_name == 'pull_request'
-        with:
-          name: output
-          path: output

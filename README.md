@@ -4,6 +4,15 @@
 
 A base image with a (mostly) stock Fedora Silverblue. Help us make a sweet base image: Pull requests and improvements appreciated and encouraged! Scroll to the bottom to see how to make your own!
 
+***WARNING: STOP USING ME*** 
+
+This image is mostly read-only for Fedora 37. All further improvements will be made to: 
+
+https://github.com/ublue-os/main
+
+Builds will continue to be generated but will be deprecated in the future
+***WARNING: STOP USING ME*** 
+
 ## What is this?
 
 This is a base Fedora Silverblue image designed to be customized to whatever you want, have GitHub build it for you, and then host it for you. You then just tell your computer to boot off of that image. GitHub keeps 90 days worth image backups for you, thanks Microsoft! 

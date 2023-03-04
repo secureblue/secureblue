@@ -24,13 +24,14 @@ distrobox-ubuntu:
   distrobox create --image quay.io/toolbx-images/ubuntu-toolbox:22.04 -n ubuntu -Y
 
 setup-flatpaks:
+  #!/bin/bash
   echo 'Installing flatpaks from the ublue recipe ...'
   flatpaks=$(yq '.flatpaks[]' < /etc/ublue-recipe.yml)
   for pkg in $flatpaks; do \
       echo "Installing: ${pkg}" && \
       flatpak install --user --noninteractive flathub $pkg; \
   done
-  
+
 setup-pwa:
   echo 'Giving browser permission to create PWAs (Progressive Web Apps)'
   # Add for your favorite chromium-based browser

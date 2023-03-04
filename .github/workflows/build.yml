@@ -4,19 +4,21 @@ on:
     branches:
       - main
     paths-ignore:
-      - '**.md'
-      - '**.txt'
+      - "**.md"
+      - "**.txt"
   schedule:
-    - cron: '20 20 * * *'  # 8:20pm everyday
+    - cron: "20 20 * * *" # 8:20pm everyday
   push:
     branches:
       - main
     paths-ignore:
-      - '**.md'
-      - '**.txt'
+      - "**.md"
+      - "**.txt"
+  workflow-dispatch:
+
 env:
-    IMAGE_BASE_NAME: base
-    IMAGE_REGISTRY: ghcr.io/${{ github.repository_owner }}
+  IMAGE_BASE_NAME: base
+  IMAGE_REGISTRY: ghcr.io/${{ github.repository_owner }}
 
 jobs:
   push-ghcr:
@@ -35,7 +37,7 @@ jobs:
           - major_version: 37
             is_latest_version: true
             is_stable_version: true
-    steps: 
+    steps:
       # Checkout push-to-registry action GitHub repository
       - name: Checkout Push to Registry action
         uses: actions/checkout@v3

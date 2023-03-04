@@ -1,8 +1,6 @@
-# Multi-stage build
 ARG FEDORA_MAJOR_VERSION=37
 
 FROM ghcr.io/ublue-os/silverblue-main:${FEDORA_MAJOR_VERSION}
-# See https://pagure.io/releng/issue/11047 for final location
 
 COPY etc /etc
 COPY usr /us

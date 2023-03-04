@@ -22,18 +22,25 @@ See [the documentation](https://ublue.it/making-your-own/) on how to clone and u
 
 You can customize this image to your needs by adding packages to install in the `recipe.yml`, configuration files in the `etc` or `usr` folders or doing any custom commands you want to in the `Containerfile`.
 
-## Usage
+## Installation
 
 > **Warning**
 > This is an experimental feature and should not be used in production, try it in a VM for a while! If you are rebasing and not doing a clean install do a `touch ~/.config/ublue/firstboot-done` to keep your flatpak configuration untouched BEFORE you rebase, otherwise we're going to mangle it (for science).
 
-To rebase an existing Silverblue/Kinoite machine to the latest release (37):
+> **Note**
+> In the commands below, make sure to replace `ublue-os/startingpoint` with the details of your own repository.
 
-    sudo rpm-ostree rebase ostree-unverified-registry:ghcr.io/ublue-os/base:37
+To rebase an existing Silverblue/Kinoite installation to the latest build:
 
-We build date tags as well, so if you want to rebase to a particular day's release:
+```
+sudo rpm-ostree rebase ostree-unverified-registry:ghcr.io/ublue-os/startingpoint:latest
+```
 
-    sudo rpm-ostree rebase ostree-unverified-registry:ghcr.io/ublue-os/base:20221217
+This repository builds date tags as well, so if you want to rebase to a particular day's build:
+
+```
+sudo rpm-ostree rebase ostree-unverified-registry:ghcr.io/ublue-os/startingpoint:20221217
+```
 
 The `latest` tag will automatically point to the latest build. Note that when a new version of Fedora is released that the `latest` tag will get updated to that latest release automatically.
 

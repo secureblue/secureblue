@@ -19,12 +19,9 @@ RUN rpm-ostree override remove firefox firefox-langpacks && \
         echo "Installing: ${pkg}" && \
         rpm-ostree install $pkg; \
     done && \ 
-    echo "---" && \
+    echo "---"
 
-    sed -i 's/#AutomaticUpdatePolicy.*/AutomaticUpdatePolicy=stage/' /etc/rpm-ostreed.conf && \
-    systemctl enable rpm-ostreed-automatic.timer && \
-    systemctl enable flatpak-system-update.timer && \
-    rm -rf \
+RUN rm -rf \
         /tmp/* \
         /var/* && \
     ostree container commit

@@ -14,7 +14,7 @@ on:
     paths-ignore:
       - "**.md"
       - "**.txt"
-  workflow-dispatch:
+  workflow_dispatch:
 
 env:
   IMAGE_BASE_NAME: base

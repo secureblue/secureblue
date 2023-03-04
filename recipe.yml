@@ -1,4 +1,5 @@
 rpms:
+  - zenity
 flatpaks:
   - org.mozilla.firefox
   - org.mozilla.Thunderbird

@@ -17,7 +17,7 @@ on:
   workflow_dispatch:
 
 env:
-  IMAGE_BASE_NAME: base
+  IMAGE_BASE_NAME: startingpoint
   IMAGE_REGISTRY: ghcr.io/${{ github.repository_owner }}
 
 jobs:
@@ -31,7 +31,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        image_name: [base]
+        image_name: [startingpoint]
         major_version: [37]
         include:
           - major_version: 37
@@ -97,7 +97,7 @@ jobs:
             $IMAGE_NAME
           labels: |
             org.opencontainers.image.title=$IMAGE_NAME
-            org.opencontainers.image.description=A base $IMAGE_NAME image with batteries included
+            org.opencontainers.image.description=A $IMAGE_NAME image for further customization
             io.artifacthub.package.readme-url=https://raw.githubusercontent.com/ublue-os/base/base/README.md
             io.artifacthub.package.logo-url=https://avatars.githubusercontent.com/u/120078124?s=200&v=4
 

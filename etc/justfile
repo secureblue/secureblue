@@ -25,12 +25,10 @@ distrobox-ubuntu:
 
 setup-flatpaks:
   echo 'Installing flatpaks from the ublue recipe ...'
-  flatpaks=$(dasel -f /etc/ublue-recipe.yml -r yaml -w json -s 'flatpaks')
-  flatpaks_count=$(echo $flatpaks | dasel -r json -s 'len()')
-  for i in $(seq 0 $(($flatpaks_count-1))); do
-    pkg=$(echo $flatpaks | dasel -r json "[${i}]" | tr -d '"')
-    echo "# Installing ${pkg}"
-    flatpak install --user --noninteractive flathub $pkg
+  flatpaks=$(yq '.flatpaks[]' < /etc/ublue-recipe.yml)
+  for pkg in $flatpaks; do \
+      echo "Installing: ${pkg}" && \
+      flatpak install --user --noninteractive flathub $pkg; \
   done
   
 setup-pwa:

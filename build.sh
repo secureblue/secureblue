@@ -11,3 +11,11 @@ echo "---"
 
 # install yafti to install flatpaks on first boot, https://github.com/ublue-os/yafti
 pip install --prefix=/usr yafti
+
+# add a package group for yafti using the packages defined in recipe.yml
+yq -iy '.screens.applications.values.groups.Custom.description = "Flatpaks defined by the image maintainer"' /etc/yafti.yml
+yq -iy '.screens.applications.values.groups.Custom.default = true' /etc/yafti.yml
+flatpaks=$(yq '.flatpaks[]' < /etc/ublue-recipe.yml)
+for pkg in $flatpaks; do \
+    yq -iy ".screens.applications.values.groups.Custom.packages += [{'$pkg': '$pkg'}]" /etc/yafti.yml \
+done

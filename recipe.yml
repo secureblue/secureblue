@@ -1,5 +1,5 @@
 rpms:
-  - zenity
+  - python3-pip # needed for yafti
 flatpaks:
   - org.mozilla.firefox
   - org.mozilla.Thunderbird

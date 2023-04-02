@@ -7,7 +7,7 @@ on:
       - "**.md"
       - "**.txt"
   schedule:
-    - cron: "20 20 * * *" # 8:20pm everyday
+    - cron: "20 22 * * *" # 10:20pm everyday (1 hr delay after 'nvidia' builds)
   push:
     branches:
       - main

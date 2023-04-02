@@ -7,7 +7,7 @@ on:
       - "**.md"
       - "**.txt"
   schedule:
-    - cron: "20 20 * * *" # 8:20pm everyday
+    - cron: "20 22 * * *" # 10:20pm everyday (1 hr delay after 'nvidia' builds)
   push:
     branches:
       - main
@@ -17,7 +17,7 @@ on:
   workflow_dispatch:
 
 env:
-  IMAGE_BASE_NAME: startingpoint
+  IMAGE_NAME: startingpoint
   IMAGE_REGISTRY: ghcr.io/${{ github.repository_owner }}
 
 jobs:
@@ -31,7 +31,6 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        image_name: [startingpoint]
         major_version: [37]
         include:
           - major_version: 37
@@ -44,7 +43,7 @@ jobs:
 
       - name: Matrix Variables
         run: |
-          echo "IMAGE_NAME=${{ format('{1}', matrix.image_name, env.IMAGE_BASE_NAME) }}" >> $GITHUB_ENV
+          echo "IMAGE_NAME=${{ env.IMAGE_NAME }}" >> $GITHUB_ENV
 
       - name: Generate tags
         id: generate-tags
@@ -94,11 +93,11 @@ jobs:
         id: meta
         with:
           images: |
-            $IMAGE_NAME
+            ${{ env.IMAGE_NAME }}
           labels: |
-            org.opencontainers.image.title=$IMAGE_NAME
-            org.opencontainers.image.description=A $IMAGE_NAME image for further customization
-            io.artifacthub.package.readme-url=https://raw.githubusercontent.com/ublue-os/base/base/README.md
+            org.opencontainers.image.title=${{ env.IMAGE_NAME }}
+            org.opencontainers.image.description=A starting point for further customization of uBlue images. Make your own! https://ublue.it/making-your-own/
+            io.artifacthub.package.readme-url=https://raw.githubusercontent.com/ublue-os/startingpoint/main/README.md
             io.artifacthub.package.logo-url=https://avatars.githubusercontent.com/u/120078124?s=200&v=4
 
       # Build image using Buildah action
@@ -112,7 +111,6 @@ jobs:
           tags: |
             ${{ steps.generate-tags.outputs.alias_tags }}
           build-args: |
-            IMAGE_NAME=${{ matrix.image_name }}
             FEDORA_MAJOR_VERSION=${{ matrix.major_version }}
           labels: ${{ steps.meta.outputs.labels }}
           oci: false

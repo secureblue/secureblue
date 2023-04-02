@@ -7,7 +7,7 @@ FROM ghcr.io/ublue-os/silverblue-main:${FEDORA_MAJOR_VERSION}
 COPY etc /etc
 # COPY usr /usr
 
-COPY recipe.yml /etc/ublue-recipe.yml
+COPY recipe.yml /tmp/ublue-recipe.yml
 
 # yq used in build.sh and the setup-flatpaks recipe to read the recipe.yml
 # copied from the official container image as it's not avaible as an rpm

@@ -17,5 +17,5 @@ yq -i '.screens.applications.values.groups.Custom.description = "Flatpaks define
 yq -i '.screens.applications.values.groups.Custom.default = true' /etc/yafti.yml
 flatpaks=$(yq '.flatpaks[]' < /etc/ublue-recipe.yml)
 for pkg in $flatpaks; do \
-    yq -i ".screens.applications.values.groups.Custom.packages += [{'$pkg': '$pkg'}]" /etc/yafti.yml \
+    yq -i ".screens.applications.values.groups.Custom.packages += [{'$pkg': '$pkg'}]" /etc/yafti.yml
 done

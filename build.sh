@@ -8,3 +8,6 @@ for pkg in $rpm_packages; do \
     rpm-ostree install $pkg; \
 done
 echo "---"
+
+# install yafti to install flatpaks on first boot, https://github.com/ublue-os/yafti
+pip install --prefix=/usr yafti

@@ -23,6 +23,12 @@ For the base-container field, you can use any other native container image. You 
 
 If you want to add custom configuration files, you can just add them in the `etc` directory. If you need to add other directories, you can look at the Containerfile to see how it's done. Writing to any directories under `/var` in Fedora Silverblue are not supported and will not work, as those are user-managed.
 
+### [yafti](https://github.com/ublue-os/yafti/)
+
+`yafti` is the uBlue firstboot installer, and it's configuration can be found in `/etc/yafti.yml`. It includes an optional selection of Flatpaks to install, with a new group added for the Flatpaks declared in `recipe.yml`. You can look at what's done in the config and modify it to your liking.
+
+The files `/etc/profile.d/ublue-firstboot.sh` and `/etc/skel.d/.config/autostart/ublue-firstboot.desktop` set up `yafti` so that it starts on boot, so if you wish to retain that functionality those files shouldn't be touched.
+
 ## Installation
 
 > **Warning**

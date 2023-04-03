@@ -6,13 +6,15 @@ This is a starting point Fedora Silverblue image designed to be customized to wh
 
 For more info, check out the [uBlue homepage](https://ublue.it/) and the [main uBlue repo](https://github.com/ublue-os/main/)
 
-## Making your own
+## Getting started
 
-See [the documentation](https://ublue.it/making-your-own/) on how to clone and use this repo for your own projects.
+See the [Make Your Own -page in the documentation](https://ublue.it/making-your-own/) for quick setup instructions for setting up your own repository based on this template.
+
+Don't worry, it only requires some basic knowledge about using the terminal and git.
 
 ## Customization
 
-You can customize this image to your needs by adding packages to install in the `recipe.yml`, configuration files in the `etc` or `usr` folders or doing any custom commands you want to in the `Containerfile`.
+The easiest way to start customizing is by looking at and modifying `recipe.yml`.
 
 ## Installation
 

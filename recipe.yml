@@ -1,4 +1,13 @@
+# the image will be at ghcr.io/yourusername/name
 name: startingpoint
+
+# what native container image to build on top of
+# images not built by ublue might function unexpectly
+base-container: ghcr.io/ublue-os/silverblue-main
+
+# what fedora version to use, you can just change this to update
+fedora-version: 37
+
 rpms:
   - python3-pip # needed for yafti
 flatpaks:

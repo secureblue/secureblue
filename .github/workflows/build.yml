@@ -46,6 +46,8 @@ jobs:
       - name: Gather image data from recipe
         run: |
           echo "IMAGE_NAME=$(yq '.name' ./recipe.yml)" >> $GITHUB_ENV
+          echo "FEDORA_MAJOR_VERSION=$(yq '.fedora-version' ./recipe.yml)" >> $GITHUB_ENV
+          echo "BASE_CONTAINER_URL=$(yq '.base-container' ./recipe.yml)" >> $GITHUB_ENV
 
       - name: Generate tags
         id: generate-tags
@@ -113,7 +115,8 @@ jobs:
           tags: |
             ${{ steps.generate-tags.outputs.alias_tags }}
           build-args: |
-            FEDORA_MAJOR_VERSION=${{ matrix.major_version }}
+            FEDORA_MAJOR_VERSION=${{ env.FEDORA_MAJOR_VERSION }}
+            BASE_CONTAINER_URL=${{ env.BASE_CONTAINER_URL }}
           labels: ${{ steps.meta.outputs.labels }}
           oci: false
 

@@ -1,7 +1,7 @@
 ARG FEDORA_MAJOR_VERSION=37
+ARG BASE_CONTAINER_URL=ghcr.io/ublue-os/silverblue-main
 
-# change this line if you want to change the image
-FROM ghcr.io/ublue-os/silverblue-main:${FEDORA_MAJOR_VERSION}
+FROM ${BASE_CONTAINER_URL}:${FEDORA_MAJOR_VERSION}
 
 # copy over configuration files
 COPY etc /etc

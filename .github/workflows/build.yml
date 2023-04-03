@@ -30,6 +30,8 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
+        recipe:
+          - recipe.yml
 
     steps:
       # Checkout push-to-registry action GitHub repository
@@ -41,10 +43,10 @@ jobs:
 
       - name: Gather image data from recipe
         run: |
-          echo "IMAGE_NAME=$(yq '.name' ./recipe.yml)" >> $GITHUB_ENV
-          echo "IMAGE_DESCRIPTION=$(yq '.description' ./recipe.yml)" >> $GITHUB_ENV
-          echo "FEDORA_MAJOR_VERSION=$(yq '.fedora-version' ./recipe.yml)" >> $GITHUB_ENV
-          echo "BASE_CONTAINER_URL=$(yq '.base-container' ./recipe.yml)" >> $GITHUB_ENV
+          echo "IMAGE_NAME=$(yq '.name' ./${{ matrix.recipe }})" >> $GITHUB_ENV
+          echo "IMAGE_DESCRIPTION=$(yq '.description' ./${{ matrix.recipe }})" >> $GITHUB_ENV
+          echo "FEDORA_MAJOR_VERSION=$(yq '.fedora-version' ./${{ matrix.recipe }})" >> $GITHUB_ENV
+          echo "BASE_CONTAINER_URL=$(yq '.base-container' ./${{ matrix.recipe }})" >> $GITHUB_ENV
 
       - name: Generate tags
         id: generate-tags

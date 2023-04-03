@@ -56,26 +56,18 @@ jobs:
         run: |
           # Generate a timestamp for creating an image version history
           TIMESTAMP="$(date +%Y%m%d)"
-          MAJOR_VERSION="${{ matrix.major_version }}"
+          MAJOR_VERSION="${{ env.FEDORA_MAJOR_VERSION }}"
           COMMIT_TAGS=()
           BUILD_TAGS=()
           # Have tags for tracking builds during pull request
           SHA_SHORT="$(git rev-parse --short HEAD)"
           COMMIT_TAGS+=("pr-${{ github.event.number }}-${MAJOR_VERSION}")
           COMMIT_TAGS+=("${SHA_SHORT}-${MAJOR_VERSION}")
-          if [[ "${{ matrix.is_latest_version }}" == "true" ]] && \
-             [[ "${{ matrix.is_stable_version }}" == "true" ]]; then
-              COMMIT_TAGS+=("pr-${{ github.event.number }}")
-              COMMIT_TAGS+=("${SHA_SHORT}")
-          fi
 
           BUILD_TAGS=("${MAJOR_VERSION}" "${MAJOR_VERSION}-${TIMESTAMP}")
 
-          if [[ "${{ matrix.is_latest_version }}" == "true" ]] && \
-             [[ "${{ matrix.is_stable_version }}" == "true" ]]; then
-              BUILD_TAGS+=("${TIMESTAMP}")
-              BUILD_TAGS+=("latest")
-          fi
+          BUILD_TAGS+=("${TIMESTAMP}")
+          BUILD_TAGS+=("latest")
 
           if [[ "${{ github.event_name }}" == "pull_request" ]]; then
               echo "Generated the following commit tags: "

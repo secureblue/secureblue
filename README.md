@@ -12,6 +12,9 @@ See the [Make Your Own -page in the documentation](https://ublue.it/making-your-
 
 Don't worry, it only requires some basic knowledge about using the terminal and git.
 
+> **Note**
+> Everywhere in this repository, make sure to replace `ublue-os/startingpoint` with the details of your own repository. Unless you used `create-ublue-image`, in which case the previous repo identifier should already be your repo's details.
+
 ## Customization
 
 The easiest way to start customizing is by looking at and modifying `recipe.yml`. It's documented using comments and should be pretty easy to understand.
@@ -24,9 +27,6 @@ If you want to add custom configuration files, you can just add them in the `etc
 
 > **Warning**
 > This is an experimental feature and should not be used in production, try it in a VM for a while! If you are rebasing and not doing a clean install do a `touch ~/.config/ublue/firstboot-done` to keep your flatpak configuration untouched BEFORE you rebase, otherwise we're going to mangle it (for science).
-
-> **Note**
-> In the commands below, make sure to replace `ublue-os/startingpoint` with the details of your own repository.
 
 To rebase an existing Silverblue/Kinoite installation to the latest build:
 

@@ -30,11 +30,10 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        major_version: [37]
-        include:
-          - major_version: 37
-            is_latest_version: true
-            is_stable_version: true
+        recipe:
+          - recipe.yml
+          - recipe-38.yml
+
     steps:
       # Checkout push-to-registry action GitHub repository
       - name: Checkout Push to Registry action
@@ -45,10 +44,10 @@ jobs:
 
       - name: Gather image data from recipe
         run: |
-          echo "IMAGE_NAME=$(yq '.name' ./recipe.yml)" >> $GITHUB_ENV
-          echo "IMAGE_DESCRIPTION=$(yq '.description' ./recipe.yml)" >> $GITHUB_ENV
-          echo "FEDORA_MAJOR_VERSION=$(yq '.fedora-version' ./recipe.yml)" >> $GITHUB_ENV
-          echo "BASE_CONTAINER_URL=$(yq '.base-container' ./recipe.yml)" >> $GITHUB_ENV
+          echo "IMAGE_NAME=$(yq '.name' ./${{ matrix.recipe }})" >> $GITHUB_ENV
+          echo "IMAGE_DESCRIPTION=$(yq '.description' ./${{ matrix.recipe }})" >> $GITHUB_ENV
+          echo "FEDORA_MAJOR_VERSION=$(yq '.fedora-version' ./${{ matrix.recipe }})" >> $GITHUB_ENV
+          echo "BASE_CONTAINER_URL=$(yq '.base-container' ./${{ matrix.recipe }})" >> $GITHUB_ENV
 
       - name: Generate tags
         id: generate-tags
@@ -56,26 +55,18 @@ jobs:
         run: |
           # Generate a timestamp for creating an image version history
           TIMESTAMP="$(date +%Y%m%d)"
-          MAJOR_VERSION="${{ matrix.major_version }}"
+          MAJOR_VERSION="${{ env.FEDORA_MAJOR_VERSION }}"
           COMMIT_TAGS=()
           BUILD_TAGS=()
           # Have tags for tracking builds during pull request
           SHA_SHORT="$(git rev-parse --short HEAD)"
           COMMIT_TAGS+=("pr-${{ github.event.number }}-${MAJOR_VERSION}")
           COMMIT_TAGS+=("${SHA_SHORT}-${MAJOR_VERSION}")
-          if [[ "${{ matrix.is_latest_version }}" == "true" ]] && \
-             [[ "${{ matrix.is_stable_version }}" == "true" ]]; then
-              COMMIT_TAGS+=("pr-${{ github.event.number }}")
-              COMMIT_TAGS+=("${SHA_SHORT}")
-          fi
 
           BUILD_TAGS=("${MAJOR_VERSION}" "${MAJOR_VERSION}-${TIMESTAMP}")
 
-          if [[ "${{ matrix.is_latest_version }}" == "true" ]] && \
-             [[ "${{ matrix.is_stable_version }}" == "true" ]]; then
-              BUILD_TAGS+=("${TIMESTAMP}")
-              BUILD_TAGS+=("latest")
-          fi
+          BUILD_TAGS+=("${TIMESTAMP}")
+          BUILD_TAGS+=("latest")
 
           if [[ "${{ github.event_name }}" == "pull_request" ]]; then
               echo "Generated the following commit tags: "

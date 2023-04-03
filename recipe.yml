@@ -5,7 +5,10 @@ name: startingpoint
 # images not built by ublue might function unexpectly
 base-container: ghcr.io/ublue-os/silverblue-main
 
-# what fedora version to use, you can just change this to update
+# what fedora version to use, you can just change this to the next version update
+# if you change this to "latest", you will be automatically updated
+# to the next major version assuming the image you're using as your base container
+# builds with the tag (all uBlue images do)
 fedora-version: 37
 
 # this description will be visible in the containers metadata

@@ -2,33 +2,37 @@
 
 [![build-ublue](https://github.com/ublue-os/startingpoint/actions/workflows/build.yml/badge.svg)](https://github.com/ublue-os/startingpoint/actions/workflows/build.yml)
 
-A starting point for creating your own customized Ostree Native Container image.
-
-## What is this?
-
 This is a starting point Fedora Silverblue image designed to be customized to whatever you want, have GitHub build it for you, and then host it for you. You then just tell your computer to boot off of that image. GitHub keeps 90 days worth image backups for you, thanks Microsoft!
 
-Check out the [spec for Fedora](https://fedoraproject.org/wiki/Changes/OstreeNativeContainerStable) for more information and proper explanation.
+For more info, check out the [uBlue homepage](https://ublue.it/) and the [main uBlue repo](https://github.com/ublue-os/main/)
 
-You can use any other native container image as a base for your custom image. Check out the [uBlue images list](https://ublue.it/images/) to decide what to use!
+## Getting started
 
-The Github actions and methods are meant to be shared and improved upon, [so come on in](https://github.com/orgs/ublue-os/discussions) and help out!
+See the [Make Your Own -page in the documentation](https://ublue.it/making-your-own/) for quick setup instructions for setting up your own repository based on this template.
 
-## Making your own
+Don't worry, it only requires some basic knowledge about using the terminal and git.
 
-See [the documentation](https://ublue.it/making-your-own/) on how to clone and use this repo for your own projects.
+> **Note**
+> Everywhere in this repository, make sure to replace `ublue-os/startingpoint` with the details of your own repository. Unless you used `create-ublue-image`, in which case the previous repo identifier should already be your repo's details.
 
 ## Customization
 
-You can customize this image to your needs by adding packages to install in the `recipe.yml`, configuration files in the `etc` or `usr` folders or doing any custom commands you want to in the `Containerfile`.
+The easiest way to start customizing is by looking at and modifying `recipe.yml`. It's documented using comments and should be pretty easy to understand.
+
+For the base-container field, you can use any other native container image. You will get all the features of that image, plus the ones added here! Check out the [uBlue images list](https://ublue.it/images/) to decide what to use!
+
+If you want to add custom configuration files, you can just add them in the `etc` directory. If you need to add other directories, you can look at the Containerfile to see how it's done. Writing to any directories under `/var` in Fedora Silverblue are not supported and will not work, as those are user-managed.
+
+### [yafti](https://github.com/ublue-os/yafti/)
+
+`yafti` is the uBlue firstboot installer, and it's configuration can be found in `/etc/yafti.yml`. It includes an optional selection of Flatpaks to install, with a new group added for the Flatpaks declared in `recipe.yml`. You can look at what's done in the config and modify it to your liking.
+
+The files `/etc/profile.d/ublue-firstboot.sh` and `/etc/skel.d/.config/autostart/ublue-firstboot.desktop` set up `yafti` so that it starts on boot, so if you wish to retain that functionality those files shouldn't be touched.
 
 ## Installation
 
 > **Warning**
-> This is an experimental feature and should not be used in production, try it in a VM for a while! If you are rebasing and not doing a clean install do a `touch ~/.config/ublue/firstboot-done` to keep your flatpak configuration untouched BEFORE you rebase, otherwise we're going to mangle it (for science).
-
-> **Note**
-> In the commands below, make sure to replace `ublue-os/startingpoint` with the details of your own repository.
+> This is an experimental feature and should not be used in production, try it in a VM for a while!
 
 To rebase an existing Silverblue/Kinoite installation to the latest build:
 
@@ -39,15 +43,15 @@ sudo rpm-ostree rebase ostree-unverified-registry:ghcr.io/ublue-os/startingpoint
 This repository builds date tags as well, so if you want to rebase to a particular day's build:
 
 ```
-sudo rpm-ostree rebase ostree-unverified-registry:ghcr.io/ublue-os/startingpoint:20221217
+sudo rpm-ostree rebase ostree-unverified-registry:ghcr.io/ublue-os/startingpoint:20230403
 ```
 
-The `latest` tag will automatically point to the latest build. Note that when a new version of Fedora is released that the `latest` tag will get updated to that latest release automatically.
+The `latest` tag will automatically point to the latest build. That build will still always use the Fedora version specified in `release.yml`, so you won't get accidentally updated to the next major version.
 
 ## Just
 
 The `just` task runner is included in main for further customization after first boot.
-The firstboot script copies the justfile from `/etc/justfile` to your home directory.
+You can copy the justfile from `/etc/justfile` to `~/.justfile` to get started. Once `just` supports [include directives](https://just.systems/man/en/chapter_52.html), you can just include the file in `/etc` into your own justfile, where you have the option of adding new tasks.
 After that run the following commands:
 
 - `just` - Show all tasks, more will be added in the future
@@ -70,4 +74,4 @@ These images are signed with sisgstore's [cosign](https://docs.sigstore.dev/cosi
 
     cosign verify --key cosign.pub ghcr.io/ublue-os/base
 
-If you're forking this repo you should [read the docs](https://docs.github.com/en/actions/security-guides/encrypted-secrets) on keeping secrets in github. You need to [generate a new keypair](https://docs.sigstore.dev/cosign/overview/) with cosign. The public key can be in your public repo (your users need it to check the signatures), and you can paste the private key in Settings -> Secrets -> Actions.
+If you're forking this repo, the uBlue website has [instructions](https://ublue.it/making-your-own/) for setting up signing properly.

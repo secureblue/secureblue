@@ -17,7 +17,6 @@ on:
   workflow_dispatch:
 
 env:
-  IMAGE_NAME: startingpoint
   IMAGE_REGISTRY: ghcr.io/${{ github.repository_owner }}
 
 jobs:
@@ -41,9 +40,15 @@ jobs:
       - name: Checkout Push to Registry action
         uses: actions/checkout@v3
 
-      - name: Matrix Variables
+      - name: Add yq for reading recipe.yml
+        uses: mikefarah/yq@v4.33.2
+
+      - name: Gather image data from recipe
         run: |
-          echo "IMAGE_NAME=${{ env.IMAGE_NAME }}" >> $GITHUB_ENV
+          echo "IMAGE_NAME=$(yq '.name' ./recipe.yml)" >> $GITHUB_ENV
+          echo "IMAGE_DESCRIPTION=$(yq '.description' ./recipe.yml)" >> $GITHUB_ENV
+          echo "FEDORA_MAJOR_VERSION=$(yq '.fedora-version' ./recipe.yml)" >> $GITHUB_ENV
+          echo "BASE_CONTAINER_URL=$(yq '.base-container' ./recipe.yml)" >> $GITHUB_ENV
 
       - name: Generate tags
         id: generate-tags
@@ -96,7 +101,7 @@ jobs:
             ${{ env.IMAGE_NAME }}
           labels: |
             org.opencontainers.image.title=${{ env.IMAGE_NAME }}
-            org.opencontainers.image.description=A starting point for further customization of uBlue images. Make your own! https://ublue.it/making-your-own/
+            org.opencontainers.image.description=${{ env.IMAGE_DESCRIPTION }}
             io.artifacthub.package.readme-url=https://raw.githubusercontent.com/ublue-os/startingpoint/main/README.md
             io.artifacthub.package.logo-url=https://avatars.githubusercontent.com/u/120078124?s=200&v=4
 
@@ -111,7 +116,8 @@ jobs:
           tags: |
             ${{ steps.generate-tags.outputs.alias_tags }}
           build-args: |
-            FEDORA_MAJOR_VERSION=${{ matrix.major_version }}
+            FEDORA_MAJOR_VERSION=${{ env.FEDORA_MAJOR_VERSION }}
+            BASE_CONTAINER_URL=${{ env.BASE_CONTAINER_URL }}
           labels: ${{ steps.meta.outputs.labels }}
           oci: false
 

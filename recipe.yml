@@ -1,5 +1,24 @@
+# the image will be at ghcr.io/yourusername/name
+name: startingpoint
+
+# what native container image to build on top of
+# images not built by ublue might function unexpectly
+base-container: ghcr.io/ublue-os/silverblue-main
+
+# what fedora version to use, you can just change this to update
+fedora-version: 37
+
+# this description will be visible in the containers metadata
+description: A starting point for further customization of uBlue images. Make your own! https://ublue.it/making-your-own/
+
+# these rpms will be installed from the fedora repository
+# using rpm-ostree and will be preinstalled in the final image
 rpms:
-  - python3-pip # needed for yafti
+  - python3-pip # needed for yafti (the first boot installer)
+
+# these flatpaks (from flathub) will be available for install on boot
+# this is just an example selection, and even if you leave it empty,
+# you'll have the basic options available in yafti
 flatpaks:
   - org.mozilla.firefox
   - org.mozilla.Thunderbird

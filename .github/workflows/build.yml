@@ -17,7 +17,6 @@ on:
   workflow_dispatch:
 
 env:
-  IMAGE_NAME: startingpoint
   IMAGE_REGISTRY: ghcr.io/${{ github.repository_owner }}
 
 jobs:
@@ -41,9 +40,12 @@ jobs:
       - name: Checkout Push to Registry action
         uses: actions/checkout@v3
 
-      - name: Matrix Variables
+      - name: Add yq - portable yaml processor
+        uses: mikefarah/yq@v4.33.2
+
+      - name: Gather image data from recipe
         run: |
-          echo "IMAGE_NAME=${{ env.IMAGE_NAME }}" >> $GITHUB_ENV
+          echo "IMAGE_NAME=$(yq '.name' ./recipe.yml)" >> $GITHUB_ENV
 
       - name: Generate tags
         id: generate-tags

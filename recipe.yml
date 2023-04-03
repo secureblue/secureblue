@@ -1,3 +1,4 @@
+name: startingpoint
 rpms:
   - python3-pip # needed for yafti
 flatpaks:

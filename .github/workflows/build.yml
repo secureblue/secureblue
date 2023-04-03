@@ -46,6 +46,7 @@ jobs:
       - name: Gather image data from recipe
         run: |
           echo "IMAGE_NAME=$(yq '.name' ./recipe.yml)" >> $GITHUB_ENV
+          echo "IMAGE_DESCRIPTION=$(yq '.description' ./recipe.yml)" >> $GITHUB_ENV
           echo "FEDORA_MAJOR_VERSION=$(yq '.fedora-version' ./recipe.yml)" >> $GITHUB_ENV
           echo "BASE_CONTAINER_URL=$(yq '.base-container' ./recipe.yml)" >> $GITHUB_ENV
 
@@ -100,7 +101,7 @@ jobs:
             ${{ env.IMAGE_NAME }}
           labels: |
             org.opencontainers.image.title=${{ env.IMAGE_NAME }}
-            org.opencontainers.image.description=A starting point for further customization of uBlue images. Make your own! https://ublue.it/making-your-own/
+            org.opencontainers.image.description=${{ env.IMAGE_DESCRIPTION }}
             io.artifacthub.package.readme-url=https://raw.githubusercontent.com/ublue-os/startingpoint/main/README.md
             io.artifacthub.package.logo-url=https://avatars.githubusercontent.com/u/120078124?s=200&v=4
 

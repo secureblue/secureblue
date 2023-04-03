@@ -8,6 +8,9 @@ base-container: ghcr.io/ublue-os/silverblue-main
 # what fedora version to use, you can just change this to update
 fedora-version: 37
 
+# this description will be visible in the containers metadata
+description: A starting point for further customization of uBlue images. Make your own! https://ublue.it/making-your-own/
+
 # these rpms will be installed from the fedora repository
 # using rpm-ostree and will be preinstalled in the final image
 rpms:

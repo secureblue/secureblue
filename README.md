@@ -13,7 +13,7 @@ See the [Make Your Own -page in the documentation](https://ublue.it/making-your-
 Don't worry, it only requires some basic knowledge about using the terminal and git.
 
 > **Note**
-> Everywhere in this repository, make sure to replace `ublue-os/startingpoint` with the details of your own repository. Unless you used `create-ublue-image`, in which case the previous repo identifier should already be your repo's details.
+> Everywhere in this repository, make sure to replace `ublue-os/startingpoint` with the details of your own repository. Unless you used [`create-ublue-image`](https://github.com/EinoHR/create-ublue-image), in which case the previous repo identifier should already be your repo's details.
 
 ## Customization
 

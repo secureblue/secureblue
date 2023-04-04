@@ -23,6 +23,31 @@ For the base-container field, you can use any other native container image. You 
 
 If you want to add custom configuration files, you can just add them in the `etc` directory. If you need to add other directories, you can look at the Containerfile to see how it's done. Writing to any directories under `/var` in Fedora Silverblue are not supported and will not work, as those are user-managed.
 
+### Building multiple images
+
+You can build multiple images using multiple `recipe.yml` files. They will share the Containerfile and everything else, but things like packages declared in the recipe will be different between the images. For a more robust multibuild setup, you could consider forking from the [ublue-os/main](https://github.com/ublue-os/main/) repo, which was built from the purpose.
+
+In order to build multiple recipes, you need to declare each one below line ~33 in `build.yml`. The files should be in the root of the repository.
+
+Example: Adding a new recipe called `recipe-2.yml` (snippets from the `matrix` section of `build.yml`)
+
+Before:
+
+```yml
+matrix:
+  recipe:
+    - recipe.yml
+```
+
+After:
+
+```yml
+matrix:
+  recipe:
+    - recipe.yml
+    - recipe-2.yml
+```
+
 ### [yafti](https://github.com/ublue-os/yafti/)
 
 `yafti` is the uBlue firstboot installer, and it's configuration can be found in `/etc/yafti.yml`. It includes an optional selection of Flatpaks to install, with a new group added for the Flatpaks declared in `recipe.yml`. You can look at what's done in the config and modify it to your liking.

@@ -108,6 +108,7 @@ jobs:
           build-args: |
             FEDORA_MAJOR_VERSION=${{ env.FEDORA_MAJOR_VERSION }}
             BASE_CONTAINER_URL=${{ env.BASE_CONTAINER_URL }}
+            RECIPE=${{ matrix.recipe }}
           labels: ${{ steps.meta.outputs.labels }}
           oci: false
 

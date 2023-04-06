@@ -1,5 +1,6 @@
 ARG FEDORA_MAJOR_VERSION=37
 ARG BASE_CONTAINER_URL=ghcr.io/ublue-os/silverblue-main
+ARG RECIPE
 
 FROM ${BASE_CONTAINER_URL}:${FEDORA_MAJOR_VERSION}
 
@@ -7,7 +8,7 @@ FROM ${BASE_CONTAINER_URL}:${FEDORA_MAJOR_VERSION}
 COPY etc /etc
 # COPY usr /usr
 
-COPY recipe.yml /tmp/ublue-recipe.yml
+COPY ${RECIPE} /tmp/ublue-recipe.yml
 
 # yq used in build.sh and the setup-flatpaks recipe to read the recipe.yml
 # copied from the official container image as it's not avaible as an rpm

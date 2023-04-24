@@ -15,6 +15,11 @@ fedora-version: 37
 # This description will be visible in the container metadata
 description: A starting point for further customization of uBlue images. Make your own! https://ublue.it/making-your-own/
 
+# These scripts will be executed during the container build
+# Place scripts in scripts/ and put the corresponding filename here
+scripts:
+#  - example.sh
+
 # These rpms will be installed from the fedora repository
 # using rpm-ostree and will be preinstalled in the final image
 rpms:

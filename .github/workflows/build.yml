@@ -82,6 +82,12 @@ jobs:
           done
           echo "alias_tags=${alias_tags[*]}" >> $GITHUB_OUTPUT
 
+      - name: Get current version
+        id: labels
+        run: |
+          ver=$(skopeo inspect docker://quay.io/fedora-ostree-desktops/${{ env.SOURCE_IMAGE }}:${{ matrix.major_version }} | jq -r '.Labels["org.opencontainers.image.version"]')
+          echo "VERSION=$ver" >> $GITHUB_OUTPUT
+
       # Build metadata
       - name: Image Metadata
         uses: docker/metadata-action@v4
@@ -91,6 +97,7 @@ jobs:
             ${{ env.IMAGE_NAME }}
           labels: |
             org.opencontainers.image.title=${{ env.IMAGE_NAME }}
+            org.opencontainers.image.version=${{ steps.labels.outputs.VERSION }}
             org.opencontainers.image.description=${{ env.IMAGE_DESCRIPTION }}
             io.artifacthub.package.readme-url=https://raw.githubusercontent.com/ublue-os/startingpoint/main/README.md
             io.artifacthub.package.logo-url=https://avatars.githubusercontent.com/u/120078124?s=200&v=4
@@ -124,6 +131,7 @@ jobs:
       - name: Push To GHCR
         uses: redhat-actions/push-to-registry@v2
         id: push
+        if: github.event_name != 'pull_request'
         env:
           REGISTRY_USER: ${{ github.actor }}
           REGISTRY_PASSWORD: ${{ github.token }}
@@ -136,20 +144,9 @@ jobs:
           extra-args: |
             --disable-content-trust
 
-      # Sign container
-      - uses: sigstore/cosign-installer@main
-
-      # Only needed when running `cosign sign` using a key
-      - name: Write signing key to disk
-        run: |
-          cosign sign -y --key env://COSIGN_PRIVATE_KEY ${{ steps.registry_case.outputs.lowercase }}/${{ env.IMAGE_NAME }}@${TAGS}
-        env:
-          TAGS: ${{ steps.push.outputs.digest }}
-          COSIGN_EXPERIMENTAL: false
-          COSIGN_PRIVATE_KEY: ${{ secrets.SIGNING_SECRET }}
-
       - name: Login to GitHub Container Registry
         uses: docker/login-action@v2
+        if: github.event_name != 'pull_request'
         with:
           registry: ghcr.io
           username: ${{ github.actor }}
@@ -160,15 +157,15 @@ jobs:
         if: github.event_name != 'pull_request'
 
       - name: Sign container image
+        if: github.event_name != 'pull_request'
         run: |
-          echo "${{ env.COSIGN_PRIVATE_KEY }}" > cosign.key
-          wc -c cosign.key
-          cosign sign -y --key cosign.key ${{ steps.registry_case.outputs.lowercase }}/${{ env.IMAGE_NAME }}@${TAGS}
+          cosign sign -y --key env://COSIGN_PRIVATE_KEY ${{ steps.registry_case.outputs.lowercase }}/${{ env.IMAGE_NAME }}@${TAGS}
         env:
           TAGS: ${{ steps.push.outputs.digest }}
           COSIGN_EXPERIMENTAL: false
           COSIGN_PRIVATE_KEY: ${{ secrets.SIGNING_SECRET }}
 
       - name: Echo outputs
+        if: github.event_name != 'pull_request'
         run: |
           echo "${{ toJSON(steps.push.outputs) }}"

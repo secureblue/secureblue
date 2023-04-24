@@ -58,7 +58,7 @@ jobs:
           COMMIT_TAGS=()
           BUILD_TAGS=()
           # Have tags for tracking builds during pull request
-          SHA_SHORT="$(git rev-parse --short HEAD)"
+          SHA_SHORT="${GITHUB_SHA::7}"
           COMMIT_TAGS+=("pr-${{ github.event.number }}-${MAJOR_VERSION}")
           COMMIT_TAGS+=("${SHA_SHORT}-${MAJOR_VERSION}")
 
@@ -142,10 +142,10 @@ jobs:
       # Only needed when running `cosign sign` using a key
       - name: Write signing key to disk
         run: |
-          echo "${{ env.COSIGN_PRIVATE_KEY }}" > cosign.key
-          # DEBUG: get character count of key
-          wc -c cosign.key
+          cosign sign -y --key env://COSIGN_PRIVATE_KEY ${{ steps.registry_case.outputs.lowercase }}/${{ env.IMAGE_NAME }}@${TAGS}
         env:
+          TAGS: ${{ steps.push.outputs.digest }}
+          COSIGN_EXPERIMENTAL: false
           COSIGN_PRIVATE_KEY: ${{ secrets.SIGNING_SECRET }}
 
       - name: Login to GitHub Container Registry

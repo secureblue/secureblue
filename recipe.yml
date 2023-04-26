@@ -1,3 +1,6 @@
+# Warning: only edit this file inside the images git repository.
+# If you are looking at this file in your root directory on your computer, editing it does nothing.
+
 # The image will be at ghcr.io/yourusername/name
 name: startingpoint
 

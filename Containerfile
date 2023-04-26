@@ -1,7 +1,7 @@
 ARG FEDORA_MAJOR_VERSION=37
-ARG BASE_CONTAINER_URL=ghcr.io/ublue-os/silverblue-main
+ARG BASE_IMAGE_URL=ghcr.io/ublue-os/silverblue-main
 
-FROM ${BASE_CONTAINER_URL}:${FEDORA_MAJOR_VERSION}
+FROM ${BASE_IMAGE_URL}:${FEDORA_MAJOR_VERSION}
 ARG RECIPE
 
 # copy over configuration files

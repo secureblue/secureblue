@@ -19,7 +19,7 @@ Don't worry, it only requires some basic knowledge about using the terminal and 
 
 The easiest way to start customizing is by looking at and modifying `recipe.yml`. It's documented using comments and should be pretty easy to understand.
 
-For the base-container field, you can use any other native container image. You will get all the features of that image, plus the ones added here! Check out the [uBlue images list](https://ublue.it/images/) to decide what to use!
+For the base-image field, you can use any other native container image. You will get all the features of that image, plus the ones added here! Check out the [uBlue images list](https://ublue.it/images/) to decide what to use!
 
 If you want to add custom configuration files, you can just add them in the `etc` directory. If you need to add other directories, you can look at the Containerfile to see how it's done. Writing to any directories under `/var` in Fedora Silverblue are not supported and will not work, as those are user-managed.
 

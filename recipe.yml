@@ -5,9 +5,8 @@
 name: startingpoint
 
 # The native container image to build on top of
-# images.
 # Warning: Non-uBlue images might function unexpectly
-base-container: ghcr.io/ublue-os/silverblue-main
+base-image: ghcr.io/ublue-os/silverblue-main
 
 # What fedora version to use. Use an explicit version or `latest`.
 # If you use `latest`, you will be automatically updated

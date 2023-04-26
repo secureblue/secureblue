@@ -46,7 +46,7 @@ jobs:
           echo "IMAGE_NAME=$(yq '.name' ./${{ matrix.recipe }})" >> $GITHUB_ENV
           echo "IMAGE_DESCRIPTION=$(yq '.description' ./${{ matrix.recipe }})" >> $GITHUB_ENV
           echo "FEDORA_MAJOR_VERSION=$(yq '.fedora-version' ./${{ matrix.recipe }})" >> $GITHUB_ENV
-          echo "BASE_CONTAINER_URL=$(yq '.base-container' ./${{ matrix.recipe }})" >> $GITHUB_ENV
+          echo "BASE_IMAGE_URL=$(yq '.base-image' ./${{ matrix.recipe }})" >> $GITHUB_ENV
 
       - name: Generate tags
         id: generate-tags
@@ -114,7 +114,7 @@ jobs:
             ${{ steps.generate-tags.outputs.alias_tags }}
           build-args: |
             FEDORA_MAJOR_VERSION=${{ env.FEDORA_MAJOR_VERSION }}
-            BASE_CONTAINER_URL=${{ env.BASE_CONTAINER_URL }}
+            BASE_IMAGE_URL=${{ env.BASE_IMAGE_URL }}
             RECIPE=${{ matrix.recipe }}
           labels: ${{ steps.meta.outputs.labels }}
           oci: false

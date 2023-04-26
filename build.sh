@@ -23,9 +23,9 @@ echo "---"
 pip install --prefix=/usr yafti
 
 # add a package group for yafti using the packages defined in recipe.yml
-yq -i '.screens.applications.values.groups.Custom.description = "Flatpaks defined by the image maintainer"' /etc/yafti.yml
-yq -i '.screens.applications.values.groups.Custom.default = true' /etc/yafti.yml
+yq -i '.screens.applications.values.groups.Custom.description = "Flatpaks defined by the image maintainer"' /usr/etc/yafti.yml
+yq -i '.screens.applications.values.groups.Custom.default = true' /usr/etc/yafti.yml
 flatpaks=$(yq '.flatpaks[]' < /tmp/ublue-recipe.yml)
 for pkg in $(echo -e "$flatpaks"); do \
-    yq -i ".screens.applications.values.groups.Custom.packages += [{\"$pkg\": \"$pkg\"}]" /etc/yafti.yml
+    yq -i ".screens.applications.values.groups.Custom.packages += [{\"$pkg\": \"$pkg\"}]" /usr/etc/yafti.yml
 done

@@ -26,7 +26,7 @@ distrobox-ubuntu:
 setup-flatpaks:
   #!/bin/bash
   echo 'Installing flatpaks from the ublue recipe ...'
-  flatpaks=$(yq '.flatpaks[]' < /etc/ublue-recipe.yml)
+  flatpaks=$(yq '.flatpaks[]' < /usr/etc/ublue-recipe.yml)
   for pkg in $flatpaks; do \
       echo "Installing: ${pkg}" && \
       flatpak install --user --noninteractive flathub $pkg; \

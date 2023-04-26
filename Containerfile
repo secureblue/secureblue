@@ -5,7 +5,12 @@ FROM ${BASE_CONTAINER_URL}:${FEDORA_MAJOR_VERSION}
 ARG RECIPE
 
 # copy over configuration files
-COPY etc /etc
+# etc is copied to /usr/etc/ to prevent "merge conflicts"
+# as it is the proper directory for "system" configuration files
+# and /etc/ is for editing by the local admin
+# see issue #28 (https://github.com/ublue-os/startingpoint/issues/28)
+COPY etc /usr/etc
+# uncomment below line if you need to put config files in /usr/
 # COPY usr /usr
 
 # copy scripts

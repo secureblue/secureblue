@@ -22,6 +22,12 @@ description: A starting point for further customization of uBlue images. Make yo
 scripts:
 #  - example.sh
 
+# a list of urls of .repo files that should be added to your system
+# this is the proper way to add copr repos to your image
+extrarepos:
+  # example:
+  # - https://copr.fedorainfracloud.org/coprs/atim/starship/repo/fedora-37/atim-starship-fedora-37.repo
+
 # These rpms will be installed from the fedora repository
 # using rpm-ostree and will be preinstalled in the final image
 rpms:

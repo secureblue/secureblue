@@ -11,6 +11,15 @@ echo "---"
 # remove the default firefox (from fedora) in favor of the flatpak
 rpm-ostree override remove firefox firefox-langpacks
 
+repos=$(yq '.extrarepos[]' < /usr/etc/ublue-recipe.yml)
+if [[ -n "$repos" ]]; then
+    echo "-- Adding repos defined in recipe.yml --"
+    for repo in $(echo -e "$repos"); do \
+        wget $repo -P /etc/yum.repos.d/; \
+    done
+    echo "---"
+fi
+
 echo "-- Installing RPMs defined in recipe.yml --"
 rpm_packages=$(yq '.rpms[]' < /usr/etc/ublue-recipe.yml)
 for pkg in $(echo -e "$rpm_packages"); do \

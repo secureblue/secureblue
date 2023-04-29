@@ -10,8 +10,7 @@ ARG RECIPE
 # and /etc/ is for editing by the local admin
 # see issue #28 (https://github.com/ublue-os/startingpoint/issues/28)
 COPY etc /usr/etc
-# uncomment below line if you need to put config files in /usr/
-# COPY usr /usr
+COPY usr /usr
 
 # copy scripts
 RUN mkdir /tmp/scripts

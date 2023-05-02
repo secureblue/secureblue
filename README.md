@@ -30,6 +30,13 @@ If you want to add custom configuration files, you can just add them in the `etc
 
 If you want to execute custom shell script or commands in the image build, you shouldn't edit `build.sh` or the `Containerfile` directly. Instead, you can create a shell script in the `scripts/` directory (look at the `example.sh`). After creating your script, enable it in the `scripts:` section of your `recipe.yml`.
 
+### Custom package repositories
+
+If you want to add custom package repositories to your image, you can include them in the `recipe.yml` as a list of URLs under the `extrarepos:` section. They **must** be proper `.repo` files (like `https://copr.fedorainfracloud.org/coprs/atim/starship/repo/fedora-37/atim-starship-fedora-37.repo`). In the build process, the `.repo` file will be downloaded and placed inside `/etc/yum.repos.d/` where rpm-ostree can access it.
+
+You can use this to add [COPR repositories](https://copr.fedorainfracloud.org/) to your image.
+COPR is like the Arch User Repository for Fedora, where you can find extra packages that wouldn't otherwise be available. The repositories are community-created, so use them at your own risk. [Read more](https://docs.pagure.org/copr.copr/user_documentation.html)
+
 ### Building multiple images
 
 You can build multiple images using multiple `recipe.yml` files. They will share the Containerfile and everything else, but things like packages declared in the recipe will be different between the images. For a more robust multibuild setup, you could consider forking from the [ublue-os/main](https://github.com/ublue-os/main/) repo, which was built from the purpose.
@@ -96,6 +103,7 @@ After that run the following commands:
   - `just distrobox-ubuntu`
 - `just setup-flatpaks` - Install all of the flatpaks declared in recipe.yml
 - `just setup-gaming` - Install Steam, Heroic Game Launcher, OBS Studio, Discord, Boatswain, Bottles, and ProtonUp-Qt. MangoHud is installed and enabled by default, hit right Shift-F12 to toggle
+- `just nix-me-up` - Install Nix with dnkmmr69420's Nix Silverblue install script
 - `just update` - Update rpm-ostree, flatpaks, and distroboxes in one command
 
 Check the [just website](https://just.systems) for tips on modifying and adding your own recipes.

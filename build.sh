@@ -12,15 +12,21 @@ get_yaml_string() {
     yq -- "$1" "$RECIPE_FILE"
 }
 
+# Automatically determine which Fedora version we're building.
+FEDORA_VERSION="$(cat /usr/lib/os-release | grep '^VERSION_ID=' | head -1 | sed 's,^VERSION_ID=,,')"
+
 # Read configuration variables.
-fedora_version="$(get_yaml_string '.fedora-version')"
+base_image="$(get_yaml_string '.base-image')"
+
+# Welcome.
+echo "Building custom Fedora ${FEDORA_VERSION} from image: \"${base_image}\"."
 
 # Add custom repos.
 get_yaml_array repos '.rpm.repos[]'
 if [[ ${#repos[@]} -gt 0 ]]; then
     echo "-- Adding repos defined in recipe.yml --"
     for repo in "${repos[@]}"; do
-        repo="${repo//%FEDORA_VERSION%/${fedora_version}}"
+        repo="${repo//%FEDORA_VERSION%/${FEDORA_VERSION}}"
         wget "$repo" -P /etc/yum.repos.d/
     done
     echo "---"

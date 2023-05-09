@@ -37,7 +37,7 @@ If you want to add custom package repositories to your image, you can include th
 You can use this to add [COPR repositories](https://copr.fedorainfracloud.org/) to your image.
 COPR is like the Arch User Repository for Fedora, where you can find extra packages that wouldn't otherwise be available. The repositories are community-created, so use them at your own risk. [Read more](https://docs.pagure.org/copr.copr/user_documentation.html)
 
-Tip: You can use the magic string `%FEDORA_VERSION%` in your repo URLs, to automatically refer to the correct repo for your recipe's `fedora-version`.
+Tip: You can use the magic string `%FEDORA_VERSION%` in your repo URLs, to automatically refer to the correct repository for your current Fedora version.
 
 ### Building multiple images
 

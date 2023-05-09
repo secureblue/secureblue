@@ -29,8 +29,8 @@ scripts:
 rpm:
   # A list of urls of ".repo" files that should be added to your system.
   # This is the proper way to add custom COPR repos to your image.
-  # Tip: Use `%FEDORA_VERSION%` instead of static Fedora version numbers, so that
-  # your repos automatically use the Fedora version defined in `fedora-version`,
+  # Tip: Use `%FEDORA_VERSION%` instead of static Fedora version numbers,
+  # so that your repos automatically use your image's actual Fedora version,
   # which greatly simplifies future maintenance of your custom recipe.
   repos:
     # Example (which also demonstrates version number expansion):

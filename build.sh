@@ -29,11 +29,17 @@ if [[ ${#buildscripts[@]} -gt 0 ]]; then
     echo "---"
 fi
 
-# Remove the default firefox (from fedora) in favor of the flatpak.
-rpm-ostree override remove firefox firefox-langpacks
+# Remove RPMs.
+get_yaml_array remove_rpms '.rpm-remove[]'
+if [[ ${#remove_rpms[@]} -gt 0 ]]; then
+    echo "-- Removing RPMs defined in recipe.yml --"
+    echo "Removing: ${remove_rpms[@]}"
+    rpm-ostree override remove "${remove_rpms[@]}"
+    echo "---"
+fi
 
 # Install RPMs.
-get_yaml_array install_rpms '.rpms[]'
+get_yaml_array install_rpms '.rpm-install[]'
 if [[ ${#install_rpms[@]} -gt 0 ]]; then
     echo "-- Installing RPMs defined in recipe.yml --"
     echo "Installing: ${install_rpms[@]}"

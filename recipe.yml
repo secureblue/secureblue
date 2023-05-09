@@ -30,10 +30,17 @@ extrarepos:
   # example:
   # - https://copr.fedorainfracloud.org/coprs/atim/starship/repo/fedora-38/atim-starship-fedora-38.repo
 
+# These RPMs will be removed from the system image. This step happens during
+# image build, before installing custom RPMs (from the "rpm-install" category).
+rpm-remove:
+  # Remove the native firefox (from Fedora) in favor of the Flatpak.
+  - firefox
+  - firefox-langpacks
+
 # These RPMs will be installed from your enabled repositories (Fedora's own repos,
 # any "extrarepos" you've added, etc). The installation is automatically performed
 # via rpm-ostree during the image build, and will be pre-installed in the final image.
-rpms:
+rpm-install:
   # Needed for yafti (the first boot installer). Remove if you're not using yafti.
   - python3-pip
   # GNOME's GTK4 Theme, Libadwaita. It already comes with silverblue, but not other spins.

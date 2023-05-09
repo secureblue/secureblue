@@ -66,10 +66,11 @@ matrix:
 
 ### [yafti](https://github.com/ublue-os/yafti/)
 
-`yafti` is the uBlue firstboot installer, and it's configuration can be found in `/etc/yafti.yml`. You can look at what's done in the config and modify it to your liking.
-It includes an optional selection of Flatpaks to install out of the box. A new group will be added for the Flatpaks declared in `recipe.yml`, which will be enabled by default. 
+`yafti` is the uBlue "first boot" installer. It shows up the first time a user logs into uBlue. By default, the menu also shows up again anytime the image's yafti configuration differs from the user's last encounter, so feel free to expand or modify your custom image's yafti configuration over time. Your users will then see the yafti menu again after the OS update, and will be given a chance to install any new additions.
 
-The files `/etc/profile.d/ublue-firstboot.sh` and `/etc/skel.d/.config/autostart/ublue-firstboot.desktop` set up `yafti` so that it starts on boot, so if you wish to retain that functionality those files shouldn't be touched.
+Its configuration can be found in `/etc/yafti.yml` of the installed OS. It includes an optional selection of Flatpaks to install, along with a new group that's automatically added for all Flatpaks declared in `recipe.yml`. You can look at what's done in the config and modify it to your liking.
+
+The files `/etc/profile.d/ublue-firstboot.sh` and `/etc/skel.d/.config/autostart/ublue-firstboot.desktop` set up `yafti` so that it starts on boot, which means that you shouldn't touch those files if you wish to retain that functionality.
 
 ## Installation
 

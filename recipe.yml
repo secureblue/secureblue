@@ -59,14 +59,10 @@ rpm:
     - firefox
     - firefox-langpacks
 
-# These Flatpaks will be suggested for install on user login, via the yafti
-# "first boot" GUI. By default, the menu also shows up again anytime the image's
-# yafti configuration differs from the user's last encounter, so feel free
-# to expand the selection over time. Your users will then see the yafti menu
-# again after OS update, and will be given a chance to install new additions.
-# Everything below will be merged into the "etc/yafti.yml" config on build,
-# in a category named "Custom". If you prefer, you can instead remove everything
-# below and purely use "etc/yafti.yml" to have more control over settings.
+# These Flatpaks will be suggested for install after user login, via the yafti
+# "first boot" GUI. Everything below will be merged into the "etc/yafti.yml" config
+# on build, in a category named "Custom". If you prefer, you can instead remove
+# everything below and directly edit "etc/yafti.yml" to have more control.
 # This is just an example selection.
 flatpaks:
   - org.mozilla.firefox

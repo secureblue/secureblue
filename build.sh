@@ -3,6 +3,16 @@
 # Tell build process to exit if there are any errors.
 set -ouex pipefail
 
+# Add custom repos.
+repos=$(yq '.extrarepos[]' < /usr/etc/ublue-recipe.yml)
+if [[ -n "$repos" ]]; then
+    echo "-- Adding repos defined in recipe.yml --"
+    for repo in $(echo -e "$repos"); do \
+        wget $repo -P /etc/yum.repos.d/; \
+    done
+    echo "---"
+fi
+
 # Run scripts.
 echo "-- Running scripts defined in recipe.yml --"
 buildscripts=$(yq '.scripts[]' < /usr/etc/ublue-recipe.yml)
@@ -15,15 +25,7 @@ echo "---"
 # Remove the default firefox (from fedora) in favor of the flatpak.
 rpm-ostree override remove firefox firefox-langpacks
 
-repos=$(yq '.extrarepos[]' < /usr/etc/ublue-recipe.yml)
-if [[ -n "$repos" ]]; then
-    echo "-- Adding repos defined in recipe.yml --"
-    for repo in $(echo -e "$repos"); do \
-        wget $repo -P /etc/yum.repos.d/; \
-    done
-    echo "---"
-fi
-
+# Install RPMs.
 echo "-- Installing RPMs defined in recipe.yml --"
 rpm_packages=$(yq '.rpms[]' < /usr/etc/ublue-recipe.yml)
 for pkg in $(echo -e "$rpm_packages"); do \

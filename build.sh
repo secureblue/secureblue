@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 # Tell build process to exit if there are any errors.
-set -ouex pipefail
+set -oue pipefail
 
 # Add custom repos.
 repos=$(yq '.extrarepos[]' < /usr/etc/ublue-recipe.yml)

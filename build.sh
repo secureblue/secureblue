@@ -4,8 +4,12 @@
 set -oue pipefail
 
 # Helper functions.
+RECIPE_FILE="/usr/etc/ublue-recipe.yml"
 get_yaml_array() {
-    mapfile -t "$1" < <(yq "$2" < /usr/etc/ublue-recipe.yml)
+    mapfile -t "$1" < <(yq -- "$2" "$RECIPE_FILE")
+}
+get_yaml_string() {
+    yq -- "$1" "$RECIPE_FILE"
 }
 
 # Add custom repos.

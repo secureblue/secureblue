@@ -1,4 +1,8 @@
 #!/bin/bash
+
+# Tell build process to exit if there are any errors.
+set -ouex pipefail
+
 # run scripts
 echo "-- Running scripts defined in recipe.yml --"
 buildscripts=$(yq '.scripts[]' < /usr/etc/ublue-recipe.yml)

@@ -24,39 +24,44 @@ description: A starting point for further customization of uBlue images. Make yo
 scripts:
 #  - example.sh
 
-# A list of urls of ".repo" files that should be added to your system.
-# This is the proper way to add custom COPR repos to your image.
-# Tip: Use `%FEDORA_VERSION%` instead of static Fedora version numbers, so that
-# your repos automatically use the Fedora version defined in `fedora-version`,
-# which greatly simplifies future maintenance of your custom recipe.
-extrarepos:
-  # Example (which also demonstrates version number expansion):
-  # - https://copr.fedorainfracloud.org/coprs/atim/starship/repo/fedora-%FEDORA_VERSION%/atim-starship-fedora-%FEDORA_VERSION%.repo
+# Custom RPM configuration.
+# These changes will be integrated into your custom image at the "system level".
+rpm:
+  # A list of urls of ".repo" files that should be added to your system.
+  # This is the proper way to add custom COPR repos to your image.
+  # Tip: Use `%FEDORA_VERSION%` instead of static Fedora version numbers, so that
+  # your repos automatically use the Fedora version defined in `fedora-version`,
+  # which greatly simplifies future maintenance of your custom recipe.
+  repos:
+    # Example (which also demonstrates version number expansion):
+    # - https://copr.fedorainfracloud.org/coprs/atim/starship/repo/fedora-%FEDORA_VERSION%/atim-starship-fedora-%FEDORA_VERSION%.repo
 
-# These RPMs will be removed from the system image. This step happens during
-# image build, before installing custom RPMs (from the "rpm-install" category).
-rpm-remove:
-  # Remove the native firefox (from Fedora) in favor of the Flatpak.
-  - firefox
-  - firefox-langpacks
+  # These RPMs will be installed from your enabled repositories (Fedora's own
+  # repos, extra "repos" you've added, etc). The installation is automatically
+  # performed via rpm-ostree during the image build, and will be pre-installed
+  # at the "system level" in the final image.
+  install:
+    # Needed for yafti (the first boot installer). Remove if you're not using yafti.
+    - python3-pip
+    # GNOME's GTK4 theme, Libadwaita. Already included in Silverblue, but not other spins.
+    - libadwaita
+    # Add your own below:
+    # Example:
+    # - tilix
 
-# These RPMs will be installed from your enabled repositories (Fedora's own repos,
-# any "extrarepos" you've added, etc). The installation is automatically performed
-# via rpm-ostree during the image build, and will be pre-installed in the final image.
-rpm-install:
-  # Needed for yafti (the first boot installer). Remove if you're not using yafti.
-  - python3-pip
-  # GNOME's GTK4 Theme, Libadwaita. It already comes with silverblue, but not other spins.
-  - libadwaita
-  # Add your own below:
-  # - tilix
+  # These RPMs will be removed from the system image. This step happens during
+  # image build, BEFORE installing custom RPMs (from the "rpm.install" category).
+  remove:
+    # Remove the native firefox (from Fedora) in favor of the Flatpak.
+    - firefox
+    - firefox-langpacks
 
 # These Flatpaks will be suggested for install on user login, via the yafti
 # "first boot" GUI. By default, the menu also shows up again anytime the image's
 # yafti configuration differs from the user's last encounter, so feel free
 # to expand the selection over time. Your users will then see the yafti menu
 # again after OS update, and will be given a chance to install new additions.
-# Everything below will be merged into the "etc/yafti.yml" configuration on build,
+# Everything below will be merged into the "etc/yafti.yml" config on build,
 # in a category named "Custom". If you prefer, you can instead remove everything
 # below and purely use "etc/yafti.yml" to have more control over settings.
 # This is just an example selection.

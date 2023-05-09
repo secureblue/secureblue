@@ -1,45 +1,55 @@
 # Warning: only edit this file inside the images git repository.
 # If you are looking at this file in your root directory on your computer, editing it does nothing.
 
-# The image will be at ghcr.io/yourusername/name
+# The image will be at "ghcr.io/yourusername/name".
 name: startingpoint
 
-# The native container image to build on top of
-# Warning: Non-uBlue images might function unexpectly
+# The native container image to build on top of.
+# Warning: Non-uBlue images might not function properly.
 base-image: ghcr.io/ublue-os/silverblue-main
 
-# What fedora version to use. Use an explicit version or `latest`.
-# If you use `latest`, you will be automatically updated
-# to the next major version assuming the image you're using as your base container
+# What Fedora version to use. Use an explicit version or `latest`.
+# If you use `latest`, you will be automatically updated to the next major
+# Fedora version, assuming the image you're using as your base container
 # builds with the tag (all uBlue images do this).
 fedora-version: 38
 
-# This description will be visible in the container metadata
+# This description will be visible in the container metadata.
 description: A starting point for further customization of uBlue images. Make your own! https://ublue.it/making-your-own/
 
-# These scripts will be executed during the container build
-# Place scripts in scripts/ and put the corresponding filename here
+# These scripts will be executed during the container build.
+# Place scripts in "scripts/" and put the corresponding filename here.
+# Any files that aren't listed here won't be executed automatically, which
+# means that you can place "helper" or "library" scripts in the folder too.
 scripts:
 #  - example.sh
 
-# a list of urls of .repo files that should be added to your system
-# this is the proper way to add copr repos to your image
+# A list of urls of ".repo" files that should be added to your system.
+# This is the proper way to add custom COPR repos to your image.
 extrarepos:
   # example:
   # - https://copr.fedorainfracloud.org/coprs/atim/starship/repo/fedora-38/atim-starship-fedora-38.repo
 
-# These rpms will be installed from the fedora repository
-# using rpm-ostree and will be preinstalled in the final image
+# These RPMs will be installed from your enabled repositories (Fedora's own repos,
+# any "extrarepos" you've added, etc). The installation is automatically performed
+# via rpm-ostree during the image build, and will be pre-installed in the final image.
 rpms:
-  # needed for yafti (the first boot installer) (remove if you're not using yafti)
+  # Needed for yafti (the first boot installer). Remove if you're not using yafti.
   - python3-pip
-  - libadwaita # libadwaita comes with silverblue, but not with other flavors
-  # add your own below
+  # GNOME's GTK4 Theme, Libadwaita. It already comes with silverblue, but not other spins.
+  - libadwaita
+  # Add your own below:
+  # - tilix
 
-# These Flatpaks (from flathub) will be available for install on boot,
-# they will not be installed in the image and need to be installed by a firstboot setup tool such as yafti.
+# These Flatpaks will be suggested for install on user login, via the yafti
+# "first boot" GUI. By default, the menu also shows up again anytime the image's
+# yafti configuration differs from the user's last encounter, so feel free
+# to expand the selection over time. Your users will then see the yafti menu
+# again after OS update, and will be given a chance to install new additions.
+# Everything below will be merged into the "etc/yafti.yml" configuration on build,
+# in a category named "Custom". If you prefer, you can instead remove everything
+# below and purely use "etc/yafti.yml" to have more control over settings.
 # This is just an example selection.
-# If you leave this empty you can still use yafti for firstboot installation.
 flatpaks:
   - org.mozilla.firefox
   - org.mozilla.Thunderbird

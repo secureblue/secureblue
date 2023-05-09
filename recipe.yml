@@ -36,9 +36,10 @@ rpms:
   - libadwaita # libadwaita comes with silverblue, but not with other flavors
   # add your own below
 
-# These Flatpaks (from flathub) will be available for install on boot
-# this is just an example selection.
-# If you leave this empty you can use yafti for post-boot installation
+# These Flatpaks (from flathub) will be available for install on boot,
+# they will not be installed in the image and need to be installed by a firstboot setup tool such as yafti.
+# This is just an example selection.
+# If you leave this empty you can still use yafti for firstboot installation.
 flatpaks:
   - org.mozilla.firefox
   - org.mozilla.Thunderbird

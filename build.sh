@@ -3,7 +3,7 @@
 # Tell build process to exit if there are any errors.
 set -ouex pipefail
 
-# run scripts
+# Run scripts.
 echo "-- Running scripts defined in recipe.yml --"
 buildscripts=$(yq '.scripts[]' < /usr/etc/ublue-recipe.yml)
 for script in $(echo -e "$buildscripts"); do \
@@ -12,7 +12,7 @@ for script in $(echo -e "$buildscripts"); do \
 done
 echo "---"
 
-# remove the default firefox (from fedora) in favor of the flatpak
+# Remove the default firefox (from fedora) in favor of the flatpak.
 rpm-ostree override remove firefox firefox-langpacks
 
 repos=$(yq '.extrarepos[]' < /usr/etc/ublue-recipe.yml)
@@ -32,12 +32,12 @@ for pkg in $(echo -e "$rpm_packages"); do \
 done
 echo "---"
 
-# install yafti to install flatpaks on first boot, https://github.com/ublue-os/yafti
+# Install yafti to install flatpaks on first boot, https://github.com/ublue-os/yafti.
 pip install --prefix=/usr yafti
 
-# add a package group for yafti using the packages defined in recipe.yml
+# Add a package group for yafti using the packages defined in recipe.yml.
 flatpaks=$(yq '.flatpaks[]' < /tmp/ublue-recipe.yml)
-# only try to create package group if some flatpaks are defined
+# Only try to add package groups if some flatpaks are defined in the recipe.
 if [[ -n "$flatpaks" ]]; then            
     yq -i '.screens.applications.values.groups.Custom.description = "Flatpaks defined by the image maintainer"' /usr/etc/yafti.yml
     yq -i '.screens.applications.values.groups.Custom.default = true' /usr/etc/yafti.yml

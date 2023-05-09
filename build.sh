@@ -12,11 +12,15 @@ get_yaml_string() {
     yq -- "$1" "$RECIPE_FILE"
 }
 
+# Read configuration variables.
+fedora_version="$(get_yaml_string '.fedora-version')"
+
 # Add custom repos.
 get_yaml_array repos '.extrarepos[]'
 if [[ ${#repos[@]} -gt 0 ]]; then
     echo "-- Adding repos defined in recipe.yml --"
     for repo in "${repos[@]}"; do
+        repo="${repo//%FEDORA_VERSION%/${fedora_version}}"
         wget "$repo" -P /etc/yum.repos.d/
     done
     echo "---"

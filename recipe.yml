@@ -43,7 +43,10 @@ rpm:
   install:
     # Needed for yafti (the first boot installer). Remove if you're not using yafti.
     - python3-pip
-    # GNOME's GTK4 theme, Libadwaita. Already included in Silverblue, but not other spins.
+    # GNOME's GTK4 theme, Libadwaita. Already included in Silverblue, but not
+    # other spins. You can remove if you aren't using yafti, but many native
+    # apps and binaries require it, so it's a good idea to always include it
+    # if you ever download or compile any custom software on your machine.
     - libadwaita
     # Add your own below:
     # Example:

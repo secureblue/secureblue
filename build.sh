@@ -36,10 +36,8 @@ rpm-ostree override remove firefox firefox-langpacks
 get_yaml_array install_rpms '.rpms[]'
 if [[ ${#install_rpms[@]} -gt 0 ]]; then
     echo "-- Installing RPMs defined in recipe.yml --"
-    for pkg in "${install_rpms[@]}"; do
-        echo "Installing: ${pkg}"
-        rpm-ostree install $pkg
-    done
+    echo "Installing: ${install_rpms[@]}"
+    rpm-ostree install "${install_rpms[@]}"
     echo "---"
 fi
 

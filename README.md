@@ -74,9 +74,9 @@ matrix:
 
 `yafti` is the uBlue "first boot" installer. It shows up the first time a user logs into uBlue. By default, the menu also shows up again anytime the image's yafti configuration differs from the user's last encounter, so feel free to expand or modify your custom image's yafti configuration over time. Your users will then see the yafti menu again after the OS update, and will be given a chance to install any new additions.
 
-Its configuration can be found in `/etc/yafti.yml` of the installed OS. It includes an optional selection of Flatpaks to install, along with a new group that's automatically added for all Flatpaks declared in `recipe.yml`. You can look at what's done in the config and modify it to your liking.
+Its configuration can be found in `/usr/etc/yafti.yml` of the installed OS. It includes an optional selection of Flatpaks to install, along with a new group that's automatically added for all Flatpaks declared in `recipe.yml`. You can look at what's done in the config and modify it to your liking.
 
-The files `/etc/profile.d/ublue-firstboot.sh` and `/etc/skel.d/.config/autostart/ublue-firstboot.desktop` set up `yafti` so that it starts on boot, which means that you shouldn't touch those files if you wish to retain that functionality.
+The files `/usr/etc/profile.d/ublue-firstboot.sh` and `/usr/etc/skel.d/.config/autostart/ublue-firstboot.desktop` set up `yafti` so that it starts on boot, which means that you shouldn't touch those files if you wish to retain that functionality.
 
 ## Installation
 
@@ -100,7 +100,7 @@ The `latest` tag will automatically point to the latest build. That build will s
 ## Just
 
 The `just` task runner is included in main for further customization after first boot.
-You can copy the justfile from `/etc/justfile` to `~/.justfile` to get started. Once `just` supports [include directives](https://just.systems/man/en/chapter_52.html), you can just include the file in `/etc` into your own justfile, where you have the option of adding new tasks.
+You can copy the justfile from `/usr/etc/justfile` to `~/.justfile` to get started. Once `just` supports [include directives](https://just.systems/man/en/chapter_52.html), you can just include the file in `/etc` into your own justfile, where you have the option of adding new tasks.
 After that run the following commands:
 
 - `just` - Show all tasks, more will be added in the future

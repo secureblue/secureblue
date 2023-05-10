@@ -5,6 +5,7 @@ set -oue pipefail
 
 # Helper functions.
 RECIPE_FILE="/usr/share/ublue-os/recipe.yml"
+YAFTI_FILE="/usr/share/ublue-os/firstboot/yafti.yml"
 get_yaml_array() {
     mapfile -t "$1" < <(yq -- "$2" "$RECIPE_FILE")
 }
@@ -73,11 +74,11 @@ pip install --prefix=/usr yafti
 get_yaml_array flatpaks '.flatpaks[]'
 if [[ ${#flatpaks[@]} -gt 0 ]]; then
     echo "-- yafti: Adding Flatpaks defined in recipe.yml --"
-    yq -i '.screens.applications.values.groups.Custom.description = "Flatpaks defined by the image maintainer"' /usr/etc/yafti.yml
-    yq -i '.screens.applications.values.groups.Custom.default = true' /usr/etc/yafti.yml
+    yq -i '.screens.applications.values.groups.Custom.description = "Flatpaks defined by the image maintainer"' "$YAFTI_FILE"
+    yq -i '.screens.applications.values.groups.Custom.default = true' "$YAFTI_FILE"
     for pkg in "${flatpaks[@]}"; do
         echo "Adding to yafti: ${pkg}"
-        yq -i ".screens.applications.values.groups.Custom.packages += [{\"$pkg\": \"$pkg\"}]" /usr/etc/yafti.yml
+        yq -i ".screens.applications.values.groups.Custom.packages += [{\"$pkg\": \"$pkg\"}]" "$YAFTI_FILE"
     done
     echo "---"
 fi

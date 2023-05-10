@@ -4,7 +4,7 @@
 set -oue pipefail
 
 # Helper functions.
-RECIPE_FILE="/usr/etc/ublue-recipe.yml"
+RECIPE_FILE="/usr/share/ublue-os/recipe.yml"
 get_yaml_array() {
     mapfile -t "$1" < <(yq -- "$2" "$RECIPE_FILE")
 }

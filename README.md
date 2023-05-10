@@ -32,9 +32,7 @@ If you want to execute custom shell scripts or commands in the image build, you 
 
 Instead, you can create shell scripts in the `scripts/` directory (look at the `example.sh`). After creating your scripts, enable them in the `scripts:` section of your `recipe.yml`, within the specific "build stage" category where the scripts are intended to be executed.
 
-Your scripts will be given exactly one argument when they are executed, which specifies its precise execution phase and corresponds to the name of the `scripts:` category that it was assigned to. The primary purpose of this argument is to streamline the reuse of scripts for multiple stages.
-
-If you're looking for a fully automated script runner, you should read the code of the included `scripts/autorun.sh` to see how it works, and then simply specify that as your script in `recipe.yml`. You can also add manually listed scripts in addition to the auto-runner, which can be very useful when managing multiple recipes.
+Read [the README in the `scripts/` directory](https://github.com/ublue-os/startingpoint/blob/main/scripts/README.md) for more information.
 
 ### Custom package repositories
 

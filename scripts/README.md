@@ -6,4 +6,4 @@ Your scripts will be given exactly one argument when they are executed, which sp
 
 ## `autorun.sh`
 
-`autorun.sh` is enabled by default and automatically runs all scripts in the folders `scripts/pre/` and `scripts/post/` at the correct execution phases.
+`autorun.sh` is enabled by default and automatically runs all scripts in the folders `scripts/pre/` and `scripts/post/` at the correct execution phases. Manually listed scripts can be combined with `autorun.sh`.

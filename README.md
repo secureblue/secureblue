@@ -97,9 +97,11 @@ The `latest` tag will automatically point to the latest build. That build will s
 
 ## Just
 
-The `just` task runner is included in main for further customization after first boot.
-You can copy the justfile from `/usr/etc/justfile` to `~/.justfile` to get started. Once `just` supports [include directives](https://just.systems/man/en/chapter_52.html), you can just include the file in `/etc` into your own justfile, where you have the option of adding new tasks.
-After that run the following commands:
+The `just` task runner is included in `main` for further customization after first boot.
+
+You can copy the justfile from `/usr/share/ublue-os/just/justfile` to `~/.justfile` to get started. When `just` supports [include directives](https://just.systems/man/en/chapter_52.html), you will instead be able to simply include that path into your own justfile, without having to copy it manually.
+
+After doing that, you'll be able to run the following commands:
 
 - `just` - Show all tasks, more will be added in the future
 - `just bios` - Reboot into the system bios (Useful for dualbooting)

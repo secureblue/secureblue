@@ -21,14 +21,23 @@ description: A starting point for further customization of uBlue images. Make yo
 # Place scripts in the "scripts/" dir and put the corresponding filenames here.
 # Any files that aren't listed here won't be executed automatically, which
 # means that you can place "helper" or "library" scripts in the folder too.
+# Remember to use "autorun.sh" if you want an automatic runner.
 scripts:
   # "Pre" scripts run very early in the build, immediately after your custom
   # repos have been imported (so that you can access those repos if necessary).
   pre:
+    # Automatically runs script files within "scripts/pre/".
+    - autorun.sh
+    # Manually listed scripts. Can be combined with the autorunner, which can
+    # be useful if you're managing multiple recipes and some need extra scripts.
+    # See the contents of "scripts/autorun.sh" for more usage instructions.
     # - example_pre.sh
 
   # "Post" scripts run at the end of the build process.
   post:
+    # Automatically runs script files within "scripts/post/".
+    - autorun.sh
+    # Manually listed scripts.
     # - example_post.sh
 
 # Custom RPM configuration.

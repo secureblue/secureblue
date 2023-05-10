@@ -34,6 +34,8 @@ Instead, you can create shell scripts in the `scripts/` directory (look at the `
 
 Your scripts will be given exactly one argument when they are executed, which specifies its precise execution phase and corresponds to the name of the `scripts:` category that it was assigned to. The primary purpose of this argument is to streamline the reuse of scripts for multiple stages.
 
+If you're looking for a fully automated script runner, you should read the code of the included `scripts/autorun.sh` to see how it works, and then simply specify that as your script in `recipe.yml`. You can also add manually listed scripts in addition to the auto-runner, which can be very useful when managing multiple recipes.
+
 ### Custom package repositories
 
 If you want to add custom package repositories to your image, you can include them in the `recipe.yml` as a list of URLs under the `rpm.repos:` section. They **must** be proper `.repo` files (such as `https://copr.fedorainfracloud.org/coprs/atim/starship/repo/fedora-38/atim-starship-fedora-38.repo`). In the build process, the `.repo` file will be downloaded and placed inside `/etc/yum.repos.d/` where rpm-ostree can access it.

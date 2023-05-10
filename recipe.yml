@@ -18,11 +18,18 @@ fedora-version: 38
 description: A starting point for further customization of uBlue images. Make your own! https://ublue.it/making-your-own/
 
 # These scripts will be executed during the container build.
-# Place scripts in "scripts/" and put the corresponding filename here.
+# Place scripts in the "scripts/" dir and put the corresponding filenames here.
 # Any files that aren't listed here won't be executed automatically, which
 # means that you can place "helper" or "library" scripts in the folder too.
 scripts:
-#  - example.sh
+  # "Pre" scripts run very early in the build, immediately after your custom
+  # repos have been imported (so that you can access those repos if necessary).
+  pre:
+    # - example_pre.sh
+
+  # "Post" scripts run at the end of the build process.
+  post:
+    # - example_post.sh
 
 # Custom RPM configuration.
 # These changes will be integrated into your custom image at the "system level".

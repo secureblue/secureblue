@@ -28,7 +28,11 @@ If you want to add custom configuration files, you can just add them in the `etc
 
 ### Custom build scripts
 
-If you want to execute custom shell script or commands in the image build, you shouldn't edit `build.sh` or the `Containerfile` directly. Instead, you can create a shell script in the `scripts/` directory (look at the `example.sh`). After creating your script, enable it in the `scripts:` section of your `recipe.yml`.
+If you want to execute custom shell scripts or commands in the image build, you shouldn't edit `build.sh` or the `Containerfile` directly.
+
+Instead, you can create shell scripts in the `scripts/` directory (look at the `example.sh`). After creating your scripts, enable them in the `scripts:` section of your `recipe.yml`, within the specific "build stage" category where the scripts are intended to be executed.
+
+Your scripts will be given exactly one argument when they are executed, which specifies its precise execution phase and corresponds to the name of the `scripts:` category that it was assigned to. The primary purpose of this argument is to streamline the reuse of scripts for multiple stages.
 
 ### Custom package repositories
 

@@ -32,16 +32,20 @@ if [[ ${#repos[@]} -gt 0 ]]; then
     echo "---"
 fi
 
-# Run scripts.
-get_yaml_array buildscripts '.scripts[]'
-if [[ ${#buildscripts[@]} -gt 0 ]]; then
-    echo "-- Running scripts defined in recipe.yml --"
-    for script in "${buildscripts[@]}"; do
-        echo "Running: ${script}"
-        /tmp/scripts/"$script"
-    done
-    echo "---"
-fi
+# Run "pre" scripts.
+run_scripts() {
+    script_mode="$1"
+    get_yaml_array buildscripts ".scripts.${script_mode}[]"
+    if [[ ${#buildscripts[@]} -gt 0 ]]; then
+        echo "-- Running [${script_mode}] scripts defined in recipe.yml --"
+        for script in "${buildscripts[@]}"; do
+            echo "Running [${script_mode}]: ${script}"
+            /tmp/scripts/"$script" "${script_mode}"
+        done
+        echo "---"
+    fi
+}
+run_scripts "pre"
 
 # Remove RPMs.
 get_yaml_array remove_rpms '.rpm.remove[]'
@@ -77,3 +81,6 @@ if [[ ${#flatpaks[@]} -gt 0 ]]; then
     done
     echo "---"
 fi
+
+# Run "post" scripts.
+run_scripts "post"

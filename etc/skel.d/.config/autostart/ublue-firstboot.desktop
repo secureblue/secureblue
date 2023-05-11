@@ -1,7 +1,7 @@
 [Desktop Entry]
 Name=uBlue First Boot Setup
 Comment=Sets up uBlue Desktop Correctly On FirstBoot
-Exec=/usr/bin/yafti /usr/etc/yafti.yml
+Exec=/usr/bin/yafti /usr/share/ublue-os/firstboot/yafti.yml
 Icon=org.gnome.Terminal
 Type=Application
 Categories=Utility;System;

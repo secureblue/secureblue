@@ -1,11 +1,11 @@
-# Warning: only edit this file inside the images git repository.
-# If you are looking at this file in your root directory on your computer, editing it does nothing.
+# Warning: Only edit this file inside the uBlue image's git repository.
+# If you are looking at this file on your computer, editing it does nothing.
 
 # The image will be at "ghcr.io/yourusername/name".
 name: startingpoint
 
 # The native container image to build on top of.
-# Warning: Non-uBlue images might not function properly.
+# Warning: Non-uBlue images might not work properly, due to missing components.
 base-image: ghcr.io/ublue-os/silverblue-main
 
 # What Fedora version to use. Use an explicit version or `latest`.
@@ -73,17 +73,26 @@ rpm:
     - firefox
     - firefox-langpacks
 
-# These Flatpaks will be suggested for install after user login, via the yafti
-# "first boot" GUI. Everything below will be merged into the "yafti.yml" config
-# on build, in a category named "Custom". If you prefer, you can instead remove
-# everything below and directly edit "yafti.yml" to have more control.
-# This is just an example selection.
-flatpaks:
-  - org.mozilla.firefox
-  - org.mozilla.Thunderbird
-  - com.mattjakeman.ExtensionManager
-  - org.libreoffice.LibreOffice
-  - org.gnome.DejaDup
-  - org.gustavoperedo.FontDownloader
-  - com.github.tchx84.Flatseal
-  - io.github.celluloid_player.Celluloid
+# Configuration for the "first boot" experience, which is available after login.
+firstboot:
+  # Whether to embed "yafti" into the OS image and configure it to autostart,
+  # which is the preferred uBlue "first boot" GUI. Set this to "false" if you've
+  # decided to use a different solution instead.
+  yafti: true
+
+  # These Flatpaks will be suggested for install after user login, via the yafti
+  # "first boot" GUI. Everything below will be merged into the "yafti.yml" config
+  # on build, in a category named "Custom". If you prefer, you can instead remove
+  # everything below and directly edit "yafti.yml" to have more control.
+  # Alternatively, if you've disabled "yafti", you can still install these via
+  # the "just setup-flatpaks" command from our "justfile".
+  # This is just an example selection:
+  flatpaks:
+    - org.mozilla.firefox
+    - org.mozilla.Thunderbird
+    - com.mattjakeman.ExtensionManager
+    - org.libreoffice.LibreOffice
+    - org.gnome.DejaDup
+    - org.gustavoperedo.FontDownloader
+    - com.github.tchx84.Flatseal
+    - io.github.celluloid_player.Celluloid

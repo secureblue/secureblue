@@ -85,7 +85,7 @@ firstboot:
   # on build, in a category named "Custom". If you prefer, you can instead remove
   # everything below and directly edit "yafti.yml" to have more control.
   # Alternatively, if you've disabled "yafti", you can still install these via
-  # the "just setup-flatpaks" command from our "justfile".
+  # the "just setup-flatpaks" command from our "custom.just" template file.
   # This is just an example selection:
   flatpaks:
     - org.mozilla.firefox

@@ -97,9 +97,17 @@ The `latest` tag will automatically point to the latest build. That build will s
 
 ## Just
 
-The `just` task runner is included in `main` for further customization after first boot.
+The `just` task runner is included in `ublue-os/main`-derived images, and we have provided several template commands which help you perform further customization after first boot.
 
-You can copy the justfile from `/usr/share/ublue-os/just/justfile` to `~/.justfile` to get started. When `just` supports [include directives](https://just.systems/man/en/chapter_52.html), you will instead be able to simply include that path into your own justfile, without having to copy it manually.
+You can merge our template justfiles into your own local configuration. When `just` supports [include directives](https://just.systems/man/en/chapter_52.html), you will instead be able to simply include these paths into your own justfile, without having to copy anything manually.
+
+Run the following commands when you're logged into the operating system, to merge uBlue's provided configurations into your own user config. (The "touch" command is only necessary on certain shells which won't let you merge into non-existent files.)
+
+```sh
+touch ~/.justfile
+cat /usr/share/ublue-os/just/main.just >> ~/.justfile
+cat /usr/share/ublue-os/just/custom.just >> ~/.justfile
+```
 
 After doing that, you'll be able to run the following commands:
 

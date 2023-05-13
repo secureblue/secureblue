@@ -1,5 +1,4 @@
-# Warning: Only edit this file inside the uBlue image's git repository.
-# If you are looking at this file on your computer, editing it does nothing.
+# This file can only be edited inside the uBlue image's git repository.
 
 # The image will be at "ghcr.io/yourusername/name".
 name: startingpoint

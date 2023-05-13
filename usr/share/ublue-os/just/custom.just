@@ -7,11 +7,6 @@ setup-flatpaks:
       flatpak install --user --noninteractive flathub $pkg; \
   done
 
-setup-pwa:
-  echo 'Giving browser permission to create PWAs (Progressive Web Apps)'
-  # Add for your favorite chromium-based browser
-  flatpak override --user --filesystem=~/.local/share/applications --filesystem=~/.local/share/icons com.microsoft.Edge
-
 setup-gaming:
   echo 'Setting up gaming experience ... lock and load.'
   flatpak install -y --user \\

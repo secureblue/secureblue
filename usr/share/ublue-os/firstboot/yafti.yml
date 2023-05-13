@@ -14,12 +14,14 @@ screens:
     values:
       title: Welcome, Traveler!
       condition:
-        run: flatpak remotes --system | grep fedora
+        run: flatpak remotes --columns=name | grep fedora
       description: |
         We have detected the limited, Fedora-provided Flatpak remote on your system, whose applications are usually missing important codecs and other features. This step will therefore remove all basic Fedora Flatpaks from your system! We will instead switch all core Flatpak applications over to the vastly superior, unfiltered Flathub. If you don't want to do this, simply exit this installer.
       actions:
-        - run: flatpak remote-delete fedora --force
+        - run: flatpak remote-delete --system --force fedora
+        - run: flatpak remote-delete --user --force fedora
         - run: flatpak remove --system --noninteractive --all
+        - run: flatpak remote-add --if-not-exists --system flathub https://flathub.org/repo/flathub.flatpakrepo
         - run: flatpak remote-add --if-not-exists --user flathub https://flathub.org/repo/flathub.flatpakrepo
   applications:
     source: yafti.screen.package

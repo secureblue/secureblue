@@ -21,10 +21,10 @@ The easiest way to start customizing is by looking at and modifying `recipe.yml`
 
 For the base-image field, you can use any other native container image. You will get all the features of that image, plus the ones added here! Check out the [uBlue images list](https://ublue.it/images/) to decide what to use!
 
-If you want to add custom configuration files, you can just add them in the `etc` directory. If you need to add other directories, you can look at the Containerfile to see how it's done. Writing to any directories under `/var` in Fedora Silverblue are not supported and will not work, as those are user-managed.
+If you want to add custom configuration files, you can just add them in the `usr/etc/` directory, which is the official OSTree "configuration template" directory. If you need to add other directories, you can look at the Containerfile to see how it's done. Writing to `/etc` or `/var` in Fedora's immutable OSTree-based distros *isn't supported* and will not work, as those are user-managed locations!
 
 > **Note**
-> The configuration files you put in the `etc` directory are actually added to `/usr/etc/` where they get applied to your local `/etc/` when rebasing to or updating the image. If a config file in `/etc/` has been changed, the changes won't be overridden, but the new version will be available in `/usr/etc/`. Run `sudo ostree admin config-diff` to see the difference between `/etc/` and `/usr/etc/` (`man ostree-admin-config-diff` for further documentation).
+> The configuration files you put in the `usr/etc/` directory are actually added to `/usr/etc/` on the final system, where they will be automatically applied to your local `/etc/` when rebasing to or updating the image. If a config file in `/etc/` has been changed by the user, OSTree will attempt to automatically merge the user's changes into the installed file, but if that fails, the new version will only be available in `/usr/etc/`. Run `sudo ostree admin config-diff` to see the difference between `/etc/` and `/usr/etc/` (`man ostree-admin-config-diff` for further documentation).
 
 ### Custom build scripts
 

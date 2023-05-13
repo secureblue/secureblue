@@ -4,30 +4,32 @@ ARG BASE_IMAGE_URL=ghcr.io/ublue-os/silverblue-main
 FROM ${BASE_IMAGE_URL}:${FEDORA_MAJOR_VERSION}
 ARG RECIPE
 
-# copy over configuration files
-# etc is copied to /usr/etc/ to prevent "merge conflicts"
-# as it is the proper directory for "system" configuration files
-# and /etc/ is for editing by the local admin
-# see issue #28 (https://github.com/ublue-os/startingpoint/issues/28)
-COPY etc /usr/etc
+# Copy static configurations and component files.
+# Warning: If you want to place anything in "/etc" of the final image, you MUST
+# place them in "./usr/etc" in your repo, so that they're written to "/usr/etc"
+# on the final system. That is the proper directory for "system" configuration
+# templates on immutable Fedora distros, whereas the normal "/etc" is ONLY meant
+# for manual overrides and editing by the machine's admin AFTER installation!
+# See issue #28 (https://github.com/ublue-os/startingpoint/issues/28).
 COPY usr /usr
 
-# copy scripts
+# Copy recipe.
+COPY ${RECIPE} /usr/share/ublue-os/recipe.yml
+
+# "yq" used in build.sh and the setup-flatpaks recipe to read the recipe.yml.
+# Copied from the official container image since it's not available as an RPM.
+COPY --from=docker.io/mikefarah/yq /usr/bin/yq /usr/bin/yq
+
+# Copy scripts.
 RUN mkdir /tmp/scripts
 COPY scripts /tmp/scripts
 RUN find /tmp/scripts -type f -exec chmod +x {} \;
 
-COPY ${RECIPE} /usr/share/ublue-os/recipe.yml
-
-# yq used in build.sh and the setup-flatpaks recipe to read the recipe.yml
-# copied from the official container image as it's not avaible as an rpm
-COPY --from=docker.io/mikefarah/yq /usr/bin/yq /usr/bin/yq
-
-# copy and run the build script
+# Copy and run the build script.
 COPY build.sh /tmp/build.sh
 RUN chmod +x /tmp/build.sh && /tmp/build.sh
 
-# clean up and finalize container build
+# Clean up and finalize container build.
 RUN rm -rf \
         /tmp/* \
         /var/* && \

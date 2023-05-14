@@ -24,7 +24,7 @@ For the base-image field, you can use any other native container image. You will
 If you want to add custom configuration files, you can just add them in the `usr/etc/` directory, which is the official OSTree "configuration template" directory. If you need to add other directories, you can look at the Containerfile to see how it's done. Writing to `/etc` or `/var` in Fedora's immutable OSTree-based distros *isn't supported* and will not work, as those are user-managed locations!
 
 > **Note**
-> The configuration files you put in the `usr/etc/` directory are actually added to `/usr/etc/` on the final system, where they will be automatically applied to your local `/etc/` when rebasing to or updating the image. If a config file in `/etc/` has been changed by the user, OSTree will attempt to automatically merge the user's changes into the installed file, but if that fails, the new version will only be available in `/usr/etc/`. Run `sudo ostree admin config-diff` to see the difference between `/etc/` and `/usr/etc/` (`man ostree-admin-config-diff` for further documentation).
+> The configuration files you put in `/usr/etc/` will automatically be applied to your local `/etc/` by `systemd` whenever you rebase an OSTree system or update the image. If a config file in `/etc/` has been *modified* (compared to the same deployment's defaults), then OSTree [won't overwrite it](https://github.com/ostreedev/ostree/blob/16cb47489e582da9c139fee20acdac7079867843/docs/atomic-upgrades.md?plain=1#L76), but the new version will be available in `/usr/etc/`. Run `sudo ostree admin config-diff` to see the difference between `/etc/` and `/usr/etc/` (`man ostree-admin-config-diff` for further documentation).
 
 ### Custom build scripts
 

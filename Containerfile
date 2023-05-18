@@ -13,24 +13,18 @@ ARG RECIPE
 # See issue #28 (https://github.com/ublue-os/startingpoint/issues/28).
 COPY usr /usr
 
-# Copy recipe.
+# Copy the recipe that we're building.
 COPY ${RECIPE} /usr/share/ublue-os/recipe.yml
 
-# "yq" used in build.sh and the setup-flatpaks recipe to read the recipe.yml.
+# "yq" used in build.sh and the "setup-flatpaks" just-action to read recipe.yml.
 # Copied from the official container image since it's not available as an RPM.
 COPY --from=docker.io/mikefarah/yq /usr/bin/yq /usr/bin/yq
 
-# Copy scripts.
-RUN mkdir /tmp/scripts
+# Copy the build script and all custom scripts.
 COPY scripts /tmp/scripts
-RUN find /tmp/scripts -type f -exec chmod +x {} \;
 
-# Copy and run the build script.
-COPY build.sh /tmp/build.sh
-RUN chmod +x /tmp/build.sh && /tmp/build.sh
-
-# Clean up and finalize container build.
-RUN rm -rf \
-        /tmp/* \
-        /var/* && \
-    ostree container commit
+# Run the build script, then clean up temp files and finalize container build.
+RUN chmod +x /tmp/scripts/build.sh && \
+        /tmp/scripts/build.sh && \
+        rm -rf /tmp/* /var/* && \
+        ostree container commit

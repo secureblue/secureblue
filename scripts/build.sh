@@ -33,6 +33,9 @@ if [[ ${#repos[@]} -gt 0 ]]; then
     echo "---"
 fi
 
+# Ensure that all script files are executable.
+find /tmp/scripts -type f -exec chmod +x {} \;
+
 # Run "pre" scripts.
 run_scripts() {
     script_mode="$1"

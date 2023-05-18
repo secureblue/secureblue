@@ -31,9 +31,9 @@ If you want to add custom configuration files, you can just add them in the `usr
 
 ### Custom build scripts
 
-If you want to execute custom shell scripts or commands in the image build, you shouldn't edit `build.sh` or the `Containerfile` directly.
+If you want to execute custom shell scripts or commands in the image build, you shouldn't edit the `scripts/build.sh` or the `Containerfile` directly.
 
-Instead, you can create shell scripts in the `scripts/` directory (look at the `example.sh`). After creating your scripts, enable them in the `scripts:` section of your `recipe.yml`, within the specific "build stage" category where the scripts are intended to be executed.
+Instead, you should create your own custom shell scripts in the `scripts/` directory (look at the `example.sh`). After creating your scripts, enable them in the `scripts:` section of your `recipe.yml`, within the specific "build stage" category where the scripts are intended to be executed. Alternatively, enable the `autorun.sh` helper script in your recipe to automatically execute your custom scripts.
 
 Read [the README in the `scripts/` directory](https://github.com/ublue-os/startingpoint/blob/main/scripts/README.md) for more information.
 

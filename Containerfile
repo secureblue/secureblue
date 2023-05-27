@@ -2,7 +2,7 @@ ARG FEDORA_MAJOR_VERSION=38
 ARG BASE_IMAGE_URL=ghcr.io/ublue-os/silverblue-main
 
 FROM ${BASE_IMAGE_URL}:${FEDORA_MAJOR_VERSION}
-ARG RECIPE
+ARG RECIPE=./recipe.yml
 
 # Copy static configurations and component files.
 # Warning: If you want to place anything in "/etc" of the final image, you MUST

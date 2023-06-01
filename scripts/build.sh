@@ -13,7 +13,7 @@ get_yaml_string() {
 }
 
 # Automatically determine which Fedora version we're building.
-FEDORA_VERSION="$(cat /usr/lib/os-release | grep '^VERSION_ID=' | head -1 | sed 's,^VERSION_ID=,,')"
+FEDORA_VERSION="$(cat /usr/lib/os-release | grep -Po '(?<=VERSION_ID=)\d+')"
 
 # Read configuration variables.
 BASE_IMAGE="$(get_yaml_string '.base-image')"

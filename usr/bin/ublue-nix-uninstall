@@ -1,0 +1,86 @@
+#!/bin/bash
+VERBOSITY="${VERBOSITY:-0}"
+SUDO_PROGRAM="${SUDO_PROGRAM:-sudo}"
+USER_WARNING="${USER_WARNING:-1}"
+[ "$VERBOSITY" = "1" ] && set -x
+set -uo pipefail
+
+function log {
+	LEVEL=$1
+	shift
+	echo "[${LEVEL}]" $@ >&2
+}
+
+if [ "$EUID" = 0 ] ; then
+  log WARNING "Do not run this command as root, as it won't delete proper files in your system"
+  exit
+fi
+
+if [ "$USER_WARNING" = 1 ] ; then
+	cat <<EOF
+This is a destructive operation, it will delete the following:
+
+Services:
+
+- nix-daemon.service
+- nix-daemon.socket
+- nix.mount
+- mkdir-rootfs@.service
+
+Files & Directories:
+
+- $HOME/{.nix-channels,.nix-defexpr,.nix-profile,.config/nixpkgs}
+- /etc/profile.d/nix-app-icons.sh
+- /etc/profile.d/nix.sh
+- /etc/nix
+- /etc/tmpfiles.d/nix-daemon.conf 
+- ~root/.nix-channels 
+- ~root/.nix-defexpr 
+- ~root/.nix-profile
+
+Users & Groups:
+
+- nixbld[0-32]
+
+If you are unsure about everything that will be done, make sure to read the source code of this script by running "cat $(realpath $0)" on your terminal.
+
+EOF
+
+	read -r -p "Are you sure you want to proceed? [y/N] " response
+	case "$response" in
+		[yY][eE][sS]|[yY]) 
+	        ;;
+		*)
+			exit
+		;;
+	esac
+fi
+
+log TASK 'Removing nix configuration from "\$HOME"'
+log TASK 'To finish removing everything, make sure to remove the '. "$HOME/.nix-profile/etc/profile.d/nix.sh"' line in your ~/.profile or ~/.bash_profile'
+
+rm -rf $HOME/{.nix-channels,.nix-defexpr,.nix-profile,.config/nixpkgs,.local/state/nix,.cache/nix}
+
+log TASK 'Deleting nix system users'
+for i in $(seq 1 32); do
+	"$SUDO_PROGRAM" userdel "nixbld$i"
+done
+"$SUDO_PROGRAM" groupdel 'nixbld'
+
+log TASK 'Removing nix systemd services'
+"$SUDO_PROGRAM" systemctl disable --now nix-daemon.service nix-daemon.socket nix.mount mkdir-rootfs@.service
+"$SUDO_PROGRAM" systemctl daemon-reload
+"$SUDO_PROGRAM" rm -rf '/etc/systemd/system/mkdir-rootfs@.service' '/etc/systemd/system/nix.mount' /etc/systemd/system/nix-daemon.{service,socket} '/etc/systemd/system/nix-daemon.service.d/'
+
+log TASK 'Removing remaining nix system configuration'
+"$SUDO_PROGRAM" rm -rf '/etc/profile.d/nix-app-icons.sh' '/etc/nix' '/etc/profile.d/nix.sh' '/etc/tmpfiles.d/nix-daemon.conf' ~root/.nix-channels ~root/.nix-defexpr ~root/.nix-profile
+"$SUDO_PROGRAM" cp -f '/etc/bashrc.backup-before-nix' '/etc/bashrc'
+
+log TASK 'Removing /var/lib/nix'
+"$SUDO_PROGRAM" restorecon -RF '/var/lib/nix'
+"$SUDO_PROGRAM" restorecon -RF '/nix'
+"$SUDO_PROGRAM" rm -rf '/var/lib/nix'
+
+log INFO 'Make sure to remove residual configurations from the following files:' "/etc/bash.bashrc /etc/bashrc /etc/profile /etc/zsh/zshrc /etc/zshrc $HOME/.bashr $HOME/.bash_profile $HOME/.zshrc $HOME/.profile"
+
+log INFO 'You may now reboot your system to confirm these changes with "systemctl reboot"'

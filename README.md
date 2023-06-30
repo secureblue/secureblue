@@ -46,6 +46,8 @@ COPR is like the Arch User Repository for Fedora, where you can find extra packa
 
 Tip: You can use the magic string `%FEDORA_VERSION%` in your repo URLs, to automatically refer to the correct repository for your current Fedora version.
 
+If your `.repo` file is not available as a hosted URL and you need to copy it manually, you can upload the file in your github repository or a gist and add the raw link to the file under `rpm.repos:`. Another option in this scenario would be to create a folder for `.repo` files in your repository and add `COPY repos /etc/yum.repos.d/` in the `Containerfile`.
+
 ### Building multiple images
 
 You can build multiple images using multiple `recipe.yml` files. They will share the Containerfile and everything else, but things like packages declared in the recipe will be different between the images. For a more robust multibuild setup, you could consider forking from the [ublue-os/main](https://github.com/ublue-os/main/) repo, which was built from the purpose.

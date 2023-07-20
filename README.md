@@ -137,4 +137,4 @@ These images are signed with sisgstore's [cosign](https://docs.sigstore.dev/cosi
 
     cosign verify --key cosign.pub ghcr.io/ublue-os/startingpoint
 
-If you're forking this repo, the uBlue website has [instructions](https://ublue.it/making-your-own/) for setting up signing properly.
+If you're forking this repo, the uBlue website has [instructions](https://universal-blue.org/tinker/make-your-own/) for setting up signing properly.

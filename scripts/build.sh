@@ -24,6 +24,7 @@ echo "Building custom Fedora ${FEDORA_VERSION} from image: \"${BASE_IMAGE}\"."
 
 # Setup container signing
 echo "Setup container signing in policy.json and cosign.yaml"
+echo "Registry to write: $IMAGE_REGISTRY"
 sed -i "s ghcr.io/ublue-os $IMAGE_REGISTRY g" /usr/etc/containers/policy.json
 sed -i "s ghcr.io/ublue-os $IMAGE_REGISTRY g" /usr/etc/containers/registries.d/cosign.yaml
 

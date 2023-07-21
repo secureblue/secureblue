@@ -88,15 +88,23 @@ If you want to completely disable yafti, simply set the recipe's `firstboot.yaft
 
 To rebase an existing Silverblue/Kinoite installation to the latest build:
 
-```
-sudo rpm-ostree rebase ostree-unverified-registry:ghcr.io/ublue-os/startingpoint:latest
-```
+- First rebase to the image unsigned, to get the proper signing keys and policies installed:
+  ```
+  sudo rpm-ostree rebase ostree-unverified-registry:ghcr.io/ublue-os/startingpoint:latest
+  ```
+- Then rebase to the signed image, like so:
+  ```
+  sudo rpm-ostree rebase ostree-image-signed:docker://ghcr.io/ublue-os/startingpoint:latest
+  ```
+
 
 This repository builds date tags as well, so if you want to rebase to a particular day's build:
 
 ```
-sudo rpm-ostree rebase ostree-unverified-registry:ghcr.io/ublue-os/startingpoint:20230403
+sudo rpm-ostree rebase ostree-image-signed:docker://ghcr.io/ublue-os/startingpoint:20230403
 ```
+
+This repository by default also supports signing 
 
 The `latest` tag will automatically point to the latest build. That build will still always use the Fedora version specified in `recipe.yml`, so you won't get accidentally updated to the next major version.
 

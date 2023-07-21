@@ -147,10 +147,3 @@ After doing that, you'll be able to run the following commands:
 
 Check the [just website](https://just.systems) for tips on modifying and adding your own recipes.
 
-## Verification
-
-These images are signed with sisgstore's [cosign](https://docs.sigstore.dev/cosign/overview/). You can verify the signature by downloading the `cosign.pub` key from this repo and running the following command:
-
-    cosign verify --key cosign.pub ghcr.io/ublue-os/startingpoint
-
-If you're forking this repo, the uBlue website has [instructions](https://universal-blue.org/tinker/make-your-own/) for setting up signing properly.

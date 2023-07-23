@@ -110,11 +110,11 @@ echo "Setup container signing in policy.json and cosign.yaml"
 echo "Registry to write: $IMAGE_REGISTRY"
 
 jq '.transports.docker."$IMAGE_REGISTRY" += [{
-"type": "sigstoreSigned",
-"keyPath": "/usr/etc/pki/containers/cosign.pub",
-"signedIdentity": {
+    "type": "sigstoreSigned",
+    "keyPath": "/usr/etc/pki/containers/cosign.pub",
+    "signedIdentity": {
         "type": "matchRepository"
-}
+    }
 }]' /usr/etc/containers/policy.json > /usr/etc/containers/policy.json
 
 cp /usr/etc/containers/registries.d/ublue-os.yaml /usr/etc/containers/registries.d/cosign.yaml

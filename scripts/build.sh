@@ -109,16 +109,25 @@ fi
 echo "Setup container signing in policy.json and cosign.yaml"
 echo "Registry to write: $IMAGE_REGISTRY"
 
-jq '.transports.docker."$IMAGE_REGISTRY" += [{
+# Copy Name
+NAME=$(get_yaml_string '.name')
+cp /usr/share/ublue-os/cosign.pub /usr/etc/pki/containers/"$NAME".pub
+
+# Work around the fact that jq doesn't have an "inplace" option
+FILE=/usr/etc/containers/policy.json
+TMP=/tmp/policy.json
+
+jq '.transports.docker."'"$IMAGE_REGISTRY"'" += [{
     "type": "sigstoreSigned",
-    "keyPath": "/usr/etc/pki/containers/cosign.pub",
+    "keyPath": "/usr/etc/pki/containers/'"$NAME"'.pub",
     "signedIdentity": {
         "type": "matchRepository"
     }
-}]' /usr/etc/containers/policy.json > /usr/etc/containers/policy.json
+}]' $FILE > $TMP
+mv -f $TMP $FILE
 
-cp /usr/etc/containers/registries.d/ublue-os.yaml /usr/etc/containers/registries.d/cosign.yaml
-sed -i "s ghcr.io/ublue-os $IMAGE_REGISTRY g" /usr/etc/containers/registries.d/cosign.yaml
+cp /usr/etc/containers/registries.d/ublue-os.yaml /usr/etc/containers/registries.d/"$NAME".yaml
+sed -i "s ghcr.io/ublue-os $IMAGE_REGISTRY g" /usr/etc/containers/registries.d/"$NAME".yaml
 
 # Run "post" scripts.
 run_scripts "post"

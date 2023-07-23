@@ -29,6 +29,8 @@ COPY usr /usr
 
 # Copy public key
 COPY cosign.pub /usr/etc/pki/containers/cosign.pub
+# Copy base signing config
+COPY usr/etc/containers /usr/etc/
 
 # Copy the recipe that we're building.
 COPY ${RECIPE} /usr/share/ublue-os/recipe.yml

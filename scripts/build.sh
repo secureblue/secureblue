@@ -22,12 +22,6 @@ YAFTI_ENABLED="$(get_yaml_string '.firstboot.yafti')"
 # Welcome.
 echo "Building custom Fedora ${FEDORA_VERSION} from image: \"${BASE_IMAGE}\"."
 
-# Setup container signing
-echo "Setup container signing in policy.json and cosign.yaml"
-echo "Registry to write: $IMAGE_REGISTRY"
-sed -i "s ghcr.io/ublue-os $IMAGE_REGISTRY g" /usr/etc/containers/policy.json
-sed -i "s ghcr.io/ublue-os $IMAGE_REGISTRY g" /usr/etc/containers/registries.d/cosign.yaml
-
 # Add custom repos.
 get_yaml_array repos '.rpm.repos[]'
 if [[ ${#repos[@]} -gt 0 ]]; then
@@ -110,6 +104,35 @@ if [[ "${YAFTI_ENABLED}" == "true" ]]; then
         echo "---"
     fi
 fi
+
+# Setup container signing
+echo "Setup container signing in policy.json and cosign.yaml"
+echo "Registry to write: $IMAGE_REGISTRY"
+
+# Copy Name
+NAME=$(get_yaml_string '.name')
+cp /usr/share/ublue-os/cosign.pub /usr/etc/pki/containers/"$NAME".pub
+
+# Work around the fact that jq doesn't have an "inplace" option
+FILE=/usr/etc/containers/policy.json
+TMP=/tmp/policy.json
+
+jq '.transports.docker |= 
+    {"'"$IMAGE_REGISTRY"'": [
+            {
+                "type": "sigstoreSigned",
+                "keyPath": "/usr/etc/pki/containers/'"$NAME"'.pub",
+                "signedIdentity": {
+                    "type": "matchRepository"
+                }
+            }
+        ]
+    }
++ .' $FILE > $TMP
+mv -f $TMP $FILE
+
+cp /usr/etc/containers/registries.d/ublue-os.yaml /usr/etc/containers/registries.d/"$NAME".yaml
+sed -i "s ghcr.io/ublue-os $IMAGE_REGISTRY g" /usr/etc/containers/registries.d/"$NAME".yaml
 
 # Run "post" scripts.
 run_scripts "post"

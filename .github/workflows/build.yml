@@ -126,6 +126,12 @@ jobs:
         with:
           string: ${{ env.IMAGE_REGISTRY }}
 
+      - name: Lowercase Image
+        id: image_case
+        uses: ASzc/change-string-case-action@v5
+        with:
+          string: ${{ env.IMAGE_NAME }}
+
       # Build image using Buildah action
       - name: Build Image
         id: build_image
@@ -176,7 +182,7 @@ jobs:
       - name: Sign container image
         if: github.event_name != 'pull_request' && github.ref == 'refs/heads/live'
         run: |
-          cosign sign -y --key env://COSIGN_PRIVATE_KEY ${{ steps.registry_case.outputs.lowercase }}/${{ env.IMAGE_NAME }}@${TAGS}
+          cosign sign -y --key env://COSIGN_PRIVATE_KEY ${{ steps.registry_case.outputs.lowercase }}/${{ steps.image_case.outputs.lowercase }}@${TAGS}
         env:
           TAGS: ${{ steps.push.outputs.digest }}
           COSIGN_EXPERIMENTAL: false

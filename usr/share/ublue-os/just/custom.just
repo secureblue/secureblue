@@ -10,4 +10,4 @@ setup-flatpaks:
       flatpak install --user --noninteractive flathub $pkg; \
   done
 
-# Include some of your custom scripts here! 
+# Include some of your custom scripts here!

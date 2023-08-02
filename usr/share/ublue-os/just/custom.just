@@ -1,6 +1,6 @@
 !include /usr/share/ublue-os/just/bling.just
 
-# install all flatpaks defined in recipe.yml
+# Install all flatpaks defined in recipe.yml
 setup-flatpaks:
   #!/usr/bin/env bash
   echo 'Installing flatpaks from the ublue recipe ...'

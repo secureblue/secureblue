@@ -116,6 +116,16 @@ This repository by default also supports signing
 
 The `latest` tag will automatically point to the latest build. That build will still always use the Fedora version specified in `recipe.yml`, so you won't get accidentally updated to the next major version.
 
+## ISO
+
+This template includes a simple Github Action to build and release an ISO of your image. 
+
+To run the action, simply edit the `boot_menu.yml` by changing all the references to `ublue-os/startingpoint` to your repository. This should trigger the action automatically.
+
+The Action uses [isogenerator](https://github.com/ublue-os/isogenerator) and works in a similar manner to the official Universal Blue ISO. If you have any issues, you should first check [the documentation page on installation](https://universal-blue.org/installation/). The ISO is a netinstaller and should always pull the latest version of your image.
+
+Note that this release-iso action is not a replacement for a full-blown release automation like [release-please](https://github.com/googleapis/release-please).
+
 ## Just
 
 The `just` task runner is included in `ublue-os/main`-derived images, and we have provided several template commands which help you perform further customization after first boot.

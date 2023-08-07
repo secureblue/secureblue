@@ -64,13 +64,19 @@ jobs:
           echo "FEDORA_MAJOR_VERSION=$(yq '.fedora-version' ./${{ matrix.recipe }})" >> $GITHUB_ENV
           echo "BASE_IMAGE_URL=$(yq '.base-image' ./${{ matrix.recipe }})" >> $GITHUB_ENV
 
+      - name: Get current version
+        id: labels
+        run: |
+          ver=$(skopeo inspect docker://${{ env.BASE_IMAGE_URL }}:${{ env.FEDORA_MAJOR_VERSION }} | jq -r '.Labels["org.opencontainers.image.version"]')
+          echo "VERSION=$ver" >> $GITHUB_OUTPUT
+
       - name: Generate tags
         id: generate-tags
         shell: bash
         run: |
           # Generate a timestamp for creating an image version history
           TIMESTAMP="$(date +%Y%m%d)"
-          MAJOR_VERSION="${{ env.FEDORA_MAJOR_VERSION }}"
+          MAJOR_VERSION="$(echo ${{ steps.labels.outputs.VERSION }} | cut -d . -f 1)"
           COMMIT_TAGS=()
           BUILD_TAGS=()
           # Have tags for tracking builds during pull request
@@ -97,12 +103,6 @@ jobs:
               echo "${TAG}"
           done
           echo "alias_tags=${alias_tags[*]}" >> $GITHUB_OUTPUT
-
-      - name: Get current version
-        id: labels
-        run: |
-          ver=$(skopeo inspect docker://${{ env.BASE_IMAGE_URL }}:${{ env.FEDORA_MAJOR_VERSION }} | jq -r '.Labels["org.opencontainers.image.version"]')
-          echo "VERSION=$ver" >> $GITHUB_OUTPUT
 
       # Build metadata
       - name: Image Metadata

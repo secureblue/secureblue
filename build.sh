@@ -29,7 +29,7 @@ echo "Building $IMAGE_NAME from Fedora $FEDORA_VERSION ($BASE_IMAGE)."
 MODULES=$(get_yaml_array '.modules')
 
 for module in "${MODULES[@]}"; do
-    TYPE=$(yq r <(echo "$module") '.type')
+    TYPE=$(echo "$module" | yq '.type')
 
     echo "Launching module of type: $TYPE"
 done

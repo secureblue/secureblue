@@ -53,9 +53,9 @@ COPY build.sh /tmp/build.sh
 COPY modules /tmp/modules/
 
 # Run the build script, then clean up temp files and finalize container build.
-# TODO move this rpm-ostree cmd somewhere else
-RUN rpm-ostree install /tmp/ublue-os-wallpapers-0.1-1.fc38.noarch.rpm && \
-        chmod +x /tmp/build.sh && \
-        /tmp/build.sh && \
-        rm -rf /tmp/* /var/* && \
-        ostree container commit
+RUN chmod +x /tmp/build.sh && /tmp/build.sh && \
+    rm -rf /tmp/* /var/* && ostree container commit
+
+# Storage
+# TODO turn this bling installation stuff into a module
+# rpm-ostree install /tmp/ublue-os-wallpapers-0.1-1.fc38.noarch.rpm

@@ -13,7 +13,7 @@ FROM ${BASE_IMAGE_URL}:${FEDORA_MAJOR_VERSION}
 
 # The default recipe set to the recipe's default filename
 # so that `podman build` should just work for many people.
-ARG RECIPE=./recipe.yml
+ARG RECIPE=recipe.yml
 
 # The default image registry to write to policy.json and cosign.yaml
 ARG IMAGE_REGISTRY=ghcr.io/ublue-os
@@ -30,8 +30,8 @@ COPY usr /usr
 # Copy public key
 COPY cosign.pub /usr/share/ublue-os/cosign.pub
 
-# Copy the recipe that we're building.
-COPY ${RECIPE} /usr/share/ublue-os/recipe.yml
+# Copy the config folder
+COPY config /usr/share/ublue-os/startingpoint
 
 # Copy nix install script and Universal Blue wallpapers RPM from Bling image
 COPY --from=ghcr.io/ublue-os/bling:latest /rpms/ublue-os-wallpapers-0.1-1.fc38.noarch.rpm /tmp/ublue-os-wallpapers-0.1-1.fc38.noarch.rpm
@@ -39,19 +39,19 @@ COPY --from=ghcr.io/ublue-os/bling:latest /rpms/ublue-os-wallpapers-0.1-1.fc38.n
 # Integrate bling justfiles onto image
 COPY --from=ghcr.io/ublue-os/bling:latest /files/usr/share/ublue-os/just /usr/share/ublue-os/just
 
-# Add nix installer if you want to use it
+# Copy dnkmmr's nix installer
 COPY --from=ghcr.io/ublue-os/bling:latest /files/usr/bin/ublue-nix* /usr/bin
 
 # "yq" used in build.sh and the "setup-flatpaks" just-action to read recipe.yml.
 # Copied from the official container image since it's not available as an RPM.
 COPY --from=docker.io/mikefarah/yq /usr/bin/yq /usr/bin/yq
 
-# Copy the build script and all custom scripts.
-COPY scripts /tmp/scripts
+COPY build.sh /tmp/build.sh
 
 # Run the build script, then clean up temp files and finalize container build.
+# TODO move this rpm-ostree cmd somewhere else
 RUN rpm-ostree install /tmp/ublue-os-wallpapers-0.1-1.fc38.noarch.rpm && \
-        chmod +x /tmp/scripts/build.sh && \
-        /tmp/scripts/build.sh && \
+        chmod +x /tmp/build.sh && \
+        /tmp/build.sh && \
         rm -rf /tmp/* /var/* && \
         ostree container commit

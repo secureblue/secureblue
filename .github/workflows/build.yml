@@ -33,10 +33,10 @@ on:
 env:
   IMAGE_REGISTRY: ghcr.io/${{ github.repository_owner }}
 
+# Only deploys the branch named "live". Ignores all other branches, to allow
+# having "development" branches without interfering with GHCR image uploads.
 jobs:
   push-ghcr:
-    # Only deploys the branch named "live". Ignores all other branches, to allow
-    # having "development" branches without interfering with GHCR image uploads.
     name: Build and push image
     runs-on: ubuntu-22.04
     permissions:
@@ -46,6 +46,9 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
+
+        # Add recipes for all the images you want to build here.
+        # Don't add module configuration files, you will get errors.
         recipe:
           - recipe.yml
 
@@ -54,15 +57,15 @@ jobs:
       - name: Checkout Push to Registry action
         uses: actions/checkout@v3
 
-      - name: Add yq for reading recipe.yml
+      - name: Add yq (for reading recipe.yml)
         uses: mikefarah/yq@v4.34.2
 
       - name: Gather image data from recipe
         run: |
-          echo "IMAGE_NAME=$(yq '.name' ./${{ matrix.recipe }})" >> $GITHUB_ENV
-          echo "IMAGE_DESCRIPTION=$(yq '.description' ./${{ matrix.recipe }})" >> $GITHUB_ENV
-          echo "FEDORA_MAJOR_VERSION=$(yq '.fedora-version' ./${{ matrix.recipe }})" >> $GITHUB_ENV
-          echo "BASE_IMAGE_URL=$(yq '.base-image' ./${{ matrix.recipe }})" >> $GITHUB_ENV
+          echo "IMAGE_NAME=$(yq '.name' ./config/${{ matrix.recipe }})" >> $GITHUB_ENV
+          echo "IMAGE_DESCRIPTION=$(yq '.description' ./config/${{ matrix.recipe }})" >> $GITHUB_ENV
+          echo "FEDORA_MAJOR_VERSION=$(yq '.fedora-version' ./config/${{ matrix.recipe }})" >> $GITHUB_ENV
+          echo "BASE_IMAGE_URL=$(yq '.base-image' ./config/${{ matrix.recipe }})" >> $GITHUB_ENV
 
       - name: Get current version
         id: labels

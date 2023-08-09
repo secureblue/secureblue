@@ -46,7 +46,11 @@ COPY --from=ghcr.io/ublue-os/bling:latest /files/usr/bin/ublue-nix* /usr/bin
 # Copied from the official container image since it's not available as an RPM.
 COPY --from=docker.io/mikefarah/yq /usr/bin/yq /usr/bin/yq
 
+# Copy build script; this is what parses your recipe
 COPY build.sh /tmp/build.sh
+
+# Copy modules to a temporary directory, they'll only to be executed during the build
+COPY modules /tmp/modules/
 
 # Run the build script, then clean up temp files and finalize container build.
 # TODO move this rpm-ostree cmd somewhere else

@@ -3,7 +3,15 @@
 # Tell build process to exit if there are any errors.
 set -oue pipefail
 
-YAFTI_FILE="/usr/share/ublue-os/firstboot/yafti.yml"
+FIRSTBOOT_DATA="/usr/share/ublue-os/firstboot"
+FIRSTBOOT_LINK="/usr/etc/profile.d/ublue-firstboot.sh"
+echo "Installing and enabling yafti"
+pip install --prefix=/usr yafti
+# Create symlink to our profile script, which creates the per-user "autorun yafti" links.
+mkdir -p "$(dirname "${FIRSTBOOT_LINK}")"
+ln -s "${FIRSTBOOT_DATA}/launcher/login-profile.sh" "${FIRSTBOOT_LINK}"
+
+YAFTI_FILE="$FIRSTBOOT_DATA/yafti.yml"
 
 get_yaml_array FLATPAKS '.custom-flatpaks[]' "$1"
 if [[ ${#FLATPAKS[@]} -gt 0 ]]; then

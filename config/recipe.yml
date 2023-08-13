@@ -15,7 +15,7 @@ modules:
       - ./autorun.sh post
 
   - type: yafti # no need for an enable-disable key, inclusion implicitly enables
-    # config: yafti.yml # if not specified, would use a default config
+    # config: yafti.yml # if not specified, would use a default config TODO
     custom-flatpaks:
       - Celluloid: io.github.celluloid_player.Celluloid
       - Krita: org.kde.krita

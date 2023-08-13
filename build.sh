@@ -6,11 +6,11 @@ set -oue pipefail
 # Absolute path to recipe file
 RECIPE_FILE="/usr/share/ublue-os/startingpoint/${RECIPE}"
 
+# https://mikefarah.gitbook.io/yq/usage/tips-and-tricks#yq-in-a-bash-loop
 get_yaml_array() {
-    local array=()
-    mapfile -t array < <(yq -- "\$1" "$RECIPE_FILE")
-    printf '%s\n' "${array[@]}"
+    readarray "$1" < <(yq -o=j -I=0 "$2" "$RECIPE_FILE" )
 }
+
 get_yaml_string() {
     yq -- "${1}" "${RECIPE_FILE}"
 }
@@ -26,12 +26,9 @@ IMAGE_NAME="$(get_yaml_string '.name')"
 echo "Building $IMAGE_NAME from Fedora $FEDORA_VERSION ($BASE_IMAGE)."
 
 # Run each module
-MODULES=$(get_yaml_array '.modules')
-echo "$MODULES"
+get_yaml_array MODULES '.modules[]'
 
 for module in "${MODULES[@]}"; do
-    echo "$module"
-
     TYPE=$(echo "$module" | yq '.type')
 
     echo "Launching module of type: $TYPE"

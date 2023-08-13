@@ -3,8 +3,8 @@
 # Tell build process to exit if there are any errors.
 set -oue pipefail
 
-# Absolute path to recipe file
 RECIPE_FILE="/usr/share/ublue-os/startingpoint/${RECIPE}"
+MODULE_DIRECTORY="/tmp/modules/"
 
 # https://mikefarah.gitbook.io/yq/usage/tips-and-tricks#yq-in-a-bash-loop
 get_yaml_array() {
@@ -28,8 +28,10 @@ echo "Building $IMAGE_NAME from Fedora $FEDORA_VERSION ($BASE_IMAGE)."
 # Run each module
 get_yaml_array MODULES '.modules[]'
 
-for module in "${MODULES[@]}"; do
-    TYPE=$(echo "$module" | yq '.type')
-
-    echo "Launching module of type: $TYPE"
+for MODULE in "${MODULES[@]}"; do
+    TYPE=$(echo "$MODULE" | yq '.type')
+    if [[ "$TYPE" != "null" ]]; then
+        echo "Launching module of type: $TYPE"
+        bash "$MODULE_DIRECTORY/$TYPE/$TYPE.sh" "$MODULE"
+    fi
 done

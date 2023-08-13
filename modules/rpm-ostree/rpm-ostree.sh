@@ -2,3 +2,5 @@
 
 # Tell build process to exit if there are any errors.
 set -oue pipefail
+
+echo "$1"

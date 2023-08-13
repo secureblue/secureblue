@@ -3,13 +3,13 @@
 # Tell build process to exit if there are any errors.
 set -oue pipefail
 
-get_yaml_array RUN '.run[]' "$1"
+get_yaml_array SCRIPTS '.scripts[]' "$1"
 
 cd "$CONFIG_DIRECTORY/scripts"
 
 find "$PWD" -type f -exec chmod +x {} \;
 
-for CMD in "${RUN[@]}"; do
-    echo "Running command: $CMD"
-    eval "$CMD"
+for SCRIPT in "${SCRIPTS[@]}"; do
+    echo "Running script $SCRIPT"
+    eval "$PWD/$SCRIPT"
 done

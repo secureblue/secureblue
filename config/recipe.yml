@@ -12,7 +12,10 @@ modules:
 
   - type: script
     run:
+      # this sets up the proper policy & signing files for signed images to work
+      - ./signing.sh 
       - ./autorun.sh post
+
 
   - type: yafti # no need for an enable-disable key, inclusion implicitly enables
     # config: yafti.yml # if not specified, would use a default config TODO

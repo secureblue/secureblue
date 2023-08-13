@@ -3,7 +3,7 @@
 # Tell build process to exit if there are any errors.
 set -oue pipefail
 
-CONFIG_DIRECTORY="/usr/share/ublue-os/startingpoint"
+export CONFIG_DIRECTORY="/usr/share/ublue-os/startingpoint"
 RECIPE_FILE="$CONFIG_DIRECTORY/$RECIPE"
 MODULE_DIRECTORY="/tmp/modules"
 

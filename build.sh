@@ -15,7 +15,7 @@ get_yaml_array() {
 export -f get_yaml_array # this makes the function available to all modules
 
 # Declare dynamically generated variables as read-only and exported
-declare -rx IMAGE_NAME BASE_IMAGE OS_VERSION
+declare -x IMAGE_NAME BASE_IMAGE OS_VERSION
 
 # Read configuration variables.
 BASE_IMAGE="$(yq '.base-image' "$RECIPE_FILE")"

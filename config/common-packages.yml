@@ -1,9 +1,9 @@
 type: rpm-ostree
-  repos: 
-    # - https://copr.fedorainfracloud.org/coprs/atim/starship/repo/fedora-%FEDORA_VERSION%/atim-starship-fedora-%FEDORA_VERSION%.repo
-  install:
-    - python3-pip
-    - libadwaita
-  remove:
-    - firefox
-    - firefox-langpacks
+repos: 
+  # - https://copr.fedorainfracloud.org/coprs/atim/starship/repo/fedora-%FEDORA_VERSION%/atim-starship-fedora-%FEDORA_VERSION%.repo
+install:
+  - python3-pip
+  - libadwaita
+remove:
+  - firefox
+  - firefox-langpacks

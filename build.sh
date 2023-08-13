@@ -30,5 +30,12 @@ for MODULE in "${MODULES[@]}"; do
     if [[ "$TYPE" != "null" ]]; then
         echo "Launching module of type: $TYPE"
         bash "$MODULE_DIRECTORY/$TYPE/$TYPE.sh" "$MODULE"
+    else
+        FILE=$(echo "$MODULE" | yq '.from-file')
+        MODULE_CONFIG=$(yq -o=j -I=0 '.' "$CONFIG_DIRECTORY/$FILE")
+
+        TYPE=$(echo "$MODULE_CONFIG" | yq '.type')
+        echo "Launching module of type: $TYPE"
+        bash "$MODULE_DIRECTORY/$TYPE/$TYPE.sh" "$MODULE_CONFIG"
     fi
 done

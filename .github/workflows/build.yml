@@ -45,8 +45,8 @@ jobs:
       id-token: write
     strategy:
       fail-fast: false
-      matrix:
 
+      matrix:
         # Add recipes for all the images you want to build here.
         # Don't add module configuration files, you will get errors.
         recipe:
@@ -64,13 +64,13 @@ jobs:
         run: |
           echo "IMAGE_NAME=$(yq '.name' ./config/${{ matrix.recipe }})" >> $GITHUB_ENV
           echo "IMAGE_DESCRIPTION=$(yq '.description' ./config/${{ matrix.recipe }})" >> $GITHUB_ENV
-          echo "FEDORA_MAJOR_VERSION=$(yq '.fedora-version' ./config/${{ matrix.recipe }})" >> $GITHUB_ENV
+          echo "IMAGE_MAJOR_VERSION=$(yq '.image-version' ./config/${{ matrix.recipe }})" >> $GITHUB_ENV
           echo "BASE_IMAGE_URL=$(yq '.base-image' ./config/${{ matrix.recipe }})" >> $GITHUB_ENV
 
       - name: Get current version
         id: labels
         run: |
-          ver=$(skopeo inspect docker://${{ env.BASE_IMAGE_URL }}:${{ env.FEDORA_MAJOR_VERSION }} | jq -r '.Labels["org.opencontainers.image.version"]')
+          ver=$(skopeo inspect docker://${{ env.BASE_IMAGE_URL }}:${{ env.IMAGE_MAJOR_VERSION }} | jq -r '.Labels["org.opencontainers.image.version"]')
           echo "VERSION=$ver" >> $GITHUB_OUTPUT
 
       - name: Generate tags
@@ -146,7 +146,7 @@ jobs:
           tags: |
             ${{ steps.generate-tags.outputs.alias_tags }}
           build-args: |
-            FEDORA_MAJOR_VERSION=${{ env.FEDORA_MAJOR_VERSION }}
+            IMAGE_MAJOR_VERSION=${{ env.IMAGE_MAJOR_VERSION }}
             BASE_IMAGE_URL=${{ env.BASE_IMAGE_URL }}
             RECIPE=${{ matrix.recipe }}
             IMAGE_REGISTRY=${{ steps.registry_case.outputs.lowercase }}

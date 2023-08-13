@@ -1,7 +1,7 @@
 name: startingpoint
 description: A starting point for further customization of uBlue images. Make your own! https://ublue.it/making-your-own/
 base-image: ghcr.io/ublue-os/silverblue-main
-fedora-version: 38
+image-version: 38
 
 modules:
   - type: script

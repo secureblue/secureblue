@@ -7,7 +7,7 @@ get_yaml_array REPOS '.repos[]' "$1"
 if [[ ${#REPOS[@]} -gt 0 ]]; then
     echo "Adding repositories"
     for REPO in "${REPOS[@]}"; do
-        REPO="${REPO//%FEDORA_VERSION%/${FEDORA_VERSION}}"
+        REPO="${REPO//%OS_VERSION%/${OS_VERSION}}"
         wget "${REPO}" -P "/etc/yum.repos.d/"
     done
 fi

@@ -15,7 +15,7 @@ get_yaml_array() {
 export -f get_yaml_array # this makes the function available to all modules
 
 # Automatically determine which Fedora version we're building.
-FEDORA_VERSION="$(grep -Po '(?<=VERSION_ID=)\d+' /usr/lib/os-release)"
+export FEDORA_VERSION="$(grep -Po '(?<=VERSION_ID=)\d+' /usr/lib/os-release)"
 
 # Read configuration variables.
 BASE_IMAGE="$(yq '.base-image' "$RECIPE_FILE")"

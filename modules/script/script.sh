@@ -3,7 +3,7 @@
 # Tell build process to exit if there are any errors.
 set -oue pipefail
 
-readarray RUN < <(yq -o=j -I=0 '.run[]' "$1" )
+get_yaml_array RUN '.run[]' "$1"
 
 cd "$CONFIG_DIRECTORY/scripts"
 

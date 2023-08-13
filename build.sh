@@ -9,8 +9,10 @@ MODULE_DIRECTORY="/tmp/modules"
 
 # https://mikefarah.gitbook.io/yq/usage/tips-and-tricks#yq-in-a-bash-loop
 get_yaml_array() {
-    readarray "$1" < <(yq -o=j -I=0 "$2" "$RECIPE_FILE" )
+    # creates array $1 with content at key $2 from $3 
+    readarray "$1" < <(echo "$3" | yq -o=j -I=0 "$2" )
 }
+export -f get_yaml_array # this makes the function available to all modules
 
 # Automatically determine which Fedora version we're building.
 FEDORA_VERSION="$(grep -Po '(?<=VERSION_ID=)\d+' /usr/lib/os-release)"
@@ -23,7 +25,7 @@ IMAGE_NAME="$(yq '.name' "$RECIPE_FILE")"
 echo "Building $IMAGE_NAME from Fedora $FEDORA_VERSION ($BASE_IMAGE)."
 
 # Run each module
-get_yaml_array MODULES '.modules[]'
+readarray MODULES < <(yq -o=j -I=0 '.modules[]' "$RECIPE_FILE" )
 
 for MODULE in "${MODULES[@]}"; do
     TYPE=$(echo "$MODULE" | yq '.type')

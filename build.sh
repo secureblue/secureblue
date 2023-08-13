@@ -11,7 +11,6 @@ MODULE_DIRECTORY="/tmp/modules"
 get_yaml_array() {
     readarray "$1" < <(yq -o=j -I=0 "$2" "$RECIPE_FILE" )
 }
-export -f get_yaml_array
 
 # Automatically determine which Fedora version we're building.
 FEDORA_VERSION="$(grep -Po '(?<=VERSION_ID=)\d+' /usr/lib/os-release)"

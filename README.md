@@ -22,7 +22,15 @@ After setup, it is recommended you update this README to describe your custom im
 
 ## Customization
 
-For information about customization, see [the README in the config directory](config/README.md)
+The easiest way to start customizing is by looking at and modifying `config/recipe.yml`. It's documented using comments and should be pretty easy to understand.
+
+If you want to add custom configuration files, you can just add them in the `/usr/etc/` directory, which is the official OSTree "configuration template" directory and will be applied to `/etc/` on boot. `usr` is copied into your image by default. If you need to add other directories in the root of your image, that can be done in the Containerfile. Writing to `/var/` in the image builds of OSTree-based distros isn't supported and will not work, as that is a local user-managed directory!
+
+For more information about customization, see [the README in the config directory](config/README.md)
+
+Documentation around making custom images exists / should be written in two separate places:
+* [The Tinkerer's Guide on the website](https://universal-blue.org/tinker/make-your-own/) for general documentation around making custom images, best practices, tutorials, and so on.
+* Inside this repository for documentation specific to the ins and outs of the template, how it works, how to customize it, and some essential guidance on how to make custom images.
 
 ## Installation
 

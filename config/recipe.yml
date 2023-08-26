@@ -4,17 +4,12 @@ base-image: ghcr.io/ublue-os/silverblue-main
 image-version: 38
 
 modules:
-  - type: script
-    scripts:
-      - autorun.sh pre
-  
   - from-file: common-packages.yml # paths relative to "config" directory
 
   - type: script
     scripts:
       # this sets up the proper policy & signing files for signed images to work
       - signing.sh 
-      - autorun.sh post
 
   - type: yafti # no need for an enable-disable key, inclusion implicitly enables
     # config: yafti.yml # if not specified, would use a default config TODO

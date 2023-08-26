@@ -34,13 +34,10 @@ COPY cosign.pub /usr/share/ublue-os/cosign.pub
 
 COPY config /usr/share/ublue-os/startingpoint
 
-# Copy the bling from ublue-os/bling into the image:
-# * wallpapers
-# * justfiles
-# * nix installer
-COPY --from=ghcr.io/ublue-os/bling:latest /rpms/ublue-os-wallpapers-0.1-1.fc38.noarch.rpm /tmp/ublue-os-wallpapers-0.1-1.fc38.noarch.rpm
-COPY --from=ghcr.io/ublue-os/bling:latest /files/usr/share/ublue-os/just /usr/share/ublue-os/just
-COPY --from=ghcr.io/ublue-os/bling:latest /files/usr/bin/ublue-nix* /usr/bin
+# Copy the bling from ublue-os/bling into tmp, to be installed later by the bling module
+# Feel free to remove these lines if you want to speed up image builds and don't want any bling
+COPY --from=ghcr.io/ublue-os/bling:latest /rpms /tmp/bling/rpms
+COPY --from=ghcr.io/ublue-os/bling:latest /files /tmp/bling/files
 
 # "yq" used in build.sh and the "setup-flatpaks" just-action to read recipe.yml.
 # Copied from the official container image since it's not available as an RPM.
@@ -55,7 +52,3 @@ COPY modules /tmp/modules/
 # Run the build script, then clean up temp files and finalize container build.
 RUN chmod +x /tmp/build.sh && /tmp/build.sh && \
     rm -rf /tmp/* /var/* && ostree container commit
-
-# Storage
-# TODO turn this bling installation stuff into a module
-# rpm-ostree install /tmp/ublue-os-wallpapers-0.1-1.fc38.noarch.rpm

@@ -18,7 +18,7 @@ At the top of the recipe, there are four mandatory configuration options.
 
 The core of startingpoint's configuration is built around the idea of modules. Modules are scripts in the [`../modules`](../modules/) directory that you list out under `modules:` in the recipe. They are executed in order, and can run arbitrary shell commands and write any files.
 
-This repository comes with three modules out of the box, [`rpm-ostree`](../modules/rpm-ostree) for pseudo-declarative package management, [`yafti`](../modules/yafti) for installing [yafti](https://github.com/ublue-os/yafti) and easing basic configuration, and [`script`](../modules/script) for running small custom scripts at the build stage, like pulling in configuration or setting up `rpm-ostree` support for proper signing (see [`signing.sh`](./scripts/signing.sh)).
+This repository comes with three modules out of the box, [`rpm-ostree`](../modules/rpm-ostree) for pseudo-declarative package management, [`yafti`](../modules/yafti) for installing [yafti](https://github.com/ublue-os/yafti) and easing basic configuration, [`bling`](../modules/bling) for pulling extra components from [`ublue-os/bling`](https://github.com/ublue-os/bling), and [`script`](../modules/script) for running small custom scripts at the build stage, like pulling in configuration or setting up `rpm-ostree` support for proper signing (see [`signing.sh`](./scripts/signing.sh)).
 
 For more in-depth documentation on each module, check out the README.md files in each module folder.
 

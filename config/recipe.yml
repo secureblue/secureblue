@@ -20,12 +20,24 @@ modules:
       - firefox
       - firefox-langpacks
 
-  - type: script
-    scripts:
-      # this sets up the proper policy & signing files for signed images to work
-      - signing.sh 
+  - type: bling # configure what to pull in from ublue-os/bling
+    install:
+      - fonts # selection of common good free fonts
+      - justfiles # add "!include /usr/share/ublue-os/just/bling.just"
+                  # in your custom.just (added by default) or local justfile
+      - nix-installer # these are the silverblue nix installer scripts from dnkmmr69420
+      - ublue-os-wallpapers
+      # - ublue-update # https://github.com/ublue-os/ublue-update
+      # - dconf-update-service # a service unit that updates the dconf db on boot
+      # - devpod # https://devpod.sh/ as an rpm
+
 
   - type: yafti # if included, https://github.com/ublue-os/yafti will be installed and set up
     custom-flatpaks: # this section is optional
       - Celluloid: io.github.celluloid_player.Celluloid
       - Krita: org.kde.krita
+
+  - type: script
+    scripts:
+      # this sets up the proper policy & signing files for signed images to work
+      - signing.sh 

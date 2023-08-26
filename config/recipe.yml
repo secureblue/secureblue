@@ -14,11 +14,11 @@ modules:
     repos: 
       # - https://copr.fedorainfracloud.org/coprs/atim/starship/repo/fedora-%OS_VERSION%/atim-starship-fedora-%OS_VERSION%.repo
     install:
-      - python3-pip
-      - libadwaita
+      - python3-pip # required for yafti
+      - libadwaita # required for yafti
     remove:
-      - firefox
-      - firefox-langpacks
+      - firefox # default firefox removed in favor of flatpak
+      - firefox-langpacks # langpacks needs to also be removed to prevent dependency problems
 
   - type: bling # configure what to pull in from ublue-os/bling
     install:

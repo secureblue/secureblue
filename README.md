@@ -76,34 +76,18 @@ The Action uses [isogenerator](https://github.com/ublue-os/isogenerator) and wor
 
 Note that this release-iso action is not a replacement for a full-blown release automation like [release-please](https://github.com/googleapis/release-please).
 
-## Just
+## `just`
 
-The `just` task runner is included in `ublue-os/main`-derived images, and we have provided several template commands which help you perform further customization after first boot.
+The [`just`](https://just.systems/) command runner is included in all `ublue-os/main`-derived images.
 
-You can merge our template justfiles into your own local configuration. When `just` supports [include directives](https://just.systems/man/en/chapter_52.html), you will instead be able to simply include these paths into your own justfile, without having to copy anything manually.
-
-Run the following commands when you're logged into the operating system, to merge uBlue's provided configurations into your own user config. (The "touch" command is only necessary on certain shells which won't let you merge into non-existent files.)
-
-```sh
-touch ~/.justfile
-cat /usr/share/ublue-os/just/main.just >> ~/.justfile
-cat /usr/share/ublue-os/just/custom.just >> ~/.justfile
+You need to have a `~/.justfile` with the following contents and `just` aliased to `just --unstable` (default in posix-compatible shells on ublue) to get started with just locally.
 ```
+!include /usr/share/ublue-os/just/main.just
+!include /usr/share/ublue-os/just/nvidia.just
+!include /usr/share/ublue-os/just/custom.just
+```
+Then type `just` to list the just recipes available.
 
-After doing that, you'll be able to run the following commands:
+The file `/usr/share/ublue-os/just/custom.just` is intended for the custom just commands (recipes) you wish to include in your image. By default, it includes the justfiles from [`ublue-os/bling`](https://github.com/ublue-os/bling), if you wish to disable that, you need to just remove the line that includes bling.just.
 
-- `just` - Show all tasks, more will be added in the future
-- `just bios` - Reboot into the system bios (Useful for dualbooting)
-- `just changelogs` - Show the changelogs of the pending update
-- Set up distroboxes for the following images:
-  - `just distrobox-boxkit`
-  - `just distrobox-debian`
-  - `just distrobox-opensuse`
-  - `just distrobox-ubuntu`
-- `just setup-flatpaks` - Install all of the flatpaks declared in recipe.yml
-- `just setup-gaming` - Install Steam, Heroic Game Launcher, OBS Studio, Discord, Boatswain, Bottles, and ProtonUp-Qt. MangoHud is installed and enabled by default, hit right Shift-F12 to toggle
-- `just nix-me-up` - Install Nix with dnkmmr69420's Nix Silverblue install script
-- `just update` - Update rpm-ostree, flatpaks, and distroboxes in one command
-
-Check the [just website](https://just.systems) for tips on modifying and adding your own recipes.
-
+See [the just-page in the Universal Blue documentation](https://universal-blue.org/guide/just/) for more information.

@@ -9,6 +9,10 @@ on: # https://docs.github.com/en/actions/using-workflows/events-that-trigger-wor
   schedule:
     - cron: "20 22 * * *"
   push:
+    branches:
+      - live
+      - template
+      - main
     paths-ignore: # don't rebuild if only documentation has changed
       - "**.md"
   pull_request:

@@ -1,4 +1,7 @@
-# This is the Containerfile for your custom image. 
+# This is the Containerfile for your custom image.
+
+# Instead of adding RUN statements here, you should consider creating a script
+# in `config/scripts/`. Read more in `modules/script/README.md`
 
 # It takes in the recipe, version, and base image as arguments,
 # all of which are provided by build.yml when doing builds
@@ -27,19 +30,16 @@ ARG IMAGE_REGISTRY=ghcr.io/ublue-os
 # See issue #28 (https://github.com/ublue-os/startingpoint/issues/28).
 COPY usr /usr
 
-# Copy public key
 COPY cosign.pub /usr/share/ublue-os/cosign.pub
 
-# Copy the config folder
 COPY config /usr/share/ublue-os/startingpoint
 
-# Copy nix install script and Universal Blue wallpapers RPM from Bling image
+# Copy the bling from ublue-os/bling into the image:
+# * wallpapers
+# * justfiles
+# * nix installer
 COPY --from=ghcr.io/ublue-os/bling:latest /rpms/ublue-os-wallpapers-0.1-1.fc38.noarch.rpm /tmp/ublue-os-wallpapers-0.1-1.fc38.noarch.rpm
-
-# Integrate bling justfiles onto image
 COPY --from=ghcr.io/ublue-os/bling:latest /files/usr/share/ublue-os/just /usr/share/ublue-os/just
-
-# Copy dnkmmr's nix installer
 COPY --from=ghcr.io/ublue-os/bling:latest /files/usr/bin/ublue-nix* /usr/bin
 
 # "yq" used in build.sh and the "setup-flatpaks" just-action to read recipe.yml.

@@ -15,15 +15,13 @@ fi
 get_yaml_array INSTALL '.install[]' "$1"
 if [[ ${#INSTALL[@]} -gt 0 ]]; then
     echo "Installing RPMs"
-    INSTALL_STR=$(echo "${INSTALL[*]}" | tr -d '\n')
-    echo "Installing: $INSTALL_STR"
-    rpm-ostree install "$INSTALL_STR"
+    echo "Installing: ${INSTALL[*]}"
+    rpm-ostree install "${INSTALL[@]}"
 fi
 
 get_yaml_array REMOVE '.remove[]' "$1"
 if [[ ${#REMOVE[@]} -gt 0 ]]; then
     echo "Removing RPMs"
-    REMOVE_STR=$(echo "${REMOVE[*]}" | tr -d '\n')
-    echo "Removing: $REMOVE"
-    rpm-ostree override remove "$REMOVE_STR"
+    echo "Removing: ${REMOVE[*]}"
+    rpm-ostree override remove "${REMOVE[@]}"
 fi

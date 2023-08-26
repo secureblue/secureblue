@@ -1,5 +1,10 @@
 #!/usr/bin/env bash
 
+# This script executes the modules in order.
+# If you have some custom commands you need to run, you should not put them here.
+# Instead, you should probably include them as custom scripts.
+# Editing this file directly is an unsupported configuration.
+
 # Tell build process to exit if there are any errors.
 set -oue pipefail
 
@@ -14,7 +19,7 @@ get_yaml_array() {
 }
 export -f get_yaml_array # this makes the function available to all modules
 
-# Declare dynamically generated variables as read-only and exported
+# Declare dynamically generated variables as exported
 declare -x IMAGE_NAME BASE_IMAGE OS_VERSION
 
 # Read configuration variables.

@@ -15,18 +15,21 @@ fi
 get_yaml_array INSTALL '.install[]' "$1"
 get_yaml_array REMOVE '.remove[]' "$1"
 
+INSTALL_STR=$(echo "${INSTALL[*]}" | tr -d '\n')
+REMOVE_STR=$(echo "${REMOVE[*]}" | tr -d '\n')
+
 if [[ ${#INSTALL[@]} -gt 0 && ${#REMOVE[@]} -gt 0 ]]; then
     echo "Installing & Removing RPMs"
-    echo "Installing: ${INSTALL[*]}"
-    echo "Removing: ${REMOVE[*]}"
+    echo "Installing: ${INSTALL_STR[*]}"
+    echo "Removing: ${REMOVE_STR[*]}"
     # Doing both actions in one command allows for replacing required packages with alternatives
-    rpm-ostree override remove "${REMOVE[@]}" $(printf -- "--install=%s " ${INSTALL[@]})
+    rpm-ostree override remove "${REMOVE_STR[@]}" $(printf -- "--install=%s " ${INSTALL_STR[@]})
 elif [[ ${#INSTALL[@]} -gt 0 ]]; then
     echo "Installing RPMs"
-    echo "Installing: ${INSTALL[*]}"
-    rpm-ostree install "${INSTALL[@]}"
+    echo "Installing: ${INSTALL_STR[*]}"
+    rpm-ostree install "${INSTALL_STR[@]}"
 elif [[ ${#INSTALL[@]} -gt 0 ]]; then
     echo "Removing RPMs"
-    echo "Removing: ${REMOVE[*]}"
-    rpm-ostree override remove "${REMOVE[@]}"
+    echo "Removing: ${REMOVE_STR[*]}"
+    rpm-ostree override remove "${REMOVE_STR[@]}"
 fi

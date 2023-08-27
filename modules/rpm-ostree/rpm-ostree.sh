@@ -13,14 +13,18 @@ if [[ ${#REPOS[@]} -gt 0 ]]; then
 fi
 
 get_yaml_array INSTALL '.install[]' "$1"
-if [[ ${#INSTALL[@]} -gt 0 ]]; then
+get_yaml_array REMOVE '.remove[]' "$1"
+
+if [[ ${#INSTALL[@]} -gt 0 && ${#REMOVE[@]} -gt 0 ]]; then
+    echo "Installing & Removing RPMs"
+    echo "Installing: ${INSTALL[*]}"
+    echo "Removing: ${REMOVE[*]}"
+    rpm-ostree override remove "${REMOVE[@]}" $(printf -- "--install=%s " ${INSTALL[@]})
+elif [[ ${#INSTALL[@]} -gt 0 ]]; then
     echo "Installing RPMs"
     echo "Installing: ${INSTALL[*]}"
     rpm-ostree install "${INSTALL[@]}"
-fi
-
-get_yaml_array REMOVE '.remove[]' "$1"
-if [[ ${#REMOVE[@]} -gt 0 ]]; then
+elif [[ ${#INSTALL[@]} -gt 0 ]]; then
     echo "Removing RPMs"
     echo "Removing: ${REMOVE[*]}"
     rpm-ostree override remove "${REMOVE[@]}"

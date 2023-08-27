@@ -7,6 +7,7 @@ get_yaml_array SCRIPTS '.scripts[]' "$1"
 
 cd "$CONFIG_DIRECTORY/scripts"
 
+# Make every script executable
 find "$PWD" -type f -exec chmod +x {} \;
 
 for SCRIPT in "${SCRIPTS[@]}"; do

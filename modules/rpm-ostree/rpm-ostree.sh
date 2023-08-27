@@ -19,6 +19,7 @@ if [[ ${#INSTALL[@]} -gt 0 && ${#REMOVE[@]} -gt 0 ]]; then
     echo "Installing & Removing RPMs"
     echo "Installing: ${INSTALL[*]}"
     echo "Removing: ${REMOVE[*]}"
+    # Doing both actions in one command allows for replacing required packages with alternatives
     rpm-ostree override remove "${REMOVE[@]}" $(printf -- "--install=%s " ${INSTALL[@]})
 elif [[ ${#INSTALL[@]} -gt 0 ]]; then
     echo "Installing RPMs"

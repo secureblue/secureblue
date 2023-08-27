@@ -13,5 +13,5 @@ find "$PWD" -type f -exec chmod +x {} \;
 
 for ITEM in "${INSTALL[@]}"; do
     echo "Pulling from bling: $ITEM"
-    eval "$PWD/$ITEM.sh"
+    eval "$PWD/$ITEM".sh
 done

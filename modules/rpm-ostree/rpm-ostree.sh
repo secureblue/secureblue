@@ -23,13 +23,13 @@ if [[ ${#INSTALL[@]} -gt 0 && ${#REMOVE[@]} -gt 0 ]]; then
     echo "Installing: ${INSTALL_STR[*]}"
     echo "Removing: ${REMOVE_STR[*]}"
     # Doing both actions in one command allows for replacing required packages with alternatives
-    rpm-ostree override remove "${REMOVE_STR[@]}" $(printf -- "--install=%s " ${INSTALL_STR[@]})
+    rpm-ostree override remove ${REMOVE_STR[@]} $(printf -- "--install=%s " ${INSTALL_STR[@]})
 elif [[ ${#INSTALL[@]} -gt 0 ]]; then
     echo "Installing RPMs"
     echo "Installing: ${INSTALL_STR[*]}"
-    rpm-ostree install "${INSTALL_STR[@]}"
+    rpm-ostree install ${INSTALL_STR[@]}
 elif [[ ${#INSTALL[@]} -gt 0 ]]; then
     echo "Removing RPMs"
     echo "Removing: ${REMOVE_STR[*]}"
-    rpm-ostree override remove "${REMOVE_STR[@]}"
+    rpm-ostree override remove ${REMOVE_STR[@]}
 fi

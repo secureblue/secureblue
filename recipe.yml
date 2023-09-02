@@ -1,7 +1,7 @@
 # This file can only be edited inside the uBlue image's git repository.
 
 # The image will be at "ghcr.io/yourusername/name".
-name: startingpoint
+name: hardened-images
 
 # The native container image to build on top of.
 # Warning: Non-uBlue images might not work properly, due to missing components.
@@ -14,7 +14,7 @@ base-image: ghcr.io/ublue-os/silverblue-main
 fedora-version: 38
 
 # This description will be visible in the container metadata.
-description: A starting point for further customization of uBlue images. Make your own! https://universal-blue.org/tinker/make-your-own/
+description: " Images for GNOME and KDE with minimal hardening applied"
 
 # These scripts will be executed during the container build.
 # Place scripts in the "scripts/" dir and put the corresponding filenames here.
@@ -30,15 +30,15 @@ scripts:
     # Manually listed scripts.
     # - example_pre.sh
 
-  # "Post" scripts run at the end of the build process.
+    # "Post" scripts run at the end of the build process.
   post:
     # Automatically runs script files within "scripts/post/".
     - autorun.sh
     # Manually listed scripts.
     # - example_post.sh
 
-# Custom RPM configuration.
-# These changes will be integrated into your custom image at the "system level".
+    # Custom RPM configuration.
+    # These changes will be integrated into your custom image at the "system level".
 rpm:
   # A list of urls of ".repo" files that should be added to your system.
   # This is the proper way to add custom COPR repos to your image.
@@ -65,8 +65,8 @@ rpm:
     # Example:
     # - tilix
 
-  # These RPMs will be removed from the system image. This step happens during
-  # image build, BEFORE installing custom RPMs (from the "rpm.install" category).
+    # These RPMs will be removed from the system image. This step happens during
+    # image build, BEFORE installing custom RPMs (from the "rpm.install" category).
   remove:
     # Remove the native firefox (from Fedora) in favor of the Flatpak.
     - firefox

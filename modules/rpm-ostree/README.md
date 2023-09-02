@@ -8,6 +8,8 @@ Then the module installs the packages declared under `install:` using `rpm-ostre
 
 Unfortunately, currently `rpm-ostree override remove`, and this module, might not be able to remove packages installed in image builds. Packages included by Fedora, such as Firefox can still be removed, though.
 
+Additionally, the `rpm-ostree` module supports a temporary (waiting for `rpm-ostree` issue [#233](https://github.com/coreos/rpm-ostree/issues/233)) fix for packages that install into `/opt/`. Installation for packages that install into folder names declared under `optfix:` are fixed using some symlinks.
+ 
 Example configuration:
 ```yml
 type: rpm-ostree

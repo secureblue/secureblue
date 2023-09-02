@@ -1,4 +1,4 @@
-name: build-ublue
+name: hardened-images
 on:
   # Build *every* branch at 10:20pm UTC every day (1 hr delay after "nvidia" builds),
   # regardless of the branch names. (Not just "live, template and main" branches.)

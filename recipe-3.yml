@@ -1,7 +1,7 @@
 # This file can only be edited inside the uBlue image's git repository.
 
 # The image will be at "ghcr.io/yourusername/name".
-name: hardened-images
+name: kinoite-main-hardened
 
 # The native container image to build on top of.
 # Warning: Non-uBlue images might not work properly, due to missing components.

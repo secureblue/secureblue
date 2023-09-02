@@ -47,7 +47,10 @@ jobs:
       fail-fast: false
       matrix:
         recipe:
-          - recipe.yml
+          - recipe-silverblue-main.yml
+          - recipe-silverblue-nvidia.yml
+          - recipe-kinoite-main.yml
+          - recipe-kinoite-nvidia.yml
 
     steps:
       # Checkout push-to-registry action GitHub repository

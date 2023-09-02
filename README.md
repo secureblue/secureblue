@@ -1,8 +1,10 @@
 # hardened-images
 
-[![build-ublue](https://github.com/qoijjj/hardened-images/actions/workflows/build.yml/badge.svg)](https://github.com/qoijjj/hardened-images/actions/workflows/build.yml)
+[![hardened-images](https://github.com/qoijjj/hardened-images/actions/workflows/build.yml/badge.svg)](https://github.com/qoijjj/hardened-images/actions/workflows/build.yml)
 
-For more info, check out the [uBlue homepage](https://universal-blue.org/) and the [main uBlue repo](https://github.com/ublue-os/main/)
+This repo takes the uBlue starting point and selectively applies minimal hardening so as to provide images that are partially hardened without sacrificing usability for most use cases. These builds may be somewhat less performant due to the performance hit of some of the applied hardening.
+
+For more info on uBlue, check out the [uBlue homepage](https://universal-blue.org/) and the [main uBlue repo](https://github.com/ublue-os/main/)
 
 ## Installation
 

@@ -25,7 +25,7 @@ modules:
       - fonts # selection of common good free fonts
       - justfiles # add "!include /usr/share/ublue-os/just/bling.just"
                   # in your custom.just (added by default) or local justfile
-      - nix-installer # these are the silverblue nix installer scripts from dnkmmr69420
+      - nix-installer # shell shortcuts for determinate system's nix installers
       - ublue-os-wallpapers
       # - ublue-update # https://github.com/ublue-os/ublue-update
       # - dconf-update-service # a service unit that updates the dconf db on boot

@@ -80,6 +80,14 @@ rpm:
     - firefox-langpacks    
     - gnome-terminal
     - gnome-terminal-nautilus
+    - gnome-tour
+    - yelp
+    - gnome-user-share
+    - mod_lua
+    - httpd
+    - httpd-core
+    - mod_http2
+    - mod_dnssd
 
 
 # Configuration for the "first boot" experience, which is available after login.

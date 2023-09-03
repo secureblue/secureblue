@@ -40,6 +40,13 @@ To rebase an existing Silverblue/Kinoite installation to the latest build:
   ```
   systemctl reboot
   ```
+### Post-install
+
+The following command is available to append kernel boot parameters that apply additional hardening:
+
+```
+just set-kargs-hardening 
+```
 
 
 This repository builds date tags as well, so if you want to rebase to a particular day's build:

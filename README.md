@@ -42,7 +42,7 @@ To rebase an existing Silverblue/Kinoite installation to the latest build:
   ```
 ### Post-install
 
-The following command is available to append kernel boot parameters that apply additional hardening:
+The following command is available to append kernel boot parameters that apply additional hardening (reboot required):
 
 ```
 just set-kargs-hardening 

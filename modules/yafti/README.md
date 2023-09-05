@@ -1,4 +1,4 @@
-# [`yafti`](https://github.com/ublue-os/yafti) module for startingpoint
+# [`yafti`](https://github.com/ublue-os/yafti) Module for Startingpoint
 
 If included, the `yafti` module will install `yafti` and set it up to run on first boot.
 
@@ -6,7 +6,8 @@ Optionally, a list of Flatpak names and IDs can be included under `custom-flatpa
 
 The main `yafti` configuration file, `yafti.yml`, is in `/usr/share/ublue-os/firstboot/yafti.yml` and can be edited for a more custom first-boot experience.
 
-Example configuration:
+## Example configuration:
+
 ```yml
 type: yafti
 custom-flatpaks:

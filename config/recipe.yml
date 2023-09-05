@@ -8,10 +8,23 @@ base-image: ghcr.io/ublue-os/silverblue-main
 image-version: 38 # latest is also supported if you want new updates ASAP
 
 # list of modules that will be executed in order
+
 # you can include multiple of the same module
+
 modules:
+  - type: files
+    files:
+      - usr: /usr
+  # Copy static configurations and component files.
+  # Warning: If you want to place anything in "/etc" of the final image, you MUST
+  # place them in "./usr/etc" in your repo, so that they're written to "/usr/etc"
+  # on the final system. That is the proper directory for "system" configuration
+  # templates on immutable Fedora distros, whereas the normal "/etc" is ONLY meant
+  # for manual overrides and editing by the machine's admin AFTER installation!
+  # See issue #28 (https://github.com/ublue-os/startingpoint/issues/28).
+
   - type: rpm-ostree
-    repos: 
+    repos:
       # - https://copr.fedorainfracloud.org/coprs/atim/starship/repo/fedora-%OS_VERSION%/atim-starship-fedora-%OS_VERSION%.repo
     install:
       - python3-pip # required for yafti
@@ -40,4 +53,5 @@ modules:
   - type: script
     scripts:
       # this sets up the proper policy & signing files for signed images to work
-      - signing.sh 
+      - signing.sh
+

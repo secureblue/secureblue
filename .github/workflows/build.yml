@@ -1,6 +1,6 @@
 # This workflow builds every branch of the repository daily at 20:22 UTC, one hour after ublue-os/nvidia builds.
 # The images are also built after pushuing changes or pull requests.
-# The builds can also be triggered manually in the Actions tab thanks to workflow dispatch. 
+# The builds can also be triggered manually in the Actions tab thanks to workflow dispatch.
 # Only the branch called `live` is published.
 
 

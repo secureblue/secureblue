@@ -1,7 +1,9 @@
-# `script` module for startingpoint
+# `script` Module for Startingpoint
 
 The `script` module can be used to run arbitrary scripts at image build time that take no or minimal external configuration (in the form of command line arguments).
 The scripts, which are run from the `config/scripts` directory, are declared under `scripts:`.
+
+## Example Configuration
 
 ```yml
 type: script
@@ -9,7 +11,7 @@ scripts:
     - signing.sh 
 ```
 
-## Creating a script
+## Creating a Script
 
 Look at `example.sh` for an example shell script. You can rename and copy the file for your own purposes. In order for the script to be executed, declare it in the recipe
 

@@ -66,6 +66,7 @@ rpm:
     # for auditing
     - lynis
     - lm_sensors
+    - mediainfo
 
     # These RPMs will be removed from the system image. This step happens during
     # image build, BEFORE installing custom RPMs (from the "rpm.install" category).

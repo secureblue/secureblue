@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<zone>
+  <short>Fedora Workstation</short>
+  <description>Overriden default config</description>
+  <forward/>
+</zone>

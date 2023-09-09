@@ -30,12 +30,12 @@ For more information about customization, see [the README in the config director
 
 Documentation around making custom images exists / should be written in two separate places:
 * [The Tinkerer's Guide on the website](https://universal-blue.org/tinker/make-your-own/) for general documentation around making custom images, best practices, tutorials, and so on.
-* Inside this repository for documentation specific to the ins and outs of the template, how it works, how to customize it, and some essential guidance on how to make custom images.
+* Inside this repository for documentation specific to the ins and outs of the template (like module documentation), and just some essential guidance on how to make custom images.
 
 ## Installation
 
 > **Warning**
-> This is an experimental feature and should not be used in production, try it in a VM for a while!
+> [This is an experimental feature](https://www.fedoraproject.org/wiki/Changes/OstreeNativeContainerStable) and should not be used in production, try it in a VM for a while!
 
 To rebase an existing Silverblue/Kinoite installation to the latest build:
 

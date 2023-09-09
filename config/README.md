@@ -4,7 +4,7 @@ The main file of your is *the recipe file*. You can have multiple recipe files, 
 
 ## Basic options
 
-At the top of the recipe, there are four mandatory configuration options.
+At the top of the recipe, there are four *mandatory* configuration options.
 
 `name:` is the name of the image that is used when rebasing to it. For example, the name "sapphire" would result in the final URL of the container being `ghcr.io/<yourusername>/sapphire`.
 
@@ -18,7 +18,7 @@ At the top of the recipe, there are four mandatory configuration options.
 
 The core of startingpoint's configuration is built around the idea of modules. Modules are scripts in the [`../modules`](../modules/) directory that you list out under `modules:` in the recipe. They are executed in order, and can run arbitrary shell commands and write any files.
 
-This repository comes with three modules out of the box, [`rpm-ostree`](../modules/rpm-ostree) for pseudo-declarative package management, [`yafti`](../modules/yafti) for installing [yafti](https://github.com/ublue-os/yafti) and easing basic configuration, [`bling`](../modules/bling) for pulling extra components from [`ublue-os/bling`](https://github.com/ublue-os/bling), and [`script`](../modules/script) for running small custom scripts at the build stage, like pulling in configuration or setting up `rpm-ostree` support for proper signing (see [`signing.sh`](./scripts/signing.sh)).
+This repository comes with some modules out of the box, like [`rpm-ostree`](../modules/rpm-ostree) for pseudo-declarative package management, [`bling`](../modules/bling) for pulling extra components from [`ublue-os/bling`](https://github.com/ublue-os/bling), and [`files`](../modules/files) for copying files from the `config/files/` directory into your image.
 
 For more in-depth documentation on each module, check out the README.md files in each module folder.
 
@@ -34,17 +34,17 @@ modules:
 
 ### Making modules
 
-If you want to extend startingpoint with custom functionality that requires configuration, you should create a module. Modules are scripts in the subdirectories of the [`../modules`](../modules/) directory. The `type:` key in the recipe.yml should be used as both the name of the folder and script, with the script having an additional `.sh` suffix.
+If you want to extend Startingpoint with custom functionality that requires configuration, you should create a module. Modules are scripts in the subdirectories of the [`../modules`](../modules/) directory. The `type:` key in the recipe.yml should be used as both the name of the folder and script, with the script having an additional `.sh` suffix.
 
 Each module intended for public usage should include a `README.md` file inside it's directory with a short description of the module and documentation for each configuration option.
 
 Modules get only the configuration options given to them in the recipe.yml, not the configuration of other modules or any top-level keys. The configuration is given as the first argument as a single-line json string. You can check out the default modules for examples on how to parse such string using `yq` or `jq`.  
 
-Additionally, each module has access to four environment variables, `CONFIG_DIRECTORY` pointing to the startingpoint directory in `/usr/share/ublue-os/`, `IMAGE_NAME` being the name of the image as declared in the recipe, `BASE_IMAGE` being the URL of the container image used as the base (FROM) in the image, and `OS_VERSION` being the `VERSION_ID` from `/usr/lib/os-release`.
+Additionally, each module has access to four environment variables, `CONFIG_DIRECTORY` pointing to the Startingpoint directory in `/usr/share/ublue-os/`, `IMAGE_NAME` being the name of the image as declared in the recipe, `BASE_IMAGE` being the URL of the container image used as the base (FROM) in the image, and `OS_VERSION` being the `VERSION_ID` from `/usr/lib/os-release`.
 
-A helper bash function called `get_yaml_array` is exported from the main build script. Syntax:
+A helper bash function called `get_yaml_array` is exported from the main build script.
 ```bash
-# "$1" read from the first cli argument, being the module configuration.
+# "$1" is the first cli argument, being the module configuration.
 # If you need to read from some other JSON string, just replace "$1" with "$VARNAME".
 get_yaml_array OUTPUT_VAR_NAME '.yq.key.to.array[]' "$1"
 for THING in "${OUTPUT_VAR_NAME[@]}"; do

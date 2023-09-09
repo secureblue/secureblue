@@ -8,7 +8,7 @@ base-image: ghcr.io/ublue-os/silverblue-main
 image-version: 38 # latest is also supported if you want new updates ASAP
 
 # list of modules, executed in order
-# you can include multiple instancesof the same module
+# you can include multiple instances of the same module
 modules:
 
   - type: files

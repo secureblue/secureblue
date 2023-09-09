@@ -22,8 +22,8 @@ modules:
     repos:
       # - https://copr.fedorainfracloud.org/coprs/atim/starship/repo/fedora-%OS_VERSION%/atim-starship-fedora-%OS_VERSION%.repo
     install:
-      - python3-pip # required for yafti
-      - libadwaita # required for yafti
+      # - micro
+      # - starship
     remove:
       - firefox # default firefox removed in favor of flatpak
       - firefox-langpacks # langpacks needs to also be removed to prevent dependency problems
@@ -40,7 +40,8 @@ modules:
       # - devpod # https://devpod.sh/ as an rpm
 
 
-  - type: yafti # if included, https://github.com/ublue-os/yafti will be installed and set up
+  - type: yafti # if included, yafti and it's dependencies (pip & libadwaita)
+                #  will be installed and set up
     custom-flatpaks: # this section is optional
       # - Celluloid: io.github.celluloid_player.Celluloid
       # - Krita: org.kde.krita

@@ -6,6 +6,9 @@ set -oue pipefail
 FIRSTBOOT_DATA="/usr/share/ublue-os/firstboot"
 FIRSTBOOT_LINK="/usr/etc/profile.d/ublue-firstboot.sh"
 
+echo "Installing python3-pip and libadwaita"
+rpm-ostree install python3-pip libadwaita
+
 echo "Installing and enabling yafti"
 pip install --prefix=/usr yafti
 

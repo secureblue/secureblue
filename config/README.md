@@ -18,7 +18,7 @@ At the top of the recipe, there are four *mandatory* configuration options.
 
 The core of startingpoint's configuration is built around the idea of modules. Modules are scripts in the [`../modules`](../modules/) directory that you list out under `modules:` in the recipe. They are executed in order, and can run arbitrary shell commands and write any files.
 
-This repository comes with some modules out of the box, like [`rpm-ostree`](../modules/rpm-ostree) for pseudo-declarative package management, [`bling`](../modules/bling) for pulling extra components from [`ublue-os/bling`](https://github.com/ublue-os/bling), and [`files`](../modules/files) for copying files from the `config/files/` directory into your image.
+This repository comes with some modules out of the box, like [`rpm-ostree`](../modules/rpm-ostree) for pseudo-declarative package management, [`bling`](../modules/bling) for pulling extra components from [`ublue-os/bling`](https://github.com/ublue-os/bling), and [`files`](../modules/files) for copying files from the `config/files/` directory into your image. For a comprehensive list of modules, check out [the modules directory](../modules/).
 
 For more in-depth documentation on each module, check out the README.md files in each module folder.
 

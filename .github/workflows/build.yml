@@ -1,42 +1,30 @@
+# This workflow builds every branch of the repository daily at 20:22 UTC, one hour after ublue-os/nvidia builds.
+# The images are also built after pushuing changes or pull requests.
+# The builds can also be triggered manually in the Actions tab thanks to workflow dispatch.
+# Only the branch called `live` is published.
+
+
 name: build-ublue
-on:
-  # Build *every* branch at 10:20pm UTC every day (1 hr delay after "nvidia" builds),
-  # regardless of the branch names. (Not just "live, template and main" branches.)
-  # https://docs.github.com/en/actions/using-workflows/events-that-trigger-workflows#schedule
+on: # https://docs.github.com/en/actions/using-workflows/events-that-trigger-workflows
   schedule:
     - cron: "20 22 * * *"
-  # Build automatically after pushing commits or tags to the "live", "template"
-  # or "main" branches, except when the commit only affects "documentation" text files.
-  # https://docs.github.com/en/actions/using-workflows/events-that-trigger-workflows#push
   push:
     branches:
       - live
       - template
       - main
-    paths-ignore:
+    paths-ignore: # don't rebuild if only documentation has changed
       - "**.md"
-      - "**.txt"
-  # Build pull requests whenever they are opened or updated, to make sure they
-  # work. The build won't be deployed, since we filter out PRs in the deployment
-  # stage. Note that submitted PRs run the workflow of the *fork's* own primary
-  # branch, using the fork's own secrets/environment. Please be sure to sync
-  # your primary branch with upstream's latest workflow before submitting PRs!
-  # For pull requests, we build *any* branch regardless of name, to allow "build
-  # checks" to succeed for typical PR branch names such as "fix-something".
-  # https://docs.github.com/en/actions/using-workflows/events-that-trigger-workflows#pull_request
   pull_request:
-  # Build when manually triggering this workflow for a branch. This allows you
-  # to build any branch, even if it's not listed in the automated triggers above.
-  # https://docs.github.com/en/actions/using-workflows/events-that-trigger-workflows#workflow_dispatch
   workflow_dispatch:
 
 env:
   IMAGE_REGISTRY: ghcr.io/${{ github.repository_owner }}
 
+# Only deploys the branch named "live". Ignores all other branches, to allow
+# having "development" branches without interfering with GHCR image uploads.
 jobs:
   push-ghcr:
-    # Only deploys the branch named "live". Ignores all other branches, to allow
-    # having "development" branches without interfering with GHCR image uploads.
     name: Build and push image
     runs-on: ubuntu-22.04
     permissions:
@@ -45,29 +33,34 @@ jobs:
       id-token: write
     strategy:
       fail-fast: false
+
       matrix:
+# !!!
+        # Add recipes for all the images you want to build here.
+        # Don't add module configuration files, you will get errors.
         recipe:
           - recipe.yml
+# !!!
 
     steps:
       # Checkout push-to-registry action GitHub repository
       - name: Checkout Push to Registry action
         uses: actions/checkout@v3
 
-      - name: Add yq for reading recipe.yml
+      - name: Add yq (for reading recipe.yml)
         uses: mikefarah/yq@v4.34.2
 
       - name: Gather image data from recipe
         run: |
-          echo "IMAGE_NAME=$(yq '.name' ./${{ matrix.recipe }})" >> $GITHUB_ENV
-          echo "IMAGE_DESCRIPTION=$(yq '.description' ./${{ matrix.recipe }})" >> $GITHUB_ENV
-          echo "FEDORA_MAJOR_VERSION=$(yq '.fedora-version' ./${{ matrix.recipe }})" >> $GITHUB_ENV
-          echo "BASE_IMAGE_URL=$(yq '.base-image' ./${{ matrix.recipe }})" >> $GITHUB_ENV
+          echo "IMAGE_NAME=$(yq '.name' ./config/${{ matrix.recipe }})" >> $GITHUB_ENV
+          echo "IMAGE_DESCRIPTION=$(yq '.description' ./config/${{ matrix.recipe }})" >> $GITHUB_ENV
+          echo "IMAGE_MAJOR_VERSION=$(yq '.image-version' ./config/${{ matrix.recipe }})" >> $GITHUB_ENV
+          echo "BASE_IMAGE_URL=$(yq '.base-image' ./config/${{ matrix.recipe }})" >> $GITHUB_ENV
 
       - name: Get current version
         id: labels
         run: |
-          ver=$(skopeo inspect docker://${{ env.BASE_IMAGE_URL }}:${{ env.FEDORA_MAJOR_VERSION }} | jq -r '.Labels["org.opencontainers.image.version"]')
+          ver=$(skopeo inspect docker://${{ env.BASE_IMAGE_URL }}:${{ env.IMAGE_MAJOR_VERSION }} | jq -r '.Labels["org.opencontainers.image.version"]')
           echo "VERSION=$ver" >> $GITHUB_OUTPUT
 
       - name: Generate tags
@@ -147,7 +140,7 @@ jobs:
           tags: |
             ${{ steps.generate-tags.outputs.alias_tags }}
           build-args: |
-            FEDORA_MAJOR_VERSION=${{ env.FEDORA_MAJOR_VERSION }}
+            IMAGE_MAJOR_VERSION=${{ env.IMAGE_MAJOR_VERSION }}
             BASE_IMAGE_URL=${{ env.BASE_IMAGE_URL }}
             RECIPE=${{ matrix.recipe }}
             IMAGE_REGISTRY=${{ steps.registry_case.outputs.lowercase }}

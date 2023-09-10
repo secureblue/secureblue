@@ -1,0 +1,52 @@
+# image will be published to ghcr.io/<user>/<name>
+name: startingpoint
+# description will be included in the image's metadata
+description: A starting point for further customization of uBlue images. Make your own! https://ublue.it/making-your-own/
+
+# the base image to build on top of (FROM) and the version tag to use
+base-image: ghcr.io/ublue-os/silverblue-main
+image-version: 38 # latest is also supported if you want new updates ASAP
+
+# list of modules, executed in order
+# you can include multiple instances of the same module
+modules:
+
+  - type: files
+    files:
+      - usr: /usr # copy static configurations
+                  # configuration you wish to end up in /etc/ on the booted system should be 
+                  # added into /usr/etc/ as that is the proper "distro" config directory on ostree
+                  # read more in the files module's README
+
+  - type: rpm-ostree
+    repos:
+      # - https://copr.fedorainfracloud.org/coprs/atim/starship/repo/fedora-%OS_VERSION%/atim-starship-fedora-%OS_VERSION%.repo
+    install:
+      # - micro
+      # - starship
+    remove:
+      - firefox # default firefox removed in favor of flatpak
+      - firefox-langpacks # langpacks needs to also be removed to prevent dependency problems
+
+  - type: bling # configure what to pull in from ublue-os/bling
+    install:
+      - fonts # selection of common good free fonts
+      - justfiles # add "!include /usr/share/ublue-os/just/bling.just"
+                  # in your custom.just (added by default) or local justfile
+      - nix-installer # shell shortcuts for determinate system's nix installers
+      - ublue-os-wallpapers
+      # - ublue-update # https://github.com/ublue-os/ublue-update
+      # - dconf-update-service # a service unit that updates the dconf db on boot
+      # - devpod # https://devpod.sh/ as an rpm
+
+
+  - type: yafti # if included, yafti and it's dependencies (pip & libadwaita)
+                #  will be installed and set up
+    custom-flatpaks: # this section is optional
+      # - Celluloid: io.github.celluloid_player.Celluloid
+      # - Krita: org.kde.krita
+
+  - type: script
+    scripts:
+      # this sets up the proper policy & signing files for signed images to work
+      - signing.sh

@@ -30,8 +30,13 @@ COPY --from=ghcr.io/ublue-os/bling:latest /files /tmp/bling/files
 
 # Copy build scripts & configuration
 COPY build.sh /tmp/build.sh
-COPY modules /tmp/modules/
 COPY config /tmp/config/
+
+# Copy modules
+# The default modules are inside ublue-os/bling
+COPY --from=ghcr.io/ublue-os/bling:latest /modules /tmp/modules/
+# Custom modules overwrite defaults
+COPY modules /tmp/modules/
 
 # `yq` is used for parsing the yaml configuration
 # It is copied from the official container image since it's not available as an RPM.

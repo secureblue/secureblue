@@ -5,7 +5,7 @@ name: kinoite-main-hardened-lutris
 
 # The native container image to build on top of.
 # Warning: Non-uBlue images might not work properly, due to missing components.
-base-image: ghcr.io/ublue-os/kinoite-main
+base-image: quay.io/fedora-ostree-desktops/kinoite
 
 # What Fedora version to use. Use an explicit version or `latest`.
 # If you use `latest`, you will be automatically updated to the next major
@@ -77,7 +77,6 @@ rpm:
     # Remove the native firefox (from Fedora) in favor of the Flatpak.
     - firefox
     - firefox-langpacks
-    - mesa-va-drivers-freeworld
     
 # Configuration for the "first boot" experience, which is available after login.
 firstboot:

@@ -5,7 +5,7 @@ name: kinoite-main-hardened-lutris
 
 # The native container image to build on top of.
 # Warning: Non-uBlue images might not work properly, due to missing components.
-base-image: quay.io/fedora-ostree-desktops/kinoite
+base-image: quay.io/fedora-ostree-desktops/kinoite:38
 
 # What Fedora version to use. Use an explicit version or `latest`.
 # If you use `latest`, you will be automatically updated to the next major

@@ -50,6 +50,7 @@ jobs:
           - recipe-silverblue-main.yml
           - recipe-silverblue-nvidia.yml
           - recipe-kinoite-main.yml
+          - recipe-kinoite-main-lutris.yml
           - recipe-kinoite-nvidia.yml
 
     steps:

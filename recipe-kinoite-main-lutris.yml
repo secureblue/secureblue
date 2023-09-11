@@ -29,6 +29,7 @@ scripts:
     - autorun.sh
     # Manually listed scripts.
     # - example_pre.sh
+    - mesa.sh
 
     # "Post" scripts run at the end of the build process.
   post:

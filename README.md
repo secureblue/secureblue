@@ -9,7 +9,7 @@ For more info on uBlue, check out the [uBlue homepage](https://universal-blue.or
 ## Installation
 
 > **Warning**
-> This is an experimental feature and should not be used in production, try it in a VM for a while!
+> [This is an experimental feature](https://www.fedoraproject.org/wiki/Changes/OstreeNativeContainerStable) and should not be used in production, try it in a VM for a while!
 
 
 ### Available Images
@@ -23,8 +23,7 @@ For more info on uBlue, check out the [uBlue homepage](https://universal-blue.or
 
 To rebase an existing Silverblue/Kinoite installation to the latest build:
 
-
-- First rebase to the image unsigned, to get the proper signing keys and policies installed:
+- First rebase to the unsigned image, to get the proper signing keys and policies installed:
   ```
   sudo rpm-ostree rebase ostree-unverified-registry:ghcr.io/qoijjj/$IMAGE_NAME:latest
   ```
@@ -48,13 +47,12 @@ The following command is available to append kernel boot parameters that apply a
 just set-kargs-hardening 
 ```
 
-
 This repository builds date tags as well, so if you want to rebase to a particular day's build:
 
 ```
 sudo rpm-ostree rebase ostree-image-signed:docker://ghcr.io/qoijjj/$IMAGE_NAME:20230403
 ```
 
-This repository by default also supports signing 
+This repository by default also supports signing.
 
 The `latest` tag will automatically point to the latest build. That build will still always use the Fedora version specified in `recipe.yml`, so you won't get accidentally updated to the next major version.

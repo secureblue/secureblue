@@ -1,0 +1,20 @@
+type: rpm-ostree
+repos:
+  # - https://blah
+install:    
+  - gnome-shell-extension-appindicator
+  - gnome-shell-extension-pop-shell
+  - gnome-console
+  - gnome-text-editor
+  - firewall-config
+remove:
+  - gnome-terminal
+  - gnome-terminal-nautilus
+  - gnome-tour
+  - yelp
+  - gnome-user-share
+  - mod_lua
+  - httpd
+  - httpd-core
+  - mod_http2
+  - mod_dnssd

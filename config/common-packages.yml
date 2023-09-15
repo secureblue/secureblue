@@ -16,7 +16,7 @@ install:
   - mediainfo
   - gnome-disk-utility
   - headsetcontrol
-  - gstreamer1-plugins-bad
+  - gstreamer1-plugins-bad-freeworld
   - gstreamer1-plugins-ugly
   - chromium
 remove:

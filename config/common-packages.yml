@@ -16,6 +16,9 @@ install:
   - mediainfo
   - gnome-disk-utility
   - headsetcontrol
+  - gstreamer1-plugins-bad
+  - gstreamer1-plugins-ugly
+  - chromium
 remove:
   - firefox # default firefox removed in favor of flatpak
   - firefox-langpacks # langpacks needs to also be removed to prevent dependency problems

@@ -23,8 +23,8 @@ install:
   - gstreamer1-plugins-good-extras
   - x264
   - x265
+  - libheif-freeworld
+  - libavcodec-freeworld
 remove:
   - firefox # default firefox removed in favor of flatpak
   - firefox-langpacks # langpacks needs to also be removed to prevent dependency problems
-  - gstreamer1-plugins-bad-free
-  - gstreamer1-plugins-ugly-free

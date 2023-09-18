@@ -7,7 +7,7 @@ description: A starting point for further customization of uBlue images. Make yo
 base-image: ghcr.io/ublue-os/silverblue-main
 image-version: 38 # latest is also supported if you want new updates ASAP
 
-# list of modules, executed in order
+# module configuration, executed in order
 # you can include multiple instances of the same module
 modules:
 

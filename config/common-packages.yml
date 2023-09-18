@@ -2,6 +2,7 @@ type: rpm-ostree
 repos:
   # - https://blah
 install:    
+  - https://github.com/Alex313031/thorium/releases/download/M116.0.5845.169/thorium-browser_116.0.5845.169_x64.rpm
   - python3-pip
   # GNOME's GTK4 theme, Libadwaita. Already included in Silverblue, but not
   # other spins. You can remove if you aren't using yafti, but many native
@@ -18,7 +19,6 @@ install:
   - headsetcontrol
   - gstreamer1-plugins-bad-freeworld
   - gstreamer1-plugins-ugly
-  - https://github.com/Alex313031/thorium/releases/download/M116.0.5845.169/thorium-browser_116.0.5845.169_x64.rpm
   - gstreamer1-plugins-good-extras
   - x264
   - x265

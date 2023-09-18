@@ -16,16 +16,27 @@ At the top of the recipe, there are four *mandatory* configuration options.
 
 ## Modules
 
-The core of startingpoint's configuration is built around the idea of modules. Modules are scripts in the [`../modules`](../modules/) directory that you list out under `modules:` in the recipe. They are executed in order, and can run arbitrary shell commands and write any files.
+The core of startingpoint's configuration is built around the idea of modules. Modules are scripts in the [`../modules`](../modules/) directory that you configure under `modules:` in the recipe. They are executed in order, and can run arbitrary shell commands and write any files.
 
-This repository fetches some useful default modules from [`ublue-os/bling`](https://github.com/ublue-os/bling/), like [`rpm-ostree`](../modules/rpm-ostree) for pseudo-declarative package management, [`bling`](../modules/bling) for pulling extra components from [`ublue-os/bling`](https://github.com/ublue-os/bling), and [`files`](../modules/files) for copying files from the `config/files/` directory into your image. For a comprehensive list of modules and their in-depth documentation, check out [the modules page on the website](https://universal-blue.org/tinker/modules/).
+This repository fetches some useful default modules from [`ublue-os/bling`](https://github.com/ublue-os/bling/), like [`rpm-ostree`](https://universal-blue.org/tinker/modules/rpm-ostree) for pseudo-declarative package management, [`bling`](https://universal-blue.org/tinker/modules/bling) for pulling extra components from [`ublue-os/bling`](https://github.com/ublue-os/bling), and [`files`](https://universal-blue.org/tinker/modules/files) for copying files from the `config/files/` directory into your image.
 
-### Including modules from other files and building multiple images
+For a comprehensive list of modules, their in-depth documentation and example configuration, check out [the Modules page on the website](https://universal-blue.org/tinker/modules/).
+
+### Building multiple images and including module configuration from other files and 
 
 To build multiple images, you need to create another recipe.yml file, which you should name based on what kind of image you want it to build. Then, edit the [`build.yml`](../.github/workflows/build.yml) file. Inside the file, under `jobs: strategy: matrix:`, there's a list of recipe files to build images, which you need to add your new recipe file to. These should be paths to files inside the `config` directory.
 
-Module configuration can be included from other files using the `from-file` syntax. The valye should be a path to a file inside the `config` directory. For example, the following snippet could be used to include the configuration for installing a set of packages common to multiple images.
-```yml
+Module configuration can be included from other files using the `from-file` syntax. The value should be a path to a file inside the `config` directory. For example, the following snippet could be used to include the configuration for installing a set of packages common to multiple images.
+```yaml
 modules:
   - from-file: common-packages.yml
+```
+And inside config/common-packages.yml
+```yaml
+type: rpm-ostree
+install:
+  - i3
+  - dunst
+  - rofi
+  - kitty
 ```

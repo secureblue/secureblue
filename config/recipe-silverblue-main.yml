@@ -7,16 +7,19 @@ description: "Silverblue main with minimal hardening applied"
 base-image: ghcr.io/ublue-os/silverblue-main
 image-version: latest
 
-# list of modules, executed in order
+# module configuration, executed in order
 # you can include multiple instances of the same module
 modules:
 
   - type: files
     files:
-      - usr: /usr # copy static configurations
-                  # configuration you wish to end up in /etc/ on the booted system should be 
-                  # added into /usr/etc/ as that is the proper "distro" config directory on ostree
-                  # read more in the files module's README
+      - usr: /usr # copy static configurations 
+                  # 
+                  # copies config/files/usr into your image's /usr
+                  #
+                  # configuration you wish to end up in /etc/ on the booted system 
+                  # should be added into /usr/etc/ as that is the proper "distro" 
+                  # config directory on ostree read more in the files module's README
 
   - from-file: common-packages.yml
   - from-file: silverblue-packages.yml

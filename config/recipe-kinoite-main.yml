@@ -19,7 +19,6 @@ modules:
                   # read more in the files module's README
 
   - from-file: common-packages.yml
-  - from-file: thorium.yml
 
   - type: bling # configure what to pull in from ublue-os/bling
     install:

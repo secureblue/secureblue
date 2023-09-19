@@ -1,6 +1,6 @@
 type: rpm-ostree
 repos:
-  # - https://blah
+  - https://raw.githubusercontent.com/qoijjj/hardened-images/live/thorium.repo
 install:    
   - python3-pip
   # GNOME's GTK4 theme, Libadwaita. Already included in Silverblue, but not
@@ -24,6 +24,7 @@ install:
   - libheif-freeworld
   - libavcodec-freeworld
   - fdk-aac
+  - thorium-browser
 remove:
   - firefox # default firefox removed in favor of flatpak
   - firefox-langpacks # langpacks needs to also be removed to prevent dependency problems

@@ -91,6 +91,7 @@ screens:
           default: false
           packages:
             - Brave: com.brave.Browser
+            - GNOME Web: org.gnome.Epiphany
             - Google Chrome: com.google.Chrome
             - Microsoft Edge: com.microsoft.Edge
             - Opera: com.opera.Opera

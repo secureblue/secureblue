@@ -59,8 +59,8 @@ screens:
           packages:
             - Calculator: org.gnome.Calculator
             - Calendar: org.gnome.Calendar
+            - Camera: org.gnome.Snapshot
             - Characters: org.gnome.Characters
-            - Cheese: org.gnome.Cheese
             - Clocks: org.gnome.clocks
             - Connections: org.gnome.Connections
             - Contacts: org.gnome.Contacts
@@ -69,7 +69,7 @@ screens:
             - Document Viewer: org.gnome.Evince
             - Extension Manager: com.mattjakeman.ExtensionManager
             - Font Viewer: org.gnome.font-viewer
-            - Image Viewer: org.gnome.eog
+            - Image Viewer: org.gnome.Loupe
             - Logs: org.gnome.Logs
             - Maps: org.gnome.Maps
             - Photos (Organizer): org.gnome.Photos

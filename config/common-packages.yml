@@ -15,14 +15,7 @@ install:
   - mediainfo
   - gnome-disk-utility
   - headsetcontrol
-  - gstreamer1-plugins-bad-freeworld
-  - gstreamer1-plugins-ugly
-  - gstreamer1-plugins-good-extras
-  - x264
-  - x265
-  - libheif-freeworld
-  - libavcodec-freeworld
-  - fdk-aac
+  - chromium
 remove:
   - firefox # default firefox removed in favor of flatpak
   - firefox-langpacks # langpacks needs to also be removed to prevent dependency problems

@@ -1,5 +1,3 @@
-type: import-gpg
-
 type: rpm-ostree
 repos:
   - https://brave-browser-rpm-release.s3.brave.com/brave-browser.repo

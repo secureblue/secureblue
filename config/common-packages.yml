@@ -1,9 +1,8 @@
 
-type: repo-files
-repos:
-  - https://repo.vivaldi.com/stable/vivaldi-fedora.repo
 
 type: rpm-ostree
+repos:
+  - https://repo.vivaldi.com/stable/vivaldi-fedora.repo
 install:    
   - python3-pip
   # GNOME's GTK4 theme, Libadwaita. Already included in Silverblue, but not

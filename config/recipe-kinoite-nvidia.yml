@@ -17,8 +17,6 @@ modules:
                   # configuration you wish to end up in /etc/ on the booted system should be 
                   # added into /usr/etc/ as that is the proper "distro" config directory on ostree
                   # read more in the files module's README
-  - type: import-gpg
-
   - from-file: common-packages.yml
 
   - type: bling # configure what to pull in from ublue-os/bling

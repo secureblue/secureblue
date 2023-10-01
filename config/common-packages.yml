@@ -1,6 +1,4 @@
 type: rpm-ostree
-repos:
-  - https://brave-browser-rpm-release.s3.brave.com/brave-browser.repo
 install:    
   - python3-pip
   # GNOME's GTK4 theme, Libadwaita. Already included in Silverblue, but not
@@ -16,8 +14,7 @@ install:
   - mediainfo
   - gnome-disk-utility
   - headsetcontrol
-  - brave-browser
-  - brave-keyring
+  - https://github.com/brave/brave-browser/releases/download/v1.58.135/brave-browser-1.58.135-1.x86_64.rpm
 remove:
   - firefox # default firefox removed in favor of flatpak
   - firefox-langpacks # langpacks needs to also be removed to prevent dependency problems

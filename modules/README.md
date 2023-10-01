@@ -37,7 +37,7 @@ set -oue pipefail
 
 ### README
 
-- Title should be "`type` module for startingpoint", where the name/type of the module is a noun that shows the module's purpose
+- Title should be "`type` Module for Startingpoint", where the name/type of the module is a noun that shows the module's purpose
 - There should be a subtitle "Example configuration", under which there should be a loosely documented yaml block showcasing each of the module's configuration options
 - At the start of each paragraph, refer to the module using its name or with "the module", not "it" or "the script"
 - Use passive grammar when talking about the user, ie. "should be used", "can be configured", preferring references to what the module does, ie. "This module downloads the answer to the question of life, the universe and everything..."

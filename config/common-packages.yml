@@ -1,6 +1,9 @@
-type: rpm-ostree
-repo-files:
+
+type: repo-files
+repos:
   - https://repo.vivaldi.com/stable/vivaldi-fedora.repo
+
+type: rpm-ostree
 install:    
   - python3-pip
   # GNOME's GTK4 theme, Libadwaita. Already included in Silverblue, but not
@@ -17,10 +20,9 @@ install:
   - gnome-disk-utility
   - headsetcontrol
   - vivaldi-stable
-
-# Create these symlinks ../../usr/lib/opt/[name here] in /opt/[name here] to fix installing packages that add files to /opt while building the image
 optfix:
   - vivaldi
 remove:
   - firefox # default firefox removed in favor of flatpak
   - firefox-langpacks # langpacks needs to also be removed to prevent dependency problems
+

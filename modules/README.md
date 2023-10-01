@@ -38,5 +38,5 @@ set -oue pipefail
 ### README
 
 - Title should be "`type` module for startingpoint", where the name/type of the module is a noun that shows the module's purpose
-- There should be a subtitle "Example configuration:", under which there should be a loosely documented yaml block showcasing each of the module's configuration options
+- There should be a subtitle "Example configuration", under which there should be a loosely documented yaml block showcasing each of the module's configuration options
 - At the start of each paragraph, refer to the module using its name or with "the module", not "it" or "the script"

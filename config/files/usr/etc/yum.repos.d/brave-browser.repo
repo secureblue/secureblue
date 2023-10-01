@@ -1,0 +1,5 @@
+[brave-browser]
+name=Brave Browser
+enabled=1
+autorefresh=1
+baseurl=https://brave-browser-rpm-release.s3.brave.com/$basearch

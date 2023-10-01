@@ -24,7 +24,7 @@ yq -i -o=j '.transports.docker |=
 + .' "$FILE"
 
 IMAGE_REF="ostree-image-signed:docker://$IMAGE_REGISTRY/$IMAGE_NAME"
-printf '{\n"image-ref": "'"$IMAGE_REF"'",\n"image-default-tag": "latest"\n}' > /usr/share/ublue-os/image-info.json
+printf '{\n"image-ref": "'"$IMAGE_REF"'",\n"image-tag": "latest"\n}' > /usr/share/ublue-os/image-info.json
 
 cp /usr/etc/containers/registries.d/ublue-os.yaml /usr/etc/containers/registries.d/"$IMAGE_NAME".yaml
 sed -i "s ghcr.io/ublue-os $IMAGE_REGISTRY g" /usr/etc/containers/registries.d/"$IMAGE_NAME".yaml

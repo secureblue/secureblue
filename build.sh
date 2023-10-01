@@ -23,10 +23,11 @@ run_module() {
     MODULE="$1"
     TYPE=$(echo "$MODULE" | yq '.type')
     if [[ "$TYPE" != "null" ]]; then
+        cd "$CONFIG_DIRECTORY"
         # If type is found, that means that the module config
         # has been declared inline, and thus is safe to pass to the module
         echo "=== Launching module of type: $TYPE ==="
-            bash "$MODULE_DIRECTORY/$TYPE/$TYPE.sh" "$MODULE"
+        bash "$MODULE_DIRECTORY/$TYPE/$TYPE.sh" "$MODULE"
     else
         # If the type is not found, that means that the module config
         # is in a separate file, and has to be read from it

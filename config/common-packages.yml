@@ -1,4 +1,4 @@
-
+type: import-gpg
 
 type: rpm-ostree
 repos:

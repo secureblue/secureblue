@@ -62,4 +62,12 @@ OS_VERSION="$(grep -Po '(?<=VERSION_ID=)\d+' /usr/lib/os-release)"
 # Welcome.
 echo "Building $IMAGE_NAME from $BASE_IMAGE:$OS_VERSION."
 
+# Remove old image-info.json from main image
+# (this file is added back by signing.sh, but shouldn't exist
+# with wrong details in an unsigned image)
+IMAGE_INFO="/usr/share/ublue-os/image-info.json"
+if [ -f "$IMAGE_INFO" ]; then
+    rm -v "$IMAGE_INFO"
+fi
+
 run_modules "$RECIPE_FILE"

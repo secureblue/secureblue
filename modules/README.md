@@ -8,6 +8,8 @@ Modules get only the configuration options given to them in the recipe.yml, not 
 
 Additionally, each module has access to four environment variables, `CONFIG_DIRECTORY` pointing to the Startingpoint directory in `/usr/share/ublue-os/`, `IMAGE_NAME` being the name of the image as declared in the recipe, `BASE_IMAGE` being the URL of the container image used as the base (FROM) in the image, and `OS_VERSION` being the `VERSION_ID` from `/usr/lib/os-release`.
 
+When running modules, the working directory is the `CONFIG_DIRECTORY`.
+
 A helper bash function called `get_yaml_array` is exported from the main build script.
 ```bash
 # "$1" is the first cli argument, being the module configuration.
@@ -23,3 +25,17 @@ All bash-based modules should start with the following lines to ensure the image
 #!/usr/bin/env bash
 set -oue pipefail
 ```
+
+## Style directions for official modules
+
+### Bash
+
+- Start with `#!/usr/bin/env bash` and `set -oue pipefail`
+- Don't print "===", this is only for encapsulating the output of _different_ modules in `build.sh`
+- Print something on each step and on errors for easier debugging
+- Use CAPITALIZED names for variables that are read from the configuration
+
+### README
+
+- Title should be "`type` module for startingpoint", where the name/type of the module is a noun that shows the module's purpose
+- There should be a subtitle "Example configuration:", under which there should be a loosely documented yaml block showcasing each of the module's configuration options

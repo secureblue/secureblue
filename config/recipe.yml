@@ -32,7 +32,6 @@ modules:
 
   - type: bling # configure what to pull in from ublue-os/bling
     install:
-      - fonts # selection of common good free fonts
       - justfiles # add "!include /usr/share/ublue-os/just/bling.just"
                   # in your custom.just (added by default) or local justfile
       - nix-installer # shell shortcuts for determinate system's nix installers

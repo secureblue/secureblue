@@ -14,7 +14,6 @@ install:
   - mediainfo
   - gnome-disk-utility
   - headsetcontrol
-  - brave-browser
 remove:
   - firefox # default firefox removed in favor of flatpak
   - firefox-langpacks # langpacks needs to also be removed to prevent dependency problems

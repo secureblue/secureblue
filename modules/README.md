@@ -28,6 +28,8 @@ set -oue pipefail
 
 ## Style directions for official modules
 
+These are general directions for writing official modules and their documentation to follow to keep a consistent style. Not all of these are to be mindlessly followed, especially the ones about grammar and writing style. It's good to keep these in mind if you intend to contribute back upstream, though, so that your module doesn't feel out of place.
+
 ### Bash
 
 - Start with `#!/usr/bin/env bash` and `set -oue pipefail`
@@ -39,5 +41,6 @@ set -oue pipefail
 
 - Title should be "`type` Module for Startingpoint", where the name/type of the module is a noun that shows the module's purpose
 - There should be a subtitle "Example configuration", under which there should be a loosely documented yaml block showcasing each of the module's configuration options
+    - For a YAML block, specify the language as "yaml", not "yml" (MkDocs only supports "yaml")
 - At the start of each paragraph, refer to the module using its name or with "the module", not "it" or "the script"
 - Use passive grammar when talking about the user, ie. "should be used", "can be configured", preferring references to what the module does, ie. "This module downloads the answer to the question of life, the universe and everything..."

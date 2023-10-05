@@ -17,6 +17,7 @@ install:
   - hwloc-devel
   - mpv
   - protonvpn-cli
+  - qbittorrent
 
 remove:
   - firefox # default firefox removed in favor of flatpak

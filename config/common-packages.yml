@@ -18,6 +18,7 @@ install:
   - mpv
   - protonvpn-cli
   - qbittorrent
+  - gimp
 
 remove:
   - firefox # default firefox removed in favor of flatpak

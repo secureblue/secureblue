@@ -43,6 +43,8 @@ jobs:
           - recipe-silverblue-nvidia.yml
           - recipe-kinoite-main.yml
           - recipe-kinoite-nvidia.yml
+          - recipe-kinoite-nvidia-steam.yml
+
 
     steps:
       - name: Maximize build space

@@ -41,6 +41,7 @@ jobs:
         recipe:
           - recipe-silverblue-main.yml
           - recipe-silverblue-nvidia.yml
+          - recipe-silverblue-nvidia-steam.yml
           - recipe-kinoite-main.yml
           - recipe-kinoite-nvidia.yml
           - recipe-kinoite-nvidia-steam.yml

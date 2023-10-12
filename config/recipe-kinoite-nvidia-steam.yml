@@ -1,5 +1,5 @@
 # image will be published to ghcr.io/<user>/<name>
-name: kinoite-nvidia-hardened0steam
+name: kinoite-nvidia-hardened-steam
 # description will be included in the image's metadata
 description: "Kinoite nvidia with minimal hardening applied + steam"
 

@@ -1,4 +1,6 @@
 type: rpm-ostree
+repos:
+  - https://copr.fedorainfracloud.org/coprs/samsepi0l/HardHatOS/repo/fedora-38/samsepi0l-HardHatOS-fedora-38.repo
 install:    
   - python3-pip
   # GNOME's GTK4 theme, Libadwaita. Already included in Silverblue, but not
@@ -19,8 +21,10 @@ install:
   - protonvpn-cli
   - qbittorrent
   - gimp
+  - kernel-hardened
 
 remove:
+  - kernel
   - firefox # default firefox removed in favor of flatpak
   - firefox-langpacks # langpacks needs to also be removed to prevent dependency problems
 

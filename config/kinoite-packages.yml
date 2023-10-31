@@ -15,7 +15,6 @@ remove:
   - tigervnc-server-minimal
   - libvncserver
   - krdc
-  - kolourpaint
   - konversation
   - kde-connect
   - qt5-qdbusviewer

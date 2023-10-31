@@ -28,7 +28,6 @@ remove:
   - virtualbox-guest-additions
   - firefox # default firefox removed in favor of flatpak
   - firefox-langpacks # langpacks needs to also be removed to prevent dependency problems
-  - plasma-browser-integration
   - openssh-server
   - cups
   

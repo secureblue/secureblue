@@ -9,6 +9,7 @@ remove:
   - kcharselect
   - kde-connect
   - kde-connect-libs
+  - kdeconnectd
   - plasma-discover
   - plasma-discover-notifier
   - kf5-akonadi-server
@@ -30,6 +31,8 @@ remove:
   - libppd
   - plasma-discover-flatpak
   - ibus
+  - ibus-m17n
+  - ibus-libpinyin
   - ibus-hangul
   - ibus-qt
   - ibus-anthy

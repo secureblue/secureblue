@@ -38,3 +38,4 @@ remove:
   - mariadb-server-utils
   - fedora-chromium-config-kde
   - plasma-browser-integration
+  - flatpak

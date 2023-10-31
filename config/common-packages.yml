@@ -1,6 +1,5 @@
 type: rpm-ostree
 repos:
-  - https://copr.fedorainfracloud.org/coprs/samsepi0l/HardHatOS/repo/fedora-38/samsepi0l-HardHatOS-fedora-38.repo
 install:    
   - python3-pip
   # GNOME's GTK4 theme, Libadwaita. Already included in Silverblue, but not
@@ -8,23 +7,74 @@ install:
   # apps and binaries require it, so it's a good idea to always include it
   # if you ever download or compile any custom software on your machine.
   - libadwaita
-  # not available as a flatpak, extremely small and useful
+  # small and useful
   - yt-dlp
-  # for auditing
-  - lynis
   - lm_sensors
   - mediainfo
+  # for auditing
+  - lynis
   - gnome-disk-utility
   - headsetcontrol
-  - hwloc-devel
   - mpv
   - protonvpn-cli
   - qbittorrent
   - gimp
-  - kernel-hardened
 
 remove:
-  - kernel
+  - *abrt*
+  - *vnc*
+  - open-vm-tools
+  - ibus
+  - flatpak
+  - virtualbox-guest-additions
   - firefox # default firefox removed in favor of flatpak
   - firefox-langpacks # langpacks needs to also be removed to prevent dependency problems
+  - plasma-browser-integration
+  - openssh-server
+  - *akonadi*
+  - kde-partitionmanager
+  - kwalletmanager5
+  - im-chooser
+  - cldr-emoji-annotation
+  - kemojiselector
+  - kmouth
+  - kmousetool 
+  - kgpg 
+  - kmag
+  - plasma-welcome
+  - kwrite
+  - kaddressbook
+  - korganizer
+  - mediawriter
+  - kcalc
+  - kfind
+  - kcharselect
+  - tigervnc-*
+  - kfrb
+  - krdc
+  - kolourpaint
+  - okular
+  - akregator
+  - kpat
+  - plasma-vault
+  - cups
+  - kmines
+  - kpatience
+  - dnfdragora
+  - mariadb-server
+  - konversation
+  - kde-connect
+  - qt5-qdbusviewer
+  - elisa-player
+  - kamoso
+  - kontact 
+  - kmahjongg
+  - kmail
+  - plasma-discover
+  - libreoffice*
+  
+
+
+
+
 

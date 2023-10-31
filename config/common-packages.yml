@@ -32,7 +32,6 @@ remove:
   - openssh-server
   - cups
   - mariadb-server
-  - libreoffice
   
 
 

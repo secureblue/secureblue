@@ -33,6 +33,7 @@ remove:
   - cups
   - libppd
   - open-vm-tools-desktop
+  - fedora-flathub-remote
   
 
 

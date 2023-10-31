@@ -19,6 +19,7 @@ install:
   - protonvpn-cli
   - qbittorrent
   - gimp
+  - chromium
 
 remove:
   - virtualbox-guest-additions

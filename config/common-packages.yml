@@ -32,6 +32,7 @@ remove:
   - openssh-server
   - cups
   - libppd
+  - open-vm-tools-desktop
   
 
 

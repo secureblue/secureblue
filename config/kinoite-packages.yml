@@ -22,6 +22,7 @@ remove:
   - kde-print-manager-libs
   - hplip
   - cups
+  - gutenprint-cups
   - cups-browsed
   - bluez-cups
   - cups-filters
@@ -29,7 +30,10 @@ remove:
   - libppd
   - plasma-discover-flatpak
   - ibus
+  - ibus-hangul
+  - ibus-qt
   - ibus-anthy
+  - ibus-anthy-python
   - ibus-setup
   - ibus-typing-booster
   - open-vm-tools

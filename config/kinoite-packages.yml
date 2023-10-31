@@ -17,8 +17,6 @@ remove:
   - libvncserver
   - krdc
   - kolourpaint
-  - kmines
-  - kpatience
   - konversation
   - kde-connect
   - qt5-qdbusviewer

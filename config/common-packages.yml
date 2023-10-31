@@ -22,7 +22,6 @@ install:
 
 remove:
   - libvncserver
-  - dragon
   - open-vm-tools
   - ibus
   - flatpak

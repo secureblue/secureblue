@@ -18,3 +18,4 @@ remove:
   - httpd-core
   - mod_http2
   - mod_dnssd
+  - gnome-remote-desktop

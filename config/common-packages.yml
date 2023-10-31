@@ -31,7 +31,6 @@ remove:
   - plasma-browser-integration
   - openssh-server
   - cups
-  - mariadb-server
   
 
 

@@ -24,6 +24,7 @@ remove:
   - libvncserver
   - open-vm-tools
   - ibus
+  - ibus-typing-booster
   - flatpak
   - virtualbox-guest-additions
   - firefox # default firefox removed in favor of flatpak

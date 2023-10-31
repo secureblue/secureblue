@@ -1,0 +1,36 @@
+type: rpm-ostree
+repos:
+  # - https://blah
+install:    
+remove:
+  - kmouth
+  - kmousetool 
+  - kgpg 
+  - kmag
+  - plasma-welcome
+  - kwrite
+  - korganizer
+  - mediawriter
+  - kcalc
+  - kfind
+  - kcharselect
+  - tigervnc-server-minimal
+  - kfrb
+  - krdc
+  - kolourpaint
+  - kmines
+  - kpatience
+  - konversation
+  - kde-connect
+  - qt5-qdbusviewer
+  - kontact 
+  - kmahjongg
+  - kmail
+  - plasma-discover
+  - kf5-akonadi-server
+  - kde-partitionmanager
+  - kwalletmanager5
+  - cldr-emoji-annotation
+  - okular
+  - kpat
+  - plasma-vault

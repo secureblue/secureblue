@@ -37,5 +37,4 @@ remove:
   - mariadb-server
   - mariadb-server-utils
   - fedora-chromium-config-kde
-  - fedora-flathub-remote
   - plasma-browser-integration

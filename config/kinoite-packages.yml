@@ -4,33 +4,19 @@ repos:
 install:    
 remove:
   - kmousetool 
-  - kmag
   - plasma-welcome
   - kwrite
-  - korganizer
   - mediawriter
-  - kcalc
   - kfind
   - kcharselect
-  - tigervnc-server-minimal
-  - libvncserver
-  - krdc
-  - konversation
   - kde-connect
-  - qt5-qdbusviewer
-  - kontact 
   - plasma-discover
+  - plasma-discover-notifier
   - kf5-akonadi-server
+  - kf5-akonadi-server-mysql
   - kde-partitionmanager
   - kwalletmanager5
-  - cldr-emoji-annotation
-  - okular
-  - kpat
   - plasma-vault
-  - mariadb-server
-  - mariadb-server-utils
-  - fedora-chromium-config-kde
-  - plasma-browser-integration
   - flatpak
   - fedora-flathub-remote
   - kde-print-manager

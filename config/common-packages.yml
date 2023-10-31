@@ -41,7 +41,6 @@ remove:
   - kmag
   - plasma-welcome
   - kwrite
-  - kaddressbook
   - korganizer
   - mediawriter
   - kcalc

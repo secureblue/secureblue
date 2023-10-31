@@ -19,3 +19,4 @@ remove:
   - mod_http2
   - mod_dnssd
   - gnome-remote-desktop
+  - libvncserver

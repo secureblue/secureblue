@@ -31,6 +31,7 @@ remove:
   - firefox-langpacks # langpacks needs to also be removed to prevent dependency problems
   - openssh-server
   - cups
+  - cups-filters
   - libppd
   - open-vm-tools-desktop
   - fedora-flathub-remote

@@ -15,7 +15,6 @@ remove:
   - kfind
   - kcharselect
   - tigervnc-server-minimal
-  - kfrb
   - libvncserver
   - krdc
   - kolourpaint

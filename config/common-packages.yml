@@ -21,8 +21,9 @@ install:
   - gimp
 
 remove:
-  - *abrt*
-  - *vnc*
+  - abrt
+  - libvncserver
+  - dragon
   - open-vm-tools
   - ibus
   - flatpak
@@ -31,7 +32,7 @@ remove:
   - firefox-langpacks # langpacks needs to also be removed to prevent dependency problems
   - plasma-browser-integration
   - openssh-server
-  - *akonadi*
+  - kf5-akonadi-server
   - kde-partitionmanager
   - kwalletmanager5
   - im-chooser
@@ -49,7 +50,7 @@ remove:
   - kcalc
   - kfind
   - kcharselect
-  - tigervnc-*
+  - tigervnc-server-minimal
   - kfrb
   - krdc
   - kolourpaint
@@ -71,7 +72,7 @@ remove:
   - kmahjongg
   - kmail
   - plasma-discover
-  - libreoffice*
+  - libreoffice
   
 
 

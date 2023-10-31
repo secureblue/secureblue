@@ -8,6 +8,7 @@ remove:
   - kfind
   - kcharselect
   - kde-connect
+  - kde-connect-libs
   - plasma-discover
   - plasma-discover-notifier
   - kf5-akonadi-server
@@ -18,12 +19,17 @@ remove:
   - flatpak
   - fedora-flathub-remote
   - kde-print-manager
+  - kde-print-manager-libs
+  - hplip
   - cups
+  - cups-browsed
+  - bluez-cups
   - cups-filters
   - braille-printer-app
   - libppd
   - plasma-discover-flatpak
   - ibus
+  - ibus-anthy
   - ibus-setup
   - ibus-typing-booster
   - open-vm-tools

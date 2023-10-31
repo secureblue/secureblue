@@ -3,7 +3,6 @@ repos:
   # - https://blah
 install:    
 remove:
-  - kmouth
   - kmousetool 
   - kmag
   - plasma-welcome

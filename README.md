@@ -16,8 +16,7 @@ This repo takes the uBlue starting point and selectively applies minimal hardeni
 - Disabling unprivileged user namespaces and removing flatpak
 - Sets numerous hardening kernel parameters (Inspired by [Madaidan's Hardening Guide](https://madaidans-insecurities.github.io/guides/linux-hardening.html))
 - Installs and enables [hardened_malloc](https://github.com/GrapheneOS/hardened_malloc) globally
-- Installing Brave Browser and its rpm repo (Unfortunately, the Fedora Chromium rpm is consistently behind security patches, so Brave provides an up-to-date [Chromium-based browser](https://madaidans-insecurities.github.io/firefox-chromium.html). Brave also has content blocking built-in, avoiding the need for [MV2 extensions](https://forums.whonix.org/t/chromium-browser-for-kicksecure-discussions-not-whonix/10388))
-
+- Installing Chromium from the rawhide repo to always have the latest version of chromium, the stable chromium package lags behind on security patches
 ## Why
 
 Fedora is one of the few distributions that ships with selinux and associated tooling built-in and enabled by default. This makes it advantageous as a starting point for building a hardened system. However, out of the box it's lacking hardening in numerous other areas. This project's goal is to improve on that significantly.

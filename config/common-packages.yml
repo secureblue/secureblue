@@ -59,7 +59,6 @@ remove:
   - cups
   - kmines
   - kpatience
-  - dnfdragora
   - mariadb-server
   - konversation
   - kde-connect

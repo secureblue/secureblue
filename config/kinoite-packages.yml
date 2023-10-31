@@ -34,3 +34,10 @@ remove:
   - okular
   - kpat
   - plasma-vault
+  - libppd
+  - ibus-typing-booster
+  - mariadb-server
+  - mariadb-server-utils
+  - open-vm-tools-desktop
+  - fedora-chromium-config-kde
+  - fedora-flathub-remote

@@ -41,3 +41,4 @@ remove:
   - open-vm-tools-desktop
   - fedora-chromium-config-kde
   - fedora-flathub-remote
+  - plasma-browser-integration

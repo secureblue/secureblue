@@ -24,6 +24,7 @@ remove:
   - libvncserver
   - open-vm-tools
   - ibus
+  - ibus-setup
   - ibus-typing-booster
   - flatpak
   - virtualbox-guest-additions
@@ -32,6 +33,7 @@ remove:
   - openssh-server
   - cups
   - cups-filters
+  - braille-printer-app
   - libppd
   - open-vm-tools-desktop
   - fedora-flathub-remote

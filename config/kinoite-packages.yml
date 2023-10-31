@@ -16,6 +16,7 @@ remove:
   - kcharselect
   - tigervnc-server-minimal
   - kfrb
+  - libvncserver
   - krdc
   - kolourpaint
   - kmines
@@ -39,3 +40,6 @@ remove:
   - fedora-chromium-config-kde
   - plasma-browser-integration
   - flatpak
+  - kde-print-manager
+  - cups
+  - plasma-discover-flatpak

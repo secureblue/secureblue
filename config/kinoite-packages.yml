@@ -5,7 +5,6 @@ install:
 remove:
   - kmouth
   - kmousetool 
-  - kgpg 
   - kmag
   - plasma-welcome
   - kwrite

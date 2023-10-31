@@ -30,6 +30,7 @@ remove:
   - firefox-langpacks # langpacks needs to also be removed to prevent dependency problems
   - openssh-server
   - cups
+  - libppd
   
 
 

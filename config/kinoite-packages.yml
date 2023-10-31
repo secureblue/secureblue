@@ -41,7 +41,6 @@ remove:
   - plasma-browser-integration
   - flatpak
   - fedora-flathub-remote
-  - libvncserver
   - kde-print-manager
   - cups
   - cups-filters

@@ -40,6 +40,16 @@ remove:
   - fedora-chromium-config-kde
   - plasma-browser-integration
   - flatpak
+  - fedora-flathub-remote
+  - libvncserver
   - kde-print-manager
   - cups
+  - cups-filters
+  - braille-printer-app
+  - libppd
   - plasma-discover-flatpak
+  - ibus
+  - ibus-setup
+  - ibus-typing-booster
+  - open-vm-tools
+  - open-vm-tools-desktop

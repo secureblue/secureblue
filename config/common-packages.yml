@@ -21,22 +21,10 @@ install:
   - gimp
 
 remove:
-  - libvncserver
-  - open-vm-tools
-  - ibus
-  - ibus-setup
-  - ibus-typing-booster
-  - flatpak
   - virtualbox-guest-additions
   - firefox # default firefox removed in favor of flatpak
   - firefox-langpacks # langpacks needs to also be removed to prevent dependency problems
   - openssh-server
-  - cups
-  - cups-filters
-  - braille-printer-app
-  - libppd
-  - open-vm-tools-desktop
-  - fedora-flathub-remote
   
 
 

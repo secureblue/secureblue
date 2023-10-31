@@ -21,7 +21,6 @@ install:
   - gimp
 
 remove:
-  - abrt
   - libvncserver
   - dragon
   - open-vm-tools

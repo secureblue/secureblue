@@ -23,7 +23,6 @@ remove:
   - kde-connect
   - qt5-qdbusviewer
   - kontact 
-  - kmail
   - plasma-discover
   - kf5-akonadi-server
   - kde-partitionmanager

@@ -34,7 +34,6 @@ remove:
   - okular
   - kpat
   - plasma-vault
-  - libppd
   - ibus-typing-booster
   - mariadb-server
   - mariadb-server-utils

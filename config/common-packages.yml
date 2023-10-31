@@ -33,7 +33,6 @@ remove:
   - kf5-akonadi-server
   - kde-partitionmanager
   - kwalletmanager5
-  - im-chooser
   - cldr-emoji-annotation
   - kemojiselector
   - kmouth

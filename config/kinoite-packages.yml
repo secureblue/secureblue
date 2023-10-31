@@ -5,7 +5,6 @@ install:
 remove:
   - kmousetool 
   - plasma-welcome
-  - kwrite
   - mediawriter
   - kfind
   - kcharselect

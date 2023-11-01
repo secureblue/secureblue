@@ -43,6 +43,7 @@ remove:
   - open-vm-tools
   - open-vm-tools-desktop
   - krfb
+  - krfb-libs
   - kcalc
   - kmag
   - okular

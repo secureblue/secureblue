@@ -22,6 +22,7 @@ install:
   - gimp
   - chromium
   - hardened_malloc
+  - chkrootkit
 
 remove:
   - virtualbox-guest-additions

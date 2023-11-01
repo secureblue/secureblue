@@ -42,3 +42,8 @@ remove:
   - ibus-typing-booster
   - open-vm-tools
   - open-vm-tools-desktop
+  - krfb
+  - kcalc
+  - kmag
+  - okular
+  - qt5-qdbusviewer

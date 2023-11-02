@@ -22,7 +22,7 @@ install:
   - gimp
   - hardened_malloc
   - chkrootkit
-  - chromium
+  - koji
 
 remove:
   - virtualbox-guest-additions

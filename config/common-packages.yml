@@ -20,7 +20,6 @@ install:
   - protonvpn-cli
   - qbittorrent
   - gimp
-  - chromium
   - hardened_malloc
   - chkrootkit
 

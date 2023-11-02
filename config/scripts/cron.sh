@@ -6,7 +6,6 @@
 set -oue pipefail
 
 echo "Setting more restrictive file permissions..."
-chmod 600 /etc/cron.deny
 chmod 600 /etc/crontab
 chmod 700 /etc/cron.d
 chmod 700 /etc/cron.daily/

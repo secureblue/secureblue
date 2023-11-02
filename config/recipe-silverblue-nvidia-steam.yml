@@ -20,8 +20,7 @@ modules:
 
   - from-file: common-packages.yml
   - from-file: silverblue-packages.yml
-  - from-file: chromium.yml
-  
+
   - type: rpm-ostree
     install:
     - steam

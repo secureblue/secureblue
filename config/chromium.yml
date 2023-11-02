@@ -1,9 +1,0 @@
-type: rpm-ostree
-repos: 
-install:
-  - https://kojipkgs.fedoraproject.org/packages/chromium/119.0.6045.105/1.fc40/x86_64/chromium-119.0.6045.105-1.fc40.x86_64.rpm
-remove:
-
-
-
-

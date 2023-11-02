@@ -20,7 +20,6 @@ modules:
 
   - from-file: common-packages.yml
   - from-file: kinoite-packages.yml
-  - from-file: chromium.yml
 
 
   - type: bling # configure what to pull in from ublue-os/bling

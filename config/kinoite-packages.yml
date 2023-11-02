@@ -44,6 +44,5 @@ remove:
   - open-vm-tools-desktop
   - krfb
   - krfb-libs
-  - kmag
-  - okular
+  - kmagS
   - qt5-qdbusviewer

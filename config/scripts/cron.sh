@@ -5,11 +5,10 @@
 # builds actually ran successfully without any errors!
 set -oue pipefail
 
-echo "Setting more restrictive file permissions..."
-chmod 600 /etc/crontab
-chmod 700 /etc/cron.d
-chmod 700 /etc/cron.daily/
-chmod 700 /etc/cron.daily
-chmod 700 /etc/cron.hourly
-chmod 700 /etc/cron.weekly
-chmod 700 /etc/cron.monthly
+# echo "Setting more restrictive file permissions..."
+# chmod 700 /etc/cron.d
+# chmod 700 /etc/cron.daily/
+# chmod 700 /etc/cron.daily
+# chmod 700 /etc/cron.hourly
+# chmod 700 /etc/cron.weekly
+# chmod 700 /etc/cron.monthly

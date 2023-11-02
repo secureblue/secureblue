@@ -31,6 +31,7 @@ remove:
   - libppd
   - plasma-discover-flatpak
   - ibus
+  - ibus-panel
   - ibus-m17n
   - ibus-libpinyin
   - ibus-hangul

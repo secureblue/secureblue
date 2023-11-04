@@ -29,3 +29,4 @@ remove:
   - braille-printer-app
   - libppd
   - gnome-software
+  - flatpak

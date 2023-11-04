@@ -28,3 +28,4 @@ remove:
   - cups-filters
   - braille-printer-app
   - libppd
+  - gnome-software

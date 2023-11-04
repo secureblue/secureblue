@@ -22,6 +22,19 @@ modules:
   - from-file: kinoite-packages.yml
 
 
+  - type: fonts
+    fonts:
+      nerd-fonts:
+        - FiraCode # don't add "Nerd Font" suffix.
+        - Hack
+        - SourceCodePro
+        - Terminus
+        - JetBrainsMono
+        - NerdFontsSymbolsOnly
+      google-fonts:
+        - Roboto
+        - Open Sans
+
   - type: bling # configure what to pull in from ublue-os/bling
     install:
       - fonts # selection of common good free fonts
@@ -32,13 +45,6 @@ modules:
       # - ublue-update # https://github.com/ublue-os/ublue-update
       # - dconf-update-service # a service unit that updates the dconf db on boot
       # - devpod # https://devpod.sh/ as an rpm
-
-
-  - type: yafti # if included, yafti and it's dependencies (pip & libadwaita)
-                #  will be installed and set up
-    custom-flatpaks: # this section is optional
-      # - Celluloid: io.github.celluloid_player.Celluloid
-      # - Krita: org.kde.krita
 
   - type: script
     scripts:

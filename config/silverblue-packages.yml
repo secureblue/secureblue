@@ -20,3 +20,17 @@ remove:
   - mod_dnssd
   - gnome-remote-desktop
   - libvncserver
+  - hplip
+  - cups
+  - gutenprint-cups
+  - cups-browsed
+  - bluez-cups
+  - cups-filters
+  - braille-printer-app
+  - libppd
+  - gnome-maps
+  - gnome-characters
+  - gnome-weather
+  - gnome-software
+  - gnome-calendar
+  - gnome-calculator

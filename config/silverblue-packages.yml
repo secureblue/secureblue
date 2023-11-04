@@ -29,4 +29,6 @@ remove:
   - braille-printer-app
   - libppd
   - gnome-software
+  - gnome-software-rpm-ostree
   - flatpak
+  - fedora-flathub-remote

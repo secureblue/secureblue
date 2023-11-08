@@ -17,6 +17,7 @@ This repo takes the uBlue starting point and selectively applies minimal hardeni
 - Sets numerous hardening kernel parameters (Inspired by [Madaidan's Hardening Guide](https://madaidans-insecurities.github.io/guides/linux-hardening.html))
 - Installs and enables [hardened_malloc](https://github.com/GrapheneOS/hardened_malloc) globally
 - Installing Chromium from the rawhide repo to always have the latest version of chromium, the stable chromium package lags behind on security patches
+- Opinionated "debloating"
 ## Why
 
 Fedora is one of the few distributions that ships with selinux and associated tooling built-in and enabled by default. This makes it advantageous as a starting point for building a hardened system. However, out of the box it's lacking hardening in numerous other areas. This project's goal is to improve on that significantly.

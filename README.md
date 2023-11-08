@@ -68,12 +68,3 @@ The following command is available to append kernel boot parameters that apply a
 just set-kargs-hardening 
 ```
 
-This repository builds date tags as well, so if you want to rebase to a particular day's build:
-
-```
-rpm-ostree rebase ostree-image-signed:docker://ghcr.io/ublue-os/$IMAGE_NAME:20230403
-```
-
-This repository by default also supports signing.
-
-The `latest` tag will automatically point to the latest build. That build will still always use the Fedora version specified in `recipe.yml`, so you won't get accidentally updated to the next major version.

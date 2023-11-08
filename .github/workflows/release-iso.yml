@@ -13,17 +13,17 @@ jobs:
     permissions:
       contents: write
     container: 
-      image: fedora:38
+      image: fedora:39
       options: --privileged
     steps:
       - uses: actions/checkout@v4
       - name: Generate ISO  
-        uses: ublue-os/isogenerator@main
+        uses: ublue-os/isogenerator@v2.2.0
         id: isogenerator
         with:
           image-name: ${{ github.event.repository.name }}
           installer-repo: releases
-          installer-major-version: 38
+          installer-major-version: 39
           boot-menu-path: boot_menu.yml
       - name: install github CLI
         run: |

@@ -40,9 +40,11 @@ jobs:
         # Don't add module configuration files, you will get errors.
         recipe:
           - recipe-silverblue-main.yml
+          - recipe-silverblue-main-steam.yml
           - recipe-silverblue-nvidia.yml
           - recipe-silverblue-nvidia-steam.yml
           - recipe-kinoite-main.yml
+          - recipe-kinoite-main-steam.yml
           - recipe-kinoite-nvidia.yml
           - recipe-kinoite-nvidia-steam.yml
 

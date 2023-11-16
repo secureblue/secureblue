@@ -18,6 +18,8 @@ remove:
   - kwalletmanager5
   - plasma-vault
   - flatpak
+  - flatpak-libs
+  - flatpak-selinux
   - fedora-flathub-remote
   - kde-print-manager
   - kde-print-manager-libs

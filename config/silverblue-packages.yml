@@ -31,4 +31,6 @@ remove:
   - gnome-software
   - gnome-software-rpm-ostree
   - flatpak
+  - flatpak-libs
+  - flatpak-selinux
   - fedora-flathub-remote

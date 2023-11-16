@@ -22,7 +22,6 @@ remove:
   - flatpak-selinux
   - flatpak-kcm
   - flatpak-session-helper
-  - malcontent-ui-libs
   - fedora-flathub-remote
   - kde-print-manager
   - kde-print-manager-libs

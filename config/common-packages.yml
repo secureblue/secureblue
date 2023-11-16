@@ -25,7 +25,8 @@ install:
   - chkrootkit
   - koji
   - codium
-
+  - chromium
+  
 remove:
   - virtualbox-guest-additions
   - firefox # default firefox removed in favor of flatpak

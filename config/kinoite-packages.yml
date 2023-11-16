@@ -23,6 +23,7 @@ remove:
   - flatpak-kcm
   - flatpak-session-helper
   - fedora-flathub-remote
+  - toolbox
   - kde-print-manager
   - kde-print-manager-libs
   - hplip

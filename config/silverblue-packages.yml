@@ -35,4 +35,6 @@ remove:
   - flatpak-selinux
   - flatpak-session-helper
   - malcontent-ui-libs
+  - malcontent-control
+  - toolbox
   - fedora-flathub-remote

@@ -5,6 +5,6 @@
 # builds actually ran successfully without any errors!
 set -oue pipefail
 
-echo "Installing chromium from rawhide"
-koji download-build --arch=x86_64 $(koji latest-build rawhide chromium | awk 'NR==3 {print $1}')
+echo "Installing chromium from koji updates-candidate"
+koji download-build --arch=x86_64 $(koji latest-build f39-updates-candidate chromium | awk 'NR==3 {print $1}')
 rpm-ostree install *.rpm

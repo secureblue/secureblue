@@ -33,4 +33,7 @@ remove:
   - flatpak
   - flatpak-libs
   - flatpak-selinux
+  - flatpak-kcm
+  - flatpak-session-helper
+  - malcontent-ui-libs
   - fedora-flathub-remote

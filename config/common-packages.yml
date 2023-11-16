@@ -25,7 +25,6 @@ install:
   - chkrootkit
   - koji
   - codium
-  - chromium
   
 remove:
   - virtualbox-guest-additions

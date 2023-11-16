@@ -51,4 +51,3 @@ modules:
       # this sets up the proper policy & signing files for signed images to work
       - signing.sh
       - cron.sh
-      - chromium.sh

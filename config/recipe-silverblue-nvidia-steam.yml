@@ -24,6 +24,7 @@ modules:
   - type: rpm-ostree
     install:
     - steam
+    - lutris
 
 
   - type: fonts

@@ -34,9 +34,11 @@ For more info on uBlue, check out the [uBlue homepage](https://universal-blue.or
 ### Available Images
 
 - kinoite-main-hardened
+- kinoite-main-hardened-steam
 - kinoite-nvidia-hardened
 - kinoite-nvidia-hardened-steam
 - silverblue-main-hardened
+- silverblue-main-hardened-steam
 - silverblue-nvidia-hardened
 - silverblue-nvidia-hardened-steam
 

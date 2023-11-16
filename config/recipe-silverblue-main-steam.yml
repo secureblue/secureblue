@@ -1,0 +1,64 @@
+# image will be published to ghcr.io/<user>/<name>
+name: silverblue-main-hardened
+# description will be included in the image's metadata
+description: "Silverblue main with minimal hardening applied"
+
+# the base image to build on top of (FROM) and the version tag to use
+base-image: ghcr.io/ublue-os/silverblue-main
+image-version: 39 # latest is also supported if you want new updates ASAP
+
+# module configuration, executed in order
+# you can include multiple instances of the same module
+modules:
+  - type: files
+    files:
+      - usr: /usr # copy static configurations
+                  #
+                  # copies config/files/usr into your image's /usr
+                  #
+                  # configuration you wish to end up in /etc/ on the booted system
+                  # should be added into /usr/etc/ as that is the proper "distro"
+                  # config directory on ostree. Read more in the files module's README
+
+  - from-file: common-packages.yml
+  - from-file: silverblue-packages.yml
+
+  - type: bling # configure what to pull in from ublue-os/bling
+    install:
+      - justfiles # add "!include /usr/share/ublue-os/just/100-bling.just"
+                  # in your custom.just (added by default) or local justfile
+      - laptop 
+      # - ublue-update # https://github.com/ublue-os/ublue-update
+      # - 1password # install 1Password (stable) and `op` CLI tool
+      # - dconf-update-service # a service unit that updates the dconf db on boot
+      # - devpod # https://devpod.sh/ as an rpm
+      # - gnome-vrr # enables gnome-vrr for your image
+      # - container-tools # installs container-related tools onto /usr/bin: kind, kubectx, docker-compose and kubens
+      # - laptop # installs TLP and configures your system for laptop usage
+      # - flatpaksync # allows synchronization of user-installed flatpaks, see separate documentation section
+
+
+  - type: rpm-ostree
+    install:
+    - steam
+    - lutris
+
+  - type: fonts
+    fonts:
+      nerd-fonts:
+        - FiraCode # don't add "Nerd Font" suffix.
+        - Hack
+        - SourceCodePro
+        - Terminus
+        - JetBrainsMono
+        - NerdFontsSymbolsOnly
+      google-fonts:
+        - Roboto
+        - Open Sans
+        
+
+  - type: script
+    scripts:
+      # this sets up the proper policy & signing files for signed images to work
+      - signing.sh
+      - cron.sh

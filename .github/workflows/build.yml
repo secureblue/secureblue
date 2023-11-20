@@ -55,7 +55,7 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Add yq (for reading recipe.yml)
-        uses: mikefarah/yq@v4.40.1
+        uses: mikefarah/yq@v4.40.2
 
       - name: Gather image data from recipe
         run: |

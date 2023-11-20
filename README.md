@@ -16,7 +16,7 @@ This repo takes the uBlue starting point and selectively applies minimal hardeni
 - Disabling unprivileged user namespaces and removing flatpak
 - Sets numerous hardening kernel parameters (Inspired by [Madaidan's Hardening Guide](https://madaidans-insecurities.github.io/guides/linux-hardening.html))
 - Installs and enables [hardened_malloc](https://github.com/GrapheneOS/hardened_malloc) globally
-- Installing Chromium from the koji updates-candidate repo to always have the latest version of chromium, the stable chromium package lags behind on security patches
+- Installing Chromium from the koji updates-candidate repo to always have the latest version of chromium, the stable chromium package lags behind on security patches (currently disabled due to an ongoing ffmpeg compatibility issue with chromium)
 - Opinionated "debloating"
 ## Why
 

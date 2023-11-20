@@ -56,7 +56,7 @@ To rebase an existing Silverblue/Kinoite installation to the latest build:
   ```
 - Then rebase to the signed image, like so:
   ```
-  rpm-ostree rebase rpm-ostree rebase ostree-image-signed:docker://ghcr.io/qoijjj/$IMAGE_NAME:latest
+  rpm-ostree rebase ostree-image-signed:docker://ghcr.io/qoijjj/$IMAGE_NAME:latest
   ```
 - Reboot again to complete the installation
   ```

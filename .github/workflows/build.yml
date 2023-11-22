@@ -41,10 +41,12 @@ jobs:
         recipe:
           - recipe-silverblue-main.yml
           - recipe-silverblue-nvidia.yml
-          - recipe-bazzite-nvidia.yml
           - recipe-kinoite-main.yml
           - recipe-kinoite-nvidia.yml
+          - recipe-bazzite-main.yml
           - recipe-bazzite-nvidia.yml
+          - recipe-bazzite-gnome-main.yml
+          - recipe-bazzite-gnome-nvidia.yml
 
 
     steps:

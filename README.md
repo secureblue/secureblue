@@ -4,7 +4,6 @@
 
 ## What
 
-
 This repo takes the uBlue starting point and selectively applies minimal hardening so as to provide images that are partially hardened without sacrificing usability for most use cases. These builds may be somewhat less performant due to the performance hit of some of the applied hardening.
 
 - Setting numerous hardened sysctl values (Inspired by but not the same as Kicksecure's)
@@ -18,6 +17,7 @@ This repo takes the uBlue starting point and selectively applies minimal hardeni
 - Installs and enables [hardened_malloc](https://github.com/GrapheneOS/hardened_malloc) globally
 - Installing Chromium from the koji updates-candidate repo to always have the latest version of chromium, the stable chromium package lags behind on security patches (currently disabled due to an ongoing ffmpeg compatibility issue with chromium)
 - Opinionated "debloating"
+
 ## Why
 
 Fedora is one of the few distributions that ships with selinux and associated tooling built-in and enabled by default. This makes it advantageous as a starting point for building a hardened system. However, out of the box it's lacking hardening in numerous other areas. This project's goal is to improve on that significantly.
@@ -33,14 +33,18 @@ For more info on uBlue, check out the [uBlue homepage](https://universal-blue.or
 
 ### Available Images
 
+Without gaming packages:
 - kinoite-main-hardened
-- kinoite-main-hardened-steam
 - kinoite-nvidia-hardened
-- kinoite-nvidia-hardened-steam
 - silverblue-main-hardened
-- silverblue-main-hardened-steam
 - silverblue-nvidia-hardened
-- silverblue-nvidia-hardened-steam
+
+With gaming packages:
+- bazzite-main-hardened
+- bazzite-nvidia-hardened
+- bazzite-gnome-main-hardened
+- bazzite-gnome-nvidia-hardened
+
 
 ### Rebasing
 

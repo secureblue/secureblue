@@ -1,10 +1,10 @@
 # image will be published to ghcr.io/<user>/<name>
-name: kinoite-main-hardened
+name: bazzite-main-hardened
 # description will be included in the image's metadata
-description: "Kinoite main with minimal hardening applied"
+description: "Bazzite main with minimal hardening applied"
 
 # the base image to build on top of (FROM) and the version tag to use
-base-image: ghcr.io/ublue-os/kinoite-main
+base-image: ghcr.io/ublue-os/bazzite-main
 image-version: 39
 
 # list of modules, executed in order
@@ -21,10 +21,6 @@ modules:
   - from-file: common-packages.yml
   - from-file: kinoite-packages.yml
 
-  - type: rpm-ostree
-    install:
-    - steam
-    - lutris
 
   - type: fonts
     fonts:

@@ -1,10 +1,10 @@
 # image will be published to ghcr.io/<user>/<name>
-name: silverblue-nvidia-hardened-steam
+name: bazzite-nvidia-hardened
 # description will be included in the image's metadata
-description: "Silverblue nvidia with minimal hardening applied"
+description: "Bazzite nvidia with minimal hardening applied"
 
 # the base image to build on top of (FROM) and the version tag to use
-base-image: ghcr.io/ublue-os/silverblue-nvidia
+base-image: ghcr.io/ublue-os/bazzite-nvidia
 image-version: 39
 
 # list of modules, executed in order
@@ -17,14 +17,17 @@ modules:
                   # configuration you wish to end up in /etc/ on the booted system should be 
                   # added into /usr/etc/ as that is the proper "distro" config directory on ostree
                   # read more in the files module's README
-
   - from-file: common-packages.yml
-  - from-file: silverblue-packages.yml
+  - from-file: kinoite-packages.yml
 
-  - type: rpm-ostree
+  - type: bling # configure what to pull in from ublue-os/bling
     install:
-    - steam
-    - lutris
+      - justfiles # add "!include /usr/share/ublue-os/just/bling.just"
+                  # in your custom.just (added by default) or local justfile
+      - laptop 
+      # - ublue-update # https://github.com/ublue-os/ublue-update
+      # - dconf-update-service # a service unit that updates the dconf db on boot
+      # - devpod # https://devpod.sh/ as an rpm
 
 
   - type: fonts
@@ -40,15 +43,6 @@ modules:
         - Roboto
         - Open Sans
         
-  - type: bling # configure what to pull in from ublue-os/bling
-    install:
-      - justfiles # add "!include /usr/share/ublue-os/just/bling.just"
-                  # in your custom.just (added by default) or local justfile
-      - laptop
-      # - ublue-update # https://github.com/ublue-os/ublue-update
-      # - dconf-update-service # a service unit that updates the dconf db on boot
-      # - devpod # https://devpod.sh/ as an rpm
-
 
   - type: script
     scripts:

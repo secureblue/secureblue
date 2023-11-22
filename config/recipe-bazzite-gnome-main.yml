@@ -19,6 +19,7 @@ modules:
                   # config directory on ostree read more in the files module's README
 
   - from-file: common-packages.yml
+  - from-file: silverblue-packages.yml
 
 
   - type: fonts

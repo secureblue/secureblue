@@ -1,6 +1,6 @@
-# hardened-images
+# secureblue
 
-[![hardened-images](https://github.com/qoijjj/hardened-images/actions/workflows/build.yml/badge.svg)](https://github.com/qoijjj/hardened-images/actions/workflows/build.yml)
+[![secureblue](https://github.com/secureblue/secureblue/actions/workflows/build.yml/badge.svg)](https://github.com/secureblue/secureblue/actions/workflows/build.yml)
 
 ## What
 

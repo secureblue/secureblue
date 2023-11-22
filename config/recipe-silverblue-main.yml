@@ -21,6 +21,7 @@ modules:
                   # config directory on ostree. Read more in the files module's README
 
   - from-file: common-packages.yml
+  - from-file: remove-firefox.yml
   - from-file: silverblue-packages.yml
 
   - type: bling # configure what to pull in from ublue-os/bling

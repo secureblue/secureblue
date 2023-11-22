@@ -27,6 +27,7 @@ modules:
       # - dconf-update-service # a service unit that updates the dconf db on boot
       # - devpod # https://devpod.sh/ as an rpm
 
+  - from-file: common-packages.yml
 
   - type: fonts
     fonts:

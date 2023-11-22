@@ -28,7 +28,6 @@ modules:
       # - devpod # https://devpod.sh/ as an rpm
 
   - from-file: common-packages.yml
-  - from-file: kinoite-packages.yml
 
   - type: fonts
     fonts:

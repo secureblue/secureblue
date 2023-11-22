@@ -62,7 +62,7 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Add yq (for reading recipe.yml)
-        uses: mikefarah/yq@v4.35.1
+        uses: mikefarah/yq@v4.40.2
 
       - name: Gather image data from recipe
         run: |
@@ -187,7 +187,7 @@ jobs:
           password: ${{ secrets.GITHUB_TOKEN }}
 
       # Sign container
-      - uses: sigstore/cosign-installer@v3.1.2
+      - uses: sigstore/cosign-installer@v3.2.0
         if: github.event_name != 'pull_request' && github.ref == 'refs/heads/live'
 
       - name: Sign container image

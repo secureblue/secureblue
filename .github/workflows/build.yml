@@ -54,6 +54,9 @@ jobs:
       - name: Checkout Push to Registry action
         uses: actions/checkout@v4
 
+      - name: Check just syntax
+        uses: ublue-os/just-action@v1
+
       - name: Add yq (for reading recipe.yml)
         uses: mikefarah/yq@v4.40.2
 

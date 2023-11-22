@@ -1,10 +1,10 @@
 # image will be published to ghcr.io/<user>/<name>
-name: bazzite-main-hardened
+name: bazzite-hardened
 # description will be included in the image's metadata
-description: "Bazzite main with minimal hardening applied"
+description: "Bazzite with minimal hardening applied"
 
 # the base image to build on top of (FROM) and the version tag to use
-base-image: ghcr.io/ublue-os/bazzite-main
+base-image: ghcr.io/ublue-os/bazzite
 image-version: 39
 
 # list of modules, executed in order
@@ -17,9 +17,6 @@ modules:
                   # configuration you wish to end up in /etc/ on the booted system should be 
                   # added into /usr/etc/ (under /config/files) as that is the proper "distro" 
                   # config directory on ostree read more in the files module's README
-
-  - from-file: common-packages.yml
-  - from-file: kinoite-packages.yml
 
 
   - type: fonts

@@ -28,6 +28,8 @@ install:
   - chromium
   
 remove:
+  - firefox
+  - firefox-langpacks
   - virtualbox-guest-additions
   - openssh-server
   

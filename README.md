@@ -33,17 +33,12 @@ For more info on uBlue, check out the [uBlue homepage](https://universal-blue.or
 
 ### Available Images
 
-Without gaming packages:
+> Note: gaming utilities like Steam and Lutris are not included and in my experience are largely incompatible with hardened_malloc
+
 - kinoite-main-hardened
 - kinoite-nvidia-hardened
 - silverblue-main-hardened
 - silverblue-nvidia-hardened
-
-With gaming packages:
-- bazzite-main-hardened
-- bazzite-nvidia-hardened
-- bazzite-gnome-main-hardened
-- bazzite-gnome-nvidia-hardened
 
 
 ### Rebasing

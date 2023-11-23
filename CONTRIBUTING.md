@@ -37,7 +37,7 @@ to jorge.castro@gmail.com
 
 ## I Have a Question
 
-> If you want to ask a question, ask in the [Issues](https://github.com/secureblue/secureblue/issues).
+> If you want to ask a question, ask in [Issues](https://github.com/secureblue/secureblue/issues).
 
 ## I Want To Contribute
 
@@ -86,77 +86,21 @@ Here's an example: https://github.com/ublue-os/nvidia/pull/49
 The minimum tools required are git and a working machine with podman enabled and configured. 
 Building locally is much faster than building in GitHub and is a good way to move fast before pushing to a remote.
 
-### Start a local registry
+### Clone the repo
 
-#### On the developer Host
-
-- Add an entry for the container registry to your /etc/hosts file
-
-```
-# Container registry
-127.0.0.1 registry.dev.local
-```
-
-- Start the container registry
-
-```
-podman run -d --name registry.dev.local -p 5000:5000 docker.io/library/registry:latest
-```
-
-#### On the test VM
-
-- Find out the IP address for the default gateway
-
-```
-ip route | grep "default via" | cut -d ' ' -f 3
-```
-
-- The VM needs to find the container registry on the host system. Add the IP address of the default gateway to the /etc/hosts file
-
-```
-# Container registry
-10.0.2.2 registry.dev.local
-```
-
-- Since the container registry is running in "insecure" mode we have to create the file /etc/containers/registries.conf.d/ublue-dev.conf with the following configuration.
-
-```
-[[registry]]
-location = "registry.dev.local:5000"
-insecure = true
-```
-
-### Clone the secureblue repo
-
-    git clone https://github.com/secureblue/secureblue
+    git clone https://github.com/secureblue/secureblue.git
 
 ### Build the image
     
-First makre sure to edit select the Image you would like to build by editing the `RECIPE` Argument in the Containerfile. Here is an example selecting Silverblue Main:
-
-```
-# The default recipe is set to the recipe's default filename
-# so that `podman build` should just work for most people.
-ARG RECIPE=recipe-silverblue-main.yml 
-```
-
 First make sure you can build an existing image: 
     
-```
-podman build . -t registry.dev.local:5000/ublue-main:dev-latest
-```
+    podman build . -t something
     
-- Upload image to the container registry
+Then confirm your image built:
+    
+    podman image ls 
 
-```
-podman push --tls-verify=false registry.dev.local:5000/ublue-main:dev-latest
-```
-
-### Rebase to DEV image
-
-```
-rpm-ostree rebase ostree-unverified-registry:registry.dev.local:5000/ublue-main:dev-latest
-```
+TODO: Set up and push to your own local registry
     
 ### Make your changes
 

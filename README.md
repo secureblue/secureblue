@@ -4,7 +4,7 @@
 
 ## What
 
-This repo takes the uBlue starting point and selectively applies minimal hardening so as to provide images that are partially hardened without sacrificing usability for most use cases. These builds may be somewhat less performant due to the performance hit of some of the applied hardening.
+This repo takes the uBlue starting point and selectively applies some hardening so as to provide images that are partially hardened without sacrificing usability for most use cases. These builds may be somewhat less performant due to the performance hit of some of the applied hardening.
 
 - Setting numerous hardened sysctl values (Inspired by but not the same as Kicksecure's)
 - Disabling coredumps in limits.conf

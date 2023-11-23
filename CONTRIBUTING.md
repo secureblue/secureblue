@@ -1,4 +1,4 @@
-# Welcome to Universal Blue
+# Welcome to Secure Blue
 
 Thanks for taking the time to look into helping out!
 All contributions are appreciated! 
@@ -37,7 +37,7 @@ to jorge.castro@gmail.com
 
 ## I Have a Question
 
-> If you want to ask a question, ask in the [discussion forum](https://github.com/orgs/ublue-os/discussions)
+> If you want to ask a question, ask in [Issues](https://github.com/secureblue/secureblue/issues).
 
 ## I Want To Contribute
 
@@ -86,9 +86,9 @@ Here's an example: https://github.com/ublue-os/nvidia/pull/49
 The minimum tools required are git and a working machine with podman enabled and configured. 
 Building locally is much faster than building in GitHub and is a good way to move fast before pushing to a remote.
 
-### Clone the repo you want
+### Clone the repo
 
-    git clone https://github.com/ublue-os/base.git
+    git clone https://github.com/secureblue/secureblue.git
 
 ### Build the image
     

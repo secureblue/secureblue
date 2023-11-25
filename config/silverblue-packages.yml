@@ -7,6 +7,7 @@ install:
   - gnome-console
   - gnome-text-editor
   - firewall-config
+  - gnome-disk-utility
 remove:
   - gnome-terminal
   - gnome-terminal-nautilus
@@ -21,19 +22,8 @@ remove:
   - gnome-remote-desktop
   - libvncserver
   - hplip
-  - cups
-  - gutenprint-cups
-  - cups-browsed
-  - bluez-cups
-  - cups-filters
-  - braille-printer-app
   - libppd
-  - gnome-software
   - gnome-software-rpm-ostree
-  - flatpak
-  - flatpak-libs
-  - flatpak-selinux
-  - flatpak-session-helper
   - malcontent-ui-libs
   - malcontent-control
   - toolbox

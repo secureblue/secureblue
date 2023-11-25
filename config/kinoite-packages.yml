@@ -3,6 +3,7 @@ repos:
   # - https://blah
 install:    
 remove:
+# flatpak removed until bubblewrap-suid is added
   - kmousetool 
   - plasma-welcome
   - kfind
@@ -10,9 +11,22 @@ remove:
   - plasma-discover-notifier
   - kf5-akonadi-server
   - kf5-akonadi-server-mysql
+  - flatpak
+  - flatpak-libs
+  - flatpak-selinux
+  - flatpak-kcm
+  - flatpak-session-helper
+  - plasma-discover-flatpak
   - fedora-flathub-remote
   - toolbox
+  - kde-print-manager
+  - kde-print-manager-libs
   - hplip
+  - cups
+  - gutenprint-cups
+  - cups-browsed
+  - bluez-cups
+  - cups-filters
   - braille-printer-app
   - libppd
   - ibus

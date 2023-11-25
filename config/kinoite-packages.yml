@@ -16,7 +16,6 @@ remove:
   - kf5-akonadi-server-mysql
   - kde-partitionmanager
   - kwalletmanager5
-  - plasma-vault
   - flatpak
   - flatpak-libs
   - flatpak-selinux

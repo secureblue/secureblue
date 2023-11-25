@@ -9,16 +9,13 @@ install:
   # apps and binaries require it, so it's a good idea to always include it
   # if you ever download or compile any custom software on your machine.
   - libadwaita
-  # small and useful
   - yt-dlp
   - lm_sensors
   - mediainfo
-  # for auditing
   - lynis
   - gnome-disk-utility
   - headsetcontrol
   - mpv
-  - protonvpn-cli
   - qbittorrent
   - gimp
   - hardened_malloc

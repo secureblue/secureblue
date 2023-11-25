@@ -7,7 +7,7 @@
 
 [![secureblue](https://github.com/secureblue/secureblue/actions/workflows/build.yml/badge.svg)](https://github.com/secureblue/secureblue/actions/workflows/build.yml)
 
-This repo takes the uBlue starting point and selectively applies hardening with the following goals:
+This repo takes the [uBlue](https://universal-blue.org/) starting point and selectively applies hardening with the following goals:
 
 - Increase defenses against the exploitation of both known and unknown vulnerabilities.
 - Avoid sacrificing usability for most use cases where possible

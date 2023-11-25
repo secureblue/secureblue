@@ -13,7 +13,6 @@ remove:
   - kf5-akonadi-server
   - kf5-akonadi-server-mysql
   - kwalletmanager5
-  - plasma-vault
   - flatpak
   - flatpak-libs
   - flatpak-selinux

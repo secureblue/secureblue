@@ -7,8 +7,13 @@ install:
   - gnome-console
   - gnome-text-editor
   - firewall-config
-  - gnome-disk-utility
 remove:
+# flatpak removed until bubblewrap-suid is added
+  - flatpak
+  - flatpak-libs
+  - flatpak-selinux
+  - flatpak-session-helper
+  - gnome-software
   - gnome-terminal
   - gnome-terminal-nautilus
   - gnome-tour
@@ -22,6 +27,12 @@ remove:
   - gnome-remote-desktop
   - libvncserver
   - hplip
+  - cups
+  - gutenprint-cups
+  - cups-browsed
+  - bluez-cups
+  - cups-filters
+  - braille-printer-app
   - libppd
   - gnome-software-rpm-ostree
   - malcontent-ui-libs

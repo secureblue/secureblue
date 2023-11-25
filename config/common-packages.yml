@@ -15,14 +15,13 @@ install:
   - mediainfo
   # for auditing
   - lynis
-  - gnome-disk-utility
+  - chkrootkit
+  # other packages
   - headsetcontrol
   - mpv
-  - protonvpn-cli
   - qbittorrent
   - gimp
   - hardened_malloc
-  - chkrootkit
   - koji
   - codium
   
@@ -30,7 +29,6 @@ remove:
   - firefox
   - firefox-langpacks
   - virtualbox-guest-additions
-  - openssh-server
   
 
 

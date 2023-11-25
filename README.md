@@ -1,10 +1,24 @@
-# secureblue
+<p align="center">
+  <img src="https://github.com/secureblue/secureblue/assets/129108030/292e0ecc-50b8-4de5-a11a-bfe292489f6c" href="https://github.com/secureblue/secureblue" width=180 />
+</p>
+
+<h1 align="center">secureblue</h1>
+
 
 [![secureblue](https://github.com/secureblue/secureblue/actions/workflows/build.yml/badge.svg)](https://github.com/secureblue/secureblue/actions/workflows/build.yml)
 
+This repo takes the [uBlue](https://universal-blue.org/) starting point and selectively applies hardening with the following goals:
+
+- Increase defenses against the exploitation of both known and unknown vulnerabilities.
+- Avoid sacrificing usability for most use cases where possible
+
+The following are not in scope for this project:
+- Anything related to increasing "privacy", especially when at odds with improving security
+- Anything related to "degoogling"
+
 ## What
 
-This repo takes the uBlue starting point and selectively applies some hardening so as to provide images that are partially hardened without sacrificing usability for most use cases. These builds may be somewhat less performant due to the performance hit of some of the applied hardening.
+Hardening applied:
 
 - Setting numerous hardened sysctl values (Inspired by but not the same as Kicksecure's)
 - Disabling coredumps in limits.conf
@@ -15,8 +29,7 @@ This repo takes the uBlue starting point and selectively applies some hardening 
 - Disabling unprivileged user namespaces and removing flatpak
 - Sets numerous hardening kernel parameters (Inspired by [Madaidan's Hardening Guide](https://madaidans-insecurities.github.io/guides/linux-hardening.html))
 - Installs and enables [hardened_malloc](https://github.com/GrapheneOS/hardened_malloc) globally
-- Installing Chromium from the koji updates-testing repo to always have the latest version of chromium, the stable chromium package lags behind on security patches ([Why chromium?](https://madaidans-insecurities.github.io/firefox-chromium.html))
-- Opinionated "debloating"
+- Installing Chromium from the koji updates-testing repo to always have the latest version of chromium, the stable chromium package lags behind on security patches ([Why chromium?](https://grapheneos.org/usage#web-browsing))
 
 ## Why
 

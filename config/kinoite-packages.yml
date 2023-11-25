@@ -11,6 +11,13 @@ remove:
   - plasma-discover-notifier
   - kf5-akonadi-server
   - kf5-akonadi-server-mysql
+  - kde-connect
+  - kde-connect-libs
+  - kdeconnectd
+  - kf5-akonadi-server
+  - kf5-akonadi-server-mysql
+  - kwalletmanager5
+  - plasma-vault
   - flatpak
   - flatpak-libs
   - flatpak-selinux

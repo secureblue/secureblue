@@ -4,10 +4,6 @@ repos:
 install:    
   - gwenview
 remove:
-  - kmousetool 
-  - plasma-welcome
-  - kfind
-  - kcharselect
   - kde-connect
   - kde-connect-libs
   - kdeconnectd

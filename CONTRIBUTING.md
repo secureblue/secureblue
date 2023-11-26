@@ -63,6 +63,15 @@ A good bug report should describe the issue in detail. Generally speaking:
 - Possibly your input and the output
 - Can you reliably reproduce the issue? And can you also reproduce it with older versions?
 
+#### Before Submitting a Pull Request
+
+A good pull request should be ready for review before it is even created. For all pull requests, ensure:
+
+- Your changes are in a single commit
+- You have no unnecessary changes, including and especially whitespace changes
+- You have tested your changes
+- For substantive changes, you include evidence of proper functionality in the pull request in addition to the build results.
+
 ### How to test incoming changes
 
 One of the nice things about the image model is that we can generate an entire OS image for every change we want to commit, so this makes testing way easier than in the past. You can rebase to it, see if it works, and then move back. This also means we can increase the amount of testers! 

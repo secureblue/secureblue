@@ -22,6 +22,7 @@ All types of contributions are encouraged and valued. See the [Table of Contents
 - [I Have a Question](#i-have-a-question)
 - [I Want To Contribute](#i-want-to-contribute)
 - [Reporting Bugs](#reporting-bugs)
+- [Pull Requests](#pull-requests)
 - [How to test incoming changes](#how-to-test-incoming-changes)
 - [Building Locally](#building-locally)
 - [Styleguides](#styleguides)

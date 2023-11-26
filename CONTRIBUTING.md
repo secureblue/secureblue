@@ -63,6 +63,8 @@ A good bug report should describe the issue in detail. Generally speaking:
 - Possibly your input and the output
 - Can you reliably reproduce the issue? And can you also reproduce it with older versions?
 
+### Pull Requests
+
 #### Before Submitting a Pull Request
 
 A good pull request should be ready for review before it is even created. For all pull requests, ensure:

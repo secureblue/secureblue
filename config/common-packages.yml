@@ -22,6 +22,7 @@ install:
   - chkrootkit
   - koji
   - codium
+  - clamav
 
 remove:
   - firefox

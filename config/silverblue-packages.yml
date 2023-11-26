@@ -1,7 +1,7 @@
 type: rpm-ostree
 repos:
   # - https://blah
-install:    
+install:
   - gnome-shell-extension-appindicator
   - gnome-shell-extension-pop-shell
   - gnome-console
@@ -21,12 +21,6 @@ remove:
   - gnome-remote-desktop
   - libvncserver
   - hplip
-  - cups
-  - gutenprint-cups
-  - cups-browsed
-  - bluez-cups
-  - cups-filters
-  - braille-printer-app
   - libppd
   - gnome-software
   - gnome-software-rpm-ostree

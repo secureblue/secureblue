@@ -1,8 +1,8 @@
 type: rpm-ostree
-repos: 
+repos:
   - https://copr.fedorainfracloud.org/coprs/qoijjj/hardened_malloc/repo/fedora-39/qoijjj-hardened_malloc-fedora-39.repo
   - https://copr.fedorainfracloud.org/coprs/qoijjj/vscodium/repo/fedora-39/qoijjj-codium-fedora-39.repo
-install:    
+install:
   - python3-pip
   # GNOME's GTK4 theme, Libadwaita. Already included in Silverblue, but not
   # other spins. You can remove if you aren't using yafti, but many native
@@ -22,13 +22,19 @@ install:
   - chkrootkit
   - koji
   - codium
-  
+
 remove:
   - firefox
   - firefox-langpacks
   - virtualbox-guest-additions
   - openssh-server
-  
+  - cups
+  - gutenprint-cups
+  - cups-browsed
+  - bluez-cups
+  - cups-filters
+  - braille-printer-app
+
 
 
 

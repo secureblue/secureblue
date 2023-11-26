@@ -34,7 +34,7 @@ All types of contributions are encouraged and valued. See the [Table of Contents
 This project and everyone participating in it is governed by the
 [CONTRIBUTING.md Code of Conduct](/CODE_OF_CONDUCT.md).
 By participating, you are expected to uphold this code. Please report unacceptable behavior
-to jorge.castro@gmail.com
+to uhchyf42o@mozmail.com
 
 ## I Have a Question
 

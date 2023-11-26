@@ -2,6 +2,7 @@ type: rpm-ostree
 repos:
   # - https://blah
 install:    
+  - gwenview
 remove:
   - kmousetool 
   - plasma-welcome

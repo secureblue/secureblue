@@ -1,0 +1,10 @@
+[Desktop Entry]
+Encoding=UTF-8
+Name=chkrootkit
+Comment=Locally check for signs of a rootkit
+Icon=chkrootkit
+Exec=pkexec chkrootkit
+Terminal=true
+Type=Application
+Categories=Application;System;
+X-Desktop-File-Install-Version=0.26

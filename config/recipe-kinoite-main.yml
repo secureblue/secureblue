@@ -18,8 +18,9 @@ modules:
                   # added into /usr/etc/ (under /config/files) as that is the proper "distro" 
                   # config directory on ostree read more in the files module's README
 
-  - from-file: common-packages.yml
+  # common packages last
   - from-file: kinoite-packages.yml
+  - from-file: common-packages.yml
 
 
   - type: fonts

@@ -26,6 +26,8 @@ Hardening applied:
 - Disabling coredumps in limits.conf
 - Disabling all ports and services for firewalld
 - Blacklisting numerous unused kernel modules to reduce attack surface
+- Require a password for sudo every time it's called
+- Disable passwordless sudo for rpm-ostree
 - Setting more restrictive file permissions (Based on recommendations from [lynis](https://cisofy.com/lynis/))
 - Installing dnf-automatic and chkrootkit
 - Disabling unprivileged user namespaces and removing flatpak

@@ -1,4 +1,4 @@
-# Welcome to Universal Blue
+# Welcome to Secure Blue
 
 Thanks for taking the time to look into helping out!
 All contributions are appreciated! 
@@ -22,6 +22,7 @@ All types of contributions are encouraged and valued. See the [Table of Contents
 - [I Have a Question](#i-have-a-question)
 - [I Want To Contribute](#i-want-to-contribute)
 - [Reporting Bugs](#reporting-bugs)
+- [Pull Requests](#pull-requests)
 - [How to test incoming changes](#how-to-test-incoming-changes)
 - [Building Locally](#building-locally)
 - [Styleguides](#styleguides)
@@ -37,7 +38,7 @@ to jorge.castro@gmail.com
 
 ## I Have a Question
 
-> If you want to ask a question, ask in the [discussion forum](https://github.com/orgs/ublue-os/discussions)
+> If you want to ask a question, ask in [Issues](https://github.com/secureblue/secureblue/issues).
 
 ## I Want To Contribute
 
@@ -63,6 +64,17 @@ A good bug report should describe the issue in detail. Generally speaking:
 - Possibly your input and the output
 - Can you reliably reproduce the issue? And can you also reproduce it with older versions?
 
+### Pull Requests
+
+#### Before Submitting a Pull Request
+
+A good pull request should be ready for review before it is even created. For all pull requests, ensure:
+
+- Your changes are in a single commit
+- You have no unnecessary changes, including and especially whitespace changes
+- You have tested your changes
+- For substantive changes, you include evidence of proper functionality in the pull request in addition to the build results.
+
 ### How to test incoming changes
 
 One of the nice things about the image model is that we can generate an entire OS image for every change we want to commit, so this makes testing way easier than in the past. You can rebase to it, see if it works, and then move back. This also means we can increase the amount of testers! 
@@ -86,9 +98,9 @@ Here's an example: https://github.com/ublue-os/nvidia/pull/49
 The minimum tools required are git and a working machine with podman enabled and configured. 
 Building locally is much faster than building in GitHub and is a good way to move fast before pushing to a remote.
 
-### Clone the repo you want
+### Clone the repo
 
-    git clone https://github.com/ublue-os/base.git
+    git clone https://github.com/secureblue/secureblue.git
 
 ### Build the image
     

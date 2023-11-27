@@ -5,6 +5,10 @@
 # builds actually ran successfully without any errors!
 set -oue pipefail
 
-# Your code goes here.
-echo 'This is an example shell script'
-echo 'Scripts here will run during build if specified in recipe.yml'
+# echo "Setting more restrictive file permissions..."
+# chmod 700 /etc/cron.d
+# chmod 700 /etc/cron.daily/
+# chmod 700 /etc/cron.daily
+# chmod 700 /etc/cron.hourly
+# chmod 700 /etc/cron.weekly
+# chmod 700 /etc/cron.monthly

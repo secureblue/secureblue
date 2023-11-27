@@ -1,0 +1,46 @@
+type: rpm-ostree
+repos:
+  # - https://blah
+install:    
+  - gwenview
+remove:
+  - kde-connect
+  - kde-connect-libs
+  - kdeconnectd
+  - kf5-akonadi-server
+  - kf5-akonadi-server-mysql
+  - kwalletmanager5
+  - flatpak
+  - flatpak-libs
+  - flatpak-selinux
+  - flatpak-kcm
+  - flatpak-session-helper
+  - fedora-flathub-remote
+  - toolbox
+  - kde-print-manager
+  - kde-print-manager-libs
+  - hplip
+  - cups
+  - gutenprint-cups
+  - cups-browsed
+  - bluez-cups
+  - cups-filters
+  - braille-printer-app
+  - libppd
+  - plasma-discover-flatpak
+  - ibus
+  - ibus-panel
+  - ibus-m17n
+  - ibus-libpinyin
+  - ibus-hangul
+  - ibus-libzhuyin
+  - ibus-qt
+  - ibus-anthy
+  - ibus-anthy-python
+  - ibus-setup
+  - ibus-typing-booster
+  - open-vm-tools
+  - open-vm-tools-desktop
+  - krfb
+  - krfb-libs
+  - qt5-qdbusviewer

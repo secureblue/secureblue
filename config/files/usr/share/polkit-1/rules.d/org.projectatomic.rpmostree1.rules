@@ -1,0 +1,1 @@
+/* Overwrites polkit rule that allows rpm-ostree to be used without sudo */

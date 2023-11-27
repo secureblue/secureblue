@@ -1,7 +1,6 @@
 type: rpm-ostree
 repos: 
-  - https://copr.fedorainfracloud.org/coprs/qoijjj/hardened_malloc/repo/fedora-39/qoijjj-hardened_malloc-fedora-39.repo
-  - https://copr.fedorainfracloud.org/coprs/qoijjj/vscodium/repo/fedora-39/qoijjj-codium-fedora-39.repo
+  - https://copr.fedorainfracloud.org/coprs/secureblue/hardened_malloc/repo/fedora-39/secureblue-hardened_malloc-fedora-39.repo
   - https://copr.fedorainfracloud.org/coprs/secureblue/bubblewrap-suid/repo/fedora-39/secureblue-bubblewrap-suid-fedora-39.repo
 install:    
   - python3-pip
@@ -15,13 +14,9 @@ install:
   - mediainfo
   - lynis
   - headsetcontrol
-  - mpv
-  - qbittorrent
-  - gimp
   - hardened_malloc
   - chkrootkit
   - koji
-  - codium
   - bubblewrap-suid
   
 remove:

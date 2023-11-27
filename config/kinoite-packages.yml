@@ -2,7 +2,6 @@ type: rpm-ostree
 repos:
   # - https://blah
 install:    
-  - gwenview
 remove:
   - kde-connect
   - kde-connect-libs
@@ -22,14 +21,6 @@ remove:
   - cups-filters
   - braille-printer-app
   - libppd
-  - ibus-m17n
-  - ibus-libpinyin
-  - ibus-hangul
-  - ibus-libzhuyin
-  - ibus-qt
-  - ibus-anthy
-  - ibus-anthy-python
-  - ibus-typing-booster
   - open-vm-tools
   - open-vm-tools-desktop
   - qt5-qdbusviewer

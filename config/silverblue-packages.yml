@@ -7,6 +7,7 @@ install:
   - gnome-console
   - gnome-text-editor
   - firewall-config
+  - gnome-disk-utility
 remove:
   - gnome-terminal
   - gnome-terminal-nautilus

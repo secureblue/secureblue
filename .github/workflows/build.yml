@@ -58,7 +58,7 @@ jobs:
         uses: ublue-os/just-action@v1
 
       - name: Add yq (for reading recipe.yml)
-        uses: mikefarah/yq@v4.40.2
+        uses: mikefarah/yq@v4.40.3
 
       - name: Gather image data from recipe
         run: |

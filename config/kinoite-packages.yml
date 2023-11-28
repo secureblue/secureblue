@@ -1,26 +1,15 @@
 type: rpm-ostree
 repos:
   # - https://blah
-install:    
+install:
 remove:
   - kde-connect
   - kde-connect-libs
   - kdeconnectd
   - kf5-akonadi-server
   - kf5-akonadi-server-mysql
-  - kwalletmanager5
-  - fedora-flathub-remote
-  - toolbox
   - kde-print-manager
   - kde-print-manager-libs
-  - hplip
-  - cups
-  - gutenprint-cups
-  - cups-browsed
-  - bluez-cups
-  - cups-filters
-  - braille-printer-app
-  - libppd
   - open-vm-tools
   - open-vm-tools-desktop
   - qt5-qdbusviewer

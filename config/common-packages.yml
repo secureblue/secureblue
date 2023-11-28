@@ -1,8 +1,8 @@
 type: rpm-ostree
-repos: 
+repos:
   - https://copr.fedorainfracloud.org/coprs/secureblue/hardened_malloc/repo/fedora-39/secureblue-hardened_malloc-fedora-39.repo
   - https://copr.fedorainfracloud.org/coprs/secureblue/bubblewrap-suid/repo/fedora-39/secureblue-bubblewrap-suid-fedora-39.repo
-install:    
+install:
   - python3-pip
   # GNOME's GTK4 theme, Libadwaita. Already included in Silverblue, but not
   # other spins. You can remove if you aren't using yafti, but many native
@@ -18,13 +18,23 @@ install:
   - chkrootkit
   - koji
   - bubblewrap-suid
-  
+
 remove:
   - firefox
   - firefox-langpacks
   - virtualbox-guest-additions
   - openssh-server
   - bubblewrap
+  - cups
+  - gutenprint-cups
+  - cups-browsed
+  - bluez-cups
+  - cups-filters
+  - braille-printer-app
+  - toolbox
+  - fedora-flathub-remote
+  - hplip
+  - libppd
 
 
 

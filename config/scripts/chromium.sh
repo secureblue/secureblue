@@ -6,7 +6,7 @@
 set -oue pipefail
 
 echo "Installing chromium from koji updates-testing"
-koji download-build --arch=x86_64 $(koji latest-build f39-build chromium | awk 'NR==3 {print $1}')
+koji download-build --arch=x86_64 $(koji latest-build f39-updates-candidate chromium | awk 'NR==3 {print $1}')
 rm chromedriver-*.rpm
 rm chromium-headless-*.rpm
 rpm-ostree install *.rpm

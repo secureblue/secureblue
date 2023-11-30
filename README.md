@@ -25,6 +25,7 @@ Hardening applied:
 - Setting numerous hardened sysctl values (Inspired by but not the same as Kicksecure's)
 - Disabling coredumps in limits.conf
 - Disabling all ports and services for firewalld
+- Adds per-network MAC randomization
 - Blacklisting numerous unused kernel modules to reduce attack surface
 - Require a password for sudo every time it's called
 - Disable passwordless sudo for rpm-ostree

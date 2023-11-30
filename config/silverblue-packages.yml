@@ -31,5 +31,4 @@ remove:
   - libppd
   - malcontent-ui-libs
   - malcontent-control
-  - toolbox
   - fedora-flathub-remote

@@ -25,6 +25,9 @@ remove:
   - virtualbox-guest-additions
   - openssh-server
   - bubblewrap
+  - toolbox
+  - distrobox
+  - podman
 
 
 

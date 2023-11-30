@@ -10,7 +10,6 @@ remove:
   - kf5-akonadi-server-mysql
   - kwalletmanager5
   - fedora-flathub-remote
-  - toolbox
   - kde-print-manager
   - kde-print-manager-libs
   - hplip

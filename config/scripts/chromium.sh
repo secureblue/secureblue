@@ -5,7 +5,7 @@
 # builds actually ran successfully without any errors!
 set -oue pipefail
 
-echo "Installing chromium from koji updates-testing"
+echo "Installing chromium from koji updates"
 koji download-build --arch=x86_64 $(koji latest-build f39-updates chromium | awk 'NR==3 {print $1}')
 rm chromedriver-*.rpm
 rm chromium-headless-*.rpm

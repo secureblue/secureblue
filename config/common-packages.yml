@@ -2,6 +2,7 @@ type: rpm-ostree
 repos: 
   - https://copr.fedorainfracloud.org/coprs/secureblue/hardened_malloc/repo/fedora-39/secureblue-hardened_malloc-fedora-39.repo
   - https://copr.fedorainfracloud.org/coprs/secureblue/bubblewrap-suid/repo/fedora-39/secureblue-bubblewrap-suid-fedora-39.repo
+  - https://copr.fedorainfracloud.org/coprs/secureblue/bubblejail/repo/fedora-39/secureblue-bubblejail-fedora-39.repo
 install:    
   - python3-pip
   # GNOME's GTK4 theme, Libadwaita. Already included in Silverblue, but not
@@ -18,6 +19,7 @@ install:
   - chkrootkit
   - koji
   - bubblewrap-suid
+  - bubblejail
   
 remove:
   - firefox

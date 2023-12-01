@@ -88,6 +88,16 @@ The following command is available to append kernel boot parameters that apply a
 just set-kargs-hardening 
 ```
 
+#### Nvidia
+If you are using an nvidia image, run this after installation:
+
+```
+rpm-ostree kargs \
+    --append=rd.driver.blacklist=nouveau \
+    --append=modprobe.blacklist=nouveau \
+    --append=nvidia-drm.modeset=1
+```
+
 ## Contributing
 
 Follow the [contributing documentation](CONTRIBUTING.md#contributing), and make sure to respect the [CoC](CODE_OF_CONDUCT.md).

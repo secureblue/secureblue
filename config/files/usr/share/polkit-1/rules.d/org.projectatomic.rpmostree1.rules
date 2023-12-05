@@ -1,1 +1,16 @@
-/* Overwrites polkit rule that allows rpm-ostree to be used without sudo */
+/* Overwrites polkit rule that allows rpm-ostree install to be used without sudo
+   Allows only upgrades and repo refreshes without sudo
+ */
+polkit.addRule(function(action, subject) {
+    if (action.id == "org.projectatomic.rpmostree1.repo-refresh" &&
+        subject.active == true && subject.local == true) {
+            return polkit.Result.YES;
+    }
+
+    if ((action.id == "org.projectatomic.rpmostree1.upgrade" ) &&
+        subject.active == true &&
+        subject.local == true &&
+        subject.isInGroup("wheel")) {
+            return polkit.Result.YES;
+    }
+});

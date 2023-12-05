@@ -4,33 +4,34 @@ repos:
   - https://copr.fedorainfracloud.org/coprs/secureblue/bubblewrap-suid/repo/fedora-39/secureblue-bubblewrap-suid-fedora-39.repo
   - https://copr.fedorainfracloud.org/coprs/secureblue/bubblejail/repo/fedora-39/secureblue-bubblejail-fedora-39.repo
 install:    
-  - python3-pip
-  # GNOME's GTK4 theme, Libadwaita. Already included in Silverblue, but not
-  # other spins. You can remove if you aren't using yafti, but many native
-  # apps and binaries require it, so it's a good idea to always include it
-  # if you ever download or compile any custom software on your machine.
-  - libadwaita
   - yt-dlp
   - lm_sensors
   - mediainfo
   - lynis
-  - headsetcontrol
   - hardened_malloc
   - chkrootkit
-  - koji
   - bubblewrap-suid
   - bubblejail
-  - chromium
   
 remove:
   - firefox
   - firefox-langpacks
   - virtualbox-guest-additions
-  - openssh-server
   - bubblewrap
   - toolbox
   - distrobox
   - podman
+  - hplip
+  - braille-printer-app
+  - libppd
+  - cups
+  - gutenprint-cups
+  - cups-browsed
+  - bluez-cups
+  - cups-filters
+  - open-vm-tools
+  - open-vm-tools-desktop
+  - fedora-flathub-remote
 
 
 

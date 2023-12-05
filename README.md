@@ -56,6 +56,8 @@ For more info on uBlue, check out the [uBlue homepage](https://universal-blue.or
 - kinoite-nvidia-hardened
 - silverblue-main-hardened
 - silverblue-nvidia-hardened
+- server-main-hardened
+- server-nvidia-hardened
 
 
 ### Rebasing

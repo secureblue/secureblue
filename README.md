@@ -83,6 +83,15 @@ To rebase an existing Silverblue/Kinoite installation to the latest build:
   
 ### Post-install
 
+After installation, [yafti](https://github.com/ublue-os/yafti) will open. Make sure to follow the steps listed carefully and read the directions closely.
+
+#### Kargs
+To append kernel boot parameters that apply additional hardening (reboot required):
+
+```
+just set-kargs-hardening 
+```
+
 #### Nvidia
 If you are using an nvidia image, run this after installation:
 

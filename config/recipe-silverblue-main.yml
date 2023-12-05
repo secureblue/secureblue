@@ -1,7 +1,7 @@
 # image will be published to ghcr.io/<user>/<name>
 name: silverblue-main-hardened
 # description will be included in the image's metadata
-description: "Silverblue main with minimal hardening applied"
+description: "Silverblue main with some hardening applied"
 
 # the base image to build on top of (FROM) and the version tag to use
 base-image: ghcr.io/ublue-os/silverblue-main
@@ -10,14 +10,10 @@ image-version: 39 # latest is also supported if you want new updates ASAP
 # module configuration, executed in order
 # you can include multiple instances of the same module
 modules:
-
   - from-file: common-files.yml
-
-    # common packages last
   - from-file: silverblue-packages.yml
+  - from-file: desktop-packages.yml
   - from-file: common-packages.yml
-
   - from-file: common-bling.yml
   - from-file: common-scripts.yml
-  
   - type: yafti 

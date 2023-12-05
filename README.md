@@ -35,7 +35,7 @@ Hardening applied:
 - Replacing bubblewrap with bubblewrap-suid so flatpak can be used without unprivileged user namespaces
 - Sets numerous hardening kernel parameters (Inspired by [Madaidan's Hardening Guide](https://madaidans-insecurities.github.io/guides/linux-hardening.html))
 - Installs and enables [hardened_malloc](https://github.com/GrapheneOS/hardened_malloc) globally
-- Installing Chromium from the koji updates-testing repo to always have the latest version of chromium, the stable chromium package lags behind on security patches ([Why chromium?](https://grapheneos.org/usage#web-browsing))
+- Installing Chromium into the base image ([Why chromium?](https://grapheneos.org/usage#web-browsing))
 
 ## Why
 

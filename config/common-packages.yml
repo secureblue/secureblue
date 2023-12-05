@@ -20,6 +20,7 @@ install:
   - koji
   - bubblewrap-suid
   - bubblejail
+  - chromium
   
 remove:
   - firefox

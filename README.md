@@ -52,8 +52,6 @@ For more info on uBlue, check out the [uBlue homepage](https://universal-blue.or
 
 ### Available Images
 
-> Note: gaming utilities like Steam and Lutris are not included and in my experience are largely incompatible with hardened_malloc
-
 - kinoite-main-hardened
 - kinoite-nvidia-hardened
 - silverblue-main-hardened

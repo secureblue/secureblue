@@ -10,10 +10,10 @@ image-version: 39
 # list of modules, executed in order
 # you can include multiple instances of the same module
 modules:
-  - from-file: common-files.yml
-  - from-file: kinoite-packages.yml
-  - from-file: desktop-packages.yml
-  - from-file: common-packages.yml
-  - from-file: common-bling.yml
-  - from-file: common-scripts.yml
+  - from-file: common/common-files.yml
+  - from-file: common/kinoite-packages.yml
+  - from-file: common/gui-packages.yml
+  - from-file: common/common-packages.yml
+  - from-file: common/common-bling.yml
+  - from-file: common/common-scripts.yml
   - type: yafti 

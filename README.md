@@ -52,10 +52,23 @@ For more info on uBlue, check out the [uBlue homepage](https://universal-blue.or
 
 ### Available Images
 
+#### desktop
 - kinoite-main-hardened
 - kinoite-nvidia-hardened
 - silverblue-main-hardened
 - silverblue-nvidia-hardened
+- sericea-main-hardened
+- sericea-nvidia-hardened
+
+#### laptop
+- kinoite-main-hardened-laptop
+- kinoite-nvidia-hardened-laptop
+- silverblue-main-hardened-laptop
+- silverblue-nvidia-hardened-laptop
+- sericea-main-hardened-laptop
+- sericea-nvidia-hardened-laptop
+
+#### server
 - server-main-hardened
 - server-nvidia-hardened
 

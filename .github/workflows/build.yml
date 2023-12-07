@@ -39,12 +39,23 @@ jobs:
         # Add recipes for all the images you want to build here.
         # Don't add module configuration files, you will get errors.
         recipe:
-          - recipe-silverblue-main.yml
-          - recipe-silverblue-nvidia.yml
-          - recipe-kinoite-main.yml
-          - recipe-kinoite-nvidia.yml
-          - recipe-server-main.yml
-          - recipe-server-nvidia.yml
+          # desktop
+          - recipes/desktop/recipe-silverblue-main.yml
+          - recipes/desktop/recipe-silverblue-nvidia.yml
+          - recipes/desktop/recipe-kinoite-main.yml
+          - recipes/desktop/recipe-kinoite-nvidia.yml
+          - recipes/desktop/recipe-sericea-main.yml
+          - recipes/desktop/recipe-sericea-nvidia.yml
+          # laptop
+          - recipes/laptop/recipe-silverblue-main-laptop.yml
+          - recipes/laptop/recipe-silverblue-nvidia-laptop.yml
+          - recipes/laptop/recipe-kinoite-main-laptop.yml
+          - recipes/laptop/recipe-kinoite-nvidia-laptop.yml
+          - recipes/laptop/recipe-sericea-main-laptop.yml
+          - recipes/laptop/recipe-sericea-nvidia-laptop.yml
+          # server
+          - recipes/server/recipe-server-main.yml
+          - recipes/server/recipe-server-nvidia.yml
 
 
     steps:

@@ -61,12 +61,12 @@ For more info on uBlue, check out the [uBlue homepage](https://universal-blue.or
 - sericea-nvidia-hardened
 
 #### laptop
-- kinoite-main-hardened-laptop
-- kinoite-nvidia-hardened-laptop
-- silverblue-main-hardened-laptop
-- silverblue-nvidia-hardened-laptop
-- sericea-main-hardened-laptop
-- sericea-nvidia-hardened-laptop
+- kinoite-main-laptop-hardened
+- kinoite-nvidia-laptop-hardened
+- silverblue-main-laptop-hardened
+- silverblue-nvidia-laptop-hardened
+- sericea-main-laptop-hardened
+- sericea-nvidia-laptop-hardened
 
 #### server
 - server-main-hardened

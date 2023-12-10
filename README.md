@@ -35,7 +35,7 @@ Hardening applied:
 - Disabling unprivileged user namespaces
 - Replacing bubblewrap with bubblewrap-suid so flatpak can be used without unprivileged user namespaces
 - Sets numerous hardening kernel parameters (Inspired by [Madaidan's Hardening Guide](https://madaidans-insecurities.github.io/guides/linux-hardening.html))
-- Installs and enables [hardened_malloc](https://github.com/GrapheneOS/hardened_malloc) globally
+- Installs and enables [hardened_malloc](https://github.com/GrapheneOS/hardened_malloc) globally, including for flatpaks
 - Installing Chromium into the base image ([Why chromium?](https://grapheneos.org/usage#web-browsing)) ([Why not flatpak chromium?](https://forum.vivaldi.net/post/669805))
 - Including a hardened chromium config and pushing upstream fedora to harden the build for all fedora users, including secureblue users ([for example, enabling CFI](https://bugzilla.redhat.com/show_bug.cgi?id=2252874))
 

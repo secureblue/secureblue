@@ -19,6 +19,15 @@ screens:
       actions:
         - run: just set-kargs-hardening
 
+  can-we-enable-printing:
+    source: yafti.screen.consent
+    values:
+      title: Printing
+      description: |
+        The cups printing service is disabled by default to reduce attack surface. If you need printing support, run "just enable-cups" manually.
+      actions:
+        - run: just enable-cups
+
   can-we-harden-your-flatpaks:
     source: yafti.screen.consent
     values:

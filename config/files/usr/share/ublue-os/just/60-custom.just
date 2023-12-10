@@ -6,3 +6,10 @@ set-kargs-hardening:
 
 harden-flatpak:
     flatpak override --user --filesystem=host-os:ro --env=LD_PRELOAD=/var/run/host/usr/lib64/libhardened_malloc.so
+
+enable-cups:
+    firewall-cmd --add-service=cups --permanent 
+    firewall-cmd --reload 
+    systemctl unmask cups
+    systemctl enable cups
+    systemctl start cups

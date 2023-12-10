@@ -1,0 +1,3 @@
+# Command-line options for chronyd
+# https://www.mankier.com/8/chronyd
+OPTIONS="-F 1"

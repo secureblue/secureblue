@@ -31,7 +31,7 @@ Hardening applied:
 - Disable passwordless sudo for rpm-ostree
 - Setting more restrictive file permissions (Based on recommendations from [lynis](https://cisofy.com/lynis/))
 - Brute force protection by locking user accounts for 24 hours after 50 failed login attempts, hardened password encryption and password quality suggestions
-- Installing dnf-automatic and chkrootkit
+- Installing chkrootkit
 - Disabling unprivileged user namespaces
 - Replacing bubblewrap with bubblewrap-suid so flatpak can be used without unprivileged user namespaces
 - Sets numerous hardening kernel parameters (Inspired by [Madaidan's Hardening Guide](https://madaidans-insecurities.github.io/guides/linux-hardening.html))

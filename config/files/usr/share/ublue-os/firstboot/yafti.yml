@@ -15,9 +15,9 @@ screens:
     values:
       title: Kernel hardening
       description: |
-        This step will enable additional kernel hardening. You must run this manually, since it requires sudo. Run "just set-kargs-hardening" in a terminal, then click accept.
+        This step will enable additional kernel hardening. 
       actions:
-        - run: just set-kargs-hardening
+        - run: pkexec ujust set-kargs-hardening
 
   can-we-enable-printing:
     source: yafti.screen.consent

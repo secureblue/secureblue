@@ -1,7 +1,7 @@
 # image will be published to ghcr.io/<user>/<name>
-name: silverblue-main-hardened
+name: silverblue-main-laptop-userns-hardened
 # description will be included in the image's metadata
-description: "Silverblue main with some hardening applied"
+description: "Silverblue main with some hardening applied, for laptops"
 
 # the base image to build on top of (FROM) and the version tag to use
 base-image: ghcr.io/ublue-os/silverblue-main
@@ -15,7 +15,6 @@ modules:
   - from-file: common/gui-packages.yml
   - from-file: common/common-packages.yml
   - from-file: common/common-bling.yml
+  - from-file: recipes/laptop/laptop-bling.yml
   - from-file: common/common-scripts.yml
-  - from-file: common/disableuserns-packages.yml
-  - from-file: common/disableuserns-scripts.yml
   - type: yafti 

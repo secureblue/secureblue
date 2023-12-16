@@ -1,5 +1,5 @@
 # image will be published to ghcr.io/<user>/<name>
-name: silverblue-main-hardened
+name: silverblue-main-userns-hardened
 # description will be included in the image's metadata
 description: "Silverblue main with some hardening applied"
 
@@ -16,6 +16,4 @@ modules:
   - from-file: common/common-packages.yml
   - from-file: common/common-bling.yml
   - from-file: common/common-scripts.yml
-  - from-file: common/disableuserns-packages.yml
-  - from-file: common/disableuserns-scripts.yml
   - type: yafti 

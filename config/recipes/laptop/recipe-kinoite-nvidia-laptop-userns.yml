@@ -1,21 +1,20 @@
 # image will be published to ghcr.io/<user>/<name>
-name: silverblue-main-hardened
+name: kinoite-nvidia-laptop-userns-hardened
 # description will be included in the image's metadata
-description: "Silverblue main with some hardening applied"
+description: "Kinoite nvidia with some hardening applied, for laptops"
 
 # the base image to build on top of (FROM) and the version tag to use
-base-image: ghcr.io/ublue-os/silverblue-main
-image-version: 39 # latest is also supported if you want new updates ASAP
+base-image: ghcr.io/ublue-os/kinoite-nvidia
+image-version: 39
 
-# module configuration, executed in order
+# list of modules, executed in order
 # you can include multiple instances of the same module
 modules:
   - from-file: common/common-files.yml
-  - from-file: common/silverblue-packages.yml
+  - from-file: common/kinoite-packages.yml
   - from-file: common/gui-packages.yml
   - from-file: common/common-packages.yml
   - from-file: common/common-bling.yml
+  - from-file: recipes/laptop/laptop-bling.yml
   - from-file: common/common-scripts.yml
-  - from-file: common/disableuserns-packages.yml
-  - from-file: common/disableuserns-scripts.yml
   - type: yafti 

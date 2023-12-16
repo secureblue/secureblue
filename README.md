@@ -31,8 +31,8 @@ Hardening applied:
 - Disable passwordless sudo for rpm-ostree
 - Brute force protection by locking user accounts for 24 hours after 50 failed login attempts, hardened password encryption and password quality suggestions
 - Installing chkrootkit
-- Disabling unprivileged user namespaces
-- Replacing bubblewrap with bubblewrap-suid so flatpak can be used without unprivileged user namespaces
+- (Non-userns variants) Disabling unprivileged user namespaces
+- (Non-userns variants) Replacing bubblewrap with bubblewrap-suid so flatpak can be used without unprivileged user namespaces
 - Enabling only the [flathub-verified](https://flathub.org/apps/collection/verified/1) remote by default
 - Sets numerous hardening kernel parameters (Inspired by [Madaidan's Hardening Guide](https://madaidans-insecurities.github.io/guides/linux-hardening.html))
 - Installs and enables [hardened_malloc](https://github.com/GrapheneOS/hardened_malloc) globally, including for flatpaks
@@ -55,7 +55,9 @@ For more info on uBlue, check out the [uBlue homepage](https://universal-blue.or
 
 ### Available Images
 
-#### desktop
+#### Without User Namespaces
+
+##### desktop
 - kinoite-main-hardened
 - kinoite-nvidia-hardened
 - silverblue-main-hardened
@@ -63,7 +65,7 @@ For more info on uBlue, check out the [uBlue homepage](https://universal-blue.or
 - sericea-main-hardened
 - sericea-nvidia-hardened
 
-#### laptop
+##### laptop
 - kinoite-main-laptop-hardened
 - kinoite-nvidia-laptop-hardened
 - silverblue-main-laptop-hardened
@@ -71,9 +73,31 @@ For more info on uBlue, check out the [uBlue homepage](https://universal-blue.or
 - sericea-main-laptop-hardened
 - sericea-nvidia-laptop-hardened
 
-#### server
+##### server
 - server-main-hardened
 - server-nvidia-hardened
+
+#### With User Namespaces
+
+##### desktop
+- kinoite-main-userns-hardened
+- kinoite-nvidia-userns-hardened
+- silverblue-main-userns-hardened
+- silverblue-nvidia-userns-hardened
+- sericea-main-userns-hardened
+- sericea-nvidia-userns-hardened
+
+##### laptop
+- kinoite-main-laptop-userns-hardened
+- kinoite-nvidia-laptop-userns-hardened
+- silverblue-main-laptop-userns-hardened
+- silverblue-nvidia-laptop-userns-hardened
+- sericea-main-laptop-userns-hardened
+- sericea-nvidia-laptop-userns-hardened
+
+##### server
+- server-main-userns-hardened
+- server-nvidia-userns-hardened
 
 
 ### Rebasing

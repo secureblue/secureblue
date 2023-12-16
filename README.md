@@ -16,7 +16,7 @@ This repo takes the [uBlue](https://universal-blue.org/) starting point and sele
 
 The following are not in scope for this project:
 - Anything related to increasing "privacy", especially when at odds with improving security
-- Anything related to "degoogling"
+- Anything related to "degoogling" chromium. For example, we will not be replacing chromium with Brave or ungoogled-chromium.
 
 ## What
 

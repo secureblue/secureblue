@@ -39,6 +39,7 @@ jobs:
         # Add recipes for all the images you want to build here.
         # Don't add module configuration files, you will get errors.
         recipe:
+          # non-userns
           # desktop
           - recipes/desktop/recipe-silverblue-main.yml
           - recipes/desktop/recipe-silverblue-nvidia.yml
@@ -56,6 +57,24 @@ jobs:
           # server
           - recipes/server/recipe-server-main.yml
           - recipes/server/recipe-server-nvidia.yml
+          # userns
+          # desktop
+          - recipes/desktop/recipe-silverblue-main-userns.yml
+          - recipes/desktop/recipe-silverblue-nvidia-userns.yml
+          - recipes/desktop/recipe-kinoite-main-userns.yml
+          - recipes/desktop/recipe-kinoite-nvidia-userns.yml
+          - recipes/desktop/recipe-sericea-main-userns.yml
+          - recipes/desktop/recipe-sericea-nvidia-userns.yml
+          # laptop
+          - recipes/laptop/recipe-silverblue-main-laptop-userns.yml
+          - recipes/laptop/recipe-silverblue-nvidia-laptop-userns.yml
+          - recipes/laptop/recipe-kinoite-main-laptop-userns.yml
+          - recipes/laptop/recipe-kinoite-nvidia-laptop-userns.yml
+          - recipes/laptop/recipe-sericea-main-laptop-userns.yml
+          - recipes/laptop/recipe-sericea-nvidia-laptop-userns.yml
+          # server
+          - recipes/server/recipe-server-main-userns.yml
+          - recipes/server/recipe-server-nvidia-userns.yml
 
 
     steps:

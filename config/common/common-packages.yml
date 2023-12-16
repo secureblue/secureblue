@@ -1,7 +1,6 @@
 type: rpm-ostree
 repos: 
   - https://copr.fedorainfracloud.org/coprs/secureblue/hardened_malloc/repo/fedora-39/secureblue-hardened_malloc-fedora-39.repo
-  - https://copr.fedorainfracloud.org/coprs/secureblue/bubblewrap-suid/repo/fedora-39/secureblue-bubblewrap-suid-fedora-39.repo
   - https://copr.fedorainfracloud.org/coprs/secureblue/bubblejail/repo/fedora-39/secureblue-bubblejail-fedora-39.repo
 install:    
   - yt-dlp
@@ -10,17 +9,12 @@ install:
   - lynis
   - hardened_malloc
   - chkrootkit
-  - bubblewrap-suid
   - bubblejail
   
 remove:
   - firefox
   - firefox-langpacks
   - virtualbox-guest-additions
-  - bubblewrap
-  - toolbox
-  - distrobox
-  - podman
   - open-vm-tools
   - open-vm-tools-desktop
   - fedora-flathub-remote

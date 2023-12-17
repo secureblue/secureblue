@@ -54,6 +54,28 @@ jobs:
       - name: Checkout Push to Registry action
         uses: actions/checkout@v4
 
+      # Confirm that cosign.pub matches SIGNING_SECRET
+      - uses: sigstore/cosign-installer@v3.2.0
+        if: github.event_name != 'pull_request' && github.ref == 'refs/heads/live'
+
+      - name: Check SIGNING_SECRET matches cosign.pub
+        if: github.event_name != 'pull_request' && github.ref == 'refs/heads/live'
+        env:
+          COSIGN_EXPERIMENTAL: false
+          COSIGN_PASSWORD: ""
+          COSIGN_PRIVATE_KEY: ${{ secrets.SIGNING_SECRET }}
+        shell: bash
+        run: |
+          echo "Checking for difference between public key from SIGNING_SECRET and cosign.pub"
+          delta=$(diff -u <(cosign public-key --key env://COSIGN_PRIVATE_KEY) cosign.pub)
+          if [ -z "$delta" ]; then
+            echo "cosign.pub matches SIGNING_SECRET"
+          else
+            echo "cosign.pub does not match SIGNING_SECRET"
+            echo "$delta"
+            exit 1
+          fi
+
       - name: Add yq (for reading recipe.yml)
         uses: mikefarah/yq@v4.40.4
 
@@ -180,9 +202,6 @@ jobs:
           password: ${{ secrets.GITHUB_TOKEN }}
 
       # Sign container
-      - uses: sigstore/cosign-installer@v3.2.0
-        if: github.event_name != 'pull_request' && github.ref == 'refs/heads/live'
-
       - name: Sign container image
         if: github.event_name != 'pull_request' && github.ref == 'refs/heads/live'
         run: |

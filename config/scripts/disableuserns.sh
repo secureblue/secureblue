@@ -13,3 +13,7 @@ kernel.unprivileged_userns_clone = 0
 
 " >> /usr/etc/sysctl.d/hardening.conf
 
+
+chown root:root /usr/bin/bwrap
+chmod u+s /usr/bin/bwrap
+

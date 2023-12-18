@@ -1,10 +1,5 @@
 type: rpm-ostree
-repos: 
-  - https://copr.fedorainfracloud.org/coprs/secureblue/bubblewrap-suid/repo/fedora-39/secureblue-bubblewrap-suid-fedora-39.repo
-install:    
-  - bubblewrap-suid
 remove:
-  - bubblewrap
   - toolbox
   - distrobox
   - podman

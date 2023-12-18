@@ -77,7 +77,7 @@ jobs:
           fi
 
       - name: Add yq (for reading recipe.yml)
-        uses: mikefarah/yq@v4.40.4
+        uses: mikefarah/yq@v4.40.5
 
       - name: Gather image data from recipe
         run: |

@@ -12,8 +12,6 @@ install:
   - bubblejail
   
 remove:
-  - firefox
-  - firefox-langpacks
   - virtualbox-guest-additions
   - open-vm-tools
   - open-vm-tools-desktop

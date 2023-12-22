@@ -60,6 +60,8 @@ For more info on uBlue, check out the [uBlue homepage](https://universal-blue.or
 ##### desktop
 - kinoite-main-hardened
 - kinoite-nvidia-hardened
+- lazurite-main-hardened
+- lazurite-nvidia-hardened
 - silverblue-main-hardened
 - silverblue-nvidia-hardened
 - sericea-main-hardened
@@ -68,6 +70,8 @@ For more info on uBlue, check out the [uBlue homepage](https://universal-blue.or
 ##### laptop
 - kinoite-main-laptop-hardened
 - kinoite-nvidia-laptop-hardened
+- lazurite-main-laptop-hardened
+- lazurite-nvidia-laptop-hardened
 - silverblue-main-laptop-hardened
 - silverblue-nvidia-laptop-hardened
 - sericea-main-laptop-hardened
@@ -82,6 +86,8 @@ For more info on uBlue, check out the [uBlue homepage](https://universal-blue.or
 ##### desktop
 - kinoite-main-userns-hardened
 - kinoite-nvidia-userns-hardened
+- lazurite-main-userns-hardened
+- lazurite-nvidia-userns-hardened
 - silverblue-main-userns-hardened
 - silverblue-nvidia-userns-hardened
 - sericea-main-userns-hardened
@@ -90,6 +96,8 @@ For more info on uBlue, check out the [uBlue homepage](https://universal-blue.or
 ##### laptop
 - kinoite-main-laptop-userns-hardened
 - kinoite-nvidia-laptop-userns-hardened
+- lazurite-main-laptop-userns-hardened
+- lazurite-nvidia-laptop-userns-hardened
 - silverblue-main-laptop-userns-hardened
 - silverblue-nvidia-laptop-userns-hardened
 - sericea-main-laptop-userns-hardened

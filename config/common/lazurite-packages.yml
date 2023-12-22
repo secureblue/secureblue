@@ -1,0 +1,5 @@
+type: rpm-ostree
+install:
+  - labwc
+remove:
+  - falkon

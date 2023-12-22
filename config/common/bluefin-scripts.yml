@@ -1,3 +1,4 @@
 type: script
 scripts:
   - disabletailscale.sh
+  - disableubluesystemsetup.sh

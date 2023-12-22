@@ -14,6 +14,7 @@ modules:
   - from-file: common/kinoite-packages.yml
   - from-file: common/gui-packages.yml
   - from-file: common/common-packages.yml
+  - from-file: common/remove-firefox.yml
   - from-file: common/common-bling.yml
   - from-file: recipes/laptop/laptop-bling.yml
   - from-file: common/common-scripts.yml

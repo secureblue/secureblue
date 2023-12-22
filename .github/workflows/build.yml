@@ -45,6 +45,8 @@ jobs:
           - recipes/desktop/recipe-silverblue-nvidia.yml
           - recipes/desktop/recipe-kinoite-main.yml
           - recipes/desktop/recipe-kinoite-nvidia.yml
+          - recipes/desktop/recipe-lazurite-main.yml
+          - recipes/desktop/recipe-lazurite-nvidia.yml
           - recipes/desktop/recipe-sericea-main.yml
           - recipes/desktop/recipe-sericea-nvidia.yml
           # laptop
@@ -52,6 +54,8 @@ jobs:
           - recipes/laptop/recipe-silverblue-nvidia-laptop.yml
           - recipes/laptop/recipe-kinoite-main-laptop.yml
           - recipes/laptop/recipe-kinoite-nvidia-laptop.yml
+          - recipes/laptop/recipe-lazurite-main-laptop.yml
+          - recipes/laptop/recipe-lazurite-nvidia-laptop.yml
           - recipes/laptop/recipe-sericea-main-laptop.yml
           - recipes/laptop/recipe-sericea-nvidia-laptop.yml
           # server
@@ -63,6 +67,8 @@ jobs:
           - recipes/desktop/recipe-silverblue-nvidia-userns.yml
           - recipes/desktop/recipe-kinoite-main-userns.yml
           - recipes/desktop/recipe-kinoite-nvidia-userns.yml
+          - recipes/desktop/recipe-lazurite-main-userns.yml
+          - recipes/desktop/recipe-lazurite-nvidia-userns.yml
           - recipes/desktop/recipe-sericea-main-userns.yml
           - recipes/desktop/recipe-sericea-nvidia-userns.yml
           # laptop
@@ -70,6 +76,8 @@ jobs:
           - recipes/laptop/recipe-silverblue-nvidia-laptop-userns.yml
           - recipes/laptop/recipe-kinoite-main-laptop-userns.yml
           - recipes/laptop/recipe-kinoite-nvidia-laptop-userns.yml
+          - recipes/laptop/recipe-lazurite-main-laptop-userns.yml
+          - recipes/laptop/recipe-lazurite-nvidia-laptop-userns.yml
           - recipes/laptop/recipe-sericea-main-laptop-userns.yml
           - recipes/laptop/recipe-sericea-nvidia-laptop-userns.yml
           # server

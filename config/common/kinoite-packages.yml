@@ -5,7 +5,6 @@ remove:
   - kdeconnectd
   - kf5-akonadi-server
   - kf5-akonadi-server-mysql
-  - kwalletmanager5
   - kde-print-manager
   - kde-print-manager-libs
   - qt5-qdbusviewer

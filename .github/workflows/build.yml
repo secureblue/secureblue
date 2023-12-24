@@ -107,10 +107,10 @@ jobs:
 
       # Confirm that cosign.pub matches SIGNING_SECRET
       - uses: sigstore/cosign-installer@v3.3.0
-        if: github.event_name != 'pull_request' && github.ref == 'refs/heads/live'
+        if: github.event_name != 'pull_request' && (github.ref == 'refs/heads/live' || github.ref == 'refs/heads/staging')
 
       - name: Check SIGNING_SECRET matches cosign.pub
-        if: github.event_name != 'pull_request' && github.ref == 'refs/heads/live'
+        if: github.event_name != 'pull_request' && (github.ref == 'refs/heads/live' || github.ref == 'refs/heads/staging')
         env:
           COSIGN_EXPERIMENTAL: false
           COSIGN_PASSWORD: ""
@@ -237,7 +237,7 @@ jobs:
       - name: Push To GHCR
         uses: redhat-actions/push-to-registry@v2
         id: push
-        if: github.event_name != 'pull_request' && github.ref == 'refs/heads/live'
+        if: github.event_name != 'pull_request' && (github.ref == 'refs/heads/live' || github.ref == 'refs/heads/staging')
         env:
           REGISTRY_USER: ${{ github.actor }}
           REGISTRY_PASSWORD: ${{ github.token }}
@@ -252,7 +252,7 @@ jobs:
 
       - name: Login to GitHub Container Registry
         uses: docker/login-action@v3
-        if: github.event_name != 'pull_request' && github.ref == 'refs/heads/live'
+        if: github.event_name != 'pull_request' && (github.ref == 'refs/heads/live' || github.ref == 'refs/heads/staging')
         with:
           registry: ghcr.io
           username: ${{ github.actor }}
@@ -260,7 +260,7 @@ jobs:
 
       # Sign container
       - name: Sign container image
-        if: github.event_name != 'pull_request' && github.ref == 'refs/heads/live'
+        if: github.event_name != 'pull_request' && (github.ref == 'refs/heads/live' || github.ref == 'refs/heads/staging')
         run: |
           cosign sign -y --key env://COSIGN_PRIVATE_KEY ${{ steps.registry_case.outputs.lowercase }}/${{ steps.image_case.outputs.lowercase }}@${TAGS}
         env:
@@ -269,6 +269,6 @@ jobs:
           COSIGN_PRIVATE_KEY: ${{ secrets.SIGNING_SECRET }}
 
       - name: Echo outputs
-        if: github.event_name != 'pull_request' && github.ref == 'refs/heads/live'
+        if: github.event_name != 'pull_request' && (github.ref == 'refs/heads/live' || github.ref == 'refs/heads/staging')
         run: |
           echo "${{ toJSON(steps.push.outputs) }}"

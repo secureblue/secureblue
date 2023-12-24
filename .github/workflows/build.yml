@@ -12,7 +12,7 @@ on: # https://docs.github.com/en/actions/using-workflows/events-that-trigger-wor
     branches:
       - live
       - template
-      - main
+      - staging
     paths-ignore: # don't rebuild if only documentation has changed
       - "**.md"
   pull_request:
@@ -163,8 +163,14 @@ jobs:
           BUILD_TAGS=("${MAJOR_VERSION}" "${MAJOR_VERSION:+$MAJOR_VERSION-}${TIMESTAMP}")
           # --
 
-          BUILD_TAGS+=("${TIMESTAMP}")
-          BUILD_TAGS+=("latest")
+          if [[ ${{ github.ref_name }} == "staging" ]]; then
+            BUILD_TAGS=("${MAJOR_VERSION}-staging" "${MAJOR_VERSION}-staging-${TIMESTAMP}")
+            BUILD_TAGS+=("staging")
+          else
+            BUILD_TAGS=("${MAJOR_VERSION}" "${MAJOR_VERSION}-${TIMESTAMP}")
+            BUILD_TAGS+=("latest")
+            BUILD_TAGS+=("${TIMESTAMP}")
+          fi
 
           if [[ "${{ github.event_name }}" == "pull_request" ]]; then
               echo "Generated the following commit tags: "

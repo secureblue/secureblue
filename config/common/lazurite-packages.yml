@@ -1,3 +1,0 @@
-type: rpm-ostree
-remove:
-  - falkon

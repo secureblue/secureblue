@@ -52,6 +52,7 @@ For more info on uBlue, check out the [uBlue homepage](https://universal-blue.or
 > **Warning**
 > [This is an experimental feature](https://www.fedoraproject.org/wiki/Changes/OstreeNativeContainerStable) and should not be used in production, try it in a VM for a while!
 
+Have a look at [PREINSTALL-README](PREINSTALL-README.md) before proceeding.
 
 ### Available Images
 

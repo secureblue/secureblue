@@ -4,4 +4,4 @@
 # Tell build process to exit if there are any errors.
 set -oue pipefail
 
-sed 's/launcher_thunar = thunar.desktop/launcher_thunar = thunar.desktop\nlauncher_chromium = chromium-browser.desktop/' /usr/share/wayfire/wf-shell.ini 
+sed -i 's/launcher_thunar = thunar.desktop/launcher_chromium = chromium-browser.desktop\nlauncher_thunar = thunar.desktop/' /usr/share/wayfire/wf-shell.ini 

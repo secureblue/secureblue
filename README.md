@@ -67,6 +67,8 @@ Have a look at [PREINSTALL-README](PREINSTALL-README.md) before proceeding.
 - silverblue-nvidia-hardened
 - sericea-main-hardened
 - sericea-nvidia-hardened
+- wayblue-wayfire-main-hardened
+- wayblue-wayfire-nvidia-hardened
 
 ##### laptop
 - kinoite-main-laptop-hardened
@@ -77,6 +79,8 @@ Have a look at [PREINSTALL-README](PREINSTALL-README.md) before proceeding.
 - silverblue-nvidia-laptop-hardened
 - sericea-main-laptop-hardened
 - sericea-nvidia-laptop-hardened
+- wayblue-wayfire-main-laptop-hardened
+- wayblue-wayfire-nvidia-laptop-hardened
 
 ##### server
 - server-main-hardened
@@ -93,6 +97,8 @@ Have a look at [PREINSTALL-README](PREINSTALL-README.md) before proceeding.
 - silverblue-nvidia-userns-hardened
 - sericea-main-userns-hardened
 - sericea-nvidia-userns-hardened
+- wayblue-wayfire-main-userns-hardened
+- wayblue-wayfire-nvidia-userns-hardened
 
 ##### laptop
 - kinoite-main-laptop-userns-hardened
@@ -103,6 +109,8 @@ Have a look at [PREINSTALL-README](PREINSTALL-README.md) before proceeding.
 - silverblue-nvidia-laptop-userns-hardened
 - sericea-main-laptop-userns-hardened
 - sericea-nvidia-laptop-userns-hardened
+- wayblue-wayfire-main-laptop-userns-hardened
+- wayblue-wayfire-nvidia-laptop-userns-hardened
 
 ##### server
 - server-main-userns-hardened

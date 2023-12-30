@@ -49,6 +49,8 @@ jobs:
           - recipes/desktop/recipe-bluefin-nvidia.yml
           - recipes/desktop/recipe-sericea-main.yml
           - recipes/desktop/recipe-sericea-nvidia.yml
+          - recipes/desktop/recipe-wayblue-wayfire-main.yml
+          - recipes/desktop/recipe-wayblue-wayfire-nvidia.yml
           # laptop
           - recipes/laptop/recipe-silverblue-main-laptop.yml
           - recipes/laptop/recipe-silverblue-nvidia-laptop.yml
@@ -58,6 +60,8 @@ jobs:
           - recipes/laptop/recipe-bluefin-nvidia-laptop.yml
           - recipes/laptop/recipe-sericea-main-laptop.yml
           - recipes/laptop/recipe-sericea-nvidia-laptop.yml
+          - recipes/laptop/recipe-wayblue-wayfire-main-laptop.yml
+          - recipes/laptop/recipe-wayblue-wayfire-nvidia-laptop.yml
           # server
           - recipes/server/recipe-server-main.yml
           - recipes/server/recipe-server-nvidia.yml
@@ -71,6 +75,8 @@ jobs:
           - recipes/desktop/recipe-bluefin-nvidia-userns.yml
           - recipes/desktop/recipe-sericea-main-userns.yml
           - recipes/desktop/recipe-sericea-nvidia-userns.yml
+          - recipes/desktop/recipe-wayblue-wayfire-main-userns.yml
+          - recipes/desktop/recipe-wayblue-wayfire-nvidia-userns.yml
           # laptop
           - recipes/laptop/recipe-silverblue-main-laptop-userns.yml
           - recipes/laptop/recipe-silverblue-nvidia-laptop-userns.yml
@@ -80,6 +86,8 @@ jobs:
           - recipes/laptop/recipe-bluefin-nvidia-laptop-userns.yml
           - recipes/laptop/recipe-sericea-main-laptop-userns.yml
           - recipes/laptop/recipe-sericea-nvidia-laptop-userns.yml
+          - recipes/laptop/recipe-wayblue-wayfire-main-laptop-userns.yml
+          - recipes/laptop/recipe-wayblue-wayfire-nvidia-laptop-userns.yml
           # server
           - recipes/server/recipe-server-main-userns.yml
           - recipes/server/recipe-server-nvidia-userns.yml

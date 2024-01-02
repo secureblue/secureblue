@@ -133,13 +133,13 @@ jobs:
           echo "BASE_IMAGE_NAME=$(echo $BASE_IMAGE | sed 's/.*\/.*\///')" >> $GITHUB_ENV
 
       - name: Verify base image
-        if: ${{ ! contains(IMAGE_NAME, 'wayblue') }}
+        if: ${{ ! contains(env.IMAGE_NAME, 'wayblue') }}
         uses: EyeCantCU/cosign-action/verify@v0.2.1
         with:
           containers: ${{ env.BASE_IMAGE_NAME }}:${{ env.IMAGE_MAJOR_VERSION }}
 
       - name: Verify base image
-        if: ${{ contains(IMAGE_NAME, 'wayblue') }}
+        if: ${{ contains(env.IMAGE_NAME, 'wayblue') }}
         uses: EyeCantCU/cosign-action/verify@v0.2.1
         with:
           containers: ${{ env.BASE_IMAGE_NAME }}:${{ env.IMAGE_MAJOR_VERSION }}

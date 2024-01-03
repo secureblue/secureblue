@@ -82,6 +82,12 @@ Have a look at [PREINSTALL-README](PREINSTALL-README.md) before proceeding.
 - wayblue-wayfire-main-laptop-hardened
 - wayblue-wayfire-nvidia-laptop-hardened
 
+###### framework
+- kinoite-framework-hardened
+- bluefin-framework-hardened
+- silverblue-framework-hardened
+- sericea-framework-hardened
+
 ##### server
 - server-main-hardened
 - server-nvidia-hardened
@@ -111,6 +117,12 @@ Have a look at [PREINSTALL-README](PREINSTALL-README.md) before proceeding.
 - sericea-nvidia-laptop-userns-hardened
 - wayblue-wayfire-main-laptop-userns-hardened
 - wayblue-wayfire-nvidia-laptop-userns-hardened
+
+###### framework
+- kinoite-framework-userns-hardened
+- bluefin-framework-userns-hardened
+- silverblue-framework-userns-hardened
+- sericea-framework-userns-hardened
 
 ##### server
 - server-main-userns-hardened

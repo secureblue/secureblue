@@ -94,10 +94,10 @@ jobs:
           - recipes/laptop/recipe-wayblue-wayfire-main-laptop-userns.yml
           - recipes/laptop/recipe-wayblue-wayfire-nvidia-laptop-userns.yml
           # framework
-          - recipes/laptop/recipe-silverblue-userns-framework.yml
-          - recipes/laptop/recipe-kinoite-userns-framework.yml
-          - recipes/laptop/recipe-bluefin-userns-framework.yml
-          - recipes/laptop/recipe-sericea-userns-framework.yml
+          - recipes/laptop/recipe-silverblue-framework-userns.yml
+          - recipes/laptop/recipe-kinoite-framework-userns.yml
+          - recipes/laptop/recipe-bluefin-framework-userns.yml
+          - recipes/laptop/recipe-sericea-framework-userns.yml
           # server
           - recipes/server/recipe-server-main-userns.yml
           - recipes/server/recipe-server-nvidia-userns.yml

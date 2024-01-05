@@ -9,7 +9,8 @@ harden-flatpak:
     flatpak override --user --filesystem=host-os:ro --env=LD_PRELOAD=/var/run/host/usr/lib64/libhardened_malloc.so
 
 enable-cups:
-    firewall-cmd --add-service=cups --permanent 
+    firewall-cmd --permanent --add-port=631/tcp
+    firewall-cmd --permanent --add-port=631/udp 
     firewall-cmd --reload 
     systemctl unmask cups
     systemctl enable cups

@@ -4,8 +4,8 @@ name: server-main-userns-hardened
 description: "base with some hardening applied"
 
 # the base image to build on top of (FROM) and the version tag to use
-base-image: ghcr.io/ublue-os/base-main
-image-version: 39
+base-image: ghcr.io/ublue-os/fedora-coreos
+image-version: stable-zfs
 
 # list of modules, executed in order
 # you can include multiple instances of the same module

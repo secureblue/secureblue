@@ -154,6 +154,9 @@ To rebase an existing Silverblue/Kinoite installation to the latest build:
 
 After installation, [yafti](https://github.com/ublue-os/yafti) will open. Make sure to follow the steps listed carefully and read the directions closely.
 
+Have a look at [POSTINSTALL-README](POSTINSTALL-README.md).
+
+
 #### Kargs
 To append kernel boot parameters that apply additional hardening (reboot required):
 

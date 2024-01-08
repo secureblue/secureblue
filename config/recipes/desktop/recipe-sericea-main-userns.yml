@@ -16,4 +16,5 @@ modules:
   - from-file: common/remove-firefox.yml
   - from-file: common/common-bling.yml
   - from-file: common/common-scripts.yml
+  - from-file: common/gui-scripts.yml
   - type: yafti 

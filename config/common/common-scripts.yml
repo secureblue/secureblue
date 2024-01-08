@@ -1,6 +1,5 @@
 type: script
 scripts:
   - authselect.sh
-  - disablecups.sh
   # this sets up the proper policy & signing files for signed images to work
   - signing.sh

@@ -6,9 +6,10 @@ set -oue pipefail
 echo "Setting up container signing in policy.json and cosign.yaml for $IMAGE_NAME"
 echo "Registry to write: $IMAGE_REGISTRY"
 
-mkdir -p /usr/etc/pki/containers
+mkdir -p /usr/etc/pki/containers/registries.d
 cp /usr/share/ublue-os/cosign.pub /usr/etc/pki/containers/"$IMAGE_NAME".pub
 
+touch /usr/etc/containers/policy.json
 FILE=/usr/etc/containers/policy.json
 
 yq -i -o=j '.transports.docker |=

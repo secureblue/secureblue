@@ -10,9 +10,6 @@ install:
   - hardened_malloc
   - chkrootkit
   - bubblejail
-  
-remove:
-  - virtualbox-guest-additions
 
 
 

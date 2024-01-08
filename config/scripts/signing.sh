@@ -9,6 +9,7 @@ echo "Registry to write: $IMAGE_REGISTRY"
 mkdir -p /usr/etc/pki/containers/registries.d
 cp /usr/share/ublue-os/cosign.pub /usr/etc/pki/containers/"$IMAGE_NAME".pub
 
+mkdir -p /usr/etc/pki/containers
 touch /usr/etc/containers/policy.json
 FILE=/usr/etc/containers/policy.json
 

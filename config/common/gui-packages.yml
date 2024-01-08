@@ -10,6 +10,7 @@ install:
   - chromium
   - mediainfo
   - yt-dlp
+  - bubblejail
   
 remove:
   - openssh-server

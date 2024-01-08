@@ -7,7 +7,6 @@ install:
   - lynis
   - hardened_malloc
   - chkrootkit
-  - bubblejail
 
 
 

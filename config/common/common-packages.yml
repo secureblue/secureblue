@@ -13,9 +13,6 @@ install:
   
 remove:
   - virtualbox-guest-additions
-  - open-vm-tools
-  - open-vm-tools-desktop
-
 
 
 

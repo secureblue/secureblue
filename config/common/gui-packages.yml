@@ -12,6 +12,9 @@ install:
 remove:
   - openssh-server
   - fedora-flathub-remote
+  - open-vm-tools
+  - open-vm-tools-desktop
+
 
 
 

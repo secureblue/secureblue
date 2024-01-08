@@ -8,6 +8,8 @@ install:
   - libadwaita
   - headsetcontrol
   - chromium
+  - mediainfo
+  - yt-dlp
   
 remove:
   - openssh-server

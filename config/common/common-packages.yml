@@ -6,6 +6,8 @@ install:
   - lynis
   - hardened_malloc
   - chkrootkit
+  - usbguard
+  - usbguard-dbus
 
 
 

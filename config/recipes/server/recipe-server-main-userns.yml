@@ -1,11 +1,11 @@
 # image will be published to ghcr.io/<user>/<name>
 name: server-main-userns-hardened
 # description will be included in the image's metadata
-description: "coreos with some hardening applied"
+description: "ucore with some hardening applied"
 
 # the base image to build on top of (FROM) and the version tag to use
-base-image: ghcr.io/ublue-os/fedora-coreos
-image-version: stable-zfs
+base-image: ghcr.io/ublue-os/ucore
+image-version: stable
 
 # list of modules, executed in order
 # you can include multiple instances of the same module

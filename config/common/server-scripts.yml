@@ -1,3 +1,4 @@
 type: script
 scripts:
   - includewget.sh
+  - enablefirewallssh.sh

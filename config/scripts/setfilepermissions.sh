@@ -4,3 +4,4 @@
 set -oue pipefail
 
 chmod 440 /usr/etc/sudoers.d/timeout
+chmod 600 /usr/etc/ssh/sshd_config

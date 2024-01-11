@@ -17,3 +17,10 @@ https://www.kicksecure.com/wiki/Root#Prevent_Malware_from_Sniffing_the_Root_Pass
 2. ```usermod -aG wheel admin```
 3. ```gpasswd -d {your username here} wheel```
 4. reboot
+
+## Chromium Extension
+
+1. Go to [uBlock Origin Lite](https://chromewebstore.google.com/detail/ublock-origin-lite/ddkjiahejlhfcafbddmgiahcphecmpfh?pli=1) ([Why Lite?](https://developer.chrome.com/docs/extensions/develop/migrate/improve-security))
+2. Install it
+3. In the extension's settings, make sure all of the lists under Default and Miscellaneous are checked (and at your preference, lists in the Annoyances section or country-specific lists)
+

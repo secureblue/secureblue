@@ -32,3 +32,7 @@ https://www.kicksecure.com/wiki/Root#Prevent_Malware_from_Sniffing_the_Root_Pass
 2. Install it
 3. In the extension's settings, make sure all of the lists under Default and Miscellaneous are checked (and at your preference, lists in the Annoyances section or country-specific lists)
 
+## Chromium settings
+1. Go to `chrome://settings/security`
+2. Scroll to "Always use secure connections" and enable it
+

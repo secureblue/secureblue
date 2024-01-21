@@ -2,15 +2,10 @@
    Allows only upgrades and repo refreshes without sudo
  */
 polkit.addRule(function(action, subject) {
-    if (action.id == "org.projectatomic.rpmostree1.repo-refresh" &&
-        subject.active == true && subject.local == true) {
-            return polkit.Result.YES;
-    }
-
-    if ((action.id == "org.projectatomic.rpmostree1.upgrade" ) &&
-        subject.active == true &&
-        subject.local == true &&
-        subject.isInGroup("wheel")) {
+    if ((action.id == "org.projectatomic.rpmostree1.repo-refresh" ||
+        action.id == "org.projectatomic.rpmostree1.upgrade") &&
+        subject.active == true && 
+        subject.local == true) {
             return polkit.Result.YES;
     }
 });

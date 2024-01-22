@@ -31,6 +31,7 @@ Hardening applied:
 - Disable passwordless sudo for rpm-ostree
 - Brute force protection by locking user accounts for 24 hours after 50 failed login attempts, hardened password encryption and password quality suggestions
 - Installing chkrootkit
+- Set opportunistic DNSSEC and DNSOverTLS for systemd-resolved
 - (Non-userns variants) Disabling unprivileged user namespaces
 - (Non-userns variants) Replacing bubblewrap with bubblewrap-suid so flatpak can be used without unprivileged user namespaces
 - Enabling only the [flathub-verified](https://flathub.org/apps/collection/verified/1) remote by default

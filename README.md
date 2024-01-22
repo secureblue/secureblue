@@ -61,6 +61,8 @@ Have a look at [PREINSTALL-README](PREINSTALL-README.md) before proceeding.
 ##### desktop
 - kinoite-main-hardened
 - kinoite-nvidia-hardened
+- cinnamon-main-hardened
+- cinnamon-nvidia-hardened
 - bluefin-main-hardened
 - bluefin-nvidia-hardened
 - silverblue-main-hardened
@@ -73,6 +75,8 @@ Have a look at [PREINSTALL-README](PREINSTALL-README.md) before proceeding.
 ##### laptop
 - kinoite-main-laptop-hardened
 - kinoite-nvidia-laptop-hardened
+- cinnamon-main-laptop-hardened
+- cinnamon-nvidia-laptop-hardened
 - bluefin-main-laptop-hardened
 - bluefin-nvidia-laptop-hardened
 - silverblue-main-laptop-hardened
@@ -97,6 +101,8 @@ Have a look at [PREINSTALL-README](PREINSTALL-README.md) before proceeding.
 ##### desktop
 - kinoite-main-userns-hardened
 - kinoite-nvidia-userns-hardened
+- cinnamon-main-userns-hardened
+- cinnamon-nvidia-userns-hardened
 - bluefin-main-userns-hardened
 - bluefin-nvidia-userns-hardened
 - silverblue-main-userns-hardened
@@ -109,6 +115,8 @@ Have a look at [PREINSTALL-README](PREINSTALL-README.md) before proceeding.
 ##### laptop
 - kinoite-main-laptop-userns-hardened
 - kinoite-nvidia-laptop-userns-hardened
+- cinnamon-main-laptop-userns-hardened
+- cinnamon-nvidia-laptop-userns-hardened
 - bluefin-main-laptop-userns-hardened
 - bluefin-nvidia-laptop-userns-hardened
 - silverblue-main-laptop-userns-hardened

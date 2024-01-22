@@ -45,6 +45,8 @@ jobs:
           - recipes/desktop/recipe-silverblue-nvidia.yml
           - recipes/desktop/recipe-kinoite-main.yml
           - recipes/desktop/recipe-kinoite-nvidia.yml
+          - recipes/desktop/recipe-cinnamon-main.yml
+          - recipes/desktop/recipe-cinnamon-nvidia.yml
           - recipes/desktop/recipe-bluefin-main.yml
           - recipes/desktop/recipe-bluefin-nvidia.yml
           - recipes/desktop/recipe-sericea-main.yml
@@ -56,6 +58,8 @@ jobs:
           - recipes/laptop/recipe-silverblue-nvidia-laptop.yml
           - recipes/laptop/recipe-kinoite-main-laptop.yml
           - recipes/laptop/recipe-kinoite-nvidia-laptop.yml
+          - recipes/laptop/recipe-cinnamon-main-laptop.yml
+          - recipes/laptop/recipe-cinnamon-nvidia-laptop.yml
           - recipes/laptop/recipe-bluefin-main-laptop.yml
           - recipes/laptop/recipe-bluefin-nvidia-laptop.yml
           - recipes/laptop/recipe-sericea-main-laptop.yml
@@ -76,6 +80,8 @@ jobs:
           - recipes/desktop/recipe-silverblue-nvidia-userns.yml
           - recipes/desktop/recipe-kinoite-main-userns.yml
           - recipes/desktop/recipe-kinoite-nvidia-userns.yml
+          - recipes/desktop/recipe-cinnamon-main-userns.yml
+          - recipes/desktop/recipe-cinnamon-nvidia-userns.yml
           - recipes/desktop/recipe-bluefin-main-userns.yml
           - recipes/desktop/recipe-bluefin-nvidia-userns.yml
           - recipes/desktop/recipe-sericea-main-userns.yml
@@ -87,6 +93,8 @@ jobs:
           - recipes/laptop/recipe-silverblue-nvidia-laptop-userns.yml
           - recipes/laptop/recipe-kinoite-main-laptop-userns.yml
           - recipes/laptop/recipe-kinoite-nvidia-laptop-userns.yml
+          - recipes/laptop/recipe-cinnamon-main-laptop-userns.yml
+          - recipes/laptop/recipe-cinnamon-nvidia-laptop-userns.yml
           - recipes/laptop/recipe-bluefin-main-laptop-userns.yml
           - recipes/laptop/recipe-bluefin-nvidia-laptop-userns.yml
           - recipes/laptop/recipe-sericea-main-laptop-userns.yml

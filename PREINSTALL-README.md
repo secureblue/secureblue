@@ -4,9 +4,13 @@ The recommended method to install secureblue is to rebase from an upstream silve
 
 ## Preinstall guide
 
-- During the installation, select the option to encrypt the drive you're installing to.
-- Use a strong password when prompted.
+Fedora Installation
+- Select the option to encrypt the drive you're installing to.
+- Use a [strong password](https://security.harvard.edu/use-strong-passwords) when prompted.
 - Leave the root account disabled.
-- Ensure secureboot is enabled in your bios.
-- Ensure your bios is up to date by checking its manufacturer's website.
-- Set a bios password to prevent tampering
+
+BIOS Hardening
+- Ensure secureboot is enabled.
+- Ensure your BIOS is up to date by checking its manufacturer's website.
+- Disable booting from USB (some manufacturers allow firmware changes from live systems).
+- Set a BIOS password to prevent tampering.

@@ -1,6 +1,7 @@
 type: rpm-ostree
 repos: 
   - https://copr.fedorainfracloud.org/coprs/secureblue/hardened_malloc/repo/fedora-39/secureblue-hardened_malloc-fedora-39.repo
+  - https://copr.fedorainfracloud.org/coprs/secureblue/pam-authramp/repo/fedora-39/pam-authramp.repo
 install:    
   - lm_sensors
   - lynis
@@ -8,6 +9,7 @@ install:
   - chkrootkit
   - usbguard
   - usbguard-dbus
+  - pam-authramp
 
 
 

@@ -29,7 +29,7 @@ Hardening applied:
 - Blacklisting numerous unused kernel modules to reduce attack surface
 - Require a password for sudo every time it's called
 - Disable passwordless sudo for rpm-ostree
-- Brute force protection by locking user accounts for 24 hours after 50 failed login attempts, hardened password encryption and password quality suggestions
+- Strong Brute force protection using [pam-authramp](https://github.com/34N0/pam-authramp), hardened password encryption and password quality suggestions
 - Installing chkrootkit
 - (Non-userns variants) Disabling unprivileged user namespaces
 - (Non-userns variants) Replacing bubblewrap with bubblewrap-suid so flatpak can be used without unprivileged user namespaces

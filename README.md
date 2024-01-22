@@ -36,8 +36,8 @@ Hardening applied:
 - Enabling only the [flathub-verified](https://flathub.org/apps/collection/verified/1) remote by default
 - Sets numerous hardening kernel parameters (Inspired by [Madaidan's Hardening Guide](https://madaidans-insecurities.github.io/guides/linux-hardening.html))
 - Installs and enables [hardened_malloc](https://github.com/GrapheneOS/hardened_malloc) globally, including for flatpaks
-- Installing Chromium instead of Firefox in the base image ([Why chromium?](https://grapheneos.org/usage#web-browsing)) ([Why not flatpak chromium?](https://forum.vivaldi.net/post/669805))
-- Including a hardened chromium config that disables JIT javascript ([why?](https://microsoftedge.github.io/edgevr/posts/Super-Duper-Secure-Mode/#is-jit-worth-it))
+- Installing Chromium instead of Firefox in the base image <sup>[Why chromium?](https://grapheneos.org/usage#web-browsing)</sup> <sup>[Why not flatpak chromium?](https://forum.vivaldi.net/post/669805)</sup>
+- Including a hardened chromium config that disables JIT javascript <sup>[why?](https://microsoftedge.github.io/edgevr/posts/Super-Duper-Secure-Mode/#is-jit-worth-it)</sup>
 - Pushing upstream fedora to harden the build for all fedora users, including secureblue users ([for example, by enabling CFI](https://bugzilla.redhat.com/show_bug.cgi?id=2252874))
 
 ## Why
@@ -56,7 +56,7 @@ Have a look at [PREINSTALL-README](PREINSTALL-README.md) before proceeding.
 
 ### Available Images
 
-#### Without User Namespaces
+#### Without User Namespaces <sup>[What's the difference?](USERNS.md)</sup>
 
 ##### desktop
 - kinoite-main-hardened
@@ -96,7 +96,7 @@ Have a look at [PREINSTALL-README](PREINSTALL-README.md) before proceeding.
 - server-main-hardened
 - server-nvidia-hardened
 
-#### With User Namespaces
+#### With User Namespaces <sup>[What's the difference?](USERNS.md)</sup>
 
 ##### desktop
 - kinoite-main-userns-hardened

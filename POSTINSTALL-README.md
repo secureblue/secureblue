@@ -53,7 +53,7 @@ polkit.addRule(function(action, subject) {
 EOF
 ```
 
-The custom rule allows the groups `wheel` and `diskadmin` to do the actions for unlocking and mounting these drives. Note the requirement on `active` and `local`, and the exactly specified actions.
+The custom rule allows the group`diskadmin` to do the actions for unlocking and mounting these drives. Note the requirement on `active` and `local`, and the exactly specified actions.
 
 ## Chromium Extension
 

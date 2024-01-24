@@ -6,7 +6,7 @@ Each module intended for public usage should include a `README.md` file inside i
 
 Modules get only the configuration options given to them in the recipe.yml, not the configuration of other modules or any top-level keys. The configuration is given as the first argument as a single-line json string. You can check out the default modules for examples on how to parse such string using `yq` or `jq`.  
 
-Additionally, each module has access to four environment variables, `CONFIG_DIRECTORY` pointing to the Startingpoint directory in `/usr/share/ublue-os/`, `IMAGE_NAME` being the name of the image as declared in the recipe, `BASE_IMAGE` being the URL of the container image used as the base (FROM) in the image, and `OS_VERSION` being the `VERSION_ID` from `/usr/lib/os-release`.
+Additionally, each module has access to four environment variables, `CONFIG_DIRECTORY` pointing to the directory containing the confiuration files for the build (`/tmp/config`), `IMAGE_NAME` being the name of the image as declared in the recipe, `BASE_IMAGE` being the URL of the container image used as the base (FROM) in the image, and `OS_VERSION` being the `VERSION_ID` from `/usr/lib/os-release`.
 
 When running modules, the working directory is the `CONFIG_DIRECTORY`.
 

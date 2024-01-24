@@ -1,6 +1,7 @@
 type: script
 scripts:
-  - addauthramp.sh
+  # hotfix disable authramp
+  # - addauthramp.sh
   - optoutauthselect.sh
   - setfilepermissions.sh
   # this sets up the proper policy & signing files for signed images to work

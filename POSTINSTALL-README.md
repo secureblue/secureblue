@@ -2,7 +2,8 @@
 
 After rebasing to secureblue, the following steps are recommended.
 
-## Set a GRUB password
+## GRUB
+### Set a password
 
 Setting a GRUB password helps protect the device from physical tampering and mitigates various attack vectors, such as booting from malicious media devices and changing boot or kernel parameters.
 
@@ -24,7 +25,7 @@ Creating a dedicated wheel user and removing wheel from your primary user helps 
 1. ```adduser admin```
 2. ```usermod -aG wheel admin```
 3. ```gpasswd -d {your username here} wheel```
-4. reboot
+4. ```reboot```
 
 When not in the wheel group, a user can be added to a dedicated group, otherwise certain actions are blocked:
 
@@ -55,13 +56,14 @@ EOF
 
 The custom rule allows the group`diskadmin` to do the actions for unlocking and mounting these drives. Note the requirement on `active` and `local`, and the exactly specified actions.
 
-## Chromium Extension
+## Chromium
+### Extension
 
 1. Go to [uBlock Origin Lite](https://chromewebstore.google.com/detail/ublock-origin-lite/ddkjiahejlhfcafbddmgiahcphecmpfh?pli=1) ([Why Lite?](https://developer.chrome.com/docs/extensions/develop/migrate/improve-security))
 2. Install it
 3. In the extension's settings, make sure all of the lists under Default and Miscellaneous are checked (and at your preference, lists in the Annoyances section or country-specific lists)
 
-## Chromium settings
+### Settings
 1. Go to `chrome://settings/security`
 2. Scroll to "Always use secure connections" and enable it
 

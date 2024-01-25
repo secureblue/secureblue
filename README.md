@@ -105,6 +105,8 @@ Have a look at [PREINSTALL-README](PREINSTALL-README.md) before proceeding.
 - kinoite-nvidia-userns-hardened
 - cinnamon-main-userns-hardened
 - cinnamon-nvidia-userns-hardened
+- bluefin-dx-main-userns-hardened
+- bluefin-dx-nvidia-userns-hardened
 - bluefin-main-userns-hardened
 - bluefin-nvidia-userns-hardened
 - silverblue-main-userns-hardened
@@ -119,6 +121,8 @@ Have a look at [PREINSTALL-README](PREINSTALL-README.md) before proceeding.
 - kinoite-nvidia-laptop-userns-hardened
 - cinnamon-main-laptop-userns-hardened
 - cinnamon-nvidia-laptop-userns-hardened
+- bluefin-dx-main-laptop-userns-hardened
+- bluefin-dx-nvidia-laptop-userns-hardened
 - bluefin-main-laptop-userns-hardened
 - bluefin-nvidia-laptop-userns-hardened
 - silverblue-main-laptop-userns-hardened
@@ -171,7 +175,14 @@ Have a look at [POSTINSTALL-README](POSTINSTALL-README.md).
 To append kernel boot parameters that apply additional hardening (reboot required):
 
 ```
-just set-kargs-hardening 
+ujust set-kargs-hardening 
+```
+
+
+To append additional kernel boot parameters that apply additional hardening, but cause boot issues on some hardware (reboot required):
+
+```
+ujust set-kargs-hardening-unstable
 ```
 
 #### Nvidia

@@ -179,7 +179,7 @@ ujust set-kargs-hardening
 ```
 
 
-To append additional kernel boot parameters that apply additional hardening, but cause boot issues on some hardware(reboot required):
+To append additional kernel boot parameters that apply additional hardening, but cause boot issues on some hardware (reboot required):
 
 ```
 ujust set-kargs-hardening-unstable

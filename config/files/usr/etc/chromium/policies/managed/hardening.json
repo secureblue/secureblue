@@ -27,4 +27,8 @@
 	"UrlKeyedAnonymizedDataCollectionEnabled": false,
 	"WebRtcEventLogCollectionAllowed": false,
 	"WebRtcIPHandling": "disable_non_proxied_udp"
+	"ExtensionInstallForcelist": [
+		"ddkjiahejlhfcafbddmgiahcphecmpfh;https://clients2.google.com/service/update2/crx",
+		"doojmbjmlfjjnbmnoijecmcbfeoakpjm;https://clients2.google.com/service/update2/crx"
+		],
 }

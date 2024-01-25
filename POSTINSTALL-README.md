@@ -22,7 +22,7 @@ If you are on an UEFI system, the fix for [this known problem](https://discussio
 sudo grub2-switch-to-blscfg
 ```
 
-Note that [the issuetracker](https://github.com/fedora-silverblue/issue-tracker/issues/120) is still open, and running this command may [break GRUB on BIOS systems](https://discussion.fedoraproject.org/t/boot-entries-gone-after-upgrade/8026/6)!
+Note that [the issuetracker](https://github.com/fedora-silverblue/issue-tracker/issues/120) is still open, and running this command may [break GRUB on BIOS systems](https://discussion.fedoraproject.org/t/boot-entries-gone-after-upgrade/8026/6)! On a BIOS system you can follow [these steps](https://github.com/ostreedev/ostree/pull/2044#issuecomment-608316436), but using outdated firmware is highly insecure and not encouraged.
 
 ## Create a separate wheel account for admin purposes
 

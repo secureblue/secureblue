@@ -2,110 +2,112 @@
 
 **Disable Javascript JIT**
 
-"DefaultJavaScriptJitSetting": 2
+`"DefaultJavaScriptJitSetting": 2`
 
 **Do not allow any site to access sensors**
 
-"DefaultSensorsSetting": 2
+`"DefaultSensorsSetting": 2`
 
 **Disable Google Cast**
 
-"EnableMediaRouter": false
+`"EnableMediaRouter": false`
 
 **Disable Suggested Content**
 
-"SuggestedContentEnabled": false
+`"SuggestedContentEnabled": false`
 
 **Disable fetching labels for unlabelled images**
 
-"AccessibilityImageLabelsEnabled": false
+`"AccessibilityImageLabelsEnabled": false`
 
 **Disable background mode**
 
-"BackgroundModeEnabled": false
+`"BackgroundModeEnabled": false`
 
 **Disable third party cookies**
 
-"BlockThirdPartyCookies": true
+`"BlockThirdPartyCookies": true`
 
 **Don't report Chrome Cleanup results**
 
-"ChromeCleanupReportingEnabled": false
+`"ChromeCleanupReportingEnabled": false`
 
 **Permit Chrome Variations only for critical fixes**
 
-"ChromeVariations": 1
+`"ChromeVariations": 1`
 
 **Disable click to call**
 
-"ClickToCallEnabled": false
+`"ClickToCallEnabled": false`
 
 **Automatically use DNS-over-HTTPS if it's available**
 
-"DnsOverHttpsMode": "automatic"
+`"DnsOverHttpsMode": "automatic"`
 
 **Force enable HTTPS-Only Mode**
 
-"HttpsOnlyMode": "force_enabled"
+`"HttpsOnlyMode": "force_enabled"`
 
 **Hide media recommendations**
 
-"MediaRecommendationsEnabled": false
+`"MediaRecommendationsEnabled": false`
 
 **Disable usage and crash reporting**
 
-"MetricsReportingEnabled": false
+`"MetricsReportingEnabled": false`
 
 **Disable network prediction**
 
-"NetworkPredictionOptions": 2
+`"NetworkPredictionOptions": 2`
 
 **Disable payment method API**
 
-"PaymentMethodQueryEnabled": false
+`"PaymentMethodQueryEnabled": false`
 
 **Disable full-tab promotions**
 
-"PromotionalTabsEnabled": false
+`"PromotionalTabsEnabled": false`
 
 **Disable remote debugging**
 
-"RemoteDebuggingAllowed": false
+`"RemoteDebuggingAllowed": false`
 
 **Disable sending URLs for content filtering**
 
-"SafeSitesFilterBehavior": 0
+`"SafeSitesFilterBehavior": 0`
 
 **Disable search suggestions**
 
-"SearchSuggestEnabled": false
+`"SearchSuggestEnabled": false`
 
 **Disable cross-device clipboard sharing**
 
-"SharedClipboardEnabled": false
+`"SharedClipboardEnabled": false`
 
 **Show full urls in the address bar**
 
-"ShowFullUrlsInAddressBar": true
+`"ShowFullUrlsInAddressBar": true`
 
 **Disable online spellchecking service**
 
-"SpellCheckServiceEnabled": false
+`"SpellCheckServiceEnabled": false`
 
 **Disable sync services**
 
-"SyncDisabled": true
+`"SyncDisabled": true`
 
 **Disable translate services**
 
-"TranslateEnabled": false
+`"TranslateEnabled": false`
 
 **Disable URL-keyed anonymized data collection**
 
-"UrlKeyedAnonymizedDataCollectionEnabled": false
+`"UrlKeyedAnonymizedDataCollectionEnabled": false`
 
 **Disable WebRTC event log collection and uploading**
-"WebRtcEventLogCollectionAllowed": false
+
+`"WebRtcEventLogCollectionAllowed": false`
 
 **For WebRTC, use TCP on the public-facing interface, and will only use UDP if supported by a configured proxy.**
-"WebRtcIPHandling": "disable_non_proxied_udp"
+
+`"WebRtcIPHandling": "disable_non_proxied_udp"`

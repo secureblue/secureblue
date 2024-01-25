@@ -111,7 +111,3 @@
 **For WebRTC, use TCP on the public-facing interface, and will only use UDP if supported by a configured proxy.**
 
 `"WebRtcIPHandling": "disable_non_proxied_udp"`
-
-**Force install UBlock-Origin Lite & NoScript**
-
-`"ExtensionInstallForcelist": "ID;https://clients2.google.com/service/update2/crx"`

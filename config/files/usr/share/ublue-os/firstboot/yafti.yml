@@ -15,7 +15,8 @@ screens:
     values:
       title: Kernel hardening
       description: |
-        This step will enable additional kernel hardening. 
+        This step will enable additional kernel hardening. Warning: setting disable_early_pci_dma may lead to boot issues. If you encounter them, re-run this without the disable_early_pci_dma variable
+   
       actions:
         - run: pkexec ujust set-kargs-hardening
 

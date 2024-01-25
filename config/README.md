@@ -22,7 +22,7 @@ This repository fetches some useful default modules from [`ublue-os/bling`](http
 
 For a comprehensive list of modules, their in-depth documentation and example configuration, check out [the Modules page on the website](https://universal-blue.org/tinker/modules/).
 
-### Building multiple images and including module configuration from other files and 
+### Building multiple images and including module configuration from other files
 
 To build multiple images, you need to create another recipe.yml file, which you should name based on what kind of image you want it to build. Then, edit the [`build.yml`](../.github/workflows/build.yml) file. Inside the file, under `jobs: strategy: matrix:`, there's a list of recipe files to build images, which you need to add your new recipe file to. These should be paths to files inside the `config` directory.
 
@@ -40,3 +40,17 @@ install:
   - rofi
   - kitty
 ```
+An external module can also include multiple modules.
+```yaml
+# config/common.yml
+modules:
+ - type: files
+   files:
+     - usr: /usr
+ - type: rpm-ostree
+   install:
+     - i3
+     - dunst
+     - rofi
+     - kitty
+``` 

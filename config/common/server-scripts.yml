@@ -1,4 +1,3 @@
 type: script
 scripts:
   - includewget.sh
-  - setserverfilepermissions.sh

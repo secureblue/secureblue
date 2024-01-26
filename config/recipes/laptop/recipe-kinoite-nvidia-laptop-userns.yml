@@ -20,4 +20,5 @@ modules:
   - from-file: recipes/laptop/laptop-bling.yml
   - from-file: common/common-scripts.yml
   - from-file: common/gui-scripts.yml
+  - from-file: common/nvidia-laptop-scripts.yml
   - type: yafti 

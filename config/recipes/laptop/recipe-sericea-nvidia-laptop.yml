@@ -20,4 +20,5 @@ modules:
   - from-file: common/gui-scripts.yml
   - from-file: common/disableuserns-packages.yml
   - from-file: common/disableuserns-scripts.yml
+  - from-file: common/nvidia-laptop-scripts.yml
   - type: yafti 

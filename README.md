@@ -30,7 +30,7 @@ Hardening applied:
 - Require a password for sudo every time it's called
 - Disable passwordless sudo for rpm-ostree
 - Brute force protection by locking user accounts for 24 hours after 50 failed login attempts, hardened password encryption and password quality suggestions
-- Installing chkrootkit
+- Installing chkrootkit, usbguard, and bubblejail
 - Set opportunistic DNSSEC and DNSOverTLS for systemd-resolved
 - Configure chronyd to use Network Time Security (NTS)
 - (Non-userns variants) Disabling unprivileged user namespaces

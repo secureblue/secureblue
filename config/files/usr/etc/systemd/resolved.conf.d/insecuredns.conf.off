@@ -1,0 +1,25 @@
+# INSECURE DNS CONFIGURATION
+#
+# This config is needed to make Captive Portals work.
+# It will use the DNS Server advertized over DHCP,
+# and allows exploitations like redirecting HTTP requestsy
+# which are the foundation of Captive Portals.
+#
+# Only use this for logging in to public Networks using Captive Portals,
+# and address complaints to the providers.
+#
+# You can change configurations like this:
+# sudo mv /etc/systemd/resolved.conf.d/securedns.conf /etc/systemd/resolved.conf.d/securedns.conf.off
+# sudo mv /etc/systemd/resolved.conf.d/insecuredns.conf.off /etc/systemd/resolved.conf.d/insecuredns.conf
+# systemctl restart systemd-resolved
+#
+# And then revert like this:
+# sudo mv /etc/systemd/resolved.conf.d/securedns.conf.off /etc/systemd/resolved.conf.d/securedns.conf
+# sudo mv /etc/systemd/resolved.conf.d/insecuredns.conf /etc/systemd/resolved.conf.d/insecuredns.conf.off
+# systemctl restart systemd-resolved
+
+[Resolve]
+DNSSEC=no
+DNSOverTLS=no
+DNS=
+FallbackDNS=

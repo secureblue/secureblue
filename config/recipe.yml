@@ -1,0 +1,58 @@
+# image will be published to ghcr.io/<user>/<name>
+name: startingpoint
+# description will be included in the image's metadata
+description: A starting point for further customization of uBlue images. Make your own! https://ublue.it/making-your-own/
+
+# the base image to build on top of (FROM) and the version tag to use
+base-image: ghcr.io/ublue-os/silverblue-main
+image-version: 39 # latest is also supported if you want new updates ASAP
+
+# module configuration, executed in order
+# you can include multiple instances of the same module
+modules:
+  - type: files
+    files:
+      - usr: /usr # copy static configurations
+                  #
+                  # copies config/files/usr into your image's /usr
+                  #
+                  # configuration you wish to end up in /etc/ on the booted system
+                  # should be added into /usr/etc/ as that is the proper "distro"
+                  # config directory on ostree. Read more in the files module's README
+
+  - type: rpm-ostree
+    repos:
+      # - https://copr.fedorainfracloud.org/coprs/atim/starship/repo/fedora-%OS_VERSION%/atim-starship-fedora-%OS_VERSION%.repo
+    install:
+      # - micro
+      # - starship
+    remove:
+      - firefox # default firefox removed in favor of flatpak
+      - firefox-langpacks # langpacks needs to also be removed to prevent dependency problems
+
+  - type: bling # configure what to pull in from ublue-os/bling
+    install:
+      - justfiles # add "!include /usr/share/ublue-os/just/100-bling.just"
+                  # in your custom.just (added by default) or local justfile
+      - nix-installer # shell shortcuts for determinate system's nix installers
+      - ublue-os-wallpapers
+      # - ublue-update # https://github.com/ublue-os/ublue-update
+      # - 1password # install 1Password (stable) and `op` CLI tool
+      # - dconf-update-service # a service unit that updates the dconf db on boot
+      # - devpod # https://devpod.sh/ as an rpm
+      # - gnome-vrr # enables gnome-vrr for your image
+      # - container-tools # installs container-related tools onto /usr/bin: kind, kubectx, docker-compose and kubens
+      # - laptop # installs TLP and configures your system for laptop usage
+      # - flatpaksync # allows synchronization of user-installed flatpaks, see separate documentation section
+
+
+  - type: yafti # if included, yafti and it's dependencies (pip & libadwaita)
+                #  will be installed and set up
+    custom-flatpaks: # this section is optional
+      # - Celluloid: io.github.celluloid_player.Celluloid
+      # - Krita: org.kde.krita
+
+  - type: script
+    scripts:
+      # this sets up the proper policy & signing files for signed images to work
+      - signing.sh

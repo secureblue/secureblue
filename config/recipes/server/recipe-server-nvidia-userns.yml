@@ -14,5 +14,4 @@ modules:
   - from-file: common/server-files.yml
   - from-file: common/server-scripts.yml
   - from-file: common/common-packages.yml
-  - from-file: common/common-bling.yml
   - from-file: common/common-scripts.yml

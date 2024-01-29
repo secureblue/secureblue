@@ -1,9 +1,6 @@
 type: rpm-ostree
-install:    
-  - gnome-shell-extension-appindicator
-  - gnome-shell-extension-pop-shell
+install:
   - gnome-console
-  - gnome-text-editor
   - firewall-config
   - gnome-disk-utility
 remove:

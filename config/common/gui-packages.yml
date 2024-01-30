@@ -11,7 +11,6 @@ install:
   - headsetcontrol
   - chromium
   - mediainfo
-  - yt-dlp
   - bubblejail
   - usbguard-notifier
   

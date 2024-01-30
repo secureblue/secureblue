@@ -22,7 +22,7 @@ The following are not in scope for this project:
 
 Hardening applied:
 
-- Setting numerous hardened sysctl values (Inspired by but not the same as Kicksecure's) <sup>[details](https://github.com/secureblue/secureblue/tree/live/config/files/usr/etc/sysctl.d)</sup>
+- Setting numerous hardened sysctl values (Inspired by but not the same as Kicksecure's) <sup>[details](https://github.com/secureblue/secureblue/blob/live/config/files/usr/etc/sysctl.d/hardening.conf)</sup>
 - Disabling coredumps in limits.conf
 - Disabling all ports and services for firewalld
 - Adds per-network MAC randomization

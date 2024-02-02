@@ -9,6 +9,3 @@ remove:
   - samba-winbind-clients
   - samba-winbind-modules
   - samba
-  - usbmuxd
-  - cockpit-bridge
-  - gvfs-afc

@@ -10,16 +10,6 @@ screens:
       description: |
         This guided installer will help you get started with your new system.
 
-  can-we-harden-your-kargs:
-    source: yafti.screen.consent
-    values:
-      title: Kernel hardening
-      description: |
-        This step will enable additional kernel hardening. Warning: setting disable_early_pci_dma may lead to boot issues. If you encounter them, re-run this without the disable_early_pci_dma variable
-   
-      actions:
-        - run: pkexec ujust set-kargs-hardening
-
   can-we-enable-printing:
     source: yafti.screen.consent
     values:
@@ -27,7 +17,7 @@ screens:
       description: |
         The cups printing service is disabled by default to reduce attack surface. If you need printing support, run "just enable-cups" manually.
       actions:
-        - run: just enable-cups
+        - run: pkexec ujust enable-cups
 
   can-we-harden-your-flatpaks:
     source: yafti.screen.consent

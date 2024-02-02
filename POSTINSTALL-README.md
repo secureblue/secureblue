@@ -2,6 +2,22 @@
 
 After rebasing to secureblue, the following steps are recommended.
 
+
+## kargs
+
+Documentation is available [here](https://github.com/secureblue/secureblue/blob/live/config/files/usr/share/ublue-os/just/60-custom.just.readme.md) for the kargs set by the commands below.
+
+### Set hardened kargs
+
+```ujust set-kargs-hardening```
+
+### Set unstable hardened kargs
+
+*Can cause issues on some hardware, but stable on other hardware*
+
+```ujust set-kargs-hardening-unstable```
+
+
 ## GRUB
 ### Set a password
 

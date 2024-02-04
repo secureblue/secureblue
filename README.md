@@ -34,7 +34,7 @@ Hardening applied:
 - Including a hardened chromium config that sets numerous hardened defaults <sup>[details](https://github.com/secureblue/secureblue/blob/live/config/files/usr/etc/chromium/policies/managed/hardening.json.readme.md)</sup> and disables JIT javascript <sup>[why?](https://microsoftedge.github.io/edgevr/posts/Super-Duper-Secure-Mode/#is-jit-worth-it)</sup>
 - Pushing upstream fedora to harden the build for all fedora users, including secureblue users ([for example, by enabling CFI](https://bugzilla.redhat.com/show_bug.cgi?id=2252874))
 - Require a password for sudo every time it's called
-- Disable passwordless sudo for rpm-ostree
+- Disable passwordless sudo for `rpm-ostree install` <sup>[why?](https://github.com/rohanssrao/silverblue-privesc)
 - Brute force protection by locking user accounts for 24 hours after 50 failed login attempts, hardened password encryption and password quality suggestions
 - Installing chkrootkit, usbguard, and bubblejail
 - Set opportunistic DNSSEC and DNSOverTLS for systemd-resolved

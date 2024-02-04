@@ -27,6 +27,12 @@ Hardening applied:
 - Disabling all ports and services for firewalld
 - Adds per-network MAC randomization
 - Blacklisting numerous unused kernel modules to reduce attack surface <sup>[details](https://github.com/secureblue/secureblue/blob/live/config/files/usr/etc/modprobe.d/blacklist.conf)</sup>
+- Enabling only the [flathub-verified](https://flathub.org/apps/collection/verified/1) remote by default
+- Sets numerous hardening kernel parameters (Inspired by [Madaidan's Hardening Guide](https://madaidans-insecurities.github.io/guides/linux-hardening.html)) <sup>[details](https://github.com/secureblue/secureblue/blob/live/config/files/usr/share/ublue-os/just/60-custom.just.readme.md)</sup>
+- Installs and enables [hardened_malloc](https://github.com/GrapheneOS/hardened_malloc) globally, including for flatpaks
+- Installing Chromium instead of Firefox in the base image <sup>[Why chromium?](https://grapheneos.org/usage#web-browsing)</sup> <sup>[Why not flatpak chromium?](https://forum.vivaldi.net/post/669805)</sup>
+- Including a hardened chromium config that disables JIT javascript <sup>[why?](https://microsoftedge.github.io/edgevr/posts/Super-Duper-Secure-Mode/#is-jit-worth-it)</sup>
+- Pushing upstream fedora to harden the build for all fedora users, including secureblue users ([for example, by enabling CFI](https://bugzilla.redhat.com/show_bug.cgi?id=2252874))
 - Require a password for sudo every time it's called
 - Disable passwordless sudo for rpm-ostree
 - Brute force protection by locking user accounts for 24 hours after 50 failed login attempts, hardened password encryption and password quality suggestions
@@ -35,12 +41,6 @@ Hardening applied:
 - Configure chronyd to use Network Time Security (NTS)
 - (Non-userns variants) Disabling unprivileged user namespaces
 - (Non-userns variants) Replacing bubblewrap with bubblewrap-suid so flatpak can be used without unprivileged user namespaces
-- Enabling only the [flathub-verified](https://flathub.org/apps/collection/verified/1) remote by default
-- Sets numerous hardening kernel parameters (Inspired by [Madaidan's Hardening Guide](https://madaidans-insecurities.github.io/guides/linux-hardening.html)) <sup>[details](https://github.com/secureblue/secureblue/blob/live/config/files/usr/share/ublue-os/just/60-custom.just.readme.md)</sup>
-- Installs and enables [hardened_malloc](https://github.com/GrapheneOS/hardened_malloc) globally, including for flatpaks
-- Installing Chromium instead of Firefox in the base image <sup>[Why chromium?](https://grapheneos.org/usage#web-browsing)</sup> <sup>[Why not flatpak chromium?](https://forum.vivaldi.net/post/669805)</sup>
-- Including a hardened chromium config that disables JIT javascript <sup>[why?](https://microsoftedge.github.io/edgevr/posts/Super-Duper-Secure-Mode/#is-jit-worth-it)</sup>
-- Pushing upstream fedora to harden the build for all fedora users, including secureblue users ([for example, by enabling CFI](https://bugzilla.redhat.com/show_bug.cgi?id=2252874))
 
 ## Why
 
@@ -166,21 +166,6 @@ To rebase an existing Silverblue/Kinoite installation to the latest build:
 After installation, [yafti](https://github.com/ublue-os/yafti) will open. Make sure to follow the steps listed carefully and read the directions closely.
 
 Have a look at [POSTINSTALL-README](POSTINSTALL-README.md).
-
-
-#### Kargs
-To append kernel boot parameters that apply additional hardening (reboot required):
-
-```
-ujust set-kargs-hardening 
-```
-
-
-To append additional kernel boot parameters that apply additional hardening, but cause boot issues on some hardware (reboot required):
-
-```
-ujust set-kargs-hardening-unstable
-```
 
 #### Nvidia
 If you are using an nvidia image, run this after installation:

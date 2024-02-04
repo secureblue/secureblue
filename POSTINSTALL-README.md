@@ -40,8 +40,9 @@ Creating a dedicated wheel user and removing wheel from your primary user helps 
 
 1. ```adduser admin```
 2. ```usermod -aG wheel admin```
-3. ```gpasswd -d {your username here} wheel```
-4. ```reboot```
+3. ```passwd admin```
+4. ```gpasswd -d {your username here} wheel```
+5. ```reboot```
 
 When not in the wheel group, a user can be added to a dedicated group, otherwise certain actions are blocked:
 

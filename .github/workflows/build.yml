@@ -48,7 +48,7 @@ jobs:
         uses: actions/checkout@v4
 
       # Confirm that cosign.pub matches SIGNING_SECRET
-      - uses: sigstore/cosign-installer@v3.3.0
+      - uses: sigstore/cosign-installer@v3.4.0
         if: github.event_name != 'pull_request' && github.ref == 'refs/heads/live'
 
       - name: Check SIGNING_SECRET matches cosign.pub

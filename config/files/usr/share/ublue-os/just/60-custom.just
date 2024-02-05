@@ -28,6 +28,29 @@ set-kargs-hardening-unstable:
     rpm-ostree kargs \
       --append-if-missing="efi=disable_early_pci_dma"
 
+# Add additional boot parameters for hardening (requires reboot)
+remove-kargs-hardening:
+    rpm-ostree kargs \
+      --delete-if-present="init_on_alloc=1" \
+      --delete-if-present="init_on_free=1" \
+      --delete-if-present="slab_nomerge" \
+      --delete-if-present="page_alloc.shuffle=1" \
+      --delete-if-present="randomize_kstack_offset=on" \
+      --delete-if-present="vsyscall=none" \
+      --delete-if-present="debugfs=off" \
+      --delete-if-present="lockdown=confidentiality" \
+      --delete-if-present="random.trust_cpu=off" \
+      --delete-if-present="random.trust_bootloader=off" \
+      --delete-if-present="iommu=force" \
+      --delete-if-present="intel_iommu=on" \
+      --delete-if-present="amd_iommu=force_isolation" \
+      --delete-if-present="iommu.passthrough=0" \
+      --delete-if-present="iommu.strict=1" \
+      --delete-if-present="pti=on" \
+      --delete-if-present="module.sig_enforce=1" \
+      --delete-if-present="mitigations=auto,nosmt" \
+      --delete-if-present="efi=disable_early_pci_dma"
+
 harden-flatpak:
     flatpak override --user --filesystem=host-os:ro --env=LD_PRELOAD=/var/run/host/usr/lib64/libhardened_malloc.so
 

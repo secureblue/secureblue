@@ -49,6 +49,10 @@ Fedora is one of the few distributions that ships with selinux and associated to
 
 For more info on uBlue, check out the [uBlue homepage](https://universal-blue.org/) and the [main uBlue repo](https://github.com/ublue-os/main/)
 
+## Customization
+
+If you want to add your own customizations on top of secureblue, you are advised strongly against forking. Instead, create a repo for your own image by using [startingpoint](https://github.com/ublue-os/startingpoint), then change your `base-image` to a secureblue image. This will allow you to apply your customizations to secureblue in a concise and maintainable way, without the need to constantly sync with upstream.
+
 ## Installation
 
 Have a look at [PREINSTALL-README](PREINSTALL-README.md) before proceeding.

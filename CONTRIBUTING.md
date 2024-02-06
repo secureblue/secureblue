@@ -1,4 +1,4 @@
-# Welcome to Secure Blue
+# Welcome to secureblue
 
 Thanks for taking the time to look into helping out!
 All contributions are appreciated! 

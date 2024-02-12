@@ -10,7 +10,6 @@ set-kargs-hardening:
       --append-if-missing="page_alloc.shuffle=1" \
       --append-if-missing="randomize_kstack_offset=on" \
       --append-if-missing="vsyscall=none" \
-      --append-if-missing="debugfs=off" \
       --append-if-missing="lockdown=confidentiality" \
       --append-if-missing="random.trust_cpu=off" \
       --append-if-missing="random.trust_bootloader=off" \
@@ -26,7 +25,8 @@ set-kargs-hardening:
 set-kargs-hardening-unstable:
     echo "Warning: setting these kargs may lead to boot issues on some hardware."
     rpm-ostree kargs \
-      --append-if-missing="efi=disable_early_pci_dma"
+      --append-if-missing="efi=disable_early_pci_dma" \
+      --append-if-missing="debugfs=off"
 
 harden-flatpak:
     flatpak override --user --filesystem=host-os:ro --env=LD_PRELOAD=/var/run/host/usr/lib64/libhardened_malloc.so

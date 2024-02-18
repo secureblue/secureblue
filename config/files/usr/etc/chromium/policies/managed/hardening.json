@@ -28,5 +28,6 @@
 	"WebRtcEventLogCollectionAllowed": false,
 	"WebRtcIPHandling": "disable_non_proxied_udp",
 	"SafeBrowsingExtendedReportingEnabled": false,
-	"BrowserSignin": 0
+	"BrowserSignin": 0,
+	"AlternateErrorPagesEnabled": false
 }

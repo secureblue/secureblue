@@ -119,3 +119,7 @@
 **Disable browser sign-in**
 
 `"BrowserSignin": 0`
+
+**Disable navigation error correction**
+
+`"AlternateErrorPagesEnabled": false`

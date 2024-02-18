@@ -26,5 +26,7 @@
 	"TranslateEnabled": false,
 	"UrlKeyedAnonymizedDataCollectionEnabled": false,
 	"WebRtcEventLogCollectionAllowed": false,
-	"WebRtcIPHandling": "disable_non_proxied_udp"
+	"WebRtcIPHandling": "disable_non_proxied_udp",
+	"SafeBrowsingExtendedReportingEnabled": false,
+	"BrowserSignin": 0
 }

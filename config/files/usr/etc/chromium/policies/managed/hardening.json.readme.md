@@ -111,3 +111,11 @@
 **For WebRTC, use TCP on the public-facing interface, and will only use UDP if supported by a configured proxy.**
 
 `"WebRtcIPHandling": "disable_non_proxied_udp"`
+
+**Disable extended reporting for Safe Browsing**
+
+`"SafeBrowsingExtendedReportingEnabled": false`
+
+**Disable browser sign-in**
+
+`"BrowserSignin": 0`

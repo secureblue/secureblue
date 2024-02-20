@@ -4,6 +4,10 @@
 
 https://github.com/secureblue/secureblue/issues/125#issuecomment-1859610560
 
+#### Should I use electron apps? Why don't they work well with hardened_malloc?
+
+https://github.com/secureblue/secureblue/issues/193#issuecomment-1953323680
+
 #### My fans are really loud, is this normal?
 
 During rpm-ostree operations, it's normal. Outside of that:

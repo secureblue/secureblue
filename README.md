@@ -144,6 +144,7 @@ Have a look at [PREINSTALL-README](PREINSTALL-README.md) before proceeding.
 ###### framework
 - kinoite-framework-userns-hardened
 - bluefin-framework-userns-hardened
+- bluefin-dx-framework-userns-hardened
 - silverblue-framework-userns-hardened
 - sericea-framework-userns-hardened
 

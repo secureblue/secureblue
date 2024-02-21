@@ -9,7 +9,7 @@
 
 [![secureblue](https://github.com/secureblue/secureblue/actions/workflows/build.yml/badge.svg)](https://github.com/secureblue/secureblue/actions/workflows/build.yml)
 
-This repo takes the [uBlue](https://universal-blue.org/) starting point and selectively applies hardening with the following goals:
+This repo takes the [BlueBuild](https://blue-build.org/) template and selectively applies hardening with the following goals:
 
 - Increase defenses against the exploitation of both known and unknown vulnerabilities.
 - Avoid sacrificing usability for most use cases where possible
@@ -47,11 +47,11 @@ Hardening applied:
 Fedora is one of the few distributions that ships with selinux and associated tooling built-in and enabled by default. This makes it advantageous as a starting point for building a hardened system. However, out of the box it's lacking hardening in numerous other areas. This project's goal is to improve on that significantly.
 
 
-For more info on uBlue, check out the [uBlue homepage](https://universal-blue.org/) and the [main uBlue repo](https://github.com/ublue-os/main/)
+For more info on uBlue and BlueBuild, check out the [uBlue homepage](https://universal-blue.org/) and the [BlueBuild homepage](https://blue-build.org/).
 
 ## Customization
 
-If you want to add your own customizations on top of secureblue, you are advised strongly against forking. Instead, create a repo for your own image by using [startingpoint](https://github.com/ublue-os/startingpoint), then change your `base-image` to a secureblue image. This will allow you to apply your customizations to secureblue in a concise and maintainable way, without the need to constantly sync with upstream. 
+If you want to add your own customizations on top of secureblue, you are advised strongly against forking. Instead, create a repo for your own image by using the [BlueBuild template](https://github.com/blue-build/template), then change your `base-image` to a secureblue image. This will allow you to apply your customizations to secureblue in a concise and maintainable way, without the need to constantly sync with upstream. 
 
 ## FAQ
 

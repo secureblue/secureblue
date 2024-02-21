@@ -1,8 +1,8 @@
 on:
   push:
     paths:
-      - 'boot_menu.yml'
-      - '.github/workflows/release-iso.yml'
+      - "boot_menu.yml"
+      - ".github/workflows/release-iso.yml"
   workflow_dispatch:
 
 name: release-iso
@@ -12,13 +12,13 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: write
-    container: 
+    container:
       image: fedora:39
       options: --privileged
     steps:
       - uses: actions/checkout@v4
-      - name: Generate ISO  
-        uses: ublue-os/isogenerator@v2.3.1
+      - name: Generate ISO
+        uses: ublue-os/isogenerator-old@v2.3.1
         id: isogenerator
         with:
           image-name: ${{ github.event.repository.name }}
@@ -43,5 +43,4 @@ jobs:
       - name: Upload SHA256SUM
         env:
           GITHUB_TOKEN: ${{ github.token }}
-        run:
-          gh release upload auto-iso ${{ steps.isogenerator.outputs.sha256sum-path }} -R ${{ github.repository_owner }}/${{ github.event.repository.name }} --clobber
+        run: gh release upload auto-iso ${{ steps.isogenerator.outputs.sha256sum-path }} -R ${{ github.repository_owner }}/${{ github.event.repository.name }} --clobber

@@ -1,7 +1,7 @@
 # image will be published to ghcr.io/<user>/<name>
-name: bluefin-framework-userns-hardened
+name: bluefin-dx-framework-userns-hardened
 # description will be included in the image's metadata
-description: "Bluefin framework with some hardening applied"
+description: "Bluefin-dx framework with some hardening applied"
 
 # the base image to build on top of (FROM) and the version tag to use
 base-image: ghcr.io/ublue-os/bluefin-dx-framework

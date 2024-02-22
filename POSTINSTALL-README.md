@@ -79,8 +79,3 @@ The custom rule allows the group`diskadmin` to do the actions for unlocking and 
 1. Go to [uBlock Origin Lite](https://chromewebstore.google.com/detail/ublock-origin-lite/ddkjiahejlhfcafbddmgiahcphecmpfh?pli=1) ([Why Lite?](https://developer.chrome.com/docs/extensions/develop/migrate/improve-security))
 2. Install it
 3. In the extension's settings, make sure all of the lists under Default and Miscellaneous are checked (and at your preference, lists in the Annoyances section or country-specific lists)
-
-### Settings
-1. Go to `chrome://settings/security`
-2. Scroll to "Always use secure connections" and enable it
-

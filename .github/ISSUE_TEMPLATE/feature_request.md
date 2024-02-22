@@ -17,4 +17,4 @@ A clear and concise description of what specific change you would like.
 A clear and concise description of any alternative solutions or features you've considered.
 
 **Declaration**
-[] I declare that I have read the README and my feature request is in-scope.
+- [ ] I declare that I have read the README and my feature request is in-scope.

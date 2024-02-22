@@ -42,3 +42,7 @@ Override `LD_PRELOAD` for that app. For flatpaks, this is as simple as removing 
 #### Another security project has a feature that's missing in secureblue, can you add it?
 
 First check if the README already has an equivalent or better feature. If it doesn't, open a new github issue.
+
+#### I need Javascript JIT in chromium, how do I enable it?
+
+Remove `CHROMIUM_FLAGS+=" --js-flags='--jitless --no-expose-wasm'"` from `/etc/chromium/chromium.conf` and remove `"DefaultJavaScriptJitSetting": 2,` from `/etc/chromium/policies/managed/hardening.json`

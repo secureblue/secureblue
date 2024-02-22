@@ -2,7 +2,7 @@ A list of [Vanadium patches](https://github.com/GrapheneOS/Vanadium/blob/main/pa
 
 | Vanadium patch  | Patch description | Relevance | Counterpart |
 | ------------- | ------------- | ------------- | ------------- |
-| [0001-disable-checkout_nacl](https://github.com/GrapheneOS/Vanadium/blob/main/patches/0001-disable-checkout_nacl.patch) | Disables checking out nacl | Yes | [nacl is completely disabled in upstream Fedora](https://src.fedoraproject.org/rpms/chromium/blob/f39/f/chromium.spec#_1301) |
+| [0001-disable-checkout_nacl](https://github.com/GrapheneOS/Vanadium/blob/main/patches/0001-disable-checkout_nacl.patch) | Disables checking out nacl | Yes | [nacl is completely disabled in upstream Fedora](https://src.fedoraproject.org/rpms/chromium/blob/f39/f/chromium.spec#_1291) |
 | [0002-use-64-bit-WebView-processes](https://github.com/GrapheneOS/Vanadium/blob/main/patches/0002-use-64-bit-WebView-processes.patch) | Forbid use of 32-bit ABI in WebView | No, Android only | N/A |
 | [0003-switch-to-fstack-protector-strong](https://github.com/GrapheneOS/Vanadium/blob/main/patches/0003-switch-to-fstack-protector-strong.patch) | Use -fstack-protector-strong cflag | Yes | [Set in upstream Fedora already](https://src.fedoraproject.org/rpms/chromium/blob/f39/f/chromium-119-fstack-protector-strong.patch) |
 | [0004-enable-fwrapv-in-Clang-for-non-UBSan-builds](https://github.com/GrapheneOS/Vanadium/blob/main/patches/0004-enable-fwrapv-in-Clang-for-non-UBSan-builds.patch) | Set -fwrapv to make signed integer overflow defined behavior to improve memory safety | Yes | MISSING, https://bugzilla.redhat.com/show_bug.cgi?id=2265039 |

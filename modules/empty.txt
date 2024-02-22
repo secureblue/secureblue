@@ -1,0 +1,3 @@
+Remove this dir once blue-build action 0.7.2 is released.
+
+https://github.com/blue-build/cli/pull/77

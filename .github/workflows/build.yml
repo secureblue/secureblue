@@ -55,10 +55,6 @@ jobs:
           - recipes/laptop/recipe-kinoite-framework.yml
           - recipes/laptop/recipe-bluefin-framework.yml
           - recipes/laptop/recipe-sericea-framework.yml
-          - recipes/laptop/recipe-silverblue-framework-amd.yml
-          - recipes/laptop/recipe-kinoite-framework-amd.yml
-          - recipes/laptop/recipe-bluefin-framework-amd.yml
-          - recipes/laptop/recipe-sericea-framework-amd.yml
           # server
           - recipes/server/recipe-server-main.yml
           - recipes/server/recipe-server-nvidia.yml
@@ -101,11 +97,6 @@ jobs:
           - recipes/laptop/recipe-bluefin-framework-userns.yml
           - recipes/laptop/recipe-bluefin-dx-framework-userns.yml
           - recipes/laptop/recipe-sericea-framework-userns.yml
-          - recipes/laptop/recipe-silverblue-framework-userns-amd.yml
-          - recipes/laptop/recipe-kinoite-framework-userns-amd.yml
-          - recipes/laptop/recipe-bluefin-framework-userns-amd.yml
-          - recipes/laptop/recipe-bluefin-dx-framework-userns-amd.yml
-          - recipes/laptop/recipe-sericea-framework-userns-amd.yml
           # server
           - recipes/server/recipe-server-main-userns.yml
           - recipes/server/recipe-server-nvidia-userns.yml

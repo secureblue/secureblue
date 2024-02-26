@@ -74,6 +74,7 @@ A good pull request should be ready for review before it is even created. For al
 - You have no unnecessary changes, including and especially whitespace changes
 - You have tested your changes
 - For substantive changes, you include evidence of proper functionality in the pull request in addition to the build results.
+- Your commits are [verified](https://docs.github.com/en/authentication/managing-commit-signature-verification)
 
 ### How to test incoming changes
 

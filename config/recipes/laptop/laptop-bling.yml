@@ -1,3 +1,8 @@
 type: bling 
 install:
+  # Installs laptop related changes from upstream
+  # See the following for details:
+  # - https://blue-build.org/reference/modules/bling/
+  # - https://github.com/blue-build/modules/blob/main/modules/bling/installers/laptop.sh
+  # - https://github.com/blue-build/modules/blob/main/modules/bling/50-laptop.conf
   - laptop 

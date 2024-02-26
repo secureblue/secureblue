@@ -79,7 +79,7 @@ Have a look at [PREINSTALL-README](PREINSTALL-README.md) before proceeding.
 - wayblue-wayfire-main-hardened
 - wayblue-wayfire-nvidia-hardened
 
-##### laptop
+##### laptop <sup>[changes](./config/recipes/laptop/laptop-bling.yml)</sup>
 - kinoite-main-laptop-hardened
 - kinoite-nvidia-laptop-hardened
 - cinnamon-main-laptop-hardened
@@ -123,7 +123,7 @@ Have a look at [PREINSTALL-README](PREINSTALL-README.md) before proceeding.
 - wayblue-wayfire-main-userns-hardened
 - wayblue-wayfire-nvidia-userns-hardened
 
-##### laptop
+##### laptop <sup>[changes](./config/recipes/laptop/laptop-bling.yml)</sup>
 - kinoite-main-laptop-userns-hardened
 - kinoite-nvidia-laptop-userns-hardened
 - cinnamon-main-laptop-userns-hardened

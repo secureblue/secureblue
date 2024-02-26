@@ -79,7 +79,7 @@ Have a look at [PREINSTALL-README](PREINSTALL-README.md) before proceeding.
 - wayblue-wayfire-main-hardened
 - wayblue-wayfire-nvidia-hardened
 
-##### laptop
+##### laptop<sup>[installer](https://github.com/blue-build/modules/blob/main/modules/bling/installers/laptop.sh), [configs](https://github.com/blue-build/modules/blob/main/modules/bling/50-laptop.conf)</sup>
 - kinoite-main-laptop-hardened
 - kinoite-nvidia-laptop-hardened
 - cinnamon-main-laptop-hardened

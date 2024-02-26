@@ -95,7 +95,10 @@ Have a look at [PREINSTALL-README](PREINSTALL-README.md) before proceeding.
 - wayblue-wayfire-main-laptop-hardened
 - wayblue-wayfire-nvidia-laptop-hardened
 
-###### framework <sup>[docs](https://universal-blue.org/images/framework/)</sup>
+###### framework 
+
+Framework Laptop 13/16 AMD Ryzen™ 7040 Series user are recommended to use desktop version of `main` image, like `kinoite-main-hardened`, `bluefin-main-hardened`, or `silverblue-main-hardened`, etc. Laptop images uses TLP instead of `power-profiles-daemon`, hence should be avoided. See [ublue doc](https://universal-blue.org/images/framework/) and [fedora battery optimization guide](https://knowledgebase.frame.work/en_us/optimizing-fedora-battery-life-r1baXZh) for more details. For advanced user, see [this thread](https://community.frame.work/t/tracking-ppd-v-tlp-for-amd-ryzen-7040/39423) for alternative battery life optimization methods.
+
 - kinoite-framework-hardened
 - bluefin-framework-hardened
 - silverblue-framework-hardened

@@ -2,5 +2,3 @@ type: script
 scripts:
   - authselect.sh
   - setfilepermissions.sh
-  # this sets up the proper policy & signing files for signed images to work
-  - signing.sh

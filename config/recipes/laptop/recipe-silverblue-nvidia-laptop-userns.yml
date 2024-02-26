@@ -17,6 +17,7 @@ modules:
   - from-file: common/remove-firefox.yml
   - from-file: recipes/laptop/laptop-bling.yml
   - from-file: common/common-scripts.yml
+  - type: signing
   - from-file: common/gui-scripts.yml
   - from-file: common/nvidia-laptop-gnome-cinnamon-scripts.yml
   - from-file: common/nvidia-laptop-scripts.yml

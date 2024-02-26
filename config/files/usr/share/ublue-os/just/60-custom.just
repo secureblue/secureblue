@@ -1,6 +1,3 @@
-import '100-bling.just'
-# Include some of your custom scripts here!
-
 # Add additional boot parameters for hardening (requires reboot)
 set-kargs-hardening:
     rpm-ostree kargs \

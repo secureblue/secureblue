@@ -15,4 +15,5 @@ modules:
   - from-file: common/server-scripts.yml
   - from-file: common/common-packages.yml
   - from-file: common/common-scripts.yml
+  - type: signing
   - from-file: common/disableuserns-scripts.yml

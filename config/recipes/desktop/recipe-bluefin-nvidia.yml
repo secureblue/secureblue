@@ -15,6 +15,7 @@ modules:
   - from-file: common/gui-packages.yml
   - from-file: common/common-packages.yml
   - from-file: common/common-scripts.yml
+  - type: signing
   - from-file: common/gui-scripts.yml
   - from-file: common/bluefin-scripts.yml
   - from-file: common/disableuserns-packages.yml

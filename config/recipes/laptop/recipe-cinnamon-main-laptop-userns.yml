@@ -15,6 +15,7 @@ modules:
   - from-file: common/common-packages.yml
   - from-file: recipes/laptop/laptop-bling.yml
   - from-file: common/common-scripts.yml
+  - type: signing
   - from-file: common/gui-scripts.yml
   - from-file: common/cinnamon-scripts.yml
   - type: yafti 

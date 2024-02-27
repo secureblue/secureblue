@@ -1,6 +1,0 @@
-version: "1"
-rules:
-  - base: main
-    upstream: blue-build:main
-    mergeMethod: merge
-    mergeUnstable: false

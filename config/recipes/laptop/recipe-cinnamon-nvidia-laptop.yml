@@ -20,6 +20,6 @@ modules:
   - from-file: common/disableuserns-packages.yml
   - from-file: common/disableuserns-scripts.yml
   - from-file: common/cinnamon-scripts.yml
-  - from-file: common/nvidia-laptop-gnome-cinnamon-scripts.yml
+  - from-file: common/nvidia-optimus-workaround-scripts.yml
   - from-file: common/nvidia-laptop-scripts.yml
   - type: yafti 

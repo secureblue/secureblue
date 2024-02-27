@@ -78,6 +78,8 @@ Have a look at [PREINSTALL-README](PREINSTALL-README.md) before proceeding.
 - sericea-nvidia-hardened
 - wayblue-wayfire-main-hardened
 - wayblue-wayfire-nvidia-hardened
+- wayblue-hyprland-main-hardened
+- wayblue-hyprland-nvidia-hardened
 
 ##### laptop <sup>[changes](./config/recipes/laptop/laptop-bling.yml)</sup>
 - kinoite-main-laptop-hardened
@@ -94,6 +96,8 @@ Have a look at [PREINSTALL-README](PREINSTALL-README.md) before proceeding.
 - sericea-nvidia-laptop-hardened
 - wayblue-wayfire-main-laptop-hardened
 - wayblue-wayfire-nvidia-laptop-hardened
+- wayblue-hyprland-main-laptop-hardened
+- wayblue-hyprland-nvidia-laptop-hardened
 
 ###### framework <sup>[docs](https://universal-blue.org/images/framework/)</sup>
 - kinoite-framework-hardened
@@ -122,6 +126,8 @@ Have a look at [PREINSTALL-README](PREINSTALL-README.md) before proceeding.
 - sericea-nvidia-userns-hardened
 - wayblue-wayfire-main-userns-hardened
 - wayblue-wayfire-nvidia-userns-hardened
+- wayblue-hyprland-main-userns-hardened
+- wayblue-hyprland-nvidia-userns-hardened
 
 ##### laptop <sup>[changes](./config/recipes/laptop/laptop-bling.yml)</sup>
 - kinoite-main-laptop-userns-hardened
@@ -140,6 +146,8 @@ Have a look at [PREINSTALL-README](PREINSTALL-README.md) before proceeding.
 - sericea-nvidia-laptop-userns-hardened
 - wayblue-wayfire-main-laptop-userns-hardened
 - wayblue-wayfire-nvidia-laptop-userns-hardened
+- wayblue-hyprland-main-laptop-userns-hardened
+- wayblue-hyprland-nvidia-laptop-userns-hardened
 
 ###### framework <sup>[docs](https://universal-blue.org/images/framework/)</sup>
 - kinoite-framework-userns-hardened

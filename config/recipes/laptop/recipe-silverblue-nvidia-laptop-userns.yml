@@ -19,6 +19,6 @@ modules:
   - from-file: common/common-scripts.yml
   - type: signing
   - from-file: common/gui-scripts.yml
-  - from-file: common/nvidia-laptop-gnome-cinnamon-scripts.yml
+  - from-file: common/nvidia-optimus-workaround-scripts.yml
   - from-file: common/nvidia-laptop-scripts.yml
   - type: yafti 

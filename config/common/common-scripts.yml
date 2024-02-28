@@ -1,4 +1,5 @@
 type: script
 scripts:
-  - authselect.sh
+  - addauthramp.sh
+  - optoutauthselect.sh
   - setfilepermissions.sh

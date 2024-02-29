@@ -42,6 +42,8 @@ jobs:
           - recipes/laptop/recipe-silverblue-nvidia-laptop.yml
           - recipes/laptop/recipe-silverblue-asus.yml
           - recipes/laptop/recipe-silverblue-asus-nvidia.yml
+          - recipes/laptop/recipe-kinoite-asus.yml
+          - recipes/laptop/recipe-kinoite-asus-nvidia.yml
           - recipes/laptop/recipe-kinoite-main-laptop.yml
           - recipes/laptop/recipe-kinoite-nvidia-laptop.yml
           - recipes/laptop/recipe-cinnamon-main-laptop.yml
@@ -85,6 +87,8 @@ jobs:
           - recipes/laptop/recipe-silverblue-nvidia-laptop-userns.yml
           - recipes/laptop/recipe-silverblue-asus-userns.yml
           - recipes/laptop/recipe-silverblue-asus-nvidia-userns.yml
+          - recipes/laptop/recipe-kinoite-asus-userns.yml
+          - recipes/laptop/recipe-kinoite-asus-nvidia-userns.yml
           - recipes/laptop/recipe-kinoite-main-laptop-userns.yml
           - recipes/laptop/recipe-kinoite-nvidia-laptop-userns.yml
           - recipes/laptop/recipe-cinnamon-main-laptop-userns.yml

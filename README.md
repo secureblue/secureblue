@@ -92,6 +92,8 @@ Have a look at [PREINSTALL-README](PREINSTALL-README.md) before proceeding.
 - silverblue-nvidia-laptop-hardened
 - silverblue-asus-hardened
 - silverblue-asus-nvidia-hardened
+- kinoite-asus-hardened
+- kinoite-asus-nvidia-hardened
 - sericea-main-laptop-hardened
 - sericea-nvidia-laptop-hardened
 - wayblue-wayfire-main-laptop-hardened
@@ -142,6 +144,8 @@ Have a look at [PREINSTALL-README](PREINSTALL-README.md) before proceeding.
 - silverblue-nvidia-laptop-userns-hardened
 - silverblue-asus-userns-hardened
 - silverblue-asus-nvidia-userns-hardened
+- kinoite-asus-userns-hardened
+- kinoite-asus-nvidia-userns-hardened
 - sericea-main-laptop-userns-hardened
 - sericea-nvidia-laptop-userns-hardened
 - wayblue-wayfire-main-laptop-userns-hardened

@@ -37,6 +37,8 @@ jobs:
           - recipes/desktop/recipe-wayblue-wayfire-nvidia.yml
           - recipes/desktop/recipe-wayblue-hyprland-main.yml
           - recipes/desktop/recipe-wayblue-hyprland-nvidia.yml
+          - recipes/desktop/recipe-wayblue-river-main.yml
+          - recipes/desktop/recipe-wayblue-river-nvidia.yml
           # laptop
           - recipes/laptop/recipe-silverblue-main-laptop.yml
           - recipes/laptop/recipe-silverblue-nvidia-laptop.yml
@@ -56,6 +58,8 @@ jobs:
           - recipes/laptop/recipe-wayblue-wayfire-nvidia-laptop.yml
           - recipes/laptop/recipe-wayblue-hyprland-main-laptop.yml
           - recipes/laptop/recipe-wayblue-hyprland-nvidia-laptop.yml
+          - recipes/laptop/recipe-wayblue-river-main-laptop.yml
+          - recipes/laptop/recipe-wayblue-river-nvidia-laptop.yml
           # framework
           - recipes/laptop/recipe-silverblue-framework.yml
           - recipes/laptop/recipe-kinoite-framework.yml
@@ -82,6 +86,8 @@ jobs:
           - recipes/desktop/recipe-wayblue-wayfire-nvidia-userns.yml
           - recipes/desktop/recipe-wayblue-hyprland-main-userns.yml
           - recipes/desktop/recipe-wayblue-hyprland-nvidia-userns.yml
+          - recipes/desktop/recipe-wayblue-river-main-userns.yml
+          - recipes/desktop/recipe-wayblue-river-nvidia-userns.yml
           # laptop
           - recipes/laptop/recipe-silverblue-main-laptop-userns.yml
           - recipes/laptop/recipe-silverblue-nvidia-laptop-userns.yml
@@ -103,6 +109,8 @@ jobs:
           - recipes/laptop/recipe-wayblue-wayfire-nvidia-laptop-userns.yml
           - recipes/laptop/recipe-wayblue-hyprland-main-laptop-userns.yml
           - recipes/laptop/recipe-wayblue-hyprland-nvidia-laptop-userns.yml
+          - recipes/laptop/recipe-wayblue-river-main-laptop-userns.yml
+          - recipes/laptop/recipe-wayblue-river-nvidia-laptop-userns.yml
           # framework
           - recipes/laptop/recipe-silverblue-framework-userns.yml
           - recipes/laptop/recipe-kinoite-framework-userns.yml

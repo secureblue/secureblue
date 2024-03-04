@@ -123,3 +123,55 @@
 **Disable navigation error correction**
 
 `"AlternateErrorPagesEnabled": false`
+
+**Prevent remote access service from starting**
+
+`"RemoteAccessHostAllowRemoteAccessConnections": false`
+
+**Prevent remote client discovery**
+
+`"RemoteAccessHostFirewallTraversal": false`
+
+**Do not allow sites to load mixed content**
+
+`"DefaultInsecureContentSetting": 2`
+
+**Block external extensions**
+
+`"BlockExternalExtensions": true`
+
+**Disable insecure HTTP authentication schemes**
+
+`"AuthSchemes": "ntlm,negotiate"`
+
+**Disable Google Cloud Print proxy**
+
+`"CloudPrintProxyEnabled": false`
+
+**Prevent disabling site isolation**
+
+`"SitePerProcess": true`
+
+**By default, do not allow any site to track the users' physical location**
+
+`"DefaultGeolocationSetting": 2`
+
+**Disable Google Cloud Print site submission**
+
+`"CloudPrintSubmitEnabled": false`
+
+**Prevent saving address information for autofill**
+
+`"AutofillAddressEnabled": false`
+
+**Prevent saving credit card information for autofill**
+
+`"AutofillCreditCardEnabled": false`
+
+**Do not import saved passwords on first run**
+
+`"ImportSavedPasswords": false`
+
+**Disable disk cache**
+
+`"DiskCacheSize": 0`

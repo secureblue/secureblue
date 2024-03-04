@@ -148,10 +148,6 @@
 
 `"CloudPrintProxyEnabled": false`
 
-**Prevent disabling site isolation**
-
-`"SitePerProcess": true`
-
 **By default, do not allow any site to track the users' physical location**
 
 `"DefaultGeolocationSetting": 2`

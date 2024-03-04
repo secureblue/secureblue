@@ -36,7 +36,6 @@
 	"BlockExternalExtensions": true,
 	"AuthSchemes": "ntlm,negotiate",
 	"CloudPrintProxyEnabled": false,
-	"SitePerProcess": true,
 	"DefaultGeolocationSetting": 2,
 	"CloudPrintSubmitEnabled": false,
 	"AutofillAddressEnabled": false,

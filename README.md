@@ -15,7 +15,7 @@ This repo takes the [BlueBuild](https://blue-build.org/) template and selectivel
 - Avoid sacrificing usability for most use cases where possible
 
 The following are not in scope for this project:
-- Anything related to increasing "privacy", especially when at odds with improving security
+- Anything related to "privacy", since Fedora is already sufficiently private and "privacy" often serves as a euphemism for security theater. This is especially true when at odds with improving security.
 - Anything related to "degoogling" chromium. For example, we will not be replacing chromium with Brave or ungoogled-chromium.
 
 ## What

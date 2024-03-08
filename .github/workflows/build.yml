@@ -39,6 +39,8 @@ jobs:
           - recipes/desktop/recipe-wayblue-hyprland-nvidia.yml
           - recipes/desktop/recipe-wayblue-river-main.yml
           - recipes/desktop/recipe-wayblue-river-nvidia.yml
+          - recipes/desktop/recipe-wayblue-sway-main.yml
+          - recipes/desktop/recipe-wayblue-sway-nvidia.yml
           # laptop
           - recipes/laptop/recipe-silverblue-main-laptop.yml
           - recipes/laptop/recipe-silverblue-nvidia-laptop.yml
@@ -60,6 +62,8 @@ jobs:
           - recipes/laptop/recipe-wayblue-hyprland-nvidia-laptop.yml
           - recipes/laptop/recipe-wayblue-river-main-laptop.yml
           - recipes/laptop/recipe-wayblue-river-nvidia-laptop.yml
+          - recipes/laptop/recipe-wayblue-sway-main-laptop.yml
+          - recipes/laptop/recipe-wayblue-sway-nvidia-laptop.yml
           # framework
           - recipes/laptop/recipe-silverblue-framework.yml
           - recipes/laptop/recipe-kinoite-framework.yml
@@ -88,6 +92,8 @@ jobs:
           - recipes/desktop/recipe-wayblue-hyprland-nvidia-userns.yml
           - recipes/desktop/recipe-wayblue-river-main-userns.yml
           - recipes/desktop/recipe-wayblue-river-nvidia-userns.yml
+          - recipes/desktop/recipe-wayblue-sway-main-userns.yml
+          - recipes/desktop/recipe-wayblue-sway-nvidia-userns.yml
           # laptop
           - recipes/laptop/recipe-silverblue-main-laptop-userns.yml
           - recipes/laptop/recipe-silverblue-nvidia-laptop-userns.yml
@@ -111,6 +117,8 @@ jobs:
           - recipes/laptop/recipe-wayblue-hyprland-nvidia-laptop-userns.yml
           - recipes/laptop/recipe-wayblue-river-main-laptop-userns.yml
           - recipes/laptop/recipe-wayblue-river-nvidia-laptop-userns.yml
+          - recipes/laptop/recipe-wayblue-sway-main-laptop-userns.yml
+          - recipes/laptop/recipe-wayblue-sway-nvidia-laptop-userns.yml
           # framework
           - recipes/laptop/recipe-silverblue-framework-userns.yml
           - recipes/laptop/recipe-kinoite-framework-userns.yml

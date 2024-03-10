@@ -10,15 +10,6 @@ screens:
       description: |
         This guided installer will help you get started with your new system.
 
-  can-we-enable-printing:
-    source: yafti.screen.consent
-    values:
-      title: Printing
-      description: |
-        The cups printing service is disabled by default to reduce attack surface. If you need printing support, run "just enable-cups" manually.
-      actions:
-        - run: pkexec ujust enable-cups
-
   can-we-harden-your-flatpaks:
     source: yafti.screen.consent
     values:

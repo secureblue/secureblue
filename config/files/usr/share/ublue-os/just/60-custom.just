@@ -1,6 +1,6 @@
 # Add additional boot parameters for hardening (requires reboot)
 set-kargs-hardening:
-    #!/usr/bin/bash
+    #!/usr/bin/pkexec /usr/bin/bash
     rpm-ostree kargs \
       --append-if-missing="init_on_alloc=1" \
       --append-if-missing="init_on_free=1" \
@@ -19,20 +19,25 @@ set-kargs-hardening:
       --append-if-missing="pti=on" \
       --append-if-missing="module.sig_enforce=1" \
       --append-if-missing="mitigations=auto,nosmt"
+    echo "Hardening kargs set."
 
+# Add additional (unstable) boot parameters for hardening (requires reboot)
 set-kargs-hardening-unstable:
-    #!/usr/bin/bash
+    #!/usr/bin/pkexec /usr/bin/bash
     echo "Warning: setting these kargs may lead to boot issues on some hardware."
     rpm-ostree kargs \
       --append-if-missing="efi=disable_early_pci_dma" \
       --append-if-missing="debugfs=off"
+    echo "Unstable hardening kargs set."
 
+# Harden flatpaks by preloading hardened_malloc
 harden-flatpak:
     #!/usr/bin/bash
     flatpak override --user --filesystem=host-os:ro --env=LD_PRELOAD=/var/run/host/usr/lib64/libhardened_malloc.so
 
+# Toggle the cups service on/off
 toggle-cups:
-    #!/usr/bin/bash
+    #!/usr/bin/pkexec /usr/bin/bash
     if systemctl is-enabled --quiet cups; then
       firewall-cmd --permanent --remove-port=631/tcp
       firewall-cmd --permanent --remove-port=631/udp 
@@ -40,6 +45,8 @@ toggle-cups:
       systemctl mask cups
       systemctl disable cups
       systemctl stop cups
+      systemctl daemon-reload
+      echo "Cups disabled."
     else
       firewall-cmd --permanent --add-port=631/tcp
       firewall-cmd --permanent --add-port=631/udp 
@@ -47,10 +54,13 @@ toggle-cups:
       systemctl unmask cups
       systemctl enable cups
       systemctl start cups
+      systemctl daemon-reload
+      echo "Cups enabled."
     fi
 
+# Toggle bluetooth kernel modules on/off (requires reboot)
 toggle-bluetooth-modules:
-    #!/usr/bin/bash
+    #!/usr/bin/pkexec /usr/bin/bash
     BLUE_MOD_FILE="/etc/modprobe.d/99-bluetooth.conf"
     if test -e $BLUE_MOD_FILE; then
       sudo rm -f $BLUE_MOD_FILE

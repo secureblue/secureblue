@@ -13,13 +13,26 @@ IMAGE_DATE_SECONDS=$(date -d "$IMAGE_DATE" +%s)
 CURRENT_SECONDS=$(date +%s)
 DIFFERENCE=$((CURRENT_SECONDS - IMAGE_DATE_SECONDS))
 MONTH=$((7 * 24 * 60 * 60))
-if [ "$DIFFERENCE" -ge "$MONTH" ]; then
+
+readarray -t imageTypes < <(jq -r '.imageTypes[]' deprecated-images.json)
+
+isDeprecated=false
+for imageType in "${imageTypes[@]}"; do
+    if [[ "$IMAGE_REF_NAME" == *"$imageType"* ]]; then
+        isDeprecated=true
+        break
+    fi
+done
+
+if $isDeprecated; then
+    TIP='~~~ NOTICE: You are on a deprecated image, please rebase. ~~~\n~~~ For more information, visit https://github.com/secureblue/secureblue/blob/live/config/files/usr/libexec/deprecated-images.json.md ~~~'
+elif [ "$DIFFERENCE" -ge "$MONTH" ]; then
     TIP='~~~ NOTICE: Your current image is over 1 week old, run `ujust update`. ~~~'
 else
     TIP='~~~ NOTICE: There is currently no notice. ~~~'
 fi
 
-TIP_OUTPUT=$(sed -e "s/%IMAGE_REF_NAME%/$IMAGE_REF_NAME/g" -e "s/%IMAGE_TAG%/$IMAGE_TAG/g" -e "s/%TIP%/$TIP/g" /usr/share/ublue-os/motd/secureblue.txt)
+TIP_OUTPUT=$(sed -e "s/%IMAGE_REF_NAME%/$IMAGE_REF_NAME/g" -e "s/%IMAGE_TAG%/$IMAGE_TAG/g" -e "s#%TIP%#$TIP#g" /usr/share/ublue-os/motd/secureblue.txt)
 while IFS= read -r line; do
     echo "$line"
 done <<< $TIP_OUTPUT

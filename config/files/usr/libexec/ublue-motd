@@ -14,7 +14,7 @@ CURRENT_SECONDS=$(date +%s)
 DIFFERENCE=$((CURRENT_SECONDS - IMAGE_DATE_SECONDS))
 MONTH=$((7 * 24 * 60 * 60))
 
-readarray -t imageTypes < <(jq -r '.imageTypes[]' deprecated-images.json)
+readarray -t imageTypes < <(jq -r '.imageTypes[]' /usr/libexec/deprecated-images.json)
 
 isDeprecated=false
 for imageType in "${imageTypes[@]}"; do

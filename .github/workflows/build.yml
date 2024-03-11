@@ -22,25 +22,25 @@ jobs:
       matrix:
         recipe:
           # non-userns
-          # desktop
-          - recipes/desktop/recipe-silverblue-main.yml
-          - recipes/desktop/recipe-silverblue-nvidia.yml
-          - recipes/desktop/recipe-kinoite-main.yml
-          - recipes/desktop/recipe-kinoite-nvidia.yml
-          - recipes/desktop/recipe-cinnamon-main.yml
-          - recipes/desktop/recipe-cinnamon-nvidia.yml
-          - recipes/desktop/recipe-bluefin-main.yml
-          - recipes/desktop/recipe-bluefin-nvidia.yml
-          - recipes/desktop/recipe-sericea-main.yml
-          - recipes/desktop/recipe-sericea-nvidia.yml
-          - recipes/desktop/recipe-wayblue-wayfire-main.yml
-          - recipes/desktop/recipe-wayblue-wayfire-nvidia.yml
-          - recipes/desktop/recipe-wayblue-hyprland-main.yml
-          - recipes/desktop/recipe-wayblue-hyprland-nvidia.yml
-          - recipes/desktop/recipe-wayblue-river-main.yml
-          - recipes/desktop/recipe-wayblue-river-nvidia.yml
-          - recipes/desktop/recipe-wayblue-sway-main.yml
-          - recipes/desktop/recipe-wayblue-sway-nvidia.yml
+          # general
+          - recipes/general/recipe-silverblue-main.yml
+          - recipes/general/recipe-silverblue-nvidia.yml
+          - recipes/general/recipe-kinoite-main.yml
+          - recipes/general/recipe-kinoite-nvidia.yml
+          - recipes/general/recipe-cinnamon-main.yml
+          - recipes/general/recipe-cinnamon-nvidia.yml
+          - recipes/general/recipe-bluefin-main.yml
+          - recipes/general/recipe-bluefin-nvidia.yml
+          - recipes/general/recipe-sericea-main.yml
+          - recipes/general/recipe-sericea-nvidia.yml
+          - recipes/general/recipe-wayblue-wayfire-main.yml
+          - recipes/general/recipe-wayblue-wayfire-nvidia.yml
+          - recipes/general/recipe-wayblue-hyprland-main.yml
+          - recipes/general/recipe-wayblue-hyprland-nvidia.yml
+          - recipes/general/recipe-wayblue-river-main.yml
+          - recipes/general/recipe-wayblue-river-nvidia.yml
+          - recipes/general/recipe-wayblue-sway-main.yml
+          - recipes/general/recipe-wayblue-sway-nvidia.yml
           # laptop
           - recipes/laptop/recipe-silverblue-main-laptop.yml
           - recipes/laptop/recipe-silverblue-nvidia-laptop.yml
@@ -73,27 +73,27 @@ jobs:
           - recipes/server/recipe-server-main.yml
           - recipes/server/recipe-server-nvidia.yml
           # userns
-          # desktop
-          - recipes/desktop/recipe-silverblue-main-userns.yml
-          - recipes/desktop/recipe-silverblue-nvidia-userns.yml
-          - recipes/desktop/recipe-kinoite-main-userns.yml
-          - recipes/desktop/recipe-kinoite-nvidia-userns.yml
-          - recipes/desktop/recipe-cinnamon-main-userns.yml
-          - recipes/desktop/recipe-cinnamon-nvidia-userns.yml
-          - recipes/desktop/recipe-bluefin-main-userns.yml
-          - recipes/desktop/recipe-bluefin-nvidia-userns.yml
-          - recipes/desktop/recipe-bluefin-dx-main-userns.yml
-          - recipes/desktop/recipe-bluefin-dx-nvidia-userns.yml
-          - recipes/desktop/recipe-sericea-main-userns.yml
-          - recipes/desktop/recipe-sericea-nvidia-userns.yml
-          - recipes/desktop/recipe-wayblue-wayfire-main-userns.yml
-          - recipes/desktop/recipe-wayblue-wayfire-nvidia-userns.yml
-          - recipes/desktop/recipe-wayblue-hyprland-main-userns.yml
-          - recipes/desktop/recipe-wayblue-hyprland-nvidia-userns.yml
-          - recipes/desktop/recipe-wayblue-river-main-userns.yml
-          - recipes/desktop/recipe-wayblue-river-nvidia-userns.yml
-          - recipes/desktop/recipe-wayblue-sway-main-userns.yml
-          - recipes/desktop/recipe-wayblue-sway-nvidia-userns.yml
+          # general
+          - recipes/general/recipe-silverblue-main-userns.yml
+          - recipes/general/recipe-silverblue-nvidia-userns.yml
+          - recipes/general/recipe-kinoite-main-userns.yml
+          - recipes/general/recipe-kinoite-nvidia-userns.yml
+          - recipes/general/recipe-cinnamon-main-userns.yml
+          - recipes/general/recipe-cinnamon-nvidia-userns.yml
+          - recipes/general/recipe-bluefin-main-userns.yml
+          - recipes/general/recipe-bluefin-nvidia-userns.yml
+          - recipes/general/recipe-bluefin-dx-main-userns.yml
+          - recipes/general/recipe-bluefin-dx-nvidia-userns.yml
+          - recipes/general/recipe-sericea-main-userns.yml
+          - recipes/general/recipe-sericea-nvidia-userns.yml
+          - recipes/general/recipe-wayblue-wayfire-main-userns.yml
+          - recipes/general/recipe-wayblue-wayfire-nvidia-userns.yml
+          - recipes/general/recipe-wayblue-hyprland-main-userns.yml
+          - recipes/general/recipe-wayblue-hyprland-nvidia-userns.yml
+          - recipes/general/recipe-wayblue-river-main-userns.yml
+          - recipes/general/recipe-wayblue-river-nvidia-userns.yml
+          - recipes/general/recipe-wayblue-sway-main-userns.yml
+          - recipes/general/recipe-wayblue-sway-nvidia-userns.yml
           # laptop
           - recipes/laptop/recipe-silverblue-main-laptop-userns.yml
           - recipes/laptop/recipe-silverblue-nvidia-laptop-userns.yml

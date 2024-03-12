@@ -150,7 +150,7 @@ jobs:
           pubkey: 'https://raw.githubusercontent.com/wayblueorg/wayblue/live/cosign.pub'
 
       - name: Build secureblue
-        uses: blue-build/github-action@testing
+        uses: blue-build/github-action@main
         with:
           recipe: ${{ matrix.recipe }}
           cosign_private_key: ${{ secrets.SIGNING_SECRET }}

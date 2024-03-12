@@ -41,34 +41,11 @@ jobs:
           - recipes/general/recipe-wayblue-river-nvidia.yml
           - recipes/general/recipe-wayblue-sway-main.yml
           - recipes/general/recipe-wayblue-sway-nvidia.yml
-          # laptop
-          - recipes/laptop/recipe-silverblue-main-laptop.yml
-          - recipes/laptop/recipe-silverblue-nvidia-laptop.yml
-          - recipes/laptop/recipe-silverblue-asus.yml
-          - recipes/laptop/recipe-silverblue-asus-nvidia.yml
-          - recipes/laptop/recipe-kinoite-asus.yml
-          - recipes/laptop/recipe-kinoite-asus-nvidia.yml
-          - recipes/laptop/recipe-kinoite-main-laptop.yml
-          - recipes/laptop/recipe-kinoite-nvidia-laptop.yml
-          - recipes/laptop/recipe-cinnamon-main-laptop.yml
-          - recipes/laptop/recipe-cinnamon-nvidia-laptop.yml
-          - recipes/laptop/recipe-bluefin-main-laptop.yml
-          - recipes/laptop/recipe-bluefin-nvidia-laptop.yml
-          - recipes/laptop/recipe-sericea-main-laptop.yml
-          - recipes/laptop/recipe-sericea-nvidia-laptop.yml
-          - recipes/laptop/recipe-wayblue-wayfire-main-laptop.yml
-          - recipes/laptop/recipe-wayblue-wayfire-nvidia-laptop.yml
-          - recipes/laptop/recipe-wayblue-hyprland-main-laptop.yml
-          - recipes/laptop/recipe-wayblue-hyprland-nvidia-laptop.yml
-          - recipes/laptop/recipe-wayblue-river-main-laptop.yml
-          - recipes/laptop/recipe-wayblue-river-nvidia-laptop.yml
-          - recipes/laptop/recipe-wayblue-sway-main-laptop.yml
-          - recipes/laptop/recipe-wayblue-sway-nvidia-laptop.yml
-          # framework
-          - recipes/laptop/recipe-silverblue-framework.yml
-          - recipes/laptop/recipe-kinoite-framework.yml
-          - recipes/laptop/recipe-bluefin-framework.yml
-          - recipes/laptop/recipe-sericea-framework.yml
+          # asus
+          - recipes/asus/recipe-silverblue-asus.yml
+          - recipes/asus/recipe-silverblue-asus-nvidia.yml
+          - recipes/asus/recipe-kinoite-asus.yml
+          - recipes/asus/recipe-kinoite-asus-nvidia.yml
           # server
           - recipes/server/recipe-server-main.yml
           - recipes/server/recipe-server-nvidia.yml
@@ -94,37 +71,11 @@ jobs:
           - recipes/general/recipe-wayblue-river-nvidia-userns.yml
           - recipes/general/recipe-wayblue-sway-main-userns.yml
           - recipes/general/recipe-wayblue-sway-nvidia-userns.yml
-          # laptop
-          - recipes/laptop/recipe-silverblue-main-laptop-userns.yml
-          - recipes/laptop/recipe-silverblue-nvidia-laptop-userns.yml
-          - recipes/laptop/recipe-silverblue-asus-userns.yml
-          - recipes/laptop/recipe-silverblue-asus-nvidia-userns.yml
-          - recipes/laptop/recipe-kinoite-asus-userns.yml
-          - recipes/laptop/recipe-kinoite-asus-nvidia-userns.yml
-          - recipes/laptop/recipe-kinoite-main-laptop-userns.yml
-          - recipes/laptop/recipe-kinoite-nvidia-laptop-userns.yml
-          - recipes/laptop/recipe-cinnamon-main-laptop-userns.yml
-          - recipes/laptop/recipe-cinnamon-nvidia-laptop-userns.yml
-          - recipes/laptop/recipe-bluefin-main-laptop-userns.yml
-          - recipes/laptop/recipe-bluefin-nvidia-laptop-userns.yml
-          - recipes/laptop/recipe-bluefin-dx-main-laptop-userns.yml
-          - recipes/laptop/recipe-bluefin-dx-nvidia-laptop-userns.yml
-          - recipes/laptop/recipe-sericea-main-laptop-userns.yml
-          - recipes/laptop/recipe-sericea-nvidia-laptop-userns.yml
-          - recipes/laptop/recipe-wayblue-wayfire-main-laptop-userns.yml
-          - recipes/laptop/recipe-wayblue-wayfire-nvidia-laptop-userns.yml
-          - recipes/laptop/recipe-wayblue-hyprland-main-laptop-userns.yml
-          - recipes/laptop/recipe-wayblue-hyprland-nvidia-laptop-userns.yml
-          - recipes/laptop/recipe-wayblue-river-main-laptop-userns.yml
-          - recipes/laptop/recipe-wayblue-river-nvidia-laptop-userns.yml
-          - recipes/laptop/recipe-wayblue-sway-main-laptop-userns.yml
-          - recipes/laptop/recipe-wayblue-sway-nvidia-laptop-userns.yml
-          # framework
-          - recipes/laptop/recipe-silverblue-framework-userns.yml
-          - recipes/laptop/recipe-kinoite-framework-userns.yml
-          - recipes/laptop/recipe-bluefin-framework-userns.yml
-          - recipes/laptop/recipe-bluefin-dx-framework-userns.yml
-          - recipes/laptop/recipe-sericea-framework-userns.yml
+          # asus
+          - recipes/asus/recipe-silverblue-asus-userns.yml
+          - recipes/asus/recipe-silverblue-asus-nvidia-userns.yml
+          - recipes/asus/recipe-kinoite-asus-userns.yml
+          - recipes/asus/recipe-kinoite-asus-nvidia-userns.yml
           # server
           - recipes/server/recipe-server-main-userns.yml
           - recipes/server/recipe-server-nvidia-userns.yml

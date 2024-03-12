@@ -1,0 +1,13 @@
+Welcome to secureblue!
+Your image is: %IMAGE_REF_NAME%:%IMAGE_TAG%
+
+Commands:
+| `ujust`  | List all available commands |
+| `ujust toggle-user-motd` | Toggle this banner on/off |
+
+%TIP%
+
+To report an issue: https://github.com/secureblue/secureblue/issues
+FAQ: https://github.com/secureblue/secureblue/blob/live/FAQ.md
+Discord: https://discord.gg/qMTv5cKfbF
+

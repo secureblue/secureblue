@@ -65,7 +65,7 @@ Have a look at [PREINSTALL-README](PREINSTALL-README.md) before proceeding.
 
 #### Without User Namespaces <sup>[What's the difference?](USERNS.md)</sup>
 
-##### desktop
+##### general purpose
 - kinoite-main-hardened
 - kinoite-nvidia-hardened
 - cinnamon-main-hardened
@@ -82,34 +82,14 @@ Have a look at [PREINSTALL-README](PREINSTALL-README.md) before proceeding.
 - wayblue-hyprland-nvidia-hardened
 - wayblue-river-main-hardened
 - wayblue-river-nvidia-hardened
+- wayblue-sway-main-hardened
+- wayblue-sway-nvidia-hardened
 
-##### laptop <sup>[changes](./config/recipes/laptop/laptop-bling.yml)</sup>
-- kinoite-main-laptop-hardened
-- kinoite-nvidia-laptop-hardened
-- cinnamon-main-laptop-hardened
-- cinnamon-nvidia-laptop-hardened
-- bluefin-main-laptop-hardened
-- bluefin-nvidia-laptop-hardened
-- silverblue-main-laptop-hardened
-- silverblue-nvidia-laptop-hardened
+##### asus <sup>[docs](https://universal-blue.org/images/asus/)</sup>
 - silverblue-asus-hardened
 - silverblue-asus-nvidia-hardened
 - kinoite-asus-hardened
 - kinoite-asus-nvidia-hardened
-- sericea-main-laptop-hardened
-- sericea-nvidia-laptop-hardened
-- wayblue-wayfire-main-laptop-hardened
-- wayblue-wayfire-nvidia-laptop-hardened
-- wayblue-hyprland-main-laptop-hardened
-- wayblue-hyprland-nvidia-laptop-hardened
-- wayblue-river-main-laptop-hardened
-- wayblue-river-nvidia-laptop-hardened
-
-###### framework <sup>[docs](https://universal-blue.org/images/framework/)</sup>
-- kinoite-framework-hardened
-- bluefin-framework-hardened
-- silverblue-framework-hardened
-- sericea-framework-hardened
 
 ##### server
 - server-main-hardened
@@ -117,7 +97,7 @@ Have a look at [PREINSTALL-README](PREINSTALL-README.md) before proceeding.
 
 #### With User Namespaces <sup>[What's the difference?](USERNS.md)</sup>
 
-##### desktop
+##### general purpose
 - kinoite-main-userns-hardened
 - kinoite-nvidia-userns-hardened
 - cinnamon-main-userns-hardened
@@ -136,37 +116,14 @@ Have a look at [PREINSTALL-README](PREINSTALL-README.md) before proceeding.
 - wayblue-hyprland-nvidia-userns-hardened
 - wayblue-river-main-userns-hardened
 - wayblue-river-nvidia-userns-hardened
+- wayblue-sway-main-userns-hardened
+- wayblue-sway-nvidia-userns-hardened
 
-##### laptop <sup>[changes](./config/recipes/laptop/laptop-bling.yml)</sup>
-- kinoite-main-laptop-userns-hardened
-- kinoite-nvidia-laptop-userns-hardened
-- cinnamon-main-laptop-userns-hardened
-- cinnamon-nvidia-laptop-userns-hardened
-- bluefin-dx-main-laptop-userns-hardened
-- bluefin-dx-nvidia-laptop-userns-hardened
-- bluefin-main-laptop-userns-hardened
-- bluefin-nvidia-laptop-userns-hardened
-- silverblue-main-laptop-userns-hardened
-- silverblue-nvidia-laptop-userns-hardened
+##### asus <sup>[docs](https://universal-blue.org/images/asus/)</sup>
 - silverblue-asus-userns-hardened
 - silverblue-asus-nvidia-userns-hardened
 - kinoite-asus-userns-hardened
 - kinoite-asus-nvidia-userns-hardened
-- sericea-main-laptop-userns-hardened
-- sericea-nvidia-laptop-userns-hardened
-- wayblue-wayfire-main-laptop-userns-hardened
-- wayblue-wayfire-nvidia-laptop-userns-hardened
-- wayblue-hyprland-main-laptop-userns-hardened
-- wayblue-hyprland-nvidia-laptop-userns-hardened
-- wayblue-river-main-laptop-userns-hardened
-- wayblue-river-nvidia-laptop-userns-hardened
-
-###### framework <sup>[docs](https://universal-blue.org/images/framework/)</sup>
-- kinoite-framework-userns-hardened
-- bluefin-framework-userns-hardened
-- bluefin-dx-framework-userns-hardened
-- silverblue-framework-userns-hardened
-- sericea-framework-userns-hardened
 
 ##### server
 - server-main-userns-hardened
@@ -209,6 +166,14 @@ rpm-ostree kargs \
     --append=modprobe.blacklist=nouveau \
     --append=nvidia-drm.modeset=1
 ```
+
+#### Nvidia optimus laptop
+If you are using an nvidia image on an optimus laptop, run this after installation:
+
+```
+ujust configure-nvidia-optimus
+```
+
 
 ## Contributing
 

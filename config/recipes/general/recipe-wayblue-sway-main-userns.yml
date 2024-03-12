@@ -1,10 +1,10 @@
 # image will be published to ghcr.io/<user>/<name>
-name: wayblue-wayfire-main-laptop-userns-hardened
+name: wayblue-sway-main-userns-hardened
 # description will be included in the image's metadata
-description: "wayblue wayfire main with some hardening applied, for laptops"
+description: "wayblue sway main with some hardening applied"
 
 # the base image to build on top of (FROM) and the version tag to use
-base-image: ghcr.io/wayblueorg/wayfire
+base-image: ghcr.io/wayblueorg/sway
 image-version: 39
 
 # list of modules, executed in order
@@ -14,9 +14,7 @@ modules:
   - from-file: common/gui-packages.yml
   - from-file: common/common-packages.yml
   - from-file: common/remove-firefox.yml
-  - from-file: recipes/laptop/laptop-bling.yml
   - from-file: common/common-scripts.yml
   - type: signing
   - from-file: common/gui-scripts.yml
-  - from-file: common/wayfire-scripts.yml
   - type: yafti 

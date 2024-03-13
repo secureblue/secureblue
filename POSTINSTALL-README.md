@@ -33,7 +33,7 @@ If you wish to password-protect booting existing entries, you can add the `grub_
 
 ## Create a separate wheel account for admin purposes
 
-Creating a dedicated wheel user and removing wheel from your primary user helps prevent certain attack vectors:
+Creating a dedicated wheel user and removing wheel from your primary user helps prevent certain attack vectors, like:
 
 - https://www.kicksecure.com/wiki/Dev/Strong_Linux_User_Account_Isolation#LD_PRELOAD
 - https://www.kicksecure.com/wiki/Root#Prevent_Malware_from_Sniffing_the_Root_Password
@@ -50,9 +50,9 @@ When not in the wheel group, a user can be added to a dedicated group, otherwise
 - use `adb` and `fastboot`: `plugdev`
 - use systemwide flatpaks: `flatpak`
 
-Be aware that granting these permissions will increase attack surface, so keep them as minimal as possible. Some actions don't have an associated group yet, you can create your own rules and groups to fix this.
+Some actions don't have an associated group yet, you can create your own rules and groups to fix this.
 
-**Example**: Use LUKS encrypted backup drives
+**Example**: To allow a non-wheel user to use LUKS encrypted external drives:
 
 1. `sudo groupadd diskadmin`
 2. `sudo usermod -aG diskadmin {your username here}`

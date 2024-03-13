@@ -13,7 +13,6 @@ https://github.com/secureblue/secureblue/issues/193#issuecomment-1953323680
 During rpm-ostree operations, it's normal. Outside of that:
 
 - Make sure you followed the nvidia steps in the readme if you're using nvidia.
-- Make sure you're using a `laptop` image if you're using a laptop.
 - Make sure you're using an `asus` image if you're using asus.
 
 #### Should I use firejail?
@@ -54,3 +53,7 @@ To use flatpak steam you need to:
 
 - Be on a [userns](USERNS.md) variant
 - Remove `LD_PRELOAD=/var/run/host/usr/lib64/libhardened_malloc.so` from flatpak steam's environment variables in Flatseal
+
+#### How do I enable bluetooth kernel modules?
+
+Run `ujust toggle-bluetooth-modules`

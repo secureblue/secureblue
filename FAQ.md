@@ -57,3 +57,7 @@ To use flatpak steam you need to:
 #### How do I enable bluetooth kernel modules?
 
 Run `ujust toggle-bluetooth-modules`
+
+#### Why are upgrades so large?
+
+https://universal-blue.org/faq/?h=diff#why-does-it-download-more-changes-than-it-seems-like-it-should

@@ -13,7 +13,7 @@ kernel.unprivileged_userns_clone = 0
 
 " >> /usr/etc/sysctl.d/hardening.conf
 
-mkdir /usr/etc/systemd/system/upower.service.d/
+mkdir -p /usr/etc/systemd/system/upower.service.d/
 
 echo "
 

@@ -167,7 +167,3 @@
 **Do not import saved passwords on first run**
 
 `"ImportSavedPasswords": false`
-
-**Disable disk cache**
-
-`"DiskCacheSize": 0`

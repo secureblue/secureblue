@@ -40,6 +40,5 @@
 	"CloudPrintSubmitEnabled": false,
 	"AutofillAddressEnabled": false,
 	"AutofillCreditCardEnabled": false,
-	"ImportSavedPasswords": false,
-	"DiskCacheSize": 0
+	"ImportSavedPasswords": false
 }

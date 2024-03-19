@@ -14,9 +14,9 @@ modules:
   - from-file: common/gui-packages.yml
   - from-file: common/common-packages.yml
   - from-file: common/remove-firefox.yml
-  - from-file: common/common-scripts.yml
   - from-file: common/gui-scripts.yml
   - from-file: common/disableuserns-scripts.yml
   - from-file: common/common-files.yml
+  - from-file: common/common-scripts.yml
   - type: signing
   - type: yafti 

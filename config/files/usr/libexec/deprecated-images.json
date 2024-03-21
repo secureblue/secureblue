@@ -3,5 +3,8 @@
       "framework",
       "main-laptop",
       "nvidia-laptop"
+    ], 
+    "imageTags": [
+      "39"
     ]
 }

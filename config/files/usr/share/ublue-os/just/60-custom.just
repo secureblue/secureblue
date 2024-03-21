@@ -1,40 +1,3 @@
-# Enable xwaylandvideobridge
-fix-screenshare:
-    cp /usr/share/applications/org.kde.xwaylandvideobridge.desktop $HOME/.config/autostart/
-
-# Check for local overrides
-check-local-overrides:
-    #!/usr/bin/bash
-    diff -r \
-      --suppress-common-lines \
-      --color="always" \
-      --exclude "passwd*" \
-      --exclude "group*" \
-      --exclude="subgid*" \
-      --exclude="subuid*" \
-      --exclude="machine-id" \
-      --exclude="adjtime" \
-      --exclude="fstab" \
-      --exclude="system-connections" \
-      --exclude="shadow*" \
-      --exclude="gshadow*" \
-      --exclude="ssh_host*" \
-      --exclude="cmdline" \
-      --exclude="crypttab" \
-      --exclude="hostname" \
-      --exclude="localtime" \
-      --exclude="locale*" \
-      --exclude="*lock" \
-      --exclude=".updated" \
-      --exclude="*LOCK" \
-      --exclude="vconsole*" \
-      --exclude="00-keyboard.conf" \
-      --exclude="grub" \
-      --exclude="system.control*" \
-      --exclude="cdi" \
-      --exclude="default.target" \
-      /usr/etc /etc 2>/dev/null | sed '/Binary\ files\ /d'
-
 # Add additional boot parameters for hardening (requires reboot)
 set-kargs-hardening:
     #!/usr/bin/pkexec /usr/bin/bash
@@ -63,8 +26,7 @@ set-kargs-hardening-unstable:
     #!/usr/bin/pkexec /usr/bin/bash
     echo "Warning: setting these kargs may lead to boot issues on some hardware."
     rpm-ostree kargs \
-      --append-if-missing="efi=disable_early_pci_dma" \
-      --append-if-missing="debugfs=off"
+      --append-if-missing="efi=disable_early_pci_dma"
     echo "Unstable hardening kargs set."
 
 # Harden flatpaks by preloading hardened_malloc

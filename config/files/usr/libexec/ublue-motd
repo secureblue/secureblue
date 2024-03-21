@@ -15,6 +15,7 @@ DIFFERENCE=$((CURRENT_SECONDS - IMAGE_DATE_SECONDS))
 MONTH=$((7 * 24 * 60 * 60))
 
 readarray -t imageTypes < <(jq -r '.imageTypes[]' /usr/libexec/deprecated-images.json)
+
 isDeprecated=false
 for imageType in "${imageTypes[@]}"; do
     if [[ "$IMAGE_REF_NAME" == *"$imageType"* ]]; then
@@ -23,19 +24,8 @@ for imageType in "${imageTypes[@]}"; do
     fi
 done
 
-readarray -t imageTags < <(jq -r '.imageTags[]' /usr/libexec/deprecated-images.json)
-isOnSpecificTag=false
-for imageTag in "${imageTags[@]}"; do
-    if [[ "$IMAGE_TAG" == *"$imageTag"* ]]; then
-        isOnSpecificTag=true
-        break
-    fi
-done
-
 if $isDeprecated; then
     TIP='~~~ NOTICE: You are on a deprecated image, please rebase. ~~~\n~~~ For more information, visit https://github.com/secureblue/secureblue/blob/live/config/files/usr/libexec/deprecated-images.json.md ~~~'
-elif $isOnSpecificTag; then
-    TIP='~~~ NOTICE: You are on a specific tag, which is unsupported by secureblue. Rebase to the `latest` tag to ensure you continue to receive updates. ~~~'
 elif [ "$DIFFERENCE" -ge "$MONTH" ]; then
     TIP='~~~ NOTICE: Your current image is over 1 week old, run `ujust update`. ~~~'
 else

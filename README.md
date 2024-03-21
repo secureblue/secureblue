@@ -182,3 +182,8 @@ Follow the [contributing documentation](CONTRIBUTING.md#contributing), and make 
 ### Development
 
 For local Development [building locally](CONTRIBUTING.md#building-locally) is the recommended approach.
+
+### Community 
+Opening issues is preferred, but discord is available as well. https://discord.gg/qMTv5cKfbF
+
+

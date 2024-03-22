@@ -54,10 +54,16 @@ To use flatpak steam you need to:
 - Be on a [userns](USERNS.md) variant
 - Remove `LD_PRELOAD=/var/run/host/usr/lib64/libhardened_malloc.so` from flatpak steam's environment variables in Flatseal
 
-#### How do I enable bluetooth kernel modules?
+#### Why are bluetooth kernel modules disabled? How do I enable them?
 
-Run `ujust toggle-bluetooth-modules`
+Bluetooth has a long and consistent history of security issues. However, if you still need it, run `ujust toggle-bluetooth-modules`
 
 #### Why are upgrades so large?
 
 https://universal-blue.org/faq/?h=diff#why-does-it-download-more-changes-than-it-seems-like-it-should
+
+#### Why can't I install new KDE themes?
+
+The functionality that provides this, called GHNS, is disabled by default due to the risk posed by the installation of potentially damaging or malicious scripts. This has caused [real damage](https://blog.davidedmundson.co.uk/blog/kde-store-content/). 
+
+If you still want to enable this functionality, run `ujust toggle-ghns`

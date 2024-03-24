@@ -3,6 +3,4 @@ remove:
   - kde-connect
   - kde-connect-libs
   - kdeconnectd
-  - kf5-akonadi-server
-  - kf5-akonadi-server-mysql
   - qt5-qdbusviewer

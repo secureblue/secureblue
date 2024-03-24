@@ -3,4 +3,3 @@ remove:
   - kde-connect
   - kde-connect-libs
   - kdeconnectd
-  - qt5-qdbusviewer

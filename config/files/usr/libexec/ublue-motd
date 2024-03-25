@@ -25,7 +25,7 @@ done
 
 if $isDeprecated; then
     TIP='~~~ NOTICE: You are on a deprecated image, please rebase. ~~~\n~~~ For more information, visit https://github.com/secureblue/secureblue/blob/live/config/files/usr/libexec/deprecated-images.json.md ~~~'
-elif ["$IMAGE_TAG" != "latest"]; then
+elif [ "$IMAGE_TAG" != "latest" ]; then
     TIP='~~~ NOTICE: You are on a specific tag, which is unsupported by secureblue. Rebase to the `latest` tag to ensure you continue to receive updates. ~~~'
 elif [ "$DIFFERENCE" -ge "$MONTH" ]; then
     TIP='~~~ NOTICE: Your current image is over 1 week old, run `ujust update`. ~~~'

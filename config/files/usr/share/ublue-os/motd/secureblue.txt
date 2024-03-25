@@ -1,5 +1,5 @@
 Welcome to secureblue!
-Your image is: %IMAGE_REF_NAME%:%IMAGE_TAG%
+Your image is: %IMAGE_REF_NAME%
 
 Commands:
 | `ujust`  | List all available commands |

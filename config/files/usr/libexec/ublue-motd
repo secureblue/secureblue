@@ -2,10 +2,9 @@
 
 # Modified from https://github.com/ublue-os/bazzite/blob/main/system_files/desktop/shared/usr/libexec/ublue-motd
 
-IMAGE_INFO="/usr/share/ublue-os/image-info.json"
-IMAGE_REF=$(jq -r '."image-ref"' < $IMAGE_INFO)
-IMAGE_REF_NAME="${IMAGE_REF##*/}"
-IMAGE_TAG=$(jq -r '."image-tag"' < $IMAGE_INFO)
+RPM_OSTREE_STATUS=$(rpm-ostree status --json)
+IMAGE_REF_NAME=$(echo $RPM_OSTREE_STATUS | jq -r '.deployments[0]."container-image-reference" // empty | split("/")[-1]')
+IMAGE_TAG=$(echo $RPM_OSTREE_STATUS | jq -r '.deployments[0]."container-image-reference" // empty | split(":")[-1]')
 TIP=""
 
 IMAGE_DATE=$(rpm-ostree status --booted | sed -n 's/.*Timestamp: \(.*\)/\1/p')
@@ -15,7 +14,6 @@ DIFFERENCE=$((CURRENT_SECONDS - IMAGE_DATE_SECONDS))
 MONTH=$((7 * 24 * 60 * 60))
 
 readarray -t imageTypes < <(jq -r '.imageTypes[]' /usr/libexec/deprecated-images.json)
-
 isDeprecated=false
 for imageType in "${imageTypes[@]}"; do
     if [[ "$IMAGE_REF_NAME" == *"$imageType"* ]]; then
@@ -24,8 +22,11 @@ for imageType in "${imageTypes[@]}"; do
     fi
 done
 
+
 if $isDeprecated; then
     TIP='~~~ NOTICE: You are on a deprecated image, please rebase. ~~~\n~~~ For more information, visit https://github.com/secureblue/secureblue/blob/live/config/files/usr/libexec/deprecated-images.json.md ~~~'
+elif ["$IMAGE_TAG" != "latest"]; then
+    TIP='~~~ NOTICE: You are on a specific tag, which is unsupported by secureblue. Rebase to the `latest` tag to ensure you continue to receive updates. ~~~'
 elif [ "$DIFFERENCE" -ge "$MONTH" ]; then
     TIP='~~~ NOTICE: Your current image is over 1 week old, run `ujust update`. ~~~'
 else

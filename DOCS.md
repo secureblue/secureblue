@@ -8,7 +8,7 @@
    
     b. [Using a Fedora Atomic ISO, then rebasing (Recommended)](README.md#rebasing-recommended)
    
-    c. [Generating an ISO based on a secureblue iamge](README.md#iso)
+    c. [Generating an ISO based on a secureblue image](README.md#iso)
    
     d. [Post-install instructions](POSTINSTALL-README.md)
    

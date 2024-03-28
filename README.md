@@ -118,7 +118,7 @@ While it's recommended to use a Fedora Atomic iso to install and then rebase tha
 - wayblue-sway-main-hardened
 - wayblue-sway-nvidia-hardened
 
-##### asus <sup>[docs](https://universal-blue.org/images/asus/)</sup>
+##### asus <sup>[source](https://github.com/ublue-os/hwe/tree/main/asus)</sup>
 - silverblue-asus-hardened
 - silverblue-asus-nvidia-hardened
 - kinoite-asus-hardened
@@ -155,7 +155,7 @@ While it's recommended to use a Fedora Atomic iso to install and then rebase tha
 - wayblue-sway-main-userns-hardened
 - wayblue-sway-nvidia-userns-hardened
 
-##### asus <sup>[docs](https://universal-blue.org/images/asus/)</sup>
+##### asus <sup>[source](https://github.com/ublue-os/hwe/tree/main/asus)</sup>
 - silverblue-asus-userns-hardened
 - silverblue-asus-nvidia-userns-hardened
 - kinoite-asus-userns-hardened

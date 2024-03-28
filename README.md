@@ -9,7 +9,7 @@
 
 [![secureblue](https://github.com/secureblue/secureblue/actions/workflows/build.yml/badge.svg)](https://github.com/secureblue/secureblue/actions/workflows/build.yml)
 
-This repo uses the [BlueBuild](https://blue-build.org/) template to generate hardened operating system images, using [uBlue](https://universal-blue.org)'s [Fedora Atomic](https://fedoraproject.org/atomic-desktops/)-based [base images](https://github.com/orgs/ublue-os/packages?repo_name=main) as a starting point. This hardening is done with the following goals in mind:
+This repo uses [BlueBuild](https://blue-build.org/) to generate hardened operating system images, using [uBlue](https://universal-blue.org)'s [Fedora Atomic](https://fedoraproject.org/atomic-desktops/)-based [base images](https://github.com/orgs/ublue-os/packages?repo_name=main) as a starting point. This hardening is done with the following goals in mind:
 
 - Increase defenses against the exploitation of both known and unknown vulnerabilities.
 - Avoid sacrificing usability for most use cases where possible

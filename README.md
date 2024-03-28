@@ -62,21 +62,53 @@ If you want to add your own customizations on top of secureblue, you are advised
 
 Have a look at [PREINSTALL-README](PREINSTALL-README.md) before proceeding.
 
+### Rebasing (Recommended)
+
+To rebase a Fedora Atomic installation, choose an $IMAGE_NAME from the [list below](README.md#available-images), then follow these steps:
+
+- First rebase to the unsigned image, to get the proper signing keys and policies installed:
+  ```
+  rpm-ostree rebase ostree-unverified-registry:ghcr.io/secureblue/$IMAGE_NAME:latest
+  ```
+- Reboot to complete the rebase:
+  ```
+  systemctl reboot
+  ```
+- Then rebase to the signed image, like so:
+  ```
+  rpm-ostree rebase ostree-image-signed:docker://ghcr.io/secureblue/$IMAGE_NAME:latest
+  ```
+- Reboot again to complete the installation
+  ```
+  systemctl reboot
+  ```
+
+### ISO 
+
+While it's recommended to use a Fedora Atomic iso to install and then rebase that installation to secureblue, you can also generate an iso and install that directly using [this script](generate_secureblue_iso.sh). Please note you should still follow the [post-install steps](README.md#post-install) when installing from a generated iso:
+
+```
+./generate_secureblue_iso.sh
+```
+
 ### Available Images
 
 #### Without User Namespaces <sup>[What's the difference?](USERNS.md)</sup>
 
 ##### general purpose
+###### stable
 - kinoite-main-hardened
 - kinoite-nvidia-hardened
-- cinnamon-main-hardened
-- cinnamon-nvidia-hardened
 - bluefin-main-hardened
 - bluefin-nvidia-hardened
 - silverblue-main-hardened
 - silverblue-nvidia-hardened
 - sericea-main-hardened
 - sericea-nvidia-hardened
+
+###### experimental
+- cinnamon-main-hardened
+- cinnamon-nvidia-hardened
 - wayblue-wayfire-main-hardened
 - wayblue-wayfire-nvidia-hardened
 - wayblue-hyprland-main-hardened
@@ -99,10 +131,9 @@ Have a look at [PREINSTALL-README](PREINSTALL-README.md) before proceeding.
 #### With User Namespaces <sup>[What's the difference?](USERNS.md)</sup>
 
 ##### general purpose
+###### stable
 - kinoite-main-userns-hardened
 - kinoite-nvidia-userns-hardened
-- cinnamon-main-userns-hardened
-- cinnamon-nvidia-userns-hardened
 - bluefin-dx-main-userns-hardened
 - bluefin-dx-nvidia-userns-hardened
 - bluefin-main-userns-hardened
@@ -111,6 +142,10 @@ Have a look at [PREINSTALL-README](PREINSTALL-README.md) before proceeding.
 - silverblue-nvidia-userns-hardened
 - sericea-main-userns-hardened
 - sericea-nvidia-userns-hardened
+
+###### experimental
+- cinnamon-main-userns-hardened
+- cinnamon-nvidia-userns-hardened
 - wayblue-wayfire-main-userns-hardened
 - wayblue-wayfire-nvidia-userns-hardened
 - wayblue-hyprland-main-userns-hardened
@@ -129,28 +164,6 @@ Have a look at [PREINSTALL-README](PREINSTALL-README.md) before proceeding.
 ##### server
 - server-main-userns-hardened
 - server-nvidia-userns-hardened
-
-
-### Rebasing
-
-To rebase an existing Silverblue/Kinoite installation to the latest build:
-
-- First rebase to the unsigned image, to get the proper signing keys and policies installed:
-  ```
-  rpm-ostree rebase ostree-unverified-registry:ghcr.io/secureblue/$IMAGE_NAME:latest
-  ```
-- Reboot to complete the rebase:
-  ```
-  systemctl reboot
-  ```
-- Then rebase to the signed image, like so:
-  ```
-  rpm-ostree rebase ostree-image-signed:docker://ghcr.io/secureblue/$IMAGE_NAME:latest
-  ```
-- Reboot again to complete the installation
-  ```
-  systemctl reboot
-  ```
   
 ### Post-install
 

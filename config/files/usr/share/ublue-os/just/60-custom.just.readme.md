@@ -19,7 +19,7 @@
 
 `randomize_kstack_offset=on` 
 
-**Disable vsyscall as it is both obsolete and enable an ROP attack vector**
+**Disable vsyscall as it is both obsolete and enables an ROP attack vector**
 
 `vsyscall=none` 
 

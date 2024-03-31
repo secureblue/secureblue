@@ -1,6 +1,6 @@
 type: rpm-ostree
 repos:
-  - https://copr.fedorainfracloud.org/coprs/secureblue/bubblejail/repo/fedora-40/secureblue-bubblejail-fedora-40.repo
+  - https://copr.fedorainfracloud.org/coprs/secureblue/bubblejail/repo/fedora-%OS_VERSION%/secureblue-bubblejail-fedora-%OS_VERSION%.repo
 install:    
   - python3-pip
   # GNOME's GTK4 theme, Libadwaita. Already included in Silverblue, but not

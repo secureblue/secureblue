@@ -40,5 +40,8 @@
 	"CloudPrintSubmitEnabled": false,
 	"AutofillAddressEnabled": false,
 	"AutofillCreditCardEnabled": false,
-	"ImportSavedPasswords": false
+	"ImportSavedPasswords": false,
+	"DefaultWebUsbGuardSetting": 2,
+	"DefaultWebBluetoothGuardSetting": 2,
+	"DefaultSerialGuardSetting": 2
 }

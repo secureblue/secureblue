@@ -60,7 +60,7 @@ Bluetooth has a long and consistent history of security issues. However, if you 
 
 #### Why are upgrades so large?
 
-https://universal-blue.org/faq/?h=diff#why-does-it-download-more-changes-than-it-seems-like-it-should
+This is an issue with rpm-ostree image-based systems generally, and not specific to secureblue. Ideally upgrades would come in the form of a zstd-compressed container diff, but it's not there yet. Check out [this upstream issue](https://github.com/coreos/rpm-ostree/issues/4012) for more information.
 
 #### Why can't I install new KDE themes?
 

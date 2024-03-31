@@ -9,7 +9,7 @@
 
 [![secureblue](https://github.com/secureblue/secureblue/actions/workflows/build.yml/badge.svg)](https://github.com/secureblue/secureblue/actions/workflows/build.yml)
 
-This repo takes the [BlueBuild](https://blue-build.org/) template and selectively applies hardening with the following goals:
+This repo uses [BlueBuild](https://blue-build.org/) to generate hardened operating system images, using [uBlue](https://universal-blue.org)'s [Fedora Atomic](https://fedoraproject.org/atomic-desktops/)-based [base images](https://github.com/orgs/ublue-os/packages?repo_name=main) as a starting point. This hardening is done with the following goals in mind:
 
 - Increase defenses against the exploitation of both known and unknown vulnerabilities.
 - Avoid sacrificing usability for most use cases where possible
@@ -62,78 +62,9 @@ If you want to add your own customizations on top of secureblue, you are advised
 
 Have a look at [PREINSTALL-README](PREINSTALL-README.md) before proceeding.
 
-### Available Images
+### Rebasing (Recommended)
 
-#### Without User Namespaces <sup>[What's the difference?](USERNS.md)</sup>
-
-##### general purpose
-- kinoite-main-hardened
-- kinoite-nvidia-hardened
-- cinnamon-main-hardened
-- cinnamon-nvidia-hardened
-- bluefin-main-hardened
-- bluefin-nvidia-hardened
-- silverblue-main-hardened
-- silverblue-nvidia-hardened
-- sericea-main-hardened
-- sericea-nvidia-hardened
-- wayblue-wayfire-main-hardened
-- wayblue-wayfire-nvidia-hardened
-- wayblue-hyprland-main-hardened
-- wayblue-hyprland-nvidia-hardened
-- wayblue-river-main-hardened
-- wayblue-river-nvidia-hardened
-- wayblue-sway-main-hardened
-- wayblue-sway-nvidia-hardened
-
-##### asus <sup>[docs](https://universal-blue.org/images/asus/)</sup>
-- silverblue-asus-hardened
-- silverblue-asus-nvidia-hardened
-- kinoite-asus-hardened
-- kinoite-asus-nvidia-hardened
-
-##### server
-- server-main-hardened
-- server-nvidia-hardened
-
-#### With User Namespaces <sup>[What's the difference?](USERNS.md)</sup>
-
-##### general purpose
-- kinoite-main-userns-hardened
-- kinoite-nvidia-userns-hardened
-- cinnamon-main-userns-hardened
-- cinnamon-nvidia-userns-hardened
-- bluefin-dx-main-userns-hardened
-- bluefin-dx-nvidia-userns-hardened
-- bluefin-main-userns-hardened
-- bluefin-nvidia-userns-hardened
-- silverblue-main-userns-hardened
-- silverblue-nvidia-userns-hardened
-- sericea-main-userns-hardened
-- sericea-nvidia-userns-hardened
-- wayblue-wayfire-main-userns-hardened
-- wayblue-wayfire-nvidia-userns-hardened
-- wayblue-hyprland-main-userns-hardened
-- wayblue-hyprland-nvidia-userns-hardened
-- wayblue-river-main-userns-hardened
-- wayblue-river-nvidia-userns-hardened
-- wayblue-sway-main-userns-hardened
-- wayblue-sway-nvidia-userns-hardened
-
-##### asus <sup>[docs](https://universal-blue.org/images/asus/)</sup>
-- silverblue-asus-userns-hardened
-- silverblue-asus-nvidia-userns-hardened
-- kinoite-asus-userns-hardened
-- kinoite-asus-nvidia-userns-hardened
-
-##### server
-- server-main-userns-hardened
-- server-nvidia-userns-hardened
-
-
-### Rebasing
-
-To rebase an existing Silverblue/Kinoite installation to the latest build:
+To rebase a Fedora Atomic installation, choose an $IMAGE_NAME from the [list below](README.md#available-images), then follow these steps:
 
 - First rebase to the unsigned image, to get the proper signing keys and policies installed:
   ```
@@ -151,6 +82,88 @@ To rebase an existing Silverblue/Kinoite installation to the latest build:
   ```
   systemctl reboot
   ```
+
+### ISO 
+
+While it's recommended to use a Fedora Atomic iso to install and then rebase that installation to secureblue, you can also generate an iso and install that directly using [this script](generate_secureblue_iso.sh). Please note you should still follow the [post-install steps](README.md#post-install) when installing from a generated iso:
+
+```
+./generate_secureblue_iso.sh
+```
+
+### Available Images
+
+#### Without User Namespaces <sup>[What's the difference?](USERNS.md)</sup>
+
+##### general purpose
+###### stable
+- kinoite-main-hardened
+- kinoite-nvidia-hardened
+- bluefin-main-hardened
+- bluefin-nvidia-hardened
+- silverblue-main-hardened
+- silverblue-nvidia-hardened
+- sericea-main-hardened
+- sericea-nvidia-hardened
+
+###### experimental
+- cinnamon-main-hardened
+- cinnamon-nvidia-hardened
+- wayblue-wayfire-main-hardened
+- wayblue-wayfire-nvidia-hardened
+- wayblue-hyprland-main-hardened
+- wayblue-hyprland-nvidia-hardened
+- wayblue-river-main-hardened
+- wayblue-river-nvidia-hardened
+- wayblue-sway-main-hardened
+- wayblue-sway-nvidia-hardened
+
+##### asus <sup>[source](https://github.com/ublue-os/hwe/tree/main/asus)</sup>
+- silverblue-asus-hardened
+- silverblue-asus-nvidia-hardened
+- kinoite-asus-hardened
+- kinoite-asus-nvidia-hardened
+
+##### server
+- server-main-hardened
+- server-nvidia-hardened
+
+#### With User Namespaces <sup>[What's the difference?](USERNS.md)</sup>
+
+##### general purpose
+###### stable
+- kinoite-main-userns-hardened
+- kinoite-nvidia-userns-hardened
+- bluefin-dx-main-userns-hardened
+- bluefin-dx-nvidia-userns-hardened
+- bluefin-main-userns-hardened
+- bluefin-nvidia-userns-hardened
+- silverblue-main-userns-hardened
+- silverblue-nvidia-userns-hardened
+- sericea-main-userns-hardened
+- sericea-nvidia-userns-hardened
+
+###### experimental
+- cinnamon-main-userns-hardened
+- cinnamon-nvidia-userns-hardened
+- wayblue-wayfire-main-userns-hardened
+- wayblue-wayfire-nvidia-userns-hardened
+- wayblue-hyprland-main-userns-hardened
+- wayblue-hyprland-nvidia-userns-hardened
+- wayblue-river-main-userns-hardened
+- wayblue-river-nvidia-userns-hardened
+- wayblue-sway-main-userns-hardened
+- wayblue-sway-nvidia-userns-hardened
+
+##### asus <sup>[source](https://github.com/ublue-os/hwe/tree/main/asus)</sup>
+- silverblue-asus-userns-hardened
+- silverblue-asus-nvidia-userns-hardened
+- kinoite-asus-userns-hardened
+- kinoite-asus-nvidia-userns-hardened
+
+##### server
+- server-main-userns-hardened
+- server-nvidia-userns-hardened
   
 ### Post-install
 

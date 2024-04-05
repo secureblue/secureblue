@@ -130,7 +130,7 @@ jobs:
           pubkey: 'https://raw.githubusercontent.com/NiHaiden/aurora/main/cosign.pub'
 
       - name: Build secureblue
-        uses: blue-build/github-action@v1.2.0
+        uses: blue-build/github-action@v1.3.0
         with:
           recipe: ${{ matrix.recipe }}
           cosign_private_key: ${{ secrets.SIGNING_SECRET }}

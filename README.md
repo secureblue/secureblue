@@ -127,6 +127,8 @@ While it's recommended to use a Fedora Atomic iso to install and then rebase tha
 - aurora-surface-nvidia-hardened
 
 ##### asus <sup>[source](https://github.com/ublue-os/hwe/tree/main/asus)</sup>
+- aurora-asus-hardened
+- aurora-asus-nvidia-hardened
 - silverblue-asus-hardened
 - silverblue-asus-nvidia-hardened
 - kinoite-asus-hardened
@@ -175,6 +177,10 @@ While it's recommended to use a Fedora Atomic iso to install and then rebase tha
 - aurora-dx-surface-nvidia-userns-hardened
 
 ##### asus <sup>[source](https://github.com/ublue-os/hwe/tree/main/asus)</sup>
+- aurora-asus-userns-hardened
+- aurora-asus-nvidia-userns-hardened
+- aurora-dx-asus-userns-hardened
+- aurora-dx-asus-nvidia-userns-hardened
 - silverblue-asus-userns-hardened
 - silverblue-asus-nvidia-userns-hardened
 - kinoite-asus-userns-hardened

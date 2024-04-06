@@ -51,6 +51,8 @@ jobs:
           - recipes/asus/recipe-silverblue-asus-nvidia.yml
           - recipes/asus/recipe-kinoite-asus.yml
           - recipes/asus/recipe-kinoite-asus-nvidia.yml
+          - recipes/asus/recipe-aurora-asus.yml
+          - recipes/asus/recipe-aurora-asus-nvidia.yml
           # server
           - recipes/server/recipe-server-main.yml
           - recipes/server/recipe-server-nvidia.yml
@@ -89,6 +91,10 @@ jobs:
           - recipes/asus/recipe-silverblue-asus-nvidia-userns.yml
           - recipes/asus/recipe-kinoite-asus-userns.yml
           - recipes/asus/recipe-kinoite-asus-nvidia-userns.yml
+          - recipes/asus/recipe-aurora-asus-userns.yml
+          - recipes/asus/recipe-aurora-asus-nvidia-userns.yml
+          - recipes/asus/recipe-aurora-dx-asus-userns.yml
+          - recipes/asus/recipe-aurora-dx-asus-nvidia-userns.yml
           # server
           - recipes/server/recipe-server-main-userns.yml
           - recipes/server/recipe-server-nvidia-userns.yml

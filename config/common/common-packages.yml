@@ -5,6 +5,8 @@ install:
   - lm_sensors
   - lynis
   - hardened_malloc
+  - setools
+  - setroubleshoot
   - usbguard
   - usbguard-dbus
 

@@ -2,4 +2,3 @@ type: script
 scripts:
   - authselect.sh
   - setfilepermissions.sh
-  - disablesealertpopups.sh

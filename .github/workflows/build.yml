@@ -24,6 +24,10 @@ jobs:
         recipe:
           # non-userns
           # general
+          - recipes/general/recipe-aurora-main.yml
+          - recipes/general/recipe-aurora-nvidia.yml
+          - recipes/general/recipe-aurora-surface.yml
+          - recipes/general/recipe-aurora-surface-nvidia.yml
           - recipes/general/recipe-silverblue-main.yml
           - recipes/general/recipe-silverblue-nvidia.yml
           - recipes/general/recipe-kinoite-main.yml
@@ -47,11 +51,21 @@ jobs:
           - recipes/asus/recipe-silverblue-asus-nvidia.yml
           - recipes/asus/recipe-kinoite-asus.yml
           - recipes/asus/recipe-kinoite-asus-nvidia.yml
+          - recipes/asus/recipe-aurora-asus.yml
+          - recipes/asus/recipe-aurora-asus-nvidia.yml
           # server
           - recipes/server/recipe-server-main.yml
           - recipes/server/recipe-server-nvidia.yml
           # userns
           # general
+          - recipes/general/recipe-aurora-surface-userns.yml
+          - recipes/general/recipe-aurora-surface-nvidia-userns.yml
+          - recipes/general/recipe-aurora-dx-main-userns.yml
+          - recipes/general/recipe-aurora-dx-nvidia-userns.yml
+          - recipes/general/recipe-aurora-dx-surface-nvidia-userns.yml
+          - recipes/general/recipe-aurora-dx-surface-userns.yml
+          - recipes/general/recipe-aurora-main-userns.yml
+          - recipes/general/recipe-aurora-nvidia-userns.yml
           - recipes/general/recipe-silverblue-main-userns.yml
           - recipes/general/recipe-silverblue-nvidia-userns.yml
           - recipes/general/recipe-kinoite-main-userns.yml
@@ -77,6 +91,10 @@ jobs:
           - recipes/asus/recipe-silverblue-asus-nvidia-userns.yml
           - recipes/asus/recipe-kinoite-asus-userns.yml
           - recipes/asus/recipe-kinoite-asus-nvidia-userns.yml
+          - recipes/asus/recipe-aurora-asus-userns.yml
+          - recipes/asus/recipe-aurora-asus-nvidia-userns.yml
+          - recipes/asus/recipe-aurora-dx-asus-userns.yml
+          - recipes/asus/recipe-aurora-dx-asus-nvidia-userns.yml
           # server
           - recipes/server/recipe-server-main-userns.yml
           - recipes/server/recipe-server-nvidia-userns.yml
@@ -96,7 +114,7 @@ jobs:
           echo "BASE_IMAGE_NAME=$(echo $BASE_IMAGE | sed 's/.*\/.*\///')" >> $GITHUB_ENV
 
       - name: Verify base image
-        if: ${{ ! contains(env.IMAGE_NAME, 'wayblue') }}
+        if: ${{ !contains(env.IMAGE_NAME, 'aurora') && !contains(env.IMAGE_NAME, 'wayblue') }}
         uses: EyeCantCU/cosign-action/verify@v0.2.2
         with:
           containers: ${{ env.BASE_IMAGE_NAME }}:${{ env.IMAGE_MAJOR_VERSION }}
@@ -109,8 +127,16 @@ jobs:
           registry: 'ghcr.io/wayblueorg'
           pubkey: 'https://raw.githubusercontent.com/wayblueorg/wayblue/live/cosign.pub'
 
+      - name: Verify base image
+        if: ${{ contains(env.IMAGE_NAME, 'aurora') }}
+        uses: EyeCantCU/cosign-action/verify@v0.2.2
+        with:
+          containers: ${{ env.BASE_IMAGE_NAME }}:${{ env.IMAGE_MAJOR_VERSION }}
+          registry: 'ghcr.io/NiHaiden'
+          pubkey: 'https://raw.githubusercontent.com/NiHaiden/aurora/main/cosign.pub'
+
       - name: Build secureblue
-        uses: blue-build/github-action@v1.2.0
+        uses: blue-build/github-action@v1.3.0
         with:
           recipe: ${{ matrix.recipe }}
           cosign_private_key: ${{ secrets.SIGNING_SECRET }}

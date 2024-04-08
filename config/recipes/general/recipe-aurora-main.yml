@@ -1,0 +1,27 @@
+# image will be published to ghcr.io/<user>/<name>
+name: aurora-main-hardened
+# description will be included in the image's metadata
+description: "Aurora main with some hardening applied"
+
+# the base image to build on top of (FROM) and the version tag to use
+base-image: ghcr.io/nihaiden/aurora
+image-version: 39
+
+# list of modules, executed in order
+# you can include multiple instances of the same module
+modules:
+  - from-file: common/initialization-scripts.yml
+  - from-file: common/kinoite-packages.yml
+  - from-file: common/aurora-packages.yml
+  - from-file: common/gui-packages.yml
+  - from-file: common/common-packages.yml
+  - from-file: common/disableuserns-packages.yml
+  - from-file: common/remove-firefox.yml
+  - from-file: common/gui-scripts.yml
+  - from-file: common/bluefin-scripts.yml
+  - from-file: common/kinoite-files.yml
+  - from-file: common/common-files.yml
+  - from-file: common/common-scripts.yml
+  - from-file: common/disableuserns-scripts.yml
+  - type: signing
+  - type: yafti 

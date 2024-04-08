@@ -101,6 +101,8 @@ While it's recommended to use a Fedora Atomic iso to install and then rebase tha
 - kinoite-nvidia-hardened
 - bluefin-main-hardened
 - bluefin-nvidia-hardened
+- aurora-main-hardened
+- aurora-nvidia-hardened
 - silverblue-main-hardened
 - silverblue-nvidia-hardened
 - sericea-main-hardened
@@ -118,7 +120,15 @@ While it's recommended to use a Fedora Atomic iso to install and then rebase tha
 - wayblue-sway-main-hardened
 - wayblue-sway-nvidia-hardened
 
+
+##### surface <sup>[source](https://github.com/ublue-os/hwe/tree/main/surface)</sup>
+
+- aurora-surface-hardened
+- aurora-surface-nvidia-hardened
+
 ##### asus <sup>[source](https://github.com/ublue-os/hwe/tree/main/asus)</sup>
+- aurora-asus-hardened
+- aurora-asus-nvidia-hardened
 - silverblue-asus-hardened
 - silverblue-asus-nvidia-hardened
 - kinoite-asus-hardened
@@ -138,6 +148,10 @@ While it's recommended to use a Fedora Atomic iso to install and then rebase tha
 - bluefin-dx-nvidia-userns-hardened
 - bluefin-main-userns-hardened
 - bluefin-nvidia-userns-hardened
+- aurora-main-userns-hardened
+- aurora-nvidia-userns-hardened
+- aurora-dx-main-userns-hardened
+- aurora-dx-nvidia-userns-hardened
 - silverblue-main-userns-hardened
 - silverblue-nvidia-userns-hardened
 - sericea-main-userns-hardened
@@ -155,7 +169,18 @@ While it's recommended to use a Fedora Atomic iso to install and then rebase tha
 - wayblue-sway-main-userns-hardened
 - wayblue-sway-nvidia-userns-hardened
 
+##### surface <sup>[source](https://github.com/ublue-os/hwe/tree/main/surface)</sup>
+
+- aurora-surface-userns-hardened
+- aurora-surface-nvidia-userns-hardened
+- aurora-dx-surface-userns-hardened
+- aurora-dx-surface-nvidia-userns-hardened
+
 ##### asus <sup>[source](https://github.com/ublue-os/hwe/tree/main/asus)</sup>
+- aurora-asus-userns-hardened
+- aurora-asus-nvidia-userns-hardened
+- aurora-dx-asus-userns-hardened
+- aurora-dx-asus-nvidia-userns-hardened
 - silverblue-asus-userns-hardened
 - silverblue-asus-nvidia-userns-hardened
 - kinoite-asus-userns-hardened

@@ -4,7 +4,7 @@ name: aurora-surface-hardened
 description: "Aurora surface with some hardening applied"
 
 # the base image to build on top of (FROM) and the version tag to use
-base-image: ghcr.io/nihaiden/aurora-surface
+base-image: ghcr.io/ublue-os/aurora-surface
 image-version: 39
 
 # list of modules, executed in order

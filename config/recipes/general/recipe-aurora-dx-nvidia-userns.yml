@@ -4,7 +4,7 @@ name: aurora-dx-nvidia-userns-hardened
 description: "Aurora-dx nvidia with some hardening applied"
 
 # the base image to build on top of (FROM) and the version tag to use
-base-image: ghcr.io/nihaiden/aurora-dx-nvidia
+base-image: ghcr.io/ublue-os/aurora-dx-nvidia
 image-version: 39
 
 # list of modules, executed in order

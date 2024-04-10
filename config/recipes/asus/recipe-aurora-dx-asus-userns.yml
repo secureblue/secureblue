@@ -4,7 +4,7 @@ name: aurora-dx-asus-userns-hardened
 description: "Aurora asus dx with some hardening applied"
 
 # the base image to build on top of (FROM) and the version tag to use
-base-image: ghcr.io/nihaiden/aurora-dx-asus
+base-image: ghcr.io/ublue-os/aurora-dx-asus
 image-version: 39
 
 # list of modules, executed in order

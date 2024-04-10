@@ -16,7 +16,6 @@ modules:
   - from-file: common/gui-packages.yml
   - from-file: common/common-packages.yml
   - from-file: common/disableuserns-packages.yml
-  - from-file: common/remove-firefox.yml
   - from-file: common/gui-scripts.yml
   - from-file: common/bluefin-scripts.yml
   - from-file: common/kinoite-files.yml

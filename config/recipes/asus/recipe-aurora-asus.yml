@@ -4,7 +4,7 @@ name: aurora-asus-hardened
 description: "Aurora asus with some hardening applied"
 
 # the base image to build on top of (FROM) and the version tag to use
-base-image: ghcr.io/nihaiden/aurora-asus
+base-image: ghcr.io/ublue-os/aurora-asus
 image-version: 39
 
 # list of modules, executed in order

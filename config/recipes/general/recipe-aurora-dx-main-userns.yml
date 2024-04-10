@@ -4,7 +4,7 @@ name: aurora-dx-main-userns-hardened
 description: "Aurora-dx main with some hardening applied"
 
 # the base image to build on top of (FROM) and the version tag to use
-base-image: ghcr.io/nihaiden/aurora-dx
+base-image: ghcr.io/ublue-os/aurora-dx
 image-version: 39
 
 # list of modules, executed in order

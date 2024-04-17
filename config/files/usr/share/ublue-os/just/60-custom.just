@@ -112,3 +112,28 @@ toggle-ghns:
     else
       echo "No kdeglobals file found. Are you on kinoite?"
     fi
+
+# enable a kernel module that is disabled by modprobe.d (require restart)
+override-enable-module mod_name:
+    #!/usr/bin/pkexec /usr/bin/bash
+    MOD_NAME="{{ mod_name }}"
+    MOD_FILE="/etc/modprobe.d/99-$MOD_NAME.conf"
+    if test -e $MOD_FILE; then
+      echo "$MOD_NAME module is already enabled. You might forgot to restart for the override to take effect."
+    else
+      sudo sh -c 'echo "install $1 /sbin/modprobe --ignore-install $1" >> "$2"' _ "$MOD_NAME" "$MOD_FILE" 
+      sudo chmod 644 $MOD_FILE
+      echo "Override created to enable $MOD_NAME module. Reboot to take effect."
+    fi
+  
+# reset the override by `just override-enable-module`, i.e. disable the module again (require restart)
+override-reset-module mod_name:
+    #!/usr/bin/pkexec /usr/bin/bash
+    MOD_NAME="{{ mod_name }}"
+    MOD_FILE="/etc/modprobe.d/99-$MOD_NAME.conf"
+    if test -e $MOD_FILE; then
+      sudo rm -f $MOD_FILE
+      echo "Override for $MOD_NAME module has been reset. Reboot to take effect."
+    else
+      echo "No override found for $MOD_NAME module."
+    fi

@@ -119,7 +119,7 @@ override-enable-module mod_name:
     MOD_NAME="{{ mod_name }}"
     MOD_FILE="/etc/modprobe.d/99-$MOD_NAME.conf"
     if test -e $MOD_FILE; then
-      echo "$MOD_NAME module is already enabled. You might forgot to restart for the override to take effect."
+      echo "$MOD_NAME module is already enabled."
     else
       sudo sh -c 'echo "install $1 /sbin/modprobe --ignore-install $1" >> "$2"' _ "$MOD_NAME" "$MOD_FILE" 
       sudo chmod 644 $MOD_FILE
@@ -133,7 +133,7 @@ override-reset-module mod_name:
     MOD_FILE="/etc/modprobe.d/99-$MOD_NAME.conf"
     if test -e $MOD_FILE; then
       sudo rm -f $MOD_FILE
-      echo "Override for $MOD_NAME module has been reset. Reboot to take effect."
+      echo "The override for $MOD_NAME module has been reset. Reboot to take effect."
     else
       echo "No override found for $MOD_NAME module."
     fi

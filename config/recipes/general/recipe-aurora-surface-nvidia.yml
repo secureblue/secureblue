@@ -4,8 +4,9 @@ name: aurora-surface-nvidia-hardened
 description: "Aurora surface nvidia with some hardening applied"
 
 # the base image to build on top of (FROM) and the version tag to use
-base-image: ghcr.io/nihaiden/aurora-surface-nvidia
+base-image: ghcr.io/ublue-os/aurora-surface-nvidia
 image-version: 40
+
 # list of modules, executed in order
 # you can include multiple instances of the same module
 modules:
@@ -15,7 +16,6 @@ modules:
   - from-file: common/gui-packages.yml
   - from-file: common/common-packages.yml
   - from-file: common/disableuserns-packages.yml
-  - from-file: common/remove-firefox.yml
   - from-file: common/gui-scripts.yml
   - from-file: common/bluefin-scripts.yml
   - from-file: common/kinoite-files.yml

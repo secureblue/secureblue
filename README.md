@@ -36,7 +36,7 @@ Hardening applied:
 - Reduce the sudo timeout to 1 minute
 - Disable passwordless sudo for `rpm-ostree install` <sup>[why?](https://github.com/rohanssrao/silverblue-privesc)
 - Brute force protection by locking user accounts for 24 hours after 50 failed login attempts, hardened password encryption and password quality suggestions
-- Installing chkrootkit, usbguard, and bubblejail
+- Installing usbguard and bubblejail
 - Set opportunistic DNSSEC and DNSOverTLS for systemd-resolved
 - Configure chronyd to use Network Time Security (NTS) <sup>[using chrony config from GrapheneOS](https://github.com/GrapheneOS/infrastructure/blob/main/chrony.conf)</sup>
 - Disable KDE GHNS by default <sup>[why?](https://blog.davidedmundson.co.uk/blog/kde-store-content/)</sup>

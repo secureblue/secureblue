@@ -179,3 +179,7 @@
 **Disable serial port access by default**
 
 `"DefaultSerialGuardSetting": 2`
+
+**Disable the internal PDF viewer**
+
+`"AlwaysOpenPdfExternally": true`

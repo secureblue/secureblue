@@ -114,7 +114,7 @@ jobs:
           echo "BASE_IMAGE_NAME=$(echo $BASE_IMAGE | sed 's/.*\/.*\///')" >> $GITHUB_ENV
 
       - name: Verify base image
-        if: ${{ ! contains(env.IMAGE_NAME, 'wayblue') }}
+        if: ${{ !contains(env.IMAGE_NAME, 'wayblue') && !contains(env.IMAGE_NAME, 'cinnamon') }}
         uses: EyeCantCU/cosign-action/verify@v0.2.2
         with:
           containers: ${{ env.BASE_IMAGE_NAME }}:${{ env.IMAGE_MAJOR_VERSION }}
@@ -126,6 +126,14 @@ jobs:
           containers: ${{ env.BASE_IMAGE_NAME }}:${{ env.IMAGE_MAJOR_VERSION }}
           registry: 'ghcr.io/wayblueorg'
           pubkey: 'https://raw.githubusercontent.com/wayblueorg/wayblue/live/cosign.pub'
+
+      - name: Verify base image
+        if: ${{ contains(env.IMAGE_NAME, 'cinnamon') }}
+        uses: EyeCantCU/cosign-action/verify@v0.2.2
+        with:
+          containers: ${{ env.BASE_IMAGE_NAME }}:${{ env.IMAGE_MAJOR_VERSION }}
+          registry: 'ghcr.io/legacy-images'
+          pubkey: 'https://raw.githubusercontent.com/legacy-images/cinnamon/main/cosign.pub'
 
       - name: Build secureblue
         uses: blue-build/github-action@v1.3.0

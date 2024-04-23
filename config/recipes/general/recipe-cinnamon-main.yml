@@ -4,8 +4,8 @@ name: cinnamon-main-hardened
 description: "Cinnamon main with some hardening applied"
 
 # the base image to build on top of (FROM) and the version tag to use
-base-image: ghcr.io/ublue-os/cinnamon-main
-image-version: 39
+base-image: ghcr.io/legacy-images/cinnamon-main
+image-version: 40
 
 # list of modules, executed in order
 # you can include multiple instances of the same module

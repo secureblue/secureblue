@@ -5,7 +5,7 @@ description: "Silverblue nvidia with some hardening applied"
 
 # the base image to build on top of (FROM) and the version tag to use
 base-image: ghcr.io/ublue-os/silverblue-nvidia
-image-version: 39
+image-version: 40
 
 # list of modules, executed in order
 # you can include multiple instances of the same module

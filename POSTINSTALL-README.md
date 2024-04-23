@@ -2,11 +2,11 @@
 
 After rebasing to secureblue, the following steps are recommended.
 
-## enroll ublue key
+## Enroll secureboot key
 
 ```ujust enroll-secure-boot-key```
 
-## kargs
+## Set kargs
 
 Documentation is available [here](https://github.com/secureblue/secureblue/blob/live/config/files/usr/share/ublue-os/just/60-custom.just.readme.md) for the kargs set by the commands below.
 

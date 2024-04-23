@@ -5,7 +5,7 @@ description: "wayblue sway main with some hardening applied"
 
 # the base image to build on top of (FROM) and the version tag to use
 base-image: ghcr.io/wayblueorg/sway
-image-version: br-f40-40
+image-version: 40
 
 # list of modules, executed in order
 # you can include multiple instances of the same module

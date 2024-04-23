@@ -2,6 +2,9 @@
 
 After rebasing to secureblue, the following steps are recommended.
 
+## enroll ublue key
+
+```ujust enroll-secure-boot-key```
 
 ## kargs
 

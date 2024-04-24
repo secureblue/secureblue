@@ -66,6 +66,8 @@ Have a look at [PREINSTALL-README](PREINSTALL-README.md) before proceeding.
 
 To rebase a Fedora Atomic installation, choose an $IMAGE_NAME from the [list below](README.md#available-images), then follow these steps:
 
+*(Important note: the **only** supported tag is `latest`)*
+
 - First rebase to the unsigned image, to get the proper signing keys and policies installed:
   ```
   rpm-ostree rebase ostree-unverified-registry:ghcr.io/secureblue/$IMAGE_NAME:latest

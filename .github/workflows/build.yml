@@ -136,7 +136,7 @@ jobs:
           pubkey: 'https://raw.githubusercontent.com/legacy-images/cinnamon/main/cosign.pub'
 
       - name: Build secureblue
-        uses: blue-build/github-action@v1.3.0
+        uses: blue-build/github-action@v1.3.1
         with:
           recipe: ${{ matrix.recipe }}
           cosign_private_key: ${{ secrets.SIGNING_SECRET }}

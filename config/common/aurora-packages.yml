@@ -7,3 +7,4 @@ remove:
   - samba-winbind-clients
   - samba-winbind-modules
   - samba
+  - samba-usershares

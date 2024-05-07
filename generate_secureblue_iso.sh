@@ -102,13 +102,13 @@ fi
 
 image_name+="-hardened"
 
-command="sudo podman run --rm --privileged --volume .:/isogenerator/output -e IMAGE_REPO=ghcr.io/secureblue -e IMAGE_NAME=$image_name -e IMAGE_TAG=latest ghcr.io/ublue-os/isogenerator:latest"
+command="sudo podman run --rm --privileged --volume .:/isogenerator/output -e IMAGE_REPO=ghcr.io/secureblue -e IMAGE_NAME=$image_name -e IMAGE_TAG=latest ghcr.io/jasonn3/build-container-installer:latest"
 
 echo "Command to execute:"
 echo "$command"
 echo ""
 
-read -p "Generate this ISO? (yes/No)" generate_iso
+read -p "Generate this ISO? (yes/No): " generate_iso
 if is_yes "$generate_iso"; then
     $command
 fi

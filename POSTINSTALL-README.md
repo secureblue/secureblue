@@ -41,11 +41,20 @@ Creating a dedicated wheel user and removing wheel from your primary user helps 
 - https://www.kicksecure.com/wiki/Dev/Strong_Linux_User_Account_Isolation#LD_PRELOAD
 - https://www.kicksecure.com/wiki/Root#Prevent_Malware_from_Sniffing_the_Root_Password
 
+> [!CAUTION]
+> If you do these steps out of order, it is possible to end up without the ability to administrate your system. You will not be able to use the [traditional GRUB-based method](https://linuxconfig.org/recover-reset-forgotten-linux-root-password) of fixing mistakes like this, either, as this will leave your system in a broken state. However, simply rolling back to an older snapshot of your system, should resolve the problem.
+
 1. ```adduser admin```
 2. ```usermod -aG wheel admin```
 3. ```passwd admin```
-4. ```gpasswd -d {your username here} wheel```
-5. ```reboot```
+4. ```reboot```
+
+> [!NOTE]
+> We log in as admin to do the final step of removing the user account's wheel privileges in order to make the operation of removing those privileges depend on having access to your admin account, and the admin account functioning correctly first.
+
+5. Log in as `admin`
+6. ```gpasswd -d {your username here} wheel```
+7. ```reboot```
 
 When not in the wheel group, a user can be added to a dedicated group, otherwise certain actions are blocked:
 

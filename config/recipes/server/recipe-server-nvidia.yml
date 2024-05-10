@@ -11,7 +11,6 @@ image-version: stable-nvidia
 # you can include multiple instances of the same module
 modules:
   - from-file: common/initialization-scripts.yml
-  - from-file: common/server-scripts.yml
   - from-file: common/common-packages.yml
   - from-file: common/common-files.yml
   - from-file: common/server-files.yml

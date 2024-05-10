@@ -102,7 +102,7 @@ fi
 
 image_name+="-hardened"
 
-command="sudo podman run --rm --privileged --volume .:/build-container-installer/build ghcr.io/jasonn3/build-container-installer:latest IMAGE_REPO=ghcr.io/secureblue IMAGE_NAME=$image_name VERSION=40 IMAGE_TAG=latest"
+command="sudo podman run --rm --privileged --volume .:/build-container-installer/build ghcr.io/jasonn3/build-container-installer:latest IMAGE_REPO=ghcr.io/secureblue IMAGE_NAME=$image_name ISO_NAME=$image_name.iso VERSION=40 IMAGE_TAG=latest"
 
 echo "Command to execute:"
 echo "$command"

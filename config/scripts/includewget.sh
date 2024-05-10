@@ -3,4 +3,4 @@
 # Tell build process to exit if there are any errors.
 set -oue pipefail
 
-rpm-ostree install wget
+rpm-ostree install wget2

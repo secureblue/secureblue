@@ -67,3 +67,9 @@ This is an issue with rpm-ostree image-based systems generally, and not specific
 The functionality that provides this, called GHNS, is disabled by default due to the risk posed by the installation of potentially damaging or malicious scripts. This has caused [real damage](https://blog.davidedmundson.co.uk/blog/kde-store-content/). 
 
 If you still want to enable this functionality, run `ujust toggle-ghns`
+
+#### Why Won't My Internet Connect After Boot
+
+If your system time is off by an excessive amount due to rare conditions like a CMOS reset, your network will not connect and your system time must be reset manually. This should never be required except under very rare circumstances.
+
+For more technical detail, see [#268](https://github.com/secureblue/secureblue/issues/268)

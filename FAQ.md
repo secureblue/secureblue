@@ -68,7 +68,7 @@ The functionality that provides this, called GHNS, is disabled by default due to
 
 If you still want to enable this functionality, run `ujust toggle-ghns`
 
-#### Why Won't My Internet Connect After Boot
+#### My clock is wrong and it's not getting automatically set. How do I fix this?
 
 If your system time is off by an excessive amount due to rare conditions like a CMOS reset, your network will not connect and your system time must be reset manually. This should never be required except under very rare circumstances.
 

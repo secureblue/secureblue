@@ -115,5 +115,3 @@ if is_yes "$generate_iso"; then
     mv deploy.iso-CHECKSUM $image_name.iso-CHECKSUM
 sed -i 's/deploy.iso/$image_name.iso/' $image_name.iso-CHECKSUM
 fi
-
-

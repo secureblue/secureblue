@@ -3,3 +3,4 @@ scripts:
   - authselect.sh
   - setfilepermissions.sh
   - disablesealertpopups.sh
+  - homebrewanalyticsoptout.sh

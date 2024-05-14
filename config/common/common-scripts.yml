@@ -5,3 +5,4 @@ scripts:
   - disablesealertpopups.sh
   - homebrewanalyticsoptout.sh
   - hardencontainerpolicy.sh
+  - httpsmirrors.sh

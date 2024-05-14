@@ -3,4 +3,6 @@
 # Tell build process to exit if there are any errors.
 set -oue pipefail
 
-find /usr/etc/yum.repos.d/ -name "*.repo" -type f -exec sed -i 's/metalink?/metalink?protocol=https\&/g' {} \;
+for repo in /etc/yum.repos.d/*.repo; do
+    sed -i 's/metalink?/metalink?protocol=https\&/g' "$repo"
+done

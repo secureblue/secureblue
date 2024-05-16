@@ -18,5 +18,5 @@ modules:
   - from-file: common/bluefin-scripts.yml
   - from-file: common/common-files.yml
   - from-file: common/common-scripts.yml
-  - type: signing
+  - type: secureblue-signing
   - type: yafti 

@@ -21,5 +21,5 @@ modules:
   - from-file: common/kinoite-files.yml
   - from-file: common/common-scripts.yml
   - from-file: common/disableuserns-scripts.yml
-  - type: signing
+  - type: secureblue-signing
   - type: yafti 

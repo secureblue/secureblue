@@ -108,9 +108,9 @@ jobs:
 
       - name: Gather image data from recipe
         run: |
-          echo "IMAGE_NAME=$(yq '.name' ./config/${{ matrix.recipe }})" >> $GITHUB_ENV
-          echo "IMAGE_MAJOR_VERSION=$(yq '.image-version' ./config/${{ matrix.recipe }})" >> $GITHUB_ENV
-          BASE_IMAGE=$(yq '.base-image' ./config/${{ matrix.recipe }})
+          echo "IMAGE_NAME=$(yq '.name' ./recipes/${{ matrix.recipe }})" >> $GITHUB_ENV
+          echo "IMAGE_MAJOR_VERSION=$(yq '.image-version' ./recipes/${{ matrix.recipe }})" >> $GITHUB_ENV
+          BASE_IMAGE=$(yq '.base-image' ./recipes/${{ matrix.recipe }})
           echo "BASE_IMAGE_NAME=$(echo $BASE_IMAGE | sed 's/.*\/.*\///')" >> $GITHUB_ENV
 
       - name: Verify base image
@@ -136,7 +136,7 @@ jobs:
           pubkey: 'https://raw.githubusercontent.com/legacy-images/cinnamon/main/cosign.pub'
 
       - name: Build secureblue
-        uses: blue-build/github-action@v1.3.1
+        uses: blue-build/github-action@v1.5.0
         with:
           recipe: ${{ matrix.recipe }}
           cosign_private_key: ${{ secrets.SIGNING_SECRET }}

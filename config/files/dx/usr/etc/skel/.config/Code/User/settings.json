@@ -1,0 +1,6 @@
+{
+    "window.titleBarStyle": "custom",
+    "editor.fontFamily": "'Cascadia Code', 'Droid Sans Mono', 'monospace', monospace",
+    "telemetry.telemetryLevel": "off",
+    "gitlens.telemetry.enabled": false
+}

@@ -1,6 +1,3 @@
 type: files
 files:
-  - server/usr: /usr # copy static configurations
-              # configuration you wish to end up in /etc/ on the booted system should be 
-              # added into /usr/etc/ (under /config/files) as that is the proper "distro" 
-              # config directory on ostree read more in the files module's README
+  - server/usr: /usr 

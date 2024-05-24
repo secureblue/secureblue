@@ -1,4 +1,4 @@
-*The policies set here are a subset of those found in the [brace policy file](https://github.com/divestedcg/Brace/blob/master/brace/etc/chromium/policies/managed/brace.json). All policies that are deprecated, identical to the default, or only for ChromeOS have been removed.*
+*The policies set here include a subset of those found in the [brace policy file](https://github.com/divestedcg/Brace/blob/master/brace/etc/chromium/policies/managed/brace.json). All policies that are deprecated, identical to the default, or only for ChromeOS have been removed.*
 
 **Disable Javascript JIT**
 

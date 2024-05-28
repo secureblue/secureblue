@@ -30,34 +30,25 @@ case "$GRAPHIC_DRIVER" in
       # Need new mesa with AMD multi planes support, is not yet supported in fedora
       # see https://gitlab.freedesktop.org/mesa/mesa/-/merge_requests/26165
       CHROMIUM_FLAGS+=" --use-angle=vulkan --enable-accelerated-video-decode"
-      CHROMIUM_FLAGS+=" --enable-features=Vulkan,VulkanFromANGLE,DefaultANGLEVulkan,VaapiIgnoreDriverChecks,VaapiVideoDecoder,UseMultiPlaneFormatForHardwareVideo"
+      CHROMIUM_FLAGS+=" --enable-features=Vulkan,VulkanFromANGLE,DefaultANGLEVulkan,VaapiIgnoreDriverChecks,VaapiVideoDecoder,UseMultiPlaneFormatForHardwareVideo,SplitCacheByNetworkIsolationKey,SplitCodeCacheByNetworkIsolationKey,SplitHostCacheByNetworkIsolationKey,PrefetchPrivacyChanges,IsolateSandboxedIframes,StrictOriginIsolation,PartitionConnectionsByNetworkIsolationKey,PartitionHttpServerPropertiesByNetworkIsolationKey,PartitionSSLSessionsByNetworkIsolationKey,PartitionNelAndReportingByNetworkIsolationKey,EnableCrossSiteFlagNetworkIsolationKey"
       ;;
    nvidia)
       # The NVIDIA VaAPI drivers are known to not support Chromium
       # see https://crbug.com/1492880. This feature switch is
       # provided for developers to test VaAPI drivers on NVIDIA GPUs
       CHROMIUM_FLAGS+=" --use-angle=gl"
-      CHROMIUM_FLAGS+=" --enable-features=VaapiVideoDecodeLinuxGL,VaapiVideoEncoder,VaapiOnNvidiaGPUs"
+      CHROMIUM_FLAGS+=" --enable-features=VaapiVideoDecodeLinuxGL,VaapiVideoEncoder,VaapiOnNvidiaGPUs,SplitCacheByNetworkIsolationKey,SplitCodeCacheByNetworkIsolationKey,SplitHostCacheByNetworkIsolationKey,PrefetchPrivacyChanges,IsolateSandboxedIframes,StrictOriginIsolation,PartitionConnectionsByNetworkIsolationKey,PartitionHttpServerPropertiesByNetworkIsolationKey,PartitionSSLSessionsByNetworkIsolationKey,PartitionNelAndReportingByNetworkIsolationKey,EnableCrossSiteFlagNetworkIsolationKey"
       ;;
    intel)
       CHROMIUM_FLAGS+=" --use-angle=gl"
-      CHROMIUM_FLAGS+=" --enable-features=VaapiVideoEncoder,VaapiVideoDecodeLinuxGL"
+      CHROMIUM_FLAGS+=" --enable-features=VaapiVideoEncoder,VaapiVideoDecodeLinuxGL,SplitCacheByNetworkIsolationKey,SplitCodeCacheByNetworkIsolationKey,SplitHostCacheByNetworkIsolationKey,PrefetchPrivacyChanges,IsolateSandboxedIframes,StrictOriginIsolation,PartitionConnectionsByNetworkIsolationKey,PartitionHttpServerPropertiesByNetworkIsolationKey,PartitionSSLSessionsByNetworkIsolationKey,PartitionNelAndReportingByNetworkIsolationKey,EnableCrossSiteFlagNetworkIsolationKey"
       ;;
    *)
       CHROMIUM_FLAGS+=" --use-angle=gl"
-      CHROMIUM_FLAGS+=" --enable-features=VaapiVideoEncoder,VaapiVideoDecodeLinuxGL"
+      CHROMIUM_FLAGS+=" --enable-features=VaapiVideoEncoder,VaapiVideoDecodeLinuxGL,SplitCacheByNetworkIsolationKey,SplitCodeCacheByNetworkIsolationKey,SplitHostCacheByNetworkIsolationKey,PrefetchPrivacyChanges,IsolateSandboxedIframes,StrictOriginIsolation,PartitionConnectionsByNetworkIsolationKey,PartitionHttpServerPropertiesByNetworkIsolationKey,PartitionSSLSessionsByNetworkIsolationKey,PartitionNelAndReportingByNetworkIsolationKey,EnableCrossSiteFlagNetworkIsolationKey"
       ;;
 esac
        
-# Web Dark mode
-if [ "$WEB_DARKMODE" == "on" ] ; then
-   darktype="WebContentsForceDark:inversion_method/cielab_based/image_behavior/none/foreground_lightness_threshold/150/background_lightness_threshold/205"
-   if [ -z "$CHROMIUM_FLAGS" ] ; then
-      CHROMIUM_FLAGS+=" --enable-features=$darktype"
-   else
-      CHROMIUM_FLAGS+=",$darktype"
-   fi
-fi
 
 ' > /usr/etc/chromium/chromium.conf
 
@@ -66,6 +57,6 @@ fi
 # Not temporary, keep:
 echo '
 
-CHROMIUM_FLAGS+=" --ozone-platform=wayland --no-pings --disk-cache-dir=/dev/null --enable-features=SplitCacheByNetworkIsolationKey,SplitCodeCacheByNetworkIsolationKey,SplitHostCacheByNetworkIsolationKey,PrefetchPrivacyChanges,IsolateSandboxedIframes,StrictOriginIsolation,PartitionConnectionsByNetworkIsolationKey,PartitionHttpServerPropertiesByNetworkIsolationKey,PartitionSSLSessionsByNetworkIsolationKey,PartitionNelAndReportingByNetworkIsolationKey,EnableCrossSiteFlagNetworkIsolationKey --disable-features=PrivacySandboxSettings4,InterestFeedV2,NTPPopularSitesBakedInContent,UsePopularSitesSuggestions,MediaDrmPreprovisioning,AutofillServerCommunication,DisableThirdPartyStoragePartitioningDeprecationTrial"
+CHROMIUM_FLAGS+=" --ozone-platform=wayland --no-pings --disk-cache-dir=/dev/null --disable-features=PrivacySandboxSettings4,InterestFeedV2,NTPPopularSitesBakedInContent,UsePopularSitesSuggestions,MediaDrmPreprovisioning,AutofillServerCommunication,DisableThirdPartyStoragePartitioningDeprecationTrial"
 
 ' >> /usr/etc/chromium/chromium.conf

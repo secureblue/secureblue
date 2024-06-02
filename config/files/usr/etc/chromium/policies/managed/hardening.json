@@ -44,5 +44,7 @@
 	"DefaultWebUsbGuardSetting": 2,
 	"DefaultWebBluetoothGuardSetting": 2,
 	"DefaultSerialGuardSetting": 2,
-	"AlwaysOpenPdfExternally": true
+	"AlwaysOpenPdfExternally": true,
+    	"AudioSandboxEnabled": true,
+  	"NetworkServiceSandboxEnabled": true
 }

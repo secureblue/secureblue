@@ -3,6 +3,8 @@
 # Tell build process to exit if there are any errors.
 set -oue pipefail
 
+sed -i '/  CHROMIUM_FLAGS+=" --enable-chrome-browser-cloud-management"/d' /etc/chromium/chromium.conf
+
 sed -i 's/FEATURES=""/FEATURES="SplitCacheByNetworkIsolationKey,SplitCodeCacheByNetworkIsolationKey,SplitHostCacheByNetworkIsolationKey,PrefetchPrivacyChanges,IsolateSandboxedIframes,StrictOriginIsolation,PartitionConnectionsByNetworkIsolationKey,PartitionHttpServerPropertiesByNetworkIsolationKey,PartitionSSLSessionsByNetworkIsolationKey,PartitionNelAndReportingByNetworkIsolationKey,EnableCrossSiteFlagNetworkIsolationKey,"/g' /etc/chromium/chromium.conf
 
 # Not temporary, keep:

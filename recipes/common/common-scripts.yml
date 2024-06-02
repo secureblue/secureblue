@@ -6,4 +6,3 @@ scripts:
   - homebrewanalyticsoptout.sh
   - hardencontainerpolicy.sh
   - httpsmirrors.sh
-  - setchromiumflags.sh

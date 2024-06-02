@@ -183,3 +183,12 @@
 **Disable the internal PDF viewer**
 
 `"AlwaysOpenPdfExternally": true`
+
+**Enable Audio Service Sandbox**
+
+`"AudioSandboxEnabled": true`
+
+**Enable Network Service Sandbox**
+
+`"NetworkServiceSandboxEnabled": true`
+

@@ -6,6 +6,10 @@
 
 `--disk-cache-dir=/dev/null`
 
+**Use strict extension verification**
+
+`--extension-content-verification=enforce_strict --extensions-install-verification=enforce_strict`
+
 **Enable partitioning features**
 
 `SplitCacheByNetworkIsolationKey,SplitCodeCacheByNetworkIsolationKey,SplitHostCacheByNetworkIsolationKey,IsolateSandboxedIframes,StrictOriginIsolation,PartitionConnectionsByNetworkIsolationKey,PartitionHttpServerPropertiesByNetworkIsolationKey,PartitionSSLSessionsByNetworkIsolationKey,PartitionNelAndReportingByNetworkIsolationKey,EnableCrossSiteFlagNetworkIsolationKey`

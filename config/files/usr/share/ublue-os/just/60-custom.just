@@ -26,7 +26,9 @@ set-kargs-hardening-unstable:
     #!/usr/bin/pkexec /usr/bin/bash
     echo "Warning: setting these kargs may lead to boot issues on some hardware."
     rpm-ostree kargs \
-      --append-if-missing="efi=disable_early_pci_dma"
+      --append-if-missing="efi=disable_early_pci_dma" \
+      --append-if-missing="debugfs=off"
+
     echo "Unstable hardening kargs set."
 
 # Remove all hardening boot parameters (requires reboot)
@@ -50,7 +52,8 @@ remove-kargs-hardening:
       --delete-if-present="pti=on" \
       --delete-if-present="module.sig_enforce=1" \
       --delete-if-present="mitigations=auto,nosmt" \
-      --delete-if-present="efi=disable_early_pci_dma"
+      --delete-if-present="efi=disable_early_pci_dma" \
+      --delete-if-present="debugfs=off"
     echo "Hardening kargs removed."
 
 # Harden flatpaks by preloading hardened_malloc

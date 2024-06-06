@@ -1,12 +1,7 @@
 type: rpm-ostree
 repos:
   - https://copr.fedorainfracloud.org/coprs/secureblue/bubblejail/repo/fedora-%OS_VERSION%/secureblue-bubblejail-fedora-%OS_VERSION%.repo
-install:    
-  # GNOME's GTK4 theme, Libadwaita. Already included in Silverblue, but not
-  # other spins. You can remove if you aren't using yafti, but many native
-  # apps and binaries require it, so it's a good idea to always include it
-  # if you ever download or compile any custom software on your machine.
-  - libadwaita
+install:
   - headsetcontrol
   - chromium
   - mediainfo

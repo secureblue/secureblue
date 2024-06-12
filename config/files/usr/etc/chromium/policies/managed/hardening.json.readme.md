@@ -168,18 +168,6 @@
 
 `"ImportSavedPasswords": false`
 
-**Disable WebUSB by default**
-
-`"DefaultWebUsbGuardSetting": 2`
-
-**Disable WebBluetooth by default**
-
-`"DefaultWebBluetoothGuardSetting": 2`
-
-**Disable serial port access by default**
-
-`"DefaultSerialGuardSetting": 2`
-
 **Disable the internal PDF viewer**
 
 `"AlwaysOpenPdfExternally": true`

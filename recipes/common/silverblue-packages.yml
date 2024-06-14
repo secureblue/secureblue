@@ -3,7 +3,6 @@ install:
   - firewall-config
   - gnome-disk-utility
 remove:
-  - gnome-tour
   - yelp
   - gnome-user-share
   - mod_lua

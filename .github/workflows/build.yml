@@ -32,6 +32,10 @@ jobs:
           - general/recipe-silverblue-nvidia.yml
           - general/recipe-kinoite-main.yml
           - general/recipe-kinoite-nvidia.yml
+          - general/recipe-bazzite-gnome.yml
+          - general/recipe-bazzite-gnome-nvidia.yml
+          - general/recipe-bazzite.yml
+          - general/recipe-bazzite-nvidia.yml
           - general/recipe-cinnamon-main.yml
           - general/recipe-cinnamon-nvidia.yml
           - general/recipe-bluefin-main.yml
@@ -70,6 +74,10 @@ jobs:
           - general/recipe-silverblue-nvidia-userns.yml
           - general/recipe-kinoite-main-userns.yml
           - general/recipe-kinoite-nvidia-userns.yml
+          - general/recipe-bazzite-gnome-userns.yml
+          - general/recipe-bazzite-gnome-nvidia-userns.yml
+          - general/recipe-bazzite-userns.yml
+          - general/recipe-bazzite-nvidia-userns.yml
           - general/recipe-cinnamon-main-userns.yml
           - general/recipe-cinnamon-nvidia-userns.yml
           - general/recipe-bluefin-main-userns.yml

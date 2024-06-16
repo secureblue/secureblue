@@ -12,10 +12,6 @@
 
 `"EnableMediaRouter": false`
 
-**Disable Suggested Content**
-
-`"SuggestedContentEnabled": false`
-
 **Disable fetching labels for unlabelled images**
 
 `"AccessibilityImageLabelsEnabled": false`
@@ -27,10 +23,6 @@
 **Disable third party cookies**
 
 `"BlockThirdPartyCookies": true`
-
-**Don't report Chrome Cleanup results**
-
-`"ChromeCleanupReportingEnabled": false`
 
 **Permit Chrome Variations only for critical fixes**
 

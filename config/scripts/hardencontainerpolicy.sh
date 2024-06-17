@@ -10,9 +10,22 @@ sed -i 's/insecureAcceptAnything/reject/' /usr/etc/containers/policy.json
 # https://github.com/JasonN3/build-container-installer/issues/123
 yq -i -o=j '.transports.docker |=
     {"ghcr.io/jasonn3": [
-            {
-                "type": "insecureAcceptAnything"
-            }
-        ]
+        {
+            "type": "insecureAcceptAnything"
+        }
+      ]
+    }
++ .' /usr/etc/containers/policy.json
+
+yq -i -o=j '.transports.docker |=
+    {"ghcr.io/zelikos": [
+        {
+          "type": "sigstoreSigned",
+          "keyPath": "/usr/etc/pki/containers/davincibox.pub",
+          "signedIdentity": {
+            "type": "matchRepository"
+          }
+        }
+      ]
     }
 + .' /usr/etc/containers/policy.json

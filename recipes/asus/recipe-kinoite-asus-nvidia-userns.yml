@@ -5,7 +5,7 @@ description: "Kinoite asus nvidia with some hardening applied"
 
 # the base image to build on top of (FROM) and the version tag to use
 base-image: ghcr.io/ublue-os/kinoite-asus-nvidia
-image-version: 40-20240617
+image-version: 40-20240616
 
 # list of modules, executed in order
 # you can include multiple instances of the same module

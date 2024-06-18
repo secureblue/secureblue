@@ -117,13 +117,13 @@ jobs:
         if: ${{ !contains(env.IMAGE_NAME, 'wayblue') && !contains(env.IMAGE_NAME, 'cinnamon') }}
         uses: EyeCantCU/cosign-action/verify@v0.2.2
         with:
-          containers: ${{ env.BASE_IMAGE_NAME }}:40
+          containers: ${{ env.BASE_IMAGE_NAME }}:latest
 
       - name: Verify base image
         if: ${{ contains(env.IMAGE_NAME, 'wayblue') }}
         uses: EyeCantCU/cosign-action/verify@v0.2.2
         with:
-          containers: ${{ env.BASE_IMAGE_NAME }}:40
+          containers: ${{ env.BASE_IMAGE_NAME }}:latest
           registry: 'ghcr.io/wayblueorg'
           pubkey: 'https://raw.githubusercontent.com/wayblueorg/wayblue/live/cosign.pub'
 
@@ -131,7 +131,7 @@ jobs:
         if: ${{ contains(env.IMAGE_NAME, 'cinnamon') }}
         uses: EyeCantCU/cosign-action/verify@v0.2.2
         with:
-          containers: ${{ env.BASE_IMAGE_NAME }}:40
+          containers: ${{ env.BASE_IMAGE_NAME }}:latest
           registry: 'ghcr.io/legacy-images'
           pubkey: 'https://raw.githubusercontent.com/legacy-images/cinnamon/main/cosign.pub'
 

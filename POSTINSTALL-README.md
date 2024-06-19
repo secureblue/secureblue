@@ -85,9 +85,13 @@ EOF
 
 The custom rule allows the group`diskadmin` to do the actions for unlocking and mounting these drives. Note the requirement on `active` and `local`, and the exactly specified actions.
 
-## Chromium
-### Extension
+## Chromium extension
 
 1. Go to [uBlock Origin Lite](https://chromewebstore.google.com/detail/ublock-origin-lite/ddkjiahejlhfcafbddmgiahcphecmpfh?pli=1) ([Why Lite?](https://developer.chrome.com/docs/extensions/develop/migrate/improve-security))
 2. Install it
 3. In the extension's settings, make sure all of the lists under Default and Miscellaneous are checked (and at your preference, lists in the Annoyances section or country-specific lists)
+4. 
+
+## Instruction set optimizations for hardened_malloc
+
+Please see the description for release [v2.2.0](https://github.com/secureblue/secureblue/releases/tag/v2.2.0)

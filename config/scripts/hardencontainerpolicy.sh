@@ -11,7 +11,11 @@ sed -i 's/insecureAcceptAnything/reject/' /usr/etc/containers/policy.json
 yq -i -o=j '.transports.docker |=
     {"ghcr.io/jasonn3": [
         {
-            "type": "insecureAcceptAnything"
+          "type": "sigstoreSigned",
+          "keyPath": "/usr/etc/pki/containers/build-container-installer.pub",
+          "signedIdentity": {
+            "type": "matchRepository"
+          }
         }
       ]
     }

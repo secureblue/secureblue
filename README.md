@@ -37,7 +37,7 @@ Hardening applied:
 - Pushing upstream fedora to harden the build for all fedora users, including secureblue users ([for example, by enabling CFI](https://bugzilla.redhat.com/show_bug.cgi?id=2252874))
 - Reduce the sudo timeout to 1 minute
 - Disable passwordless sudo for `rpm-ostree install` <sup>[why?](https://github.com/rohanssrao/silverblue-privesc)
-- Brute force protection by locking user accounts for 24 hours after 50 failed login attempts, hardened password encryption and password quality suggestions
+- Strong Brute force protection using [pam-authramp](https://github.com/34N0/pam-authramp), hardened password encryption and password quality suggestions
 - Installing usbguard and bubblejail
 - Set opportunistic DNSSEC and DNSOverTLS for systemd-resolved
 - Configure chronyd to use Network Time Security (NTS) <sup>[using chrony config from GrapheneOS](https://github.com/GrapheneOS/infrastructure/blob/main/chrony.conf)</sup>

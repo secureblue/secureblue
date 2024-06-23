@@ -37,4 +37,6 @@ if [ -e "/usr/libexec/Xorg.wrap" ]; then
   chmod u-s /usr/libexec/Xorg.wrap
 fi
 
-chmod u-s /usr/libexec/dbus-1/dbus-daemon-launch-helper
+if [ -e "/usr/libexec/dbus-1/dbus-daemon-launch-helper" ]; then
+  chmod u-s /usr/libexec/dbus-1/dbus-daemon-launch-helper
+fi

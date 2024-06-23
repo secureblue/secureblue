@@ -95,3 +95,13 @@ The custom rule allows the group`diskadmin` to do the actions for unlocking and 
 ## Instruction set optimizations for hardened_malloc
 
 Please see the description for release [v2.2.0](https://github.com/secureblue/secureblue/releases/tag/v2.2.0)
+
+## Enable Usbguard
+
+1. ```sudo sh -c 'usbguard generate-policy > /etc/usbguard/rules.conf'```
+2. ```sudo systemctl start usbguard.service```
+3. ```sudo systemctl enable usbguard.service```
+4. ```sudo systemctl start usbguard-dbus.service```
+5. ```sudo systemctl enable usbguard-dbus.service```
+6. ```gsettings set org.gnome.desktop.privacy usb-protection-level always```
+7. ```gsettings set org.gnome.desktop.privacy usb-protection true```

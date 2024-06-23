@@ -7,7 +7,7 @@ set -oue pipefail
 
 
 chmod u-s /usr/bin/mount
-chmod u-s /usr/bin/mount.nfs
+chmod u-s /usr/sbin/mount.nfs
 chmod u-s /usr/bin/umount
 
 chmod u-s /usr/sbin/unix_chkpwd

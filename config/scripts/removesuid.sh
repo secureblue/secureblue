@@ -33,5 +33,8 @@ setcap cap_dac_read_search,cap_setgid,cap_audit_write=ep /usr/bin/newgrp
 chmod u-s /usr/libexec/openssh/ssh-keysign
 setcap cap_dac_read_search=ep /usr/libexec/openssh/ssh-keysign
 
-chmod u-s /usr/libexec/Xorg.wrap
+if [ -e "/usr/libexec/Xorg.wrap" ]; then
+  chmod u-s /usr/libexec/Xorg.wrap
+fi
+
 chmod u-s /usr/libexec/dbus-1/dbus-daemon-launch-helper

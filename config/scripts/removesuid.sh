@@ -10,9 +10,6 @@ chmod u-s /usr/bin/mount
 chmod u-s /usr/sbin/mount.nfs
 chmod u-s /usr/bin/umount
 
-chmod u-s /usr/sbin/unix_chkpwd
-setcap cap_dac_read_search,cap_audit_write=ep /usr/sbin/unix_chkpwd
-
 chmod u-s /usr/bin/chage
 setcap cap_dac_read_search,cap_audit_write=ep /usr/bin/chage
 

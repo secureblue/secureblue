@@ -18,6 +18,7 @@ modules:
   - from-file: common/remove-firefox.yml
   - from-file: common/gui-scripts.yml
   - from-file: common/common-files.yml
-  - from-file: common/common-scripts.yml
+  - from-file: common/common-scripts.ym
+  - from-file: common/gnome-scripts.yml
   - type: secureblue-signing
   - type: yafti 

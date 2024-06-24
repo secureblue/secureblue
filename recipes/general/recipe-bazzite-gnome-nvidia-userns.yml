@@ -18,5 +18,6 @@ modules:
   - from-file: common/common-files.yml
   - from-file: common/common-scripts.yml
   - from-file: common/bazzite-scripts.yml
+  - from-file: common/gnome-scripts.yml
   - type: secureblue-signing
   - type: yafti 

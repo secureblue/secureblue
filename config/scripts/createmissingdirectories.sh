@@ -5,8 +5,8 @@
 set -oue pipefail
 
 # https://bugzilla.redhat.com/show_bug.cgi?id=2259249
-mkdir /var/log/usbguard
+mkdir -p /var/log/usbguard
 
-mkdir /var/lib/setroubleshoot
+mkdir -p /var/lib/setroubleshoot
 chown setroubleshoot:setroubleshoot /var/lib/setroubleshoot
 chmod 600 /var/lib/setroubleshoot

@@ -140,3 +140,20 @@ override-reset-module mod_name:
     else
       echo "No override found for $MOD_NAME module."
     fi
+
+
+# Setup USBGuard
+setup-usbguard:
+    #!/usr/bin/pkexec /usr/bin/bash
+    echo "Notice: This will generate a policy based on your existing connected USB devices."
+    sudo mkdir -p /var/log/usbguard
+    sudo systemctl enable --now usbguard.service
+    sudo systemctl enable --now usbguard-dbus.service
+    if command -v gsettings &> /dev/null; then
+        gsettings set org.gnome.desktop.privacy usb-protection-level always
+        gsettings set org.gnome.desktop.privacy usb-protection true
+    fi
+
+# Rerun Yafti
+rerun-yafti:
+    yafti -f /usr/share/ublue-os/firstboot/yafti.yml

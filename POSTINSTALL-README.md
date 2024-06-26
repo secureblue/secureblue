@@ -20,6 +20,11 @@ Documentation is available [here](https://github.com/secureblue/secureblue/blob/
 
 ```ujust set-kargs-hardening-unstable```
 
+## Setup USBGuard
+
+*This will generate a policy based on your currently attached USB devices and block all others, then enable usbguard*
+
+```ujust setup-usbguard```
 
 ## GRUB
 ### Set a password

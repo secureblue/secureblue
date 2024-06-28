@@ -47,12 +47,12 @@ First check if the README already has an equivalent or better feature. If it doe
 Add an additional chromium policy file and set the sites that need JIT in `JavaScriptJitAllowedForSites`. Here is the [policy reference](
 https://admx.help/?Category=Chrome&Policy=Google.Policies.Chrome::JavaScriptJitAllowedForSites).
 
-#### Why won't flatpak steam run?
+#### How do I install steam?
 
-To use flatpak steam you need to:
+To use steam you can either:
 
-- Be on a [userns](USERNS.md) variant
-- Remove `LD_PRELOAD=/var/run/host/usr/lib64/libhardened_malloc.so` from flatpak steam's environment variables in Flatseal
+- Install the [flatpak](https://flathub.org/apps/com.valvesoftware.Steam)
+- Layer the rpm with `rpm-ostree install steam`
 
 #### Why are bluetooth kernel modules disabled? How do I enable them?
 

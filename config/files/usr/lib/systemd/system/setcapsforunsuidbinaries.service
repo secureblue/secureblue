@@ -1,0 +1,13 @@
+[Unit]
+Description=Set caps for suid-removed binaries
+After=local-fs.target sysinit.target
+DefaultDependencies=no
+Before=graphical-session-pre.target
+
+[Service]
+Type=oneshot
+ExecStart=/usr/bin/setcapsforunsuidbinaries
+RemainAfterExit=yes
+
+[Install]
+WantedBy=multi-user.target

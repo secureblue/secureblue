@@ -7,3 +7,4 @@ scripts:
   - hardencontainerpolicy.sh
   - httpsmirrors.sh
   - createmissingdirectories.sh
+  - removesuid.sh

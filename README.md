@@ -44,6 +44,7 @@ Hardening applied:
 - Disable KDE GHNS by default <sup>[why?](https://blog.davidedmundson.co.uk/blog/kde-store-content/)</sup>
 - Use HTTPS for all rpm mirrors
 - Set all default container policies to `reject`, `signedBy`, or `sigstoreSigned`
+- Remove SUID-root from [numerous binaries](https://github.com/secureblue/secureblue/blob/live/config/scripts/removesuid.sh) and replace functionality [using capabilities](https://github.com/secureblue/secureblue/blob/staging/config/files/usr/bin/setcapsforunsuidbinaries)
 - (Non-userns variants) Disabling unprivileged user namespaces
 - (Non-userns variants) Replacing bubblewrap with bubblewrap-suid so flatpak can be used without unprivileged user namespaces
 

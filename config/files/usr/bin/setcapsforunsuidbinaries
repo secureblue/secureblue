@@ -1,0 +1,24 @@
+#!/usr/bin/env bash
+
+set_caps_if_present() {
+    local caps="$1"
+    local binary_path="$2"
+    if [ -f "$binary_path" ]; then
+        mount --bind -o rw "$binary_path" "$binary_path"
+
+        echo "Setting caps $caps on $binary_path"
+        setcap "$caps" "$binary_path"
+        echo "Set caps $caps on $binary_path"
+
+        umount "$binary_path"
+    fi
+}
+
+set_caps_if_present "cap_dac_read_search,cap_audit_write=ep" "/usr/bin/chage"
+set_caps_if_present "cap_chown,cap_dac_override,cap_fowner,cap_audit_write=ep" "/usr/bin/chsh"
+set_caps_if_present "cap_chown,cap_dac_override,cap_fowner,cap_audit_write=ep" "/usr/bin/chfn"
+set_caps_if_present "cap_dac_read_search=ep" "/usr/libexec/openssh/ssh-keysign"
+set_caps_if_present "cap_sys_admin=ep" "/usr/bin/fusermount"
+set_caps_if_present "cap_sys_admin=ep" "/usr/bin/fusermount3"
+set_caps_if_present "cap_sys_admin=ep" "/usr/bin/fusermount-glusterfs"
+set_caps_if_present "cap_dac_read_search,cap_audit_write=ep" "/usr/sbin/unix_chkpwd"

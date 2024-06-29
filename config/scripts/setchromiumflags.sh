@@ -5,6 +5,9 @@ set -oue pipefail
 
 sed -i '/--enable-chrome-browser-cloud-management/d' /etc/chromium/chromium.conf
 
+# https://bugzilla.redhat.com/show_bug.cgi?id=2293202
+sed -i '/--enable-native-gpu-memory-buffers/d' /etc/chromium/chromium.conf
+
 sed -i 's/FEATURES=""/FEATURES="SplitCacheByNetworkIsolationKey,SplitCodeCacheByNetworkIsolationKey,SplitHostCacheByNetworkIsolationKey,PrefetchPrivacyChanges,IsolateSandboxedIframes,StrictOriginIsolation,PartitionConnectionsByNetworkIsolationKey,PartitionHttpServerPropertiesByNetworkIsolationKey,PartitionSSLSessionsByNetworkIsolationKey,PartitionNelAndReportingByNetworkIsolationKey,EnableCrossSiteFlagNetworkIsolationKey,"/g' /etc/chromium/chromium.conf
 
 echo '

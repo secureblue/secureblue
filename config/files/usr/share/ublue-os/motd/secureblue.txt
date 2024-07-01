@@ -9,5 +9,6 @@ Commands:
 
 To report an issue: https://github.com/secureblue/secureblue/issues
 FAQ: https://github.com/secureblue/secureblue/blob/live/FAQ.md
+Donate: https://github.com/secureblue/secureblue/blob/live/DONATE.md
 Discord: https://discord.gg/qMTv5cKfbF
 

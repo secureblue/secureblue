@@ -19,9 +19,19 @@ echo "
 [Service]
 # Namespaces
 PrivateUsers=no
-RestrictNamespaces=no
 
 " >> /usr/etc/systemd/system/upower.service.d/namespaces.conf
+
+
+mkdir -p /usr/etc/systemd/system/colord.service.d/
+
+echo "
+
+[Service]
+# Namespaces
+PrivateUsers=no
+
+" >> /usr/etc/systemd/system/colord.service.d/namespaces.conf
 
 chown root:root /usr/bin/bwrap
 chmod u+s /usr/bin/bwrap

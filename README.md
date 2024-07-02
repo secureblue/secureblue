@@ -144,6 +144,8 @@ While it's recommended to use a Fedora Atomic iso to install and then rebase tha
 ##### server
 - server-main-hardened
 - server-nvidia-hardened
+- server-zfs-main-hardened
+- server-zfs-nvidia-hardened
 
 #### With User Namespaces <sup>[What's the difference?](USERNS.md)</sup>
 
@@ -196,6 +198,8 @@ While it's recommended to use a Fedora Atomic iso to install and then rebase tha
 ##### server
 - server-main-userns-hardened
 - server-nvidia-userns-hardened
+- server-zfs-main-userns-hardened
+- server-zfs-nvidia-userns-hardened
   
 ### Post-install
 

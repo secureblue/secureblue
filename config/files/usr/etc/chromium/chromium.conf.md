@@ -33,3 +33,7 @@
 **Disable autofill requests**
 
 `AutofillServerCommunication`
+
+**Enable content settings partitioning**
+
+`ContentSettingsPartitioning`

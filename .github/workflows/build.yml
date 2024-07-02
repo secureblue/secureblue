@@ -56,6 +56,8 @@ jobs:
           # server
           - server/recipe-server-main.yml
           - server/recipe-server-nvidia.yml
+          - server/recipe-server-zfs-main.yml
+          - server/recipe-server-zfs-nvidia.yml
           # userns
           # general
           - general/recipe-aurora-surface-userns.yml
@@ -98,6 +100,8 @@ jobs:
           # server
           - server/recipe-server-main-userns.yml
           - server/recipe-server-nvidia-userns.yml
+          - server/recipe-server-zfs-main-userns.yml
+          - server/recipe-server-zfs-nvidia-userns.yml
 
     steps:
       - name: Checkout repo

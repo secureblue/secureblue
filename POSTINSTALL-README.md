@@ -55,13 +55,13 @@ Creating a dedicated wheel user and removing wheel from your primary user helps 
 4. ```reboot```
 
 > [!NOTE]
-> We log in as admin to do the final step of removing the user account's wheel privileges in order to make the operation of removing those privileges depend on having access to your admin account, and the admin account functioning correctly first.
+> We log in as admin to do the final step of removing the user account's `wheel` privileges in order to make the operation of removing those privileges depend on having access to your admin account, and the admin account functioning correctly first.
 
 5. Log in as `admin`
 6. ```gpasswd -d {your username here} wheel```
 7. ```reboot```
 
-When not in the wheel group, a user can be added to a dedicated group, otherwise certain actions are blocked:
+When not in the `wheel` group, a user can be added to a dedicated group, otherwise certain actions are blocked:
 
 - use virtual machines: `libvirt`
 - use `adb` and `fastboot`: `plugdev`
@@ -69,7 +69,7 @@ When not in the wheel group, a user can be added to a dedicated group, otherwise
 
 Some actions don't have an associated group yet, you can create your own rules and groups to fix this.
 
-**Example**: To allow a non-wheel user to use LUKS encrypted external drives:
+**Example**: To allow a non-`wheel` user to use LUKS encrypted external drives:
 
 1. `sudo groupadd diskadmin`
 2. `sudo usermod -aG diskadmin {your username here}`
@@ -94,7 +94,7 @@ The custom rule allows the group`diskadmin` to do the actions for unlocking and 
 
 1. Go to [uBlock Origin Lite](https://chromewebstore.google.com/detail/ublock-origin-lite/ddkjiahejlhfcafbddmgiahcphecmpfh?pli=1) ([Why Lite?](https://developer.chrome.com/docs/extensions/develop/migrate/improve-security))
 2. Install it
-3. In the extension's settings, make sure all of the lists under Default and Miscellaneous are checked (and at your preference, lists in the Annoyances section or country-specific lists)
+3. In the extension's settings, make sure all of the lists under "Default" and "Miscellaneous" are checked (and at your preference, lists in the "Annoyances" section or country-specific lists)
 
 
 ## Instruction set optimizations for hardened_malloc

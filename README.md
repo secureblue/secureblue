@@ -15,10 +15,11 @@ This repo uses [BlueBuild](https://blue-build.org/) to generate hardened operati
 
 - Increase defenses against the exploitation of both known and unknown vulnerabilities.
 - Avoid sacrificing usability for most use cases where possible
+- Disabling metrics and data collection where they exist, so long as this has no security implications (for example, making vscode data collection opt-in instead of opt-out on `dx` images)
 
-The following are not in scope for this project:
-- Anything related to "privacy", since Fedora is already sufficiently private and "privacy" often serves as a euphemism for security theater. This is especially true when at odds with improving security.
-- Anything related to "degoogling" chromium. For example, we will not be replacing chromium with Brave or ungoogled-chromium.
+The following are not in scope:
+- Anything that sacrifices security for "privacy". Fedora is already sufficiently private and "privacy" often serves as a euphemism for security theater. This is especially true when at odds with improving security.
+- Anything related to "degoogling" chromium. For example, we will not be replacing chromium with Brave or ungoogled-chromium. Both of them make changes that sacrifice security for "privacy", such as enabling MV2.
 
 ## What
 

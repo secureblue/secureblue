@@ -4,23 +4,23 @@
   </a>
 </p>
 
-<h1 align="center">Secureblue</h1>
+<h1 align="center">secureblue</h1>
 
 
 [![secureblue](https://github.com/secureblue/secureblue/actions/workflows/build.yml/badge.svg)](https://github.com/secureblue/secureblue/actions/workflows/build.yml)
 [![Discord](https://img.shields.io/discord/1202086019298500629?style=flat&logo=discord&logoColor=white&label=Discord&labelColor=%235F6AE9&color=%2333CB56)](https://discord.com/invite/qMTv5cKfbF)
 [![Donate](https://img.shields.io/badge/Donate-blue.svg)](https://github.com/secureblue/secureblue/blob/live/DONATE.md)
 
-This repo uses [BlueBuild](https://blue-build.org/) to *generate* hardened operating system images, using [uBlue](https://universal-blue.org)'s [Fedora Atomic](https://fedoraproject.org/atomic-desktops/)-based [base images](https://github.com/orgs/ublue-os/packages?repo_name=main) as a starting point. This hardening is done with the following goals in mind:
+This repo uses [BlueBuild](https://blue-build.org/) to generate hardened operating system images, using [uBlue](https://universal-blue.org)'s [Fedora Atomic](https://fedoraproject.org/atomic-desktops/)-based [base images](https://github.com/orgs/ublue-os/packages?repo_name=main) as a starting point. This hardening is done with the following goals in mind:
 
-- **Increase** defenses against the exploitation of *both* **known** and **unknown** vulnerabilities.
-- **Avoid** sacrificing *usability* for most use cases *where* possible.
+- Increase defenses against the exploitation of both known and unknown vulnerabilities.
+- Avoid sacrificing usability for most use cases where possible.
 
-The following are **not** in scope for this project:
-- Anything related to "**privacy**", since Fedora is *already* sufficiently private and "privacy" often serves as a euphemism for the security theater. This is *especially* true when at odds with improving security.
-- Anything related to "*degoogling*" chromium. For example, we will **not** be replacing Chromium with Brave or ungoogled-chromium.
+The following are not in scope for this project:
+- Anything related to "privacy", since Fedora is already sufficiently private and "privacy" often serves as a euphemism for the security theater. This is especially true when at odds with improving security.
+- Anything related to "degoogling" Chromium. For example, we will not be replacing Chromium with Brave or ungoogled-chromium.
 
-## What hardening is made under the hood?
+## What
 
 Hardening __applied:__
 
@@ -50,7 +50,7 @@ Hardening __applied:__
 
 ## Why Fedora ?
 
-[Fedora](https://getfedora.org) is one of the *few* distributions that ships with [SELinux](https://selinuxproject.org/page/Main_Page) and associated tooling built-in and enabled **by default**. This makes it advantageous as a starting point for building a hardened system. However, out of the box it's **lacking** hardening in numerous other areas. This project's goal is to improve on that __significantly.__
+[Fedora](https://getfedora.org) is one of the few distributions that ships with [SELinux](https://selinuxproject.org/page/Main_Page) and associated tooling built-in and enabled **by default**. This makes it advantageous as a starting point for building a hardened system. However, out of the box it's **lacking** hardening in numerous other areas. This project's goal is to improve on that __significantly.__
 
 For more info on uBlue and BlueBuild, check out the [uBlue homepage](https://universal-blue.org/) and the [BlueBuild homepage](https://blue-build.org/).
 
@@ -101,10 +101,8 @@ While it's recommended to use a Fedora Atomic ISO file to install and then rebas
 
 #### Without User Namespaces <sup>[What's the difference?](USERNS.md)</sup>
 
-##### General Purpose
-
-###### Stable
-
+##### general purpose
+###### stable
 - `kinoite-main-hardened`
 - `kinoite-nvidia-hardened`
 - `bluefin-main-hardened`
@@ -116,8 +114,7 @@ While it's recommended to use a Fedora Atomic ISO file to install and then rebas
 - `sericea-main-hardened`
 - `sericea-nvidia-hardened`
 
-###### Experimental
-
+###### experimental
 - `cinnamon-main-hardened`
 - `cinnamon-nvidia-hardened`
 - `wayblue-wayfire-main-hardened`
@@ -129,13 +126,12 @@ While it's recommended to use a Fedora Atomic ISO file to install and then rebas
 - `wayblue-sway-main-hardened`
 - `wayblue-sway-nvidia-hardened`
 
-##### Surface <sup>[source](https://github.com/ublue-os/hwe/tree/main/surface)</sup>
+##### surface <sup>[source](https://github.com/ublue-os/hwe/tree/main/surface)</sup>
 
 - `aurora-surface-hardened`
 - `aurora-surface-nvidia-hardened`
 
-##### ASUS <sup>[source](https://github.com/ublue-os/hwe/tree/main/asus)</sup>
-
+##### asus <sup>[source](https://github.com/ublue-os/hwe/tree/main/asus)</sup>
 - `aurora-asus-hardened`
 - `aurora-asus-nvidia-hardened`
 - `silverblue-asus-hardened`
@@ -143,8 +139,7 @@ While it's recommended to use a Fedora Atomic ISO file to install and then rebas
 - `kinoite-asus-hardened`
 - `kinoite-asus-nvidia-hardened`
 
-##### Server
-
+##### server
 - `server-main-hardened`
 - `server-nvidia-hardened`
 - `server-zfs-main-hardened`
@@ -152,10 +147,8 @@ While it's recommended to use a Fedora Atomic ISO file to install and then rebas
 
 #### With User Namespaces <sup>[What's the difference?](USERNS.md)</sup>
 
-##### General Purpose
-
-###### Stable
-
+##### general purpose
+###### stable
 - `kinoite-main-userns-hardened`
 - `kinoite-nvidia-userns-hardened`
 - `bluefin-dx-main-userns-hardened`
@@ -171,8 +164,7 @@ While it's recommended to use a Fedora Atomic ISO file to install and then rebas
 - `sericea-main-userns-hardened`
 - `sericea-nvidia-userns-hardened`
 
-###### Experimental
-
+###### experimental
 - `cinnamon-main-userns-hardened`
 - `cinnamon-nvidia-userns-hardened`
 - `wayblue-wayfire-main-userns-hardened`
@@ -184,15 +176,14 @@ While it's recommended to use a Fedora Atomic ISO file to install and then rebas
 - `wayblue-sway-main-userns-hardened`
 - `wayblue-sway-nvidia-userns-hardened`
 
-##### Surface <sup>[source](https://github.com/ublue-os/hwe/tree/main/surface)</sup>
+##### surface <sup>[source](https://github.com/ublue-os/hwe/tree/main/surface)</sup>
 
 - `aurora-surface-userns-hardened`
 - `aurora-surface-nvidia-userns-hardened`
 - `aurora-dx-surface-userns-hardened`
 - `aurora-dx-surface-nvidia-userns-hardened`
 
-##### ASUS <sup>[source](https://github.com/ublue-os/hwe/tree/main/asus)</sup>
-
+##### asus <sup>[source](https://github.com/ublue-os/hwe/tree/main/asus)</sup>
 - `aurora-asus-userns-hardened`
 - `aurora-asus-nvidia-userns-hardened`
 - `aurora-dx-asus-userns-hardened`
@@ -202,8 +193,7 @@ While it's recommended to use a Fedora Atomic ISO file to install and then rebas
 - `kinoite-asus-userns-hardened`
 - `kinoite-asus-nvidia-userns-hardened`
 
-##### Server
-
+##### server
 - `server-main-userns-hardened`
 - `server-nvidia-userns-hardened`
 - `server-zfs-main-userns-hardened`

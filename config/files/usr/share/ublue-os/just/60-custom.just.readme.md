@@ -1,3 +1,4 @@
+## Included in set-kargs-hardening
 
 **Zero newly allocated pages and heaps, mitigating use-after-free vulnerabilities**
 
@@ -22,10 +23,6 @@
 **Disable vsyscall as it is both obsolete and enables an ROP attack vector**
 
 `vsyscall=none` 
-
-**Disable debugfs to prevent exposure of sensitive kernel information**
-
-`debugfs=off` 
 
 **Enable kernel lockdown in the strictest mode**
 
@@ -65,6 +62,12 @@
 
 `mitigations=auto,nosmt` 
 
+## Included in set-kargs-hardening-unstable
+
 **Fill IOMMU protection gap by setting the busmaster bit during early boot**
 
 `efi=disable_early_pci_dma`
+
+**Disable debugfs to prevent exposure of sensitive kernel information**
+
+`debugfs=off` 

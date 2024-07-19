@@ -5,7 +5,7 @@ description: "ucore nvidia with some hardening applied"
 
 # the base image to build on top of (FROM) and the version tag to use
 base-image: ghcr.io/ublue-os/ucore-minimal
-image-version: testing-nvidia
+image-version: testing-nvidia-20240718
 
 # list of modules, executed in order
 # you can include multiple instances of the same module

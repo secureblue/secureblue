@@ -9,7 +9,6 @@ install:
   - usbguard-dbus
   - usbguard-notifier
   - setools
-  - setroubleshoot
 
 
 

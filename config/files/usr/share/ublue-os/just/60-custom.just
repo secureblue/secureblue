@@ -177,3 +177,13 @@ toggle-anticheat-support:
     else 
         echo "The sysctl hardening file is missing the ptrace_scope setting."
     fi
+
+
+# Detect microarchitecture support and apply highest supported flatpak malloc hwcap
+set-flatpak-malloc-hwcap:
+    #!/usr/bin/pkexec /usr/bin/bash
+    uarches=$(/var/run/host/usr/lib64/ld-linux-x86-64.so.2 --help | grep '(supported, searched)' | cut -d'v' -f2)
+    bestuarch=${uarches:0:1}
+    if [ ! -z "${bestuarch}" ]
+        then flatpak override --user --env=LD_PRELOAD=/var/run/host/usr/lib64/glibc-hwcaps/x86-64-v$bestuarch/libhardened_malloc.so
+    fi

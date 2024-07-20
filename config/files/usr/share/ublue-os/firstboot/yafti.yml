@@ -18,6 +18,7 @@ screens:
         This step will enable hardening for installed flatpaks.
       actions:
         - run: flatpak override --user --filesystem=host-os:ro --env=LD_PRELOAD=/var/run/host/usr/lib64/libhardened_malloc.so
+        - run: uarches=$(/var/run/host/usr/lib64/ld-linux-x86-64.so.2 --help | grep '(supported, searched)' | cut -d'v' -f2); bestuarch=${uarches:0:1}; if [ ! -z "${bestuarch}" ]; then flatpak override --user --env=LD_PRELOAD=/var/run/host/usr/lib64/glibc-hwcaps/x86-64-v$bestuarch/libhardened_malloc.so; fi
 
   can-we-modify-your-flatpaks:
     source: yafti.screen.consent

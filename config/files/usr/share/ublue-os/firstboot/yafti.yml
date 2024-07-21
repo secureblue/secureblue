@@ -17,7 +17,7 @@ screens:
       description: |
         This step will enable hardening for installed flatpaks.
       actions:
-        - run: flatpak override --user --filesystem=host-os:ro --env=LD_PRELOAD=/var/run/host/usr/lib64/libhardened_malloc.so
+        - run: ujust harden-flatpak
 
   can-we-modify-your-flatpaks:
     source: yafti.screen.consent

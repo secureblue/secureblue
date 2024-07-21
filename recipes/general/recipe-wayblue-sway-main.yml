@@ -1,14 +1,11 @@
-# image will be published to ghcr.io/<user>/<name>
 name: wayblue-sway-main-hardened
-# description will be included in the image's metadata
+
 description: "wayblue sway main with some hardening applied"
 
-# the base image to build on top of (FROM) and the version tag to use
 base-image: ghcr.io/wayblueorg/sway
+
 image-version: 40
 
-# list of modules, executed in order
-# you can include multiple instances of the same module
 modules:
   - from-file: common/initialization-scripts.yml
   - from-file: common/gui-packages.yml

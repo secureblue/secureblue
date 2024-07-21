@@ -1,3 +1,4 @@
 type: files
 files:
-  - server/usr: /usr 
+  - source: system/server
+  destination: /

@@ -1,3 +1,4 @@
 type: files
 files:
-  - dx/usr: /usr 
+  - source: system/dx
+  destination: /

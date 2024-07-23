@@ -8,3 +8,4 @@ scripts:
   - httpsmirrors.sh
   - createmissingdirectories.sh
   - removesuid.sh
+  - disablegeoclue.sh

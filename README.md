@@ -101,7 +101,7 @@ While it's recommended to use a Fedora Atomic iso to install and then rebase tha
 ./generate_secureblue_iso.sh
 ```
 
-## Images <sup>[What's are userns?](USERNS.md)</sup>
+## Images <sup>[What are userns?](USERNS.md)</sup>
 ### Recommended,<sup>[why?](RECOMMENDED.md)</sup> Stable
 - `silverblue-main-hardened`
 - `silverblue-nvidia-hardened`

@@ -8,6 +8,7 @@ install:
   - bubblejail
   - usbguard-notifier
   - setroubleshoot
+  - setools
   
 remove:
   - openssh-server

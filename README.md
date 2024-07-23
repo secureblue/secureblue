@@ -101,55 +101,55 @@ While it's recommended to use a Fedora Atomic iso to install and then rebase tha
 ./generate_secureblue_iso.sh
 ```
 
-### Available Images
-#### Recommended <sup>[why?](RECOMMENDED.md)</sup>, Stable
-##### Without User Namespaces <sup>[What's the difference?](USERNS.md)</sup>
+## Images
+### Recommended <sup>[why?](RECOMMENDED.md)</sup>, Stable
+#### Without User Namespaces <sup>[What's the difference?](USERNS.md)</sup>
 - `silverblue-main-hardened`
 - `silverblue-nvidia-hardened`
 - `bluefin-main-hardened`
 - `bluefin-nvidia-hardened`
-###### server
+##### server
 - `server-main-hardened`
 - `server-nvidia-hardened`
 - `server-zfs-main-hardened`
 - `server-zfs-nvidia-hardened`
-###### asus <sup>[source](https://github.com/ublue-os/hwe/tree/main/asus)</sup>
+##### asus <sup>[source](https://github.com/ublue-os/hwe/tree/main/asus)</sup>
 - `silverblue-asus-hardened`
 - `silverblue-asus-nvidia-hardened`
-##### With User Namespaces <sup>[What's the difference?](USERNS.md)</sup>
+#### With User Namespaces <sup>[What's the difference?](USERNS.md)</sup>
 - `bluefin-dx-main-userns-hardened`
 - `bluefin-dx-nvidia-userns-hardened`
 - `bluefin-main-userns-hardened`
 - `bluefin-nvidia-userns-hardened`
 - `silverblue-main-userns-hardened`
 - `silverblue-nvidia-userns-hardened`
-###### asus <sup>[source](https://github.com/ublue-os/hwe/tree/main/asus)</sup>
+##### asus <sup>[source](https://github.com/ublue-os/hwe/tree/main/asus)</sup>
 - `silverblue-asus-userns-hardened`
 - `silverblue-asus-nvidia-userns-hardened`
-###### server
+##### server
 - `server-main-userns-hardened`
 - `server-nvidia-userns-hardened`
 - `server-zfs-main-userns-hardened`
 - `server-zfs-nvidia-userns-hardened`
 
 
-#### Stable
-##### Without User Namespaces <sup>[What's the difference?](USERNS.md)</sup>
+### Stable
+#### Without User Namespaces <sup>[What's the difference?](USERNS.md)</sup>
 - `kinoite-main-hardened`
 - `kinoite-nvidia-hardened`
 - `aurora-main-hardened`
 - `aurora-nvidia-hardened`
 - `sericea-main-hardened`
 - `sericea-nvidia-hardened`
-###### asus <sup>[source](https://github.com/ublue-os/hwe/tree/main/asus)</sup>
+##### asus <sup>[source](https://github.com/ublue-os/hwe/tree/main/asus)</sup>
 - `aurora-asus-hardened`
 - `aurora-asus-nvidia-hardened`
 - `kinoite-asus-hardened`
 - `kinoite-asus-nvidia-hardened`
-###### surface <sup>[source](https://github.com/ublue-os/hwe/tree/main/surface)</sup>
+##### surface <sup>[source](https://github.com/ublue-os/hwe/tree/main/surface)</sup>
 - `aurora-surface-hardened`
 - `aurora-surface-nvidia-hardened`
-##### With User Namespaces <sup>[What's the difference?](USERNS.md)</sup>
+#### With User Namespaces <sup>[What's the difference?](USERNS.md)</sup>
 - `kinoite-main-userns-hardened`
 - `kinoite-nvidia-userns-hardened`
 - `aurora-main-userns-hardened`
@@ -158,22 +158,22 @@ While it's recommended to use a Fedora Atomic iso to install and then rebase tha
 - `aurora-dx-nvidia-userns-hardened`
 - `sericea-main-userns-hardened`
 - `sericea-nvidia-userns-hardened`
-###### asus <sup>[source](https://github.com/ublue-os/hwe/tree/main/asus)</sup>
+##### asus <sup>[source](https://github.com/ublue-os/hwe/tree/main/asus)</sup>
 - `aurora-asus-userns-hardened`
 - `aurora-asus-nvidia-userns-hardened`
 - `aurora-dx-asus-userns-hardened`
 - `aurora-dx-asus-nvidia-userns-hardened`
 - `kinoite-asus-userns-hardened`
 - `kinoite-asus-nvidia-userns-hardened`
-###### surface <sup>[source](https://github.com/ublue-os/hwe/tree/main/surface)</sup>
+##### surface <sup>[source](https://github.com/ublue-os/hwe/tree/main/surface)</sup>
 - `aurora-surface-userns-hardened`
 - `aurora-surface-nvidia-userns-hardened`
 - `aurora-dx-surface-userns-hardened`
 - `aurora-dx-surface-nvidia-userns-hardened`
 
 
-#### Experimental
-##### Without User Namespaces <sup>[What's the difference?](USERNS.md)</sup>
+### Experimental
+#### Without User Namespaces <sup>[What's the difference?](USERNS.md)</sup>
 - `cinnamon-main-hardened`
 - `cinnamon-nvidia-hardened`
 - `wayblue-wayfire-main-hardened`
@@ -184,7 +184,7 @@ While it's recommended to use a Fedora Atomic iso to install and then rebase tha
 - `wayblue-river-nvidia-hardened`
 - `wayblue-sway-main-hardened`
 - `wayblue-sway-nvidia-hardened`
-##### With User Namespaces <sup>[What's the difference?](USERNS.md)</sup>
+#### With User Namespaces <sup>[What's the difference?](USERNS.md)</sup>
 - `cinnamon-main-userns-hardened`
 - `cinnamon-nvidia-userns-hardened`
 - `wayblue-wayfire-main-userns-hardened`

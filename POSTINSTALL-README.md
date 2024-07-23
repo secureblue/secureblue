@@ -2,6 +2,23 @@
 
 After rebasing to secureblue, the following steps are recommended.
 
+## Nvidia
+If you are using an nvidia image, run this after installation:
+
+```
+rpm-ostree kargs \
+    --append-if-missing=rd.driver.blacklist=nouveau \
+    --append-if-missing=modprobe.blacklist=nouveau \
+    --append-if-missing=nvidia-drm.modeset=1
+```
+
+### Nvidia optimus laptop
+If you are using an nvidia image on an optimus laptop, run this after installation:
+
+```
+ujust configure-nvidia-optimus
+```
+
 ## Enroll secureboot key
 
 ```ujust enroll-secure-boot-key```

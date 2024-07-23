@@ -7,7 +7,6 @@ install:
   - hardened_malloc
   - usbguard
   - usbguard-dbus
-  - setools
 
 
 

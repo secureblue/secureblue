@@ -13,7 +13,7 @@
 
 This repo uses [BlueBuild](https://blue-build.org/) to generate hardened operating system images, using [uBlue](https://universal-blue.org)'s [Fedora Atomic](https://fedoraproject.org/atomic-desktops/)-based [base images](https://github.com/orgs/ublue-os/packages?repo_name=main) as a starting point. 
 
-## Scope
+# Scope
 
 secureblue applies hardening with the following goals in mind:
 
@@ -25,7 +25,7 @@ The following are not in scope:
 - Anything that sacrifices security for "privacy". Fedora is already sufficiently private and "privacy" often serves as a euphemism for security theater. This is especially true when at odds with improving security.
 - Anything related to "degoogling" chromium. For example, we will not be replacing chromium with Brave or ungoogled-chromium. Both of them make changes that sacrifice security for "privacy", such as enabling MV2.
 
-## Hardening
+# Hardening
 
 - Setting numerous hardened sysctl values (Inspired by but not the same as Kicksecure's) <sup>[details](https://github.com/secureblue/secureblue/blob/live/config/files/usr/etc/sysctl.d/hardening.conf)</sup>
 - Disabling coredumps in limits.conf
@@ -51,26 +51,26 @@ The following are not in scope:
 - (Non-userns variants) Disabling unprivileged user namespaces
 - (Non-userns variants) Replacing bubblewrap with bubblewrap-suid so flatpak can be used without unprivileged user namespaces
 
-## Rationale
+# Rationale
 
 Fedora is one of the few distributions that ships with selinux and associated tooling built-in and enabled by default. This makes it advantageous as a starting point for building a hardened system. However, out of the box it's lacking hardening in numerous other areas. This project's goal is to improve on that significantly.
 
 
 For more info on uBlue and BlueBuild, check out the [uBlue homepage](https://universal-blue.org/) and the [BlueBuild homepage](https://blue-build.org/).
 
-## Customization
+# Customization
 
 If you want to add your own customizations on top of secureblue, you are advised strongly against forking. Instead, create a repo for your own image by using the [BlueBuild template](https://github.com/blue-build/template), then change your `base-image` to a secureblue image. This will allow you to apply your customizations to secureblue in a concise and maintainable way, without the need to constantly sync with upstream. 
 
-## FAQ
+# FAQ
 
 [FAQ](FAQ.md)
 
-## Installation
+# Installation
 
 Have a look at [PREINSTALL-README](PREINSTALL-README.md) before proceeding.
 
-### Rebasing (Recommended)
+## Rebasing (Recommended)
 
 To rebase a Fedora Atomic installation, choose an $IMAGE_NAME from the [list below](README.md#available-images), then follow these steps:
 
@@ -93,7 +93,7 @@ To rebase a Fedora Atomic installation, choose an $IMAGE_NAME from the [list bel
   systemctl reboot
   ```
 
-### ISO 
+## ISO 
 
 While it's recommended to use a Fedora Atomic iso to install and then rebase that installation to secureblue, you can also generate an iso and install that directly using [this script](generate_secureblue_iso.sh). Please note you should still follow the [post-install steps](README.md#post-install) when installing from a generated iso:
 
@@ -101,8 +101,9 @@ While it's recommended to use a Fedora Atomic iso to install and then rebase tha
 ./generate_secureblue_iso.sh
 ```
 
-## Images <sup>[What are userns?](USERNS.md)</sup>
-### Recommended,<sup>[why?](RECOMMENDED.md)</sup> Stable
+# Images <sup>[userns?](USERNS.md)</sup>
+## Desktop
+### Recommended <sup>[why?](RECOMMENDED.md)</sup>
 - `silverblue-main-hardened`
 - `silverblue-nvidia-hardened`
 - `bluefin-main-hardened`
@@ -113,21 +114,6 @@ While it's recommended to use a Fedora Atomic iso to install and then rebase tha
 - `bluefin-nvidia-userns-hardened`
 - `silverblue-main-userns-hardened`
 - `silverblue-nvidia-userns-hardened`
-##### asus <sup>[source](https://github.com/ublue-os/hwe/tree/main/asus)</sup>
-- `silverblue-asus-hardened`
-- `silverblue-asus-nvidia-hardened`
-- `silverblue-asus-userns-hardened`
-- `silverblue-asus-nvidia-userns-hardened`
-##### server
-- `server-main-hardened`
-- `server-nvidia-hardened`
-- `server-zfs-main-hardened`
-- `server-zfs-nvidia-hardened`
-- `server-main-userns-hardened`
-- `server-nvidia-userns-hardened`
-- `server-zfs-main-userns-hardened`
-- `server-zfs-nvidia-userns-hardened`
-
 ### Stable
 - `kinoite-main-hardened`
 - `kinoite-nvidia-hardened`
@@ -143,25 +129,6 @@ While it's recommended to use a Fedora Atomic iso to install and then rebase tha
 - `aurora-dx-nvidia-userns-hardened`
 - `sericea-main-userns-hardened`
 - `sericea-nvidia-userns-hardened`
-##### asus <sup>[source](https://github.com/ublue-os/hwe/tree/main/asus)</sup>
-- `aurora-asus-hardened`
-- `aurora-asus-nvidia-hardened`
-- `kinoite-asus-hardened`
-- `kinoite-asus-nvidia-hardened`
-- `aurora-asus-userns-hardened`
-- `aurora-asus-nvidia-userns-hardened`
-- `aurora-dx-asus-userns-hardened`
-- `aurora-dx-asus-nvidia-userns-hardened`
-- `kinoite-asus-userns-hardened`
-- `kinoite-asus-nvidia-userns-hardened`
-##### surface <sup>[source](https://github.com/ublue-os/hwe/tree/main/surface)</sup>
-- `aurora-surface-hardened`
-- `aurora-surface-nvidia-hardened`
-- `aurora-surface-userns-hardened`
-- `aurora-surface-nvidia-userns-hardened`
-- `aurora-dx-surface-userns-hardened`
-- `aurora-dx-surface-nvidia-userns-hardened`
-
 ### Experimental
 - `cinnamon-main-hardened`
 - `cinnamon-nvidia-hardened`
@@ -183,15 +150,45 @@ While it's recommended to use a Fedora Atomic iso to install and then rebase tha
 - `wayblue-river-nvidia-userns-hardened`
 - `wayblue-sway-main-userns-hardened`
 - `wayblue-sway-nvidia-userns-hardened`
-
+### Asus <sup>[source](https://github.com/ublue-os/hwe/tree/main/asus)</sup>
+- `silverblue-asus-hardened`
+- `silverblue-asus-nvidia-hardened`
+- `silverblue-asus-userns-hardened`
+- `silverblue-asus-nvidia-userns-hardened`
+- `aurora-asus-hardened`
+- `aurora-asus-nvidia-hardened`
+- `kinoite-asus-hardened`
+- `kinoite-asus-nvidia-hardened`
+- `aurora-asus-userns-hardened`
+- `aurora-asus-nvidia-userns-hardened`
+- `aurora-dx-asus-userns-hardened`
+- `aurora-dx-asus-nvidia-userns-hardened`
+- `kinoite-asus-userns-hardened`
+- `kinoite-asus-nvidia-userns-hardened`
+### Surface <sup>[source](https://github.com/ublue-os/hwe/tree/main/surface)</sup>
+- `aurora-surface-hardened`
+- `aurora-surface-nvidia-hardened`
+- `aurora-surface-userns-hardened`
+- `aurora-surface-nvidia-userns-hardened`
+- `aurora-dx-surface-userns-hardened`
+- `aurora-dx-surface-nvidia-userns-hardened`
+## Server
+- `server-main-hardened`
+- `server-nvidia-hardened`
+- `server-zfs-main-hardened`
+- `server-zfs-nvidia-hardened`
+- `server-main-userns-hardened`
+- `server-nvidia-userns-hardened`
+- `server-zfs-main-userns-hardened`
+- `server-zfs-nvidia-userns-hardened`
   
-### Post-install
+# Post-install
 
 After installation, [yafti](https://github.com/ublue-os/yafti) will open. Make sure to follow the steps listed carefully and read the directions closely.
 
 Have a look at [POSTINSTALL-README](POSTINSTALL-README.md).
 
-#### Nvidia
+## Nvidia
 If you are using an nvidia image, run this after installation:
 
 ```
@@ -209,13 +206,13 @@ ujust configure-nvidia-optimus
 ```
 
 
-## Contributing
+# Contributing
 
 Follow the [contributing documentation](CONTRIBUTING.md#contributing), and make sure to respect the [CoC](CODE_OF_CONDUCT.md).
 
-### Development
+## Development
 
 For local Development [building locally](CONTRIBUTING.md#building-locally) is the recommended approach.
 
-### Community 
+## Community 
 Opening issues is preferred, but [Discord](https://discord.gg/qMTv5cKfbF) is available as well.

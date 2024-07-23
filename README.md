@@ -25,9 +25,7 @@ The following are not in scope:
 - Anything that sacrifices security for "privacy". Fedora is already sufficiently private and "privacy" often serves as a euphemism for security theater. This is especially true when at odds with improving security.
 - Anything related to "degoogling" chromium. For example, we will not be replacing chromium with Brave or ungoogled-chromium. Both of them make changes that sacrifice security for "privacy", such as enabling MV2.
 
-## What
-
-Hardening applied:
+## What hardening is applied?
 
 - Setting numerous hardened sysctl values (Inspired by but not the same as Kicksecure's) <sup>[details](https://github.com/secureblue/secureblue/blob/live/config/files/usr/etc/sysctl.d/hardening.conf)</sup>
 - Disabling coredumps in limits.conf
@@ -53,7 +51,7 @@ Hardening applied:
 - (Non-userns variants) Disabling unprivileged user namespaces
 - (Non-userns variants) Replacing bubblewrap with bubblewrap-suid so flatpak can be used without unprivileged user namespaces
 
-## Why
+## Why is this needed?
 
 Fedora is one of the few distributions that ships with selinux and associated tooling built-in and enabled by default. This makes it advantageous as a starting point for building a hardened system. However, out of the box it's lacking hardening in numerous other areas. This project's goal is to improve on that significantly.
 
@@ -104,107 +102,100 @@ While it's recommended to use a Fedora Atomic iso to install and then rebase tha
 ```
 
 ### Available Images
+#### Recommended <sup>[why?](RECOMMENDED.md), Stable
+##### Without User Namespaces <sup>[What's the difference?](USERNS.md)</sup>
+- `silverblue-main-hardened`
+- `silverblue-nvidia-hardened`
+- `bluefin-main-hardened`
+- `bluefin-nvidia-hardened`
+###### server
+- `server-main-hardened`
+- `server-nvidia-hardened`
+- `server-zfs-main-hardened`
+- `server-zfs-nvidia-hardened`
+###### asus <sup>[source](https://github.com/ublue-os/hwe/tree/main/asus)</sup>
+- `silverblue-asus-hardened`
+- `silverblue-asus-nvidia-hardened`
+##### With User Namespaces <sup>[What's the difference?](USERNS.md)</sup>
+- `bluefin-dx-main-userns-hardened`
+- `bluefin-dx-nvidia-userns-hardened`
+- `bluefin-main-userns-hardened`
+- `bluefin-nvidia-userns-hardened`
+- `silverblue-main-userns-hardened`
+- `silverblue-nvidia-userns-hardened`
+###### asus <sup>[source](https://github.com/ublue-os/hwe/tree/main/asus)</sup>
+- `silverblue-asus-userns-hardened`
+- `silverblue-asus-nvidia-userns-hardened`
+###### server
+- `server-main-userns-hardened`
+- `server-nvidia-userns-hardened`
+- `server-zfs-main-userns-hardened`
+- `server-zfs-nvidia-userns-hardened`
 
-#### Without User Namespaces <sup>[What's the difference?](USERNS.md)</sup>
 
-##### general purpose
-###### stable
-- kinoite-main-hardened
-- kinoite-nvidia-hardened
-- bluefin-main-hardened
-- bluefin-nvidia-hardened
-- aurora-main-hardened
-- aurora-nvidia-hardened
-- silverblue-main-hardened
-- silverblue-nvidia-hardened
-- sericea-main-hardened
-- sericea-nvidia-hardened
+#### Stable
+##### Without User Namespaces <sup>[What's the difference?](USERNS.md)</sup>
+- `kinoite-main-hardened`
+- `kinoite-nvidia-hardened`
+- `aurora-main-hardened`
+- `aurora-nvidia-hardened`
+- `sericea-main-hardened`
+- `sericea-nvidia-hardened`
+###### asus <sup>[source](https://github.com/ublue-os/hwe/tree/main/asus)</sup>
+- `aurora-asus-hardened`
+- `aurora-asus-nvidia-hardened`
+- `kinoite-asus-hardened`
+- `kinoite-asus-nvidia-hardened`
+###### surface <sup>[source](https://github.com/ublue-os/hwe/tree/main/surface)</sup>
+- `aurora-surface-hardened`
+- `aurora-surface-nvidia-hardened`
+##### With User Namespaces <sup>[What's the difference?](USERNS.md)</sup>
+- `kinoite-main-userns-hardened`
+- `kinoite-nvidia-userns-hardened`
+- `aurora-main-userns-hardened`
+- `aurora-nvidia-userns-hardened`
+- `aurora-dx-main-userns-hardened`
+- `aurora-dx-nvidia-userns-hardened`
+- `sericea-main-userns-hardened`
+- `sericea-nvidia-userns-hardened`
+###### asus <sup>[source](https://github.com/ublue-os/hwe/tree/main/asus)</sup>
+- `aurora-asus-userns-hardened`
+- `aurora-asus-nvidia-userns-hardened`
+- `aurora-dx-asus-userns-hardened`
+- `aurora-dx-asus-nvidia-userns-hardened`
+- `kinoite-asus-userns-hardened`
+- `kinoite-asus-nvidia-userns-hardened`
+###### surface <sup>[source](https://github.com/ublue-os/hwe/tree/main/surface)</sup>
+- `aurora-surface-userns-hardened`
+- `aurora-surface-nvidia-userns-hardened`
+- `aurora-dx-surface-userns-hardened`
+- `aurora-dx-surface-nvidia-userns-hardened`
 
-###### experimental
-- cinnamon-main-hardened
-- cinnamon-nvidia-hardened
-- wayblue-wayfire-main-hardened
-- wayblue-wayfire-nvidia-hardened
-- wayblue-hyprland-main-hardened
-- wayblue-hyprland-nvidia-hardened
-- wayblue-river-main-hardened
-- wayblue-river-nvidia-hardened
-- wayblue-sway-main-hardened
-- wayblue-sway-nvidia-hardened
 
+#### Experimental
+##### Without User Namespaces <sup>[What's the difference?](USERNS.md)</sup>
+- `cinnamon-main-hardened`
+- `cinnamon-nvidia-hardened`
+- `wayblue-wayfire-main-hardened`
+- `wayblue-wayfire-nvidia-hardened`
+- `wayblue-hyprland-main-hardened`
+- `wayblue-hyprland-nvidia-hardened`
+- `wayblue-river-main-hardened`
+- `wayblue-river-nvidia-hardened`
+- `wayblue-sway-main-hardened`
+- `wayblue-sway-nvidia-hardened`
+##### With User Namespaces <sup>[What's the difference?](USERNS.md)</sup>
+- `cinnamon-main-userns-hardened`
+- `cinnamon-nvidia-userns-hardened`
+- `wayblue-wayfire-main-userns-hardened`
+- `wayblue-wayfire-nvidia-userns-hardened`
+- `wayblue-hyprland-main-userns-hardened`
+- `wayblue-hyprland-nvidia-userns-hardened`
+- `wayblue-river-main-userns-hardened`
+- `wayblue-river-nvidia-userns-hardened`
+- `wayblue-sway-main-userns-hardened`
+- `wayblue-sway-nvidia-userns-hardened`
 
-##### surface <sup>[source](https://github.com/ublue-os/hwe/tree/main/surface)</sup>
-
-- aurora-surface-hardened
-- aurora-surface-nvidia-hardened
-
-##### asus <sup>[source](https://github.com/ublue-os/hwe/tree/main/asus)</sup>
-- aurora-asus-hardened
-- aurora-asus-nvidia-hardened
-- silverblue-asus-hardened
-- silverblue-asus-nvidia-hardened
-- kinoite-asus-hardened
-- kinoite-asus-nvidia-hardened
-
-##### server
-- server-main-hardened
-- server-nvidia-hardened
-- server-zfs-main-hardened
-- server-zfs-nvidia-hardened
-
-#### With User Namespaces <sup>[What's the difference?](USERNS.md)</sup>
-
-##### general purpose
-###### stable
-- kinoite-main-userns-hardened
-- kinoite-nvidia-userns-hardened
-- bluefin-dx-main-userns-hardened
-- bluefin-dx-nvidia-userns-hardened
-- bluefin-main-userns-hardened
-- bluefin-nvidia-userns-hardened
-- aurora-main-userns-hardened
-- aurora-nvidia-userns-hardened
-- aurora-dx-main-userns-hardened
-- aurora-dx-nvidia-userns-hardened
-- silverblue-main-userns-hardened
-- silverblue-nvidia-userns-hardened
-- sericea-main-userns-hardened
-- sericea-nvidia-userns-hardened
-
-###### experimental
-- cinnamon-main-userns-hardened
-- cinnamon-nvidia-userns-hardened
-- wayblue-wayfire-main-userns-hardened
-- wayblue-wayfire-nvidia-userns-hardened
-- wayblue-hyprland-main-userns-hardened
-- wayblue-hyprland-nvidia-userns-hardened
-- wayblue-river-main-userns-hardened
-- wayblue-river-nvidia-userns-hardened
-- wayblue-sway-main-userns-hardened
-- wayblue-sway-nvidia-userns-hardened
-
-##### surface <sup>[source](https://github.com/ublue-os/hwe/tree/main/surface)</sup>
-
-- aurora-surface-userns-hardened
-- aurora-surface-nvidia-userns-hardened
-- aurora-dx-surface-userns-hardened
-- aurora-dx-surface-nvidia-userns-hardened
-
-##### asus <sup>[source](https://github.com/ublue-os/hwe/tree/main/asus)</sup>
-- aurora-asus-userns-hardened
-- aurora-asus-nvidia-userns-hardened
-- aurora-dx-asus-userns-hardened
-- aurora-dx-asus-nvidia-userns-hardened
-- silverblue-asus-userns-hardened
-- silverblue-asus-nvidia-userns-hardened
-- kinoite-asus-userns-hardened
-- kinoite-asus-nvidia-userns-hardened
-
-##### server
-- server-main-userns-hardened
-- server-nvidia-userns-hardened
-- server-zfs-main-userns-hardened
-- server-zfs-nvidia-userns-hardened
   
 ### Post-install
 

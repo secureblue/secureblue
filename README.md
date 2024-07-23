@@ -102,7 +102,7 @@ While it's recommended to use a Fedora Atomic iso to install and then rebase tha
 ```
 
 ### Available Images
-#### Recommended <sup>[why?](RECOMMENDED.md), Stable
+#### Recommended <sup>[why?](RECOMMENDED.md)</sup>, Stable
 ##### Without User Namespaces <sup>[What's the difference?](USERNS.md)</sup>
 - `silverblue-main-hardened`
 - `silverblue-nvidia-hardened`

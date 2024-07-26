@@ -131,6 +131,8 @@ While it's recommended to use a Fedora Atomic iso to install and then rebase tha
 ### Experimental
 - `cinnamon-main-hardened`
 - `cinnamon-nvidia-hardened`
+- `cosmic-main-hardened`
+- `cosmic-nvidia-hardened`
 - `wayblue-wayfire-main-hardened`
 - `wayblue-wayfire-nvidia-hardened`
 - `wayblue-hyprland-main-hardened`
@@ -141,6 +143,8 @@ While it's recommended to use a Fedora Atomic iso to install and then rebase tha
 - `wayblue-sway-nvidia-hardened`
 - `cinnamon-main-userns-hardened`
 - `cinnamon-nvidia-userns-hardened`
+- `cosmic-main-userns-hardened`
+- `cosmic-nvidia-userns-hardened`
 - `wayblue-wayfire-main-userns-hardened`
 - `wayblue-wayfire-nvidia-userns-hardened`
 - `wayblue-hyprland-main-userns-hardened`

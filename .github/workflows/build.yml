@@ -45,6 +45,8 @@ jobs:
           - general/recipe-wayblue-river-nvidia.yml
           - general/recipe-wayblue-sway-main.yml
           - general/recipe-wayblue-sway-nvidia.yml
+          - general/recipe-cosmic-main.yml
+          - general/recipe-cosmic-nvidia.yml
           # asus
           - asus/recipe-silverblue-asus.yml
           - asus/recipe-silverblue-asus-nvidia.yml
@@ -87,6 +89,8 @@ jobs:
           - general/recipe-wayblue-river-nvidia-userns.yml
           - general/recipe-wayblue-sway-main-userns.yml
           - general/recipe-wayblue-sway-nvidia-userns.yml
+          - general/recipe-cosmic-main-userns.yml
+          - general/recipe-cosmic-nvidia-userns.yml
           # asus
           - asus/recipe-silverblue-asus-userns.yml
           - asus/recipe-silverblue-asus-nvidia-userns.yml

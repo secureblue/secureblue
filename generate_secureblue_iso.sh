@@ -3,6 +3,7 @@
 if ! command -v podman &> /dev/null
 then
     echo "Podman is not installed, install it to use this script."
+    exit 1
 fi
 
 function is_yes {
@@ -12,97 +13,76 @@ function is_yes {
     esac
 }
 
-desktop_options=("kinoite" "cinnamon" "bluefin" "silverblue" "sericea" "wayblue-wayfire" "wayblue-sway" "wayblue-river" "wayblue-hyprland")
-desktop_options_asus=("silverblue" "kinoite")
+# Define image configurations
+declare -A image_configs=(
+    ["server"]="Server"
+    ["server-zfs"]="Server"
+    ["silverblue"]="Silverblue"
+    ["kinoite"]="Kinoite"
+    ["bluefin"]="Silverblue:dx"
+    ["sericea"]="Sericea"
+    ["wayblue-wayfire"]="Sericea"
+    ["wayblue-sway"]="Sericea"
+    ["wayblue-river"]="Sericea"
+    ["wayblue-hyprland"]="Sericea"
+    ["cinnamon"]="Silverblue"
+    ["aurora"]="Kinoite:dx:asus:surface"
+    ["cosmic"]="Silverblue"
+)
 
 image_name=""
+additional_params=""
+variant=""
 
-read -p "Do you need user namespaces? (yes/No): " use_userns
-read -p "Do you use an Asus laptop? (yes/No): " is_asus
-read -p "Do you use Nvidia? (yes/No): " use_nvidia
-if is_yes "$is_asus"; then
+# Determine if it's a server or desktop
+read -p "Is this for a server? (yes/No): " is_server
+if is_yes "$is_server"; then
+    read -p "Do you need ZFS support? (yes/No): " use_zfs
+    image_name=$(is_yes "$use_zfs" && echo "server-zfs" || echo "server")
+    variant=${image_configs[$image_name]}
+else
+    # For desktops, present all non-server options
+    desktop_options=($(for key in "${!image_configs[@]}"; do [[ $key != server* ]] && echo "$key"; done | sort))
+    
     echo "Select a desktop:"
-    select opt in "${desktop_options_asus[@]}"; do
-        case $opt in
-            "silverblue")
-                image_name+="silverblue"
-                break;
-                ;;
-            "kinoite")
-                image_name+="kinoite"
-                break;
-                ;;
-            *) echo "Invalid option";;
-        esac
+    select opt in "${desktop_options[@]}"; do
+        if [[ " ${desktop_options[@]} " =~ " ${opt} " ]]; then
+            image_name=$opt
+            IFS=':' read -r variant options <<< "${image_configs[$opt]}"
+            break
+        else
+            echo "Invalid option"
+        fi
     done
 
-    image_name+="-asus"
-    if is_yes "$use_nvidia"; then
-        image_name+="-nvidia"
-    fi
-else
-    read -p "Is this for a server? (yes/No): " is_server
-    if is_yes "$is_server"; then
-        image_name+="server"
-    else 
-        echo "Select a desktop:"
-        select opt in "${desktop_options[@]}"; do
-            case $opt in
-                "silverblue")
-                    image_name+="silverblue"
-                    break;
-                    ;;
-                "kinoite")
-                    image_name+="kinoite"
-                    break;
-                    ;;
-                "cinnamon")
-                    image_name+="cinnamon"
-                    break;
-                    ;;
-                "sericea")
-                    image_name+="sericea"
-                    break;
-                    ;;
-                "bluefin")
-                    image_name+="bluefin"
-                    break;
-                    ;;
-                "wayblue-river")
-                    image_name+="wayblue-river"
-                    break;
-                    ;;
-                "wayblue-sway")
-                    image_name+="wayblue-sway"
-                    break;
-                    ;;
-                "wayblue-hyprland")
-                    image_name+="wayblue-hyprland"
-                    break;
-                    ;;
-                "wayblue-wayfire")
-                    image_name+="wayblue-wayfire"
-                    break;
-                    ;;
-                *) echo "Invalid option";;
-            esac
-        done
+    # Ask specific questions based on the chosen desktop
+    if [[ $options == *"dx"* ]]; then
+        read -p "Do you need Developer Experience (dx)? (yes/No): " use_dx
+        is_yes "$use_dx" && additional_params+="-dx"
     fi
 
-    if is_yes "$use_nvidia"; then
-        image_name+="-nvidia"
-    else
-        image_name+="-main"
+    if [[ $options == *"asus"* ]]; then
+        read -p "Do you use an Asus laptop? (yes/No): " is_asus
+        is_yes "$is_asus" && additional_params+="-asus"
+    fi
+
+    if [[ $options == *"surface"* && $additional_params != *"-asus"* ]]; then
+        read -p "Do you use a Microsoft Surface device? (yes/No): " is_surface
+        is_yes "$is_surface" && additional_params+="-surface"
     fi
 fi
 
-if is_yes "$use_userns"; then
-    image_name+="-userns"
-fi
+# Ask about Nvidia for all options
+read -p "Do you use Nvidia? (yes/No): " use_nvidia
+is_yes "$use_nvidia" && additional_params+="-nvidia" || additional_params+="-main"
 
-image_name+="-hardened"
+# Ask about user namespaces for all options
+read -p "Do you need user namespaces? (yes/No): " use_userns
+is_yes "$use_userns" && additional_params+="-userns"
 
-command="sudo podman run --rm --privileged --volume .:/build-container-installer/build ghcr.io/jasonn3/build-container-installer:latest IMAGE_REPO=ghcr.io/secureblue IMAGE_NAME=$image_name VERSION=40 IMAGE_TAG=latest"
+image_name+="$additional_params-hardened"
+
+command="sudo podman run --rm --privileged --volume .:/build-container-installer/build ghcr.io/jasonn3/build-container-installer:latest IMAGE_REPO=ghcr.io/secureblue IMAGE_NAME=$image_name VERSION=40 IMAGE_TAG=latest VARIANT=$variant"
 
 echo "Command to execute:"
 echo "$command"

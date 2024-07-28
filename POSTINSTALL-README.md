@@ -1,4 +1,4 @@
-# secureblue
+# Secureblue Post Install Recommendations
 
 After rebasing to secureblue, the following steps are recommended.
 
@@ -33,7 +33,7 @@ Documentation is available [here](https://github.com/secureblue/secureblue/blob/
 
 ### Set unstable hardened kargs
 
-*Can cause issues on some hardware, but stable on other hardware*
+*Can cause issues on some hardware, but stable on other hardware* [[1]](https://github.com/secureblue/secureblue/issues/169) [[2]](https://github.com/secureblue/secureblue/issues/215)
 
 ```ujust set-kargs-hardening-unstable```
 
@@ -58,7 +58,8 @@ GRUB will prompt for a username and password. The default username is root.
 
 If you wish to password-protect booting existing entries, you can add the `grub_users root` entry in the specific configuration file located in the `/boot/loader/entries` directory.
 
-## Create a separate wheel account for admin purposes
+## User setup
+### Create a separate wheel account for admin purposes
 
 Creating a dedicated wheel user and removing wheel from your primary user helps prevent certain attack vectors, like:
 
@@ -68,9 +69,9 @@ Creating a dedicated wheel user and removing wheel from your primary user helps 
 > [!CAUTION]
 > If you do these steps out of order, it is possible to end up without the ability to administrate your system. You will not be able to use the [traditional GRUB-based method](https://linuxconfig.org/recover-reset-forgotten-linux-root-password) of fixing mistakes like this, either, as this will leave your system in a broken state. However, simply rolling back to an older snapshot of your system, should resolve the problem.
 
-1. ```sudo adduser admin```
-2. ```sudo usermod -aG wheel admin```
-3. ```sudo passwd admin```
+1. ```adduser admin```
+2. ```usermod -aG wheel admin```
+3. ```passwd admin```
 4. ```reboot```
 
 > [!NOTE]
@@ -80,39 +81,32 @@ Creating a dedicated wheel user and removing wheel from your primary user helps 
 6. ```gpasswd -d {your username here} wheel```
 7. ```reboot```
 
-## Avoid `wheel` by using dedicated groups
+### Avoid `wheel` by using dedicated groups
 When not in the wheel group, a user can be added to a dedicated group, otherwise certain actions are blocked:
 
-- use virtual machines: `libvirt`
+- use virtual machines with a QEMU system session: `libvirt`
 - use `adb` and `fastboot`: `plugdev`
 
-## Create a custom polkit rule
-Some actions don't have an associated group yet, you can create your own rules and groups to fix this.
+To create a custom new group with associated polkit rules, use the guide in the FAQ
 
-**Example**: To allow a non-wheel user to use LUKS encrypted *internal* drives:
+### Add a SELinux confined user
+[SELinux confined users](https://fedoraproject.org/wiki/SELinux/ConfinedUsers) are a project to secure not only the core system, but also the user accounts with [SELinux](https://docs.fedoraproject.org/en-US/quick-docs/selinux-getting-started/).
 
-1. `sudo groupadd diskadmin`
-2. `sudo usermod -aG diskadmin {your username here}`
-3. execute this command (*explanation below*)
+At the current state, unlike on Android, a user account and all it's processes are not protected by SELinux on Fedora.
+
+SELinux confined users have different access levels. From most privileged to least privileged:
+- `sysadm_u`
+- `staff_u`
+- `user_u`
+
+Example for adding a user with the loose `sysadm_u` protection
 
 ```
-cat >> /etc/polkit-1/rules.d/80-udisks2.rules <<EOF
-polkit.addRule(function(action, subject) {
-    if (action.id == "org.freedesktop.udisks2.encrypted-unlock-system" || action.id == "org.freedesktop.udisks2.filesystem-mount-system" &&
-        subject.active == true && subject.local == true &&
-        subject.isInGroup("diskadmin"))
-        {
-        return polkit.Result.YES;
-    }
-});
-EOF
+sudo useradd sysadm-confined
+sudo passwd sysadm-confined
+sudo usermod -aG wheel sysadm-confined
+sudo semanage login -a -s sysadm_u sysadm-confined
 ```
-
-The custom rule allows the group`diskadmin` to do the actions for unlocking and mounting these drives. Note the requirement on `active` and `local`, and the exactly specified actions.
-
-**NOTES**
-- In this example, using *external* drives does not require any privileges, so USB adapters for SSDs should all work. If they don't work, this is a bug on the device.
-- Access to system drives can be used to gain root access on the system
 
 ## Chromium extension
 
@@ -124,22 +118,3 @@ The custom rule allows the group`diskadmin` to do the actions for unlocking and 
 ## Instruction set optimizations for hardened_malloc
 
 Please see the description for release [v2.2.0](https://github.com/secureblue/secureblue/releases/tag/v2.2.0)
-
-## Add a SELinux confined user
-[SELinux confined users](https://fedoraproject.org/wiki/SELinux/ConfinedUsers) are a project to secure not only the core system, but also the user accounts with [SELinux](https://docs.fedoraproject.org/en-US/quick-docs/selinux-getting-started/).
-
-At the current state, unlike on Android, a user account and all it's processes are not protected by SELinux on Fedora.
-
-As this may cause breakages, [follow these guides](https://fedoraproject.org/wiki/SELinux/ConfinedUsers#Assign_a_SELinux_user_to_an_existing_Linux_user) on how to add a new user account and confine it.
-
-First, create a new user, using the above guide on adding a dedicated admin user. You can leave out the `wheel` group if you like.
-
-SELinux confined users have different access levels. From most privileged to least privileged:
-- `sysadm_u`
-- `staff_u`
-- `user_u`
-
-## Use a virtual machine without root
-You can use GNOME Boxes, [as Flatpak](https://flathub.org/apps/org.gnome.Boxes) or layered with `rpm-ostree`. This defaults to using a "QEMU user session", which does not require root.
-
-For more advanced configurations, you can layer `virt-manager` with `rpm-ostree`. By default it will use the "QEMU system session" and prompt for the admin password. You can exit that prompt, right-click on the displayed QEMU session, and instead under "File -> Add Connection" add an unprivileged QEMU user session.

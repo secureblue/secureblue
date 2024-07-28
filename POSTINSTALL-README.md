@@ -48,7 +48,9 @@ Documentation is available [here](https://github.com/secureblue/secureblue/blob/
 
 Setting a GRUB password helps protect the device from physical tampering and mitigates various attack vectors, such as booting from malicious media devices and changing boot or kernel parameters.
 
-To set a GRUB password, use the following command. By default, the password will be required when modifying boot entries, but not when booting existing entries.
+By default, the password will be required when modifying boot entries, but not when booting existing entries.
+
+To set a GRUB password, use the following command.
 
 ```sudo grub2-setpassword```
 
@@ -66,9 +68,9 @@ Creating a dedicated wheel user and removing wheel from your primary user helps 
 > [!CAUTION]
 > If you do these steps out of order, it is possible to end up without the ability to administrate your system. You will not be able to use the [traditional GRUB-based method](https://linuxconfig.org/recover-reset-forgotten-linux-root-password) of fixing mistakes like this, either, as this will leave your system in a broken state. However, simply rolling back to an older snapshot of your system, should resolve the problem.
 
-1. ```adduser admin```
-2. ```usermod -aG wheel admin```
-3. ```passwd admin```
+1. ```sudo adduser admin```
+2. ```sudo usermod -aG wheel admin```
+3. ```sudo passwd admin```
 4. ```reboot```
 
 > [!NOTE]
@@ -78,15 +80,16 @@ Creating a dedicated wheel user and removing wheel from your primary user helps 
 6. ```gpasswd -d {your username here} wheel```
 7. ```reboot```
 
+## Avoid `wheel` by using dedicated groups
 When not in the wheel group, a user can be added to a dedicated group, otherwise certain actions are blocked:
 
 - use virtual machines: `libvirt`
 - use `adb` and `fastboot`: `plugdev`
-- use systemwide flatpaks: `flatpak`
 
+## Create a custom polkit rule
 Some actions don't have an associated group yet, you can create your own rules and groups to fix this.
 
-**Example**: To allow a non-wheel user to use LUKS encrypted external drives:
+**Example**: To allow a non-wheel user to use LUKS encrypted *internal* drives:
 
 1. `sudo groupadd diskadmin`
 2. `sudo usermod -aG diskadmin {your username here}`
@@ -107,6 +110,10 @@ EOF
 
 The custom rule allows the group`diskadmin` to do the actions for unlocking and mounting these drives. Note the requirement on `active` and `local`, and the exactly specified actions.
 
+**NOTES**
+- In this example, using *external* drives does not require any privileges, so USB adapters for SSDs should all work. If they don't work, this is a bug on the device.
+- Access to system drives can be used to gain root access on the system
+
 ## Chromium extension
 
 1. Go to [uBlock Origin Lite](https://chromewebstore.google.com/detail/ublock-origin-lite/ddkjiahejlhfcafbddmgiahcphecmpfh?pli=1) ([Why Lite?](https://developer.chrome.com/docs/extensions/develop/migrate/improve-security))
@@ -117,3 +124,22 @@ The custom rule allows the group`diskadmin` to do the actions for unlocking and 
 ## Instruction set optimizations for hardened_malloc
 
 Please see the description for release [v2.2.0](https://github.com/secureblue/secureblue/releases/tag/v2.2.0)
+
+## Add a SELinux confined user
+[SELinux confined users](https://fedoraproject.org/wiki/SELinux/ConfinedUsers) are a project to secure not only the core system, but also the user accounts with [SELinux](https://docs.fedoraproject.org/en-US/quick-docs/selinux-getting-started/).
+
+At the current state, unlike on Android, a user account and all it's processes are not protected by SELinux on Fedora.
+
+As this may cause breakages, [follow these guides](https://fedoraproject.org/wiki/SELinux/ConfinedUsers#Assign_a_SELinux_user_to_an_existing_Linux_user) on how to add a new user account and confine it.
+
+First, create a new user, using the above guide on adding a dedicated admin user. You can leave out the `wheel` group if you like.
+
+SELinux confined users have different access levels. From most privileged to least privileged:
+- `sysadm_u`
+- `staff_u`
+- `user_u`
+
+## Use a virtual machine without root
+You can use GNOME Boxes, [as Flatpak](https://flathub.org/apps/org.gnome.Boxes) or layered with `rpm-ostree`. This defaults to using a "QEMU user session", which does not require root.
+
+For more advanced configurations, you can layer `virt-manager` with `rpm-ostree`. By default it will use the "QEMU system session" and prompt for the admin password. You can exit that prompt, right-click on the displayed QEMU session, and instead under "File -> Add Connection" add an unprivileged QEMU user session.

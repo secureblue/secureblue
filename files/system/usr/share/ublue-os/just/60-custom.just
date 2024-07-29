@@ -184,8 +184,8 @@ toggle-gnome-jit-js:
     ENV_FILE="/etc/profile.d/gnome-disable-jit.sh"
     if test -e $ENV_FILE; then
     	sudo rm -f $ENV_FILE
-    	echo "JIT has been enabled."
+    	echo "JIT JavaScript for Gnome and WebkitGTK has been enabled."
     else
-    	sudo sh -c 'echo -e "export JavaScriptCoreUseJIT=0\nexport GJS_DISABLE_JIT=1" > /etc/profile.d/gnome-disable-jit.sh'
-    	echo "JIT has been disabled."
+    	sudo cp /usr/$ENV_FILE $ENV_FILE
+    	echo "JIT JavaScript for Gnome and WebkitGTK has been disabled."
     fi

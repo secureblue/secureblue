@@ -47,6 +47,7 @@ The following are not in scope:
 - Use HTTPS for all rpm mirrors
 - Set all default container policies to `reject`, `signedBy`, or `sigstoreSigned`
 - Remove SUID-root from [numerous binaries](https://github.com/secureblue/secureblue/blob/live/files/scripts/removesuid.sh) and replace functionality [using capabilities](https://github.com/secureblue/secureblue/blob/live/files/system/usr/bin/setcapsforunsuidbinaries)
+- Disable Xwayland by default (for GNOME, Plasma, and Sway images)
 - (Non-userns variants) Disabling unprivileged user namespaces
 - (Non-userns variants) Replacing bubblewrap with bubblewrap-suid so flatpak can be used without unprivileged user namespaces
 

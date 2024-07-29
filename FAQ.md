@@ -42,11 +42,6 @@ Override `LD_PRELOAD` for that app. For flatpaks, this is as simple as removing 
 
 First check if the README already has an equivalent or better feature. If it doesn't, open a new github issue.
 
-#### I need Javascript JIT for a specific site, how do I enable it?
-
-Add an additional chromium policy file and set the sites that need JIT in `JavaScriptJitAllowedForSites`. Here is the [policy reference](
-https://admx.help/?Category=Chrome&Policy=Google.Policies.Chrome::JavaScriptJitAllowedForSites).
-
 #### How do I install steam?
 
 To use steam you can either:

@@ -36,3 +36,30 @@ PrivateUsers=no
 chown root:root /usr/bin/bwrap
 chmod u+s /usr/bin/bwrap
 
+
+# https://bugzilla.redhat.com/show_bug.cgi?id=2300183
+
+echo "
+
+
+module chrome_sandbox 1.0;
+
+require {
+	type chrome_sandbox_home_t;
+	type chrome_sandbox_t;
+	class file map;
+}
+
+#============= chrome_sandbox_t ==============
+
+allow chrome_sandbox_t chrome_sandbox_home_t:file map;
+
+" > chrome_sandbox.te
+
+checkmodule -M -m -o chrome_sandbox.mod chrome_sandbox.te
+semodule_package -o chrome_sandbox.pp -m chrome_sandbox.mod
+semodule -i chrome_sandbox.pp
+
+rm chrome_sandbox.te
+rm chrome_sandbox.mod
+rm chrome_sandbox.pp

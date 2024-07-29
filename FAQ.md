@@ -35,7 +35,7 @@ Override `LD_PRELOAD` for that app. For flatpaks, this is as simple as removing 
 
 1. Check if it's already installed using `rpm -qa | grep x`
 2. Check if there's a flatpak available at https://flathub.org
-3. Consider using distrobox or nix to install it
+3. Consider using distrobox or brew to install it
 4. Layer it using `rpm-ostree install`, as a last option
 
 #### Another security project has a feature that's missing in secureblue, can you add it?

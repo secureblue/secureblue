@@ -177,3 +177,15 @@ toggle-anticheat-support:
     else 
         echo "The sysctl hardening file is missing the ptrace_scope setting."
     fi
+
+# Toggle Gnome JIT JavaScript for GJS and WebkitGTK (requires session restart)
+toggle-gnome-jit-js:
+    #!/usr/bin/pkexec /usr/bin/bash
+    ENV_FILE="/etc/profile.d/gnome-disable-jit.sh"
+    if test -e $ENV_FILE; then
+    	sudo rm -f $ENV_FILE
+    	echo "JIT has been enabled."
+    else
+    	sudo sh -c 'echo -e "export JavaScriptCoreUseJIT=0\nexport GJS_DISABLE_JIT=1" > /etc/profile.d/gnome-disable-jit.sh'
+    	echo "JIT has been disabled."
+    fi

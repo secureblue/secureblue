@@ -17,8 +17,8 @@ function is_yes {
 declare -A image_configs=(
     ["server"]="Server"
     ["server-zfs"]="Server"
-    ["silverblue"]="Silverblue"
-    ["kinoite"]="Kinoite"
+    ["silverblue"]="Silverblue:asus"
+    ["kinoite"]="Kinoite:asus"
     ["bluefin"]="Silverblue:dx"
     ["sericea"]="Sericea"
     ["wayblue-wayfire"]="Sericea"

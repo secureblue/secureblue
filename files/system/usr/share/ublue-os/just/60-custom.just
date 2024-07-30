@@ -197,6 +197,53 @@ toggle-gnome-jit-js:
     	sudo rm -f $ENV_FILE
     	echo "JIT JavaScript for Gnome and WebkitGTK has been enabled."
     else
-    	sudo cp /usr/$ENV_FILE $ENV_FILE
+    	sudo cp /usr$ENV_FILE $ENV_FILE
     	echo "JIT JavaScript for Gnome and WebkitGTK has been disabled."
     fi
+
+# Toggle Xwayland support
+toggle-xwayland ACTION="prompt":
+    #!/usr/bin/pkexec /usr/bin/bash
+    source /usr/lib/ujust/ujust.sh
+    OPTION={{ ACTION }}
+    if [ "$OPTION" == "prompt" ]; then
+      echo "${bold}Toggling Xwayland (requires logout)${normal}"
+      echo 'For which DE/WM do you want to toggle Xwayland?'
+      OPTION=$(ugum choose "GNOME" "KDE Plasma" "Sway")
+    elif [ "$OPTION" == "help" ]; then
+      echo "Usage: ujust toggle-xwayland <option>"
+      echo "  <option>: Specify the quick option - 'gnome', 'plasma', or 'sway'"
+      echo "  Use 'gnome' to Toggle Xwayland for GNOME."
+      echo "  Use 'plasma' to Toggle Xwayland for KDE Plasma."
+      echo "  Use 'sway' to Toggle Xwayland for Sway."
+      exit 0
+    fi
+    if [ "$OPTION" == "GNOME" ] || [ "${OPTION,,}" == "gnome" ]; then
+      GNOME_XWAYLAND_FILE="/etc/systemd/user/org.gnome.Shell@wayland.service.d/override.conf"
+      if test -e $GNOME_XWAYLAND_FILE; then
+        sudo rm -f $GNOME_XWAYLAND_FILE
+        echo "Xwayland for GNOME has been enabled."
+      else
+        sudo cp /usr$GNOME_XWAYLAND_FILE $GNOME_XWAYLAND_FILE
+        echo "Xwayland for GNOME has been disabled."
+      fi
+    elif [ "$OPTION" == "KDE Plasma" ] || [ "${OPTION,,}" == "plasma" ]; then
+      PLASMA_XWAYLAND_FILE="/etc/systemd/user/plasma-kwin_wayland.service.d/override.conf"
+      if test -e $PLASMA_XWAYLAND_FILE; then
+        sudo rm -f $PLASMA_XWAYLAND_FILE
+        echo "Xwayland for KDE Plasma has been enabled."
+      else
+        sudo cp /usr$PLASMA_XWAYLAND_FILE $PLASMA_XWAYLAND_FILE
+        echo "Xwayland for KDE Plasma has been disabled."
+      fi
+    elif [ "$OPTION" == "Sway" ] || [ "${OPTION,,}" == "sway" ]; then
+      SWAY_XWAYLAND_FILE="/etc/sway/config.d/99-noxwayland.conf"
+      if test -e $SWAY_XWAYLAND_FILE; then
+        sudo rm -f $SWAY_XWAYLAND_FILE
+        echo "Xwayland for Sway has been enabled."
+      else
+        sudo cp /usr$SWAY_XWAYLAND_FILE $SWAY_XWAYLAND_FILE
+        echo "Xwayland for Sway has been disabled."
+      fi
+    fi
+

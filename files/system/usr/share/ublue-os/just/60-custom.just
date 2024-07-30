@@ -186,7 +186,7 @@ toggle-gnome-jit-js:
     	sudo rm -f $ENV_FILE
     	echo "JIT JavaScript for Gnome and WebkitGTK has been enabled."
     else
-    	sudo cp /usr/$ENV_FILE $ENV_FILE
+    	sudo cp /usr$ENV_FILE $ENV_FILE
     	echo "JIT JavaScript for Gnome and WebkitGTK has been disabled."
     fi
 
@@ -208,12 +208,12 @@ toggle-xwayland ACTION="prompt":
       exit 0
     fi
     if [ "$OPTION" == "GNOME" ] || [ "${OPTION,,}" == "gnome" ]; then
-      GNOME_XWAYLAND_FILE="/etc/systemd/user/org.gnome.Shell@wayland.service/override.conf"
+      GNOME_XWAYLAND_FILE="/etc/systemd/user/org.gnome.Shell@wayland.service.d/override.conf"
       if test -e $GNOME_XWAYLAND_FILE; then
         sudo rm -f $GNOME_XWAYLAND_FILE
         echo "Xwayland for GNOME has been enabled."
       else
-        sudo cp /usr/$GNOME_XWAYLAND_FILE $GNOME_XWAYLAND_FILE
+        sudo cp /usr$GNOME_XWAYLAND_FILE $GNOME_XWAYLAND_FILE
         echo "Xwayland for GNOME has been disabled."
       fi
     elif [ "$OPTION" == "KDE Plasma" ] || [ "${OPTION,,}" == "plasma" ]; then
@@ -222,7 +222,7 @@ toggle-xwayland ACTION="prompt":
         sudo rm -f $PLASMA_XWAYLAND_FILE
         echo "Xwayland for KDE Plasma has been enabled."
       else
-        sudo cp /usr/$PLASMA_XWAYLAND_FILE $PLASMA_XWAYLAND_FILE
+        sudo cp /usr$PLASMA_XWAYLAND_FILE $PLASMA_XWAYLAND_FILE
         echo "Xwayland for KDE Plasma has been disabled."
       fi
     elif [ "$OPTION" == "Sway" ] || [ "${OPTION,,}" == "sway" ]; then
@@ -231,7 +231,7 @@ toggle-xwayland ACTION="prompt":
         sudo rm -f $SWAY_XWAYLAND_FILE
         echo "Xwayland for Sway has been enabled."
       else
-        sudo cp /usr/$SWAY_XWAYLAND_FILE $SWAY_XWAYLAND_FILE
+        sudo cp /usr$SWAY_XWAYLAND_FILE $SWAY_XWAYLAND_FILE
         echo "Xwayland for Sway has been disabled."
       fi
     fi

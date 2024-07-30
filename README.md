@@ -39,7 +39,7 @@ The following are not in scope:
 - Reduce the sudo timeout to 1 minute
 - Require wheel user authentication via polkit for `rpm-ostree install` <sup>[why?](https://github.com/rohanssrao/silverblue-privesc)
 - Brute force protection by locking user accounts for 24 hours after 50 failed login attempts, hardened password encryption and password quality suggestions
-- Installing usbguard and providing `ujust` commands to enable it
+- Installing usbguard and providing `ujust` commands to automatically configure it
 - Installing bubblejail for additional sandboxing tooling
 - Set opportunistic DNSSEC and DNSOverTLS for systemd-resolved
 - Configure chronyd to use Network Time Security (NTS) <sup>[using chrony config from GrapheneOS](https://github.com/GrapheneOS/infrastructure/blob/main/chrony.conf)</sup>

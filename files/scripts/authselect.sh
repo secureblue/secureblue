@@ -3,6 +3,6 @@
 # Tell build process to exit if there are any errors.
 set -oue pipefail
 
-echo "Enabling faillock in PAM authentication profile"
+echo "Selecting the secureblue authselect profile"
 
-authselect enable-feature with-faillock 1> /dev/null
+authselect select custom/secureblue

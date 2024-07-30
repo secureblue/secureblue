@@ -1,0 +1,26 @@
+Secureblue
+================
+
+The Secureblue Profile is specifically configured for local user accounts.
+
+FEATURES
+---------------------------
+
+faillock::
+    Enable account locking mechanisms to protect against brute-force
+    login attempts. When a specified number of failed authentication
+    attempts occur within a defined time frame, the user account
+    will be temporarily locked, preventing further login attempts.
+
+fingerprint::
+    Enable authentication with fingerprint reader through *pam_fprintd*.
+    This feature allows users to log in using their biometric fingerprint
+    data, adding an additional layer of security while improving user
+    convenience during the authentication process.
+
+EXAMPLES
+--------
+
+* Enable Secureblue profile
+
+  authselect select custom/secureblue

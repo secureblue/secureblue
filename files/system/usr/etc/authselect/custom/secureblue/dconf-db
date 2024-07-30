@@ -1,0 +1,10 @@
+# dconf-db - DConf Database Configuration
+#
+# This file is part of the secureblue Authselect profile. It specifies the
+# configuration for DConf, which is a configuration system used to store
+# application settings. The settings in this file are applied as part of
+# the profile's system authentication and security configurations.
+
+[org/gnome/login-screen]
+enable-smartcard-authentication=false
+enable-fingerprint-authentication=true

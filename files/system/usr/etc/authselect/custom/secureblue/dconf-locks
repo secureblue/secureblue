@@ -1,0 +1,8 @@
+# dconf-locks - DConf Locks Configuration
+#
+# This file is part of the secureblue Authselect profile. It specifies the
+# configuration for DConf locks, which are used to enforce read-only settings
+# in the DConf database. The settings in this file are applied as part of the
+# profile's system authentication and security configurations.
+
+/org/gnome/login-screen/enable-fingerprint-authentication

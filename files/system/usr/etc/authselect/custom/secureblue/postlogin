@@ -1,0 +1,12 @@
+# postlogin - Post-Login Configuration
+#
+# This file is part of the secureblue Authselect profile. It defines the
+# configuration for actions and policies that take place immediately after
+# user login. The settings in this file specify post-login behaviors, such
+# as session management, environment variable setups, and any additional
+# security measures to be applied.
+
+session     optional                   pam_umask.so silent
+session     [success=1 default=ignore] pam_succeed_if.so service !~ gdm* service !~ su* quiet
+session     [default=1]                pam_lastlog.so nowtmp silent
+session     optional                   pam_lastlog.so silent noupdate showfailed

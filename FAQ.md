@@ -35,17 +35,12 @@ Override `LD_PRELOAD` for that app. For flatpaks, this is as simple as removing 
 
 1. Check if it's already installed using `rpm -qa | grep x`
 2. Check if there's a flatpak available at https://flathub.org
-3. Consider using distrobox or nix to install it
+3. Consider using distrobox or brew to install it
 4. Layer it using `rpm-ostree install`, as a last option
 
 #### Another security project has a feature that's missing in secureblue, can you add it?
 
 First check if the README already has an equivalent or better feature. If it doesn't, open a new github issue.
-
-#### I need Javascript JIT for a specific site, how do I enable it?
-
-Add an additional chromium policy file and set the sites that need JIT in `JavaScriptJitAllowedForSites`. Here is the [policy reference](
-https://admx.help/?Category=Chrome&Policy=Google.Policies.Chrome::JavaScriptJitAllowedForSites).
 
 #### How do I install steam?
 

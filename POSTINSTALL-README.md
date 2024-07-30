@@ -78,34 +78,11 @@ Creating a dedicated wheel user and removing wheel from your primary user helps 
 6. ```gpasswd -d {your username here} wheel```
 7. ```reboot```
 
-When not in the wheel group, a user can be added to a dedicated group, otherwise certain actions are blocked:
+When using a non-wheel user, you can add the user to other groups if you want. For example:
 
-- use virtual machines: `libvirt`
+- use libvirt: `libvirt`
 - use `adb` and `fastboot`: `plugdev`
 - use systemwide flatpaks: `flatpak`
-
-Some actions don't have an associated group yet, you can create your own rules and groups to fix this.
-
-**Example**: To allow a non-wheel user to use LUKS encrypted external drives:
-
-1. `sudo groupadd diskadmin`
-2. `sudo usermod -aG diskadmin {your username here}`
-3. execute this command (*explanation below*)
-
-```
-cat >> /etc/polkit-1/rules.d/80-udisks2.rules <<EOF
-polkit.addRule(function(action, subject) {
-    if (action.id == "org.freedesktop.udisks2.encrypted-unlock-system" || action.id == "org.freedesktop.udisks2.filesystem-mount-system" &&
-        subject.active == true && subject.local == true &&
-        subject.isInGroup("diskadmin"))
-        {
-        return polkit.Result.YES;
-    }
-});
-EOF
-```
-
-The custom rule allows the group`diskadmin` to do the actions for unlocking and mounting these drives. Note the requirement on `active` and `local`, and the exactly specified actions.
 
 ## Chromium extension
 

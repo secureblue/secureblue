@@ -56,10 +56,21 @@ remove-kargs-hardening:
       --delete-if-present="debugfs=off"
     echo "Hardening kargs removed."
 
-# Harden flatpaks by preloading hardened_malloc
+# Harden flatpaks by preloading hardened_malloc (highest supported hwcap)
 harden-flatpak:
     #!/usr/bin/bash
-    flatpak override --user --filesystem=host-os:ro --env=LD_PRELOAD=/var/run/host/usr/lib64/libhardened_malloc.so
+    flatpak override --user --filesystem=host-os:ro
+#   `ld-linux-x86-64.so.2 --help` prints ld.so linker info, including detected hwcaps support. Grep those, then use cut and substring selection (:0:1) to isolate the 1st character after 'v', which will be 4, 3, or 2, corresponding to the system's highest supported hwcap. On x86_64-v1 systems, grep finds no matches, leaving our variables empty.
+    uarches="$(/usr/lib64/ld-linux-x86-64.so.2 --help | grep '(supported, searched)' | cut -d'v' -f2)"
+    bestuarch="${uarches:0:1}"
+#   If bestuarch is empty, set LD_PRELOAD to the x86-64-v1 arch. If not empty, set LD_PRELOAD to the supported hwcap in $bestuarch.
+    if [ -z "$bestuarch" ] ; then
+        echo "No microarchitecture support detected. Using default x86-64-v1 architecture."
+        flatpak override --user --env=LD_PRELOAD=/var/run/host/usr/lib64/libhardened_malloc.so
+    else
+        echo "x86-64-v$bestuarch support detected. Using x86-64-v$bestuarch microarchitecture."
+        flatpak override --user --env=LD_PRELOAD=/var/run/host/usr/lib64/glibc-hwcaps/x86-64-v"$bestuarch"/libhardened_malloc.so
+    fi
 
 # Toggle the cups service on/off
 toggle-cups:

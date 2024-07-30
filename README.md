@@ -37,7 +37,7 @@ The following are not in scope:
 - Enabling only the [flathub-verified](https://flathub.org/apps/collection/verified/1) remote by default
 - Sets numerous hardening kernel arguments (Inspired by [Madaidan's Hardening Guide](https://madaidans-insecurities.github.io/guides/linux-hardening.html)) <sup>[details](https://github.com/secureblue/secureblue/blob/live/files/system/usr/share/ublue-os/just/60-custom.just.readme.md)</sup>
 - Reduce the sudo timeout to 1 minute
-- Disable passwordless sudo for `rpm-ostree install` <sup>[why?](https://github.com/rohanssrao/silverblue-privesc)
+- Require wheel user authentication via polkit for `rpm-ostree install` <sup>[why?](https://github.com/rohanssrao/silverblue-privesc)
 - Brute force protection by locking user accounts for 24 hours after 50 failed login attempts, hardened password encryption and password quality suggestions
 - Installing usbguard and providing `ujust` commands to enable it
 - Installing bubblejail for additional sandboxing tooling

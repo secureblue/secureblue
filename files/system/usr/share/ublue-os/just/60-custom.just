@@ -160,13 +160,8 @@ setup-usbguard:
     sudo chmod 755 /etc/usbguard
     sudo sh -c 'usbguard generate-policy > /etc/usbguard/rules.conf'
     sudo systemctl enable --now usbguard.service
-    sudo systemctl enable --now usbguard-dbus.service
     sudo usbguard add-user $(whoami)
     systemctl enable --user --now usbguard-notifier.service
-    if command -v gsettings &> /dev/null; then
-        gsettings set org.gnome.desktop.privacy usb-protection-level always
-        gsettings set org.gnome.desktop.privacy usb-protection true
-    fi
 
 # Rerun Yafti
 rerun-yafti:

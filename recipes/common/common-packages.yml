@@ -3,7 +3,6 @@ repos:
   - https://copr.fedorainfracloud.org/coprs/secureblue/hardened_malloc/repo/fedora-%OS_VERSION%/secureblue-hardened_malloc-fedora-%OS_VERSION%.repo
 install:
   - hardened_malloc
-  - usbguard-dbus
 
 
 

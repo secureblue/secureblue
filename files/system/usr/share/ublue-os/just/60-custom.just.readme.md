@@ -62,16 +62,6 @@
 
 `mitigations=auto,nosmt` 
 
-## Included in set-kargs-hardening-unstable
-
-**Fill IOMMU protection gap by setting the busmaster bit during early boot**
-
-`efi=disable_early_pci_dma`
-
-**Disable debugfs to prevent exposure of sensitive kernel information**
-
-`debugfs=off` 
-
 **Turn on spectre_v2 mitigations at boot time for all programs**
 
 `spectre_v2=on` 
@@ -87,3 +77,13 @@
 **Mitigate unprivileged speculative access to data by using the microcode mitigation when available or by disabling AVX on affected systems where the microcode hasn’t been updated to include the mitigation.**
 
 `gather_data_sampling=force`
+
+## Included in set-kargs-hardening-unstable
+
+**Fill IOMMU protection gap by setting the busmaster bit during early boot**
+
+`efi=disable_early_pci_dma`
+
+**Disable debugfs to prevent exposure of sensitive kernel information**
+
+`debugfs=off` 

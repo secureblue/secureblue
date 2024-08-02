@@ -18,7 +18,11 @@ set-kargs-hardening:
       --append-if-missing="iommu.strict=1" \
       --append-if-missing="pti=on" \
       --append-if-missing="module.sig_enforce=1" \
-      --append-if-missing="mitigations=auto,nosmt"
+      --append-if-missing="mitigations=auto,nosmt" \
+      --append-if-missing="spectre_v2=on" \
+      --append-if-missing="spec_store_bypass_disable=on" \
+      --append-if-missing="l1d_flush=on" \
+      --append-if-missing="gather_data_sampling=force"
     echo "Hardening kargs set."
 
 # Add additional (unstable) boot parameters for hardening (requires reboot)
@@ -53,7 +57,11 @@ remove-kargs-hardening:
       --delete-if-present="module.sig_enforce=1" \
       --delete-if-present="mitigations=auto,nosmt" \
       --delete-if-present="efi=disable_early_pci_dma" \
-      --delete-if-present="debugfs=off"
+      --delete-if-present="debugfs=off" \
+      --delete-if-present="spectre_v2=on" \
+      --delete-if-present="spec_store_bypass_disable=on" \
+      --delete-if-present="l1d_flush=on" \
+      --delete-if-present="gather_data_sampling=force"
     echo "Hardening kargs removed."
 
 # Harden flatpaks by preloading hardened_malloc (highest supported hwcap)

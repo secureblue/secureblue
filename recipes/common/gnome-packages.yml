@@ -1,0 +1,17 @@
+type: rpm-ostree
+install:
+  - firewall-config
+  - gnome-disk-utility
+remove:
+  - yelp
+  - gnome-user-share
+  - mod_lua
+  - httpd
+  - httpd-core
+  - mod_http2
+  - mod_dnssd
+  - gnome-remote-desktop
+  - libvncserver
+  - malcontent-ui-libs
+  - malcontent-control
+  - fedora-chromium-config-gnome

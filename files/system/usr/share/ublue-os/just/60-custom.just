@@ -230,8 +230,8 @@ toggle-gnome-extensions:
       if [[ "${CURRENT_STATE}" == "Disabled" ]]; then
         echo "Gnome extensions are already disabled"
       elif [[ "${CURRENT_STATE}" == "Enabled" ]]; then
-        gsettings set org.gnome.shell disable-user-extensions true
-        gsettings set org.gnome.shell allow-extension-installation false
+        gsettings reset org.gnome.shell disable-user-extensions
+        gsettings reset org.gnome.shell allow-extension-installation
         echo "Gnome extensions have been disabled"
       fi
     elif [ "${OPTION,,}" == "enable" ]; then

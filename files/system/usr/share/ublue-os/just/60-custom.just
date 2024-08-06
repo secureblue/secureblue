@@ -205,7 +205,7 @@ toggle-gnome-jit-js:
 
 # Toggle support for using GNOME user extensions
 toggle-gnome-extensions:
-    /usr/bin/bash
+    #!/usr/bin/bash
     GSETTING_1="$(gsettings get org.gnome.shell disable-user-extensions)"
     GSETTING_2="$(gsettings get org.gnome.shell allow-extension-installation)"
     CURRENT_STATE="Disabled"

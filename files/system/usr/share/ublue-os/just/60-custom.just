@@ -203,6 +203,47 @@ toggle-gnome-jit-js:
     	echo "JIT JavaScript for Gnome and WebkitGTK has been disabled."
     fi
 
+# Toggle support for using user Gnome extensions
+toggle-gnome-extensions:
+    #!/usr/bin/pkexec /usr/bin/bash
+    source /usr/lib/ujust/ujust.sh
+    OPTION={{ ACTION }}
+    GSETTING_1="$(gsettings get org.gnome.shell disable-user-extensions)"
+    GSETTING_2="$(gsettings get org.gnome.shell allow-extension-installation)"
+    CURRENT_STATE="Disabled"
+    if [[ "${GSETTING_1}" == "false" ]] && [[ "${GSETTING_2}" == "true" ]]; then
+      CURRENT_STATE="Enabled"
+    fi
+    if [ "$OPTION" == "prompt" ]; then
+      echo "${bold}Toggling Gnome extensions (requires logout)${normal}"
+      echo "Support for Gnome extensions is currently: ${bold}${CURRENT_STATE}${normal}"
+      echo 'Do you want to enable or disable user Gnome extensions support?'
+      OPTION=$(ugum choose Enable Disable)
+    elif [ "$OPTION" == "help" ]; then
+      echo "Usage: ujust toggle-gnome-extensions <option>"
+      echo "  <option>: Specify the quick option - 'enable', or 'disable'"
+      echo "  Use 'enable' to enable user Gnome extensions support."
+      echo "  Use 'disable' to disable user Gnome extensions support."
+      exit 0
+    fi
+    if [ "${OPTION,,}" == "disable" ]; then
+      if [[ "${CURRENT_STATE}" == "Disabled" ]]; then
+        echo "Gnome extensions are already disabled"
+      elif [[ "${CURRENT_STATE}" == "Enabled" ]]; then
+        gsettings set org.gnome.shell disable-user-extensions true
+        gsettings set org.gnome.shell allow-extension-installation false
+        echo "Gnome extensions have been disabled"
+      fi
+    elif [ "${OPTION,,}" == "enable" ]; then
+      if [[ "${CURRENT_STATE}" == "Enabled" ]]; then
+        echo "Gnome extensions are already enabled"
+      elif [[ "${CURRENT_STATE}" == "Disabled" ]]; then
+        gsettings set org.gnome.shell disable-user-extensions false
+        gsettings set org.gnome.shell allow-extension-installation true
+        echo "Gnome extensions have been enabled"
+      fi
+    fi
+
 # Toggle Xwayland support
 toggle-xwayland ACTION="prompt":
     #!/usr/bin/pkexec /usr/bin/bash

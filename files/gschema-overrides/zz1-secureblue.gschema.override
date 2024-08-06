@@ -1,6 +1,5 @@
-# Disable user Gnome extensions & user-installation of them
-# Only system Gnome extensions are trusted if installed
+# Disable GNOME user extensions installation
+# Only GNOME system extensions are trusted if installed
 
 [org.gnome.shell]
 allow-extension-installation=false
-disable-user-extensions=true

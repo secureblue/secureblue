@@ -203,9 +203,9 @@ toggle-gnome-jit-js:
     	echo "JIT JavaScript for Gnome and WebkitGTK has been disabled."
     fi
 
-# Toggle support for using user Gnome extensions
+# Toggle support for using GNOME user extensions
 toggle-gnome-extensions:
-    #!/usr/bin/pkexec /usr/bin/bash
+    /usr/bin/bash
     GSETTING_1="$(gsettings get org.gnome.shell disable-user-extensions)"
     GSETTING_2="$(gsettings get org.gnome.shell allow-extension-installation)"
     CURRENT_STATE="Disabled"
@@ -216,11 +216,11 @@ toggle-gnome-extensions:
       if [[ "${CURRENT_STATE}" == "Disabled" ]]; then
         gsettings set org.gnome.shell disable-user-extensions false
         gsettings set org.gnome.shell allow-extension-installation true
-        echo "Gnome extensions have been enabled"
+        echo "Support for GNOME user extensions have been enabled"
       elif [[ "${CURRENT_STATE}" == "Enabled" ]]; then
         gsettings reset org.gnome.shell disable-user-extensions
         gsettings reset org.gnome.shell allow-extension-installation
-        echo "Gnome extensions have been disabled"
+        echo "Support for GNOME user extensions have been disabled"
       fi
     fi
 

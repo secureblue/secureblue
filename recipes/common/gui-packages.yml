@@ -12,7 +12,6 @@ install:
   - setools
   
 remove:
-  - openssh-server
   - fedora-chromium-config
   - fedora-flathub-remote
   - open-vm-tools

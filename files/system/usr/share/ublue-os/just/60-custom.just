@@ -210,7 +210,7 @@ toggle-gnome-extensions:
     if [[ "${GSETTING}" == "false" ]]; then
       gsettings set org.gnome.shell allow-extension-installation true
       echo "Support for GNOME user extensions have been enabled"
-    elif [[ "${GSETTING}" == "true" ]]; then
+    else
       gsettings reset org.gnome.shell allow-extension-installation
       echo "Support for GNOME user extensions have been disabled"
     fi

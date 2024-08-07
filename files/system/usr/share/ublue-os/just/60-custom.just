@@ -207,14 +207,10 @@ toggle-gnome-jit-js:
 toggle-gnome-extensions:
     #!/usr/bin/bash
     GSETTING="$(gsettings get org.gnome.shell allow-extension-installation)"
-    CURRENT_STATE="Disabled"
-    if [[ "${GSETTING}" == "true" ]]; then
-      CURRENT_STATE="Enabled"
-    fi
-    if [[ "${CURRENT_STATE}" == "Disabled" ]]; then
+    if [[ "${GSETTING}" == "false" ]]; then
       gsettings set org.gnome.shell allow-extension-installation true
       echo "Support for GNOME user extensions have been enabled"
-    elif [[ "${CURRENT_STATE}" == "Enabled" ]]; then
+    elif [[ "${GSETTING}" == "true" ]]; then
       gsettings reset org.gnome.shell allow-extension-installation
       echo "Support for GNOME user extensions have been disabled"
     fi

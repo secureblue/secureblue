@@ -11,6 +11,7 @@ image-version: 40 # latest is also supported if you want new updates ASAP
 modules:
   - from-file: common/initialization-scripts.yml
   - from-file: common/gnome-packages.yml
+  - from-file: common/disable-gnome-extensions.yml
   - from-file: common/silverblue-packages.yml
   - from-file: common/gui-packages.yml
   - from-file: common/common-packages.yml

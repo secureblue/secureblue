@@ -9,6 +9,7 @@ image-version: 40
 modules:
   - from-file: common/initialization-scripts.yml
   - from-file: common/gnome-packages.yml
+  - from-file: common/disable-gnome-extensions.yml
   - from-file: common/silverblue-packages.yml
   - from-file: common/gui-packages.yml
   - from-file: common/disableuserns-packages.yml

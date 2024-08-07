@@ -67,6 +67,14 @@ If you still want to enable this functionality, run `ujust toggle-ghns`
 
 Xwayland is disabled by default on GNOME, KDE Plasma, and Sway. Use `ujust toggle-xwayland` if you need it
 
+#### Why I can't install any GNOME user extensions?
+
+This is because support for installing them has been intentionally disabled in secureblue.
+Only system extensions are trusted, if they are installed.
+
+To enable support for installing GNOME user extensions, you can run ujust command:
+`ujust toggle-gnome-extensions`
+
 #### My clock is wrong and it's not getting automatically set. How do I fix this?
 
 If your system time is off by an excessive amount due to rare conditions like a CMOS reset, your network will not connect. A one-time manual reset will fix this. This should never be required except under very rare circumstances.

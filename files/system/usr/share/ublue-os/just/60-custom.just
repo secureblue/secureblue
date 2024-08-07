@@ -203,6 +203,18 @@ toggle-gnome-jit-js:
     	echo "JIT JavaScript for Gnome and WebkitGTK has been disabled."
     fi
 
+# Toggle support for using GNOME user extensions
+toggle-gnome-extensions:
+    #!/usr/bin/bash
+    GSETTING="$(gsettings get org.gnome.shell allow-extension-installation)"
+    if [[ "${GSETTING}" == "false" ]]; then
+      gsettings set org.gnome.shell allow-extension-installation true
+      echo "Support for GNOME user extensions have been enabled"
+    else
+      gsettings reset org.gnome.shell allow-extension-installation
+      echo "Support for GNOME user extensions have been disabled"
+    fi
+
 # Toggle Xwayland support
 toggle-xwayland ACTION="prompt":
     #!/usr/bin/pkexec /usr/bin/bash

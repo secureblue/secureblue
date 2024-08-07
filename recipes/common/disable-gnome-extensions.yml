@@ -1,0 +1,3 @@
+type: gschema-overrides
+include:
+  - zz1-secureblue.gschema.override

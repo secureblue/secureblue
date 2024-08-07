@@ -65,7 +65,6 @@ screens:
             - Photos (Organizer): org.gnome.Photos
             - Sushi (Nautilus Previewer): org.gnome.NautilusPreviewer
             - Text Editor: org.gnome.TextEditor
-            - Videos (Player): org.gnome.Totem
             - Weather: org.gnome.Weather
 
         Core KDE Plasma Apps:

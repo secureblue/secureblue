@@ -69,7 +69,7 @@ Xwayland is disabled by default on GNOME, KDE Plasma, and Sway. Use `ujust toggl
 
 #### Why I can't install nor use any GNOME user extensions?
 
-This is because support for installing & using them has been intentionally disabled in secureblue.
+This is because support for installing & using them has been intentionally disabled by default in secureblue.
 Only GNOME system extensions are trusted, if they are installed.
 
 To enable support for installing GNOME user extensions, you can run ujust command:

@@ -66,7 +66,7 @@ A good bug report should describe the issue in detail. Generally speaking:
 A good pull request should be ready for review before it is even created. For all pull requests, ensure:
 
 - Your changes are in a single commit
-- You have no unnecessary changes, including and especially whitespace changes
+- You have no unnecessary changes, including whitespace changes
 - You have tested your changes
 - For substantive changes, you include evidence of proper functionality in the pull request in addition to the build results.
 - Your commits are [verified](https://docs.github.com/en/authentication/managing-commit-signature-verification)

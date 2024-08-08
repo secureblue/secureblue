@@ -1,4 +1,4 @@
-# Disable GNOME user extensions installation
+# Disable GNOME user extensions installation & usage
 # Only GNOME system extensions are trusted if installed
 
 [org.gnome.shell]

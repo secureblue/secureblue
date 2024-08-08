@@ -3,7 +3,7 @@
 # Tell build process to exit if there are any errors.
 set -euo pipefail
 
-CONTAINER_DIR="/usr/etc/containers"
+CONTAINER_DIR="/etc/containers"
 MODULE_DIRECTORY="${MODULE_DIRECTORY:-"/tmp/modules"}"
 IMAGE_NAME_FILE="${IMAGE_NAME//\//_}"
 IMAGE_REGISTRY_TITLE=$(echo "$IMAGE_REGISTRY" | cut -d'/' -f2-)
@@ -19,15 +19,15 @@ if ! [ -d $CONTAINER_DIR/registries.d ]; then
    mkdir -p "$CONTAINER_DIR/registries.d"
 fi
 
-if ! [ -d "/usr/etc/pki/containers" ]; then
-    mkdir -p "/usr/etc/pki/containers"
+if ! [ -d "/etc/pki/containers" ]; then
+    mkdir -p "/etc/pki/containers"
 fi
 
 if ! [ -f "$CONTAINER_DIR/policy.json" ]; then
     cp "$MODULE_DIRECTORY/signing/policy.json" "$CONTAINER_DIR/policy.json"
 fi
 
-mv "/usr/etc/pki/containers/$IMAGE_NAME.pub" "/usr/etc/pki/containers/$IMAGE_REGISTRY_TITLE.pub"
+mv "/etc/pki/containers/$IMAGE_NAME.pub" "/etc/pki/containers/$IMAGE_REGISTRY_TITLE.pub"
 
 POLICY_FILE="$CONTAINER_DIR/policy.json"
 

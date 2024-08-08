@@ -2,3 +2,5 @@ type: files
 files:
   - source: system/usr
     destination: /usr
+  - source: system/etc
+    destination: /etc

@@ -8,4 +8,4 @@ echo "
 
 HOMEBREW_NO_ANALYTICS=1
 
-" >> /usr/etc/environment
+" >> /etc/environment

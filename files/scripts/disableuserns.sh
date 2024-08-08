@@ -10,20 +10,9 @@ echo "
 # https://github.com/containers/bubblewrap/security/advisories/GHSA-j2qp-rvxj-43vj
 user.max_user_namespaces = 0
 
-" >> /usr/etc/sysctl.d/hardening.conf
+" >> /etc/sysctl.d/hardening.conf
 
-mkdir -p /usr/etc/systemd/system/upower.service.d/
-
-echo "
-
-[Service]
-# Namespaces
-PrivateUsers=no
-
-" >> /usr/etc/systemd/system/upower.service.d/namespaces.conf
-
-
-mkdir -p /usr/etc/systemd/system/colord.service.d/
+mkdir -p /etc/systemd/system/upower.service.d/
 
 echo "
 
@@ -31,7 +20,18 @@ echo "
 # Namespaces
 PrivateUsers=no
 
-" >> /usr/etc/systemd/system/colord.service.d/namespaces.conf
+" >> /etc/systemd/system/upower.service.d/namespaces.conf
+
+
+mkdir -p /etc/systemd/system/colord.service.d/
+
+echo "
+
+[Service]
+# Namespaces
+PrivateUsers=no
+
+" >> /etc/systemd/system/colord.service.d/namespaces.conf
 
 chown root:root /usr/bin/bwrap
 chmod u+s /usr/bin/bwrap

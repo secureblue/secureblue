@@ -9,4 +9,3 @@ scripts:
   - createmissingdirectories.sh
   - removesuid.sh
   - disablegeoclue.sh
-  - removechsh.sh

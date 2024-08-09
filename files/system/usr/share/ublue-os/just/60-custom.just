@@ -268,13 +268,33 @@ toggle-xwayland ACTION="prompt":
 toggle-bash-environment-lockdown:
     #!/usr/bin/bash
     BASH_ENV_FILES=("$HOME/.bashrc" "$HOME/.bash_profile")
+    
+    bashrcd_string="bashrc.d"
+
+    for file in "${BASH_ENV_FILES[@]}"; do
+        if [ ! -e "$file" ]; then
+            echo "Error: File '$file' does not exist."
+            exit 1
+        fi
+
+        if grep -q "$bashrcd_string" "$file"; then
+            echo "Error: '$bashrcd_string' found in '$file'."
+            echo "
+                 Importing bash environment files from other directories
+                 prevents this mitigation from being effective. Remove 
+                 these imports from all bash environment files and retry.
+            "
+            exit 1
+        fi
+    done
+
     if lsattr "${BASH_ENV_FILES[0]}" 2>/dev/null | grep -q 'i'; then
-      echo "Bash environment is locked down. Unlocking it."
+      echo "Bash environment "(${BASH_ENV_FILES[@]})" is locked down. Unlocking it."
       for file in "${BASH_ENV_FILES[@]}"; do
           pkexec chattr -i "$file"
       done
     else
-      echo "Bash environment is unlocked. Locking it."
+      echo "Bash environment "(${BASH_ENV_FILES[@]})" is unlocked. Locking it."
       for file in "${BASH_ENV_FILES[@]}"; do
           pkexec chattr +i "$file"
       done

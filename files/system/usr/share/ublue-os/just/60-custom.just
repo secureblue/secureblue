@@ -264,3 +264,19 @@ toggle-xwayland ACTION="prompt":
       fi
     fi
 
+# Toggle bash environment lockdown (mitigates LD_PRELOAD attacks)
+toggle-bash-environment-lockdown:
+    #!/usr/bin/bash
+    BASH_ENV_FILES=("$HOME/.bashrc" "$HOME/.bash_profile")
+    if lsattr "${BASH_ENV_FILES[0]}" 2>/dev/null | grep -q 'i'; then
+      echo "Bash environment is locked down. Unlocking it."
+      for file in "${BASH_ENV_FILES[@]}"; do
+          pkexec chattr -i "$file"
+      done
+    else
+      echo "Bash environment is unlocked. Locking it."
+      for file in "${BASH_ENV_FILES[@]}"; do
+          pkexec chattr +i "$file"
+      done
+    fi
+

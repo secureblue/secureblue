@@ -131,11 +131,7 @@ While it's recommended to use a Fedora Atomic iso to install and then rebase tha
 - `aurora-dx-nvidia-userns-hardened`
 - `sericea-main-userns-hardened`
 - `sericea-nvidia-userns-hardened`
-### Experimental
-- `cinnamon-main-hardened`
-- `cinnamon-nvidia-hardened`
-- `cosmic-main-hardened`
-- `cosmic-nvidia-hardened`
+### Beta
 - `wayblue-wayfire-main-hardened`
 - `wayblue-wayfire-nvidia-hardened`
 - `wayblue-hyprland-main-hardened`
@@ -144,10 +140,6 @@ While it's recommended to use a Fedora Atomic iso to install and then rebase tha
 - `wayblue-river-nvidia-hardened`
 - `wayblue-sway-main-hardened`
 - `wayblue-sway-nvidia-hardened`
-- `cinnamon-main-userns-hardened`
-- `cinnamon-nvidia-userns-hardened`
-- `cosmic-main-userns-hardened`
-- `cosmic-nvidia-userns-hardened`
 - `wayblue-wayfire-main-userns-hardened`
 - `wayblue-wayfire-nvidia-userns-hardened`
 - `wayblue-hyprland-main-userns-hardened`
@@ -155,6 +147,15 @@ While it's recommended to use a Fedora Atomic iso to install and then rebase tha
 - `wayblue-river-main-userns-hardened`
 - `wayblue-river-nvidia-userns-hardened`
 - `wayblue-sway-main-userns-hardened`
+### Experimental
+- `cinnamon-main-hardened`
+- `cinnamon-nvidia-hardened`
+- `cinnamon-main-userns-hardened`
+- `cinnamon-nvidia-userns-hardened`
+- `cosmic-main-hardened`
+- `cosmic-nvidia-hardened`
+- `cosmic-main-userns-hardened`
+- `cosmic-nvidia-userns-hardened`
 - `wayblue-sway-nvidia-userns-hardened`
 ### Asus <sup>[source](https://github.com/ublue-os/hwe/tree/main/asus)</sup>
 - `silverblue-asus-hardened`

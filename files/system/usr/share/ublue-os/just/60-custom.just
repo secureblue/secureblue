@@ -274,7 +274,7 @@ toggle-bash-environment-lockdown:
     echo "Please type in \"YES I UNDERSTAND\" and press enter"
     read ACCEPT
     if [ "$ACCEPT" == "YES I UNDERSTAND" ]; then
-      if lsattr "${BASH_ENV_FILES[0]}" 2>/dev/null | grep -q 'i'; then
+      if lsattr "${BASH_ENV_FILES[0]}" 2>/dev/null | awk '{print $1}' | grep -q 'i'; then
         echo "Bash environment '(${BASH_ENV_FILES[@]})' is locked down. Unlocking it."
         for file in "${BASH_ENV_FILES[@]}"; do
             pkexec chattr -i "$file"

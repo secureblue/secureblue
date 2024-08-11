@@ -9,7 +9,8 @@ image-version: 40
 modules:
   - from-file: common/initialization-scripts.yml
   - from-file: common/gui-packages.yml
-  - from-file: common/common-packages.yml
+  - from-file: common/common-packages.yml 
+  - from-file: common/non-cosmic-scripts.yml
   - from-file: common/remove-firefox.yml
   - from-file: common/gui-scripts.yml
   - from-file: common/wayfire-scripts.yml

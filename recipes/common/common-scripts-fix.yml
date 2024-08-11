@@ -4,7 +4,7 @@ scripts:
   - setfilepermissions.sh
   - disablesealertpopups.sh
   - homebrewanalyticsoptout.sh
-#  - hardencontainerpolicy.sh
+  - hardencontainerpolicy.sh
   - httpsmirrors.sh
   - createmissingdirectories.sh
   - removesuid.sh

@@ -1,6 +1,6 @@
 title: Welcome to secureblue!
 properties:
-  mode: "run-on-change"
+  mode: "run-once"
 screens:
   first-screen:
     source: yafti.screen.title

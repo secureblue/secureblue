@@ -3,3 +3,4 @@ cosign.key
 *.kate-swp
 .directory
 Containerfile
+.DS_Store

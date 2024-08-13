@@ -29,11 +29,11 @@ The following are not in scope:
 
 - Installing and enabling [hardened_malloc](https://github.com/GrapheneOS/hardened_malloc) globally, including for flatpaks. <sup>[Thanks to rusty-snake's hardened_malloc spec](https://github.com/rusty-snake/fedora-extras)</sup>
 - Installing [hardened-chromium](https://github.com/secureblue/hardened-chromium), which is inspired by and incorporates patches from [Vanadium](https://github.com/GrapheneOS/Vanadium). <sup>[Why chromium?](https://grapheneos.org/usage#web-browsing)</sup> <sup>[Why not flatpak chromium?](https://forum.vivaldi.net/post/669805)</sup>
-- Setting numerous hardened sysctl values <sup>[details](https://github.com/secureblue/secureblue/blob/live/files/system/usr/etc/sysctl.d/hardening.conf)</sup>
+- Setting numerous hardened sysctl values <sup>[details](https://github.com/secureblue/secureblue/blob/live/files/system/etc/sysctl.d/hardening.conf)</sup>
 - Disabling coredumps in limits.conf
 - Disabling all ports and services for firewalld
 - Adds per-network MAC randomization
-- Blacklisting numerous unused kernel modules to reduce attack surface <sup>[details](https://github.com/secureblue/secureblue/blob/live/files/system/usr/etc/modprobe.d/blacklist.conf)</sup>
+- Blacklisting numerous unused kernel modules to reduce attack surface <sup>[details](https://github.com/secureblue/secureblue/blob/live/files/system/etc/modprobe.d/blacklist.conf)</sup>
 - Enabling only the [flathub-verified](https://flathub.org/apps/collection/verified/1) remote by default
 - Sets numerous hardening kernel arguments (Inspired by [Madaidan's Hardening Guide](https://madaidans-insecurities.github.io/guides/linux-hardening.html)) <sup>[details](https://github.com/secureblue/secureblue/blob/live/files/system/usr/share/ublue-os/just/60-custom.just.readme.md)</sup>
 - Reduce the sudo timeout to 1 minute

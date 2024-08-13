@@ -6,7 +6,6 @@ audit-secureblue-kargs:
     for i in "${array[@]}"; do
 	if ! echo "$kargs" | grep -q "$i"; then missing=1; echo "missing $i"; else echo "$i is present"; fi
     done
-    #if missing variable is set, then report
     if [ -n "${missing}" ] ; then echo 'You are missing one or more stable karg. We recommend you run `ujust set-kargs-hardening`.'; fi
 
 # Add additional boot parameters for hardening (requires reboot)

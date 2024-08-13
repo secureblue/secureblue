@@ -1,3 +1,15 @@
+# Audit kargs
+audit-secureblue-kargs:
+    #!/usr/bin/bash
+    array=( "init_on_alloc=1" "init_on_free=1" "slab_nomerge" "page_alloc.shuffle=1" "randomize_kstack_offset=on" "vsyscall=none" "lockdown=confidentiality" "random.trust_cpu=off" "random.trust_bootloader=off" "iommu=force" "intel_iommu=on" "amd_iommu=force_isolation" "iommu.passthrough=0" "iommu.strict=1" "pti=on" "module.sig_enforce=1" "mitigations=auto,nosmt" "spectre_v2=on" "spec_store_bypass_disable=on" "l1d_flush=on" "gather_data_sampling=force" )
+    kargs="$(rpm-ostree kargs)"
+    for i in "${array[@]}"
+    do
+	    if ! echo "$kargs" | grep -q "$i"; then missing=1; echo "missing $i"; else echo "$i is present"; fi
+    done
+    #if missing variable is set, then report
+    if [ -n "${missing}" ] ; then echo 'You are missing one or more stable karg. We recommend you run `ujust set-kargs-hardening`.'; fi
+
 # Add additional boot parameters for hardening (requires reboot)
 set-kargs-hardening:
     #!/usr/bin/pkexec /usr/bin/bash

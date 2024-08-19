@@ -2,12 +2,13 @@
 
 # Modified from https://github.com/ublue-os/bazzite/blob/main/system_files/desktop/shared/usr/libexec/ublue-motd
 
-RPM_OSTREE_STATUS=$(rpm-ostree status --json)
+RPM_OSTREE_STATUS=$(rpm-ostree status --json --booted)
 IMAGE_REF_NAME=$(echo $RPM_OSTREE_STATUS | jq -r '.deployments[0]."container-image-reference" // empty | split("/")[-1]')
 IMAGE_TAG=$(echo $RPM_OSTREE_STATUS | jq -r '.deployments[0]."container-image-reference" // empty | split(":")[-1]')
 TIP=""
 
-IMAGE_DATE=$(rpm-ostree status --json --booted | sed -n 's/.*Timestamp: \(.*\)/\1/p')
+IMAGE_DATE_EPOCH=$(echo $RPM_OSTREE_STATUS | jq -r '.deployments[0].timestamp')
+IMAGE_DATE=$(date -d "@$IMAGE_DATE_EPOCH")
 IMAGE_DATE_SECONDS=$(date -d "$IMAGE_DATE" +%s)
 CURRENT_SECONDS=$(date +%s)
 DIFFERENCE=$((CURRENT_SECONDS - IMAGE_DATE_SECONDS))

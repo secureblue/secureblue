@@ -145,9 +145,9 @@ jobs:
       - name: Build secureblue
         uses: blue-build/github-action@v1.6.1
         with:          
-          cli_version: v0.8.11
+          cli_version: v0.8.12
           recipe: ${{ matrix.recipe }}
           cosign_private_key: ${{ secrets.SIGNING_SECRET }}
           registry_token: ${{ github.token }}
           pr_event_number: ${{ github.event.number }}
-          maximize_build_space: true
+          maximize_build_space: false

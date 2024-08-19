@@ -7,7 +7,7 @@ IMAGE_REF_NAME=$(echo $RPM_OSTREE_STATUS | jq -r '.deployments[0]."container-ima
 IMAGE_TAG=$(echo $RPM_OSTREE_STATUS | jq -r '.deployments[0]."container-image-reference" // empty | split(":")[-1]')
 TIP=""
 
-IMAGE_DATE=$(rpm-ostree status --booted | sed -n 's/.*Timestamp: \(.*\)/\1/p')
+IMAGE_DATE=$(rpm-ostree status --json --booted | sed -n 's/.*Timestamp: \(.*\)/\1/p')
 IMAGE_DATE_SECONDS=$(date -d "$IMAGE_DATE" +%s)
 CURRENT_SECONDS=$(date +%s)
 DIFFERENCE=$((CURRENT_SECONDS - IMAGE_DATE_SECONDS))

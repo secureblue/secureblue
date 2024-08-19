@@ -1,0 +1,18 @@
+6a7,11
+> echo "WARNING: Do NOT use this if your CPU is vulnerable to faulTPM!"
+> echo "All AMD Zen2 and Zen3 Processors are known to be affected!"
+> echo "All AMD Zen1 processors are also likely affected, with Zen4 unknown!"
+> echo "If you have an AMD CPU, you likely shouldn't use this!"
+> echo "----------------------------------------------------------------------------"
+45a51,57
+> SET_PIN_ARG=""
+> read -p "Would you like to set a pin? " -n 1 -r
+> echo
+> if [[ $REPLY =~ ^[Yy]$ ]]; then
+>   SET_PIN_ARG=" --tpm2-with-pin=yes "
+> fi
+> 
+66c78
+< systemd-cryptenroll --tpm2-device=auto --tpm2-pcrs=7 "$CRYPT_DISK"
+---
+> systemd-cryptenroll --tpm2-device=auto --tpm2-pcrs=7+14 "$SET_PIN_ARG" "$CRYPT_DISK"

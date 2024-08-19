@@ -1,0 +1,8 @@
+6c6
+<     sudo /usr/libexec/luks-enable-tpm2-autounlock
+---
+>     pkexec /usr/libexec/luks-enable-tpm2-autounlock
+11c11
+<     sudo /usr/libexec/luks-disable-tpm2-autounlock
+---
+>     pkexec /usr/libexec/luks-disable-tpm2-autounlock

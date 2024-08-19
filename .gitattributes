@@ -11,3 +11,6 @@
 *.json linguist-detectable=true
 *.json linguist-documentation=false
 *.json linguist-language=JSON
+
+*.patch linguist-detectable=true
+*.patch linguist-language=diff

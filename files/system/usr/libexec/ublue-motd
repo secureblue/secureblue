@@ -7,12 +7,10 @@ IMAGE_REF_NAME=$(echo $RPM_OSTREE_STATUS | jq -r '.deployments[0]."container-ima
 IMAGE_TAG=$(echo $RPM_OSTREE_STATUS | jq -r '.deployments[0]."container-image-reference" // empty | split(":")[-1]')
 TIP=""
 
-IMAGE_DATE_EPOCH=$(echo $RPM_OSTREE_STATUS | jq -r '.deployments[0].timestamp')
-IMAGE_DATE=$(date -d "@$IMAGE_DATE_EPOCH")
-IMAGE_DATE_SECONDS=$(date -d "$IMAGE_DATE" +%s)
+IMAGE_DATE=$(echo $RPM_OSTREE_STATUS | jq -r '.deployments[0].timestamp')
 CURRENT_SECONDS=$(date +%s)
-DIFFERENCE=$((CURRENT_SECONDS - IMAGE_DATE_SECONDS))
-MONTH=$((7 * 24 * 60 * 60))
+DIFFERENCE=$((CURRENT_SECONDS - IMAGE_DATE))
+WEEK=$((7 * 24 * 60 * 60))
 
 readarray -t imageTypes < <(jq -r '.imageTypes[]' /usr/libexec/deprecated-images.json)
 isDeprecated=false
@@ -28,7 +26,7 @@ if $isDeprecated; then
     TIP='~~~ NOTICE: You are on a deprecated image, please rebase. ~~~\n~~~ For more information, visit https://github.com/secureblue/secureblue/blob/live/files/system/usr/libexec/deprecated-images.json.md ~~~'
 elif [ "$IMAGE_TAG" != "latest" ]; then
     TIP='~~~ NOTICE: You are on a specific tag, which is unsupported by secureblue. Rebase to the `latest` tag to ensure you continue to receive updates. ~~~'
-elif [ "$DIFFERENCE" -ge "$MONTH" ]; then
+elif [ "$DIFFERENCE" -ge "$WEEK" ]; then
     TIP='~~~ NOTICE: Your current image is over 1 week old, run `ujust update`. ~~~'
 else
     TIP='~~~ NOTICE: There is currently no notice. ~~~'

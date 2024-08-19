@@ -8,4 +8,3 @@ scripts:
   - createmissingdirectories.sh
   - removesuid.sh
   - disablegeoclue.sh
-  - justfilehardening.sh

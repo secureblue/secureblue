@@ -1,6 +1,6 @@
 # secureblue
 
-After rebasing to secureblue, the following steps are recommended.
+After rebasing to secureblue, follow the following steps in order.
 
 ## Nvidia
 If you are using an nvidia image, run this after installation:

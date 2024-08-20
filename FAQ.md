@@ -91,3 +91,9 @@ This is a [known issue](https://forums.developer.nvidia.com/t/550-54-14-cannot-c
 
 - (Recommended if available for your hardware) switch to a `-main` image and use Nouveau with NVK and [GSP](https://nouveau.freedesktop.org/PowerManagement.html)
 - Enable xwayland with `ujust toggle-xwayland` and then set ozone-platform to x11 in `chrome://flags`
+
+#### How do I get notified of secureblue changes?
+
+On the secureblue github page, click "Watch", and then "Custom", and select Releases like so:
+
+![image](https://github.com/user-attachments/assets/38146394-f730-4b84-8bfa-4fbbf29350ff)

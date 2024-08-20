@@ -29,7 +29,7 @@ elif [ "$IMAGE_TAG" != "latest" ]; then
 elif [ "$DIFFERENCE" -ge "$WEEK" ]; then
     TIP='~~~ NOTICE: Your current image is over 1 week old, run `ujust update`. ~~~'
 else
-    TIP='~~~ NOTICE: View the latest release notes: https://github.com/secureblue/secureblue/releases/latest ~~~'
+    TIP='~~~ NOTICE: Subscribe to secureblue release notifications: https://github.com/secureblue/secureblue/blob/live/POSTINSTALL-README.md#how-do-i-get-notified-of-secureblue-changes ~~~'
 fi
 
 TIP_OUTPUT=$(sed -e "s/%IMAGE_REF_NAME%/$IMAGE_REF_NAME/g" -e "s/%IMAGE_TAG%/$IMAGE_TAG/g" -e "s#%TIP%#$TIP#g" /usr/share/ublue-os/motd/secureblue.txt)

@@ -101,7 +101,7 @@ To mitigate [LD_PRELOAD attacks](https://github.com/Aishou/wayland-keylogger), r
 
 ## LUKS TPM2 Unlock
 
-To enable TPM2 LUKS unlocking, run:
+To enable TPM2 LUKS unlocking (do not use this if you have an AMD CPU), run:
 
 `ujust setup-luks-tpm2-unlock` and type `Y` when asked if you want to set a PIN.
 

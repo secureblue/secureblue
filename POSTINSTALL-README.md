@@ -84,6 +84,19 @@ When using a non-wheel user, you can add the user to other groups if you want. F
 - use `adb` and `fastboot`: `plugdev`
 - use systemwide flatpaks: `flatpak`
 
+
+## Bash environment lockdown
+
+To mitigate [LD_PRELOAD attacks](https://github.com/Aishou/wayland-keylogger), run:
+
+`ujust toggle-bash-environment-lockdown`
+
+## LUKS TPM2 Unlock
+
+To enable TPM2 LUKS unlocking, run:
+
+`ujust setup-luks-tpm2-unlock` and type `Y` when asked if you want to set a PIN.
+
 ## Chromium extension
 
 1. Go to [uBlock Origin Lite](https://chromewebstore.google.com/detail/ublock-origin-lite/ddkjiahejlhfcafbddmgiahcphecmpfh?pli=1) ([Why Lite?](https://developer.chrome.com/docs/extensions/develop/migrate/improve-security))

@@ -2,6 +2,10 @@
 
 After rebasing to secureblue, follow the following steps in order.
 
+## Subscribe to secureblue release notifications
+
+https://github.com/secureblue/secureblue/blob/live/FAQ.md#how-do-i-get-notified-of-secureblue-changes
+
 ## Nvidia
 If you are using an nvidia image, run this after installation:
 

@@ -1,4 +1,0 @@
-78c78
-< systemd-cryptenroll --tpm2-device=auto --tpm2-pcrs=7 "$SET_PIN_ARG" "$CRYPT_DISK"
----
-> systemd-cryptenroll --tpm2-device=auto --tpm2-pcrs=7+14 "$SET_PIN_ARG" "$CRYPT_DISK"

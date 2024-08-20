@@ -323,5 +323,172 @@ toggle-bash-environment-lockdown:
       echo "Capitalization matters when you type \"YES I UNDERSTAND\""
     fi
 
-    
+# Audit secureblue
+audit-secureblue:
+    #!/bin/bash
+
+    print_status() {
+        local check_name="$1"
+        local status="$2"
+
+        local color_code
+        case "$status" in
+            SUCCESS) color_code=32 ;; # Green
+            WARNING) color_code=33 ;; # Yellow
+            FAIL) color_code=31 ;;    # Red
+            *) color_code=0 ;;
+        esac
+
+        local formatted_status
+        formatted_status=$(printf "%*s" $(( (7 + ${#status}) / 2 )) "$status")
+        formatted_status=$(printf "%-7s" "$formatted_status")
+
+        printf "%-50s [ \033[%dm%s\033[0m ]\n" "$check_name"... "$color_code" "$formatted_status"
+    }
+
+    KARGS=$(rpm-ostree kargs)
+    KARGS_LIST=(
+        "init_on_alloc=1"
+        "init_on_free=1"
+        "slab_nomerge"
+        "page_alloc.shuffle=1"
+        "randomize_kstack_offset=on"
+        "vsyscall=none"
+        "lockdown=confidentiality"
+        "random.trust_cpu=off"
+        "random.trust_bootloader=off"
+        "iommu=force"
+        "intel_iommu=on"
+        "amd_iommu=force_isolation"
+        "iommu.passthrough=0"
+        "iommu.strict=1"
+        "pti=on"
+        "module.sig_enforce=1"
+        "mitigations=auto,nosmt"
+        "spectre_v2=on"
+        "spec_store_bypass_disable=on"
+        "l1d_flush=on"
+        "gather_data_sampling=force"
+        "efi=disable_early_pci_dma"
+        "debugfs=off"
+    )
+
+    for karg in "${KARGS_LIST[@]}"; do
+        KARG_TEST_STRING="Checking for $karg karg"
+        if echo "$KARGS" | grep -q "$karg"; then
+            print_status "$KARG_TEST_STRING" "SUCCESS"
+        else
+            print_status "$KARG_TEST_STRING" "FAIL"
+        fi
+    done
+
+    SYSCTL_TEST_STRING="Ensuring no sysctl overrides"
+    if diff /usr/etc/sysctl.d/hardening.conf /etc/sysctl.d/hardening.conf > /dev/null; then
+        print_status "$SYSCTL_TEST_STRING" "SUCCESS"
+    else
+        print_status "$SYSCTL_TEST_STRING" "FAIL"
+    fi
+
+    SYSCTL_TEST_STRING="Ensuring no modprobe overrides"
+    if diff /usr/etc/modprobe.d/blacklist.conf /etc/modprobe.d/blacklist.conf > /dev/null; then
+        print_status "$SYSCTL_TEST_STRING" "SUCCESS"
+    else
+        print_status "$SYSCTL_TEST_STRING" "FAIL"
+    fi
+
+    AUTHSELECT_TEST_STRING="Ensuring no authselect overrides"
+    if diff /usr/etc/authselect /etc/authselect --suppress-common-lines -r > /dev/null; then
+        print_status "$AUTHSELECT_TEST_STRING" "SUCCESS"
+    else
+        print_status "$AUTHSELECT_TEST_STRING" "FAIL"
+    fi
+
+
+    USBGUARD_TEST_STRING="Ensuring usbguard is active"
+    if systemctl is-active --quiet usbguard; then
+        print_status "$USBGUARD_TEST_STRING" "SUCCESS"
+    else
+        print_status "$USBGUARD_TEST_STRING" "FAIL"
+    fi
+
+
+    CHRONYD_TEST_STRING="Ensuring chronyd is active"
+    if systemctl is-active --quiet usbguard; then
+        print_status "$CHRONYD_TEST_STRING" "SUCCESS"
+    else
+        print_status "$CHRONYD_TEST_STRING" "FAIL"
+    fi
+
+    BASH_TEST_STRING="Ensuring bash environment lockdown"
+    BASH_ENV_FILES=(~/.bashrc ~/.bash_profile)
+    all_locked=1
+
+    for file in "${BASH_ENV_FILES[@]}"; do
+        if [ -f "$file" ]; then
+            if lsattr "$file" 2>/dev/null | awk '{print $1}' | grep -q 'i'; then
+                continue
+            else
+                all_locked=0
+                break
+            fi
+        else
+            all_locked=0
+            break
+        fi
+    done
+
+    if [ "$all_locked" -eq 1 ]; then
+        print_status "$BASH_TEST_STRING" "SUCCESS"
+    else
+        print_status "$BASH_TEST_STRING" "FAIL"
+    fi
+
+    WHEEL_TEST_STRING="Ensuring user is not a member of wheel"
+    if groups | grep -q "\bwheel\b"; then
+        print_status "$WHEEL_TEST_STRING" "FAIL"
+    else
+        print_status "$WHEEL_TEST_STRING" "SUCCESS"
+    fi
+
+    GNOME_XWAYLAND_TEST_STRING="Ensuring xwayland is disabled for GNOME"
+    if [ -f "/etc/systemd/user/org.gnome.Shell@wayland.service.d/override.conf" ]; then
+        print_status "$GNOME_XWAYLAND_TEST_STRING" "SUCCESS"
+    else
+        print_status "$GNOME_XWAYLAND_TEST_STRING" "FAIL"
+    fi
+
+    PLASMA_XWAYLAND_TEST_STRING="Ensuring xwayland is disabled for KDE Plasma"
+    if [ -f "/etc/systemd/user/plasma-kwin_wayland.service.d/override.conf" ]; then
+        print_status "$PLASMA_XWAYLAND_TEST_STRING" "SUCCESS"
+    else
+        print_status "$PLASMA_XWAYLAND_TEST_STRING" "FAIL"
+    fi
+
+    SWAY_XWAYLAND_TEST_STRING="Ensuring xwayland is disabled for Sway"
+    if [ -f "/etc/sway/config.d/99-noxwayland.conf" ]; then
+        print_status "$SWAY_XWAYLAND_TEST_STRING" "SUCCESS"
+    else
+        print_status "$SWAY_XWAYLAND_TEST_STRING" "FAIL"
+    fi
+
+    EXTENSIONS_TEST_STRING="Ensuring GNOME user extensions are disabled"
+    if [ "$(gsettings get org.gnome.shell allow-extension-installation)" = "false" ]; then
+        print_status "$EXTENSIONS_TEST_STRING" "SUCCESS"
+    else
+        print_status "$EXTENSIONS_TEST_STRING" "FAIL"
+    fi
+
+    SELINUX_TEST_STRING="Ensuring SELinux is in Enforcing mode"
+    if [ "$(getenforce)" = "Enforcing" ]; then
+        print_status "$SELINUX_TEST_STRING" "SUCCESS"
+    else
+        print_status "$SELINUX_TEST_STRING" "FAIL"
+    fi
+
+    ENVIRONMENT_TEST_STRING="Ensuring no environment file overrides"
+    if diff /usr/etc/environment /etc/environment > /dev/null; then
+        print_status "$ENVIRONMENT_TEST_STRING" "SUCCESS"
+    else
+        print_status "$ENVIRONMENT_TEST_STRING" "WARNING"
+    fi
 

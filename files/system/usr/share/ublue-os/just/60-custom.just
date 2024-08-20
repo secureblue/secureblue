@@ -161,14 +161,17 @@ override-reset-module mod_name:
 
 # Setup USBGuard
 setup-usbguard:
-    #!/usr/bin/pkexec /usr/bin/bash
+    #!/usr/bin/bash
     echo "Notice: This will generate a policy based on your existing connected USB devices."
-    sudo mkdir -p /var/log/usbguard
-    sudo mkdir -p /etc/usbguard
-    sudo chmod 755 /etc/usbguard
-    sudo sh -c 'usbguard generate-policy > /etc/usbguard/rules.conf'
-    sudo systemctl enable --now usbguard.service
-    sudo usbguard add-user $(whoami)
+    ACTIVE_USERNAME=$(whoami)
+    pkexec sh -c '
+        mkdir -p /var/log/usbguard
+        mkdir -p /etc/usbguard
+        chmod 755 /etc/usbguard
+        usbguard generate-policy > /etc/usbguard/rules.conf
+        systemctl enable --now usbguard.service
+        usbguard add-user $1
+    ' -- $ACTIVE_USERNAME
     systemctl enable --user --now usbguard-notifier.service
 
 # Rerun Yafti

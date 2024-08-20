@@ -485,7 +485,7 @@ audit-secureblue:
         print_status "$SELINUX_TEST_STRING" "FAIL"
     fi
 
-    ENVIRONMENT_TEST_STRING="Checking for environment file overrides"
+    ENVIRONMENT_TEST_STRING="Ensuring no environment file overrides"
     if diff /usr/etc/environment /etc/environment > /dev/null; then
         print_status "$ENVIRONMENT_TEST_STRING" "SUCCESS"
     else

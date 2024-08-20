@@ -37,6 +37,10 @@ Documentation is available [here](https://github.com/secureblue/secureblue/blob/
 
 ```ujust set-kargs-hardening-unstable```
 
+## Install Homebrew
+
+`ujust brew`
+
 ## Setup USBGuard
 
 *This will generate a policy based on your currently attached USB devices and block all others, then enable usbguard*

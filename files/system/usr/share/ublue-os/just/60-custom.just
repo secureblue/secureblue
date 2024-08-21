@@ -413,7 +413,7 @@ audit-secureblue:
 
 
     CHRONYD_TEST_STRING="Ensuring chronyd is active"
-    if systemctl is-active --quiet usbguard; then
+    if systemctl is-active --quiet chronyd; then
         print_status "$CHRONYD_TEST_STRING" "SUCCESS"
     else
         print_status "$CHRONYD_TEST_STRING" "FAIL"

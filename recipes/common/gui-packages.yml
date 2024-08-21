@@ -8,6 +8,7 @@ install:
   - mediainfo
   - bubblejail
   - usbguard-notifier
+  - usbguard
   - setroubleshoot
   - setools
   

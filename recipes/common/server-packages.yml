@@ -1,6 +1,7 @@
 type: rpm-ostree
 install:
   - setools-console
+  - usbguard
 
 
 

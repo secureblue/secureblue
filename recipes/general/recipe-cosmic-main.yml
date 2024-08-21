@@ -2,7 +2,7 @@ name: cosmic-main-hardened
 
 description: "Cosmic main with some hardening applied"
 
-base-image: ghcr.io/ublue-os/cosmic-base
+base-image: ghcr.io/ublue-os/cosmic
 
 image-version: 40
 

@@ -198,12 +198,12 @@ toggle-gnome-jit-js:
     #!/usr/bin/pkexec /usr/bin/bash
     ENV_FILE="/etc/profile.d/gnome-disable-jit.sh"
     if test -e $ENV_FILE; then
-    	sudo rm -f $ENV_FILE
-    	echo "JIT JavaScript for Gnome and WebkitGTK has been enabled."
+        sudo rm -f $ENV_FILE
+        echo "JIT JavaScript for Gnome and WebkitGTK has been enabled."
     else
-    	sudo cp /usr$ENV_FILE $ENV_FILE
+        sudo cp /usr$ENV_FILE $ENV_FILE
         sudo chmod 644 $ENV_FILE
-    	echo "JIT JavaScript for Gnome and WebkitGTK has been disabled."
+        echo "JIT JavaScript for Gnome and WebkitGTK has been disabled."
     fi
 
 # Toggle support for using GNOME user extensions
@@ -343,7 +343,21 @@ audit-secureblue:
         formatted_status=$(printf "%*s" $(( (7 + ${#status}) / 2 )) "$status")
         formatted_status=$(printf "%-7s" "$formatted_status")
 
-        printf "%-50s [ \033[%dm%s\033[0m ]\n" "$check_name"... "$color_code" "$formatted_status"
+        printf "%-64s [ \033[%dm%s\033[0m ]\n" "$check_name"... "$color_code" "$formatted_status"
+    }
+
+    hasPermission() {
+        local permissions=$1
+        local prefix=$2
+        local query=$3
+        local line=$(grep "^${prefix}=" <<< "$permissions" | sed -e "s/^${prefix}=//" -e "s/#.*//")
+        IFS=';' read -r -a list <<< "$line"
+        for p in ${list[@]}; do
+            if [[ "$p" == "$query" ]]; then
+                return
+            fi
+        done
+        return 1
     }
 
     KARGS=$(rpm-ostree kargs)
@@ -491,4 +505,53 @@ audit-secureblue:
     else
         print_status "$ENVIRONMENT_TEST_STRING" "WARNING"
     fi
+    
+    remotes="$(flatpak remotes -d)"
+    while read -r remote ; do
+        ref="$(cut -f 1 <<<"$remote")"
+        url="$(cut -f 3 <<< "$remote")"
+        subset="$(cut -f 5 <<< "$remote")"
+        remote_string="Auditing flatpak remote $ref"
+        if [[ "$url" != "https://dl.flathub.org/repo/" && "$url" != "https://dl.flathub.org/beta-repo/" ]]; then
+            print_status "$remote_string" "FAIL"
+            echo "> $ref is configured with an unknown url!"
+        elif [ "$subset" != "verified" ]; then
+            print_status "$remote_string" "FAIL"
+            echo "> $ref is not a verified repo!"
+        else
+            print_status "$remote_string" "SUCCESS"
+        fi
+    done <<< "$remotes"
+    
+    declare -A flatpaks
+    while read -r ref version; do
+        flatpaks+=(["${ref}"]="${ref}//${version}")
+    done <<<$(flatpak list | sort -k 1 | cut --fields 2,4)
+    for f in ${!flatpaks[@]}; do
+        has_network=false
+        has_x11=false
+        fullref=${flatpaks["$f"]}
+        permissions=$(flatpak info --show-permissions "$fullref")
+        if hasPermission "$permissions" "shared" "network"; then
+            has_network=true
+        fi
+        if hasPermission "$permissions" "sockets" "x11" && ! hasPermission "$permissions" "sockets" "fallback-x11"  ]]; then
+            has_x11=true
+        fi
+        flatpak_test_string="Auditing $f"
+        if [[ ! $has_network == "true" && ! $has_x11 == "true" ]]; then
+            print_status "$flatpak_test_string" "SUCCESS"
+        elif [[ $has_x11 == "true" ]]; then
+            print_status "$flatpak_test_string" "FAIL"
+        elif [[ $has_network == "true" ]]; then
+            print_status "$flatpak_test_string" "WARNING"
+        fi
+        if [[ $has_network == "true" ]]; then
+            echo "> $f has network access!"
+        fi
+        if [[ $has_x11 == "true" ]]; then
+            echo "> $f has x11 access!"
+        fi
+    
+    done
 

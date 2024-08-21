@@ -518,6 +518,8 @@ audit-secureblue:
         elif [ "$subset" != "verified" ]; then
             print_status "$remote_string" "FAIL"
             echo "> $ref is not a verified repo!"
+        else
+            print_status "$remote_string" "SUCCESS"
         fi
     done <<< "$remotes"
     

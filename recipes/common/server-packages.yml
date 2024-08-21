@@ -2,8 +2,7 @@ type: rpm-ostree
 install:
   - setools-console
   - usbguard
-remove:
-  - nfs-utils-coreos
+
 
 
 

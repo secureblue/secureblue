@@ -20,4 +20,5 @@ modules:
   - from-file: common/dx-files.yml
   - from-file: common/common-scripts.yml
   - type: secureblue-signing
-  - type: yafti 
+  - type: yafti
+  - from-file: common/common-brew.yml

@@ -16,4 +16,5 @@ modules:
   - from-file: common/cosmic-scripts.yml
   - from-file: common/remove-firefox.yml
   - type: secureblue-signing
-  - type: yafti 
+  - type: yafti
+  - from-file: common/common-brew.yml

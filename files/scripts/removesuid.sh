@@ -72,4 +72,13 @@ find /usr -type f -perm /4000 |
         fi
     done
 
+find /usr -type f -perm /2000 |
+    while IFS= read -r binary; do
+        if ! is_in_whitelist "$binary"; then
+            echo "Removing SGID bit from $binary"
+            chmod g-s "$binary"
+            echo "Removed SGID bit from $binary"
+        fi
+    done
+
 systemctl enable setcapsforunsuidbinaries.service

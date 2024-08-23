@@ -82,10 +82,10 @@ screens:
   final-screen:
     source: yafti.screen.title
     values:
-      title: "All done!"
+      title: "Yafti run complete!"
       icon: "/path/to/icon"
       links:
-        - "Website":
-            run: /usr/bin/xdg-open https://github.com/secureblue/secureblue
+        - "POSTINSTALL-README":
+            run: /usr/bin/xdg-open https://github.com/secureblue/secureblue/blob/live/POSTINSTALL-README.md
       description: |
-        Complete your secureblue installation by following the POSTINSTALL-README: https://github.com/secureblue/secureblue/blob/live/POSTINSTALL-README.md
+        Complete your secureblue installation by following the POSTINSTALL-README.

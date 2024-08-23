@@ -88,4 +88,4 @@ screens:
         - "Website":
             run: /usr/bin/xdg-open https://github.com/secureblue/secureblue
       description: |
-        Thanks for trying secureblue, we hope you enjoy it!
+        Complete your secureblue installation by following the POSTINSTALL-README: https://github.com/secureblue/secureblue/blob/live/POSTINSTALL-README.md

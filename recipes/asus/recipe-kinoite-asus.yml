@@ -22,4 +22,5 @@ modules:
   - from-file: common/disableuserns-scripts.yml
   - from-file: common/kinoite-files.yml
   - type: secureblue-signing
-  - type: yafti 
+  - type: yafti
+  - from-file: common/common-brew.yml

@@ -327,15 +327,18 @@ toggle-bash-environment-lockdown:
 audit-secureblue:
     #!/bin/bash
 
+    STATUS_SUCCESS="SUCCESS"
+    STATUS_WARNING="WARNING"
+    STATUS_FAILURE="FAILURE"
     print_status() {
         local check_name="$1"
         local status="$2"
 
         local color_code
         case "$status" in
-            SUCCESS) color_code=32 ;; # Green
-            WARNING) color_code=33 ;; # Yellow
-            FAIL) color_code=31 ;;    # Red
+            $STATUS_SUCCESS) color_code=32 ;; # Green
+            $STATUS_WARNING) color_code=33 ;; # Yellow
+            $STATUS_FAILURE) color_code=31 ;;    # Red
             *) color_code=0 ;;
         esac
 
@@ -390,47 +393,47 @@ audit-secureblue:
     for karg in "${KARGS_LIST[@]}"; do
         KARG_TEST_STRING="Checking for $karg karg"
         if echo "$KARGS" | grep -q "$karg"; then
-            print_status "$KARG_TEST_STRING" "SUCCESS"
+            print_status "$KARG_TEST_STRING" "$STATUS_SUCCESS"
         else
-            print_status "$KARG_TEST_STRING" "FAIL"
+            print_status "$KARG_TEST_STRING" "$STATUS_FAILURE"
         fi
     done
 
     SYSCTL_TEST_STRING="Ensuring no sysctl overrides"
     if diff /usr/etc/sysctl.d/hardening.conf /etc/sysctl.d/hardening.conf > /dev/null; then
-        print_status "$SYSCTL_TEST_STRING" "SUCCESS"
+        print_status "$SYSCTL_TEST_STRING" "$STATUS_SUCCESS"
     else
-        print_status "$SYSCTL_TEST_STRING" "FAIL"
+        print_status "$SYSCTL_TEST_STRING" "$STATUS_FAILURE"
     fi
 
     SYSCTL_TEST_STRING="Ensuring no modprobe overrides"
     if diff /usr/etc/modprobe.d/blacklist.conf /etc/modprobe.d/blacklist.conf > /dev/null; then
-        print_status "$SYSCTL_TEST_STRING" "SUCCESS"
+        print_status "$SYSCTL_TEST_STRING" "$STATUS_SUCCESS"
     else
-        print_status "$SYSCTL_TEST_STRING" "FAIL"
+        print_status "$SYSCTL_TEST_STRING" "$STATUS_FAILURE"
     fi
 
     AUTHSELECT_TEST_STRING="Ensuring no authselect overrides"
     if diff /usr/etc/authselect /etc/authselect --suppress-common-lines -r > /dev/null; then
-        print_status "$AUTHSELECT_TEST_STRING" "SUCCESS"
+        print_status "$AUTHSELECT_TEST_STRING" "$STATUS_SUCCESS"
     else
-        print_status "$AUTHSELECT_TEST_STRING" "FAIL"
+        print_status "$AUTHSELECT_TEST_STRING" "$STATUS_FAILURE"
     fi
 
 
     USBGUARD_TEST_STRING="Ensuring usbguard is active"
     if systemctl is-active --quiet usbguard; then
-        print_status "$USBGUARD_TEST_STRING" "SUCCESS"
+        print_status "$USBGUARD_TEST_STRING" "$STATUS_SUCCESS"
     else
-        print_status "$USBGUARD_TEST_STRING" "FAIL"
+        print_status "$USBGUARD_TEST_STRING" "$STATUS_FAILURE"
     fi
 
 
     CHRONYD_TEST_STRING="Ensuring chronyd is active"
     if systemctl is-active --quiet chronyd; then
-        print_status "$CHRONYD_TEST_STRING" "SUCCESS"
+        print_status "$CHRONYD_TEST_STRING" "$STATUS_SUCCESS"
     else
-        print_status "$CHRONYD_TEST_STRING" "FAIL"
+        print_status "$CHRONYD_TEST_STRING" "$STATUS_FAILURE"
     fi
 
     BASH_TEST_STRING="Ensuring bash environment lockdown"
@@ -452,58 +455,58 @@ audit-secureblue:
     done
 
     if [ "$all_locked" -eq 1 ]; then
-        print_status "$BASH_TEST_STRING" "SUCCESS"
+        print_status "$BASH_TEST_STRING" "$STATUS_SUCCESS"
     else
-        print_status "$BASH_TEST_STRING" "FAIL"
+        print_status "$BASH_TEST_STRING" "$STATUS_FAILURE"
     fi
 
     WHEEL_TEST_STRING="Ensuring user is not a member of wheel"
     if groups | grep -q "\bwheel\b"; then
-        print_status "$WHEEL_TEST_STRING" "FAIL"
+        print_status "$WHEEL_TEST_STRING" "$STATUS_FAILURE"
     else
-        print_status "$WHEEL_TEST_STRING" "SUCCESS"
+        print_status "$WHEEL_TEST_STRING" "$STATUS_SUCCESS"
     fi
 
     GNOME_XWAYLAND_TEST_STRING="Ensuring xwayland is disabled for GNOME"
     if [ -f "/etc/systemd/user/org.gnome.Shell@wayland.service.d/override.conf" ]; then
-        print_status "$GNOME_XWAYLAND_TEST_STRING" "SUCCESS"
+        print_status "$GNOME_XWAYLAND_TEST_STRING" "$STATUS_SUCCESS"
     else
-        print_status "$GNOME_XWAYLAND_TEST_STRING" "FAIL"
+        print_status "$GNOME_XWAYLAND_TEST_STRING" "$STATUS_FAILURE"
     fi
 
     PLASMA_XWAYLAND_TEST_STRING="Ensuring xwayland is disabled for KDE Plasma"
     if [ -f "/etc/systemd/user/plasma-kwin_wayland.service.d/override.conf" ]; then
-        print_status "$PLASMA_XWAYLAND_TEST_STRING" "SUCCESS"
+        print_status "$PLASMA_XWAYLAND_TEST_STRING" "$STATUS_SUCCESS"
     else
-        print_status "$PLASMA_XWAYLAND_TEST_STRING" "FAIL"
+        print_status "$PLASMA_XWAYLAND_TEST_STRING" "$STATUS_FAILURE"
     fi
 
     SWAY_XWAYLAND_TEST_STRING="Ensuring xwayland is disabled for Sway"
     if [ -f "/etc/sway/config.d/99-noxwayland.conf" ]; then
-        print_status "$SWAY_XWAYLAND_TEST_STRING" "SUCCESS"
+        print_status "$SWAY_XWAYLAND_TEST_STRING" "$STATUS_SUCCESS"
     else
-        print_status "$SWAY_XWAYLAND_TEST_STRING" "FAIL"
+        print_status "$SWAY_XWAYLAND_TEST_STRING" "$STATUS_FAILURE"
     fi
 
     EXTENSIONS_TEST_STRING="Ensuring GNOME user extensions are disabled"
     if [ "$(gsettings get org.gnome.shell allow-extension-installation)" = "false" ]; then
-        print_status "$EXTENSIONS_TEST_STRING" "SUCCESS"
+        print_status "$EXTENSIONS_TEST_STRING" "$STATUS_SUCCESS"
     else
-        print_status "$EXTENSIONS_TEST_STRING" "FAIL"
+        print_status "$EXTENSIONS_TEST_STRING" "$STATUS_FAILURE"
     fi
 
     SELINUX_TEST_STRING="Ensuring SELinux is in Enforcing mode"
     if [ "$(getenforce)" = "Enforcing" ]; then
-        print_status "$SELINUX_TEST_STRING" "SUCCESS"
+        print_status "$SELINUX_TEST_STRING" "$STATUS_SUCCESS"
     else
-        print_status "$SELINUX_TEST_STRING" "FAIL"
+        print_status "$SELINUX_TEST_STRING" "$STATUS_FAILURE"
     fi
 
     ENVIRONMENT_TEST_STRING="Ensuring no environment file overrides"
     if diff /usr/etc/environment /etc/environment > /dev/null; then
-        print_status "$ENVIRONMENT_TEST_STRING" "SUCCESS"
+        print_status "$ENVIRONMENT_TEST_STRING" "$STATUS_SUCCESS"
     else
-        print_status "$ENVIRONMENT_TEST_STRING" "WARNING"
+        print_status "$ENVIRONMENT_TEST_STRING" "$STATUS_WARNING"
     fi
     
     remotes="$(flatpak remotes -d)"
@@ -513,13 +516,13 @@ audit-secureblue:
         subset="$(cut -f 5 <<< "$remote")"
         remote_string="Auditing flatpak remote $ref"
         if [[ "$url" != "https://dl.flathub.org/repo/" && "$url" != "https://dl.flathub.org/beta-repo/" ]]; then
-            print_status "$remote_string" "FAIL"
+            print_status "$remote_string" "$STATUS_FAILURE"
             echo "> $ref is configured with an unknown url!"
         elif [ "$subset" != "verified" ]; then
-            print_status "$remote_string" "FAIL"
+            print_status "$remote_string" "$STATUS_FAILURE"
             echo "> $ref is not a verified repo!"
         else
-            print_status "$remote_string" "SUCCESS"
+            print_status "$remote_string" "$STATUS_SUCCESS"
         fi
     done <<< "$remotes"
     
@@ -540,11 +543,11 @@ audit-secureblue:
         fi
         flatpak_test_string="Auditing $f"
         if [[ ! $has_network == "true" && ! $has_x11 == "true" ]]; then
-            print_status "$flatpak_test_string" "SUCCESS"
+            print_status "$flatpak_test_string" "$STATUS_SUCCESS"
         elif [[ $has_x11 == "true" ]]; then
-            print_status "$flatpak_test_string" "FAIL"
+            print_status "$flatpak_test_string" "$STATUS_FAILURE"
         elif [[ $has_network == "true" ]]; then
-            print_status "$flatpak_test_string" "WARNING"
+            print_status "$flatpak_test_string" "$STATUS_WARNING"
         fi
         if [[ $has_network == "true" ]]; then
             echo "> $f has network access!"

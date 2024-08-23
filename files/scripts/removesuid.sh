@@ -50,10 +50,6 @@ whitelist=(
     "/usr/lib64/glibc-hwcaps/x86-64-v4/libhardened_malloc.so"
     # Requires cap_setgid,cap_setuid if the SUID bit is removed
     "/usr/sbin/grub2-set-bootflag"
-    # See /usr/bin/mount
-    "/usr/sbin/mount.nfs"
-    # https://gist.github.com/ok-ryoko/1ff42a805d496cb1ca22e5cdf6ddefb0#why-does-this-binary-need-to-be-suid-root-6
-    "/usr/sbin/pam_timestamp_check"
 )
 
 

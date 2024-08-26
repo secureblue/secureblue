@@ -509,7 +509,7 @@ audit-secureblue:
         print_status "$ENVIRONMENT_TEST_STRING" "$STATUS_WARNING"
     fi
 
-    if command -v flatpak &> /dev/null
+    if command -v flatpak &> /dev/null; then
         remotes="$(flatpak remotes -d)"
         while read -r remote ; do
             ref="$(cut -f 1 <<<"$remote")"

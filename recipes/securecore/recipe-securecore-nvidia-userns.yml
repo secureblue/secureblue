@@ -15,3 +15,4 @@ modules:
   - from-file: common/server-files.yml
   - from-file: common/common-scripts.yml
   - type: secureblue-signing
+  - from-file: common/common-brew.yml

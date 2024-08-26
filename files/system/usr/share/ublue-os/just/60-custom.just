@@ -508,53 +508,54 @@ audit-secureblue:
     else
         print_status "$ENVIRONMENT_TEST_STRING" "$STATUS_WARNING"
     fi
-    
-    remotes="$(flatpak remotes -d)"
-    while read -r remote ; do
-        ref="$(cut -f 1 <<<"$remote")"
-        url="$(cut -f 3 <<< "$remote")"
-        subset="$(cut -f 5 <<< "$remote")"
-        remote_string="Auditing flatpak remote $ref"
-        if [[ "$url" != "https://dl.flathub.org/repo/" && "$url" != "https://dl.flathub.org/beta-repo/" ]]; then
-            print_status "$remote_string" "$STATUS_FAILURE"
-            echo "> $ref is configured with an unknown url!"
-        elif [ "$subset" != "verified" ]; then
-            print_status "$remote_string" "$STATUS_FAILURE"
-            echo "> $ref is not a verified repo!"
-        else
-            print_status "$remote_string" "$STATUS_SUCCESS"
-        fi
-    done <<< "$remotes"
-    
-    declare -A flatpaks
-    while read -r ref version; do
-        flatpaks+=(["${ref}"]="${ref}//${version}")
-    done <<<$(flatpak list | sort -k 1 | cut --fields 2,4)
-    for f in ${!flatpaks[@]}; do
-        has_network=false
-        has_x11=false
-        fullref=${flatpaks["$f"]}
-        permissions=$(flatpak info --show-permissions "$fullref")
-        if hasPermission "$permissions" "shared" "network"; then
-            has_network=true
-        fi
-        if hasPermission "$permissions" "sockets" "x11" && ! hasPermission "$permissions" "sockets" "fallback-x11"  ]]; then
-            has_x11=true
-        fi
-        flatpak_test_string="Auditing $f"
-        if [[ ! $has_network == "true" && ! $has_x11 == "true" ]]; then
-            print_status "$flatpak_test_string" "$STATUS_SUCCESS"
-        elif [[ $has_x11 == "true" ]]; then
-            print_status "$flatpak_test_string" "$STATUS_FAILURE"
-        elif [[ $has_network == "true" ]]; then
-            print_status "$flatpak_test_string" "$STATUS_WARNING"
-        fi
-        if [[ $has_network == "true" ]]; then
-            echo "> $f has network access!"
-        fi
-        if [[ $has_x11 == "true" ]]; then
-            echo "> $f has x11 access!"
-        fi
-    
-    done
+
+    if command -v flatpak &> /dev/null
+        remotes="$(flatpak remotes -d)"
+        while read -r remote ; do
+            ref="$(cut -f 1 <<<"$remote")"
+            url="$(cut -f 3 <<< "$remote")"
+            subset="$(cut -f 5 <<< "$remote")"
+            remote_string="Auditing flatpak remote $ref"
+            if [[ "$url" != "https://dl.flathub.org/repo/" && "$url" != "https://dl.flathub.org/beta-repo/" ]]; then
+                print_status "$remote_string" "$STATUS_FAILURE"
+                echo "> $ref is configured with an unknown url!"
+            elif [ "$subset" != "verified" ]; then
+                print_status "$remote_string" "$STATUS_FAILURE"
+                echo "> $ref is not a verified repo!"
+            else
+                print_status "$remote_string" "$STATUS_SUCCESS"
+            fi
+        done <<< "$remotes"
+        
+        declare -A flatpaks
+        while read -r ref version; do
+            flatpaks+=(["${ref}"]="${ref}//${version}")
+        done <<<$(flatpak list | sort -k 1 | cut --fields 2,4)
+        for f in ${!flatpaks[@]}; do
+            has_network=false
+            has_x11=false
+            fullref=${flatpaks["$f"]}
+            permissions=$(flatpak info --show-permissions "$fullref")
+            if hasPermission "$permissions" "shared" "network"; then
+                has_network=true
+            fi
+            if hasPermission "$permissions" "sockets" "x11" && ! hasPermission "$permissions" "sockets" "fallback-x11"  ]]; then
+                has_x11=true
+            fi
+            flatpak_test_string="Auditing $f"
+            if [[ ! $has_network == "true" && ! $has_x11 == "true" ]]; then
+                print_status "$flatpak_test_string" "$STATUS_SUCCESS"
+            elif [[ $has_x11 == "true" ]]; then
+                print_status "$flatpak_test_string" "$STATUS_FAILURE"
+            elif [[ $has_network == "true" ]]; then
+                print_status "$flatpak_test_string" "$STATUS_WARNING"
+            fi
+            if [[ $has_network == "true" ]]; then
+                echo "> $f has network access!"
+            fi
+            if [[ $has_x11 == "true" ]]; then
+                echo "> $f has x11 access!"
+            fi
+        done
+    fi
 

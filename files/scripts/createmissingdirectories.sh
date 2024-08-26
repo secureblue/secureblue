@@ -8,5 +8,4 @@ set -oue pipefail
 mkdir -p /var/log/usbguard
 
 mkdir -p /var/lib/setroubleshoot
-chown setroubleshoot:setroubleshoot /var/lib/setroubleshoot
 chmod 600 /var/lib/setroubleshoot

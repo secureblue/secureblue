@@ -181,14 +181,14 @@ While it's recommended to use a Fedora Atomic iso to install and then rebase tha
 - `aurora-dx-surface-userns-hardened`
 - `aurora-dx-surface-nvidia-userns-hardened`
 ## Server
-- `server-main-hardened`
-- `server-nvidia-hardened`
-- `server-zfs-main-hardened`
-- `server-zfs-nvidia-hardened`
-- `server-main-userns-hardened`
-- `server-nvidia-userns-hardened`
-- `server-zfs-main-userns-hardened`
-- `server-zfs-nvidia-userns-hardened`
+- `securecore-main-hardened`
+- `securecore-nvidia-hardened`
+- `securecore-zfs-main-hardened`
+- `securecore-zfs-nvidia-hardened`
+- `securecore-main-userns-hardened`
+- `securecore-nvidia-userns-hardened`
+- `securecore-zfs-main-userns-hardened`
+- `securecore-zfs-nvidia-userns-hardened`
   
 # Post-install
 

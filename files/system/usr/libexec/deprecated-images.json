@@ -2,6 +2,7 @@
     "imageTypes": [
       "framework",
       "main-laptop",
-      "nvidia-laptop"
+      "nvidia-laptop",
+      "server"
     ]
 }

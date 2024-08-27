@@ -109,12 +109,6 @@ While it's recommended to use a Fedora Atomic iso to install and then rebase tha
 ### Recommended <sup>[why?](RECOMMENDED.md)</sup>
 - `silverblue-main-hardened`
 - `silverblue-nvidia-hardened`
-- `bluefin-main-hardened`
-- `bluefin-nvidia-hardened`
-- `bluefin-dx-main-userns-hardened`
-- `bluefin-dx-nvidia-userns-hardened`
-- `bluefin-main-userns-hardened`
-- `bluefin-nvidia-userns-hardened`
 - `silverblue-main-userns-hardened`
 - `silverblue-nvidia-userns-hardened`
 ### Stable
@@ -132,6 +126,12 @@ While it's recommended to use a Fedora Atomic iso to install and then rebase tha
 - `aurora-dx-nvidia-userns-hardened`
 - `sericea-main-userns-hardened`
 - `sericea-nvidia-userns-hardened`
+- `bluefin-main-hardened`
+- `bluefin-nvidia-hardened`
+- `bluefin-dx-main-userns-hardened`
+- `bluefin-dx-nvidia-userns-hardened`
+- `bluefin-main-userns-hardened`
+- `bluefin-nvidia-userns-hardened`
 ### Beta
 - `wayblue-wayfire-main-hardened`
 - `wayblue-wayfire-nvidia-hardened`
@@ -181,14 +181,14 @@ While it's recommended to use a Fedora Atomic iso to install and then rebase tha
 - `aurora-dx-surface-userns-hardened`
 - `aurora-dx-surface-nvidia-userns-hardened`
 ## Server
-- `server-main-hardened`
-- `server-nvidia-hardened`
-- `server-zfs-main-hardened`
-- `server-zfs-nvidia-hardened`
-- `server-main-userns-hardened`
-- `server-nvidia-userns-hardened`
-- `server-zfs-main-userns-hardened`
-- `server-zfs-nvidia-userns-hardened`
+- `securecore-main-hardened`
+- `securecore-nvidia-hardened`
+- `securecore-zfs-main-hardened`
+- `securecore-zfs-nvidia-hardened`
+- `securecore-main-userns-hardened`
+- `securecore-nvidia-userns-hardened`
+- `securecore-zfs-main-userns-hardened`
+- `securecore-zfs-nvidia-userns-hardened`
   
 # Post-install
 

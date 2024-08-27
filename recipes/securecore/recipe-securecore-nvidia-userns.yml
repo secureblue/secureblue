@@ -1,0 +1,18 @@
+name: securecore-nvidia-userns-hardened
+
+description: "coreos nvidia with some hardening applied"
+
+base-image: ghcr.io/secureblue/coreos
+
+image-version: testing-nvidia
+
+modules:
+  - from-file: common/initialization-scripts.yml
+  - from-file: common/common-packages.yml 
+  - from-file: common/non-cosmic-scripts.yml
+  - from-file: common/server-packages.yml
+  - from-file: common/common-files.yml
+  - from-file: common/server-files.yml
+  - from-file: common/common-scripts.yml
+  - type: secureblue-signing
+  - from-file: common/common-brew.yml

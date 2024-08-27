@@ -18,6 +18,7 @@ remove:
   - open-vm-tools
   - open-vm-tools-desktop
   - virtualbox-guest-additions
+  - passim
 
 
 

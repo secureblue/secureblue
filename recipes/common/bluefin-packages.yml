@@ -9,3 +9,6 @@ remove:
   - samba-winbind-clients
   - samba-winbind-modules
   - samba
+remove:
+  - ifuse
+  - fuse-encfs

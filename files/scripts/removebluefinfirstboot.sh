@@ -4,3 +4,4 @@
 set -oue pipefail
 
 rm /etc/skel/.config/autostart/bluefin-firstboot.desktop
+rm /etc/profile.d/bluefin-firstboot.sh

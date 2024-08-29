@@ -474,6 +474,12 @@ audit-secureblue:
         print_status "$GNOME_XWAYLAND_TEST_STRING" "$STATUS_FAILURE"
     fi
 
+    GHNS_TEST_STRING="Ensuring GHNS is disabled"
+    if grep -q "ghns=false" "$KDE_GLOBALS_FILE"; then
+      print_status "$GHNS_TEST_STRING" "$STATUS_SUCCESS"
+    else
+      print_status "$GHNS_TEST_STRING" "$STATUS_FAILURE"
+
     PLASMA_XWAYLAND_TEST_STRING="Ensuring xwayland is disabled for KDE Plasma"
     if [ -f "/etc/systemd/user/plasma-kwin_wayland.service.d/override.conf" ]; then
         print_status "$PLASMA_XWAYLAND_TEST_STRING" "$STATUS_SUCCESS"

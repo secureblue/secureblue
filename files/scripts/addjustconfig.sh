@@ -6,4 +6,4 @@
 set -oue pipefail
 
 # add our just config
-echo 'import "/usr/share/ublue-os/just/61-custom.just"' >> /usr/share/ublue-os/justfile
+echo 'import "/usr/share/ublue-os/just/70-secureblue.just"' >> /usr/share/ublue-os/justfile

@@ -7,3 +7,4 @@ scripts:
   - createmissingdirectories.sh
   - removesuid.sh
   - disablegeoclue.sh
+  - addjustconfig.sh

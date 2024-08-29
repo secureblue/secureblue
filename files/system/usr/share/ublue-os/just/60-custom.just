@@ -488,11 +488,13 @@ audit-secureblue:
         print_status "$SWAY_XWAYLAND_TEST_STRING" "$STATUS_FAILURE"
     fi
 
-    EXTENSIONS_TEST_STRING="Ensuring GNOME user extensions are disabled"
-    if [ "$(gsettings get org.gnome.shell allow-extension-installation)" = "false" ]; then
-        print_status "$EXTENSIONS_TEST_STRING" "$STATUS_SUCCESS"
-    else
-        print_status "$EXTENSIONS_TEST_STRING" "$STATUS_FAILURE"
+    if [ "$(command -v gsettings)" == "/usr/bin/gsettings" ]; then
+        EXTENSIONS_TEST_STRING="Ensuring GNOME user extensions are disabled"
+        if [ "$(gsettings get org.gnome.shell allow-extension-installation)" = "false" ]; then
+            print_status "$EXTENSIONS_TEST_STRING" "$STATUS_SUCCESS"
+        else
+            print_status "$EXTENSIONS_TEST_STRING" "$STATUS_FAILURE"
+        fi
     fi
 
     SELINUX_TEST_STRING="Ensuring SELinux is in Enforcing mode"

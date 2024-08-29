@@ -27,7 +27,7 @@ declare -A image_configs=(
     ["wayblue-hyprland"]="Sericea"
     ["cinnamon"]="Silverblue"
     ["aurora"]="Kinoite:dx:asus:surface"
-    ["cosmic"]="Silverblue"
+    ["cosmic"]="Kinoite"
 )
 
 image_name=""

@@ -511,6 +511,31 @@ audit-secureblue:
         print_status "$ENVIRONMENT_TEST_STRING" "$STATUS_WARNING"
     fi
 
+    GHNS_TEST_STRING="Ensuring KDE GHNS is disabled"
+    KDE_GLOBALS_FILE="/etc/xdg/kdeglobals"
+    if test -e $KDE_GLOBALS_FILE; then
+        GHNS_STRING="$(grep 'ghns=false' $KDE_GLOBALS_FILE)"
+        if [[ $GHNS_STRING == "ghns=false" ]]; then
+            print_status "$GHNS_TEST_STRING" "$STATUS_SUCCESS"
+        else
+            print_status "$GHNS_TEST_STRING" "$STATUS_FAILURE"
+        fi
+    fi
+
+    HARDENED_MALLOC_TEST_STRING="Ensuring hardened_malloc is set in ld.so.preload"
+    if diff /usr/etc/ld.so.preload /etc/ld.so.preload > /dev/null; then
+        print_status "$HARDENED_MALLOC_TEST_STRING" "$STATUS_SUCCESS"
+    else
+        print_status "$HARDENED_MALLOC_TEST_STRING" "$STATUS_FAILURE"
+    fi
+
+    SECUREBOOT_TEST_STRING="Ensuring secure boot is enabled"
+    if [ "$(mokutil --sb-state)" == "SecureBoot enabled" ]; then
+        print_status "$SECUREBOOT_TEST_STRING" "$STATUS_SUCCESS"
+    else
+        print_status "$SECUREBOOT_TEST_STRING" "$STATUS_FAILURE"
+    fi
+
     if command -v flatpak &> /dev/null; then
         remotes="$(flatpak remotes -d)"
         while read -r remote ; do
@@ -559,30 +584,5 @@ audit-secureblue:
                 echo "> $f has x11 access!"
             fi
         done
-    fi
-
-    GHNS_TEST_STRING="Ensuring KDE GHNS is disabled"
-    KDE_GLOBALS_FILE="/etc/xdg/kdeglobals"
-    if test -e $KDE_GLOBALS_FILE; then
-        GHNS_STRING="$(grep 'ghns=false' $KDE_GLOBALS_FILE)"
-        if [[ $GHNS_STRING == "ghns=false" ]]; then
-            print_status "$GHNS_TEST_STRING" "$STATUS_SUCCESS"
-        else
-            print_status "$GHNS_TEST_STRING" "$STATUS_FAILURE"
-        fi
-    fi
-
-    HARDENED_MALLOC_TEST_STRING="Ensuring hardened_malloc is set in ld.so.preload"
-    if diff /usr/etc/ld.so.preload /etc/ld.so.preload > /dev/null; then
-        print_status "$HARDENED_MALLOC_TEST_STRING" "$STATUS_SUCCESS"
-    else
-        print_status "$HARDENED_MALLOC_TEST_STRING" "$STATUS_FAILURE"
-    fi
-
-    SECUREBOOT_TEST_STRING="Ensuring secure boot is enabled"
-    if [ "$(mokutil --sb-state)" == "SecureBoot enabled" ]; then
-        print_status "$SECUREBOOT_TEST_STRING" "$STATUS_SUCCESS"
-    else
-        print_status "$SECUREBOOT_TEST_STRING" "$STATUS_FAILURE"
     fi
 

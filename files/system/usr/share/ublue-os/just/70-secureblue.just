@@ -534,27 +534,24 @@ audit-secureblue:
             flatpaks+=(["${ref}"]="${ref}//${version}")
         done <<<$(flatpak list | sort -k 1 | cut --fields 2,4)
         for f in ${!flatpaks[@]}; do
-            has_network=false
-            has_x11=false
+            warnings=()
             status="$STATUS_SUCCESS"
             fullref=${flatpaks["$f"]}
             permissions=$(flatpak info --show-permissions "$fullref")
+
             if hasPermission "$permissions" "shared" "network"; then
-                has_network=true
                 [[ "$status" != "$STATUS_FAILURE" ]] && status="$STATUS_WARNING"
+                warnings+=("> $f has network access!")
             fi
             if hasPermission "$permissions" "sockets" "x11" && ! hasPermission "$permissions" "sockets" "fallback-x11"; then
-                has_x11=true
                 status="$STATUS_FAILURE"
+                warnings+=("> $f has x11 access!")
             fi
             flatpak_test_string="Auditing $f"
             print_status "$flatpak_test_string" "$status"
-            if [[ $has_network == "true" ]]; then
-                echo "> $f has network access!"
-            fi
-            if [[ $has_x11 == "true" ]]; then
-                echo "> $f has x11 access!"
-            fi
+            for warning in "${warnings[@]}"; do
+                echo "$warning"
+            done
         done
     fi
 

@@ -572,6 +572,10 @@ audit-secureblue:
                 status="$STATUS_FAILURE"
                 warnings+=("> $f has x11 access!")
             fi
+            if ! hasPermission "$permissions" "LD_PRELOAD" .*"/libhardened_malloc.so"; then
+                status="$STATUS_FAILURE"
+                warnings+=("> $f is not using hardened_malloc!")
+            fi
             flatpak_test_string="Auditing $f"
             print_status "$flatpak_test_string" "$status"
             for warning in "${warnings[@]}"; do

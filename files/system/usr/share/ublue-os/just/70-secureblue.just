@@ -563,8 +563,8 @@ audit-secureblue:
 
     GHNS_TEST_STRING="Ensuring KDE GHNS is disabled"
     KDE_GLOBALS_FILE="/etc/xdg/kdeglobals"
-    GHNS_STRING="$(grep 'ghns=false' $KDE_GLOBALS_FILE)"
     if test -e $KDE_GLOBALS_FILE; then
+        GHNS_STRING="$(grep 'ghns=false' $KDE_GLOBALS_FILE)"
         if [[ $GHNS_STRING == "ghns=false" ]]; then
             print_status "$GHNS_TEST_STRING" "$STATUS_SUCCESS"
         else

@@ -536,22 +536,19 @@ audit-secureblue:
         for f in ${!flatpaks[@]}; do
             has_network=false
             has_x11=false
+            status="$STATUS_SUCCESS"
             fullref=${flatpaks["$f"]}
             permissions=$(flatpak info --show-permissions "$fullref")
             if hasPermission "$permissions" "shared" "network"; then
                 has_network=true
+                [[ "$status" != "$STATUS_FAILURE" ]] && status="$STATUS_WARNING"
             fi
             if hasPermission "$permissions" "sockets" "x11" && ! hasPermission "$permissions" "sockets" "fallback-x11"  ]]; then
                 has_x11=true
+                status="$STATUS_FAILURE"
             fi
             flatpak_test_string="Auditing $f"
-            if [[ ! $has_network == "true" && ! $has_x11 == "true" ]]; then
-                print_status "$flatpak_test_string" "$STATUS_SUCCESS"
-            elif [[ $has_x11 == "true" ]]; then
-                print_status "$flatpak_test_string" "$STATUS_FAILURE"
-            elif [[ $has_network == "true" ]]; then
-                print_status "$flatpak_test_string" "$STATUS_WARNING"
-            fi
+            print_status "$flatpak_test_string" "$status"
             if [[ $has_network == "true" ]]; then
                 echo "> $f has network access!"
             fi

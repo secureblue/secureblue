@@ -543,7 +543,7 @@ audit-secureblue:
                 has_network=true
                 [[ "$status" != "$STATUS_FAILURE" ]] && status="$STATUS_WARNING"
             fi
-            if hasPermission "$permissions" "sockets" "x11" && ! hasPermission "$permissions" "sockets" "fallback-x11"  ]]; then
+            if hasPermission "$permissions" "sockets" "x11" && ! hasPermission "$permissions" "sockets" "fallback-x11"; then
                 has_x11=true
                 status="$STATUS_FAILURE"
             fi

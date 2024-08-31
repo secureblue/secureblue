@@ -106,4 +106,4 @@ For example: `rpm-ostree install zfs-fuse`
 
 #### Why don't KDE Vaults work?
 
-Similar to the AppImage FAQ, the KDE Vault default backend (cryfs) depends on fuse2. For this reason it's recommended that you migrate to an alternative that doesn't depend on fuse2, for example `fscrypt`. If you don't want to do so, you can add fuse2 back by layering something that depends on it, as described in the AppImage FAQ.
+Similar to the AppImage FAQ, the KDE Vault default backend `cryfs` depends on fuse2. For this reason it's recommended that you migrate to an alternative that doesn't depend on fuse2, for example `fscrypt`. If you don't want to do so, you can add fuse2 back by layering something that depends on it, as described in the AppImage FAQ.

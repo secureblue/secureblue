@@ -4,5 +4,3 @@ repos:
 install:
   - hardened_malloc
   - patch
-remove:
-  - fuse

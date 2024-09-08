@@ -8,3 +8,5 @@ remove:
   - samba-winbind-modules
   - samba
   - samba-usershares
+remove:
+  - ifuse

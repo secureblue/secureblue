@@ -4,6 +4,3 @@ repos:
 install:
   - hardened_malloc
   - patch
-
-
-

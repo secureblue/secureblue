@@ -13,11 +13,13 @@ install:
   - setools
   
 remove:
+  - fuse
   - fedora-chromium-config
   - fedora-flathub-remote
   - open-vm-tools
   - open-vm-tools-desktop
   - virtualbox-guest-additions
+  - passim
 
 
 

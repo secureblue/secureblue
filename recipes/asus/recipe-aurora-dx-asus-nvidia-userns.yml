@@ -8,6 +8,7 @@ image-version: 40
 
 modules:
   - from-file: common/initialization-scripts.yml
+  - from-file: common/dx-packages.yml
   - from-file: common/kinoite-packages.yml
   - from-file: common/aurora-packages.yml
   - from-file: common/gui-packages.yml

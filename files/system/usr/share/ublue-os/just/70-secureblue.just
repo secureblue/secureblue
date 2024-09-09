@@ -356,7 +356,7 @@ audit-secureblue:
         local line=$(grep "^${prefix}=" <<< "$permissions" | sed -e "s/^${prefix}=//" -e "s/#.*//")
         IFS=';' read -r -a list <<< "$line"
         for p in ${list[@]}; do
-            if [[ "$p" =~ $query ]]; then
+            if [[ "$p" =~ ^$query$ ]]; then
                 return
             fi
         done

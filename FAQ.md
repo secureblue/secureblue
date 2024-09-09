@@ -97,3 +97,13 @@ This is a [known issue](https://forums.developer.nvidia.com/t/550-54-14-cannot-c
 On the secureblue github page, click "Watch", and then "Custom", and select Releases like so:
 
 ![image](https://github.com/user-attachments/assets/38146394-f730-4b84-8bfa-4fbbf29350ff)
+
+#### Why don't my AppImages work?
+
+AppImages depend on fuse2, which is unmaintained and depends on a suid root binary. For this reason, fuse2 support is removed by default. It's strongly recommended that you find alternative mechanisms to install your applications (flatpak, distrobox, etc). If you can't find an alternative and still need fuse2, you can add it back by layering something that depends on it. 
+
+For example: `rpm-ostree install zfs-fuse`
+
+#### Why don't KDE Vaults work?
+
+Similar to the AppImage FAQ, the KDE Vault default backend `cryfs` depends on fuse2. For this reason it's recommended that you migrate to an alternative that doesn't depend on fuse2, for example `fscrypt`. If you don't want to do so, you can add fuse2 back by layering something that depends on it, as described in the AppImage FAQ.

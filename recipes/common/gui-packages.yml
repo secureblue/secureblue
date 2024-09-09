@@ -13,6 +13,7 @@ install:
   - setools
   
 remove:
+  - fuse
   - fedora-chromium-config
   - fedora-flathub-remote
   - open-vm-tools

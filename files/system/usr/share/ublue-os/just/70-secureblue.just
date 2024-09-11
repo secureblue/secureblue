@@ -489,7 +489,7 @@ audit-secureblue:
     fi
 
     EXTENSIONS_TEST_STRING="Ensuring GNOME user extensions are disabled"
-    if command -v gsettings &> /dev/null; then
+    if command -v gnome-shell &> /dev/null; then
         if [ "$(gsettings get org.gnome.shell allow-extension-installation)" = "false" ]; then
             print_status "$EXTENSIONS_TEST_STRING" "$STATUS_SUCCESS"
         else

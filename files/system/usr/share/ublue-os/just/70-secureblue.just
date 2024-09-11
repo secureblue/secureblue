@@ -489,7 +489,9 @@ audit-secureblue:
     fi
 
     EXTENSIONS_TEST_STRING="Ensuring GNOME user extensions are disabled"
-    if command -v gsettings &> /dev/null; then
+    RPM_OSTREE_STATUS=$(rpm-ostree status --json --booted)
+    IS_IMAGE_NOT_SECURECORE=$(echo $RPM_OSTREE_STATUS | jq -r '.deployments[0]."container-image-reference" // empty | split("/")[-1]' | grep blue)
+    if (command -v gsettings &> /dev/null) && [ $IS_IMAGE_NOT_SECURECORE ]; then
         if [ "$(gsettings get org.gnome.shell allow-extension-installation)" = "false" ]; then
             print_status "$EXTENSIONS_TEST_STRING" "$STATUS_SUCCESS"
         else

@@ -356,7 +356,7 @@ audit-secureblue:
         local line=$(grep "^${prefix}=" <<< "$permissions" | sed -e "s/^${prefix}=//" -e "s/#.*//")
         IFS=';' read -r -a list <<< "$line"
         for p in ${list[@]}; do
-            if [[ "$p" == "$query" ]]; then
+            if [[ "$p" =~ ^$query$ ]]; then
                 return
             fi
         done
@@ -489,7 +489,7 @@ audit-secureblue:
     fi
 
     EXTENSIONS_TEST_STRING="Ensuring GNOME user extensions are disabled"
-    if command -v gsettings &> /dev/null; then
+    if command -v gnome-shell &> /dev/null; then
         if [ "$(gsettings get org.gnome.shell allow-extension-installation)" = "false" ]; then
             print_status "$EXTENSIONS_TEST_STRING" "$STATUS_SUCCESS"
         else
@@ -571,6 +571,10 @@ audit-secureblue:
             if hasPermission "$permissions" "sockets" "x11" && ! hasPermission "$permissions" "sockets" "fallback-x11"; then
                 status="$STATUS_FAILURE"
                 warnings+=("> $f has x11 access!")
+            fi
+            if ! hasPermission "$permissions" "LD_PRELOAD" .*"/libhardened_malloc.so"; then
+                status="$STATUS_FAILURE"
+                warnings+=("> $f is not using hardened_malloc!")
             fi
             flatpak_test_string="Auditing $f"
             print_status "$flatpak_test_string" "$status"

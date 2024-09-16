@@ -55,10 +55,6 @@ jobs:
           - asus/recipe-aurora-asus.yml
           - asus/recipe-aurora-asus-nvidia.yml
           # server
-          - server/recipe-server-main.yml
-          - server/recipe-server-nvidia.yml
-          - server/recipe-server-zfs-main.yml
-          - server/recipe-server-zfs-nvidia.yml
           - securecore/recipe-securecore-main.yml
           - securecore/recipe-securecore-nvidia.yml
           - securecore/recipe-securecore-zfs-main.yml
@@ -105,10 +101,6 @@ jobs:
           - asus/recipe-aurora-dx-asus-userns.yml
           - asus/recipe-aurora-dx-asus-nvidia-userns.yml
           # server
-          - server/recipe-server-main-userns.yml
-          - server/recipe-server-nvidia-userns.yml
-          - server/recipe-server-zfs-main-userns.yml
-          - server/recipe-server-zfs-nvidia-userns.yml
           - securecore/recipe-securecore-main-userns.yml
           - securecore/recipe-securecore-nvidia-userns.yml
           - securecore/recipe-securecore-zfs-main-userns.yml

@@ -572,6 +572,14 @@ audit-secureblue:
                 status="$STATUS_FAILURE"
                 warnings+=("> $f has x11 access!")
             fi
+            if hasPermission "$permissions" "sockets" "session-bus"; then
+                [[ "$status" != "$STATUS_FAILURE" ]] && status="$STATUS_WARNING"
+                warnings+=("> $f has access to the D-Bus session bus!")
+            fi
+            if hasPermission "$permissions" "sockets" "system-bus"; then
+                [[ "$status" != "$STATUS_FAILURE" ]] && status="$STATUS_WARNING"
+                warnings+=("> $f has access to the D-Bus system bus!")
+            fi
             if ! hasPermission "$permissions" "LD_PRELOAD" .*"/libhardened_malloc.so"; then
                 status="$STATUS_FAILURE"
                 warnings+=("> $f is not using hardened_malloc!")

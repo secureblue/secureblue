@@ -14,7 +14,7 @@ modules:
   - from-file: common/bluefin-packages.yml
   - from-file: common/gui-packages.yml
   - from-file: common/common-packages.yml 
-  - from-file: common/non-cosmic-scripts.yml
+  - from-file: common/rechunked-scripts.yml
   - from-file: common/gui-scripts.yml
   - from-file: common/bluefin-scripts.yml
   - from-file: common/common-files.yml

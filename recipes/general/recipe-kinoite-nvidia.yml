@@ -11,7 +11,7 @@ modules:
   - from-file: common/kinoite-packages.yml
   - from-file: common/gui-packages.yml
   - from-file: common/common-packages.yml 
-  - from-file: common/non-cosmic-scripts.yml
+  - from-file: common/non-rechunked-scripts.yml
   - from-file: common/disableuserns-packages.yml
   - from-file: common/remove-firefox.yml
   - from-file: common/gui-scripts.yml

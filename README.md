@@ -68,7 +68,11 @@ If you want to add your own customizations on top of secureblue, you are advised
 
 # FAQ
 
-[FAQ](FAQ.md)
+If you're encountering a problem or have a question, please consult the [FAQ](FAQ.md). If you can't find your answer there, please ask in the support channel on Discord.
+
+# Sponsor
+
+Sponsorship options are on the [Donate](DONATE.md) page. All donations are appreciated. Sponsors get a role on the Discord if desired. If you've donated but haven't yet been tagged with the role, please reach out to me.
 
 # Installation
 

@@ -8,3 +8,4 @@ scripts:
   - removesuid.sh
   - disablegeoclue.sh
   - addjustconfig.sh
+  - addbrewjustimport.sh

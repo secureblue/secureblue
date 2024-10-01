@@ -26,7 +26,9 @@ ujust configure-nvidia-optimus
 
 ## Enroll secureboot key
 
-```ujust enroll-secure-boot-key```
+```
+ujust enroll-secure-boot-key
+```
 
 ## Set kargs
 
@@ -34,23 +36,25 @@ Documentation is available [here](https://github.com/secureblue/secureblue/blob/
 
 ### Set hardened kargs
 
-```ujust set-kargs-hardening```
+```
+ujust set-kargs-hardening
+```
 
 ### Set unstable hardened kargs
 
 *Can cause issues on some hardware, but stable on other hardware*
 
-```ujust set-kargs-hardening-unstable```
-
-## Install Homebrew
-
-`ujust brew`
+```
+ujust set-kargs-hardening-unstable
+```
 
 ## Setup USBGuard
 
 *This will generate a policy based on your currently attached USB devices and block all others, then enable usbguard*
 
-```ujust setup-usbguard```
+```
+ujust setup-usbguard
+```
 
 ## GRUB
 ### Set a password
@@ -59,7 +63,9 @@ Setting a GRUB password helps protect the device from physical tampering and mit
 
 To set a GRUB password, use the following command. By default, the password will be required when modifying boot entries, but not when booting existing entries.
 
-```sudo grub2-setpassword```
+```
+sudo grub2-setpassword
+```
 
 GRUB will prompt for a username and password. The default username is root.
 
@@ -98,16 +104,12 @@ When using a non-wheel user, you can add the user to other groups if you want. F
 
 To mitigate [LD_PRELOAD attacks](https://github.com/Aishou/wayland-keylogger), run:
 
-`ujust toggle-bash-environment-lockdown`
+```
+ujust toggle-bash-environment-lockdown
+```
 
 ## LUKS TPM2 Unlock
 
 To enable TPM2 LUKS unlocking (do not use this if you have an AMD CPU), run:
 
 `ujust setup-luks-tpm-unlock` and type `Y` when asked if you want to set a PIN.
-
-## Chromium extension
-
-1. Go to [uBlock Origin Lite](https://chromewebstore.google.com/detail/ublock-origin-lite/ddkjiahejlhfcafbddmgiahcphecmpfh?pli=1) ([Why Lite?](https://developer.chrome.com/docs/extensions/develop/migrate/improve-security))
-2. Install it
-3. In the extension's settings, make sure all of the lists under Default and Miscellaneous are checked (and at your preference, lists in the Annoyances section or country-specific lists)

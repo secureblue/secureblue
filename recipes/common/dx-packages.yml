@@ -6,3 +6,4 @@ remove:
   - libvirt-daemon-driver-storage
   - libvirt
   - libvirt-nss
+  - libguestfs

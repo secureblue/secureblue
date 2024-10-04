@@ -413,6 +413,20 @@ audit-secureblue:
         print_status "$SYSCTL_TEST_STRING" "$STATUS_FAILURE"
     fi
 
+    SYSCTL_TEST_STRING="Ensuring bluetooth is not loaded"
+    if ! lsmod | cut -d " " -f 1 | grep -w "bluetooth" > /dev/null; then
+        print_status "$SYSCTL_TEST_STRING" "$STATUS_SUCCESS"
+    else
+        print_status "$SYSCTL_TEST_STRING" "$STATUS_FAILURE"
+    fi
+
+    SYSCTL_TEST_STRING="Ensuring ptrace is forbidden"
+    if [[ "$(cat /proc/sys/kernel/yama/ptrace_scope)" == 3 ]]; then
+        print_status "$SYSCTL_TEST_STRING" "$STATUS_SUCCESS"
+    else
+        print_status "$SYSCTL_TEST_STRING" "$STATUS_FAILURE"
+    fi
+
     AUTHSELECT_TEST_STRING="Ensuring no authselect overrides"
     if diff /usr/etc/authselect /etc/authselect --suppress-common-lines -r > /dev/null; then
         print_status "$AUTHSELECT_TEST_STRING" "$STATUS_SUCCESS"

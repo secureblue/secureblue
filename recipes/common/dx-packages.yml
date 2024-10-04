@@ -7,4 +7,5 @@ remove:
   - libvirt
   - libvirt-nss
   - libguestfs
+  - libguestfs-xfs
   - virt-v2v

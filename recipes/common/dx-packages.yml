@@ -8,4 +8,5 @@ remove:
   - libvirt-nss
   - libguestfs
   - libguestfs-xfs
+  - guestfs-tools
   - virt-v2v

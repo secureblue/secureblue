@@ -418,6 +418,7 @@ audit-secureblue:
         print_status "$SYSCTL_TEST_STRING" "$STATUS_SUCCESS"
     else
         print_status "$SYSCTL_TEST_STRING" "$STATUS_FAILURE"
+        bluetooth_loaded=true
     fi
 
     SYSCTL_TEST_STRING="Ensuring ptrace is forbidden"
@@ -425,6 +426,7 @@ audit-secureblue:
         print_status "$SYSCTL_TEST_STRING" "$STATUS_SUCCESS"
     else
         print_status "$SYSCTL_TEST_STRING" "$STATUS_FAILURE"
+        ptrace_allowed=true
     fi
 
     AUTHSELECT_TEST_STRING="Ensuring no authselect overrides"
@@ -597,6 +599,14 @@ audit-secureblue:
             if ! hasPermission "$permissions" "LD_PRELOAD" .*"/libhardened_malloc.so"; then
                 status="$STATUS_FAILURE"
                 warnings+=("> $f is not using hardened_malloc!")
+            fi
+            if [[ "$bluetooth_loaded" == "true" ]] && hasPermission "$permissions" "features" "bluetooth"; then
+                status="$STATUS_FAILURE"
+                warnings+=("> $f has bluetooth access!")
+            fi
+            if [[ "$ptrace_allowed" == "true" ]] && hasPermission "$permissions" "features" "devel"; then
+                status="$STATUS_FAILURE"
+                warnings+=("> $f has ptrace access!")
             fi
             flatpak_test_string="Auditing $f"
             print_status "$flatpak_test_string" "$status"

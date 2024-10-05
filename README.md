@@ -125,7 +125,7 @@ While it's recommended to use a Fedora Atomic iso to install and then rebase tha
 - `sericea-nvidia-hardened`
 - `sericea-main-userns-hardened`
 - `sericea-nvidia-userns-hardened`
-### Beta
+### Beta  <sup>[wayblue?](https://github.com/wayblueorg/wayblue)</sup>
 - `wayblue-wayfire-main-hardened`
 - `wayblue-wayfire-nvidia-hardened`
 - `wayblue-wayfire-main-userns-hardened`
@@ -142,7 +142,7 @@ While it's recommended to use a Fedora Atomic iso to install and then rebase tha
 - `wayblue-sway-nvidia-hardened`
 - `wayblue-sway-main-userns-hardened`
 - `wayblue-sway-nvidia-userns-hardened`
-### Experimental 
+### Experimental <sup>[bluefin? aurora?](https://github.com/ublue-os/bluefin)</sup>
 - `aurora-main-hardened`
 - `aurora-nvidia-hardened`
 - `aurora-main-userns-hardened`

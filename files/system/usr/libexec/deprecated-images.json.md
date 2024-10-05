@@ -2,6 +2,12 @@
 
 The following image types have been deprecated:
 
+## bluefin/aurora
+
+Rationale: See https://github.com/secureblue/secureblue/releases/tag/v3.2.2
+
+Rebase to: The equivalent image replacing `bluefin` with `silverblue` or `aurora` with `kinoite`. For example, for `aurora-nvidia-hardened`, rebase to `kinoite-nvidia-hardened`.
+
 ## server
 
 Rationale: Upstream decisions have required us to [fork](https://github.com/secureblue/coreos/). This brings with it the following critical migration steps *before* rebasing:

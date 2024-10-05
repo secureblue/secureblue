@@ -143,18 +143,6 @@ While it's recommended to use a Fedora Atomic iso to install and then rebase tha
 - `wayblue-sway-main-userns-hardened`
 - `wayblue-sway-nvidia-userns-hardened`
 ### Experimental <sup>[bluefin? aurora?](https://github.com/ublue-os/bluefin)</sup>
-- `aurora-main-hardened`
-- `aurora-nvidia-hardened`
-- `aurora-main-userns-hardened`
-- `aurora-nvidia-userns-hardened`
-- `aurora-dx-main-userns-hardened`
-- `aurora-dx-nvidia-userns-hardened`
-- `bluefin-main-hardened`
-- `bluefin-nvidia-hardened`
-- `bluefin-dx-main-userns-hardened`
-- `bluefin-dx-nvidia-userns-hardened`
-- `bluefin-main-userns-hardened`
-- `bluefin-nvidia-userns-hardened`
 - `cinnamon-main-hardened`
 - `cinnamon-nvidia-hardened`
 - `cinnamon-main-userns-hardened`
@@ -163,28 +151,6 @@ While it's recommended to use a Fedora Atomic iso to install and then rebase tha
 - `cosmic-nvidia-hardened`
 - `cosmic-main-userns-hardened`
 - `cosmic-nvidia-userns-hardened`
-### Asus <sup>[source](https://github.com/ublue-os/hwe/tree/main/asus)</sup>
-- `silverblue-asus-hardened`
-- `silverblue-asus-nvidia-hardened`
-- `silverblue-asus-userns-hardened`
-- `silverblue-asus-nvidia-userns-hardened`
-- `kinoite-asus-hardened`
-- `kinoite-asus-nvidia-hardened`
-- `kinoite-asus-userns-hardened`
-- `kinoite-asus-nvidia-userns-hardened`
-- `aurora-asus-hardened`
-- `aurora-asus-nvidia-hardened`
-- `aurora-asus-userns-hardened`
-- `aurora-asus-nvidia-userns-hardened`
-- `aurora-dx-asus-userns-hardened`
-- `aurora-dx-asus-nvidia-userns-hardened`
-### Surface <sup>[source](https://github.com/ublue-os/hwe/tree/main/surface)</sup>
-- `aurora-surface-hardened`
-- `aurora-surface-nvidia-hardened`
-- `aurora-surface-userns-hardened`
-- `aurora-surface-nvidia-userns-hardened`
-- `aurora-dx-surface-userns-hardened`
-- `aurora-dx-surface-nvidia-userns-hardened`
 ## Server
 - `securecore-main-hardened`
 - `securecore-nvidia-hardened`
@@ -194,7 +160,15 @@ While it's recommended to use a Fedora Atomic iso to install and then rebase tha
 - `securecore-zfs-nvidia-hardened`
 - `securecore-zfs-main-userns-hardened`
 - `securecore-zfs-nvidia-userns-hardened`
-  
+## Asus <sup>[source](https://github.com/ublue-os/hwe/tree/main/asus)</sup>
+- `silverblue-asus-hardened`
+- `silverblue-asus-nvidia-hardened`
+- `silverblue-asus-userns-hardened`
+- `silverblue-asus-nvidia-userns-hardened`
+- `kinoite-asus-hardened`
+- `kinoite-asus-nvidia-hardened`
+- `kinoite-asus-userns-hardened`
+- `kinoite-asus-nvidia-userns-hardened`
 # Post-install
 
 After installation, [yafti](https://github.com/ublue-os/yafti) will open. Make sure to follow the steps listed carefully and read the directions closely.

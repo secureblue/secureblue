@@ -3,6 +3,8 @@
       "framework",
       "main-laptop",
       "nvidia-laptop",
-      "server"
+      "server",
+      "bluefin",
+      "aurora"
     ]
 }

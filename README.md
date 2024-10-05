@@ -142,7 +142,7 @@ While it's recommended to use a Fedora Atomic iso to install and then rebase tha
 - `wayblue-sway-nvidia-hardened`
 - `wayblue-sway-main-userns-hardened`
 - `wayblue-sway-nvidia-userns-hardened`
-### Experimental <sup>[bluefin? aurora?](https://github.com/ublue-os/bluefin)</sup>
+### Experimental
 - `cinnamon-main-hardened`
 - `cinnamon-nvidia-hardened`
 - `cinnamon-main-userns-hardened`

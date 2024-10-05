@@ -3,4 +3,6 @@ scripts:
   - disablecups.sh
   - disablesshd.sh
   - disableavahidaemon.sh
+  - disablealsastate.sh
+  - disablemodemmanager.sh
   - justfilehardening.sh

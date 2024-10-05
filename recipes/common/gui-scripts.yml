@@ -5,4 +5,5 @@ scripts:
   - disableavahidaemon.sh
   - disablealsastate.sh
   - disablemodemmanager.sh
+  - disablenfsdaemons.sh
   - justfilehardening.sh

@@ -26,4 +26,4 @@ systemctl disable rpcbind
 systemctl mask rpcbind
 
 systemctl disable gssproxy
-systemctl disable gssproxy
+systemctl mask gssproxy

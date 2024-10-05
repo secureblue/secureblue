@@ -19,8 +19,6 @@ remove:
   - open-vm-tools-desktop
   - virtualbox-guest-additions
   - passim
-  - nfs-utils
-
 
 
 

@@ -19,7 +19,6 @@ secureblue applies hardening with the following goals in mind:
 
 - Increase defenses against the exploitation of both known and unknown vulnerabilities.
 - Avoid sacrificing usability for most use cases where possible
-- Disabling metrics and data collection by default where they exist, so long as this has no security implications 
 
 The following are not in scope:
 - Anything that sacrifices security for "privacy". Fedora is already sufficiently private and "privacy" often serves as a euphemism for security theater. This is especially true when at odds with improving security.
@@ -28,9 +27,12 @@ The following are not in scope:
 # Hardening
 
 - Installing and enabling [hardened_malloc](https://github.com/GrapheneOS/hardened_malloc) globally, including for flatpaks. <sup>[Thanks to rusty-snake's hardened_malloc spec](https://github.com/rusty-snake/fedora-extras)</sup>
-- Installing [hardened-chromium](https://github.com/secureblue/hardened-chromium), which is inspired by and incorporates patches from [Vanadium](https://github.com/GrapheneOS/Vanadium). <sup>[Why chromium?](https://grapheneos.org/usage#web-browsing)</sup> <sup>[Why not flatpak chromium?](https://forum.vivaldi.net/post/669805)</sup>
+- Installing [hardened-chromium](https://github.com/secureblue/hardened-chromium), which is inspired by and incorporates patches from [Vanadium](https://github.com/GrapheneOS/Vanadium) as well as numerous secureblue hardening patches. <sup>[Why chromium?](https://grapheneos.org/usage#web-browsing)</sup> <sup>[Why not flatpak chromium?](https://forum.vivaldi.net/post/669805)</sup>
 - Setting numerous hardened sysctl values <sup>[details](https://github.com/secureblue/secureblue/blob/live/files/system/etc/sysctl.d/hardening.conf)</sup>
-- Disabling coredumps in limits.conf
+- Remove SUID-root from [numerous binaries](https://github.com/secureblue/secureblue/blob/live/files/scripts/removesuid.sh) and replace functionality [using capabilities](https://github.com/secureblue/secureblue/blob/live/files/system/usr/bin/setcapsforunsuidbinaries)
+- Disable Xwayland by default (for GNOME, Plasma, and Sway images)
+- Mitigation of [LD_PRELOAD attacks](https://github.com/Aishou/wayland-keylogger) via `ujust toggle-bash-environment-lockdown`
+- Disabling coredumps 
 - Disabling all ports and services for firewalld
 - Adds per-network MAC randomization
 - Blacklisting numerous unused kernel modules to reduce attack surface <sup>[details](https://github.com/secureblue/secureblue/blob/live/files/system/etc/modprobe.d/blacklist.conf)</sup>
@@ -47,13 +49,10 @@ The following are not in scope:
 - Disable install & usage of GNOME user extensions by default
 - Use HTTPS for all rpm mirrors
 - Set all default container policies to `reject`, `signedBy`, or `sigstoreSigned`
-- Remove SUID-root from [numerous binaries](https://github.com/secureblue/secureblue/blob/live/files/scripts/removesuid.sh) and replace functionality [using capabilities](https://github.com/secureblue/secureblue/blob/live/files/system/usr/bin/setcapsforunsuidbinaries)
-- Disable Xwayland by default (for GNOME, Plasma, and Sway images)
-- Mitigation of [LD_PRELOAD attacks](https://github.com/Aishou/wayland-keylogger) via `ujust toggle-bash-environment-lockdown`
 - Disable a variety of services by default (including cups, geoclue, passim, and others)
 - Removal of the unmaintained and suid-root fuse2 by default
 - (Non-userns variants) Disabling unprivileged user namespaces
-- (Non-userns variants) Replacing bubblewrap with bubblewrap-suid so flatpak can be used without unprivileged user namespaces
+- (Non-userns variants) Replacing bubblewrap with suid-root bubblewrap so flatpak can be used without unprivileged user namespaces
 
 # Rationale
 

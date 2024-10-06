@@ -15,18 +15,16 @@ function is_yes {
 
 # Define image configurations
 declare -A image_configs=(
-    ["server"]="Server"
-    ["server-zfs"]="Server"
+    ["securecore"]="Server"
+    ["securecore-zfs"]="Server"
     ["silverblue"]="Silverblue:asus"
     ["kinoite"]="Kinoite:asus"
-    ["bluefin"]="Silverblue:dx"
     ["sericea"]="Sericea"
     ["wayblue-wayfire"]="Sericea"
     ["wayblue-sway"]="Sericea"
     ["wayblue-river"]="Sericea"
     ["wayblue-hyprland"]="Sericea"
     ["cinnamon"]="Silverblue"
-    ["aurora"]="Kinoite:dx:asus:surface"
     ["cosmic"]="Kinoite"
 )
 
@@ -54,21 +52,10 @@ else
             echo "Invalid option"
         fi
     done
-
-    # Ask specific questions based on the chosen desktop
-    if [[ $options == *"dx"* ]]; then
-        read -p "Do you need Developer Experience (dx)? (yes/No): " use_dx
-        is_yes "$use_dx" && additional_params+="-dx"
-    fi
-
+    
     if [[ $options == *"asus"* ]]; then
         read -p "Do you use an Asus laptop? (yes/No): " is_asus
         is_yes "$is_asus" && additional_params+="-asus"
-    fi
-
-    if [[ $options == *"surface"* && $additional_params != *"-asus"* ]]; then
-        read -p "Do you use a Microsoft Surface device? (yes/No): " is_surface
-        is_yes "$is_surface" && additional_params+="-surface"
     fi
 fi
 

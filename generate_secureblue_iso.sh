@@ -36,7 +36,7 @@ variant=""
 read -p "Is this for a server? (yes/No): " is_server
 if is_yes "$is_server"; then
     read -p "Do you need ZFS support? (yes/No): " use_zfs
-    image_name=$(is_yes "$use_zfs" && echo "server-zfs" || echo "server")
+    image_name=$(is_yes "$use_zfs" && echo "securecore-zfs" || echo "securecore")
     variant=${image_configs[$image_name]}
 else
     # For desktops, present all non-server options

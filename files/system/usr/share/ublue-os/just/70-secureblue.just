@@ -417,14 +417,6 @@ audit-secureblue:
         done
     fi
 
-    SYSCTL_TEST_STRING="Ensuring bluetooth is not loaded"
-    if ! lsmod | cut -d " " -f 1 | grep -w "bluetooth" > /dev/null; then
-        print_status "$SYSCTL_TEST_STRING" "$STATUS_SUCCESS"
-    else
-        print_status "$SYSCTL_TEST_STRING" "$STATUS_FAILURE"
-        bluetooth_loaded=true
-    fi
-
     SYSCTL_TEST_STRING="Ensuring ptrace is forbidden"
     if [[ "$(cat /proc/sys/kernel/yama/ptrace_scope)" == 3 ]]; then
         print_status "$SYSCTL_TEST_STRING" "$STATUS_SUCCESS"

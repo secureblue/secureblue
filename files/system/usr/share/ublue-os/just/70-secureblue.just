@@ -420,11 +420,11 @@ audit-secureblue:
         done
     fi
 
-    SYSCTL_TEST_STRING="Ensuring ptrace is forbidden"
+    PTRACE_TEST_STRING="Ensuring ptrace is forbidden"
     if [[ "$(cat /proc/sys/kernel/yama/ptrace_scope)" == 3 ]]; then
-        print_status "$SYSCTL_TEST_STRING" "$STATUS_SUCCESS"
+        print_status "$PTRACE_TEST_STRING" "$STATUS_SUCCESS"
     else
-        print_status "$SYSCTL_TEST_STRING" "$STATUS_FAILURE"
+        print_status "$PTRACE_TEST_STRING" "$STATUS_FAILURE"
         ptrace_allowed=true
     fi
 

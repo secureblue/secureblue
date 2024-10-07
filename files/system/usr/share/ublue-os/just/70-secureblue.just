@@ -406,26 +406,26 @@ audit-secureblue:
         print_status "$SYSCTL_TEST_STRING" "$STATUS_FAILURE"
     fi
 
-    SYSCTL_TEST_STRING="Ensuring no modprobe overrides"
+    MODPROBE_TEST_STRING="Ensuring no modprobe overrides"
     if diff /usr/etc/modprobe.d/blacklist.conf /etc/modprobe.d/blacklist.conf > /dev/null; then
-        print_status "$SYSCTL_TEST_STRING" "$STATUS_SUCCESS"
+        print_status "$MODPROBE_TEST_STRING" "$STATUS_SUCCESS"
     else
-        print_status "$SYSCTL_TEST_STRING" "$STATUS_FAILURE"
+        print_status "$MODPROBE_TEST_STRING" "$STATUS_FAILURE"
     fi
 
-    SYSCTL_TEST_STRING="Ensuring bluetooth is not loaded"
+    BLUETOOTH_TEST_STRING="Ensuring bluetooth is not loaded"
     if ! lsmod | cut -d " " -f 1 | grep -w "bluetooth" > /dev/null; then
-        print_status "$SYSCTL_TEST_STRING" "$STATUS_SUCCESS"
+        print_status "$BLUETOOTH_TEST_STRING" "$STATUS_SUCCESS"
     else
-        print_status "$SYSCTL_TEST_STRING" "$STATUS_FAILURE"
+        print_status "$BLUETOOTH_TEST_STRING" "$STATUS_FAILURE"
         bluetooth_loaded=true
     fi
 
-    SYSCTL_TEST_STRING="Ensuring ptrace is forbidden"
+    PTRACE_TEST_STRING="Ensuring ptrace is forbidden"
     if [[ "$(cat /proc/sys/kernel/yama/ptrace_scope)" == 3 ]]; then
-        print_status "$SYSCTL_TEST_STRING" "$STATUS_SUCCESS"
+        print_status "$PTRACE_TEST_STRING" "$STATUS_SUCCESS"
     else
-        print_status "$SYSCTL_TEST_STRING" "$STATUS_FAILURE"
+        print_status "$PTRACE_TEST_STRING" "$STATUS_FAILURE"
         ptrace_allowed=true
     fi
 

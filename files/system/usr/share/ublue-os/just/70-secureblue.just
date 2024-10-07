@@ -407,10 +407,14 @@ audit-secureblue:
     fi
 
     SYSCTL_TEST_STRING="Ensuring no modprobe overrides"
-    if diff /usr/etc/modprobe.d/blacklist.conf /etc/modprobe.d/blacklist.conf > /dev/null; then
+    readarray -t unwanted_modules < <(comm -12 <(lsmod | cut -f 1 -d " " | sort) <(cat /usr/etc/modprobe.d/blacklist.conf | grep -E '^(blacklist)|(install)' | cut -f 2 -d " " | sort))
+    if [[ -z "${#modules[@]}" ]] && diff /usr/etc/modprobe.d/blacklist.conf /etc/modprobe.d/blacklist.conf > /dev/null; then
         print_status "$SYSCTL_TEST_STRING" "$STATUS_SUCCESS"
     else
         print_status "$SYSCTL_TEST_STRING" "$STATUS_FAILURE"
+        for module in "${unwanted_modules[@]}"; do
+            echo "> $module is in blacklist.conf but it is loaded"
+        done
     fi
 
     SYSCTL_TEST_STRING="Ensuring bluetooth is not loaded"

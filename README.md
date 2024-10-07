@@ -79,7 +79,7 @@ Have a look at [PREINSTALL-README](PREINSTALL-README.md) before proceeding.
 
 ## Rebasing (Recommended)
 
-To rebase a Fedora Atomic installation, choose an $IMAGE_NAME from the [list below](README.md#images-userns), then follow these steps:
+To rebase a [Fedora Atomic](https://fedoraproject.org/atomic-desktops/) installation, choose an $IMAGE_NAME from the [list below](README.md#images-userns), then follow these steps:
 
 *(Important note: the **only** supported tag is `latest`)*
 

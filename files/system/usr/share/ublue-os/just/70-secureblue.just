@@ -414,6 +414,9 @@ audit-secureblue:
         print_status "$MODPROBE_TEST_STRING" "$STATUS_FAILURE"
         for module in "${unwanted_modules[@]}"; do
             echo "> $module is in blacklist.conf but it is loaded"
+            if [[ "$module" == "bluetooth" ]]; then
+                bluetooth_loaded=true
+            fi
         done
     fi
 

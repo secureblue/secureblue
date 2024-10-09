@@ -5,6 +5,7 @@ repos:
 install:
   - headsetcontrol
   - hardened-chromium
+  - hardened-chromium-subresource-filter
   - mediainfo
   - bubblejail
   - usbguard-notifier

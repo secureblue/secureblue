@@ -10,6 +10,7 @@ install:
   - alsa-firmware
   - patch
   - heif-pixbuf-loader
+  - yubikey-manager
 
   # required for brew's installer
   # https://github.com/blue-build/modules/pull/341/files

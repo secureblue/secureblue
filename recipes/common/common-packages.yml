@@ -36,7 +36,7 @@ install:
   - ffmpegthumbnailer
   - unrar
   - pipewire-codec-aptx
-  - libfdk-aac
+  - fdk-aac
 
 remove:
   - ffmpeg-free

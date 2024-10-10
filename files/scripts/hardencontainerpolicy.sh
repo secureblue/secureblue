@@ -3,11 +3,9 @@
 # Tell build process to exit if there are any errors.
 set -oue pipefail
 
-sed -i 's/insecureAcceptAnything/reject/' /usr/etc/containers/policy.json
+sed -i 's/insecureAcceptAnything/reject/' /etc/containers/policy.json
 
 
-# Exception for build-container-installer to allow the ISO generation script to work
-# https://github.com/JasonN3/build-container-installer/issues/123
 yq -i -o=j '.transports.docker |=
     {"ghcr.io/jasonn3": [
         {

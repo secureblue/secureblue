@@ -1,4 +1,0 @@
-type: script
-scripts:
-  - disabletailscale.sh
-  - removebluefinfirstboot.sh

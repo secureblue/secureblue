@@ -6,8 +6,6 @@ base-image: ghcr.io/ublue-os/silverblue-main
 
 image-version: 40 
 
-# module configuration, executed in order
-# you can include multiple instances of the same module
 modules:
   - from-file: common/initialization-scripts.yml
   - from-file: common/gnome-packages.yml

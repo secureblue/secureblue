@@ -3,7 +3,49 @@ repos:
   - https://copr.fedorainfracloud.org/coprs/secureblue/hardened_malloc/repo/fedora-%OS_VERSION%/secureblue-hardened_malloc-fedora-%OS_VERSION%.repo
 install:
   - hardened_malloc
-  # needed for some scripts
-  - patch
+
   # missing upstream
-  - rar
+  - openssl
+  - just
+  - alsa-firmware
+  - patch
+  - heif-pixbuf-loader
+
+  # yubikey enablement
+  - pam-u2f
+  - pam_yubico
+  - pamu2fcfg
+
+  # proprietary stuff
+  - libheif-freeworld
+  - libheif-tools
+  - intel-media-driver
+  - mesa-va-drivers-freeworld
+  - gstreamer1-plugin-libav  
+  - gstreamer1-plugins-bad-free-extras  
+  - gstreamer1-plugins-bad-freeworld  
+  - gstreamer1-plugins-ugly  
+  - gstreamer1-vaapi  
+  - ffmpeg
+  - ffmpeg-libs
+  - ffmpegthumbnailer
+  - unrar
+  - pipewire-codec-aptx
+
+remove:
+  - ffmpeg-free
+  - mesa-va-drivers
+  - gstreamer1-plugins-bad-free-libs
+  - gstreamer1-plugins-bad-free
+  - gstreamer1-plugins-ugly-free
+  - libavcodec-free  
+  - libavfilter-free
+  - libavformat-free  
+  - libavutil-free  
+  - libpostproc-free  
+  - libswresample-free  
+  - libswscale-free  
+
+
+
+

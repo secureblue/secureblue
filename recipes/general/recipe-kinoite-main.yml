@@ -2,12 +2,13 @@ name: kinoite-main-hardened
 
 description: "Kinoite main with some hardening applied"
 
-base-image: ghcr.io/ublue-os/kinoite-main
+base-image: quay.io/fedora-ostree-desktops/kinoite
 
 image-version: 40
 
 modules:
   - from-file: common/initialization-scripts.yml
+  - from-file: rpmfusion.yml
   - from-file: common/kinoite-packages.yml
   - from-file: common/gui-packages.yml
   - from-file: common/common-packages.yml 

@@ -35,9 +35,6 @@ install:
 remove:
   - ffmpeg-free
   - mesa-va-drivers
-  - gstreamer1-plugins-bad-free-libs
-  - gstreamer1-plugins-bad-free
-  - gstreamer1-plugins-ugly-free
   - libavcodec-free  
   - libavfilter-free
   - libavformat-free  

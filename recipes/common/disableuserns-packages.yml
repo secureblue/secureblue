@@ -1,8 +1,0 @@
-type: rpm-ostree
-remove:
-  - toolbox
-  - distrobox
-
-
-
-

@@ -11,7 +11,6 @@ modules:
   - from-file: common/rpmfusion.yml
   - from-file: common/silverblue-packages.yml
   - from-file: common/gui-packages.yml
-  - from-file: common/disableuserns-packages.yml
   - from-file: common/common-packages.yml 
   - from-file: common/disable-gnome-extensions.yml
   - from-file: common/non-rechunked-scripts.yml

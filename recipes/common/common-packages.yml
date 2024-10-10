@@ -13,10 +13,6 @@ install:
   - yubikey-manager
   - p7zip
 
-  # required for brew's installer
-  # https://github.com/blue-build/modules/pull/341/files
-  - zstd
-
   # yubikey enablement
   - pam-u2f
   - pam_yubico

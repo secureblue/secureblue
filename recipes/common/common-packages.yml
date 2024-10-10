@@ -11,6 +11,7 @@ install:
   - patch
   - heif-pixbuf-loader
   - yubikey-manager
+  - p7zip
 
   # required for brew's installer
   # https://github.com/blue-build/modules/pull/341/files

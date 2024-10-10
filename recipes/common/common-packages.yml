@@ -11,6 +11,10 @@ install:
   - patch
   - heif-pixbuf-loader
 
+  # required for brew's installer
+  # https://github.com/blue-build/modules/pull/341/files
+  - zstd
+
   # yubikey enablement
   - pam-u2f
   - pam_yubico

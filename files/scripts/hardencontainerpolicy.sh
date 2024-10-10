@@ -17,7 +17,7 @@ yq -i -o=j '.transports.docker |=
         }
       ]
     }
-+ .' /usr/etc/containers/policy.json
++ .' /etc/containers/policy.json
 
 yq -i -o=j '.transports.docker |=
     {"ghcr.io/zelikos": [
@@ -30,4 +30,4 @@ yq -i -o=j '.transports.docker |=
         }
       ]
     }
-+ .' /usr/etc/containers/policy.json
++ .' /etc/containers/policy.json

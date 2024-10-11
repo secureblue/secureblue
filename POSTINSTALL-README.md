@@ -14,6 +14,11 @@ rpm-ostree kargs \
     --append-if-missing=rd.driver.blacklist=nouveau \
     --append-if-missing=modprobe.blacklist=nouveau \
     --append-if-missing=nvidia-drm.modeset=1 \
+```
+
+You may also need this (solves flickering issues on some nvidia hardware):
+```
+rpm-ostree kargs \
     --append-if-missing=initcall_blacklist=simpledrm_platform_driver_init
 ```
 

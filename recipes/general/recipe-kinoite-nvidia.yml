@@ -2,16 +2,18 @@ name: kinoite-nvidia-hardened
 
 description: "Kinoite nvidia with some hardening applied"
 
-base-image: ghcr.io/ublue-os/kinoite-nvidia
+base-image: quay.io/fedora-ostree-desktops/silverblue
 
 image-version: 40
 
 modules:
   - from-file: common/initialization-scripts.yml
+  - from-file: common/rpmfusion.yml
   - from-file: common/kinoite-packages.yml
   - from-file: common/gui-packages.yml
   - from-file: common/common-packages.yml 
-  - from-file: common/non-rechunked-scripts.yml
+  - from-file: common/nvidia-snippets.yml 
+  - from-file: common/nvidia-scripts.yml 
   - from-file: common/disableuserns-packages.yml
   - from-file: common/remove-firefox.yml
   - from-file: common/gui-scripts.yml

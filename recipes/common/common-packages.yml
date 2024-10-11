@@ -6,6 +6,7 @@ install:
 
   # missing upstream
   - openssl
+  - vim
   - just
   - alsa-firmware
   - patch

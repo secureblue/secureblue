@@ -7,3 +7,6 @@ modules:
       - RUN rpm -ivh /ublue-os-udev-rules.noarch.rpm
       - RUN rpm -ivh /ublue-os-update-services.noarch.rpm
       - RUN rpm -ivh /ublue-os-signing.noarch.rpm
+      - COPY --from=ghcr.io/ublue-os/config:latest /build /tmp/build
+      - RUN /tmp/build/ublue-os-luks/build.sh
+      - RUN rpm -ivh /tmp/ublue-os/rpmbuild/RPMS/noarch/ublue-os-luks-*.noarch.rpm

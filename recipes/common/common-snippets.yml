@@ -1,7 +1,5 @@
 modules:
   - type: containerfile
     snippets:
-      - COPY --from=ghcr.io/ublue-os/config:latest /rpms/ublue-os-udev-rules.noarch.rpm /
-        COPY --from=ghcr.io/ublue-os/config:latest /rpms/ublue-os-update-services.noarch.rpm /
-        RUN rpm -ivh /ublue-os-udev-rules.noarch.rpm
-        RUN rpm -ivh /ublue-os-update-services.noarch.rpm
+      - COPY --from=ghcr.io/ublue-os/config:latest /files/ublue-os/udev-rules / 
+      - COPY --from=ghcr.io/ublue-os/config:latest /files/ublue-os/update-services /

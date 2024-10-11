@@ -1,5 +1,0 @@
-type: rpm-ostree
-install:
-  - xorg-x11-drv-nvidia
-  - xorg-x11-drv-nvidia-cuda
-  - nvidia-vaapi-driver

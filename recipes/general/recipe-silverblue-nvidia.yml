@@ -12,7 +12,6 @@ modules:
   - from-file: common/silverblue-packages.yml
   - from-file: common/gui-packages.yml
   - from-file: common/common-packages.yml 
-  - from-file: common/nvidia-packages.yml 
   - from-file: common/nvidia-snippets.yml 
   - from-file: common/nvidia-scripts.yml 
   - from-file: common/disable-gnome-extensions.yml

@@ -7,4 +7,5 @@ modules:
       - COPY --from=ghcr.io/ublue-os/akmods-nvidia-open:main-40 /rpms/ /tmp/rpms
       - RUN find /tmp/rpms
       - RUN rpm-ostree install /tmp/rpms/ublue-os/ublue-os-nvidia*.rpm
+      - RUN sed -i '0,/enabled=0/{s/enabled=0/enabled=1/}' /etc/yum.repos.d/nvidia-container-toolkit.repo
       - RUN rpm-ostree install /tmp/rpms/kmods/kmod-nvidia*.rpm nvidia-container-toolkit xorg-x11-drv-nvidia xorg-x11-drv-nvidia-cuda nvidia-vaapi-driver

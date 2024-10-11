@@ -24,7 +24,7 @@ jobs:
           # non-userns
           # general
           - general/recipe-silverblue-main.yml
-          # - general/recipe-silverblue-nvidia.yml
+          - general/recipe-silverblue-nvidia.yml
           - general/recipe-kinoite-main.yml
           # - general/recipe-kinoite-nvidia.yml
           # - general/recipe-cinnamon-main.yml

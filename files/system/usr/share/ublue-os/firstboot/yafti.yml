@@ -57,7 +57,7 @@ screens:
             - Disk Usage Analyzer: org.gnome.baobab
             - Document Scanner: org.gnome.SimpleScan
             - Document Viewer: org.gnome.Evince
-            - Extension Manager: com.mattjakeman.ExtensionManager
+            - Extensions: org.gnome.Extensions
             - Font Viewer: org.gnome.font-viewer
             - Image Viewer: org.gnome.Loupe
             - Logs: org.gnome.Logs

@@ -8,6 +8,7 @@ image-version: 40
 
 modules:
   - from-file: common/initialization-scripts.yml
+  - from-file: common/common-snippets.yml
   - from-file: common/rpmfusion.yml
   - from-file: common/kinoite-packages.yml
   - from-file: common/gui-packages.yml

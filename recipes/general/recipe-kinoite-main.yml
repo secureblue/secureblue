@@ -2,7 +2,7 @@ name: kinoite-main-hardened
 
 description: "Kinoite, hardened"
 
-base-image: quay.io/fedora-kinoite
+base-image: quay.io/fedora/fedora-kinoite
 
 image-version: 40
 

@@ -13,8 +13,7 @@ If you are using an nvidia image, run this after installation:
 rpm-ostree kargs \
     --append-if-missing=rd.driver.blacklist=nouveau \
     --append-if-missing=modprobe.blacklist=nouveau \
-    --append-if-missing=nvidia-drm.modeset=1 \
-    --append-if-missing=initcall_blacklist=simpledrm_platform_driver_init
+    --append-if-missing=nvidia-drm.modeset=1
 ```
 
 ### Nvidia optimus laptop

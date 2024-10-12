@@ -113,3 +113,11 @@ ujust toggle-bash-environment-lockdown
 To enable TPM2 LUKS unlocking (do not use this if you have an AMD CPU), run:
 
 `ujust setup-luks-tpm-unlock` and type `Y` when asked if you want to set a PIN.
+
+## Validation
+
+To validate your secureblue setup, run:
+
+```
+ujust audit-secureblue
+```

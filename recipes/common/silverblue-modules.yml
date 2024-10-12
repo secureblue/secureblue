@@ -3,7 +3,7 @@ modules:
       install:
         - firewall-config
         - gnome-disk-utility
-            - adw-gtk3-theme
+        - adw-gtk3-theme
         - gnome-epub-thumbnailer
         - gnome-tweaks
       remove:

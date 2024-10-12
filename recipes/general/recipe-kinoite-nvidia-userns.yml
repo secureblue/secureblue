@@ -7,7 +7,7 @@ base-image: quay.io/fedora-ostree-desktops/kinoite
 image-version: 40
 
 modules:
-  - from-file: common/common-modules
+  - from-file: common/common-modules.yml
   - from-file: common/kinoite-modules.yml
   - from-file: common/nvidia-modules.yml 
   - from-file: common/desktop-modules.yml

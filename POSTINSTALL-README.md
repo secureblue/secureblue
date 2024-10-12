@@ -81,9 +81,9 @@ Creating a dedicated wheel user and removing wheel from your primary user helps 
 > [!CAUTION]
 > If you do these steps out of order, it is possible to end up without the ability to administrate your system. You will not be able to use the [traditional GRUB-based method](https://linuxconfig.org/recover-reset-forgotten-linux-root-password) of fixing mistakes like this, either, as this will leave your system in a broken state. However, simply rolling back to an older snapshot of your system, should resolve the problem.
 
-1. ```adduser admin```
-2. ```usermod -aG wheel admin```
-3. ```passwd admin```
+1. ```sudo adduser admin```
+2. ```sudo usermod -aG wheel admin```
+3. ```sudo passwd admin```
 4. ```reboot```
 
 > [!NOTE]

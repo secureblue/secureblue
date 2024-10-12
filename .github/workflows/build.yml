@@ -37,15 +37,15 @@ jobs:
           # - general/recipe-wayblue-river-nvidia.yml
           # - general/recipe-wayblue-sway-main.yml
           # - general/recipe-wayblue-sway-nvidia.yml
-          # - general/recipe-cosmic-main.yml
-          # - general/recipe-cosmic-nvidia.yml
-          # # server
-          # - securecore/recipe-securecore-main.yml
-          # - securecore/recipe-securecore-nvidia.yml
-          # - securecore/recipe-securecore-zfs-main.yml
-          # - securecore/recipe-securecore-zfs-nvidia.yml
-          # # userns
-          # # general
+          - general/recipe-cosmic-main.yml
+          - general/recipe-cosmic-nvidia.yml
+          # server
+          - securecore/recipe-securecore-main.yml
+          - securecore/recipe-securecore-nvidia.yml
+          - securecore/recipe-securecore-zfs-main.yml
+          - securecore/recipe-securecore-zfs-nvidia.yml
+          # userns
+          # general
           - general/recipe-silverblue-main-userns.yml
           - general/recipe-silverblue-nvidia-userns.yml
           - general/recipe-kinoite-main-userns.yml
@@ -60,13 +60,13 @@ jobs:
           # - general/recipe-wayblue-river-nvidia-userns.yml
           # - general/recipe-wayblue-sway-main-userns.yml
           # - general/recipe-wayblue-sway-nvidia-userns.yml
-          # - general/recipe-cosmic-main-userns.yml
-          # - general/recipe-cosmic-nvidia-userns.yml
-          # # server
-          # - securecore/recipe-securecore-main-userns.yml
-          # - securecore/recipe-securecore-nvidia-userns.yml
-          # - securecore/recipe-securecore-zfs-main-userns.yml
-          # - securecore/recipe-securecore-zfs-nvidia-userns.yml
+          - general/recipe-cosmic-main-userns.yml
+          - general/recipe-cosmic-nvidia-userns.yml
+          # server
+          - securecore/recipe-securecore-main-userns.yml
+          - securecore/recipe-securecore-nvidia-userns.yml
+          - securecore/recipe-securecore-zfs-main-userns.yml
+          - securecore/recipe-securecore-zfs-nvidia-userns.yml
 
     steps:
       - name: Checkout repo

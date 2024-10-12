@@ -3,7 +3,12 @@ modules:
       install:
         - setools-console
         - usbguard
+        - firewalld
+        - policycoreutils-python-utils
     - type: files
       files:
         - source: system/server
           destination: /
+    - type: script
+      scripts:
+        - addtailscalerepo.sh

@@ -1,0 +1,9 @@
+modules:
+    - type: rpm-ostree
+      install:
+        - setools-console
+        - usbguard
+    - type: files
+      files:
+        - source: system/server
+          destination: /

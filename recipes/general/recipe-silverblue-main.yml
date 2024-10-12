@@ -1,24 +1,13 @@
 name: silverblue-main-hardened
 
-description: "Silverblue main with some hardening applied"
+description: "Silverblue, hardened"
 
 base-image: quay.io/fedora-ostree-desktops/silverblue
 
 image-version: 40 
 
 modules:
-  - from-file: common/initialization-scripts.yml
-  - from-file: common/common-snippets.yml
-  - from-file: common/rpmfusion.yml
-  - from-file: common/silverblue-packages.yml
-  - from-file: common/gui-packages.yml
-  - from-file: common/common-packages.yml 
-  - from-file: common/disable-gnome-extensions.yml
-  - from-file: common/remove-firefox.yml
-  - from-file: common/gui-scripts.yml
-  - from-file: common/common-files.yml
-  - from-file: common/common-scripts.yml
-  - from-file: common/disableuserns-scripts.yml
-  - type: secureblue-signing
-  - type: yafti
-  - from-file: common/common-brew.yml
+  - from-file: common/common-modules.yml
+  - from-file: common/silverblue-modules.yml
+  - from-file: common/desktop-modules.yml
+  - from-file: common/disableuserns-modules.yml

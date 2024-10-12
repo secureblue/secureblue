@@ -27,10 +27,6 @@ jobs:
           - general/recipe-silverblue-nvidia.yml
           - general/recipe-kinoite-main.yml
           - general/recipe-kinoite-nvidia.yml
-          # - general/recipe-cinnamon-main.yml
-          # - general/recipe-cinnamon-nvidia.yml
-          # - general/recipe-bluefin-main.yml
-          # - general/recipe-bluefin-nvidia.yml
           # - general/recipe-sericea-main.yml
           # - general/recipe-sericea-nvidia.yml
           # - general/recipe-wayblue-wayfire-main.yml
@@ -43,11 +39,6 @@ jobs:
           # - general/recipe-wayblue-sway-nvidia.yml
           # - general/recipe-cosmic-main.yml
           # - general/recipe-cosmic-nvidia.yml
-          # # asus
-          # - asus/recipe-silverblue-asus.yml
-          # - asus/recipe-silverblue-asus-nvidia.yml
-          # - asus/recipe-kinoite-asus.yml
-          # - asus/recipe-kinoite-asus-nvidia.yml
           # # server
           # - securecore/recipe-securecore-main.yml
           # - securecore/recipe-securecore-nvidia.yml
@@ -55,12 +46,10 @@ jobs:
           # - securecore/recipe-securecore-zfs-nvidia.yml
           # # userns
           # # general
-          # - general/recipe-silverblue-main-userns.yml
-          # - general/recipe-silverblue-nvidia-userns.yml
-          # - general/recipe-kinoite-main-userns.yml
-          # - general/recipe-kinoite-nvidia-userns.yml
-          # - general/recipe-cinnamon-main-userns.yml
-          # - general/recipe-cinnamon-nvidia-userns.yml
+          - general/recipe-silverblue-main-userns.yml
+          - general/recipe-silverblue-nvidia-userns.yml
+          - general/recipe-kinoite-main-userns.yml
+          - general/recipe-kinoite-nvidia-userns.yml
           # - general/recipe-sericea-main-userns.yml
           # - general/recipe-sericea-nvidia-userns.yml
           # - general/recipe-wayblue-wayfire-main-userns.yml
@@ -73,11 +62,6 @@ jobs:
           # - general/recipe-wayblue-sway-nvidia-userns.yml
           # - general/recipe-cosmic-main-userns.yml
           # - general/recipe-cosmic-nvidia-userns.yml
-          # # asus
-          # - asus/recipe-silverblue-asus-userns.yml
-          # - asus/recipe-silverblue-asus-nvidia-userns.yml
-          # - asus/recipe-kinoite-asus-userns.yml
-          # - asus/recipe-kinoite-asus-nvidia-userns.yml
           # # server
           # - securecore/recipe-securecore-main-userns.yml
           # - securecore/recipe-securecore-nvidia-userns.yml
@@ -89,7 +73,7 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Add yq (for reading recipe.yml)
-        uses: mikefarah/yq@v4.44.2
+        uses: mikefarah/yq@v4.44.3
 
       - name: Gather image data from recipe
         run: |
@@ -131,7 +115,7 @@ jobs:
       - name: Build secureblue
         uses: blue-build/github-action@v1.6.1
         with:          
-          cli_version: v0.8.14
+          cli_version: v0.8.20
           recipe: ${{ matrix.recipe }}
           cosign_private_key: ${{ secrets.SIGNING_SECRET }}
           registry_token: ${{ github.token }}

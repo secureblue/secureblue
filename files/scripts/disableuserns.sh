@@ -42,7 +42,7 @@ chmod u+s /usr/bin/bwrap
 echo "
 
 
-module chrome_sandbox 1.0;
+module chrome_sandbox_secureblue 1.0;
 
 require {
 	type chrome_sandbox_home_t;
@@ -54,12 +54,12 @@ require {
 
 allow chrome_sandbox_t chrome_sandbox_home_t:file map;
 
-" > chrome_sandbox.te
+" > chrome_sandbox_secureblue.te
 
-checkmodule -M -m -o chrome_sandbox.mod chrome_sandbox.te
-semodule_package -o chrome_sandbox.pp -m chrome_sandbox.mod
-semodule -i chrome_sandbox.pp
+checkmodule -M -m -o chrome_sandbox_secureblue.mod chrome_sandbox_secureblue.te
+semodule_package -o chrome_sandbox_secureblue.pp -m chrome_sandbox_secureblue.mod
+semodule -i chrome_sandbox_secureblue.pp
 
-rm chrome_sandbox.te
-rm chrome_sandbox.mod
-rm chrome_sandbox.pp
+rm chrome_sandbox_secureblue.te
+rm chrome_sandbox_secureblue.mod
+rm chrome_sandbox_secureblue.pp

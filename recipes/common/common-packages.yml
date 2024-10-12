@@ -11,13 +11,13 @@ install:
   - alsa-firmware
   - patch
   - heif-pixbuf-loader
-  - yubikey-manager
   - p7zip
 
   # yubikey enablement
   - pam-u2f
   - pam_yubico
   - pamu2fcfg
+  - yubikey-manager
 
   # proprietary stuff
   - libheif-freeworld
@@ -48,6 +48,8 @@ remove:
   - libswresample-free  
   - libswscale-free  
   - fdk-aac-free
+  - firefox
+  - firefox-langpacks
 
 
 

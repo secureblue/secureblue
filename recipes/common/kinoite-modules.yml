@@ -1,0 +1,12 @@
+modules:
+  - type: rpm-ostree
+    remove:
+      - kde-connect
+      - kde-connect-libs
+      - kdeconnectd
+      - fedora-chromium-config-kde
+      - fuse-encfs
+  - type: files
+    files:  
+      - source: system/kinoite
+        destination: /

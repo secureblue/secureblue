@@ -20,7 +20,6 @@ modules:
         - malcontent-ui-libs
         - malcontent-control
         - fedora-chromium-config-gnome
-    - from-file: common/disable-gnome-extensions.yml
     - type: gschema-overrides
       include:
         - zz1-secureblue.gschema.override

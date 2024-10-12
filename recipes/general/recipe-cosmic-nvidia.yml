@@ -2,7 +2,7 @@ name: cosmic-nvidia-hardened
 
 description: "Cosmic with nvidia, hardened"
 
-base-image: https://quay.io/fedora-ostree-desktops/cosmic-atomic
+base-image: quay.io/fedora-ostree-desktops/cosmic-atomic
 
 image-version: 40
 

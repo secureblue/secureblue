@@ -96,22 +96,6 @@ jobs:
           registry: 'ghcr.io/wayblueorg'
           pubkey: 'https://raw.githubusercontent.com/wayblueorg/wayblue/live/cosign.pub'
 
-      - name: Verify base image
-        if: ${{ contains(env.IMAGE_NAME, 'cinnamon') }}
-        uses: EyeCantCU/cosign-action/verify@v0.3.0
-        with:
-          containers: ${{ env.BASE_IMAGE_NAME }}:${{ env.IMAGE_MAJOR_VERSION }}
-          registry: 'ghcr.io/legacy-images'
-          pubkey: 'https://raw.githubusercontent.com/legacy-images/cinnamon/main/cosign.pub'
-
-      - name: Verify base image
-        if: ${{ contains(env.IMAGE_NAME, 'securecore') }}
-        uses: EyeCantCU/cosign-action/verify@v0.3.0
-        with:
-          containers: ${{ env.BASE_IMAGE_NAME }}:${{ env.IMAGE_MAJOR_VERSION }}
-          registry: 'ghcr.io/secureblue'
-          pubkey: 'https://raw.githubusercontent.com/secureblue/coreos/main/cosign.pub'
-
       - name: Build secureblue
         uses: blue-build/github-action@v1.6.1
         with:          

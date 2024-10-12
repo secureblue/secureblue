@@ -3,7 +3,14 @@
 # Tell build process to exit if there are any errors.
 set -oue pipefail
 
-sed -i 's/insecureAcceptAnything/reject/' /etc/containers/policy.json
+POLICY_FILE="/usr/etc/containers/policy.json"
+
+if [[ ! -f "$POLICY_FILE" ]]; then
+    echo "Error: $POLICY_FILE does not exist."
+    exit 1
+fi
+
+sed -i 's/insecureAcceptAnything/reject/' "$POLICY_FILE"
 
 
 yq -i -o=j '.transports.docker |=
@@ -17,7 +24,7 @@ yq -i -o=j '.transports.docker |=
         }
       ]
     }
-+ .' /etc/containers/policy.json
++ .' "$POLICY_FILE"
 
 yq -i -o=j '.transports.docker |=
     {"ghcr.io/zelikos": [
@@ -30,4 +37,4 @@ yq -i -o=j '.transports.docker |=
         }
       ]
     }
-+ .' /etc/containers/policy.json
++ .' "$POLICY_FILE"

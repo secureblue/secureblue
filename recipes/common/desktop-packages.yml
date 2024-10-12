@@ -12,7 +12,9 @@ install:
   - usbguard
   - setroubleshoot
   - setools
+  - fdk-aac
 remove:
+  - fdk-aac-free
   - fuse
   - fedora-chromium-config
   - fedora-flathub-remote

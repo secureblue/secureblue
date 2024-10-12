@@ -34,7 +34,6 @@ install:
   - ffmpegthumbnailer
   - unrar
   - pipewire-codec-aptx
-  - fdk-aac
 
 remove:
   - ffmpeg-free
@@ -47,7 +46,6 @@ remove:
   - libpostproc-free  
   - libswresample-free  
   - libswscale-free  
-  - fdk-aac-free
   - firefox
   - firefox-langpacks
 

@@ -2,7 +2,7 @@ name: kinoite-nvidia-userns-hardened
 
 description: "Kinoite with nvidia and usenrs, hardened"
 
-base-image: quay.io/fedora-ostree-desktops/kinoite
+base-image: quay.io/fedora-kinoite
 
 image-version: 40
 

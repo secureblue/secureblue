@@ -118,7 +118,7 @@ While it's recommended to use a Fedora Atomic iso to install and then rebase tha
 
 | Name                                      | Base      | Nvidia Support | Unprivileged User Namespaces |
 |-------------------------------------------|-----------|----------------|------------------------------|
-| `silverblue-main-hardened`               | Silverblue| No             | No     |
+| ```silverblue-main-hardened```             | Silverblue| No             | No     |
 | `silverblue-nvidia-hardened`             | Silverblue| Yes            | No     |
 | `silverblue-main-userns-hardened`        | Silverblue| No             | Yes    |
 | `silverblue-nvidia-userns-hardened`      | Silverblue| Yes            | Yes    |

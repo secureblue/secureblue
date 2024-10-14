@@ -168,7 +168,7 @@ While it's recommended to use a Fedora Atomic iso to install and then rebase tha
 | `securecore-zfs-main-hardened`           | CoreOS    | No             | Yes         | No     |
 | `securecore-zfs-nvidia-hardened`         | CoreOS    | Yes            | Yes         | No     |
 | `securecore-zfs-main-userns-hardened`    | CoreOS    | No             | Yes         | Yes    |
-| `securecore-zfs-nvidia-userns-hardened`  | CoreOS    | Yes            | Yes         | Yes    |
+| ```securecore-zfs-nvidia-userns-hardened```  | CoreOS    | Yes            | Yes         | Yes    |
 
 # Post-install
 

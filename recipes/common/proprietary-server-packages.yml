@@ -12,12 +12,7 @@ install:
   - ffmpeg-libs
   - ffmpegthumbnailer
   - pipewire-codec-aptx
-  - mesa-va-drivers-freeworld
-  - fdk-aac
 remove:
-  - fdk-aac-free
-  - mesa-va-drivers
-  - ffmpeg-free
   - libavcodec-free  
   - libavdevice-free
   - libavfilter-free

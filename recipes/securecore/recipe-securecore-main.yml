@@ -9,5 +9,5 @@ image-version: testing
 modules:
   - from-file: common/common-modules.yml
   - from-file: common/server-modules.yml
-  - from-file: common/proprietary-packages.yml
+  - from-file: common/proprietary-server-packages.yml
   - from-file: common/disableuserns-modules.yml

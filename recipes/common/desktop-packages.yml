@@ -12,6 +12,8 @@ install:
   - usbguard
   - setroubleshoot
   - setools
+  - fscrypt
+  - android-udev-rules
   
   # proprietary stuff
   - libheif-freeworld

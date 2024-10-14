@@ -120,3 +120,6 @@ To validate your secureblue setup, run:
 ```
 ujust audit-secureblue
 ```
+## Read the FAQ
+
+Lots of important stuff is covered in the [FAQ](https://github.com/secureblue/secureblue/blob/live/FAQ.md). AppImage toggles, GNOME extension toggles, Xwayland toggles, etc.

@@ -47,11 +47,19 @@ First check if the README already has an equivalent or better feature. If it doe
 To use steam you can either:
 
 - Install the [flatpak](https://flathub.org/apps/com.valvesoftware.Steam)
-- Layer the rpm with `rpm-ostree install steam`
+- Layer the rpm with:
+
+```
+rpm-ostree install steam
+```
 
 #### Why are bluetooth kernel modules disabled? How do I enable them?
 
-Bluetooth has a long and consistent history of security issues. However, if you still need it, run `ujust toggle-bluetooth-modules`
+Bluetooth has a long and consistent history of security issues. However, if you still need it, run:
+
+```
+ujust toggle-bluetooth-modules
+```
 
 #### Why are upgrades so large?
 
@@ -61,11 +69,19 @@ This is an issue with rpm-ostree image-based systems generally, and not specific
 
 The functionality that provides this, called GHNS, is disabled by default due to the risk posed by the installation of potentially damaging or malicious scripts. This has caused [real damage](https://blog.davidedmundson.co.uk/blog/kde-store-content/). 
 
-If you still want to enable this functionality, run `ujust toggle-ghns`
+If you still want to enable this functionality, run:
+
+```
+ujust toggle-ghns
+```
 
 #### Why doesn't my Xwayland app work?
 
-Xwayland is disabled by default on GNOME, KDE Plasma, and Sway. Use `ujust toggle-xwayland` if you need it
+Xwayland is disabled by default on GNOME, KDE Plasma, and Sway. If you need it, run:
+
+```
+ujust toggle-xwayland
+```
 
 #### Why I can't install nor use any GNOME user extensions?
 
@@ -73,7 +89,10 @@ This is because support for installing & using them has been intentionally disab
 Only GNOME system extensions are trusted, if they are installed.
 
 To enable support for installing GNOME user extensions, you can run ujust command:
-`ujust toggle-gnome-extensions`
+
+```
+ujust toggle-gnome-extensions
+```
 
 #### My clock is wrong and it's not getting automatically set. How do I fix this?
 
@@ -90,7 +109,11 @@ The DNSSEC setting we set in `/etc/systemd/resolved.conf.d/securedns.conf` cause
 This is a [known issue](https://forums.developer.nvidia.com/t/550-54-14-cannot-create-sg-table-for-nvkmskapimemory-spammed-when-launching-chrome-on-wayland/284775) with the proprietary nvidia drivers. Your options are:
 
 - (Recommended if available for your hardware) switch to a `-main` image and use Nouveau with NVK and [GSP](https://nouveau.freedesktop.org/PowerManagement.html)
-- Enable xwayland with `ujust toggle-xwayland` and then set ozone-platform to x11 in `chrome://flags`
+- Enable xwayland by settting ozone-platform to x11 in `chrome://flags` and then running:
+
+```
+ujust toggle-xwayland
+```
 
 #### How do I get notified of secureblue changes?
 
@@ -102,7 +125,11 @@ On the secureblue github page, click "Watch", and then "Custom", and select Rele
 
 AppImages depend on fuse2, which is unmaintained and depends on a suid root binary. For this reason, fuse2 support is removed by default. It's strongly recommended that you find alternative mechanisms to install your applications (flatpak, distrobox, etc). If you can't find an alternative and still need fuse2, you can add it back by layering something that depends on it. 
 
-For example: `rpm-ostree install zfs-fuse`
+For example: 
+
+```
+rpm-ostree install zfs-fuse
+```
 
 #### Why don't KDE Vaults work?
 
@@ -110,8 +137,14 @@ Similar to the AppImage FAQ, the KDE Vault default backend `cryfs` depends on fu
 
 #### How do I provision signed distroboxes?
 
-`ujust distrobox-assemble`
+```
+ujust distrobox-assemble
+```
 
 #### Why aren't my apps loading on Nvidia Optimus?
 
-There is an [upstream bug](https://discussion.fedoraproject.org/t/gdk-message-error-71-protocol-error-dispatching-to-wayland-display/127927/21). You may need to run `mkdir -p ~/.config/environment.d && echo "GSK_RENDERER=gl" >> ~/.config/environment.d/gsk.conf`
+There is an [upstream bug](https://discussion.fedoraproject.org/t/gdk-message-error-71-protocol-error-dispatching-to-wayland-display/127927/21). You may need to run:
+
+```
+mkdir -p ~/.config/environment.d && echo "GSK_RENDERER=gl" >> ~/.config/environment.d/gsk.conf
+```

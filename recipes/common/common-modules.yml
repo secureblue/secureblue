@@ -30,4 +30,5 @@ modules:
     - type: brew 
       brew-analytics: false
     - type: secureblue-signing
-    - type: yafti
+    # temporary, revert when f41 build is available
+    # - type: yafti

@@ -11,4 +11,5 @@ modules:
   - from-file: common/kinoite-modules.yml
   - from-file: common/nvidia-modules.yml 
   - from-file: common/desktop-modules.yml
+  - from-file: common/proprietary-packages.yml
   - from-file: common/disableuserns-modules.yml

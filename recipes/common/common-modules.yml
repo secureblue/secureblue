@@ -10,11 +10,11 @@ modules:
         - COPY --from=ghcr.io/ublue-os/config:latest /rpms/ublue-os-signing.noarch.rpm /
         - COPY --from=ghcr.io/ublue-os/config:latest /rpms/ublue-os-luks.noarch.rpm /
         - COPY --from=ghcr.io/ublue-os/config:latest /rpms/ublue-os-just.noarch.rpm /
-        - RUN rpm -ivh /ublue-os-udev-rules.noarch.rpm
-        - RUN rpm -ivh /ublue-os-update-services.noarch.rpm
-        - RUN rpm -ivh /ublue-os-signing.noarch.rpm
-        - RUN rpm -ivh /ublue-os-luks.noarch.rpm
-        - RUN rpm -ivh /ublue-os-just.noarch.rpm
+        - RUN rpm -q ublue-os-udev-rules || rpm -ivh /ublue-os-udev-rules.noarch.rpm
+        - RUN rpm -q ublue-os-update-services || rpm -ivh /ublue-os-update-services.noarch.rpm
+        - RUN rpm -q ublue-os-signing || rpm -ivh /ublue-os-signing.noarch.rpm
+        - RUN rpm -q ublue-os-luks || rpm -ivh /ublue-os-luks.noarch.rpm
+        - RUN rpm -q ublue-os-just || rpm -ivh /ublue-os-just.noarch.rpm
     - type: script
       scripts:
         - installrpmfusion.sh

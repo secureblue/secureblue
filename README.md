@@ -109,65 +109,54 @@ While it's recommended to use a Fedora Atomic iso to install and then rebase tha
 ```
 
 # Images <sup>[userns?](USERNS.md)</sup>
+
 ## Desktop
-### Recommended <sup>[why?](RECOMMENDED.md)</sup>
-- `silverblue-main-hardened`
-- `silverblue-nvidia-hardened`
-- `silverblue-main-userns-hardened`
-- `silverblue-nvidia-userns-hardened`
-### Stable
-- `kinoite-main-hardened`
-- `kinoite-nvidia-hardened`
-- `kinoite-main-userns-hardened`
-- `kinoite-nvidia-userns-hardened`
-- `sericea-main-hardened`
-- `sericea-nvidia-hardened`
-- `sericea-main-userns-hardened`
-- `sericea-nvidia-userns-hardened`
-### Beta  <sup>[wayblue?](https://github.com/wayblueorg/wayblue)</sup>
-- `wayblue-wayfire-main-hardened`
-- `wayblue-wayfire-nvidia-hardened`
-- `wayblue-wayfire-main-userns-hardened`
-- `wayblue-wayfire-nvidia-userns-hardened`
-- `wayblue-hyprland-main-hardened`
-- `wayblue-hyprland-nvidia-hardened`
-- `wayblue-hyprland-main-userns-hardened`
-- `wayblue-hyprland-nvidia-userns-hardened`
-- `wayblue-river-main-hardened`
-- `wayblue-river-nvidia-hardened`
-- `wayblue-river-main-userns-hardened`
-- `wayblue-river-nvidia-userns-hardened`
-- `wayblue-sway-main-hardened`
-- `wayblue-sway-nvidia-hardened`
-- `wayblue-sway-main-userns-hardened`
-- `wayblue-sway-nvidia-userns-hardened`
-### Experimental
-- `cinnamon-main-hardened`
-- `cinnamon-nvidia-hardened`
-- `cinnamon-main-userns-hardened`
-- `cinnamon-nvidia-userns-hardened`
-- `cosmic-main-hardened`
-- `cosmic-nvidia-hardened`
-- `cosmic-main-userns-hardened`
-- `cosmic-nvidia-userns-hardened`
+
+| Name                                      | Base      | Main/Nvidia | Userns |
+|-------------------------------------------|-----------|-------------|--------|
+| `silverblue-main-hardened`               | silverblue| Main        | No     |
+| `silverblue-nvidia-hardened`             | silverblue| Nvidia      | No     |
+| `silverblue-main-userns-hardened`        | silverblue| Main        | Yes    |
+| `silverblue-nvidia-userns-hardened`      | silverblue| Nvidia      | Yes    |
+| `kinoite-main-hardened`                  | kinoite   | Main        | No     |
+| `kinoite-nvidia-hardened`                | kinoite   | Nvidia      | No     |
+| `kinoite-main-userns-hardened`           | kinoite   | Main        | Yes    |
+| `kinoite-nvidia-userns-hardened`         | kinoite   | Nvidia      | Yes    |
+| `sericea-main-hardened`                  | sericea   | Main        | No     |
+| `sericea-nvidia-hardened`                | sericea   | Nvidia      | No     |
+| `sericea-main-userns-hardened`           | sericea   | Main        | Yes    |
+| `sericea-nvidia-userns-hardened`         | sericea   | Nvidia      | Yes    |
+| `wayblue-wayfire-main-hardened`          | wayblue   | Main        | No     |
+| `wayblue-wayfire-nvidia-hardened`        | wayblue   | Nvidia      | No     |
+| `wayblue-wayfire-main-userns-hardened`   | wayblue   | Main        | Yes    |
+| `wayblue-wayfire-nvidia-userns-hardened` | wayblue   | Nvidia      | Yes    |
+| `wayblue-hyprland-main-hardened`         | wayblue   | Main        | No     |
+| `wayblue-hyprland-nvidia-hardened`       | wayblue   | Nvidia      | No     |
+| `wayblue-hyprland-main-userns-hardened`  | wayblue   | Main        | Yes    |
+| `wayblue-hyprland-nvidia-userns-hardened`| wayblue   | Nvidia      | Yes    |
+| `wayblue-river-main-hardened`            | wayblue   | Main        | No     |
+| `wayblue-river-nvidia-hardened`          | wayblue   | Nvidia      | No     |
+| `wayblue-river-main-userns-hardened`     | wayblue   | Main        | Yes    |
+| `wayblue-river-nvidia-userns-hardened`   | wayblue   | Nvidia      | Yes    |
+| `wayblue-sway-main-hardened`             | wayblue   | Main        | No     |
+| `wayblue-sway-nvidia-hardened`           | wayblue   | Nvidia      | No     |
+| `wayblue-sway-main-userns-hardened`      | wayblue   | Main        | Yes    |
+| `wayblue-sway-nvidia-userns-hardened`    | wayblue   | Nvidia      | Yes    |
+
 ## Server
-- `securecore-main-hardened`
-- `securecore-nvidia-hardened`
-- `securecore-main-userns-hardened`
-- `securecore-nvidia-userns-hardened`
-- `securecore-zfs-main-hardened`
-- `securecore-zfs-nvidia-hardened`
-- `securecore-zfs-main-userns-hardened`
-- `securecore-zfs-nvidia-userns-hardened`
-## Asus <sup>[source](https://github.com/ublue-os/hwe/tree/main/asus)</sup>
-- `silverblue-asus-hardened`
-- `silverblue-asus-nvidia-hardened`
-- `silverblue-asus-userns-hardened`
-- `silverblue-asus-nvidia-userns-hardened`
-- `kinoite-asus-hardened`
-- `kinoite-asus-nvidia-hardened`
-- `kinoite-asus-userns-hardened`
-- `kinoite-asus-nvidia-userns-hardened`
+
+| Name                                      | Base      | Main/Nvidia | Userns |
+|-------------------------------------------|-----------|-------------|--------|
+| `securecore-main-hardened`               | securecore| Main        | No     |
+| `securecore-nvidia-hardened`             | securecore| Nvidia      | No     |
+| `securecore-main-userns-hardened`        | securecore| Main        | Yes    |
+| `securecore-nvidia-userns-hardened`      | securecore| Nvidia      | Yes    |
+| `securecore-zfs-main-hardened`           | securecore| Main        | No     |
+| `securecore-zfs-nvidia-hardened`         | securecore| Nvidia      | No     |
+| `securecore-zfs-main-userns-hardened`    | securecore| Main        | Yes    |
+| `securecore-zfs-nvidia-userns-hardened`  | securecore| Nvidia      | Yes    |
+
+
 # Post-install
 
 After installation, [yafti](https://github.com/ublue-os/yafti) will open. Make sure to follow the steps listed carefully and read the directions closely.

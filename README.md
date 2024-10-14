@@ -135,25 +135,27 @@ While it's recommended to use a Fedora Atomic iso to install and then rebase tha
 | `sericea-main-userns-hardened`           | Sericea   | No             | Yes    |
 | `sericea-nvidia-userns-hardened`         | Sericea   | Yes            | Yes    |
 
-### Beta  <sup>[wayblue?](https://github.com/wayblueorg/wayblue)</sup>
+### Beta  
+
+*Note: Learn about wayblue [here](https://github.com/wayblueorg/wayblue)
 | Name                                      | Base      | Nvidia Support | Unprivileged User Namespaces |
 |-------------------------------------------|-----------|----------------|------------------------------|
-| `wayblue-wayfire-main-hardened`          | Wayblue   | No             | No     |
-| `wayblue-wayfire-nvidia-hardened`        | Wayblue   | Yes            | No     |
-| `wayblue-wayfire-main-userns-hardened`   | Wayblue   | No             | Yes    |
-| `wayblue-wayfire-nvidia-userns-hardened` | Wayblue   | Yes            | Yes    |
-| `wayblue-hyprland-main-hardened`         | Wayblue   | No             | No     |
-| `wayblue-hyprland-nvidia-hardened`       | Wayblue   | Yes            | No     |
-| `wayblue-hyprland-main-userns-hardened`  | Wayblue   | No             | Yes    |
-| `wayblue-hyprland-nvidia-userns-hardened`| Wayblue   | Yes            | Yes    |
-| `wayblue-river-main-hardened`            | Wayblue   | No             | No     |
-| `wayblue-river-nvidia-hardened`          | Wayblue   | Yes            | No     |
-| `wayblue-river-main-userns-hardened`     | Wayblue   | No             | Yes    |
-| `wayblue-river-nvidia-userns-hardened`   | Wayblue   | Yes            | Yes    |
-| `wayblue-sway-main-hardened`             | Wayblue   | No             | No     |
-| `wayblue-sway-nvidia-hardened`           | Wayblue   | Yes            | No     |
-| `wayblue-sway-main-userns-hardened`      | Wayblue   | No             | Yes    |
-| `wayblue-sway-nvidia-userns-hardened`    | Wayblue   | Yes            | Yes    |
+| `wayblue-wayfire-main-hardened`          | ayblue-Wayfire   | No             | No     |
+| `wayblue-wayfire-nvidia-hardened`        | ayblue-Wayfire   | Yes            | No     |
+| `wayblue-wayfire-main-userns-hardened`   | ayblue-Wayfire   | No             | Yes    |
+| `wayblue-wayfire-nvidia-userns-hardened` | Wayblue-Wayfire   | Yes            | Yes    |
+| `wayblue-hyprland-main-hardened`         | Wayblue-Hyprland   | No             | No     |
+| `wayblue-hyprland-nvidia-hardened`       | Wayblue-Hyprland   | Yes            | No     |
+| `wayblue-hyprland-main-userns-hardened`  | Wayblue-Hyprland   | No             | Yes    |
+| `wayblue-hyprland-nvidia-userns-hardened`| Wayblue-Hyprland   | Yes            | Yes    |
+| `wayblue-river-main-hardened`            | Wayblue-River   | No             | No     |
+| `wayblue-river-nvidia-hardened`          | Wayblue-River   | Yes            | No     |
+| `wayblue-river-main-userns-hardened`     | Wayblue-River   | No             | Yes    |
+| `wayblue-river-nvidia-userns-hardened`   | Wayblue-River   | Yes            | Yes    |
+| `wayblue-sway-main-hardened`             | Wayblue-Sway   | No             | No     |
+| `wayblue-sway-nvidia-hardened`           | Wayblue-Sway   | Yes            | No     |
+| `wayblue-sway-main-userns-hardened`      | Wayblue-Sway   | No             | Yes    |
+| `wayblue-sway-nvidia-userns-hardened`    | Wayblue-Sway   | Yes            | Yes    |
 
 ## Server
 

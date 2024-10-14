@@ -108,54 +108,61 @@ While it's recommended to use a Fedora Atomic iso to install and then rebase tha
 ./generate_secureblue_iso.sh
 ```
 
-# Images <sup>[userns?](USERNS.md)</sup>
+# Images
+
+*Note: Learn about unprivileged user namespaces [here](USERNS.md).*
 
 ## Desktop
 
-| Name                                      | Base      | Main/Nvidia | Userns |
-|-------------------------------------------|-----------|-------------|--------|
-| `silverblue-main-hardened`               | silverblue| Main        | No     |
-| `silverblue-nvidia-hardened`             | silverblue| Nvidia      | No     |
-| `silverblue-main-userns-hardened`        | silverblue| Main        | Yes    |
-| `silverblue-nvidia-userns-hardened`      | silverblue| Nvidia      | Yes    |
-| `kinoite-main-hardened`                  | kinoite   | Main        | No     |
-| `kinoite-nvidia-hardened`                | kinoite   | Nvidia      | No     |
-| `kinoite-main-userns-hardened`           | kinoite   | Main        | Yes    |
-| `kinoite-nvidia-userns-hardened`         | kinoite   | Nvidia      | Yes    |
-| `sericea-main-hardened`                  | sericea   | Main        | No     |
-| `sericea-nvidia-hardened`                | sericea   | Nvidia      | No     |
-| `sericea-main-userns-hardened`           | sericea   | Main        | Yes    |
-| `sericea-nvidia-userns-hardened`         | sericea   | Nvidia      | Yes    |
-| `wayblue-wayfire-main-hardened`          | wayblue   | Main        | No     |
-| `wayblue-wayfire-nvidia-hardened`        | wayblue   | Nvidia      | No     |
-| `wayblue-wayfire-main-userns-hardened`   | wayblue   | Main        | Yes    |
-| `wayblue-wayfire-nvidia-userns-hardened` | wayblue   | Nvidia      | Yes    |
-| `wayblue-hyprland-main-hardened`         | wayblue   | Main        | No     |
-| `wayblue-hyprland-nvidia-hardened`       | wayblue   | Nvidia      | No     |
-| `wayblue-hyprland-main-userns-hardened`  | wayblue   | Main        | Yes    |
-| `wayblue-hyprland-nvidia-userns-hardened`| wayblue   | Nvidia      | Yes    |
-| `wayblue-river-main-hardened`            | wayblue   | Main        | No     |
-| `wayblue-river-nvidia-hardened`          | wayblue   | Nvidia      | No     |
-| `wayblue-river-main-userns-hardened`     | wayblue   | Main        | Yes    |
-| `wayblue-river-nvidia-userns-hardened`   | wayblue   | Nvidia      | Yes    |
-| `wayblue-sway-main-hardened`             | wayblue   | Main        | No     |
-| `wayblue-sway-nvidia-hardened`           | wayblue   | Nvidia      | No     |
-| `wayblue-sway-main-userns-hardened`      | wayblue   | Main        | Yes    |
-| `wayblue-sway-nvidia-userns-hardened`    | wayblue   | Nvidia      | Yes    |
+### Recommended <sup>[why?](RECOMMENDED.md)</sup>
+
+| Name                                      | Base      | Nvidia Support | Unprivileged User Namespaces |
+|-------------------------------------------|-----------|----------------|------------------------------|
+| `silverblue-main-hardened`               | silverblue| No             | No     |
+| `silverblue-nvidia-hardened`             | silverblue| Yes            | No     |
+| `silverblue-main-userns-hardened`        | silverblue| No             | Yes    |
+| `silverblue-nvidia-userns-hardened`      | silverblue| Yes            | Yes    |
+
+### Stable
+| `kinoite-main-hardened`                  | kinoite   | No             | No     |
+| `kinoite-nvidia-hardened`                | kinoite   | Yes            | No     |
+| `kinoite-main-userns-hardened`           | kinoite   | No             | Yes    |
+| `kinoite-nvidia-userns-hardened`         | kinoite   | Yes            | Yes    |
+| `sericea-main-hardened`                  | sericea   | No             | No     |
+| `sericea-nvidia-hardened`                | sericea   | Yes            | No     |
+| `sericea-main-userns-hardened`           | sericea   | No             | Yes    |
+| `sericea-nvidia-userns-hardened`         | sericea   | Yes            | Yes    |
+
+### Beta  <sup>[wayblue?](https://github.com/wayblueorg/wayblue)</sup>
+| `wayblue-wayfire-main-hardened`          | wayblue   | No             | No     |
+| `wayblue-wayfire-nvidia-hardened`        | wayblue   | Yes            | No     |
+| `wayblue-wayfire-main-userns-hardened`   | wayblue   | No             | Yes    |
+| `wayblue-wayfire-nvidia-userns-hardened` | wayblue   | Yes            | Yes    |
+| `wayblue-hyprland-main-hardened`         | wayblue   | No             | No     |
+| `wayblue-hyprland-nvidia-hardened`       | wayblue   | Yes            | No     |
+| `wayblue-hyprland-main-userns-hardened`  | wayblue   | No             | Yes    |
+| `wayblue-hyprland-nvidia-userns-hardened`| wayblue   | Yes            | Yes    |
+| `wayblue-river-main-hardened`            | wayblue   | No             | No     |
+| `wayblue-river-nvidia-hardened`          | wayblue   | Yes            | No     |
+| `wayblue-river-main-userns-hardened`     | wayblue   | No             | Yes    |
+| `wayblue-river-nvidia-userns-hardened`   | wayblue   | Yes            | Yes    |
+| `wayblue-sway-main-hardened`             | wayblue   | No             | No     |
+| `wayblue-sway-nvidia-hardened`           | wayblue   | Yes            | No     |
+| `wayblue-sway-main-userns-hardened`      | wayblue   | No             | Yes    |
+| `wayblue-sway-nvidia-userns-hardened`    | wayblue   | Yes            | Yes    |
 
 ## Server
 
-| Name                                      | Base      | Main/Nvidia | Userns |
-|-------------------------------------------|-----------|-------------|--------|
-| `securecore-main-hardened`               | securecore| Main        | No     |
-| `securecore-nvidia-hardened`             | securecore| Nvidia      | No     |
-| `securecore-main-userns-hardened`        | securecore| Main        | Yes    |
-| `securecore-nvidia-userns-hardened`      | securecore| Nvidia      | Yes    |
-| `securecore-zfs-main-hardened`           | securecore| Main        | No     |
-| `securecore-zfs-nvidia-hardened`         | securecore| Nvidia      | No     |
-| `securecore-zfs-main-userns-hardened`    | securecore| Main        | Yes    |
-| `securecore-zfs-nvidia-userns-hardened`  | securecore| Nvidia      | Yes    |
-
+| Name                                      | Base      | Nvidia Support | ZFS Support | Unprivileged User Namespaces |
+|-------------------------------------------|-----------|----------------|-------------|--------|
+| `securecore-main-hardened`               | coreos    | No             | No          | No     |
+| `securecore-nvidia-hardened`             | coreos    | Yes            | No          | No     |
+| `securecore-main-userns-hardened`        | coreos    | No             | No          | Yes    |
+| `securecore-nvidia-userns-hardened`      | coreos    | Yes            | No          | Yes    |
+| `securecore-zfs-main-hardened`           | coreos    | No             | Yes         | No     |
+| `securecore-zfs-nvidia-hardened`         | coreos    | Yes            | Yes         | No     |
+| `securecore-zfs-main-userns-hardened`    | coreos    | No             | Yes         | Yes    |
+| `securecore-zfs-nvidia-userns-hardened`  | coreos    | Yes            | Yes         | Yes    |
 
 # Post-install
 

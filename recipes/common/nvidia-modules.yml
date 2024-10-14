@@ -1,10 +1,10 @@
 modules:
   - type: containerfile
     snippets:
-      - COPY --from=ghcr.io/ublue-os/akmods:main-41 /rpms/ /tmp/rpms
+      - COPY --from=ghcr.io/ublue-os/akmods:main-40 /rpms/ /tmp/rpms
       - RUN find /tmp/rpms
       - RUN rpm -q ublue-os-akmods-addons || rpm-ostree install /tmp/rpms/ublue-os/ublue-os-akmods*.rpm
-      - COPY --from=ghcr.io/ublue-os/akmods-nvidia-open:main-41 /rpms/ /tmp/rpms
+      - COPY --from=ghcr.io/ublue-os/akmods-nvidia-open:main-40 /rpms/ /tmp/rpms
       - RUN find /tmp/rpms
       - RUN rpm -q ublue-os-nvidia-addons || rpm-ostree install /tmp/rpms/ublue-os/ublue-os-nvidia*.rpm
       - RUN rpm -q ublue-os-nvidia-addons || sed -i '0,/enabled=0/{s/enabled=0/enabled=1/}' /etc/yum.repos.d/nvidia-container-toolkit.repo

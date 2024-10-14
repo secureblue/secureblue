@@ -23,50 +23,50 @@ jobs:
         recipe:
           # non-userns
           # general
-          # - general/recipe-silverblue-main.yml
-          # - general/recipe-silverblue-nvidia.yml
-          # - general/recipe-kinoite-main.yml
-          # - general/recipe-kinoite-nvidia.yml
-          # - general/recipe-sericea-main.yml
-          # - general/recipe-sericea-nvidia.yml
-          # - general/recipe-wayblue-wayfire-main.yml
-          # - general/recipe-wayblue-wayfire-nvidia.yml
-          # - general/recipe-wayblue-hyprland-main.yml
-          # - general/recipe-wayblue-hyprland-nvidia.yml
-          # - general/recipe-wayblue-river-main.yml
-          # - general/recipe-wayblue-river-nvidia.yml
-          # - general/recipe-wayblue-sway-main.yml
-          # - general/recipe-wayblue-sway-nvidia.yml
+          - general/recipe-silverblue-main.yml
+          - general/recipe-silverblue-nvidia.yml
+          - general/recipe-kinoite-main.yml
+          - general/recipe-kinoite-nvidia.yml
+          - general/recipe-sericea-main.yml
+          - general/recipe-sericea-nvidia.yml
+          - general/recipe-wayblue-wayfire-main.yml
+          - general/recipe-wayblue-wayfire-nvidia.yml
+          - general/recipe-wayblue-hyprland-main.yml
+          - general/recipe-wayblue-hyprland-nvidia.yml
+          - general/recipe-wayblue-river-main.yml
+          - general/recipe-wayblue-river-nvidia.yml
+          - general/recipe-wayblue-sway-main.yml
+          - general/recipe-wayblue-sway-nvidia.yml
           - general/recipe-cosmic-main.yml
           - general/recipe-cosmic-nvidia.yml
-          # # server
-          # - securecore/recipe-securecore-main.yml
-          # - securecore/recipe-securecore-nvidia.yml
-          # - securecore/recipe-securecore-zfs-main.yml
-          # - securecore/recipe-securecore-zfs-nvidia.yml
-          # # userns
-          # # general
-          # - general/recipe-silverblue-main-userns.yml
-          # - general/recipe-silverblue-nvidia-userns.yml
-          # - general/recipe-kinoite-main-userns.yml
-          # - general/recipe-kinoite-nvidia-userns.yml
-          # - general/recipe-sericea-main-userns.yml
-          # - general/recipe-sericea-nvidia-userns.yml
-          # - general/recipe-wayblue-wayfire-main-userns.yml
-          # - general/recipe-wayblue-wayfire-nvidia-userns.yml
-          # - general/recipe-wayblue-hyprland-main-userns.yml
-          # - general/recipe-wayblue-hyprland-nvidia-userns.yml
-          # - general/recipe-wayblue-river-main-userns.yml
-          # - general/recipe-wayblue-river-nvidia-userns.yml
-          # - general/recipe-wayblue-sway-main-userns.yml
-          # - general/recipe-wayblue-sway-nvidia-userns.yml
+          # server
+          - securecore/recipe-securecore-main.yml
+          - securecore/recipe-securecore-nvidia.yml
+          - securecore/recipe-securecore-zfs-main.yml
+          - securecore/recipe-securecore-zfs-nvidia.yml
+          # userns
+          # general
+          - general/recipe-silverblue-main-userns.yml
+          - general/recipe-silverblue-nvidia-userns.yml
+          - general/recipe-kinoite-main-userns.yml
+          - general/recipe-kinoite-nvidia-userns.yml
+          - general/recipe-sericea-main-userns.yml
+          - general/recipe-sericea-nvidia-userns.yml
+          - general/recipe-wayblue-wayfire-main-userns.yml
+          - general/recipe-wayblue-wayfire-nvidia-userns.yml
+          - general/recipe-wayblue-hyprland-main-userns.yml
+          - general/recipe-wayblue-hyprland-nvidia-userns.yml
+          - general/recipe-wayblue-river-main-userns.yml
+          - general/recipe-wayblue-river-nvidia-userns.yml
+          - general/recipe-wayblue-sway-main-userns.yml
+          - general/recipe-wayblue-sway-nvidia-userns.yml
           - general/recipe-cosmic-main-userns.yml
           - general/recipe-cosmic-nvidia-userns.yml
-          # # server
-          # - securecore/recipe-securecore-main-userns.yml
-          # - securecore/recipe-securecore-nvidia-userns.yml
-          # - securecore/recipe-securecore-zfs-main-userns.yml
-          # - securecore/recipe-securecore-zfs-nvidia-userns.yml
+          # server
+          - securecore/recipe-securecore-main-userns.yml
+          - securecore/recipe-securecore-nvidia-userns.yml
+          - securecore/recipe-securecore-zfs-main-userns.yml
+          - securecore/recipe-securecore-zfs-nvidia-userns.yml
 
     steps:
       - name: Checkout repo

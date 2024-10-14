@@ -1,11 +1,9 @@
 modules:
     - type: rpm-ostree
       install:
-        - power-profiles-daemon 
         - NetworkManager-tui
         - NetworkManager-openvpn
     - type: systemd
       system:
         enabled:
           - cosmic-greeter
-          - power-profiles-daemon

@@ -111,3 +111,7 @@ Similar to the AppImage FAQ, the KDE Vault default backend `cryfs` depends on fu
 #### How do I provision signed distroboxes?
 
 `ujust distrobox-assemble`
+
+#### Why aren't my apps loading on Nvidia Optimus?
+
+There is an [upstream bug](https://discussion.fedoraproject.org/t/gdk-message-error-71-protocol-error-dispatching-to-wayland-display/127927/21). You may need to run `mkdir -p ~/.config/environment.d && echo "GSK_RENDERER=gl" >> ~/.config/environment.d/gsk.conf`

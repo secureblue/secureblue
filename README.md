@@ -140,9 +140,9 @@ While it's recommended to use a Fedora Atomic iso to install and then rebase tha
 *Note: Learn about wayblue [here](https://github.com/wayblueorg/wayblue)*
 | Name                                      | Base      | Nvidia Support | Unprivileged User Namespaces |
 |-------------------------------------------|-----------|----------------|------------------------------|
-| `wayblue-wayfire-main-hardened`          | ayblue-Wayfire   | No             | No     |
-| `wayblue-wayfire-nvidia-hardened`        | ayblue-Wayfire   | Yes            | No     |
-| `wayblue-wayfire-main-userns-hardened`   | ayblue-Wayfire   | No             | Yes    |
+| `wayblue-wayfire-main-hardened`          | Wayblue-Wayfire   | No             | No     |
+| `wayblue-wayfire-nvidia-hardened`        | Wayblue-Wayfire   | Yes            | No     |
+| `wayblue-wayfire-main-userns-hardened`   | Wayblue-Wayfire   | No             | Yes    |
 | `wayblue-wayfire-nvidia-userns-hardened` | Wayblue-Wayfire   | Yes            | Yes    |
 | `wayblue-hyprland-main-hardened`         | Wayblue-Hyprland   | No             | No     |
 | `wayblue-hyprland-nvidia-hardened`       | Wayblue-Hyprland   | Yes            | No     |

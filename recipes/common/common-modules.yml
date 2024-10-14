@@ -17,6 +17,7 @@ modules:
         - RUN rpm -q ublue-os-just || rpm -ivh /ublue-os-just.noarch.rpm
     - type: script
       scripts:
+        - installandroidudev.sh
         - installrpmfusion.sh
     - from-file: common/common-packages.yml
     - type: files

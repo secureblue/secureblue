@@ -2,7 +2,7 @@ name: sericea-main-userns-hardened
 
 description: "Sericea with userns, hardened"
 
-base-image: quay.io/fedora/fedora-sericea
+base-image: quay.io/fedora-ostree-desktops/sericea
 
 image-version: 40
 

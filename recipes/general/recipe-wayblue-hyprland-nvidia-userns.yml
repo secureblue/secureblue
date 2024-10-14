@@ -1,20 +1,13 @@
 name: wayblue-hyprland-nvidia-userns-hardened
 
-description: "wayblue hyprland nvidia with some hardening applied"
+description: "wayblue hyprland nvidia with userns, hardened"
 
 base-image: ghcr.io/wayblueorg/hyprland-nvidia
 
-image-version: 40
+image-version: br-staging-40
 
 modules:
-  - from-file: common/initialization-scripts.yml
-  - from-file: common/gui-packages.yml
-  - from-file: common/common-packages.yml 
-  - from-file: common/non-rechunked-scripts.yml
-  - from-file: common/remove-firefox.yml
-  - from-file: common/gui-scripts.yml
-  - from-file: common/common-files.yml
-  - from-file: common/common-scripts.yml
-  - type: secureblue-signing
-  - type: yafti
-  - from-file: common/common-brew.yml
+  - from-file: common/common-modules.yml
+  - from-file: common/nvidia-modules.yml 
+  - from-file: common/desktop-modules.yml
+  - from-file: common/userns-packages.yml

@@ -38,3 +38,16 @@ yq -i -o=j '.transports.docker |=
       ]
     }
 + .' "$POLICY_FILE"
+
+yq -i -o=j '.transports.docker |=
+    {"ghcr.io/wayblueorg": [
+        {
+          "type": "sigstoreSigned",
+          "keyPath": "/usr/etc/pki/containers/wayblue.pub",
+          "signedIdentity": {
+            "type": "matchRepository"
+          }
+        }
+      ]
+    }
++ .' "$POLICY_FILE"

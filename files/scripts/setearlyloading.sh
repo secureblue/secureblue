@@ -3,6 +3,8 @@
 # Tell build process to exit if there are any errors.
 set -oue pipefail
 
+KERNEL_SUFFIX=""
+
 sed -i 's@omit_drivers@force_drivers@g' /usr/lib/dracut/dracut.conf.d/99-nvidia-dracut.conf
 sed -i 's@nvidia-uvm@nvidia-uvm i915 amdgpu@g' /usr/lib/dracut/dracut.conf.d/99-nvidia-dracut.conf
 

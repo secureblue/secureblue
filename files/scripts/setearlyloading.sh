@@ -4,7 +4,7 @@
 set -oue pipefail
 
 sed -i 's@omit_drivers@force_drivers@g' /usr/lib/dracut/dracut.conf.d/99-nvidia.conf
-sed -i 's@nvidia-uvm@nvidia-uvm i915 amdgpu@g' /usr/lib/dracut/dracut.conf.d/99-nvidia.conf
+sed -i 's@nvidia-uvm@nvidia-uvm i915 amdgpu@g' /usr/lib/dracut/dracut.conf.d/99-nvidia-dracut.conf
 
 
 if [ ! -f /usr/libexec/rpm-ostree/wrapped/dracut ]; then

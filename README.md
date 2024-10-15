@@ -79,13 +79,13 @@ Have a look at [PREINSTALL-README](PREINSTALL-README.md) before proceeding.
 
 ## Rebasing (Recommended)
 
-To rebase a [Fedora Atomic](https://fedoraproject.org/atomic-desktops/) installation, choose an $IMAGE_NAME from the [list below](README.md#images-userns), then follow these steps:
+To rebase a [Fedora Atomic](https://fedoraproject.org/atomic-desktops/) installation, then follow these steps:
 
 *(Important note: the **only** supported tag is `latest`)*
 
 - First rebase to the unsigned image, to get the proper signing keys and policies installed:
   ```
-  rpm-ostree rebase ostree-unverified-registry:ghcr.io/secureblue/$IMAGE_NAME:latest
+  rpm-ostree rebase ostree-unverified-registry:ghcr.io/secureblue/IMAGE_NAME:latest
   ```
 - Reboot to complete the rebase:
   ```
@@ -93,12 +93,13 @@ To rebase a [Fedora Atomic](https://fedoraproject.org/atomic-desktops/) installa
   ```
 - Then rebase to the signed image, like so:
   ```
-  rpm-ostree rebase ostree-image-signed:docker://ghcr.io/secureblue/$IMAGE_NAME:latest
+  rpm-ostree rebase ostree-image-signed:docker://ghcr.io/secureblue/IMAGE_NAME:latest
   ```
 - Reboot again to complete the installation
   ```
   systemctl reboot
   ```
+\* Replace `IMAGE_NAME` with the *full name* of your preferred image from the [list below](README.md#images-userns).
 
 ## ISO 
 

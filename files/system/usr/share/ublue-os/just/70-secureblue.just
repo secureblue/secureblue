@@ -26,7 +26,7 @@ set-kargs-hardening:
     echo "Hardening kargs set."
     echo "Would you like to set additional unstable kargs? [y/N] (Warning: setting these kargs may lead to boot issues on some hardware.)"
     read YES
-    if [ "$YES" == [Yy]* ]; then
+    if [[ "$YES" == [Yy]* ]]; then
     rpm-ostree kargs \
       --append-if-missing="efi=disable_early_pci_dma" \
       --append-if-missing="debugfs=off"

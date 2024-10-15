@@ -24,7 +24,7 @@ set-kargs-hardening:
       --append-if-missing="l1d_flush=on" \
       --append-if-missing="gather_data_sampling=force"
     echo "Hardening kargs set."
-    echo "Would you like to set additional unstable kargs? [y/N] (Warning: setting these kargs may lead to boot issues on some hardware.)"
+    echo "Would you like to set additional (unstable) hardening kargs? [y/N] (Warning: setting these kargs may lead to boot issues on some hardware.)"
     read YES
     if [[ "$YES" == [Yy]* ]]; then
     rpm-ostree kargs \

@@ -99,7 +99,7 @@ To rebase a [Fedora Atomic](https://fedoraproject.org/atomic-desktops/) installa
   ```
   systemctl reboot
   ```
-\* Replace `IMAGE_NAME` with the *full name* of your preferred image from the [list below](README.md#images-userns).
+\* Replace `IMAGE_NAME` with the *full name* of your preferred image from the [list below](README.md#images).
 
 ## ISO 
 

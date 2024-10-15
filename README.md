@@ -79,7 +79,7 @@ Have a look at [PREINSTALL-README](PREINSTALL-README.md) before proceeding.
 
 ## Rebasing (Recommended)
 
-To rebase a [Fedora Atomic](https://fedoraproject.org/atomic-desktops/) installation, then follow these steps\*:
+To rebase a [Fedora Atomic](https://fedoraproject.org/atomic-desktops/) installation, follow these steps\*:
 
 *(Important note: the **only** supported tag is `latest`)*
 

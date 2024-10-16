@@ -7,6 +7,6 @@ POLICY_FILE="/usr/etc/containers/policy.json"
 
 echo '
 
-omit_drivers+=" zfs "
+omit_dracutmodules+=" zfs "
 
 ' > /usr/lib/dracut/dracut.conf.d/99-omit-zfs.sh

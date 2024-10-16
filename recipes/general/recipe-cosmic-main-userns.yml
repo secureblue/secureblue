@@ -12,3 +12,4 @@ modules:
   - from-file: common/cosmic-modules.yml
   - from-file: common/proprietary-packages.yml
   - from-file: common/userns-packages.yml
+  - from-file: common/final-modules.yml

@@ -11,3 +11,4 @@ modules:
   - from-file: common/nvidia-modules.yml 
   - from-file: common/desktop-modules.yml
   - from-file: common/userns-packages.yml
+  - from-file: common/final-modules.yml

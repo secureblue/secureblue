@@ -12,3 +12,4 @@ modules:
   - from-file: common/proprietary-server-packages.yml
   - from-file: common/disableuserns-modules.yml
   - from-file: common/zfs-modules.yml
+  - from-file: common/final-modules.yml

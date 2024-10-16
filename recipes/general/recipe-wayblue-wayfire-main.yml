@@ -11,3 +11,4 @@ modules:
   - from-file: common/desktop-modules.yml
   - from-file: common/disableuserns-modules.yml
   - from-file: common/wayfire-scripts.yml
+  - from-file: common/final-modules.yml

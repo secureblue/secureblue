@@ -1,4 +1,4 @@
 modules:
     - from-file: common/desktop-packages.yml
     - from-file: common/desktop-scripts.yml
-    - type: yafti
+    # - type: yafti

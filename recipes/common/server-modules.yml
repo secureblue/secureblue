@@ -12,3 +12,6 @@ modules:
     - type: script
       scripts:
         - addtailscalerepo.sh
+    - type: script
+      scripts:
+        - excludepcsc.sh

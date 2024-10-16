@@ -13,6 +13,5 @@ install:
   - heif-pixbuf-loader
   - p7zip
   - unrar
-
-
-
+  - pcsc-lite-libs
+  - pcsc-lite

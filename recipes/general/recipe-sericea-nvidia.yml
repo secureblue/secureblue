@@ -13,3 +13,6 @@ modules:
   - from-file: common/proprietary-packages.yml
   - from-file: common/disableuserns-modules.yml
   - from-file: common/final-modules.yml
+  - type: script
+    scripts:
+      - setswaynvidiaenvironment.sh

@@ -78,6 +78,7 @@ Sponsorship options are on the [Donate](DONATE.md) page. All donations are appre
 Have a look at [PREINSTALL-README](PREINSTALL-README.md) before proceeding.
 
 ## Rebasing (Recommended)
+*Note: if you don't already have a Fedora Atomic installation, use a Fedora Atomic iso that matches your secureblue target image to install one. If you want to use a secureblue Silverblue image, start with the Fedora Silverblue iso, Kinoite for Kinoite, and Sericea (Sway Atomic) for Sericea and all the Wayblue images.*
 
 To rebase a [Fedora Atomic](https://fedoraproject.org/atomic-desktops/) installation, choose an $IMAGE_NAME from the [list below](README.md#images-userns), then follow these steps:
 

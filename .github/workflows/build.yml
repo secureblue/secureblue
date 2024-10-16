@@ -1,8 +1,7 @@
 name: build-secureblue
 on:
   schedule:
-    - cron: "00 5 * * *" # build at 5:00 UTC every day 
-                          # 80 minutes after the last uBlue images start building
+    - cron: "00 6 * * *" # build at 6:00 UTC every day 
                           # 60 minutes after last wayblue images start building
   push:
     paths-ignore: # don't rebuild if only documentation has changed

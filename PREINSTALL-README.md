@@ -5,7 +5,7 @@ The recommended method to install secureblue is to rebase from an upstream silve
 ## Preinstall guide
 
 > [!TIP]
-> If you don't yet have a Fedora installation medium, you should obtain an image from the official Fedora website, [here](https://fedoraproject.org/atomic-desktops/). Once you have downloaded an image, It is *highly reccomended* that you [verify](https://fedoraproject.org/security) it for security and integrity.
+> If you don't yet have a Fedora installation medium, you should obtain an image from the official Fedora website, [here](https://fedoraproject.org/atomic-desktops/). Once you have downloaded an image, it is *highly reccomended* that you [verify](https://fedoraproject.org/security) it for security and integrity.
 
 ### Fedora Installation
 - Select the option to encrypt the drive you're installing to.

@@ -14,7 +14,7 @@ echo "Qualified kernel: $QUALIFIED_KERNEL"
 echo "Incoming kernel version: $INCOMING_KERNEL_VERSION"
 
 
-if [[ "$FIRST_KERNEL_VERSION" != "$QUALIFIED_KERNEL" ]]; then
+if [[ "$INCOMING_KERNEL_VERSION" != "$QUALIFIED_KERNEL" ]]; then
     echo "Installing kernel rpm from kernel-cache."
     rpm-ostree override replace \
         --experimental \

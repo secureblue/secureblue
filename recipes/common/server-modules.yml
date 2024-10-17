@@ -7,7 +7,8 @@ modules:
     - type: containerfile
       snippets:
         - COPY --from=ghcr.io/ublue-os/coreos-testing-kernel:40 /tmp/rpms /tmp/rpms/kernel
-    - type: scripts
+    - type: script
+      scripts:
         - installsignedkernel.sh
     - type: rpm-ostree
       install:

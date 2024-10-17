@@ -15,7 +15,7 @@ echo "Incoming kernel version: $INCOMING_KERNEL_VERSION"
 
 
 if [[ "$FIRST_KERNEL_VERSION" != "$QUALIFIED_KERNEL" ]]; then
-    echo "Installing kernel from kernel-cache."
+    echo "Installing kernel rpm from kernel-cache."
     rpm-ostree override replace \
         --experimental \
         --install=zstd \
@@ -23,5 +23,9 @@ if [[ "$FIRST_KERNEL_VERSION" != "$QUALIFIED_KERNEL" ]]; then
         /tmp/rpms/kernel/kernel-core-*.rpm \
         /tmp/rpms/kernel/kernel-modules-*.rpm
 else
-    echo "Skipping installation: version matches installed kernel ($QUALIFIED_KERNEL)"
+    echo "Installing kernel files from kernel-cache."
+    cd /tmp
+    rpm2cpio /tmp/kernel-rpms/kernel-core-*.rpm | cpio -idmv
+    cp ./lib/modules/*/vmlinuz /usr/lib/modules/*/vmlinuz
+    cd /
 fi

@@ -127,6 +127,11 @@ To validate your secureblue setup, run:
 ```
 ujust audit-secureblue
 ```
+
+## Optional: `hardened-chromium` Flags
+The included hardened-chromium browser has some additional settings in `chrome://flags` you *may* want to set for additional hardening, and convenience. (At the cost of *some* functionality.)
+You can read about these settings [here](https://github.com/secureblue/hardened-chromium?tab=readme-ov-file#post-install).
+
 ## Read the FAQ
 
 Lots of important stuff is covered in the [FAQ](https://github.com/secureblue/secureblue/blob/live/FAQ.md). AppImage toggles, GNOME extension toggles, Xwayland toggles, etc.

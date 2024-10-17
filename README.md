@@ -78,6 +78,7 @@ Sponsorship options are on the [Donate](DONATE.md) page. All donations are appre
 Have a look at [PREINSTALL-README](PREINSTALL-README.md) before proceeding.
 
 ## Rebasing (Recommended)
+*Note: if you don't already have a Fedora Atomic installation, use a Fedora Atomic iso that matches your secureblue target image to install one. If you want to use a secureblue Silverblue image, start with the Fedora Silverblue iso, Kinoite for Kinoite, and Sericea (Sway Atomic) for Sericea and all the Wayblue images.*
 
 To rebase a [Fedora Atomic](https://fedoraproject.org/atomic-desktops/) installation, choose an $IMAGE_NAME from the [list below](README.md#images-userns), then follow these steps:
 
@@ -159,15 +160,7 @@ While it's recommended to use a Fedora Atomic iso to install and then rebase tha
 - `securecore-zfs-nvidia-hardened`
 - `securecore-zfs-main-userns-hardened`
 - `securecore-zfs-nvidia-userns-hardened`
-## Asus <sup>[source](https://github.com/ublue-os/hwe/tree/main/asus)</sup>
-- `silverblue-asus-hardened`
-- `silverblue-asus-nvidia-hardened`
-- `silverblue-asus-userns-hardened`
-- `silverblue-asus-nvidia-userns-hardened`
-- `kinoite-asus-hardened`
-- `kinoite-asus-nvidia-hardened`
-- `kinoite-asus-userns-hardened`
-- `kinoite-asus-nvidia-userns-hardened`
+
 # Post-install
 
 After installation, [yafti](https://github.com/ublue-os/yafti) will open. Make sure to follow the steps listed carefully and read the directions closely.

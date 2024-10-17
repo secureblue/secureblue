@@ -129,7 +129,7 @@ ujust audit-secureblue
 ```
 
 ## Optional: `hardened-chromium` Flags
-The included hardened-chromium browser has some additional settings in `chrome://flags` you *may* want to set for additional hardening, and convenience. (That *can* cause functionality issues in some cases)
+The included hardened-chromium browser has some additional settings in `chrome://flags` you *may* want to set for additional hardening, and convenience. (That can cause functionality issues in *some* cases)
 You can read about these settings [here](https://github.com/secureblue/hardened-chromium?tab=readme-ov-file#post-install).
 
 ## Read the FAQ

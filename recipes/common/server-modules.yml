@@ -5,6 +5,10 @@ modules:
         - usbguard
         - firewalld
         - policycoreutils-python-utils
+        - intel-media-driver
+        - ffmpeg
+        - ffmpeg-libs
+
     - type: files
       files:
         - source: system/server

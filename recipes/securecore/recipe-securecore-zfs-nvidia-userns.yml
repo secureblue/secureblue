@@ -10,7 +10,6 @@ modules:
   - from-file: common/common-modules.yml
   - from-file: common/nvidia-modules.yml 
   - from-file: common/server-modules.yml
-  - from-file: common/proprietary-server-packages.yml
   - from-file: common/userns-packages.yml
   - from-file: common/zfs-modules.yml
   - from-file: common/final-modules.yml

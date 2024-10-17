@@ -1,5 +1,0 @@
-type: rpm-ostree
-install:
-  - intel-media-driver
-  - ffmpeg
-  - ffmpeg-libs

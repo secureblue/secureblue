@@ -121,7 +121,7 @@ While it's recommended to use a Fedora Atomic iso to install and then rebase tha
 *`nvidia` images are recommended for systems with Nvidia GPUs Pascal or older.*
 
 ### Recommended <sup>[why?](RECOMMENDED.md)</sup>
-| Name                                      | Base      | Nvidia Support         | Unprivileged User Namespaces |
+| Name                                      | Base      | Nvidia Support         | Unpriv. Userns |
 |-------------------------------------------|-----------|-------------------------|------------------------------|
 | `silverblue-main-hardened`               | Silverblue| No                      | No                           |
 | `silverblue-nvidia-hardened`             | Silverblue| Yes, closed drivers     | No                           |
@@ -131,7 +131,7 @@ While it's recommended to use a Fedora Atomic iso to install and then rebase tha
 | `silverblue-nvidia-open-userns-hardened` | Silverblue| Yes, open drivers       | Yes                          |
 
 ### Stable
-| Name                                      | Base      | Nvidia Support         | Unprivileged User Namespaces |
+| Name                                      | Base      | Nvidia Support         | Unpriv. Userns |
 |-------------------------------------------|-----------|-------------------------|------------------------------|
 | `kinoite-main-hardened`                  | Kinoite   | No                      | No                           |
 | `kinoite-nvidia-hardened`                | Kinoite   | Yes, closed drivers     | No                           |
@@ -148,7 +148,7 @@ While it's recommended to use a Fedora Atomic iso to install and then rebase tha
 
 ### Beta
 *Note: Learn about wayblue [here](https://github.com/wayblueorg/wayblue)*
-| Name                                      | Base                  | Nvidia Support         | Unprivileged User Namespaces |
+| Name                                      | Base                  | Nvidia Support         | Unpriv. Userns |
 |-------------------------------------------|-----------------------|-------------------------|------------------------------|
 | `wayblue-wayfire-main-hardened`          | Wayblue-Wayfire       | No                      | No                           |
 | `wayblue-wayfire-nvidia-hardened`        | Wayblue-Wayfire       | Yes, closed drivers     | No                           |
@@ -176,7 +176,7 @@ While it's recommended to use a Fedora Atomic iso to install and then rebase tha
 | `wayblue-sway-nvidia-open-userns-hardened` | Wayblue-Sway       | Yes, open drivers       | Yes                          |
 
 ## Server
-| Name                                      | Base      | Nvidia Support         | ZFS Support | Unprivileged User Namespaces |
+| Name                                      | Base      | Nvidia Support         | ZFS Support | Unpriv. Userns |
 |-------------------------------------------|-----------|-------------------------|-------------|------------------------------|
 | `securecore-main-hardened`               | CoreOS    | No                      | No          | No                           |
 | `securecore-nvidia-hardened`             | CoreOS    | Yes, closed drivers     | No          | No                           |

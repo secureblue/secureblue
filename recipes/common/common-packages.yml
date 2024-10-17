@@ -6,9 +6,7 @@ install:
 
   # missing upstream
   - openssl
-  - vim
   - just
-  - alsa-firmware
   - patch
   - p7zip
   - unrar

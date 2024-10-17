@@ -1,4 +1,9 @@
 modules:
+    - type: containerfile
+      snippets:
+        - COPY --from=ghcr.io/ublue-os/akmods:main-40 /rpms/ /tmp/rpms
+        - RUN find /tmp/rpms
+        - RUN rpm-ostree install /tmp/rpms/ublue-os/ublue-os-ucore*.rpm
     - type: rpm-ostree
       install:
         - setools-console

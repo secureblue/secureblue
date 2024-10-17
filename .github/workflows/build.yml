@@ -43,9 +43,9 @@ jobs:
           - general/recipe-wayblue-sway-main.yml
           - general/recipe-wayblue-sway-nvidia.yml
           - general/recipe-wayblue-sway-nvidia-open.yml
-          - general/recipe-cosmic-main.yml
-          - general/recipe-cosmic-nvidia.yml
-          - general/recipe-cosmic-nvidia-open.yml
+          # - general/recipe-cosmic-main.yml
+          # - general/recipe-cosmic-nvidia.yml
+          # - general/recipe-cosmic-nvidia-open.yml
           # server
           - securecore/recipe-securecore-main.yml
           - securecore/recipe-securecore-nvidia.yml
@@ -76,9 +76,9 @@ jobs:
           - general/recipe-wayblue-sway-main-userns.yml
           - general/recipe-wayblue-sway-nvidia-userns.yml
           - general/recipe-wayblue-sway-nvidia-open-userns.yml
-          - general/recipe-cosmic-main-userns.yml
-          - general/recipe-cosmic-nvidia-userns.yml
-          - general/recipe-cosmic-nvidia-open-userns.yml
+          # - general/recipe-cosmic-main-userns.yml
+          # - general/recipe-cosmic-nvidia-userns.yml
+          # - general/recipe-cosmic-nvidia-open-userns.yml
           # server
           - securecore/recipe-securecore-main-userns.yml
           - securecore/recipe-securecore-nvidia-userns.yml

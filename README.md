@@ -18,7 +18,7 @@ This repo uses [BlueBuild](https://blue-build.org/) to generate hardened operati
 secureblue applies hardening with the following goals in mind:
 
 - Increase defenses against the exploitation of both known and unknown vulnerabilities.
-- Avoid sacrificing usability for most use cases where possible
+- Avoid sacrificing usability for most use cases where possible.
 
 The following are not in scope:
 - Anything that sacrifices security for "privacy". Fedora is already sufficiently private and "privacy" often serves as a euphemism for security theater. This is especially true when at odds with improving security.

@@ -1,4 +1,9 @@
 modules:
+    - type: containerfile
+      snippets:
+        - COPY --from=ghcr.io/ublue-os/main-kernel:40 /rpms/ /tmp/rpms
+    - type: scripts
+        - installsignedkernel.sh
     - from-file: common/desktop-packages.yml
     - from-file: common/desktop-scripts.yml
     - type: yafti

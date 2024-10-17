@@ -81,7 +81,7 @@ Have a look at [PREINSTALL-README](PREINSTALL-README.md) before proceeding.
 > [!NOTE] 
 > If you don't already have a Fedora Atomic installation, use a Fedora Atomic ISO that matches your secureblue target image to install one. If you want to use a secureblue Silverblue image, start with the Fedora Silverblue ISO, Kinoite for Kinoite, and Sericea (Sway Atomic) for Sericea, and all the Wayblue images.
 
-To rebase a [Fedora Atomic](https://fedoraproject.org/atomic-desktops/) installation, follow these steps<sup>\*</sup>:
+To rebase a [Fedora Atomic](https://fedoraproject.org/atomic-desktops/) installation, follow these steps<sup>‡</sup>:
 
 > [!IMPORTANT]
 > The **only** supported tag is `latest`.
@@ -102,7 +102,7 @@ To rebase a [Fedora Atomic](https://fedoraproject.org/atomic-desktops/) installa
   ```
   systemctl reboot
   ```
-<sup>\*</sup> Replace `IMAGE_NAME` with the *full name* of your preferred image from the [list below](README.md#images).
+<sup>‡</sup> Replace `IMAGE_NAME` with the *full name* of your preferred image from the [list below](README.md#images).
 
 ## ISO 
 

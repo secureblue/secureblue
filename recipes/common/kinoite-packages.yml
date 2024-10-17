@@ -5,3 +5,4 @@ remove:
   - kdeconnectd
   - fedora-chromium-config-kde
   - fuse-encfs
+  - krfb

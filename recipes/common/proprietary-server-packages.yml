@@ -1,10 +1,5 @@
 type: rpm-ostree
 install:
   - intel-media-driver
-  - gstreamer1-plugin-libav  
-  - gstreamer1-plugins-bad-free-extras  
-  - gstreamer1-plugins-bad-freeworld  
-  - gstreamer1-plugins-ugly  
-  - gstreamer1-vaapi  
   - ffmpeg
   - ffmpeg-libs

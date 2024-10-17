@@ -157,7 +157,7 @@ While it's recommended to use a Fedora Atomic ISO to install and then rebase tha
 
 ### Beta
 > [!NOTE]
-> Learn about wayblue [here](https://github.com/wayblueorg/wayblue)
+> Learn about wayblue [here](https://github.com/wayblueorg/wayblue).
 
 #### Wayfire
 | Name                                      | Base                  | Nvidia Support         | Unpriv. Userns |

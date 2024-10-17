@@ -116,61 +116,80 @@ While it's recommended to use a Fedora Atomic iso to install and then rebase tha
 
 ## Desktop
 
-### Recommended <sup>[why?](RECOMMENDED.md)</sup>
+*`nvidia-open` images are recommended for systems with Nvidia GPUs Turing or newer.*
 
-| Name                                      | Base      | Nvidia Support | Unprivileged User Namespaces |
-|-------------------------------------------|-----------|----------------|------------------------------|
-| `silverblue-main-hardened`               | Silverblue| No             | No     |
-| `silverblue-nvidia-hardened`             | Silverblue| Yes            | No     |
-| `silverblue-main-userns-hardened`        | Silverblue| No             | Yes    |
-| `silverblue-nvidia-userns-hardened`      | Silverblue| Yes            | Yes    |
+*`nvidia` images are recommended for systems with Nvidia GPUs Pascal or older.*
+
+### Recommended <sup>[why?](RECOMMENDED.md)</sup>
+| Name                                      | Base      | Nvidia Support         | Unprivileged User Namespaces |
+|-------------------------------------------|-----------|-------------------------|------------------------------|
+| `silverblue-main-hardened`               | Silverblue| No                      | No                           |
+| `silverblue-nvidia-hardened`             | Silverblue| Yes, closed drivers     | No                           |
+| `silverblue-nvidia-open-hardened`        | Silverblue| Yes, open drivers       | No                           |
+| `silverblue-main-userns-hardened`        | Silverblue| No                      | Yes                          |
+| `silverblue-nvidia-userns-hardened`      | Silverblue| Yes, closed drivers     | Yes                          |
+| `silverblue-nvidia-open-userns-hardened` | Silverblue| Yes, open drivers       | Yes                          |
 
 ### Stable
-| Name                                      | Base      | Nvidia Support | Unprivileged User Namespaces |
-|-------------------------------------------|-----------|----------------|------------------------------|
-| `kinoite-main-hardened`                  | Kinoite   | No             | No     |
-| `kinoite-nvidia-hardened`                | Kinoite   | Yes            | No     |
-| `kinoite-main-userns-hardened`           | Kinoite   | No             | Yes    |
-| `kinoite-nvidia-userns-hardened`         | Kinoite   | Yes            | Yes    |
-| `sericea-main-hardened`                  | Sericea   | No             | No     |
-| `sericea-nvidia-hardened`                | Sericea   | Yes            | No     |
-| `sericea-main-userns-hardened`           | Sericea   | No             | Yes    |
-| `sericea-nvidia-userns-hardened`         | Sericea   | Yes            | Yes    |
+| Name                                      | Base      | Nvidia Support         | Unprivileged User Namespaces |
+|-------------------------------------------|-----------|-------------------------|------------------------------|
+| `kinoite-main-hardened`                  | Kinoite   | No                      | No                           |
+| `kinoite-nvidia-hardened`                | Kinoite   | Yes, closed drivers     | No                           |
+| `kinoite-nvidia-open-hardened`           | Kinoite   | Yes, open drivers       | No                           |
+| `kinoite-main-userns-hardened`           | Kinoite   | No                      | Yes                          |
+| `kinoite-nvidia-userns-hardened`         | Kinoite   | Yes, closed drivers     | Yes                          |
+| `kinoite-nvidia-open-userns-hardened`    | Kinoite   | Yes, open drivers       | Yes                          |
+| `sericea-main-hardened`                  | Sericea   | No                      | No                           |
+| `sericea-nvidia-hardened`                | Sericea   | Yes, closed drivers     | No                           |
+| `sericea-nvidia-open-hardened`           | Sericea   | Yes, open drivers       | No                           |
+| `sericea-main-userns-hardened`           | Sericea   | No                      | Yes                          |
+| `sericea-nvidia-userns-hardened`         | Sericea   | Yes, closed drivers     | Yes                          |
+| `sericea-nvidia-open-userns-hardened`    | Sericea   | Yes, open drivers       | Yes                          |
 
-### Beta  
-
+### Beta
 *Note: Learn about wayblue [here](https://github.com/wayblueorg/wayblue)*
-| Name                                      | Base      | Nvidia Support | Unprivileged User Namespaces |
-|-------------------------------------------|-----------|----------------|------------------------------|
-| `wayblue-wayfire-main-hardened`          | Wayblue-Wayfire   | No             | No     |
-| `wayblue-wayfire-nvidia-hardened`        | Wayblue-Wayfire   | Yes            | No     |
-| `wayblue-wayfire-main-userns-hardened`   | Wayblue-Wayfire   | No             | Yes    |
-| `wayblue-wayfire-nvidia-userns-hardened` | Wayblue-Wayfire   | Yes            | Yes    |
-| `wayblue-hyprland-main-hardened`         | Wayblue-Hyprland   | No             | No     |
-| `wayblue-hyprland-nvidia-hardened`       | Wayblue-Hyprland   | Yes            | No     |
-| `wayblue-hyprland-main-userns-hardened`  | Wayblue-Hyprland   | No             | Yes    |
-| `wayblue-hyprland-nvidia-userns-hardened`| Wayblue-Hyprland   | Yes            | Yes    |
-| `wayblue-river-main-hardened`            | Wayblue-River   | No             | No     |
-| `wayblue-river-nvidia-hardened`          | Wayblue-River   | Yes            | No     |
-| `wayblue-river-main-userns-hardened`     | Wayblue-River   | No             | Yes    |
-| `wayblue-river-nvidia-userns-hardened`   | Wayblue-River   | Yes            | Yes    |
-| `wayblue-sway-main-hardened`             | Wayblue-Sway   | No             | No     |
-| `wayblue-sway-nvidia-hardened`           | Wayblue-Sway   | Yes            | No     |
-| `wayblue-sway-main-userns-hardened`      | Wayblue-Sway   | No             | Yes    |
-| `wayblue-sway-nvidia-userns-hardened`    | Wayblue-Sway   | Yes            | Yes    |
+| Name                                      | Base                  | Nvidia Support         | Unprivileged User Namespaces |
+|-------------------------------------------|-----------------------|-------------------------|------------------------------|
+| `wayblue-wayfire-main-hardened`          | Wayblue-Wayfire       | No                      | No                           |
+| `wayblue-wayfire-nvidia-hardened`        | Wayblue-Wayfire       | Yes, closed drivers     | No                           |
+| `wayblue-wayfire-nvidia-open-hardened`   | Wayblue-Wayfire       | Yes, open drivers       | No                           |
+| `wayblue-wayfire-main-userns-hardened`   | Wayblue-Wayfire       | No                      | Yes                          |
+| `wayblue-wayfire-nvidia-userns-hardened` | Wayblue-Wayfire       | Yes, closed drivers     | Yes                          |
+| `wayblue-wayfire-nvidia-open-userns-hardened` | Wayblue-Wayfire | Yes, open drivers       | Yes                          |
+| `wayblue-hyprland-main-hardened`         | Wayblue-Hyprland      | No                      | No                           |
+| `wayblue-hyprland-nvidia-hardened`       | Wayblue-Hyprland      | Yes, closed drivers     | No                           |
+| `wayblue-hyprland-nvidia-open-hardened`  | Wayblue-Hyprland      | Yes, open drivers       | No                           |
+| `wayblue-hyprland-main-userns-hardened`  | Wayblue-Hyprland      | No                      | Yes                          |
+| `wayblue-hyprland-nvidia-userns-hardened`| Wayblue-Hyprland      | Yes, closed drivers     | Yes                          |
+| `wayblue-hyprland-nvidia-open-userns-hardened` | Wayblue-Hyprland | Yes, open drivers       | Yes                          |
+| `wayblue-river-main-hardened`            | Wayblue-River         | No                      | No                           |
+| `wayblue-river-nvidia-hardened`          | Wayblue-River         | Yes, closed drivers     | No                           |
+| `wayblue-river-nvidia-open-hardened`     | Wayblue-River         | Yes, open drivers       | No                           |
+| `wayblue-river-main-userns-hardened`     | Wayblue-River         | No                      | Yes                          |
+| `wayblue-river-nvidia-userns-hardened`   | Wayblue-River         | Yes, closed drivers     | Yes                          |
+| `wayblue-river-nvidia-open-userns-hardened` | Wayblue-River     | Yes, open drivers       | Yes                          |
+| `wayblue-sway-main-hardened`             | Wayblue-Sway          | No                      | No                           |
+| `wayblue-sway-nvidia-hardened`           | Wayblue-Sway          | Yes, closed drivers     | No                           |
+| `wayblue-sway-nvidia-open-hardened`      | Wayblue-Sway          | Yes, open drivers       | No                           |
+| `wayblue-sway-main-userns-hardened`      | Wayblue-Sway          | No                      | Yes                          |
+| `wayblue-sway-nvidia-userns-hardened`    | Wayblue-Sway          | Yes, closed drivers     | Yes                          |
+| `wayblue-sway-nvidia-open-userns-hardened` | Wayblue-Sway       | Yes, open drivers       | Yes                          |
 
 ## Server
-
-| Name                                      | Base      | Nvidia Support | ZFS Support | Unprivileged User Namespaces |
-|-------------------------------------------|-----------|----------------|-------------|--------|
-| `securecore-main-hardened`               | CoreOS    | No             | No          | No     |
-| `securecore-nvidia-hardened`             | CoreOS    | Yes            | No          | No     |
-| `securecore-main-userns-hardened`        | CoreOS    | No             | No          | Yes    |
-| `securecore-nvidia-userns-hardened`      | CoreOS    | Yes            | No          | Yes    |
-| `securecore-zfs-main-hardened`           | CoreOS    | No             | Yes         | No     |
-| `securecore-zfs-nvidia-hardened`         | CoreOS    | Yes            | Yes         | No     |
-| `securecore-zfs-main-userns-hardened`    | CoreOS    | No             | Yes         | Yes    |
-| `securecore-zfs-nvidia-userns-hardened`  | CoreOS    | Yes            | Yes         | Yes    |
+| Name                                      | Base      | Nvidia Support         | ZFS Support | Unprivileged User Namespaces |
+|-------------------------------------------|-----------|-------------------------|-------------|------------------------------|
+| `securecore-main-hardened`               | CoreOS    | No                      | No          | No                           |
+| `securecore-nvidia-hardened`             | CoreOS    | Yes, closed drivers     | No          | No                           |
+| `securecore-nvidia-open-hardened`        | CoreOS    | Yes, open drivers       | No          | No                           |
+| `securecore-main-userns-hardened`        | CoreOS    | No                      | No          | Yes                          |
+| `securecore-nvidia-userns-hardened`      | CoreOS    | Yes, closed drivers     | No          | Yes                          |
+| `securecore-nvidia-open-userns-hardened` | CoreOS    | Yes, open drivers       | No          | Yes                          |
+| `securecore-zfs-main-hardened`           | CoreOS    | No                      | Yes         | No                           |
+| `securecore-zfs-nvidia-hardened`         | CoreOS    | Yes, closed drivers     | Yes         | No                           |
+| `securecore-zfs-nvidia-open-hardened`    | CoreOS    | Yes, open drivers       | Yes         | No                           |
+| `securecore-zfs-main-userns-hardened`    | CoreOS    | No                      | Yes         | Yes                          |
+| `securecore-zfs-nvidia-userns-hardened`  | CoreOS    | Yes, closed drivers     | Yes         | Yes                          |
+| `securecore-zfs-nvidia-open-userns-hardened` | CoreOS  | Yes, open drivers       | Yes         | Yes                          |
 
 # Post-install
 

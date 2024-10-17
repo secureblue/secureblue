@@ -14,6 +14,8 @@ install:
   - setools
   - fscrypt
   - heif-pixbuf-loader
+  - vim
+  - alsa-firmware
   
   # yubikey enablement
   - pam-u2f

@@ -1,8 +1,8 @@
-name: wayblue-river-nvidia-hardened
+name: wayblue-hyprland-nvidia-open-hardened
 
-description: "wayblue river nvidia, hardened"
+description: "wayblue hyprland nvidia-open, hardened"
 
-base-image: ghcr.io/wayblueorg/river-nvidia
+base-image: ghcr.io/wayblueorg/hyprland-nvidia-open
 
 image-version: 40
 

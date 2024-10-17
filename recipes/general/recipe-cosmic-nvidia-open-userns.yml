@@ -1,0 +1,16 @@
+name: cosmic-nvidia-open-userns-hardened
+
+description: "Cosmic with nvidia-open and userns, hardened"
+
+base-image: quay.io/fedora-ostree-desktops/cosmic-atomic
+
+image-version: 41
+
+modules:
+  - from-file: common/common-modules.yml
+  - from-file: common/nvidia-open-modules-41.yml 
+  - from-file: common/desktop-modules.yml
+  - from-file: common/cosmic-modules.yml
+  - from-file: common/proprietary-packages.yml
+  - from-file: common/userns-packages.yml
+  - from-file: common/final-modules.yml

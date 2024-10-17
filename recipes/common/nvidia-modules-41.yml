@@ -5,7 +5,7 @@ modules:
         - COPY --from=ghcr.io/ublue-os/akmods:main-41 /rpms/ /tmp/rpms
         - RUN find /tmp/rpms
         - RUN rpm-ostree install /tmp/rpms/ublue-os/ublue-os-akmods*.rpm
-        - COPY --from=ghcr.io/ublue-os/akmods-nvidia-open:main-41 /rpms/ /tmp/rpms
+        - COPY --from=ghcr.io/ublue-os/akmods-nvidia:main-41 /rpms/ /tmp/rpms
         - RUN find /tmp/rpms
         - RUN rpm-ostree install /tmp/rpms/ublue-os/ublue-os-nvidia*.rpm
         - RUN sed -i '0,/enabled=0/{s/enabled=0/enabled=1/}' /etc/yum.repos.d/nvidia-container-toolkit.repo

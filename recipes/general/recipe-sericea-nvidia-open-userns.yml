@@ -1,6 +1,6 @@
-name: sericea-nvidia-userns-hardened
+name: sericea-nvidia-open-userns-hardened
 
-description: "Sericea with nvidia and userns, hardened"
+description: "Sericea with userns and nvidia-open, hardened"
 
 base-image: quay.io/fedora-ostree-desktops/sericea
 
@@ -8,7 +8,7 @@ image-version: 40
 
 modules:
   - from-file: common/common-modules.yml
-  - from-file: common/nvidia-modules.yml 
+  - from-file: common/nvidia-open-modules.yml 
   - from-file: common/desktop-modules.yml
   - from-file: common/proprietary-packages.yml
   - from-file: common/userns-packages.yml

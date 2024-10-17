@@ -14,7 +14,7 @@ rpm-ostree kargs \
     --append-if-missing=rd.driver.blacklist=nouveau \
     --append-if-missing=modprobe.blacklist=nouveau \
     --append-if-missing=nvidia-drm.modeset=1 \
-    --append=nvidia-drm.fbdev=1
+    --append-if-missing=nvidia-drm.fbdev=1
 ```
 
 You may also need this (solves flickering and luks issues on some nvidia hardware):

@@ -78,11 +78,13 @@ Sponsorship options are on the [Donate](DONATE.md) page. All donations are appre
 Have a look at [PREINSTALL-README](PREINSTALL-README.md) before proceeding.
 
 ## Rebasing (Recommended)
-*Note: if you don't already have a Fedora Atomic installation, use a Fedora Atomic iso that matches your secureblue target image to install one. If you want to use a secureblue Silverblue image, start with the Fedora Silverblue iso, Kinoite for Kinoite, and Sericea (Sway Atomic) for Sericea and all the Wayblue images.*
+> [!NOTE] 
+> If you don't already have a Fedora Atomic installation, use a Fedora Atomic ISO that matches your secureblue target image to install one. If you want to use a secureblue Silverblue image, start with the Fedora Silverblue ISO, Kinoite for Kinoite, and Sericea (Sway Atomic) for Sericea, and all the Wayblue images.
 
-To rebase a [Fedora Atomic](https://fedoraproject.org/atomic-desktops/) installation, follow these steps:
+To rebase a [Fedora Atomic](https://fedoraproject.org/atomic-desktops/) installation, follow these steps<sup>\*</sup>:
 
-*(Important note: the **only** supported tag is `latest`)*
+> [!IMPORTANT]
+> The **only** supported tag is `latest`.
 
 - First rebase to the unsigned image, to get the proper signing keys and policies installed:
   ```
@@ -100,11 +102,11 @@ To rebase a [Fedora Atomic](https://fedoraproject.org/atomic-desktops/) installa
   ```
   systemctl reboot
   ```
-\* Replace `IMAGE_NAME` with the *full name* of your preferred image from the [list below](README.md#images).
+<sup>\*</sup> Replace `IMAGE_NAME` with the *full name* of your preferred image from the [list below](README.md#images).
 
 ## ISO 
 
-While it's recommended to use a Fedora Atomic iso to install and then rebase that installation to secureblue, you can also generate an iso and install that directly using [this script](generate_secureblue_iso.sh). Please note you should still follow the [post-install steps](README.md#post-install) when installing from a generated iso:
+While it's recommended to use a Fedora Atomic ISO to install and then rebase that installation to secureblue, you can also generate an ISO and install that directly using [this script](generate_secureblue_iso.sh). Please note you should still follow the [post-install steps](README.md#post-install) when installing from a generated ISO:
 
 ```
 ./generate_secureblue_iso.sh
@@ -112,7 +114,8 @@ While it's recommended to use a Fedora Atomic iso to install and then rebase tha
 
 # Images
 
-*Note: Learn about unprivileged user namespaces [here](USERNS.md).*
+> [!NOTE]
+> Learn about unprivileged user namespaces [here](USERNS.md).
 
 ## Desktop
 

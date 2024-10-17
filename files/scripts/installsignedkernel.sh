@@ -25,7 +25,7 @@ if [[ "$INCOMING_KERNEL_VERSION" != "$QUALIFIED_KERNEL" ]]; then
 else
     echo "Installing kernel files from kernel-cache."
     cd /tmp
-    rpm2cpio /tmp/kernel-rpms/kernel-core-*.rpm | cpio -idmv
+    rpm2cpio /tmp/rpms/kernel/kernel-core-*.rpm | cpio -idmv
     cp ./lib/modules/*/vmlinuz /usr/lib/modules/*/vmlinuz
     cd /
 fi

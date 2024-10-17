@@ -10,3 +10,4 @@ modules:
       scripts:
         - installnvidiatoolkitpolicy.sh
         - setearlyloading.sh
+         setdrmvariables.sh

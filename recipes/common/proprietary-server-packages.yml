@@ -1,7 +1,5 @@
 type: rpm-ostree
 install:
-  - libheif-freeworld
-  - libheif-tools
   - intel-media-driver
   - gstreamer1-plugin-libav  
   - gstreamer1-plugins-bad-free-extras  
@@ -10,5 +8,3 @@ install:
   - gstreamer1-vaapi  
   - ffmpeg
   - ffmpeg-libs
-  - ffmpegthumbnailer
-  - pipewire-codec-aptx

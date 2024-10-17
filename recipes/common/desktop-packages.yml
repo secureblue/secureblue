@@ -13,6 +13,7 @@ install:
   - setroubleshoot
   - setools
   - fscrypt
+  - heif-pixbuf-loader
   
   # yubikey enablement
   - pam-u2f

@@ -18,7 +18,7 @@ This repo uses [BlueBuild](https://blue-build.org/) to generate hardened operati
 secureblue applies hardening with the following goals in mind:
 
 - Increase defenses against the exploitation of both known and unknown vulnerabilities.
-- Avoid sacrificing usability for most use cases where possible
+- Avoid sacrificing usability for most use cases where possible.
 
 The following are not in scope:
 - Anything that sacrifices security for "privacy". Fedora is already sufficiently private and "privacy" often serves as a euphemism for security theater. This is especially true when at odds with improving security.
@@ -98,7 +98,7 @@ To rebase a [Fedora Atomic](https://fedoraproject.org/atomic-desktops/) installa
   ```
   rpm-ostree rebase ostree-image-signed:docker://ghcr.io/secureblue/IMAGE_NAME:latest
   ```
-- Reboot again to complete the installation
+- Reboot again to complete the installation:
   ```
   systemctl reboot
   ```
@@ -156,7 +156,8 @@ While it's recommended to use a Fedora Atomic ISO to install and then rebase tha
 | `sericea-nvidia-open-userns-hardened`    | Sericea   | Yes, open drivers       | Yes                          |
 
 ### Beta
-*Note: Learn about wayblue [here](https://github.com/wayblueorg/wayblue)*
+> [!NOTE]
+> Learn about wayblue [here](https://github.com/wayblueorg/wayblue).
 
 #### Wayfire
 | Name                                      | Base                  | Nvidia Support         | Unpriv. Userns |

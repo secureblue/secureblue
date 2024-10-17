@@ -7,4 +7,4 @@ echo '
 
 omit_dracutmodules+=" zfs "
 
-' > /usr/lib/dracut/dracut.conf.d/99-omit-zfs.sh
+' > /usr/lib/dracut/dracut.conf.d/99-omit-zfs.conf

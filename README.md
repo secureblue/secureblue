@@ -121,6 +121,7 @@ While it's recommended to use a Fedora Atomic iso to install and then rebase tha
 *`nvidia` images are recommended for systems with Nvidia GPUs Pascal or older.*
 
 ### Recommended <sup>[why?](RECOMMENDED.md)</sup>
+#### Silverblue
 | Name                                      | Base      | Nvidia Support         | Unpriv. Userns |
 |-------------------------------------------|-----------|-------------------------|------------------------------|
 | `silverblue-main-hardened`               | Silverblue| No                      | No                           |
@@ -131,6 +132,7 @@ While it's recommended to use a Fedora Atomic iso to install and then rebase tha
 | `silverblue-nvidia-open-userns-hardened` | Silverblue| Yes, open drivers       | Yes                          |
 
 ### Stable
+#### Kinoite
 | Name                                      | Base      | Nvidia Support         | Unpriv. Userns |
 |-------------------------------------------|-----------|-------------------------|------------------------------|
 | `kinoite-main-hardened`                  | Kinoite   | No                      | No                           |
@@ -139,6 +141,10 @@ While it's recommended to use a Fedora Atomic iso to install and then rebase tha
 | `kinoite-main-userns-hardened`           | Kinoite   | No                      | Yes                          |
 | `kinoite-nvidia-userns-hardened`         | Kinoite   | Yes, closed drivers     | Yes                          |
 | `kinoite-nvidia-open-userns-hardened`    | Kinoite   | Yes, open drivers       | Yes                          |
+
+#### Sericea
+| Name                                      | Base      | Nvidia Support         | Unpriv. Userns |
+|-------------------------------------------|-----------|-------------------------|------------------------------|
 | `sericea-main-hardened`                  | Sericea   | No                      | No                           |
 | `sericea-nvidia-hardened`                | Sericea   | Yes, closed drivers     | No                           |
 | `sericea-nvidia-open-hardened`           | Sericea   | Yes, open drivers       | No                           |
@@ -148,6 +154,8 @@ While it's recommended to use a Fedora Atomic iso to install and then rebase tha
 
 ### Beta
 *Note: Learn about wayblue [here](https://github.com/wayblueorg/wayblue)*
+
+#### Wayfire
 | Name                                      | Base                  | Nvidia Support         | Unpriv. Userns |
 |-------------------------------------------|-----------------------|-------------------------|------------------------------|
 | `wayblue-wayfire-main-hardened`          | Wayblue-Wayfire       | No                      | No                           |
@@ -156,18 +164,31 @@ While it's recommended to use a Fedora Atomic iso to install and then rebase tha
 | `wayblue-wayfire-main-userns-hardened`   | Wayblue-Wayfire       | No                      | Yes                          |
 | `wayblue-wayfire-nvidia-userns-hardened` | Wayblue-Wayfire       | Yes, closed drivers     | Yes                          |
 | `wayblue-wayfire-nvidia-open-userns-hardened` | Wayblue-Wayfire | Yes, open drivers       | Yes                          |
+
+#### Hyprland
+| Name                                      | Base                  | Nvidia Support         | Unpriv. Userns |
+|-------------------------------------------|-----------------------|-------------------------|------------------------------|
 | `wayblue-hyprland-main-hardened`         | Wayblue-Hyprland      | No                      | No                           |
 | `wayblue-hyprland-nvidia-hardened`       | Wayblue-Hyprland      | Yes, closed drivers     | No                           |
 | `wayblue-hyprland-nvidia-open-hardened`  | Wayblue-Hyprland      | Yes, open drivers       | No                           |
 | `wayblue-hyprland-main-userns-hardened`  | Wayblue-Hyprland      | No                      | Yes                          |
 | `wayblue-hyprland-nvidia-userns-hardened`| Wayblue-Hyprland      | Yes, closed drivers     | Yes                          |
 | `wayblue-hyprland-nvidia-open-userns-hardened` | Wayblue-Hyprland | Yes, open drivers       | Yes                          |
+
+#### River
+| Name                                      | Base                  | Nvidia Support         | Unpriv. Userns |
+|-------------------------------------------|-----------------------|-------------------------|------------------------------|
 | `wayblue-river-main-hardened`            | Wayblue-River         | No                      | No                           |
 | `wayblue-river-nvidia-hardened`          | Wayblue-River         | Yes, closed drivers     | No                           |
 | `wayblue-river-nvidia-open-hardened`     | Wayblue-River         | Yes, open drivers       | No                           |
 | `wayblue-river-main-userns-hardened`     | Wayblue-River         | No                      | Yes                          |
 | `wayblue-river-nvidia-userns-hardened`   | Wayblue-River         | Yes, closed drivers     | Yes                          |
 | `wayblue-river-nvidia-open-userns-hardened` | Wayblue-River     | Yes, open drivers       | Yes                          |
+
+
+#### Sway
+| Name                                      | Base                  | Nvidia Support         | Unpriv. Userns |
+|-------------------------------------------|-----------------------|-------------------------|------------------------------|
 | `wayblue-sway-main-hardened`             | Wayblue-Sway          | No                      | No                           |
 | `wayblue-sway-nvidia-hardened`           | Wayblue-Sway          | Yes, closed drivers     | No                           |
 | `wayblue-sway-nvidia-open-hardened`      | Wayblue-Sway          | Yes, open drivers       | No                           |

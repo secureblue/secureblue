@@ -8,7 +8,7 @@ find /tmp/rpms
 rpm-ostree cliwrap install-to-root /
 
 QUALIFIED_KERNEL="$(rpm -qa | grep -P 'kernel-(\d+\.\d+\.\d+)' | sed -E 's/kernel-//')"
-INCOMING_KERNEL_VERSION="$(basename -s .fc40.x86_64.rpm $(ls /tmp/rpms/kernel/kernel-[0-9]*.rpm 2>/dev/null | grep -P 'kernel-(\d+\.\d+\.\d+)' | sed -E 's/kernel-//'))"
+INCOMING_KERNEL_VERSION="$(basename -s .rpm $(ls /tmp/rpms/kernel/kernel-[0-9]*.rpm 2>/dev/null | grep -P 'kernel-(\d+\.\d+\.\d+)' | sed -E 's/kernel-//'))"
 
 echo "Qualified kernel: $QUALIFIED_KERNEL"
 echo "Incoming kernel version: $INCOMING_KERNEL_VERSION"

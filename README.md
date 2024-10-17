@@ -114,7 +114,8 @@ While it's recommended to use a Fedora Atomic iso to install and then rebase tha
 
 # Images
 
-*Note: Learn about unprivileged user namespaces [here](USERNS.md).*
+> [!NOTE]
+> Learn about unprivileged user namespaces [here](USERNS.md).
 
 ## Desktop
 

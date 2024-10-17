@@ -14,9 +14,10 @@ rpm-ostree kargs \
     --append-if-missing=rd.driver.blacklist=nouveau \
     --append-if-missing=modprobe.blacklist=nouveau \
     --append-if-missing=nvidia-drm.modeset=1 \
+    --append=nvidia-drm.fbdev=1
 ```
 
-You may also need this (solves flickering issues on some nvidia hardware):
+You may also need this (solves flickering and luks issues on some nvidia hardware):
 ```
 rpm-ostree kargs \
     --append-if-missing=initcall_blacklist=simpledrm_platform_driver_init
@@ -86,9 +87,9 @@ Creating a dedicated wheel user and removing wheel from your primary user helps 
 > [!CAUTION]
 > If you do these steps out of order, it is possible to end up without the ability to administrate your system. You will not be able to use the [traditional GRUB-based method](https://linuxconfig.org/recover-reset-forgotten-linux-root-password) of fixing mistakes like this, either, as this will leave your system in a broken state. However, simply rolling back to an older snapshot of your system, should resolve the problem.
 
-1. ```adduser admin```
-2. ```usermod -aG wheel admin```
-3. ```passwd admin```
+1. ```sudo adduser admin```
+2. ```sudo usermod -aG wheel admin```
+3. ```sudo passwd admin```
 4. ```reboot```
 
 > [!NOTE]
@@ -118,3 +119,14 @@ ujust toggle-bash-environment-lockdown
 To enable TPM2 LUKS unlocking (do not use this if you have an AMD CPU), run:
 
 `ujust setup-luks-tpm-unlock` and type `Y` when asked if you want to set a PIN.
+
+## Validation
+
+To validate your secureblue setup, run:
+
+```
+ujust audit-secureblue
+```
+## Read the FAQ
+
+Lots of important stuff is covered in the [FAQ](https://github.com/secureblue/secureblue/blob/live/FAQ.md). AppImage toggles, GNOME extension toggles, Xwayland toggles, etc.

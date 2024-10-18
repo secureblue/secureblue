@@ -7,6 +7,7 @@ modules:
       - fedora-chromium-config-kde
       - fuse-encfs
       - krfb
+      - krfb-libs
   - type: files
     files:  
       - source: system/kinoite

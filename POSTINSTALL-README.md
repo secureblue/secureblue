@@ -4,7 +4,7 @@ After rebasing to secureblue, follow the following steps in order.
 
 ## Subscribe to secureblue release notifications
 
-[FAQ](https://github.com/secureblue/secureblue/blob/live/FAQ.md#how-do-i-get-notified-of-secureblue-changes)
+[FAQ](FAQ.md#how-do-i-get-notified-of-secureblue-changes)
 
 ## Nvidia
 If you are using an nvidia image, run this after installation:
@@ -48,7 +48,7 @@ If you answer `y` when prompted, additional unstable kargs will be applied, whic
 
 ## Setup USBGuard
 
-*This will generate a policy based on your currently attached USB devices and block all others, then enable usbguard*
+*This will generate a policy based on your currently attached USB devices and block all others, then enable usbguard.*
 
 ```
 ujust setup-usbguard
@@ -108,9 +108,15 @@ ujust toggle-bash-environment-lockdown
 
 ## LUKS TPM2 Unlock
 
-To enable TPM2 LUKS unlocking (do not use this if you have an AMD CPU), run:
+> [!WARNING]
+> Do not use this if you have an AMD CPU.
 
-`ujust setup-luks-tpm-unlock` and type `Y` when asked if you want to set a PIN.
+To enable TPM2 LUKS unlocking, run:
+
+```
+ujust setup-luks-tpm-unlock
+``` 
+Type `Y` when asked if you want to set a PIN.
 
 ## Validation
 
@@ -121,9 +127,9 @@ ujust audit-secureblue
 ```
 
 ## Optional: `hardened-chromium` Flags
-The included hardened-chromium browser has some additional settings in `chrome://flags` you *may* want to set for additional hardening, and convenience. (That can cause functionality issues in *some* cases)
+The included [hardened-chromium](https://github.com/secureblue/hardened-chromium) browser has some additional settings in `chrome://flags` you *may* want to set for additional hardening, and convenience. (That can cause functionality issues in *some* cases)
 You can read about these settings [here](https://github.com/secureblue/hardened-chromium?tab=readme-ov-file#post-install).
 
 ## Read the FAQ
 
-Lots of important stuff is covered in the [FAQ](https://github.com/secureblue/secureblue/blob/live/FAQ.md). AppImage toggles, GNOME extension toggles, Xwayland toggles, etc.
+Lots of important stuff is covered in the [FAQ](FAQ.md). AppImage toggles, GNOME extension toggles, Xwayland toggles, etc.

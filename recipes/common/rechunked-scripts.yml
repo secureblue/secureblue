@@ -1,4 +1,0 @@
-type: script
-scripts:
-  - hardenrechunkedcontainerpolicy.sh
-  - usehardenedmalloclight.sh

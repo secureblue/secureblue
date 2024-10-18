@@ -3,11 +3,16 @@
 # Tell build process to exit if there are any errors.
 set -oue pipefail
 
-sed -i 's/insecureAcceptAnything/reject/' /usr/etc/containers/policy.json
+POLICY_FILE="/usr/etc/containers/policy.json"
+
+if [[ ! -f "$POLICY_FILE" ]]; then
+    echo "Error: $POLICY_FILE does not exist."
+    exit 1
+fi
+
+sed -i 's/insecureAcceptAnything/reject/' "$POLICY_FILE"
 
 
-# Exception for build-container-installer to allow the ISO generation script to work
-# https://github.com/JasonN3/build-container-installer/issues/123
 yq -i -o=j '.transports.docker |=
     {"ghcr.io/jasonn3": [
         {
@@ -19,7 +24,7 @@ yq -i -o=j '.transports.docker |=
         }
       ]
     }
-+ .' /usr/etc/containers/policy.json
++ .' "$POLICY_FILE"
 
 yq -i -o=j '.transports.docker |=
     {"ghcr.io/zelikos": [
@@ -32,4 +37,17 @@ yq -i -o=j '.transports.docker |=
         }
       ]
     }
-+ .' /usr/etc/containers/policy.json
++ .' "$POLICY_FILE"
+
+yq -i -o=j '.transports.docker |=
+    {"ghcr.io/wayblueorg": [
+        {
+          "type": "sigstoreSigned",
+          "keyPath": "/usr/etc/pki/containers/wayblue.pub",
+          "signedIdentity": {
+            "type": "matchRepository"
+          }
+        }
+      ]
+    }
++ .' "$POLICY_FILE"

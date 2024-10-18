@@ -1,4 +1,0 @@
-type: files
-files:
-  - source: system/dx
-    destination: /

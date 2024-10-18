@@ -1,0 +1,11 @@
+type: script
+scripts:
+  - installandroidudev.sh
+  - disablecups.sh
+  - disablesshd.sh
+  - disableavahidaemon.sh
+  - disablealsastate.sh
+  - disablemodemmanager.sh
+  - disablenfsdaemons.sh
+  - disablesssd.sh
+  - justfilehardening.sh

@@ -13,7 +13,14 @@ If you are using an nvidia image, run this after installation:
 rpm-ostree kargs \
     --append-if-missing=rd.driver.blacklist=nouveau \
     --append-if-missing=modprobe.blacklist=nouveau \
-    --append-if-missing=nvidia-drm.modeset=1
+    --append-if-missing=nvidia-drm.modeset=1 \
+    --append-if-missing=nvidia-drm.fbdev=1
+```
+
+You may also need this (solves flickering and luks issues on some nvidia hardware):
+```
+rpm-ostree kargs \
+    --append-if-missing=initcall_blacklist=simpledrm_platform_driver_init
 ```
 
 ### Nvidia optimus laptop
@@ -39,7 +46,7 @@ Documentation is available [here](https://github.com/secureblue/secureblue/blob/
 ujust set-kargs-hardening
 ```
 
-### Set unstable hardened kargs
+### Set additional unstable hardened kargs
 
 *Can cause issues on some hardware, but stable on other hardware*
 
@@ -120,6 +127,11 @@ To validate your secureblue setup, run:
 ```
 ujust audit-secureblue
 ```
+
+## Optional: `hardened-chromium` Flags
+The included hardened-chromium browser has some additional settings in `chrome://flags` you *may* want to set for additional hardening, and convenience. (That can cause functionality issues in *some* cases)
+You can read about these settings [here](https://github.com/secureblue/hardened-chromium?tab=readme-ov-file#post-install).
+
 ## Read the FAQ
 
 Lots of important stuff is covered in the [FAQ](https://github.com/secureblue/secureblue/blob/live/FAQ.md). AppImage toggles, GNOME extension toggles, Xwayland toggles, etc.

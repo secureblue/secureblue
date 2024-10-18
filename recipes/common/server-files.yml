@@ -1,4 +1,0 @@
-type: files
-files:
-  - source: system/server
-    destination: /

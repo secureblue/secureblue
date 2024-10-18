@@ -1,0 +1,7 @@
+modules:
+    - type: rpm-ostree
+      remove:
+        - toolbox
+    - type: script
+      scripts:
+        - disableuserns.sh

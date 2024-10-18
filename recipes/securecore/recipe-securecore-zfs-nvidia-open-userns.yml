@@ -1,0 +1,15 @@
+name: securecore-zfs-nvidia-open-userns-hardened
+
+description: "CoreOS with nvidia-open, userns, and zfs, hardened"
+
+base-image: quay.io/fedora/fedora-coreos
+
+image-version: testing
+
+modules:
+  - from-file: common/common-modules.yml
+  - from-file: common/server-modules.yml
+  - from-file: common/nvidia-open-server-modules.yml 
+  - from-file: common/userns-packages.yml
+  - from-file: common/zfs-modules.yml
+  - from-file: common/final-modules.yml

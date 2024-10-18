@@ -38,7 +38,8 @@ ujust enroll-secure-boot-key
 
 ## Set kargs
 
-Documentation is available [here](files/system/usr/share/ublue-os/just/70-secureblue.just.readme.md) for the kargs set by the commands below.
+> [!NOTE]
+> Learn about the hardening applied by the kargs set by the command below [here](files/system/usr/share/ublue-os/just/70-secureblue.just.readme.md).
 
 ### Set hardened kargs
 

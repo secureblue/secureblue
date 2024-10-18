@@ -6,6 +6,7 @@ modules:
       - kdeconnectd
       - fedora-chromium-config-kde
       - fuse-encfs
+      - krfb
   - type: files
     files:  
       - source: system/kinoite

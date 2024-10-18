@@ -6,6 +6,8 @@ modules:
       - kdeconnectd
       - fedora-chromium-config-kde
       - fuse-encfs
+      # depends on fedora-flathub-remote
+      - plasma-welcome-fedora
   - type: files
     files:  
       - source: system/kinoite

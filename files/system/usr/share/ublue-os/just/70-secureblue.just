@@ -16,7 +16,7 @@ set-kargs-hardening:
         --append-if-missing="debugfs=off""
         echo "Setting unstable kargs."
     else
-        echo "Not setting additional kargs."
+        echo "Not setting unstable hardening kargs."
     fi
     echo "Applying all boot parameters."
     rpm-ostree kargs \

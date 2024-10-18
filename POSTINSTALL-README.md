@@ -45,14 +45,7 @@ Documentation is available [here](https://github.com/secureblue/secureblue/blob/
 ```
 ujust set-kargs-hardening
 ```
-
-### Set additional unstable hardened kargs
-
-*Can cause issues on some hardware, but stable on other hardware*
-
-```
-ujust set-kargs-hardening-unstable
-```
+If you answer `y` when prompted, additional unstable kargs will be applied. (Which are *also* documented in the link above)
 
 ## Setup USBGuard
 

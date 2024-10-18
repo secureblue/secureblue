@@ -8,6 +8,8 @@ modules:
       - fuse-encfs
       - krfb
       - krfb-libs
+      # depends on fedora-flathub-remote
+      - plasma-welcome-fedora
   - type: files
     files:  
       - source: system/kinoite

@@ -44,7 +44,14 @@ ujust enroll-secure-boot-key
 ```
 ujust set-kargs-hardening
 ```
-If you answer `y` when prompted, additional unstable kargs will be applied, which can cause issues on some hardware, but stable on other hardware. (These kargs are *also* documented in the [link above](files/system/usr/share/ublue-os/just/70-secureblue.just.readme.md#additional-unstable-kargs))
+When you run the script, a set of hardening boot parameters will be applied, after that it will then ask you would like to apply additional boot parameters. (These kargs are *also* documented in the [link above](files/system/usr/share/ublue-os/just/70-secureblue.just.readme.md#additional-unstable-kargs))
+
+### Unstable kargs
+If you answer `Y` when prompted, additional unstable kargs will be applied, which can cause issues on some hardware, but stable on other hardware. 
+### 32-bit support
+If you answer `N`, or press enter without any input, support for 32-bit programs will be disabled on the next boot. If you run exclusively modern software, chances are likely you don't need this, so it's safe to disable for additional attack surface reduction. 
+
+However, there are certain exceptions... One common usecase is if you need support for Steam, or play *any* games, you'll likely want to keep support for 32-bit programs. If that is the case, answer `Y`.
 
 ## Setup USBGuard
 

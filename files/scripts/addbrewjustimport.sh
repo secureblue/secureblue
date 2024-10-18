@@ -2,8 +2,9 @@
 
 # Tell build process to exit if there are any errors.
 set -oue pipefail
-echo '
 
-import "/usr/share/ublue-os/just/50-brew.just"
+brewimport='import "/usr/share/ublue-os/just/50-brew.just"'
 
-' >> /usr/share/ublue-os/justfile
+if ! grep -qF "$brewimport" /usr/share/ublue-os/justfile; then
+    echo "$brewimport" >> /usr/share/ublue-os/justfile
+fi

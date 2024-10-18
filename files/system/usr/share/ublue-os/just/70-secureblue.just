@@ -62,7 +62,8 @@ remove-kargs-hardening:
       --delete-if-present="spectre_v2=on" \
       --delete-if-present="spec_store_bypass_disable=on" \
       --delete-if-present="l1d_flush=on" \
-      --delete-if-present="gather_data_sampling=force"
+      --delete-if-present="gather_data_sampling=force" \
+      --delete-if-present="ia32_emulation=0"
     echo "Hardening kargs removed."
 
 # Harden flatpaks by preloading hardened_malloc (highest supported hwcap)

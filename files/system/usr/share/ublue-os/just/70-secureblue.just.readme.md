@@ -88,6 +88,6 @@
 
 `debugfs=off` 
 
-**Disable IA32 emulation**
+**Disables support for 32-bit processes, and syscalls**
 
 `ia32_emulation=0`

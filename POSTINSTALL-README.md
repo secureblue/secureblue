@@ -45,7 +45,7 @@ Documentation is available [here](files/system/usr/share/ublue-os/just/70-secure
 ```
 ujust set-kargs-hardening
 ```
-If you answer `y` when prompted, additional unstable kargs will be applied. (Which are *also* documented in the link above)
+If you answer `y` when prompted, additional unstable kargs will be applied. (Which are *also* documented in the [link above](files/system/usr/share/ublue-os/just/70-secureblue.just.readme.md#additional-unstable-kargs))
 
 ## Setup USBGuard
 

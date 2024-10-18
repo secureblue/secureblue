@@ -88,6 +88,6 @@
 
 `debugfs=off` 
 
-**Disable IA32 Emulation**
+**Disable IA32 emulation**
 
 `ia32_emulation=0`

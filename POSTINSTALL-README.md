@@ -46,7 +46,7 @@ Documentation is available [here](https://github.com/secureblue/secureblue/blob/
 ujust set-kargs-hardening
 ```
 
-### Set unstable hardened kargs
+### Set additional unstable hardened kargs
 
 *Can cause issues on some hardware, but stable on other hardware*
 

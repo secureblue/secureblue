@@ -24,17 +24,17 @@ set-kargs-hardening:
       --append-if-missing="l1d_flush=on" \
       --append-if-missing="gather_data_sampling=force" 
     echo "Hardening kargs set."
-
-# Add additional (unstable) boot parameters for hardening (requires reboot)
-set-kargs-hardening-unstable:
-    #!/usr/bin/pkexec /usr/bin/bash
-    echo "Warning: setting these kargs may lead to boot issues on some hardware."
+    echo "Would you like to set additional (unstable) hardening kargs? [y/N] (Warning: setting these kargs may lead to boot issues on some hardware.)"
+    read YES
+    if [[ "$YES" == [Yy]* ]]; then
     rpm-ostree kargs \
       --append-if-missing="efi=disable_early_pci_dma" \
       --append-if-missing="debugfs=off" \
       --append-if-missing="ia32_emulation=0"
-
-    echo "Unstable hardening kargs set."
+        echo "Unstable hardening kargs set."
+      else
+        echo "Not setting additional kargs."
+    fi
 
 # Remove all hardening boot parameters (requires reboot)
 remove-kargs-hardening:

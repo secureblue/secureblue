@@ -46,7 +46,7 @@ ujust enroll-secure-boot-key
 ```
 ujust set-kargs-hardening
 ```
-If you answer `y` when prompted, additional unstable kargs will be applied. (Which are *also* documented in the [link above](files/system/usr/share/ublue-os/just/70-secureblue.just.readme.md#additional-unstable-kargs))
+If you answer `y` when prompted, additional unstable kargs will be applied, which can cause issues on some hardware, but stable on other hardware. (Which are *also* documented in the [link above](files/system/usr/share/ublue-os/just/70-secureblue.just.readme.md#additional-unstable-kargs))
 
 ## Setup USBGuard
 

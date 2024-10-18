@@ -22,8 +22,7 @@ set-kargs-hardening:
       --append-if-missing="spectre_v2=on" \
       --append-if-missing="spec_store_bypass_disable=on" \
       --append-if-missing="l1d_flush=on" \
-      --append-if-missing="gather_data_sampling=force" \
-      --append-if-missing="ia32_emulation=0"
+      --append-if-missing="gather_data_sampling=force" 
     echo "Hardening kargs set."
 
 # Add additional (unstable) boot parameters for hardening (requires reboot)
@@ -32,7 +31,8 @@ set-kargs-hardening-unstable:
     echo "Warning: setting these kargs may lead to boot issues on some hardware."
     rpm-ostree kargs \
       --append-if-missing="efi=disable_early_pci_dma" \
-      --append-if-missing="debugfs=off"
+      --append-if-missing="debugfs=off" \
+      --append-if-missing="ia32_emulation=0"
 
     echo "Unstable hardening kargs set."
 
@@ -389,6 +389,7 @@ audit-secureblue:
         "gather_data_sampling=force"
         "efi=disable_early_pci_dma"
         "debugfs=off"
+        "ia32_emulation=0"
     )
 
     for karg in "${KARGS_LIST[@]}"; do

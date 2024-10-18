@@ -1,7 +1,26 @@
 # Add additional boot parameters for hardening (requires reboot)
 set-kargs-hardening:
     #!/usr/bin/pkexec /usr/bin/bash
+    echo "Do you need support for 32-bit processes/syscalls? [y/N] (This is mostly used by legacy software, with some exceptions, such as Steam)"
+    read YES
+    if [[ "$YES" == [Yy]* ]]; then
+        echo "Keeping 32-bit support."
+    else
+        IAEMU_YES="--append-if-missing="ia32_emulation=0""
+        echo "Disabling 32-bit support, for the next boot."
+    fi
+    echo "Would you like to set additional (unstable) hardening kargs? [y/N] (Warning: setting these kargs may lead to boot issues on some hardware.)"
+    read YES
+    if [[ "$YES" == [Yy]* ]]; then
+    UNSTABLE_YES="--append-if-missing="efi=disable_early_pci_dma" \
+        --append-if-missing="debugfs=off""
+        echo "Setting unstable kargs."
+    else
+        echo "Not setting additional kargs."
+    fi
+    echo "Applying all boot parameters."
     rpm-ostree kargs \
+      ${UNSTABLE_YES:+UNSTABLE_YES} ${IAEMU_YES:+IAMU_YES} \
       --append-if-missing="init_on_alloc=1" \
       --append-if-missing="init_on_free=1" \
       --append-if-missing="slab_nomerge" \
@@ -24,25 +43,6 @@ set-kargs-hardening:
       --append-if-missing="l1d_flush=on" \
       --append-if-missing="gather_data_sampling=force" 
     echo "Hardening kargs set."
-    echo "Would you like to set additional (unstable) hardening kargs? [y/N] (Warning: setting these kargs may lead to boot issues on some hardware.)"
-    read YES
-    if [[ "$YES" == [Yy]* ]]; then
-    rpm-ostree kargs \
-        --append-if-missing="efi=disable_early_pci_dma" \
-        --append-if-missing="debugfs=off"
-        echo "Unstable hardening kargs set."
-    else
-        echo "Not setting additional kargs."
-    fi
-    echo "Do you need support for 32-bit processes/syscalls? [y/N] (This is mostly used by legacy software, with some exceptions, such as Steam)"
-    read YES
-    if [[ "$YES" == [Yy]* ]]; then
-        echo "Keeping 32-bit support."
-    else
-    rpm-ostree kargs \
-        --append-if-missing="ia32_emulation=0"
-        echo "Disabling 32-bit support, for the next reboot."
-    fi
 
 # Remove all hardening boot parameters (requires reboot)
 remove-kargs-hardening:

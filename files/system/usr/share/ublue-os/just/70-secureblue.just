@@ -6,7 +6,7 @@ set-kargs-hardening:
     if [[ "$YES" == [Yy]* ]]; then
         echo "Keeping 32-bit support."
     else
-        IAEMU_YES="--append-if-missing="ia32_emulation=0""
+        IAEMU_NO="--append-if-missing="ia32_emulation=0""
         echo "Disabling 32-bit support, for the next boot."
     fi
     echo "Would you like to set additional (unstable) hardening kargs? [y/N] (Warning: setting these kargs may lead to boot issues on some hardware.)"
@@ -20,7 +20,7 @@ set-kargs-hardening:
     fi
     echo "Applying all boot parameters."
     rpm-ostree kargs \
-      ${UNSTABLE_YES:+UNSTABLE_YES} ${IAEMU_YES:+IAMU_YES} \
+      ${UNSTABLE_YES:+UNSTABLE_YES} ${IAEMU_NO:+IAEMU_NO} \
       --append-if-missing="init_on_alloc=1" \
       --append-if-missing="init_on_free=1" \
       --append-if-missing="slab_nomerge" \

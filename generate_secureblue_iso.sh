@@ -69,7 +69,7 @@ is_yes "$use_userns" && additional_params+="-userns"
 
 image_name+="$additional_params-hardened"
 
-command="sudo podman run --rm --privileged --volume .:/build-container-installer/build ghcr.io/jasonn3/build-container-installer:latest IMAGE_REPO=ghcr.io/secureblue IMAGE_NAME=$image_name VERSION=40 IMAGE_TAG=latest VARIANT=$variant"
+command="sudo podman run --rm --privileged --volume .:/build-container-installer/build ghcr.io/jasonn3/build-container-installer:latest IMAGE_REPO=ghcr.io/secureblue IMAGE_NAME=$image_name VERSION=41 IMAGE_TAG=latest VARIANT=$variant"
 
 echo "Command to execute:"
 echo "$command"

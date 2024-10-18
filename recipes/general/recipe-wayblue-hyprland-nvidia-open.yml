@@ -1,0 +1,13 @@
+name: wayblue-hyprland-nvidia-open-hardened
+
+description: "wayblue hyprland nvidia-open, hardened"
+
+base-image: ghcr.io/wayblueorg/hyprland-nvidia-open
+
+image-version: 40
+
+modules:
+  - from-file: common/common-modules.yml
+  - from-file: common/desktop-modules.yml
+  - from-file: common/disableuserns-modules.yml
+  - from-file: common/final-modules.yml

@@ -1,0 +1,28 @@
+type: rpm-ostree
+install:
+  - libheif-freeworld
+  - libheif-tools
+  - intel-media-driver
+  - gstreamer1-plugin-libav  
+  - gstreamer1-plugins-bad-free-extras  
+  - gstreamer1-plugins-bad-freeworld  
+  - gstreamer1-plugins-ugly  
+  - gstreamer1-vaapi  
+  - ffmpeg
+  - ffmpeg-libs
+  - ffmpegthumbnailer
+  - pipewire-codec-aptx
+  - mesa-va-drivers-freeworld
+  - fdk-aac
+remove:
+  - fdk-aac-free
+  - mesa-va-drivers
+  - ffmpeg-free
+  - libavcodec-free  
+  - libavdevice-free
+  - libavfilter-free
+  - libavformat-free  
+  - libavutil-free  
+  - libpostproc-free  
+  - libswresample-free  
+  - libswscale-free  

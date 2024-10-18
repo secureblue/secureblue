@@ -23,6 +23,7 @@ set-kargs-hardening:
       --append-if-missing="spec_store_bypass_disable=on" \
       --append-if-missing="l1d_flush=on" \
       --append-if-missing="gather_data_sampling=force"
+      --append-if-missing="ia32_emulation=0"
     echo "Hardening kargs set."
 
 # Add additional (unstable) boot parameters for hardening (requires reboot)

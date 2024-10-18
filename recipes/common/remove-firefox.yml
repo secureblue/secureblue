@@ -1,9 +1,0 @@
-type: rpm-ostree
-remove:
-  - firefox
-  - firefox-langpacks
-
-
-
-
-

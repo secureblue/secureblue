@@ -1,0 +1,29 @@
+modules:
+    - type: containerfile
+      snippets:
+        - COPY --from=ghcr.io/ublue-os/akmods:coreos-testing-40 /rpms /tmp/rpms
+        - RUN find /tmp/rpms
+        - RUN rpm-ostree install /tmp/rpms/ucore/ublue-os-ucore-addons*.rpm    
+    - type: containerfile
+      snippets:
+        - COPY --from=ghcr.io/ublue-os/coreos-testing-kernel:40 /tmp/rpms /tmp/rpms/kernel
+    - type: script
+      scripts:
+        - installsignedkernel.sh
+    - type: rpm-ostree
+      install:
+        - setools-console
+        - usbguard
+        - firewalld
+        - policycoreutils-python-utils
+        
+    - type: files
+      files:
+        - source: system/server
+          destination: /
+    - type: script
+      scripts:
+        - addtailscalerepo.sh
+    - type: script
+      scripts:
+        - excludepcsc.sh

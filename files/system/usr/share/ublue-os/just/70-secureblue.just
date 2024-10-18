@@ -402,10 +402,33 @@ audit-secureblue:
     done
 
     SYSCTL_TEST_STRING="Ensuring no sysctl overrides"
-    if diff /usr/etc/sysctl.d/hardening.conf /etc/sysctl.d/hardening.conf > /dev/null; then
+    readarray -t hardening_conf < <(grep -v -E -e "^#" -e "^$" </usr/etc/sysctl.d/hardening.conf)
+    declare -A hardening
+    for line in "${hardening_conf[@]}"; do
+        key="$(sed -E -e "s/(.*) = .*/\1/"  <<<"$line")"
+        value="$(sed -E "s/.* = (.*)/\1/" <<<"$line")"
+        hardening["$key"]+="$value"
+    done
+    variables="$(sysctl -a 2> >(grep -v "sysctl: permission denied on key "))"
+    sysctl_errors=()
+    for key_string in "${!hardening[@]}"; do
+        expected="${hardening["$key_string"]}"
+        key="$(sed -E -e "s/\./\\\./g" -e "s/\*/\.\*/" <<<"$key_string")"
+        readarray -t results < <(grep -E "^$key = " <<<"$variables")
+        for result in "${results[@]}"; do
+            result="$(sed -E  -e "s/.* = (.*)/\1/" -e "s/\t/ /g" <<<"$result" | tr -s " " )"
+            if [[ "$result" != "$expected" && ("$expected" != 0 && "$result" != disabled) ]]; then
+                sysctl_errors+=("$key_string should be $expected, found $result")
+            fi
+        done
+    done
+    if [[ "${#sysctl_errors}" == 0 ]] && diff /usr/etc/sysctl.d/hardening.conf /etc/sysctl.d/hardening.conf > /dev/null; then
         print_status "$SYSCTL_TEST_STRING" "$STATUS_SUCCESS"
     else
         print_status "$SYSCTL_TEST_STRING" "$STATUS_FAILURE"
+        for error in "${sysctl_errors[@]}"; do
+            echo "> $error"
+        done
     fi
 
     MODPROBE_TEST_STRING="Ensuring no modprobe overrides"

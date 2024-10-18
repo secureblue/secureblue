@@ -44,7 +44,7 @@ ujust enroll-secure-boot-key
 ```
 ujust set-kargs-hardening
 ```
-When you run the script, a set of hardening boot parameters will be applied, after that it will then ask you would like to apply additional boot parameters. (These kargs are *also* documented in the [link above](files/system/usr/share/ublue-os/just/70-secureblue.just.readme.md#additional-unstable-kargs))
+When you run the command, a set of hardening boot parameters will be applied, after that it will then ask you would like to apply additional boot parameters. (These kargs are *also* documented in the [link above](files/system/usr/share/ublue-os/just/70-secureblue.just.readme.md#additional-unstable-kargs))
 
 ### Unstable kargs
 If you answer `Y` when prompted, additional unstable kargs will be applied, which can cause issues on some hardware, but stable on other hardware. 

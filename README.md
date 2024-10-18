@@ -216,6 +216,19 @@ While it's recommended to use a Fedora Atomic ISO to install and then rebase tha
 | `securecore-zfs-nvidia-userns-hardened`  | CoreOS    | Yes, closed drivers     | Yes         | Yes                          |
 | `securecore-zfs-nvidia-open-userns-hardened` | CoreOS  | Yes, open drivers       | Yes         | Yes                          |
 
+
+### Experimental
+
+#### Cosmic
+| Name                                      | Base                  | Nvidia Support         | Unpriv. Userns |
+|-------------------------------------------|-----------------------|-------------------------|------------------------------|
+| `cosmic-main-hardened`          | Cosmic       | No                      | No                           |
+| `cosmic-nvidia-hardened`        | Cosmic       | Yes, closed drivers     | No                           |
+| `cosmic-nvidia-open-hardened`   | Cosmic       | Yes, open drivers       | No                           |
+| `cosmic-main-userns-hardened`   | Cosmic       | No                      | Yes                          |
+| `cosmic-nvidia-userns-hardened` | Cosmic       | Yes, closed drivers     | Yes                          |
+| `cosmic-nvidia-open-userns-hardened` | Cosmic | Yes, open drivers       | Yes                          |
+
 # Post-install
 
 After installation, [yafti](https://github.com/ublue-os/yafti) will open. Make sure to follow the steps listed carefully and read the directions closely.

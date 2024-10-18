@@ -38,7 +38,7 @@ ujust enroll-secure-boot-key
 
 ## Set kargs
 
-Documentation is available [here](https://github.com/secureblue/secureblue/blob/live/files/system/usr/share/ublue-os/just/60-custom.just.readme.md) for the kargs set by the commands below.
+Documentation is available [here](files/system/usr/share/ublue-os/just/70-secureblue.just.readme.md) for the kargs set by the commands below.
 
 ### Set hardened kargs
 

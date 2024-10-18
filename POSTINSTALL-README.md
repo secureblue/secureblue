@@ -51,7 +51,7 @@ If you answer `Y` when prompted, additional unstable kargs will be applied, whic
 ### 32-bit support
 If you answer `N`, or press enter without any input, support for 32-bit programs will be disabled on the next boot. If you run exclusively modern software, chances are likely you don't need this, so it's safe to disable for additional attack surface reduction. 
 
-However, there are certain exceptions. A couple common usecases are if you need support for Steam, or run an ocassional application in Wine you'll likely want to keep support for 32-bit programs. If this is the case, answer `Y`.
+However, there are certain exceptions. A couple common usecases are if you need Steam, or run an ocassional application in Wine you'll likely want to keep support for 32-bit programs. If this is the case, answer `Y`.
 
 ## Setup USBGuard
 

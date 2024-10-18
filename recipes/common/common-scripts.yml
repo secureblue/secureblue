@@ -9,3 +9,4 @@ scripts:
   - disablegeoclue.sh
   - addjustconfig.sh
   - addbrewjustimport.sh
+  - hardencontainerpolicy.sh

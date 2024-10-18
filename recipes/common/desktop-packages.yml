@@ -1,0 +1,38 @@
+type: rpm-ostree
+repos:
+  - https://copr.fedorainfracloud.org/coprs/secureblue/bubblejail/repo/fedora-%OS_VERSION%/secureblue-bubblejail-fedora-%OS_VERSION%.repo
+  - https://copr.fedorainfracloud.org/coprs/secureblue/hardened-chromium/repo/fedora-%OS_VERSION%/secureblue-hardened-chromium-fedora-%OS_VERSION%.repo
+install:
+  - headsetcontrol
+  - hardened-chromium
+  - hardened-chromium-subresource-filter
+  - mediainfo
+  - bubblejail
+  - usbguard-notifier
+  - usbguard
+  - setroubleshoot
+  - setools
+  - fscrypt
+  - heif-pixbuf-loader
+  - vim
+  - alsa-firmware
+  
+  # yubikey enablement
+  - pam-u2f
+  - pam_yubico
+  - pamu2fcfg
+  - yubikey-manager
+remove:
+  - firefox
+  - firefox-langpacks
+  - fuse
+  - fedora-chromium-config
+  - fedora-flathub-remote
+  - open-vm-tools
+  - open-vm-tools-desktop
+  - virtualbox-guest-additions
+  - passim
+
+
+
+

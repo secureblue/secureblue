@@ -1,22 +1,18 @@
 name: sericea-nvidia-hardened
 
-description: "sericea nvidia with some hardening applied"
+description: "Sericea with nvidia, hardened"
 
-base-image: ghcr.io/ublue-os/sericea-nvidia
+base-image: quay.io/fedora-ostree-desktops/sericea
 
 image-version: 40
 
 modules:
-  - from-file: common/initialization-scripts.yml
-  - from-file: common/gui-packages.yml
-  - from-file: common/common-packages.yml 
-  - from-file: common/non-rechunked-scripts.yml
-  - from-file: common/disableuserns-packages.yml
-  - from-file: common/remove-firefox.yml
-  - from-file: common/gui-scripts.yml
-  - from-file: common/common-files.yml
-  - from-file: common/common-scripts.yml
-  - from-file: common/disableuserns-scripts.yml
-  - type: secureblue-signing
-  - type: yafti
-  - from-file: common/common-brew.yml
+  - from-file: common/common-modules.yml
+  - from-file: common/desktop-modules.yml
+  - from-file: common/nvidia-modules.yml 
+  - from-file: common/proprietary-packages.yml
+  - from-file: common/disableuserns-modules.yml
+  - from-file: common/final-modules.yml
+  - type: script
+    scripts:
+      - setswaynvidiaenvironment.sh

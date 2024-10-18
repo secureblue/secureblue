@@ -1,0 +1,9 @@
+modules:
+    - type: rpm-ostree
+      install:
+        - NetworkManager-tui
+        - NetworkManager-openvpn
+    - type: systemd
+      system:
+        enabled:
+          - cosmic-greeter

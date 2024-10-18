@@ -11,14 +11,14 @@
 [![Discord](https://img.shields.io/discord/1202086019298500629?style=flat&logo=discord&logoColor=white&label=Discord&labelColor=%235F6AE9&color=%2333CB56)](https://discord.com/invite/qMTv5cKfbF)
 [![Donate](https://img.shields.io/badge/Donate-blue.svg)](https://github.com/secureblue/secureblue/blob/live/DONATE.md)
 
-This repo uses [BlueBuild](https://blue-build.org/) to generate hardened operating system images, using [uBlue](https://universal-blue.org)'s [Fedora Atomic](https://fedoraproject.org/atomic-desktops/)-based [base images](https://github.com/orgs/ublue-os/packages?repo_name=main) as a starting point. 
+This repo uses [BlueBuild](https://blue-build.org/) to generate hardened operating system images, using [Fedora Atomic Desktop](https://fedoraproject.org/atomic-desktops/)'s [base images](https://pagure.io/workstation-ostree-config) as a starting point.
 
 # Scope
 
 secureblue applies hardening with the following goals in mind:
 
 - Increase defenses against the exploitation of both known and unknown vulnerabilities.
-- Avoid sacrificing usability for most use cases where possible
+- Avoid sacrificing usability for most use cases where possible.
 
 The following are not in scope:
 - Anything that sacrifices security for "privacy". Fedora is already sufficiently private and "privacy" often serves as a euphemism for security theater. This is especially true when at odds with improving security.
@@ -59,7 +59,7 @@ The following are not in scope:
 Fedora is one of the few distributions that ships with selinux and associated tooling built-in and enabled by default. This makes it advantageous as a starting point for building a hardened system. However, out of the box it's lacking hardening in numerous other areas. This project's goal is to improve on that significantly.
 
 
-For more info on uBlue and BlueBuild, check out the [uBlue homepage](https://universal-blue.org/) and the [BlueBuild homepage](https://blue-build.org/).
+For more info on BlueBuild, check out the [BlueBuild homepage](https://blue-build.org/).
 
 # Customization
 
@@ -78,14 +78,17 @@ Sponsorship options are on the [Donate](DONATE.md) page. All donations are appre
 Have a look at [PREINSTALL-README](PREINSTALL-README.md) before proceeding.
 
 ## Rebasing (Recommended)
+> [!NOTE] 
+> If you don't already have a Fedora Atomic installation, use a Fedora Atomic ISO that matches your secureblue target image to install one. If you want to use a secureblue Silverblue image, start with the Fedora Silverblue ISO, Kinoite for Kinoite, and Sericea (Sway Atomic) for Sericea and all the Wayblue images.
 
-To rebase a [Fedora Atomic](https://fedoraproject.org/atomic-desktops/) installation, choose an $IMAGE_NAME from the [list below](README.md#images-userns), then follow these steps:
+To rebase a [Fedora Atomic](https://fedoraproject.org/atomic-desktops/) installation, follow these steps<sup>‡</sup>:
 
-*(Important note: the **only** supported tag is `latest`)*
+> [!IMPORTANT]
+> The **only** supported tag is `latest`.
 
 - First rebase to the unsigned image, to get the proper signing keys and policies installed:
   ```
-  rpm-ostree rebase ostree-unverified-registry:ghcr.io/secureblue/$IMAGE_NAME:latest
+  rpm-ostree rebase ostree-unverified-registry:ghcr.io/secureblue/IMAGE_NAME:latest
   ```
 - Reboot to complete the rebase:
   ```
@@ -93,81 +96,139 @@ To rebase a [Fedora Atomic](https://fedoraproject.org/atomic-desktops/) installa
   ```
 - Then rebase to the signed image, like so:
   ```
-  rpm-ostree rebase ostree-image-signed:docker://ghcr.io/secureblue/$IMAGE_NAME:latest
+  rpm-ostree rebase ostree-image-signed:docker://ghcr.io/secureblue/IMAGE_NAME:latest
   ```
-- Reboot again to complete the installation
+- Reboot again to complete the installation:
   ```
   systemctl reboot
   ```
+<sup>‡</sup> Replace `IMAGE_NAME` with the *full name* of your preferred image from the [list below](README.md#images).
 
 ## ISO 
 
-While it's recommended to use a Fedora Atomic iso to install and then rebase that installation to secureblue, you can also generate an iso and install that directly using [this script](generate_secureblue_iso.sh). Please note you should still follow the [post-install steps](README.md#post-install) when installing from a generated iso:
+While it's recommended to use a Fedora Atomic ISO to install and then rebase that installation to secureblue, you can also generate an ISO and install that directly using [this script](generate_secureblue_iso.sh). Please note you should still follow the [post-install steps](README.md#post-install) when installing from a generated ISO:
 
 ```
 ./generate_secureblue_iso.sh
 ```
 
-# Images <sup>[userns?](USERNS.md)</sup>
+# Images
+
+> [!NOTE]
+> Learn about unprivileged user namespaces [here](USERNS.md).
+
 ## Desktop
+
+*`nvidia-open` images are recommended for systems with Nvidia GPUs Turing or newer.*
+
+*`nvidia` images are recommended for systems with Nvidia GPUs Pascal or older.*
+
 ### Recommended <sup>[why?](RECOMMENDED.md)</sup>
-- `silverblue-main-hardened`
-- `silverblue-nvidia-hardened`
-- `silverblue-main-userns-hardened`
-- `silverblue-nvidia-userns-hardened`
+#### Silverblue
+| Name                                      | Base      | Nvidia Support         | Unpriv. Userns |
+|-------------------------------------------|-----------|-------------------------|------------------------------|
+| `silverblue-main-hardened`               | Silverblue| No                      | No                           |
+| `silverblue-nvidia-hardened`             | Silverblue| Yes, closed drivers     | No                           |
+| `silverblue-nvidia-open-hardened`        | Silverblue| Yes, open drivers       | No                           |
+| `silverblue-main-userns-hardened`        | Silverblue| No                      | Yes                          |
+| `silverblue-nvidia-userns-hardened`      | Silverblue| Yes, closed drivers     | Yes                          |
+| `silverblue-nvidia-open-userns-hardened` | Silverblue| Yes, open drivers       | Yes                          |
+
 ### Stable
-- `kinoite-main-hardened`
-- `kinoite-nvidia-hardened`
-- `kinoite-main-userns-hardened`
-- `kinoite-nvidia-userns-hardened`
-- `sericea-main-hardened`
-- `sericea-nvidia-hardened`
-- `sericea-main-userns-hardened`
-- `sericea-nvidia-userns-hardened`
-### Beta  <sup>[wayblue?](https://github.com/wayblueorg/wayblue)</sup>
-- `wayblue-wayfire-main-hardened`
-- `wayblue-wayfire-nvidia-hardened`
-- `wayblue-wayfire-main-userns-hardened`
-- `wayblue-wayfire-nvidia-userns-hardened`
-- `wayblue-hyprland-main-hardened`
-- `wayblue-hyprland-nvidia-hardened`
-- `wayblue-hyprland-main-userns-hardened`
-- `wayblue-hyprland-nvidia-userns-hardened`
-- `wayblue-river-main-hardened`
-- `wayblue-river-nvidia-hardened`
-- `wayblue-river-main-userns-hardened`
-- `wayblue-river-nvidia-userns-hardened`
-- `wayblue-sway-main-hardened`
-- `wayblue-sway-nvidia-hardened`
-- `wayblue-sway-main-userns-hardened`
-- `wayblue-sway-nvidia-userns-hardened`
-### Experimental
-- `cinnamon-main-hardened`
-- `cinnamon-nvidia-hardened`
-- `cinnamon-main-userns-hardened`
-- `cinnamon-nvidia-userns-hardened`
-- `cosmic-main-hardened`
-- `cosmic-nvidia-hardened`
-- `cosmic-main-userns-hardened`
-- `cosmic-nvidia-userns-hardened`
+#### Kinoite
+| Name                                      | Base      | Nvidia Support         | Unpriv. Userns |
+|-------------------------------------------|-----------|-------------------------|------------------------------|
+| `kinoite-main-hardened`                  | Kinoite   | No                      | No                           |
+| `kinoite-nvidia-hardened`                | Kinoite   | Yes, closed drivers     | No                           |
+| `kinoite-nvidia-open-hardened`           | Kinoite   | Yes, open drivers       | No                           |
+| `kinoite-main-userns-hardened`           | Kinoite   | No                      | Yes                          |
+| `kinoite-nvidia-userns-hardened`         | Kinoite   | Yes, closed drivers     | Yes                          |
+| `kinoite-nvidia-open-userns-hardened`    | Kinoite   | Yes, open drivers       | Yes                          |
+
+#### Sericea
+| Name                                      | Base      | Nvidia Support         | Unpriv. Userns |
+|-------------------------------------------|-----------|-------------------------|------------------------------|
+| `sericea-main-hardened`                  | Sericea   | No                      | No                           |
+| `sericea-nvidia-hardened`                | Sericea   | Yes, closed drivers     | No                           |
+| `sericea-nvidia-open-hardened`           | Sericea   | Yes, open drivers       | No                           |
+| `sericea-main-userns-hardened`           | Sericea   | No                      | Yes                          |
+| `sericea-nvidia-userns-hardened`         | Sericea   | Yes, closed drivers     | Yes                          |
+| `sericea-nvidia-open-userns-hardened`    | Sericea   | Yes, open drivers       | Yes                          |
+
+### Beta
+> [!NOTE]
+> Learn about wayblue [here](https://github.com/wayblueorg/wayblue).
+
+#### Wayfire
+| Name                                      | Base                  | Nvidia Support         | Unpriv. Userns |
+|-------------------------------------------|-----------------------|-------------------------|------------------------------|
+| `wayblue-wayfire-main-hardened`          | Wayblue-Wayfire       | No                      | No                           |
+| `wayblue-wayfire-nvidia-hardened`        | Wayblue-Wayfire       | Yes, closed drivers     | No                           |
+| `wayblue-wayfire-nvidia-open-hardened`   | Wayblue-Wayfire       | Yes, open drivers       | No                           |
+| `wayblue-wayfire-main-userns-hardened`   | Wayblue-Wayfire       | No                      | Yes                          |
+| `wayblue-wayfire-nvidia-userns-hardened` | Wayblue-Wayfire       | Yes, closed drivers     | Yes                          |
+| `wayblue-wayfire-nvidia-open-userns-hardened` | Wayblue-Wayfire | Yes, open drivers       | Yes                          |
+
+#### Hyprland
+| Name                                      | Base                  | Nvidia Support         | Unpriv. Userns |
+|-------------------------------------------|-----------------------|-------------------------|------------------------------|
+| `wayblue-hyprland-main-hardened`         | Wayblue-Hyprland      | No                      | No                           |
+| `wayblue-hyprland-nvidia-hardened`       | Wayblue-Hyprland      | Yes, closed drivers     | No                           |
+| `wayblue-hyprland-nvidia-open-hardened`  | Wayblue-Hyprland      | Yes, open drivers       | No                           |
+| `wayblue-hyprland-main-userns-hardened`  | Wayblue-Hyprland      | No                      | Yes                          |
+| `wayblue-hyprland-nvidia-userns-hardened`| Wayblue-Hyprland      | Yes, closed drivers     | Yes                          |
+| `wayblue-hyprland-nvidia-open-userns-hardened` | Wayblue-Hyprland | Yes, open drivers       | Yes                          |
+
+#### River
+| Name                                      | Base                  | Nvidia Support         | Unpriv. Userns |
+|-------------------------------------------|-----------------------|-------------------------|------------------------------|
+| `wayblue-river-main-hardened`            | Wayblue-River         | No                      | No                           |
+| `wayblue-river-nvidia-hardened`          | Wayblue-River         | Yes, closed drivers     | No                           |
+| `wayblue-river-nvidia-open-hardened`     | Wayblue-River         | Yes, open drivers       | No                           |
+| `wayblue-river-main-userns-hardened`     | Wayblue-River         | No                      | Yes                          |
+| `wayblue-river-nvidia-userns-hardened`   | Wayblue-River         | Yes, closed drivers     | Yes                          |
+| `wayblue-river-nvidia-open-userns-hardened` | Wayblue-River     | Yes, open drivers       | Yes                          |
+
+
+#### Sway
+| Name                                      | Base                  | Nvidia Support         | Unpriv. Userns |
+|-------------------------------------------|-----------------------|-------------------------|------------------------------|
+| `wayblue-sway-main-hardened`             | Wayblue-Sway          | No                      | No                           |
+| `wayblue-sway-nvidia-hardened`           | Wayblue-Sway          | Yes, closed drivers     | No                           |
+| `wayblue-sway-nvidia-open-hardened`      | Wayblue-Sway          | Yes, open drivers       | No                           |
+| `wayblue-sway-main-userns-hardened`      | Wayblue-Sway          | No                      | Yes                          |
+| `wayblue-sway-nvidia-userns-hardened`    | Wayblue-Sway          | Yes, closed drivers     | Yes                          |
+| `wayblue-sway-nvidia-open-userns-hardened` | Wayblue-Sway       | Yes, open drivers       | Yes                          |
+
 ## Server
-- `securecore-main-hardened`
-- `securecore-nvidia-hardened`
-- `securecore-main-userns-hardened`
-- `securecore-nvidia-userns-hardened`
-- `securecore-zfs-main-hardened`
-- `securecore-zfs-nvidia-hardened`
-- `securecore-zfs-main-userns-hardened`
-- `securecore-zfs-nvidia-userns-hardened`
-## Asus <sup>[source](https://github.com/ublue-os/hwe/tree/main/asus)</sup>
-- `silverblue-asus-hardened`
-- `silverblue-asus-nvidia-hardened`
-- `silverblue-asus-userns-hardened`
-- `silverblue-asus-nvidia-userns-hardened`
-- `kinoite-asus-hardened`
-- `kinoite-asus-nvidia-hardened`
-- `kinoite-asus-userns-hardened`
-- `kinoite-asus-nvidia-userns-hardened`
+| Name                                      | Base      | Nvidia Support         | ZFS Support | Unpriv. Userns |
+|-------------------------------------------|-----------|-------------------------|-------------|------------------------------|
+| `securecore-main-hardened`               | CoreOS    | No                      | No          | No                           |
+| `securecore-nvidia-hardened`             | CoreOS    | Yes, closed drivers     | No          | No                           |
+| `securecore-nvidia-open-hardened`        | CoreOS    | Yes, open drivers       | No          | No                           |
+| `securecore-main-userns-hardened`        | CoreOS    | No                      | No          | Yes                          |
+| `securecore-nvidia-userns-hardened`      | CoreOS    | Yes, closed drivers     | No          | Yes                          |
+| `securecore-nvidia-open-userns-hardened` | CoreOS    | Yes, open drivers       | No          | Yes                          |
+| `securecore-zfs-main-hardened`           | CoreOS    | No                      | Yes         | No                           |
+| `securecore-zfs-nvidia-hardened`         | CoreOS    | Yes, closed drivers     | Yes         | No                           |
+| `securecore-zfs-nvidia-open-hardened`    | CoreOS    | Yes, open drivers       | Yes         | No                           |
+| `securecore-zfs-main-userns-hardened`    | CoreOS    | No                      | Yes         | Yes                          |
+| `securecore-zfs-nvidia-userns-hardened`  | CoreOS    | Yes, closed drivers     | Yes         | Yes                          |
+| `securecore-zfs-nvidia-open-userns-hardened` | CoreOS  | Yes, open drivers       | Yes         | Yes                          |
+
+
+### Experimental
+
+#### Cosmic
+| Name                                      | Base                  | Nvidia Support         | Unpriv. Userns |
+|-------------------------------------------|-----------------------|-------------------------|------------------------------|
+| `cosmic-main-hardened`          | Cosmic       | No                      | No                           |
+| `cosmic-nvidia-hardened`        | Cosmic       | Yes, closed drivers     | No                           |
+| `cosmic-nvidia-open-hardened`   | Cosmic       | Yes, open drivers       | No                           |
+| `cosmic-main-userns-hardened`   | Cosmic       | No                      | Yes                          |
+| `cosmic-nvidia-userns-hardened` | Cosmic       | Yes, closed drivers     | Yes                          |
+| `cosmic-nvidia-open-userns-hardened` | Cosmic | Yes, open drivers       | Yes                          |
+
 # Post-install
 
 After installation, [yafti](https://github.com/ublue-os/yafti) will open. Make sure to follow the steps listed carefully and read the directions closely.

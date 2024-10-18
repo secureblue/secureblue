@@ -4,7 +4,7 @@ description: "Kinoite, hardened"
 
 base-image: quay.io/fedora-ostree-desktops/kinoite
 
-image-version: 40
+image-version: 41
 
 modules:
   - from-file: common/common-modules.yml

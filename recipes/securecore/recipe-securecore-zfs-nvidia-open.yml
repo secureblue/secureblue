@@ -4,7 +4,7 @@ description: "CoreOS with nvidia-open and zfs, hardened"
 
 base-image: quay.io/fedora/fedora-coreos
 
-image-version: testing
+image-version: next
 
 modules:
   - from-file: common/common-modules.yml

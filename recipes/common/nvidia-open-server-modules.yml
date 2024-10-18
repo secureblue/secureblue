@@ -1,7 +1,7 @@
 modules:
     - type: containerfile
       snippets:
-        - COPY --from=ghcr.io/ublue-os/akmods-nvidia-open:coreos-testing-40 /rpms /tmp/rpms
+        - COPY --from=ghcr.io/ublue-os/akmods-nvidia-open:coreos-testing-41 /rpms /tmp/rpms
         - RUN find /tmp/rpms
         - RUN rpm-ostree install /tmp/rpms/ucore/ublue-os-ucore-nvidia*.rpm
         - RUN sed -i '0,/enabled=0/{s/enabled=0/enabled=1/}' /etc/yum.repos.d/nvidia-container-toolkit.repo

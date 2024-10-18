@@ -4,7 +4,7 @@ description: "wayblue wayfire nvidia with userns, hardened"
 
 base-image: ghcr.io/wayblueorg/wayfire-nvidia
 
-image-version: 40
+image-version: 41
 
 modules:
   - from-file: common/common-modules.yml

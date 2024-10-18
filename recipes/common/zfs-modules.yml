@@ -1,7 +1,7 @@
 modules:
     - type: containerfile
       snippets:
-      - COPY --from=ghcr.io/ublue-os/akmods-zfs:coreos-testing-40 /rpms /tmp/rpms
+      - COPY --from=ghcr.io/ublue-os/akmods-zfs:coreos-testing-41 /rpms /tmp/rpms
       - RUN find /tmp/rpms
       - RUN rpm-ostree install pv /tmp/rpms/kmods/zfs/*.rpm /tmp/rpms/kmods/zfs/other/zfs-dracut-*.rpm
     - type: script

@@ -14,7 +14,7 @@ set-kargs-hardening:
     if [[ "$YES" == [Yy]* ]]; then
     UNSTABLE_YES="--append-if-missing="efi=disable_early_pci_dma" \
         --append-if-missing="debugfs=off""
-        echo "Setting unstable kargs."
+        echo "Setting unstable hardening kargs."
     else
         echo "Not setting unstable hardening kargs."
     fi
@@ -42,7 +42,7 @@ set-kargs-hardening:
       --append-if-missing="spec_store_bypass_disable=on" \
       --append-if-missing="l1d_flush=on" \
       --append-if-missing="gather_data_sampling=force" 
-    echo "Hardening kargs set."
+    echo "Hardening kargs applied."
 
 # Remove all hardening boot parameters (requires reboot)
 remove-kargs-hardening:

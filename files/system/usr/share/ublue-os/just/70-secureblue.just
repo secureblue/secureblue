@@ -437,6 +437,12 @@ audit-secureblue:
         print_status "$AUTHSELECT_TEST_STRING" "$STATUS_FAILURE"
     fi
 
+    CONTAINER_POLICY_TEST_STRING="Ensuring no container policy overrides"
+    if diff /usr/etc/containers/policy.json /etc/containers/policy.json > /dev/null && [ ! -f $HOME/.config/containers/policy.json ]; then
+        print_status "$CONTAINER_POLICY_TEST_STRING" "$STATUS_SUCCESS"
+    else
+        print_status "$CONTAINER_POLICY_TEST_STRING" "$STATUS_FAILURE"
+    fi
 
     USBGUARD_TEST_STRING="Ensuring usbguard is active"
     if systemctl is-active --quiet usbguard; then

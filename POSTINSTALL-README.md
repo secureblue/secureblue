@@ -44,7 +44,7 @@ ujust enroll-secure-boot-key
 ```
 ujust set-kargs-hardening
 ```
-When you run the command, it will ask a couple questions for if you want to apply additional boot parameters, after that a set of hardened boot parameters will be applied, depending on your choices. (These kargs are *also* documented in the [link above](files/system/usr/share/ublue-os/just/70-secureblue.just.readme.md#additional-unstable-kargs))
+When you run the command, it will ask a couple questions for if you want to apply additional boot parameters, after that a set of hardened boot parameters will be applied, as well as the ones applied by your choices. (These kargs are *also* documented in the [link above](files/system/usr/share/ublue-os/just/70-secureblue.just.readme.md#additional-unstable-kargs))
 
 ### 32-bit support
 If you answer `N`, or press enter without any input, support for 32-bit programs will be disabled on the next boot. If you run exclusively modern software, chances are likely you don't need this, so it's safe to disable for additional attack surface reduction.

@@ -119,9 +119,9 @@ While it's recommended to use a Fedora Atomic ISO to install and then rebase tha
 
 ## Desktop
 
-*`nvidia-open` images are recommended for systems with Nvidia GPUs Turing or newer.*
+*`nvidia-open` images are recommended for systems with Nvidia GPUs Turing or newer. These include the new [open kernel modules](https://github.com/NVIDIA/open-gpu-kernel-modules) from Nvidia, not Nouveau.*
 
-*`nvidia` images are recommended for systems with Nvidia GPUs Pascal or older.*
+*`nvidia` images are recommended for systems with Nvidia GPUs Pascal or older. These include the closed kernel modules from Nvidia.*
 
 ### Recommended <sup>[why?](RECOMMENDED.md)</sup>
 #### Silverblue

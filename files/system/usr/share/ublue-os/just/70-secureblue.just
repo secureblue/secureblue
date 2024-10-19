@@ -1,16 +1,14 @@
 # Add additional boot parameters for hardening (requires reboot)
 set-kargs-hardening:
     #!/usr/bin/pkexec /usr/bin/bash
-    echo "Do you need support for 32-bit processes/syscalls? [y/N] (This is mostly used by legacy software, with some exceptions, such as Steam)"
-    read YES
+    read -p "Do you need support for 32-bit processes/syscalls? (This is mostly used by legacy software, with some exceptions, such as Steam) [y/N]: " YES
     if [[ "$YES" == [Yy]* ]]; then
         echo "Keeping 32-bit support."
     else
         IAEMU_NO="--append-if-missing="ia32_emulation=0""
         echo "Disabling 32-bit support, for the next boot."
     fi
-    echo "Would you like to set additional (unstable) hardening kargs? [y/N] (Warning: setting these kargs may lead to boot issues on some hardware.)"
-    read YES
+    read -p "Would you like to set additional (unstable) hardening kargs? (Warning: Setting these kargs may lead to boot issues on some hardware.) [y/N]: " YES
     if [[ "$YES" == [Yy]* ]]; then
     UNSTABLE_YES="--append-if-missing="efi=disable_early_pci_dma" \
         --append-if-missing="debugfs=off""
@@ -18,9 +16,9 @@ set-kargs-hardening:
     else
         echo "Not setting unstable hardening kargs."
     fi
-    echo "Applying all boot parameters."
+    echo "Applying boot parameters..."
     rpm-ostree kargs \
-      ${UNSTABLE_YES:+UNSTABLE_YES} ${IAEMU_NO:+IAEMU_NO} \
+      ${UNSTABLE_YES:+$UNSTABLE_YES} ${IAEMU_NO:+$IAEMU_NO} \
       --append-if-missing="init_on_alloc=1" \
       --append-if-missing="init_on_free=1" \
       --append-if-missing="slab_nomerge" \

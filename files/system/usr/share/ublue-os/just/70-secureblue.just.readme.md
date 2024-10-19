@@ -78,7 +78,7 @@
 
 `gather_data_sampling=force`
 
-## Included in set-kargs-hardening-unstable
+### Additional (unstable) kargs
 
 **Fill IOMMU protection gap by setting the busmaster bit during early boot**
 
@@ -87,3 +87,7 @@
 **Disable debugfs to prevent exposure of sensitive kernel information**
 
 `debugfs=off` 
+
+**Disables support for 32-bit processes, and syscalls**
+
+`ia32_emulation=0`

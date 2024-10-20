@@ -104,17 +104,6 @@ For more technical detail, see [#268](https://github.com/secureblue/secureblue/i
 
 The DNSSEC setting we set in `/etc/systemd/resolved.conf.d/securedns.conf` causes known issues with network connectivity when secureblue is used in a VM. To fix it, comment out `DNSSEC=allow-downgrade` in that file and manually set a dns provider in network settings.
 
-#### Why does chromium take a long time to open?
-
-This is a [known issue](https://forums.developer.nvidia.com/t/550-54-14-cannot-create-sg-table-for-nvkmskapimemory-spammed-when-launching-chrome-on-wayland/284775) with the proprietary nvidia drivers. Your options are:
-
-- (Recommended if available for your hardware) switch to a `-main` image and use Nouveau with NVK and [GSP](https://nouveau.freedesktop.org/PowerManagement.html)
-- Enable xwayland by settting ozone-platform to x11 in `chrome://flags` and then running:
-
-```
-ujust toggle-xwayland
-```
-
 #### How do I get notified of secureblue changes?
 
 On the secureblue github page, click "Watch", and then "Custom", and select Releases like so:

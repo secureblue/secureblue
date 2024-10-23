@@ -1,7 +1,24 @@
 # Add additional boot parameters for hardening (requires reboot)
 set-kargs-hardening:
     #!/usr/bin/pkexec /usr/bin/bash
+    read -p "Do you need support for 32-bit processes/syscalls? (This is mostly used by legacy software, with some exceptions, such as Steam) [y/N]: " YES
+    if [[ "$YES" == [Yy]* ]]; then
+        echo "Keeping 32-bit support."
+    else
+        IAEMU_NO="--append-if-missing="ia32_emulation=0""
+        echo "Disabling 32-bit support, for the next boot."
+    fi
+    read -p "Would you like to set additional (unstable) hardening kargs? (Warning: Setting these kargs may lead to boot issues on some hardware.) [y/N]: " YES
+    if [[ "$YES" == [Yy]* ]]; then
+    UNSTABLE_YES="--append-if-missing="efi=disable_early_pci_dma" \
+        --append-if-missing="debugfs=off""
+        echo "Setting unstable hardening kargs."
+    else
+        echo "Not setting unstable hardening kargs."
+    fi
+    echo "Applying boot parameters..."
     rpm-ostree kargs \
+      ${UNSTABLE_YES:+$UNSTABLE_YES} ${IAEMU_NO:+$IAEMU_NO} \
       --append-if-missing="init_on_alloc=1" \
       --append-if-missing="init_on_free=1" \
       --append-if-missing="slab_nomerge" \
@@ -23,18 +40,7 @@ set-kargs-hardening:
       --append-if-missing="spec_store_bypass_disable=on" \
       --append-if-missing="l1d_flush=on" \
       --append-if-missing="gather_data_sampling=force" 
-    echo "Hardening kargs set."
-
-# Add additional (unstable) boot parameters for hardening (requires reboot)
-set-kargs-hardening-unstable:
-    #!/usr/bin/pkexec /usr/bin/bash
-    echo "Warning: setting these kargs may lead to boot issues on some hardware."
-    rpm-ostree kargs \
-      --append-if-missing="efi=disable_early_pci_dma" \
-      --append-if-missing="debugfs=off" \
-      --append-if-missing="ia32_emulation=0"
-
-    echo "Unstable hardening kargs set."
+    echo "Hardening kargs applied."
 
 # Remove all hardening boot parameters (requires reboot)
 remove-kargs-hardening:
@@ -62,7 +68,8 @@ remove-kargs-hardening:
       --delete-if-present="spectre_v2=on" \
       --delete-if-present="spec_store_bypass_disable=on" \
       --delete-if-present="l1d_flush=on" \
-      --delete-if-present="gather_data_sampling=force"
+      --delete-if-present="gather_data_sampling=force" \
+      --delete-if-present="ia32_emulation=0"
     echo "Hardening kargs removed."
 
 # Harden flatpaks by preloading hardened_malloc (highest supported hwcap)

@@ -104,17 +104,6 @@ For more technical detail, see [#268](https://github.com/secureblue/secureblue/i
 
 The DNSSEC setting we set in `/etc/systemd/resolved.conf.d/securedns.conf` causes known issues with network connectivity when secureblue is used in a VM. To fix it, comment out `DNSSEC=allow-downgrade` in that file and manually set a dns provider in network settings.
 
-#### Why does chromium take a long time to open?
-
-This is a [known issue](https://forums.developer.nvidia.com/t/550-54-14-cannot-create-sg-table-for-nvkmskapimemory-spammed-when-launching-chrome-on-wayland/284775) with the proprietary nvidia drivers. Your options are:
-
-- (Recommended if available for your hardware) switch to a `-main` image and use Nouveau with NVK and [GSP](https://nouveau.freedesktop.org/PowerManagement.html)
-- Enable xwayland by settting ozone-platform to x11 in `chrome://flags` and then running:
-
-```
-ujust toggle-xwayland
-```
-
 #### How do I get notified of secureblue changes?
 
 On the secureblue github page, click "Watch", and then "Custom", and select Releases like so:
@@ -148,3 +137,11 @@ There is an [upstream bug](https://discussion.fedoraproject.org/t/gdk-message-er
 ```
 mkdir -p ~/.config/environment.d && echo "GSK_RENDERER=gl" >> ~/.config/environment.d/gsk.conf
 ```
+
+#### Why won't `hardened-chromium` start on Nvidia?
+
+On some Nvidia machines, `hardened-chromium` defaults to the X11 backend. Since secureblue disables Xwayland by default, this means that you will need to run `ujust toggle-xwayland` and reboot, for `hardened-chromium` to work.
+
+#### Why don't some websites that require JIT/WebAssembly work in hardened-chromium even with the V8 Optimizer toggle enabled?
+
+This is an [upstream bug](https://issues.chromium.org/issues/373893056) that prevents V8 optimization settings from being applied to iframes embedded within a parent website. As a result, WebAssembly may not function on services that use a separate URL for their content delivery network or other included domains, such as VSCode Web (https://github.dev). To make VSCode Web work properly, you need to manually allow V8 optimizations for the CDN by adding `https://[*.]vscode-cdn.net` to your list of trusted websites.

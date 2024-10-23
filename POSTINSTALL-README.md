@@ -4,7 +4,7 @@ After rebasing to secureblue, follow the following steps in order.
 
 ## Subscribe to secureblue release notifications
 
-[FAQ](https://github.com/secureblue/secureblue/blob/live/FAQ.md#how-do-i-get-notified-of-secureblue-changes)
+[FAQ](FAQ.md#how-do-i-get-notified-of-secureblue-changes)
 
 ## Nvidia
 If you are using an nvidia image, run this after installation:
@@ -36,27 +36,26 @@ ujust configure-nvidia-optimus
 ujust enroll-secure-boot-key
 ```
 
-## Set kargs
+## Set hardened kargs
 
-Documentation is available [here](https://github.com/secureblue/secureblue/blob/live/files/system/usr/share/ublue-os/just/60-custom.just.readme.md) for the kargs set by the commands below.
-
-### Set hardened kargs
+> [!NOTE]
+> Learn about the hardening applied by the kargs set by the command below [here](files/system/usr/share/ublue-os/just/70-secureblue.just.readme.md).
 
 ```
 ujust set-kargs-hardening
 ```
+When you run the command, it will ask a couple questions for if you want to apply additional boot parameters, after that a set of hardened boot parameters will be applied, as well as the ones applied by your choices. (These kargs are *also* documented in the [link above](files/system/usr/share/ublue-os/just/70-secureblue.just.readme.md#additional-unstable-kargs))
 
-### Set additional unstable hardened kargs
+### 32-bit support
+If you answer `N`, or press enter without any input, support for 32-bit programs will be disabled on the next boot. If you run exclusively modern software, chances are likely you don't need this, so it's safe to disable for additional attack surface reduction.
 
-*Can cause issues on some hardware, but stable on other hardware*
-
-```
-ujust set-kargs-hardening-unstable
-```
+However, there are certain exceptions. A couple common usecases are if you need Steam, or run an ocassional application in Wine you'll likely want to keep support for 32-bit programs. If this is the case, answer `Y`.
+### Unstable hardening kargs
+If you answer `Y` when prompted, additional (unstable) hardening kargs will be applied, which can cause issues on some hardware, but stable on other hardware. 
 
 ## Setup USBGuard
 
-*This will generate a policy based on your currently attached USB devices and block all others, then enable usbguard*
+*This will generate a policy based on your currently attached USB devices and block all others, then enable usbguard.*
 
 ```
 ujust setup-usbguard
@@ -116,9 +115,15 @@ ujust toggle-bash-environment-lockdown
 
 ## LUKS TPM2 Unlock
 
-To enable TPM2 LUKS unlocking (do not use this if you have an AMD CPU), run:
+> [!WARNING]
+> Do not use this if you have an AMD CPU.
 
-`ujust setup-luks-tpm-unlock` and type `Y` when asked if you want to set a PIN.
+To enable TPM2 LUKS unlocking, run:
+
+```
+ujust setup-luks-tpm-unlock
+``` 
+Type `Y` when asked if you want to set a PIN.
 
 ## Validation
 
@@ -129,9 +134,9 @@ ujust audit-secureblue
 ```
 
 ## Optional: `hardened-chromium` Flags
-The included hardened-chromium browser has some additional settings in `chrome://flags` you *may* want to set for additional hardening, and convenience. (That can cause functionality issues in *some* cases)
+The included [hardened-chromium](https://github.com/secureblue/hardened-chromium) browser has some additional settings in `chrome://flags` you *may* want to set for additional hardening, and convenience. (That can cause functionality issues in *some* cases)
 You can read about these settings [here](https://github.com/secureblue/hardened-chromium?tab=readme-ov-file#post-install).
 
 ## Read the FAQ
 
-Lots of important stuff is covered in the [FAQ](https://github.com/secureblue/secureblue/blob/live/FAQ.md). AppImage toggles, GNOME extension toggles, Xwayland toggles, etc.
+Lots of important stuff is covered in the [FAQ](FAQ.md). AppImage toggles, GNOME extension toggles, Xwayland toggles, etc.

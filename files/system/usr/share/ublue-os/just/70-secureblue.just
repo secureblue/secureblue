@@ -409,10 +409,33 @@ audit-secureblue:
     done
 
     SYSCTL_TEST_STRING="Ensuring no sysctl overrides"
-    if diff /usr/etc/sysctl.d/hardening.conf /etc/sysctl.d/hardening.conf > /dev/null; then
+    readarray -t sysctl_hardening_conf < <(grep -v -E -e "^#" -e "^$" </usr/etc/sysctl.d/hardening.conf)
+    declare -A sysctl_hardening
+    for line in "${sysctl_hardening_conf[@]}"; do
+        parameter="$(sed -E -e "s/(.*) = .*/\1/"  <<<"$line")"
+        value="$(sed -E "s/.* = (.*)/\1/" <<<"$line")"
+        sysctl_hardening["$parameter"]+="$value"
+    done
+    sysctl_results="$(sysctl -a 2> >(grep -v "sysctl: permission denied on key "))"
+    sysctl_errors=()
+    for sysctl_parameter in "${!hardening[@]}"; do
+        hardened_parameter_value="${hardening["$sysctl_parameter"]}"
+        parameter_name="$(sed -E -e "s/\./\\\./g" -e "s/\*/\.\*/" <<<"$sysctl_parameter")"
+        readarray -t sysctl_parameter_values < <(grep -E "^$key = " <<<"$sysctl_results")
+        for parameter_value in "${sysctl_parameter_values[@]}"; do
+            parameter_value="$(sed -E  -e "s/.* = (.*)/\1/" -e "s/\t/ /g" <<<"$result" | tr -s " " )"
+            if [[ "$parameter_value" != "$hardened_parameter_value" && ("$hardened_parameter_value" != 0 && "$parameter_value" != disabled) ]]; then
+                sysctl_errors+=("$sysctl_parameter should be $hardened_parameter_value, found $parameter_value")
+            fi
+        done
+    done
+    if [[ "${#sysctl_errors}" == 0 ]] && diff /usr/etc/sysctl.d/hardening.conf /etc/sysctl.d/hardening.conf > /dev/null; then
         print_status "$SYSCTL_TEST_STRING" "$STATUS_SUCCESS"
     else
         print_status "$SYSCTL_TEST_STRING" "$STATUS_FAILURE"
+        for error in "${sysctl_errors[@]}"; do
+            echo "> $error"
+        done
     fi
 
     MODPROBE_TEST_STRING="Ensuring no modprobe overrides"

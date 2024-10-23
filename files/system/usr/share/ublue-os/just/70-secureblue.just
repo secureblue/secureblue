@@ -402,23 +402,23 @@ audit-secureblue:
     done
 
     SYSCTL_TEST_STRING="Ensuring no sysctl overrides"
-    readarray -t hardening_conf < <(grep -v -E -e "^#" -e "^$" </usr/etc/sysctl.d/hardening.conf)
-    declare -A hardening
-    for line in "${hardening_conf[@]}"; do
-        key="$(sed -E -e "s/(.*) = .*/\1/"  <<<"$line")"
+    readarray -t sysctl_hardening_conf < <(grep -v -E -e "^#" -e "^$" </usr/etc/sysctl.d/hardening.conf)
+    declare -A sysctl_hardening
+    for line in "${sysctl_hardening_conf[@]}"; do
+        parameter="$(sed -E -e "s/(.*) = .*/\1/"  <<<"$line")"
         value="$(sed -E "s/.* = (.*)/\1/" <<<"$line")"
-        hardening["$key"]+="$value"
+        sysctl_hardening["$parameter"]+="$value"
     done
-    variables="$(sysctl -a 2> >(grep -v "sysctl: permission denied on key "))"
+    sysctl_results="$(sysctl -a 2> >(grep -v "sysctl: permission denied on key "))"
     sysctl_errors=()
-    for key_string in "${!hardening[@]}"; do
-        expected="${hardening["$key_string"]}"
-        key="$(sed -E -e "s/\./\\\./g" -e "s/\*/\.\*/" <<<"$key_string")"
-        readarray -t results < <(grep -E "^$key = " <<<"$variables")
-        for result in "${results[@]}"; do
-            result="$(sed -E  -e "s/.* = (.*)/\1/" -e "s/\t/ /g" <<<"$result" | tr -s " " )"
-            if [[ "$result" != "$expected" && ("$expected" != 0 && "$result" != disabled) ]]; then
-                sysctl_errors+=("$key_string should be $expected, found $result")
+    for sysctl_parameter in "${!hardening[@]}"; do
+        hardened_parameter_value="${hardening["$sysctl_parameter"]}"
+        parameter_name="$(sed -E -e "s/\./\\\./g" -e "s/\*/\.\*/" <<<"$sysctl_parameter")"
+        readarray -t sysctl_parameter_values < <(grep -E "^$key = " <<<"$sysctl_results")
+        for parameter_value in "${sysctl_parameter_values[@]}"; do
+            parameter_value="$(sed -E  -e "s/.* = (.*)/\1/" -e "s/\t/ /g" <<<"$result" | tr -s " " )"
+            if [[ "$parameter_value" != "$hardened_parameter_value" && ("$hardened_parameter_value" != 0 && "$parameter_value" != disabled) ]]; then
+                sysctl_errors+=("$sysctl_parameter should be $hardened_parameter_value, found $parameter_value")
             fi
         done
     done

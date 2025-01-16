@@ -20,5 +20,9 @@ modules:
     - type: script
       scripts:
         - enablecommonautoupdate.sh
+    - type: patch
+      source: local
+      patches:
+        - login.defs.patch
     - type: secureblue-signing
       source: local

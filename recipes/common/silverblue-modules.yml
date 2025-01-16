@@ -27,3 +27,7 @@ modules:
     - type: script
       scripts:
         - removedkmshelper.sh
+    - type: patch
+      source: local
+      patches:
+        - admin.mount.patch

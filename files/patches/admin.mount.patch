@@ -1,0 +1,11 @@
+--- a/usr/share/gvfs/mounts/admin.mount
++++ b/usr/share/gvfs/mounts/admin.mount
+@@ -1,7 +1,7 @@
+ [Mount]
+ Type=admin
+ # Add a dummy argument after pkexec, or '/bin/sh -c' will eat the first argument in '$@'
+-Exec=/bin/sh -c 'pkexec /usr/libexec/gvfsd-admin "$@" --address $DBUS_SESSION_BUS_ADDRESS --dir $XDG_RUNTIME_DIR' gvfsd-admin
++Exec=/bin/sh -c 'run0 --setenv=PKEXEC_UID="$UID" /usr/libexec/gvfsd-admin "$@" --address $DBUS_SESSION_BUS_ADDRESS --dir $XDG_RUNTIME_DIR' gvfsd-admin
+ AutoMount=false
+ DBusName=org.gtk.vfs.mountpoint_admin
+ MountPerClient=true

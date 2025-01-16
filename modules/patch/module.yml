@@ -1,0 +1,6 @@
+name: patch
+shortdesc: This module is used to apply patches to files at image build image.
+example: |
+  type: patch
+  patches:
+    - hardenlogindefs.patch

@@ -14,7 +14,7 @@ jobs:
       packages: write
     steps:
       - name: Delete Images Older Than 90 Days
-        uses: dataaxiom/ghcr-cleanup-action@2d58aab3d24aed94070e032d3091b83d50d93534 # v1.0.15
+        uses: dataaxiom/ghcr-cleanup-action@cd0cdb900b5dbf3a6f2cc869f0dbb0b8211f50c4 # v1.0.16
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           packages: silverblue-main-hardened,silverblue-nvidia-hardened,silverblue-nvidia-open-hardened,kinoite-main-hardened,kinoite-nvidia-hardened,kinoite-nvidia-open-hardened,sericea-main-hardened,sericea-nvidia-hardened,sericea-nvidia-open-hardened,wayblue-wayfire-main-hardened,wayblue-wayfire-nvidia-hardened,wayblue-wayfire-nvidia-open-hardened,wayblue-hyprland-main-hardened,wayblue-hyprland-nvidia-hardened,wayblue-hyprland-nvidia-open-hardened,wayblue-river-main-hardened,wayblue-river-nvidia-hardened,wayblue-river-nvidia-open-hardened,wayblue-sway-main-hardened,wayblue-sway-nvidia-hardened,wayblue-sway-nvidia-open-hardened,securecore-main-hardened,securecore-nvidia-hardened,securecore-nvidia-open-hardened,securecore-zfs-main-hardened,securecore-zfs-nvidia-hardened,securecore-zfs-nvidia-open-hardened,cosmic-main-hardened,cosmic-nvidia-hardened,cosmic-nvidia-open-hardened

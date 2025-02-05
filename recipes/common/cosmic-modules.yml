@@ -3,6 +3,11 @@ modules:
       install:
         - NetworkManager-tui
         - NetworkManager-openvpn
+        - cosmic-store
+      remove:
+        - gnome-software
+        - gnome-software-rpm-ostree
+        - gnome-software-fedora-langpacks
     - type: systemd
       system:
         enabled:

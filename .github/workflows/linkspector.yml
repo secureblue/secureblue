@@ -10,7 +10,7 @@ jobs:
     steps:
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
       - name: Run linkspector
-        uses: umbrelladocs/action-linkspector@fc382e19892aca958e189954912fe379a8df270c # v1.2.4
+        uses: umbrelladocs/action-linkspector@de84085e0f51452a470558693d7d308fbb2fa261 # v1.2.5
         with:
           filter_mode: nofilter
           reporter: github-pr-review

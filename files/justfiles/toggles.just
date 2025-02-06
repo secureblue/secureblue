@@ -103,7 +103,7 @@ alias toggle-ptrace-scope := toggle-anticheat-support
 # Toggle anticheat support by changing ptrace scope (requires restart)
 toggle-anticheat-support:
     #! /bin/run0 /bin/bash
-    SYSCTL_HARDENING_FILE="/etc/sysctl.d/hardening.conf"
+    SYSCTL_HARDENING_FILE="/etc/sysctl.d/60-hardening.conf"
     if grep -q "kernel.yama.ptrace_scope = 3" "$SYSCTL_HARDENING_FILE"; then
         sed -i "s/kernel.yama.ptrace_scope = 3/kernel.yama.ptrace_scope = 1/" "$SYSCTL_HARDENING_FILE"
         echo "Anticheat support enabled. ptrace_scope set to 1."

@@ -10,6 +10,6 @@
 %TIP%
 
 - **󰊤** [Report an issue](https://github.com/secureblue/secureblue/issues)
-- **󰈙** [FAQ](https://github.com/secureblue/secureblue/blob/live/docs/FAQ.md)
-- **** [Donate](https://github.com/secureblue/secureblue/blob/live/docs/DONATE.md)
+- **󰈙** [FAQ](https://secureblue.dev/faq)
+- **** [Donate](https://secureblue.dev/donate)
 - **󰙯** [Discord](https://discord.gg/qMTv5cKfbF)

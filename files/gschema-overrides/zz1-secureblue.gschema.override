@@ -3,7 +3,7 @@
 
 [org.gnome.shell]
 allow-extension-installation=false
-favorite-apps = ['chromium-browser.desktop', 'org.gnome.Nautilus.desktop', 'org.gnome.Ptyxis.desktop', 'com.github.tchx84.Flatseal.desktop', 'io.github.flattool.Warehouse.desktop']
+favorite-apps = ['trivalent.desktop', 'org.gnome.Nautilus.desktop', 'org.gnome.Ptyxis.desktop', 'com.github.tchx84.Flatseal.desktop', 'io.github.flattool.Warehouse.desktop']
 enabled-extensions = []
 
 [org.gnome.desktop.interface]

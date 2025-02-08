@@ -232,6 +232,20 @@ install-steam:
         echo "Do not set the 'ia32_emulation=0' kernel argument."
     fi
 
+# Install the official docker packages
+install-docker:
+    #! /bin/run0 /bin/bash
+    curl -Lo /etc/yum.repos.d/docker-ce.repo https://download.docker.com/linux/fedora/docker-ce.repo
+    rpm-ostree refresh-md
+    rpm-ostree install docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
+
+# Uninstall the official docker packages
+uninstall-docker:
+    #! /bin/run0 /bin/bash
+    rm /etc/yum.repos.d/docker-ce.repo
+    rpm-ostree refresh-md
+    rpm-ostree uninstall docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
+
 # Rebase to a different secureblue Desktop Environment/Atomic Desktop
 rebase-secureblue:
     #!/usr/bin/bash

@@ -1,0 +1,26 @@
+name: installer-checksum
+on: 
+  pull_request:
+    branches:
+      - live
+jobs:
+  verify-installer-checksum:
+    name: Linkspector
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+
+      - name: Verify checksum
+        shell: bash
+        env:
+          INSTALL_SCRIPT: files/system/usr/share/secureblue/install_secureblue.sh
+          EXAMPLE_BUTANE: docs/example.butane
+        run: |
+          INSTALLER_CHECKSUM=$(sha256sum $INSTALL_SCRIPT | awk '{ print $1 }')
+          BUTANE_CHECKSUM=$(grep -oP 'sha256-\K[a-f0-9]{64}' $EXAMPLE_BUTANE)
+          if [ "$INSTALLER_CHECKSUM" != "$BUTANE_CHECKSUM" ]; then
+            echo "Checksum mismatch."
+            echo "Installer checksum: $INSTALLER_CHECKSUM"
+            echo "Butane checksum: $BUTANE_CHECKSUM"
+            exit 1
+          fi

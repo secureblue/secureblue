@@ -1,25 +1,140 @@
 {
-  "default": [
-      {
-          "type": "reject"
-      }
-  ],
-  "transports": {
-      "docker": {
+    "default": [
+        {
+            "type": "reject"
+        }
+    ],
+    "transports": {
+        "docker": {
+          "gcr.io/projectsigstore": [
+              {
+                  "type": "sigstoreSigned",
+                  "keyPath": "/usr/etc/pki/containers/cosign-release.pub",
+                  "signedIdentity": {
+                      "type": "matchRepository"
+                  }
+              }
+          ],
+          "ghcr.io/wayblueorg": [
+            {
+              "type": "sigstoreSigned",
+              "keyPath": "/usr/etc/pki/containers/wayblueorg.pub",
+              "signedIdentity": {
+                "type": "matchRepository"
+              }
+            }
+          ],
+          "ghcr.io/zelikos": [
+            {
+              "type": "sigstoreSigned",
+              "keyPath": "/usr/etc/pki/containers/davincibox.pub",
+              "signedIdentity": {
+                "type": "matchRepository"
+              }
+            }
+          ],
+          "ghcr.io/jasonn3": [
+            {
+              "type": "sigstoreSigned",
+              "keyPath": "/usr/etc/pki/containers/build-container-installer.pub",
+              "signedIdentity": {
+                "type": "matchRepository"
+              }
+            }
+          ],
           "registry.access.redhat.com": [
               {
                   "type": "signedBy",
                   "keyType": "GPGKeys",
-                  "keyPath": "/etc/pki/rpm-gpg/RPM-GPG-KEY-redhat-release"
+                  "keyPath": "/usr/etc/pki/rpm-gpg/RPM-GPG-KEY-redhat-release"
               }
           ],
           "registry.redhat.io": [
               {
                   "type": "signedBy",
                   "keyType": "GPGKeys",
-                  "keyPath": "/etc/pki/rpm-gpg/RPM-GPG-KEY-redhat-release"
+                  "keyPath": "/usr/etc/pki/rpm-gpg/RPM-GPG-KEY-redhat-release"
+              }
+          ],
+          "quay.io/toolbx-images": [
+              {
+                  "type": "sigstoreSigned",
+                  "keyPath": "/usr/etc/pki/containers/quay.io-toolbx-images.pub",
+                  "signedIdentity": {
+                      "type": "matchRepository"
+                  }
+              }
+          ],
+          "ghcr.io/ublue-os": [
+              {
+                  "type": "sigstoreSigned",
+                  "keyPath": "/usr/etc/pki/containers/ublue-os.pub",
+                  "signedIdentity": {
+                      "type": "matchRepository"
+                  }
+              }
+          ],
+          "": [
+              {
+                  "type": "reject"
+              }
+          ]
+      },
+      "docker-daemon": {
+          "": [
+              {
+                  "type": "reject"
+              }
+          ]
+      },
+      "atomic": {
+          "": [
+              {
+                  "type": "reject"
+              }
+          ]
+      },
+      "containers-storage": {
+          "": [
+              {
+                  "type": "reject"
+              }
+          ]
+      },
+      "dir": {
+          "": [
+              {
+                  "type": "reject"
+              }
+          ]
+      },
+      "oci": {
+          "": [
+              {
+                  "type": "reject"
+              }
+          ]
+      },
+      "oci-archive": {
+          "": [
+              {
+                  "type": "reject"
+              }
+          ]
+      },
+      "docker-archive": {
+          "": [
+              {
+                  "type": "reject"
+              }
+          ]
+      },
+      "tarball": {
+          "": [
+              {
+                  "type": "reject"
               }
           ]
       }
-  }
+    }
 }

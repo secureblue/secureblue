@@ -1,0 +1,3 @@
+docker:
+  ghcr.io/IMAGENAME:
+    use-sigstore-attachments: true

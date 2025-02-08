@@ -78,10 +78,32 @@ override-reset-module mod_name:
       echo "No override found for $MOD_NAME module."
     fi
 
+# Toggle debug mode (requires restart)
+toggle-debug-mode:
+    #! /bin/run0 /bin/bash
+    if test -e /etc/sysctl.d/99-enable-coredump.conf; then
+        cp /usr/etc/security/limits.d/60-disable-coredump.conf /etc/security/limits.d/60-disable-coredump.conf
+        cp /usr/etc/systemd/system.conf.d/60-disable-coredump.conf /etc/systemd/system.conf.d/60-disable-coredump.conf
+        cp /usr/etc/systemd/user.conf.d/60-disable-coredump.conf /etc/systemd/user.conf.d/60-disable-coredump.conf
+        rm /etc/sysctl.d/99-enable-coredump.conf
+        echo "Debug mode disabled."
+    else
+        rm /etc/security/limits.d/60-disable-coredump.conf
+        rm /etc/systemd/system.conf.d/60-disable-coredump.conf
+        rm /etc/systemd/user.conf.d/60-disable-coredump.conf
+        echo "kernel.core_pattern = |/usr/lib/systemd/systemd-coredump %P %u %g %s %t %c %h" >/etc/sysctl.d/99-enable-coredump.conf
+        echo "Debug mode enabled."
+        if [[ $(</proc/sys/kernel/yama/ptrace_scope) != 1 ]]; then
+            echo "ptrace is restricted in this session. Some debuggers may not work as intended. Use ujust toggle-ptrace-scope to manage ptrace."
+        fi
+    fi
+
+alias toggle-ptrace-scope := toggle-anticheat-support
+
 # Toggle anticheat support by changing ptrace scope (requires restart)
 toggle-anticheat-support:
     #! /bin/run0 /bin/bash
-    SYSCTL_HARDENING_FILE="/etc/sysctl.d/hardening.conf"
+    SYSCTL_HARDENING_FILE="/etc/sysctl.d/60-hardening.conf"
     if grep -q "kernel.yama.ptrace_scope = 3" "$SYSCTL_HARDENING_FILE"; then
         sed -i "s/kernel.yama.ptrace_scope = 3/kernel.yama.ptrace_scope = 1/" "$SYSCTL_HARDENING_FILE"
         echo "Anticheat support enabled. ptrace_scope set to 1."

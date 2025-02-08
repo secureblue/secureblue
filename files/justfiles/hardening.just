@@ -96,7 +96,7 @@ flatpak-permissions-lockdown:
     echo ""
     echo "-- Granting Flatseal Access to Bus Names --"
     for i in ${kFlatsealNameAccess[@]}; do
-        echo "	Rejecting $i..."
+        echo "	Grantinbg $i..."
         $kCommand --talk-name=$i com.github.tchx84.Flatseal
     done
     echo ""

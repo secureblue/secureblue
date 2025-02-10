@@ -35,7 +35,7 @@ elif [ "$IMAGE_TAG" != "latest" ]; then
 elif [ "$DIFFERENCE" -ge "$WEEK" ]; then
     TIP='**Your current image is over 1 week old, run `rpm-ostree upgrade`.**'
 else
-    TIP='**For secureblue release notifications,** [subscribe:](https://github.com/secureblue/secureblue/blob/live/docs/FAQ.md#releases)'
+    TIP='**For secureblue release notifications,** [subscribe:](https://secureblue.dev/faq#releases)'
 fi
 sed -e "s/%IMAGE_REF_NAME%/$IMAGE_REF_NAME/g" -e "s/%IMAGE_TAG%/$IMAGE_TAG/g" -e "s|%TIP%|$TIP|g" /usr/share/ublue-os/motd/secureblue.md | tr '~' '\n' | { command -v glow >/dev/null 2>&1 && glow -s auto -w 78 - || cat; }
 

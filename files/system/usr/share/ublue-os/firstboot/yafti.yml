@@ -84,7 +84,7 @@ screens:
       title: "Yafti run complete!"
       icon: "/path/to/icon"
       links:
-        - "Post-install README":
-            run: /usr/bin/xdg-open https://github.com/secureblue/secureblue/blob/live/docs/POSTINSTALL-README.md
+        - "Post-install Instructions":
+            run: /usr/bin/xdg-open https://secureblue.dev/install#post-install
       description: |
         Complete your secureblue installation by following the Post-install README.

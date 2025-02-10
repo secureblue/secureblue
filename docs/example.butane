@@ -14,7 +14,7 @@ storage:
       contents:
         source: https://raw.githubusercontent.com/secureblue/secureblue/refs/heads/live/files/system/usr/share/secureblue/install_secureblue.sh
         verification:
-          hash: sha256-1f2f8ac822614eb20c82547aabdd18fbded3906115db8ecd4efcf3a80e19bd7d
+          hash: sha256-3b71dd267d921e35d25128a7caf49b02eeded1fb5c189c988e6c984c4bb20141
       mode: 0755
     - path: /opt/run_install_secureblue.sh
       contents:

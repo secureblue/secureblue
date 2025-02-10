@@ -1,5 +1,0 @@
-type: rpm-ostree
-repos:
-  - https://copr.fedorainfracloud.org/coprs/secureblue/hardened-chromium/repo/fedora-%OS_VERSION%/secureblue-hardened-chromium-fedora-%OS_VERSION%.repo
-install:
-  - trivalent-subresource-filter

@@ -127,14 +127,20 @@ fi
 }
 
 @test "Test command for securecore-zfs-main-hardened" {
+  sudo mv /etc/os-release /etc/os-release.bak
+  echo 'VARIANT="CoreOS"' | sudo tee /etc/os-release
   run bash -c "echo -e 'yes\nyes\nno\no' | bash '$INSTALL_SCRIPT'"
   [ "$status" -eq 0 ]
   [[ "$output" == *"securecore-zfs-main-hardened"* ]]
+  sudo mv /etc/os-release.bak /etc/os-release
 }
 
 @test "Test command for securecore-main-hardened" {
+  sudo mv /etc/os-release /etc/os-release.bak
+  echo 'VARIANT="CoreOS"' | sudo tee /etc/os-release
   run bash -c "echo -e 'yes\nno\nno\no' | bash '$INSTALL_SCRIPT'"
   [ "$status" -eq 0 ]
   [[ "$output" == *"securecore-main-hardened"* ]]
+  sudo mv /etc/os-release.bak /etc/os-release
 }
 

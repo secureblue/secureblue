@@ -6,6 +6,7 @@ repos:
 install:
   - headsetcontrol
   - trivalent
+  - trivalent-subresource-filter
   - secureblue-logos
   - mediainfo
   - bubblejail

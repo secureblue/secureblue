@@ -1,7 +1,7 @@
 modules:
   - type: rpm-ostree
     repos:
-      - https://copr.fedorainfracloud.org/coprs/secureblue/trivalent/repo/fedora-%OS_VERSION%/secureblue-trivalent-fedora-%OS_VERSION%.repo
+      - https://repo.secureblue.dev/secureblue.repo
     install:
       - trivalent-qt6-ui
     remove:

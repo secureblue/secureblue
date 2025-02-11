@@ -11,6 +11,7 @@ on:
 jobs:
   bluebuild:
     name: Build secureblue
+    if: github.actor.role == 'Admin'
     runs-on: ubuntu-24.04
     permissions:
       contents: read

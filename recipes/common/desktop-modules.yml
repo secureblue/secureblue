@@ -11,6 +11,11 @@ modules:
       scripts:
         - installsignedkernel.sh
     - from-file: common/desktop-packages.yml
+    - type: rpm-ostree
+      repos:
+        - https://copr.fedorainfracloud.org/coprs/secureblue/trivalent/repo/fedora-%OS_VERSION%/secureblue-trivalent-fedora-%OS_VERSION%.repo
+      install:
+        - trivalent-subresource-filter
     - from-file: common/desktop-scripts.yml
     - type: fonts
       fonts:

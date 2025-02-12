@@ -300,8 +300,10 @@ toggle-mac-randomization:
 
         if [ "$randomization_level" == [Yy]* ]; then
             randomization_level=random
+            echo "Selected state: per-connection"
         else
             randomization_level=stable
+            echo "Selected state: per-network (stable)"
         fi
         cat <<EOL > $RAND_MAC_FILE
     [device-mac-randomization]

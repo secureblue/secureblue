@@ -1,12 +1,11 @@
 type: rpm-ostree
 repos:
   - https://copr.fedorainfracloud.org/coprs/secureblue/bubblejail/repo/fedora-%OS_VERSION%/secureblue-bubblejail-fedora-%OS_VERSION%.repo
-  - https://copr.fedorainfracloud.org/coprs/secureblue/trivalent/repo/fedora-%OS_VERSION%/secureblue-trivalent-fedora-%OS_VERSION%.repo
+  - https://repo.secureblue.dev/secureblue.repo
   - https://copr.fedorainfracloud.org/coprs/secureblue/branding/repo/fedora-%OS_VERSION%/secureblue-branding-fedora-%OS_VERSION%.repo
 install:
   - headsetcontrol
   - trivalent
-  - trivalent-subresource-filter
   - secureblue-logos
   - mediainfo
   - bubblejail

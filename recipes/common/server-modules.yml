@@ -2,11 +2,9 @@ modules:
     - type: containerfile
       snippets:
         - COPY --from=ghcr.io/ublue-os/akmods:coreos-testing-41 /rpms /tmp/rpms
+        - COPY --from=ghcr.io/ublue-os/akmods:coreos-testing-41 /kernel-rpms /tmp/rpms/kernel
         - RUN find /tmp/rpms
         - RUN rpm-ostree install /tmp/rpms/ucore/ublue-os-ucore-addons*.rpm    
-    - type: containerfile
-      snippets:
-        - COPY --from=ghcr.io/ublue-os/coreos-testing-kernel:41 /tmp/rpms /tmp/rpms/kernel
     - type: script
       scripts:
         - installsignedkernel.sh

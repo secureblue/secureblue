@@ -74,31 +74,6 @@ jobs:
           registry: 'ghcr.io/wayblueorg'
           pubkey: 'https://raw.githubusercontent.com/wayblueorg/wayblue/live/cosign.pub'
 
-      - name: Validate server kernel and kmod versions
-        if: ${{ contains(env.IMAGE_NAME, 'securecore') }}
-        run: |
-            set -eo pipefail
-            linux=$(skopeo inspect docker://ghcr.io/ublue-os/coreos-testing-kernel:41 | jq -r '.Labels["ostree.linux"]')
-            AKMODS_KERNEL_VERSION=$(skopeo inspect docker://ghcr.io/ublue-os/akmods:coreos-testing-41 | jq -r '.Labels["ostree.linux"]')
-            if [[ "${linux}" != "${AKMODS_KERNEL_VERSION}" ]]; then
-              echo "Kernel Versions do not match between AKMODS and Cached-Kernel."
-              exit 1
-            fi
-            echo "KERNEL_VERSION=$linux" >> $GITHUB_ENV
-
-      - name: Validate desktop kernel and kmod versions
-        if: ${{ !contains(env.IMAGE_NAME, 'securecore') }}
-        run: |
-            set -eo pipefail
-            linux=$(skopeo inspect docker://ghcr.io/ublue-os/main-kernel:41 | jq -r '.Labels["ostree.linux"]')
-            AKMODS_KERNEL_VERSION=$(skopeo inspect docker://ghcr.io/ublue-os/akmods:main-41 | jq -r '.Labels["ostree.linux"]')
-            if [[ "${linux}" != "${AKMODS_KERNEL_VERSION}" ]]; then
-              echo "Kernel Versions do not match between AKMODS and Cached-Kernel."
-              exit 1
-            fi
-            echo "KERNEL_VERSION=$linux" >> $GITHUB_ENV
-
-
       - name: Build secureblue
         uses: blue-build/github-action@4d8b4df657ec923574611eec6fd7e959416c47f0 # v1.8.1
         with:          

@@ -7,6 +7,7 @@ modules:
         - installrpmfusion.sh
         - unprotectsudo.sh
         - addimageinfo.sh
+        - hardenlogindefs.sh
     - from-file: common/common-packages.yml
     - type: files
       files:

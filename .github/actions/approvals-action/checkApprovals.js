@@ -51,7 +51,7 @@ async function run() {
       for (const review of reviews) {
         const userId = review.user?.login;
         if (review.state === 'APPROVED' && userId) {
-            if (approvers.contains(userId) {
+            if (approvers.contains(userId)) {
                 validApprovers.add(userId);
             }
         }

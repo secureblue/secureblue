@@ -6,13 +6,12 @@ on:
 jobs:
   pr-approvals:
     name: PR Approvals
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-latest  
+    env:
+      approvers: EsseLowNitro, fiftydinar, RoyalOughtness, mintpilo, mkkvcs, RKNF404, Rubiginosa, ShadowSlayer1441, spaceoden, TheHooly, WavyEbuilder
     steps:
-      - id: list-approvers
-        run: echo "approvers='EsseLowNitro, fiftydinar, RoyalOughtness, mintpilo, mkkvcs, RKNF404, Rubiginosa, ShadowSlayer1441, spaceoden, TheHooly, WavyEbuilder'" >> $GITHUB_ENV
-
       - uses: peternied/required-approval@65f26b5274377eaabaa47142a812d7b568386987 # v1.3.0
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           min-required: 2
-          required-approvers-list: ${{ steps.list-approvers.outputs.approvers }}
+          required-approvers-list: ${{ env.approvers }}

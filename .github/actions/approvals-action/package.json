@@ -4,4 +4,4 @@
       "@actions/github": "6.0.0",
       "@octokit/action": "7.0.1"
     }
-  }
+}

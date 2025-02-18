@@ -67,6 +67,14 @@ jobs:
           echo "BASE_IMAGE_NAME=$(echo $BASE_IMAGE | sed 's/.*\/.*\///')" >> $GITHUB_ENV
 
       - name: Verify base image
+        if: ${{ ! contains(env.IMAGE_NAME, 'wayblue') }}
+        uses: EyeCantCU/cosign-action/verify@58722a084c82190b57863002d494c91eabbe9e79 # v0.3.0
+        with:
+          containers: ${{ env.BASE_IMAGE_NAME }}:${{ env.IMAGE_MAJOR_VERSION }}
+          registry: 'quay.io/fedora-ostree-desktops'
+          pubkey: 'https://gitlab.com/fedora/ostree/ci-test/-/raw/main/quay.io-fedora-ostree-desktops.pub'
+
+      - name: Verify base image
         if: ${{ contains(env.IMAGE_NAME, 'wayblue') }}
         uses: EyeCantCU/cosign-action/verify@58722a084c82190b57863002d494c91eabbe9e79 # v0.3.0
         with:
@@ -77,7 +85,7 @@ jobs:
       - name: Build secureblue
         uses: blue-build/github-action@4d8b4df657ec923574611eec6fd7e959416c47f0 # v1.8.1
         with:          
-          cli_version: v0.9.7
+          cli_version: v0.9.8
           recipe: ${{ matrix.recipe }}
           cosign_private_key: ${{ secrets.SIGNING_SECRET }}
           registry_token: ${{ github.token }}

@@ -15,4 +15,4 @@ jobs:
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           min-required: 2
-          required-approvers-list: ${{ steps.list-maintainers.outputs.approvers }}
+          required-approvers-list: ${{ steps.list-approvers.outputs.approvers }}

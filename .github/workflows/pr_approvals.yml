@@ -12,8 +12,6 @@ jobs:
     steps:
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
       - uses: ./.github/actions/approvals-action
-        # if this step fails we want to continue to post a message on the PR.
-        continue-on-error: true
         id: approvers
         with:
           token: ${{ secrets.GITHUB_TOKEN }}

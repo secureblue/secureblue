@@ -1,0 +1,25 @@
+name: PR Gatekeeper
+
+on:
+  pull_request:
+    types:
+      [
+        assigned,
+        unassigned,
+        opened,
+        reopened,
+        synchronize,
+        review_requested,
+        review_request_removed
+      ]
+  pull_request_review:
+
+jobs:
+  pr-gatekeeper:
+    name: PR Gatekeeper
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+      - uses: octodemo/pr-gatekeeper@4a9e74a1fd715f3d5ddccb54c2c4295abdf34ad1 # v1.0.2
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}

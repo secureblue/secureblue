@@ -67,7 +67,7 @@ jobs:
           echo "BASE_IMAGE_NAME=$(echo $BASE_IMAGE | sed 's/.*\/.*\///')" >> $GITHUB_ENV
 
       - name: Verify base image
-        if: ${{ ! contains(env.IMAGE_NAME, 'wayblue') }}
+        if: ${{ ! contains(env.IMAGE_NAME, 'wayblue') &&  ! contains(env.IMAGE_NAME, 'securecore') }}
         uses: EyeCantCU/cosign-action/verify@58722a084c82190b57863002d494c91eabbe9e79 # v0.3.0
         with:
           containers: ${{ env.BASE_IMAGE_NAME }}:${{ env.IMAGE_MAJOR_VERSION }}

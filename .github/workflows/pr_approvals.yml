@@ -11,7 +11,21 @@ jobs:
       approvers: EsseLowNitro, fiftydinar, RoyalOughtness, mintpilo, mkkvcs, RKNF404, Rubiginosa, ShadowSlayer1441, spaceoden, TheHooly, WavyEbuilder
     steps:
       - uses: peternied/required-approval@65f26b5274377eaabaa47142a812d7b568386987 # v1.3.0
+        # if this step fails we want to continue to post a message on the PR.
+        continue-on-error: true
+        id: approvers
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           min-required: 2
           required-approvers-list: ${{ env.approvers }}
+
+      - name: Post Approvers Result
+        if: steps.approvers.outcome == 'failure'
+        env:
+          PR_NUMBER: ${{ github.event.number }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          COMMENT="Pull requests require 2 approvals from secureblue approvers"
+          COMMENT_URL="https://api.github.com/repos/${{ github.repository }}/issues/${PR_NUMBER}/comments"
+          curl -s -H "Authorization: token ${GITHUB_TOKEN}" -X POST $COMMENT_URL -d "{\"body\":\"$COMMENT\"}"
+          exit 1

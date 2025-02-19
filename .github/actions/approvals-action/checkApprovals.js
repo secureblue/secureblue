@@ -58,9 +58,9 @@ async function run() {
      }
   }
 
-  core.info(`Found approvals from ${validApprovers.join(', ')}`);
+  core.info(`Found approvals from ${[...validApprovers].join(', ')}`);
 
-  if (validApprovers.Size < minRequired) {
+  if (validApprovers.size < minRequired) {
     core.setFailed(`Not enough approvals; has ${validApprovers.size} where ${minRequired} approvals are required.`);
   } else {
     core.info(`Meets minimum number of approvals requirement with ${validApprovers.size} approvals`);

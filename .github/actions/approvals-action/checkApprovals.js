@@ -26,7 +26,7 @@ async function run() {
     core.setFailed(`Input parameter 'min-required' is required`);
     return;
   }
-  const minRequired = parseInt(minRequiredStr);
+  const minRequired = parseInt(minRequiredStr, 10);
 
   const pullRequestId = github.context.payload.pull_request?.number;
   if (!pullRequestId) {
@@ -34,7 +34,7 @@ async function run() {
     return;
   }
 
-  const approversString = core.getInput('required-approvers-list', { required: true });
+  const approversString = core.getInput('approvers', { required: true });
   const approvers = approversString.split('\n').map(s => s.trim());
 
   const client = github.getOctokit(token);

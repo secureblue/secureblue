@@ -47,7 +47,6 @@ async function run() {
 
   let validApprovers = new Set();
   for await (const { data: reviews } of allReviews) {
-      console.debug(`listReviews paged response response:\n ${JSON.stringify(reviews)}`);
       for (const review of reviews) {
         const userId = review.user?.login;
         if (review.state === 'APPROVED' && userId) {

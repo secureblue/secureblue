@@ -22,4 +22,5 @@ rpm-ostree override replace \
     mesa-va-drivers \
     mesa-vulkan-drivers \
     gstreamer1-plugin-libav \
-    gstreamer1-plugin-vaapi 
+    gstreamer1-plugin-vaapi \
+    unrar

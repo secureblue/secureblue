@@ -74,6 +74,7 @@ dns-selector:
             done
             valid_input="0"
             case "$resolver_subselection" in
+                # Source for the IP addresses and hostnames/URLs: https://controld.com/free-dns
                 0)
                     resolver_ipv4_address="76.76.2.0"
                     resolver_ipv4_address_2="76.76.10.0"
@@ -138,6 +139,7 @@ dns-selector:
             done
             valid_input="0"
             case "$resolver_subselection" in
+                # Source for the IP addresses and hostnames/URLs: https://mullvad.net/en/help/dns-over-https-and-dns-over-tls
                 0)
                     resolver_ipv4_address="194.242.2.2"
                     resolver_ipv6_address="2a07:e340::2"
@@ -190,6 +192,7 @@ dns-selector:
             done
             valid_input="0"
             case "$resolver_subselection" in
+                # Source for the IP addresses and hostnames/URLs: https://developers.cloudflare.com/1.1.1.1/infrastructure/network-operators/#available-endpoints
                 0)
                     resolver_ipv4_address="1.1.1.1"
                     resolver_ipv4_address_2="1.0.0.1"
@@ -233,6 +236,7 @@ dns-selector:
             done
             valid_input="0"
             case "$resolver_subselection" in
+                # Source for the IP addresses and hostnames/URLs: https://dnsforge.de/#dnsdaten
                 0)
                     resolver_ipv4_address="176.9.93.198"
                     resolver_ipv4_address_2="176.9.1.117"

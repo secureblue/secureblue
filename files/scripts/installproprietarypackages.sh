@@ -9,6 +9,7 @@ sed -i '0,/enabled=1/{s/enabled=1/enabled=1\npriority=90/}' /etc/yum.repos.d/neg
 rpm-ostree override replace \
   --experimental \
   --from repo='fedora-multimedia' \
+  --remove=mesa-libglapi \
     libheif \
     libva \
     libva-intel-media-driver \
@@ -17,7 +18,6 @@ rpm-ostree override replace \
     mesa-libEGL \
     mesa-libGL \
     mesa-libgbm \
-    mesa-libglapi \
     mesa-libxatracker \
     mesa-va-drivers \
     mesa-vulkan-drivers \

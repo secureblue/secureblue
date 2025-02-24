@@ -10,4 +10,4 @@ xwayland {
   enabled = false
 }
 
-" > /usr/share/hyprland/hyprland.conf
+" >> /usr/share/hyprland/hyprland.conf

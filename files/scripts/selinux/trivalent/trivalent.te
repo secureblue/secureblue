@@ -34,26 +34,20 @@ role trivalent_script_roles types trivalent_script_t;
 gen_require(`
 	type audio_home_t;
 	type chrome_sandbox_home_t;
-	type config_home_t;
-	type cache_home_t;
-	type unconfined_dbusd_t;
-	type unconfined_service_t;
 	type unconfined_t;
 	type http_port_t;
 	type http_cache_port_t;
 	type howl_port_t;
 	type pki_ca_port_t;
-	type setfiles_exec_t;
 	type user_home_t;
-	type user_home_dir_t;
 	type xserver_misc_device_t;
 ')
 
 # internal
 allow trivalent_t self:process { execmem getcap getsched setcap setrlimit setsched sigkill signal signull };
-allow trivalent_t self:dir { add_name create read remove_name rmdir write };
-allow trivalent_t self:file { append create execute getattr ioctl lock map open read rename unlink write };
-allow trivalent_t self:lnk_file { create read unlink };
+allow trivalent_t self:dir { manage_dir_perms };
+allow trivalent_t self:file { manage_file_perms execute };
+allow trivalent_t self:lnk_file { manage_lnk_file_perms };
 allow trivalent_t self:fifo_file rw_fifo_file_perms;
 allow trivalent_t self:sem create_sem_perms;
 allow trivalent_t self:netlink_kobject_uevent_socket client_stream_socket_perms;
@@ -68,12 +62,12 @@ allow trivalent_t self:dir rw_dir_perms;
 allow trivalent_t self:socket_class_set create_socket_perms;
 allow trivalent_t self:tcp_socket { accept listen };
 allow trivalent_t trivalent_exec_t:file execute_no_trans;
-allow trivalent_t chrome_sandbox_home_t:dir { add_name create read remove_name rmdir write getattr open rename search };
-allow trivalent_t chrome_sandbox_home_t:file { append create execute getattr ioctl lock map open read rename unlink write };
-allow trivalent_t chrome_sandbox_home_t:lnk_file { create read unlink };
-allow trivalent_t trivalent_home_t:dir { add_name create read remove_name rmdir write getattr open rename search };
-allow trivalent_t trivalent_home_t:file { append create execute getattr ioctl lock map open read rename unlink write };
-allow trivalent_t trivalent_home_t:lnk_file { create read unlink };
+allow trivalent_t chrome_sandbox_home_t:dir { manage_dir_perms };
+allow trivalent_t chrome_sandbox_home_t:file { manage_file_perms execute };
+allow trivalent_t chrome_sandbox_home_t:lnk_file { manage_lnk_file_perms };
+allow trivalent_t trivalent_home_t:dir { manage_dir_perms };
+allow trivalent_t trivalent_home_t:file { manage_file_perms execute };
+allow trivalent_t trivalent_home_t:lnk_file { manage_lnk_file_perms };
 allow trivalent_t self:netlink_route_socket nlmsg_read;
 
 # not covered by interfaces
@@ -88,12 +82,12 @@ allow trivalent_t tmp_t:sock_file { create unlink };
 allow trivalent_t trivalent_script_exec_t:file { execute getattr read };
 
 # homedir access
-allow trivalent_t user_home_t:dir { read add_name search getattr write remove_name watch };
-allow trivalent_t user_home_t:file { create open read write rename unlink setattr getattr};
-allow trivalent_t user_home_t:lnk_file { create open read write rename unlink setattr getattr};
-allow trivalent_t audio_home_t:dir { add_name read remove_name watch write search getattr };
-allow trivalent_t audio_home_t:file { create getattr open read rename setattr unlink write };
-allow trivalent_t audio_home_t:lnk_file { create getattr open read rename setattr unlink write };
+allow trivalent_t user_home_t:dir { manage_dir_perms };
+allow trivalent_t user_home_t:file { manage_file_perms };
+allow trivalent_t user_home_t:lnk_file { manage_lnk_file_perms };
+allow trivalent_t audio_home_t:dir { manage_dir_perms };
+allow trivalent_t audio_home_t:file { manage_file_perms };
+allow trivalent_t audio_home_t:lnk_file { manage_lnk_file_perms };
 
 
 
@@ -238,15 +232,15 @@ optional_policy(`
 
 
 allow trivalent_script_t trivalent_t:dir { getattr };
-allow trivalent_script_t self:dir { add_name write };
+allow trivalent_script_t self:dir { add_entry_dir_perms };
 allow trivalent_script_t self:file { create };
 allow trivalent_script_t user_home_t:dir { search };
-allow trivalent_script_t chrome_sandbox_home_t:dir { add_name create getattr open read remove_name rmdir search write };
-allow trivalent_script_t chrome_sandbox_home_t:file { create getattr ioctl open unlink write };
+allow trivalent_script_t chrome_sandbox_home_t:dir { manage_dir_perms };
+allow trivalent_script_t chrome_sandbox_home_t:file { manage_file_perms };
 allow trivalent_script_t chrome_sandbox_home_t:lnk_file read;
-allow trivalent_script_t trivalent_home_t:dir { add_name create read remove_name rmdir write getattr open rename search };
-allow trivalent_script_t trivalent_home_t:file { append create execute getattr ioctl lock map open read rename unlink write };
-allow trivalent_script_t trivalent_home_t:lnk_file { create read unlink };
+allow trivalent_script_t trivalent_home_t:dir { manage_dir_perms };
+allow trivalent_script_t trivalent_home_t:file { manage_file_perms };
+allow trivalent_script_t trivalent_home_t:lnk_file { manage_lnk_file_perms };
 
 
 # xwayland/nvidia

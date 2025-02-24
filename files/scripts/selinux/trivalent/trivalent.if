@@ -37,18 +37,18 @@ interface(`trivalent_domtrans',`
 interface(`trivalent_run',`
 	gen_require(`
 		type trivalent_t;
-        attribute_role trivalent_roles;
+		attribute_role trivalent_roles;
 	')
 
-    trivalent_domtrans($1)
-    roleattribute $2 trivalent_roles;
+	trivalent_domtrans($1)
+	roleattribute $2 trivalent_roles;
 ')
 
 
 
 ########################################
 ## <summary>
-##	Execute trivalent script in the trivalent domain.
+##	Execute trivalent script in the trivalent script domain.
 ## </summary>
 ## <param name="domain">
 ## <summary>
@@ -67,7 +67,7 @@ interface(`trivalent_script_domtrans',`
 
 ########################################
 ## <summary>
-##	Execute trivalent script in the trivalent domain.
+##	Execute trivalent script in the trivalent script domain.
 ## </summary>
 ## <param name="domain">
 ## <summary>
@@ -83,11 +83,11 @@ interface(`trivalent_script_domtrans',`
 interface(`trivalent_script_run',`
 	gen_require(`
 		type trivalent_script_t;
-        attribute_role trivalent_script_roles;
+		attribute_role trivalent_script_roles;
 	')
 
-    trivalent_script_domtrans($1)
-    roleattribute $2 trivalent_script_roles;
+	trivalent_script_domtrans($1)
+	roleattribute $2 trivalent_script_roles;
 ')
 
 ########################################
@@ -102,12 +102,12 @@ interface(`trivalent_script_run',`
 ## </param>
 #
 interface(`trivalent_filetrans_home_content',`
-        gen_require(`
-                type trivalent_home_t;
-        ')
+		gen_require(`
+				type trivalent_home_t;
+		')
 
-        optional_policy(`
+		optional_policy(`
 			gnome_config_filetrans($1, trivalent_home_t, dir, "trivalent")
 			gnome_cache_filetrans($1, trivalent_home_t, dir, "trivalent")
-        ')
+		')
 ')

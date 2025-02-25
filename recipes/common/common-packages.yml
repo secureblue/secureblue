@@ -9,7 +9,6 @@ install:
   - just
   - patch
   - p7zip
-  - unrar
   - distrobox
   - toolbox
   - podman

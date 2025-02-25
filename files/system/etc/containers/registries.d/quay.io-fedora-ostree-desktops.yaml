@@ -1,0 +1,3 @@
+docker:
+  quay.io/fedora-ostree-desktops:
+    use-sigstore-attachments: true

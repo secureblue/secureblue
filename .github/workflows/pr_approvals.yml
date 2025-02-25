@@ -1,0 +1,35 @@
+name: PR Approvals
+
+on:
+  pull_request:
+
+jobs:
+  pr-approvals:
+    name: PR Approvals
+    runs-on: ubuntu-latest  
+    env:
+      approvers:
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2    
+      - name: Install Node.js dependencies
+        run: |
+          cd .github/actions/approvals-action
+          npm install
+          cd ../../..
+      - uses: ./.github/actions/approvals-action
+        id: approvers
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          min-required: 2
+          approvers: |
+            EsseLowNitro
+            fiftydinar
+            RoyalOughtness
+            mintpilo
+            mkkvcs
+            RKNF404
+            Rubiginosa
+            ShadowSlayer1441
+            spaceoden
+            TheHooly
+            WavyEbuilder

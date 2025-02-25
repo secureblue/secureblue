@@ -3,8 +3,8 @@ toggle-cups:
     #! /bin/run0 /bin/bash
     if systemctl is-enabled --quiet cups; then
       firewall-cmd --permanent --remove-port=631/tcp
-      firewall-cmd --permanent --remove-port=631/udp 
-      firewall-cmd --reload 
+      firewall-cmd --permanent --remove-port=631/udp
+      firewall-cmd --reload
       systemctl mask cups
       systemctl disable cups
       systemctl stop cups
@@ -12,8 +12,8 @@ toggle-cups:
       echo "Cups disabled."
     else
       firewall-cmd --permanent --add-port=631/tcp
-      firewall-cmd --permanent --add-port=631/udp 
-      firewall-cmd --reload 
+      firewall-cmd --permanent --add-port=631/udp
+      firewall-cmd --reload
       systemctl unmask cups
       systemctl enable cups
       systemctl start cups
@@ -46,7 +46,7 @@ toggle-ghns:
       elif grep -q "ghns=true" "$KDE_GLOBALS_FILE"; then
         sed -i "s/ghns=true/ghns=false/" "$KDE_GLOBALS_FILE"
         echo "GHNS disabled."
-      else 
+      else
         echo "The kdeglobals file is missing the ghns toggle."
       fi
     else
@@ -61,7 +61,7 @@ override-enable-module mod_name:
     if test -e $MOD_FILE; then
       echo "$MOD_NAME module is already enabled."
     else
-      sh -c 'echo "install $1 /sbin/modprobe --ignore-install $1" >> "$2"' _ "$MOD_NAME" "$MOD_FILE" 
+      sh -c 'echo "install $1 /sbin/modprobe --ignore-install $1" >> "$2"' _ "$MOD_NAME" "$MOD_FILE"
       chmod 644 $MOD_FILE
       echo "Override created to enable $MOD_NAME module. Reboot to take effect."
     fi
@@ -110,7 +110,7 @@ toggle-anticheat-support:
     elif grep -q "kernel.yama.ptrace_scope = 1" "$SYSCTL_HARDENING_FILE"; then
         sed -i "s/kernel.yama.ptrace_scope = 1/kernel.yama.ptrace_scope = 3/" "$SYSCTL_HARDENING_FILE"
         echo "Anticheat support disabled. ptrace_scope set back to 3."
-    else 
+    else
         echo "The sysctl hardening file is missing the ptrace_scope setting."
     fi
 
@@ -259,13 +259,13 @@ toggle-unconfined-domain-userns-creation:
     MODULE_NAME="harden_userns"
 
     if semodule -l | grep -q "$MODULE_NAME"; then
-        echo "Module $MODULE_NAME is currently enabled. Disabling it..."
+        echo "Module $MODULE_NAME is currently enabled. Disabling the hardening, enabling unconfined domain userns (e.g. for bubblejail)."
         semodule --disable="$MODULE_NAME"
-        echo "Module $MODULE_NAME disabled."
+        echo "Module $MODULE_NAME disabled. Unconfined domain userns enabled."
     else
-        echo "Module $MODULE_NAME is not currently enabled. Enabling it..."
+        echo "Module $MODULE_NAME is not currently enabled. Enabling the hardening, disabling unconfined domain userns (e.g. for bubblejail)."
         semodule --enable="$MODULE_NAME"
-        echo "Module $MODULE_NAME enabled."
+        echo "Module $MODULE_NAME enabled. Unconfined domain userns disabled."
     fi
 
 # Toggle container domain userns creation
@@ -274,13 +274,13 @@ toggle-container-domain-userns-creation:
     MODULE_NAME="harden_container_userns"
 
     if semodule -l | grep -q "$MODULE_NAME"; then
-        echo "Module $MODULE_NAME is currently enabled. Disabling it..."
+        echo "Module $MODULE_NAME is currently enabled. Disabling the hardening, enabling container domain userns (e.g. for distrobox)."
         semodule --disable="$MODULE_NAME"
-        echo "Module $MODULE_NAME disabled."
+        echo "Module $MODULE_NAME disabled. Container domain userns enabled."
     else
-        echo "Module $MODULE_NAME is not currently enabled. Enabling it..."
+        echo "Module $MODULE_NAME is not currently enabled. Enabling the hardening, disabling container domain userns (e.g. for distrobox)."
         semodule --enable="$MODULE_NAME"
-        echo "Module $MODULE_NAME enabled."
+        echo "Module $MODULE_NAME enabled. Container domain userns disabled."
     fi
 
 # Toggle MAC Randomization

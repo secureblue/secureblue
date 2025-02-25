@@ -1,5 +1,5 @@
 # Audit secureblue
-audit-secureblue:
+audit-secureblue AUDIT_FLATPAKS="true":
     #!/bin/bash
 
     STATUS_SUCCESS="SUCCESS"
@@ -126,7 +126,7 @@ audit-secureblue:
     fi
 
     SIGNED_IMAGE_TEST_STRING="Ensuring a signed image is in use"
-    if rpm-ostree status | grep -q "● ostree-image-signed"; then
+    if rpm-ostree status 2>/dev/null | grep -q "● ostree-image-signed"; then
         print_status "$SIGNED_IMAGE_TEST_STRING" "$STATUS_SUCCESS"
     else
         print_status "$SIGNED_IMAGE_TEST_STRING" "$STATUS_FAILURE"
@@ -361,107 +361,106 @@ audit-secureblue:
         print_status "$SECUREBOOT_TEST_STRING" "$STATUS_FAILURE"
     fi
 
-    if command -v flatpak &> /dev/null; then
-        remotes="$(flatpak remotes -d)"
-        while read -r remote ; do
-            ref="$(cut -f 1 <<<"$remote")"
-            url="$(cut -f 3 <<< "$remote")"
-            subset="$(cut -f 5 <<< "$remote")"
-            remote_string="Auditing flatpak remote $ref"
-            if [[ "$url" != "https://dl.flathub.org/repo/" && "$url" != "https://dl.flathub.org/beta-repo/" ]]; then
-                print_status "$remote_string" "$STATUS_FAILURE"
-                echo "> $ref is configured with an unknown url!"
-            elif [ "$subset" != "verified" ]; then
-                print_status "$remote_string" "$STATUS_FAILURE"
-                echo "> $ref is not a verified repo!"
-            else
-                print_status "$remote_string" "$STATUS_SUCCESS"
-            fi
-        done <<< "$remotes"
-
-        declare -A flatpaks
-        while read -r ref version; do
-            flatpaks+=(["${ref}"]="${ref}//${version}")
-        done < <(flatpak list | sort -k 1 | cut --fields 2,4)
-
-        for f in ${!flatpaks[@]}; do
-            warnings=()
-            status="$STATUS_SUCCESS"
-            fullref=${flatpaks["$f"]}
-            permissions=$(flatpak info --show-permissions "$fullref")
-
-            if hasPermission "$permissions" "shared" "network"; then
-                [[ "$status" != "$STATUS_FAILURE" ]] && status="$STATUS_WARNING"
-                warnings+=("> $f has network access!")
-                suggestions+=("$f has network access	To remove it use Flatseal or run:	\$ flatpak override -u --unshare=network $f")
-            fi
-            if hasPermission "$permissions" "sockets" "x11" && ! hasPermission "$permissions" "sockets" "fallback-x11"; then
-                status="$STATUS_FAILURE"
-                warnings+=("> $f has x11 access!")
-                suggestions+=("$f has x11 access	To remove it use Flatseal or run:	\$ flatpak override -u --nosocket=x11 $f")
-            fi
-            if hasPermission "$permissions" "sockets" "session-bus"; then
-                [[ "$status" != "$STATUS_FAILURE" ]] && status="$STATUS_WARNING"
-                warnings+=("> $f has access to the D-Bus session bus!")
-                suggestions+=("$f has access to the D-Bus session bus	To remove it use Flatseal or run:	\$ flatpak override -u --nosocket=session-bus $f")
-            fi
-            if hasPermission "$permissions" "sockets" "system-bus"; then
-                [[ "$status" != "$STATUS_FAILURE" ]] && status="$STATUS_WARNING"
-                warnings+=("> $f has access to the D-Bus system bus!")
-                suggestions+=("$f has access to the D-Bus system bus	To remove it use Flatseal or run:	\$ flatpak override -u --nosocket=system-bus $f")
-            fi
-            if ! hasPermission "$permissions" "LD_PRELOAD" .*"/libhardened_malloc.so"; then
-                status="$STATUS_FAILURE"
-                warnings+=("> $f is not requesting hardened_malloc!")
-                suggestions+=("$f is not requesting hardened_malloc!	To enable it run:	\$ ujust harden-flatpak $f")
-            fi
-            if ! hasPermission "$permissions" "filesystems" "host-os:ro"; then
-                status="$STATUS_FAILURE"
-                warnings+=("> $f is missing host-os:ro permission!")
-                suggestions+=("$f is missing host-os:ro permission!	This is required to load hardened_malloc.	To add it use Flatseal or run:	\$ flatpak override -u --filesystem=host-os:ro $f")
-            fi
-            if [[ "$bluetooth_loaded" == "true" ]] && hasPermission "$permissions" "features" "bluetooth"; then
-                status="$STATUS_FAILURE"
-                warnings+=("> $f has bluetooth access!")
-                suggestions+=("$f has bluetooth access	To remove it use Flatseal or run:	\$ flatpak override -u --disallow=bluetooth $f")
-            fi
-            if [[ "$ptrace_allowed" == "true" ]] && hasPermission "$permissions" "features" "devel"; then
-                status="$STATUS_FAILURE"
-                warnings+=("> $f has ptrace access!")
-                suggestions+=("$f has ptrace access	To remove it use Flatseal or run:	\$ flatpak override -u --disallow=devel $f")
-            fi
-            if hasPermission "$permissions" "shared" "ipc"; then
-                status="$STATUS_FAILURE"
-                warnings+=("> $f has inter-process communications access!")
-                suggestions+=("$f has inter-process communications access	To remove it use Flatseal or run:	\$ flatpak override -u --unshare=ipc $f")
-            fi
-            if hasPermission "$permissions" "devices" "all"; then
-                [[ "$status" != "$STATUS_FAILURE" ]] && status="$STATUS_WARNING"
-                warnings+=("> $f has device=all permission!")
-                suggestions+=("$f has device=all permission	This grants access to input devices, GPUs, raw USB, and virtualization	This may also be used as a sandbox escape vector	To remove it use Flatseal or run:	\$ flatpak override -u --nodevice=all $f	If GPU access is required, use device=dri instead	\$ flatpak override -u --device=dri $f")
-            fi
-            flatpak_test_string="Auditing $f"
-            print_status "$flatpak_test_string" "$status"
-            for warning in "${warnings[@]}"; do
-                echo "$warning"
-            done
-        done
-
-        print_heading Recommendations
-        for suggestion in "${suggestions[@]}"; do
-            readarray -t -d '	' list < <(printf "$suggestion")
-            echo "${list[0]}"
-            for (( i=1; i < ${#list[@]}; i++ )); do
-                if [[ ${list[i]} =~ ^"$" ]]; then
-                    if [[ $HAS_GUM == true ]]; then 
-                        gum style --bold "  ${list[i]}"
-                    else
-                        echo "  ${list[i]}"
-                    fi
+    if [[ "{{ AUDIT_FLATPAKS }}" == "true" ]]; then
+        if command -v flatpak &> /dev/null; then
+            remotes="$(flatpak remotes -d)"
+            while read -r remote ; do
+                ref="$(cut -f 1 <<<"$remote")"
+                url="$(cut -f 3 <<< "$remote")"
+                subset="$(cut -f 5 <<< "$remote")"
+                remote_string="Auditing flatpak remote $ref"
+                if [[ "$url" != "https://dl.flathub.org/repo/" && "$url" != "https://dl.flathub.org/beta-repo/" ]]; then
+                    print_status "$remote_string" "$STATUS_FAILURE"
+                    echo "> $ref is configured with an unknown url!"
+                elif [ "$subset" != "verified" ]; then
+                    print_status "$remote_string" "$STATUS_FAILURE"
+                    echo "> $ref is not a verified repo!"
                 else
-                    echo -e "  ${list[i]}"
+                    print_status "$remote_string" "$STATUS_SUCCESS"
                 fi
+            done <<< "$remotes"
+
+            declare -A flatpaks
+            while read -r ref version; do
+                flatpaks+=(["${ref}"]="${ref}//${version}")
+            done < <(flatpak list | sort -k 1 | cut --fields 2,4)
+
+            for f in ${!flatpaks[@]}; do
+                warnings=()
+                status="$STATUS_SUCCESS"
+                fullref=${flatpaks["$f"]}
+                permissions=$(flatpak info --show-permissions "$fullref")
+
+                if hasPermission "$permissions" "shared" "network"; then
+                    [[ "$status" != "$STATUS_FAILURE" ]] && status="$STATUS_WARNING"
+                    warnings+=("> $f has network access!")
+                    suggestions+=("$f has network access	To remove it use Flatseal or run:	\$ flatpak override -u --unshare=network $f")
+                fi
+                if hasPermission "$permissions" "sockets" "x11" && ! hasPermission "$permissions" "sockets" "fallback-x11"; then
+                    status="$STATUS_FAILURE"
+                    warnings+=("> $f has x11 access!")
+                    suggestions+=("$f has x11 access	To remove it use Flatseal or run:	\$ flatpak override -u --nosocket=x11 $f")
+                fi
+                if hasPermission "$permissions" "sockets" "session-bus"; then
+                    [[ "$status" != "$STATUS_FAILURE" ]] && status="$STATUS_WARNING"
+                    warnings+=("> $f has access to the D-Bus session bus!")
+                    suggestions+=("$f has access to the D-Bus session bus	To remove it use Flatseal or run:	\$ flatpak override -u --nosocket=session-bus $f")
+                fi
+                if hasPermission "$permissions" "sockets" "system-bus"; then
+                    [[ "$status" != "$STATUS_FAILURE" ]] && status="$STATUS_WARNING"
+                    warnings+=("> $f has access to the D-Bus system bus!")
+                    suggestions+=("$f has access to the D-Bus system bus	To remove it use Flatseal or run:	\$ flatpak override -u --nosocket=system-bus $f")
+                fi
+                if ! hasPermission "$permissions" "LD_PRELOAD" .*"/libhardened_malloc.so"; then
+                    status="$STATUS_FAILURE"
+                    warnings+=("> $f is not requesting hardened_malloc!")
+                    suggestions+=("$f is not requesting hardened_malloc!	To enable it run:	\$ ujust harden-flatpak $f")
+                fi
+                if ! hasPermission "$permissions" "filesystems" "host-os:ro"; then
+                    status="$STATUS_FAILURE"
+                    warnings+=("> $f is missing host-os:ro permission!")
+                    suggestions+=("$f is missing host-os:ro permission!	This is required to load hardened_malloc.	To add it use Flatseal or run:	\$ flatpak override -u --filesystem=host-os:ro $f")
+                fi
+                if [[ "$bluetooth_loaded" == "true" ]] && hasPermission "$permissions" "features" "bluetooth"; then
+                    status="$STATUS_FAILURE"
+                    warnings+=("> $f has bluetooth access!")
+                    suggestions+=("$f has bluetooth access	To remove it use Flatseal or run:	\$ flatpak override -u --disallow=bluetooth $f")
+                fi
+                if [[ "$ptrace_allowed" == "true" ]] && hasPermission "$permissions" "features" "devel"; then
+                    status="$STATUS_FAILURE"
+                    warnings+=("> $f has ptrace access!")
+                    suggestions+=("$f has ptrace access	To remove it use Flatseal or run:	\$ flatpak override -u --disallow=devel $f")
+                fi
+                if hasPermission "$permissions" "shared" "ipc"; then
+                    status="$STATUS_FAILURE"
+                    warnings+=("> $f has inter-process communications access!")
+                    suggestions+=("$f has inter-process communications access	To remove it use Flatseal or run:	\$ flatpak override -u --unshare=ipc $f")
+                fi
+                if hasPermission "$permissions" "devices" "all"; then
+                    [[ "$status" != "$STATUS_FAILURE" ]] && status="$STATUS_WARNING"
+                    warnings+=("> $f has device=all permission!")
+                    suggestions+=("$f has device=all permission	This grants access to input devices, GPUs, raw USB, and virtualization	This may also be used as a sandbox escape vector	To remove it use Flatseal or run:	\$ flatpak override -u --nodevice=all $f	If GPU access is required, use device=dri instead	\$ flatpak override -u --device=dri $f")
+                fi
+                flatpak_test_string="Auditing $f"
+                print_status "$flatpak_test_string" "$status"
+                for warning in "${warnings[@]}"; do
+                    echo "$warning"
+                done
             done
-            echo
-        done
+        fi
     fi
+
+    print_heading Recommendations
+    for suggestion in "${suggestions[@]}"; do
+        readarray -t -d '	' list < <(printf "$suggestion")
+        echo "${list[0]}"
+        for (( i=1; i < ${#list[@]}; i++ )); do
+            if [[ ${list[i]} =~ ^"$" ]]; then
+                gum style --bold "  ${list[i]}"
+            else
+                echo -e "  ${list[i]}"
+            fi
+        done
+        echo
+    done
+    echo "${b}Run 'ujust audit-secureblue false' to skip flatpak recommendations.${n}"

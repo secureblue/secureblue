@@ -5,8 +5,8 @@ set -oue pipefail
 
 rpm-ostree install selinux-policy-devel
 
-cd ./selinux/chromium
-bash chromium.sh
+cd ./selinux/trivalent
+bash trivalent.sh
 cd ../..
 
 cd ./selinux/flatpakfull

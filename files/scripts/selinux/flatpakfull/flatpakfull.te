@@ -28,8 +28,12 @@ optional_policy(`
 optional_policy(`
 	gen_require(`
 		type unconfined_t;
+		type trivalent_t;
 		role unconfined_r;
 	')
 
 	flatpak_run(unconfined_t, unconfined_r)
+	flatpak_run(trivalent_t, unconfined_r)
+	# required for trivalent/flatpak clipboard sharing
+    allow trivalent_t flatpak_t:fifo_file write;
 ')

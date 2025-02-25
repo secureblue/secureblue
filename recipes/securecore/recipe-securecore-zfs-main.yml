@@ -9,6 +9,6 @@ image-version: testing
 modules:
   - from-file: common/common-modules.yml
   - from-file: common/server-modules.yml
-  - from-file: common/hardenuserns-modules.yml
+  - from-file: common/selinux-modules.yml
   - from-file: common/zfs-modules.yml
   - from-file: common/final-modules.yml

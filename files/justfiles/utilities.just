@@ -190,7 +190,7 @@ check-unconfined-userns-state:
     set -euo pipefail
     unshare -U true &> /dev/null && echo 'enabled' || echo 'disabled'
 
-# Install Steam via choice of 3 methods
+# Install Steam via choice of 2 methods
 install-steam:
     #!/usr/bin/bash
     if [ -z "$(pgrep Xwayland)" ] && [ -z "$(pgrep Xorg)" ] ; then
@@ -332,3 +332,6 @@ label-external-drives:
     done
 
     echo -e '\nDone.'
+# Install packages to use libvert/qemu/kvm
+setup-kvm:
+		@rpm-ostree install -y virt-install libvirt-daemon-config-network libvirt-daemon-kvm qemu-kvm virt-manager virt-viewer virt-top

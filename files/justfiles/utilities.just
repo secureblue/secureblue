@@ -334,4 +334,53 @@ label-external-drives:
     echo -e '\nDone.'
 # Install packages to use libvert/qemu/kvm
 setup-kvm:
-		@rpm-ostree install -y virt-install libvirt-daemon-config-network libvirt-daemon-kvm qemu-kvm virt-manager virt-viewer virt-top
+		#!/usr/bin/env bash
+    valid_input="0"
+    software_selection=""
+    echo "Please select which software to install"
+    echo "    1) Gnome Boxes - simpler and more user-friendly, less powerful"
+    echo "    2) virt-manager - harder for new users, more powerful"
+    while [[ "$valid_input" == "0" ]]; do
+        read -p "Selection [1-2]: " method_selection
+        if [[ "$method_selection" == [12]* ]]; then
+            valid_input="1"
+        else
+            echo "That is not a valid selection."
+        fi
+    done
+
+    echo "" # blank space
+    case "$software_selection" in
+        1)
+						echo Gnome Boxes selected
+						valid_input="0"
+						method_selection=""
+						echo "Please select an installation method"
+						echo "    1) Flatpak - sandboxing, less powerful"
+						echo "    2) Layering - more powerful, no sandboxing"
+						while [[ "$valid_input" == "0" ]]; do
+								read -p "Selection [1-2]: " method_selection
+								if [[ "$method_selection" == [12]* ]]; then
+										valid_input="1"
+								else
+										echo "That is not a valid selection."
+								fi
+						done
+
+						case "$method_selection" in
+								1) # Flatpak
+										flatpak install flathub-verified org.gnome.Boxes
+										;;
+
+								2) # Layering
+										rpm-ostree install -y gnome-boxes
+										;;
+
+						esac
+
+            ;;
+        2)
+            echo "Virt-manager selected"
+						rpm-ostree install -y virt-install libvirt-daemon-config-network libvirt-daemon-kvm qemu-kvm virt-manager virt-viewer
+            ;;
+    esac

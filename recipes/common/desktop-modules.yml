@@ -1,8 +1,8 @@
 modules:
     - type: containerfile
       snippets:
-        - COPY --from=ghcr.io/ublue-os/akmods:main-41 /rpms /tmp/rpms
-        - COPY --from=ghcr.io/ublue-os/akmods:main-41 /kernel-rpms /tmp/rpms/kernel
+        - COPY --from=ghcr.io/ublue-os/akmods:main-41-6.12.15-200.fc41.x86_64 /rpms /tmp/rpms
+        - COPY --from=ghcr.io/ublue-os/akmods:main-41-6.12.15-200.fc41.x86_64 /kernel-rpms /tmp/rpms/kernel
         - RUN find /tmp/rpms
         - RUN rpm -q ublue-os-akmods-addons || rpm-ostree install /tmp/rpms/ublue-os/ublue-os-akmods-addons*.rpm
     - type: script

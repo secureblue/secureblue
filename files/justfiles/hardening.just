@@ -84,9 +84,9 @@ flatpak-permissions-lockdown:
         $kCommand --system-no-talk-name=$i
     done
     echo ""
-    echo "-- Peristent Filesystem Grant --"
+    echo "-- Persistent Filesystem Grant --"
     echo "Note: This is to unbreak many Flatpaks by allowing the app to store persistent data in their own, isolated home directory without accessing the user's"
-    echo "	Granting access to peristent home..."
+    echo "	Granting access to persistent home..."
     $kCommand --persist=.
     echo ""
     echo "-- Granting Access to Common Permissions --"

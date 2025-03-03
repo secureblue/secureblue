@@ -44,10 +44,11 @@ regenerate-grub:
 
 # Enroll Nvidia driver & KMOD signing key for secure boot - Enter password "universalblue" if prompted
 enroll-secure-boot-key:
+    #! /usr/bin/bash
     run0 mokutil --timeout -1
     echo 'The next line will prompt for a MOK password. Then, input "universalblue"'
     run0 mokutil --import /etc/pki/akmods/certs/akmods-ublue.der
-    echo 'At next reboot, the mokutil UEFI menu UI will be displayed (*QWERTY* keyboard input and navigation).\nThen, select "Enroll MOK", and input "universalblue" as the password'
+    echo -e "At next reboot, the mokutil UEFI menu UI will be displayed (*QWERTY* keyboard input and navigation).\nThen, select "Enroll MOK", and input "universalblue" as the password"
 
 # Toggle display of the user-motd in terminal
 toggle-user-motd:
@@ -64,6 +65,7 @@ toggle-user-motd:
 # Update device firmware
 [no-exit-message]
 update-firmware:
+    #!/usr/bin/bash
     fwupdmgr refresh --force
     fwupdmgr get-updates
     fwupdmgr update
@@ -124,6 +126,7 @@ debug-info:
 
 # Rerun Yafti
 rerun-yafti:
+    #!/usr/bin/bash
     yafti -f /usr/share/ublue-os/firstboot/yafti.yml
 
 alias assemble := distrobox-assemble

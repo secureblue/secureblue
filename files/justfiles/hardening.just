@@ -126,4 +126,6 @@ setup-usbguard:
         systemctl enable --now usbguard.service
         usbguard add-user $1
     ' -- $USER
-    systemctl enable --user --now usbguard-notifier.service
+    if ! [ -n "$(rpm-ostree status | grep '●' | grep 'securecore')" ] ; then
+        systemctl enable --user --now usbguard-notifier.service
+    fi

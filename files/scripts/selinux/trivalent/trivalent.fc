@@ -1,0 +1,8 @@
+/usr/lib/trivalent/trivalent				--	gen_context(system_u:object_r:trivalent_exec_t,s0)
+
+# TODO: move crashpad handler to its own dom
+/usr/lib/trivalent/chrome_crashpad_handler			--	gen_context(system_u:object_r:trivalent_exec_t,s0)
+/usr/lib/trivalent/trivalent.sh				--	gen_context(system_u:object_r:trivalent_script_exec_t,s0)
+/usr/lib/trivalent/install_filter.sh				--	gen_context(system_u:object_r:trivalent_script_exec_t,s0)
+HOME_DIR/\.cache/trivalent(/.*)?		gen_context(system_u:object_r:trivalent_home_t,s0)
+HOME_DIR/\.config/trivalent(/.*)?	gen_context(system_u:object_r:trivalent_home_t,s0)

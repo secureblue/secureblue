@@ -282,7 +282,7 @@ label-external-drives:
             continue
         fi
         detected_fs="$(df -T "$dir" | awk '{print $2}' | sed -n 2p)"
-        if ! [[ "${supported_fs[*]}" =~ "$detected_fs" ]]; then
+        if ! printf "%s\n" "${supported_fs[@]}" | grep -Fxq "$detected_fs"; then
             echo "SELinux support is unknown for filesystem $detected_fs, skipping drive $dir..."
             continue
         fi

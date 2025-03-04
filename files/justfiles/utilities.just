@@ -261,7 +261,7 @@ label-external-drives:
     media_path="/media/$USER/"
     selabel="user_home_t"
     supported_fs=("ext2" "ext3" "ext4" "jfs" "xfs" "btrfs") # ref: https://wiki.gentoo.org/wiki/SELinux/FAQ#Can_I_use_SELinux_with_any_file_system.3F
-    
+
     if [ -z "$( ls -A "$media_path" 2>&- )" ]; then
         echo "You don't have any drives mounted in $media_path, aborting."
         exit 0
@@ -273,7 +273,7 @@ label-external-drives:
         echo 'Aborting.'
         exit 0
     fi
-    
+
     for dir in "$media_path"*/
     do
         echo "" # blank space
@@ -298,6 +298,6 @@ label-external-drives:
             exit 1
         fi
     done
-    
+
     echo "" # blank space
     echo "Done."

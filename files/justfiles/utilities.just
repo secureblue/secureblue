@@ -263,10 +263,10 @@ label-external-drives:
     supported_fs=("ext2" "ext3" "ext4" "jfs" "xfs" "btrfs") # ref: https://wiki.gentoo.org/wiki/SELinux/FAQ#Can_I_use_SELinux_with_any_file_system.3F
 
     if [ -z "$( ls -A "$media_path" 2>&- )" ]; then
-        echo "You don't have any drives mounted in $media_path, aborting."
+        echo "You don't have any drives mounted in \"$media_path\", aborting."
         exit 0
     fi
-    echo "Warning: This will label your drives mounted on $media_path such that they are treated as an extension to your home directory. (You can select which ones to label)"
+    echo "Warning: This will label your drives mounted on \"$media_path\" such that they are treated as an extension to your home directory. (You can select which ones to label)"
     echo 'If you do not want Trivalent to have access to these drives, do not proceed.'
     read -p 'Are you sure you want to do this? [y/N] ' warning_proceed
     if ! [[ "$warning_proceed" == [Yy]* ]]; then
@@ -278,12 +278,12 @@ label-external-drives:
     do
         echo '' # blank space
         if [[ "$(stat -c '%U' "$dir")" != "$USER" ]]; then
-            echo "Drive root folder is not owned by you, skipping drive $dir..."
+            echo "Drive root folder is not owned by you, skipping drive \"$dir\"..."
             continue
         fi
         detected_fs="$(df -T "$dir" | awk '{print $2}' | sed -n 2p)"
         if ! printf "%s\n" "${supported_fs[@]}" | grep -Fxq "$detected_fs"; then
-            echo "SELinux support is unknown for filesystem $detected_fs, skipping drive $dir..."
+            echo "SELinux support is unknown for filesystem $detected_fs, skipping drive \"$dir\"..."
             continue
         fi
         read -p "Do you want to label \"$dir\"? [y/N] " proceed
@@ -291,7 +291,7 @@ label-external-drives:
             echo 'Skipping...'
             continue
         fi
-        echo "Labeling drive mounted on $dir with $selabel"
+        echo "Labeling drive mounted on \"$dir\" with $selabel"
         dir=${dir%*/} # remove trailing slash
         if ! run0 sh -c "semanage fcontext -a -t $selabel \"$dir(/.*)?\" && restorecon -r $dir"; then
             echo 'Execution failed, aborting.'

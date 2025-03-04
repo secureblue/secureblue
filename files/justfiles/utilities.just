@@ -299,5 +299,4 @@ label-external-drives:
         fi
     done
 
-    echo '' # blank space
-    echo 'Done.'
+    echo -e '\nDone.'

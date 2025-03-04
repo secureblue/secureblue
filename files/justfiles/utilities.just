@@ -277,7 +277,7 @@ label-external-drives:
     for dir in "$media_path"*/
     do
         echo '' # blank space
-        if [[ "$(stat -c '%U' .)" != "$USER" ]]; then
+        if [[ "$(stat -c '%U' $dir)" != "$USER" ]]; then
             echo "Drive root folder not owned by you, skipping drive $dir..."
             continue
         fi

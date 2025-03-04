@@ -278,7 +278,7 @@ label-external-drives:
     do
         echo '' # blank space
         if [[ "$(stat -c '%U' "$dir")" != "$USER" ]]; then
-            echo "Drive root folder not owned by you, skipping drive $dir..."
+            echo "Drive root folder is not owned by you, skipping drive $dir..."
             continue
         fi
         detected_fs="$(df -T "$dir" | awk '{print $2}' | sed -n 2p)"

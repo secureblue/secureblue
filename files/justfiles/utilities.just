@@ -267,8 +267,8 @@ label-external-drives:
         exit 0
     fi
     echo "Warning: This will label your drives mounted on $media_path such that they are treated as an extension to your home directory. (You can select which ones to label)"
-    echo "If you don't want Trivalent to have access to these drives, do not proceed."
-    read -p "Are you sure you want to do this? [y/N] " warning_proceed
+    echo 'If you do not want Trivalent to have access to these drives, do not proceed.'
+    read -p 'Are you sure you want to do this? [y/N] ' warning_proceed
     if ! [[ "$warning_proceed" == [Yy]* ]]; then
         echo 'Aborting.'
         exit 0
@@ -276,7 +276,7 @@ label-external-drives:
 
     for dir in "$media_path"*/
     do
-        echo "" # blank space
+        echo '' # blank space
         if [[ "$(stat -c '%U' .)" != "$USER" ]]; then
             echo "Drive root folder not owned by you, skipping drive $dir..."
             continue
@@ -299,5 +299,5 @@ label-external-drives:
         fi
     done
 
-    echo "" # blank space
-    echo "Done."
+    echo '' # blank space
+    echo 'Done.'

@@ -277,6 +277,10 @@ label-external-drives:
     for dir in "$media_path"*/
     do
         echo '' # blank space
+        if [[ "$dir" =~ "'" ]]; then
+            echo "WARNING: Single quotes are forbidden to avoid command execution, skipping drive \"$dir\"..."
+            continue
+        fi
         if [[ "$(stat -c '%U' "$dir")" != "$USER" ]]; then
             echo "Drive root folder is not owned by you, skipping drive \"$dir\"..."
             continue

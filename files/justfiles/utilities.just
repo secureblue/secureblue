@@ -278,7 +278,7 @@ label-external-drives:
     do
         echo
         if [[ "$dir" =~ "'" ]]; then
-            echo "WARNING: Single quotes are forbidden to avoid command execution, skipping drive \"$dir\"..."
+            echo "WARNING: Single quotes in drive labels are forbidden to avoid command execution, skipping drive \"$dir\"..."
             continue
         fi
         if [[ "$(stat -c '%U' "$dir")" != "$USER" ]]; then

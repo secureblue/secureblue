@@ -14,19 +14,27 @@
 # Enable automatic LUKS unlock via TPM
 setup-luks-tpm-unlock:
     #!/usr/bin/bash
+    set -euo pipefail
+
     run0 /usr/libexec/luks-enable-tpm2-autounlock
 
 # Disable automatic LUKS unlock via TPM
 remove-luks-tpm-unlock:
     #!/usr/bin/bash
+    set -euo pipefail
+
     run0 /usr/libexec/luks-disable-tpm2-autounlock
 
 # Enabled automatic LUKS unlock via a FIDO2 hardware key
 setup-luks-fido2-unlock:
     #!/usr/bin/bash
+    set -euo pipefail
+
     run0 /usr/libexec/luks-enable-fido2-unlock
 
 # Disable automatic LUKS unlock via a FIDO2 hardware key
 remove-luks-fido2-unlock:
     #!/usr/bin/bash
+    set -euo pipefail
+
     run0 /usr/libexec/luks-disable-fido2-unlock

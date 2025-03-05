@@ -17,6 +17,8 @@ shell := `grep :$(id -u): /etc/passwd | cut -d: -f7`
 # Boot into this device's BIOS/UEFI screen
 bios:
     #!/usr/bin/bash
+    set -euo pipefail
+
     if [ -d /sys/firmware/efi ]; then
       systemctl reboot --firmware-setup
     else
@@ -26,16 +28,22 @@ bios:
 # Show all messages from this boot
 logs-this-boot:
     #! /bin/run0 /bin/bash
+    set -euo pipefail
+
     journalctl -b 0
 
 # Show all messages from last boot
 logs-last-boot:
     #! /bin/run0 /bin/bash
+    set -euo pipefail
+
     journalctl -b -1
 
 # Regenerate GRUB config, useful in dual-boot scenarios where a second operating system isn't listed
 regenerate-grub:
     #! /bin/run0 /bin/bash
+    set -euo pipefail
+
     if [ -d /sys/firmware/efi ]; then
       grub2-mkconfig -o /etc/grub2-efi.cfg
     else
@@ -45,6 +53,8 @@ regenerate-grub:
 # Enroll Nvidia driver & KMOD signing key for secure boot - Enter password "universalblue" if prompted
 enroll-secure-boot-key:
     #! /usr/bin/bash
+    set -euo pipefail
+
     run0 mokutil --timeout -1
     echo 'The next line will prompt for a MOK password. Then, input "universalblue"'
     run0 mokutil --import /etc/pki/akmods/certs/akmods-ublue.der
@@ -53,6 +63,8 @@ enroll-secure-boot-key:
 # Toggle display of the user-motd in terminal
 toggle-user-motd:
     #!/usr/bin/bash
+    set -euo pipefail
+
     if test -e "${HOME}/.config/no-show-user-motd"; then
       rm -f "${HOME}/.config/no-show-user-motd"
     else
@@ -66,6 +78,8 @@ toggle-user-motd:
 [no-exit-message]
 update-firmware:
     #!/usr/bin/bash
+    set -euo pipefail
+
     fwupdmgr refresh --force
     fwupdmgr get-updates
     fwupdmgr update
@@ -73,6 +87,8 @@ update-firmware:
 # Clean up old up unused podman images, volumes, flatpak packages and rpm-ostree content
 clean-system:
     #!/usr/bin/bash
+    set -euo pipefail
+
     podman image prune -af
     podman volume prune -f
     flatpak uninstall --unused
@@ -81,6 +97,8 @@ clean-system:
 # Check for local overrides
 check-local-overrides:
     #!/usr/bin/bash
+    set -euo pipefail
+
     diff -r \
       --suppress-common-lines \
       --color="always" \
@@ -114,6 +132,8 @@ check-local-overrides:
 # Debug dump pastebin for issue reporting
 debug-info:
     #!/usr/bin/bash
+    set -euo pipefail
+
     rpm_ostree_status=$(echo -e "=== Rpm-Ostree Status ===\n"; rpm-ostree status --verbose)
     sysinfo=$(echo -e "\n"; fpaste --sysinfo --printonly)
     flatpaks=$(echo "=== Flatpaks Installed ==="; flatpak list --columns=application,version,options)
@@ -127,6 +147,8 @@ debug-info:
 # Rerun Yafti
 rerun-yafti:
     #!/usr/bin/bash
+    set -euo pipefail
+
     yafti -f /usr/share/ublue-os/firstboot/yafti.yml
 
 alias assemble := distrobox-assemble
@@ -134,6 +156,8 @@ alias assemble := distrobox-assemble
 # Create distroboxes from a defined manifest
 distrobox-assemble CONTAINER="prompt" ACTION="create" FILE="/etc/distrobox/distrobox.ini":
     #!/usr/bin/bash
+    set -euo pipefail
+
     # Distroboxes are gathered from distrobox.ini, please add them there
     source /usr/lib/ujust/ujust.sh
     AssembleList {{ FILE }} {{ ACTION }} {{ CONTAINER }}
@@ -141,6 +165,8 @@ distrobox-assemble CONTAINER="prompt" ACTION="create" FILE="/etc/distrobox/distr
 # Create toolbox containers from a defined manifest (this spec will not be expanded)
 toolbox-assemble CONTAINER="prompt" ACTION="create" FILE="/etc/toolbox/toolbox.ini":
     #!/usr/bin/bash
+    set -euo pipefail
+
     # Toolboxes are gathered from toolbox.ini, please add them there
     source /usr/lib/ujust/ujust.sh
     ToolboxAssembleList {{ FILE }} {{ ACTION }} {{ CONTAINER }}
@@ -148,16 +174,22 @@ toolbox-assemble CONTAINER="prompt" ACTION="create" FILE="/etc/toolbox/toolbox.i
 # Run a non-flatpak application with standard memory allocator (needs an argument!)
 with-standard-malloc APP:
     #!/usr/bin/bash
+    set -euo pipefail
+
     bwrap --dev-bind / / --ro-bind /dev/null /etc/ld.so.preload {{ APP }}
 
 # Add the unfiltered Flathub flatpak repo
 enable-flathub-unfiltered:
     #!/usr/bin/bash
+    set -euo pipefail
+
     flatpak remote-add --if-not-exists --user flathub https://flathub.org/repo/flathub.flatpakrepo
 
 # search for an installed SELinux module
 semodule-check MODULE:
     #! /bin/run0 /bin/bash
+    set -euo pipefail
+
     if [ -n "$( semodule -l | grep {{ MODULE }} )" ] ; then
         semodule -l | grep {{ MODULE }}
     fi
@@ -165,6 +197,8 @@ semodule-check MODULE:
 # Install Steam via choice of 3 methods
 install-steam:
     #!/usr/bin/bash
+    set -euo pipefail
+
     if [ -z "$(pgrep Xwayland)" ] && [ -z "$(pgrep Xorg)" ] ; then
         echo "Steam requires X or Xwayland, which your variant of secureblue has disabled by default."
         echo "Please run 'ujust toggle-xwayland' to re-enable it."
@@ -238,6 +272,8 @@ install-steam:
 # Install the official docker packages
 install-docker:
     #! /bin/run0 /bin/bash
+    set -euo pipefail
+
     curl -Lo /etc/yum.repos.d/docker-ce.repo https://download.docker.com/linux/fedora/docker-ce.repo
     rpm-ostree refresh-md
     rpm-ostree install docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
@@ -245,6 +281,8 @@ install-docker:
 # Uninstall the official docker packages
 uninstall-docker:
     #! /bin/run0 /bin/bash
+    set -euo pipefail
+
     rm /etc/yum.repos.d/docker-ce.repo
     rpm-ostree refresh-md
     rpm-ostree uninstall docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
@@ -252,4 +290,6 @@ uninstall-docker:
 # Rebase to a different secureblue Desktop Environment/Atomic Desktop
 rebase-secureblue:
     #!/usr/bin/bash
+    set -euo pipefail
+
     /usr/bin/bash /usr/share/secureblue/install_secureblue.sh

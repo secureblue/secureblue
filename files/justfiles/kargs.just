@@ -1,6 +1,8 @@
 # Add additional boot parameters for hardening (requires reboot)
 set-kargs-hardening:
     #!/usr/bin/bash
+    set -euo pipefail
+
     read -p "Do you need support for 32-bit processes/syscalls? (This is mostly used by legacy software, with some exceptions, such as Steam) [y/N]: " YES
     if [[ "$YES" == [Yy]* ]]; then
         echo "Keeping 32-bit support."
@@ -54,6 +56,8 @@ set-kargs-hardening:
 # Remove all hardening boot parameters (requires reboot)
 remove-kargs-hardening:
     #!/usr/bin/bash
+    set -euo pipefail
+
     rpm-ostree kargs \
       --delete-if-present="init_on_alloc=1" \
       --delete-if-present="init_on_free=1" \
@@ -87,6 +91,8 @@ remove-kargs-hardening:
 # Set nvidia kargs
 set-kargs-nvidia:
     #!/usr/bin/bash
+    set -euo pipefail
+
     rpm-ostree kargs \
       --append-if-missing=rd.driver.blacklist=nouveau \
       --append-if-missing=modprobe.blacklist=nouveau \

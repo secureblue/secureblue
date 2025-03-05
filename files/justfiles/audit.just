@@ -1,6 +1,7 @@
 # Audit secureblue
 audit-secureblue AUDIT_FLATPAKS="true":
     #!/bin/bash
+    set -euo pipefail
 
     STATUS_SUCCESS="SUCCESS"
     STATUS_WARNING="WARNING"
@@ -31,7 +32,7 @@ audit-secureblue AUDIT_FLATPAKS="true":
     fi
     print_heading() {
         echo
-        if [[ $HAS_GUM == true ]]; then 
+        if [[ $HAS_GUM == true ]]; then
             gum style --bold --background=63 --foreground=228 "$1"
         else
             echo "$1"

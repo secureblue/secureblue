@@ -276,7 +276,7 @@ label-external-drives:
 
     for dir in "$media_path"*/
     do
-        echo '' # blank space
+        echo
         if [[ "$dir" =~ "'" ]]; then
             echo "WARNING: Single quotes are forbidden to avoid command execution, skipping drive \"$dir\"..."
             continue

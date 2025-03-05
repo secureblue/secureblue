@@ -293,7 +293,7 @@ label-external-drives:
         fi
         echo "Labeling drive mounted on \"$dir\" with $selabel"
         dir=${dir%*/} # remove trailing slash
-        if ! run0 sh -c "semanage fcontext -a -t $selabel \"$dir(/.*)?\" && restorecon -r $dir"; then
+        if ! run0 sh -c "semanage fcontext -a -t $selabel '$dir(/.*)?' && restorecon -r '$dir'"; then
             echo 'Execution failed, aborting.'
             exit 1
         fi

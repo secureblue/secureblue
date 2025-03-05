@@ -10,5 +10,5 @@ modules:
   - from-file: common/common-modules.yml
   - from-file: common/desktop-modules.yml
   - from-file: common/proprietary-modules.yml
-  - from-file: common/hardenuserns-modules.yml
+  - from-file: common/selinux-modules.yml
   - from-file: common/final-modules.yml

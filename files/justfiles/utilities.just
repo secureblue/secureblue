@@ -134,6 +134,17 @@ alias assemble := distrobox-assemble
 # Create distroboxes from a defined manifest
 distrobox-assemble CONTAINER="prompt" ACTION="create" FILE="/etc/distrobox/distrobox.ini":
     #!/usr/bin/bash
+    if [ -n "$(ujust semodule-check harden_container_userns)" ] ; then
+        echo "Distrobox requires that secureblue's harden-container-userns module be disabled"
+        echo "Please run 'ujust toggle-container-domain-userns-creation'"
+        container_userns_now=""
+        read -p "Would you like to run 'ujust toggle-container-domain-userns-creation' now? [Y/n] " container_userns_now
+        container_userns_now=${container_userns_now:-y}
+        if [[ "$container_userns_now" == [Yy]* ]]; then
+            echo "Running 'ujust toggle-container-domain-userns-creation'"
+            ujust toggle-container-domain-userns-creation
+        fi
+    fi
     # Distroboxes are gathered from distrobox.ini, please add them there
     source /usr/lib/ujust/ujust.sh
     AssembleList {{ FILE }} {{ ACTION }} {{ CONTAINER }}
@@ -141,6 +152,17 @@ distrobox-assemble CONTAINER="prompt" ACTION="create" FILE="/etc/distrobox/distr
 # Create toolbox containers from a defined manifest (this spec will not be expanded)
 toolbox-assemble CONTAINER="prompt" ACTION="create" FILE="/etc/toolbox/toolbox.ini":
     #!/usr/bin/bash
+    if [ -n "$(ujust semodule-check harden_container_userns)" ] ; then
+        echo "Toolbox requires that secureblue's harden-container-userns module be disabled"
+        echo "Please run 'ujust toggle-container-domain-userns-creation'"
+        container_userns_now=""
+        read -p "Would you like to run 'ujust toggle-container-domain-userns-creation' now? [Y/n] " container_userns_now
+        container_userns_now=${container_userns_now:-y}
+        if [[ "$container_userns_now" == [Yy]* ]]; then
+            echo "Running 'ujust toggle-container-domain-userns-creation'"
+            ujust toggle-container-domain-userns-creation
+        fi
+    fi
     # Toolboxes are gathered from toolbox.ini, please add them there
     source /usr/lib/ujust/ujust.sh
     ToolboxAssembleList {{ FILE }} {{ ACTION }} {{ CONTAINER }}

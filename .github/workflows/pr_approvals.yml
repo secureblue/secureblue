@@ -10,7 +10,7 @@ jobs:
     env:
       approvers:
     steps:
-      - uses: secureblue/approvals-action@ba835bbab63f736238918e83b425ded11a1d7623 # v0.0.3
+      - uses: secureblue/approvals-action@e52ef174cc64a2cf7630e7f1c21e985a810c2ef3 # v0.0.4
         id: approvers
         with:
           token: ${{ secrets.GITHUB_TOKEN }}

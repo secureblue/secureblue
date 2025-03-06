@@ -10,13 +10,7 @@ jobs:
     env:
       approvers:
     steps:
-      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2    
-      - name: Install Node.js dependencies
-        run: |
-          cd .github/actions/approvals-action
-          npm install
-          cd ../../..
-      - uses: ./.github/actions/approvals-action
+      - uses: secureblue/approvals-action@61e9dc03dd0a7f08723d5bd0bf660b0db34cc727 # v0.0.1
         id: approvers
         with:
           token: ${{ secrets.GITHUB_TOKEN }}

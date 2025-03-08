@@ -352,7 +352,6 @@ setup-kvm:
     echo "" # blank space
     case "$software_selection" in
         1)
-						echo Gnome Boxes selected
 						valid_input="0"
 						method_selection=""
 						echo "Please select an installation method"
@@ -369,11 +368,18 @@ setup-kvm:
 
 						case "$method_selection" in
 								1) # Flatpak
+										echo "Gnome Boxes flatpak selected"
 										flatpak install flathub-verified org.gnome.Boxes
 										;;
 
 								2) # Layering
-										rpm-ostree install -y gnome-boxes
+										echo "Gnome Boxes layered package selected"
+										if ! [ 'rpm -qa | grep libvirt' ]; then
+												echo "NOTE: this command must be re-run with the same options after a reboot"
+												rpm-ostree install -y gnome-boxes libvirt libvirt-nss qemu qemu-char-spice qemu-device-display-virtio-gpu qemu-device-display-virtio-vga qemu-device-usb-redirect qemu-img qemu-system-x86-core qemu-user-binfmt qemu-user-static virt-v2v
+										else
+												systemctl enable --now libvirtd
+										fi
 										;;
 
 						esac
@@ -381,6 +387,11 @@ setup-kvm:
             ;;
         2)
             echo "Virt-manager selected"
-						rpm-ostree install -y virt-install libvirt-daemon-config-network libvirt-daemon-kvm qemu-kvm virt-manager virt-viewer
+						if ! [ 'rpm -qa | grep libvirt' ]; then
+								echo "NOTE: this command must be re-run with the same options after a reboot"
+								rpm-ostree install -y libvirt libvirt-nss qemu qemu-char-spice qemu-device-display-virtio-gpu qemu-device-display-virtio-vga qemu-device-usb-redirect qemu-img qemu-system-x86-core qemu-user-binfmt qemu-user-static virt-install virt-manager virt-v2v virt-viewer
+						else
+								systemctl enable --now libvirtd
+						fi
             ;;
     esac

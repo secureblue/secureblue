@@ -19,6 +19,7 @@ set-kargs-hardening:
     if [[ "$YES" == [Yy]* ]]; then
     UNSTABLE_YES="--append-if-missing=efi=disable_early_pci_dma \
         --append-if-missing=gather_data_sampling=force \
+        --append-if-missing=amd_iommu=force_isolation \
         --append-if-missing=debugfs=off"
         echo "Setting unstable hardening kargs."
     else
@@ -38,7 +39,6 @@ set-kargs-hardening:
       --append-if-missing=random.trust_bootloader=off \
       --append-if-missing=iommu=force \
       --append-if-missing=intel_iommu=on \
-      --append-if-missing=amd_iommu=force_isolation \
       --append-if-missing=iommu.passthrough=0 \
       --append-if-missing=iommu.strict=1 \
       --append-if-missing=pti=on \

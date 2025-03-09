@@ -39,7 +39,6 @@ gen_require(`
 	type http_cache_port_t;
 	type howl_port_t;
 	type pki_ca_port_t;
-	type user_devpts_t;
 	type user_home_t;
 	type xserver_misc_device_t;
 ')

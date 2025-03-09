@@ -1,0 +1,7 @@
+--- a/etc/profile.d/brew-bash-completions.sh
++++ b/etc/profile.d/brew-bash-completions.sh
+@@ -5,3 +5,3 @@
+ # Check for interactive bash and that we haven't already been sourced.
+-if [ "x${BASH_VERSION-}" != x -a "x${PS1-}" != x -a "x${BREW_BASH_COMPLETION-}" = x ]; then
++if [ "x${BASH_VERSION-}" != x -a "x${PS1-}" != x -a "x${BREW_BASH_COMPLETION-}" = x -a "$(/usr/bin/id -u)" != 0 ]; then
+ 

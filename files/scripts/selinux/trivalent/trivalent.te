@@ -39,6 +39,7 @@ gen_require(`
 	type http_cache_port_t;
 	type howl_port_t;
 	type pki_ca_port_t;
+	type user_devpts_t;
 	type user_home_t;
 	type xserver_misc_device_t;
 ')
@@ -262,3 +263,4 @@ userdom_list_user_home_dirs(trivalent_script_t)
 kernel_list_proc(trivalent_script_t)
 seutil_exec_setfiles(trivalent_script_t)
 seutil_manage_file_contexts(trivalent_script_t)
+userdom_use_inherited_user_terminals(trivalent_script_t)

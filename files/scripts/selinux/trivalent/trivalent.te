@@ -52,7 +52,7 @@ allow trivalent_t self:fifo_file rw_fifo_file_perms;
 allow trivalent_t self:sem create_sem_perms;
 allow trivalent_t self:netlink_kobject_uevent_socket client_stream_socket_perms;
 allow trivalent_t self:user_namespace create;
-allow trivalent_t self:unix_stream_socket connectto;
+allow trivalent_t self:unix_stream_socket { connectto rw_socket_perms };
 allow trivalent_t self:cap_userns { sys_admin sys_chroot sys_ptrace };
 allow trivalent_t self:capability { dac_read_search sys_admin sys_chroot sys_ptrace };
 allow trivalent_t self:fifo_file { manage_fifo_file_perms relabelfrom relabelto };
@@ -87,6 +87,9 @@ allow trivalent_t user_home_t:lnk_file { manage_lnk_file_perms };
 allow trivalent_t audio_home_t:dir { manage_dir_perms };
 allow trivalent_t audio_home_t:file { manage_file_perms };
 allow trivalent_t audio_home_t:lnk_file { manage_lnk_file_perms };
+
+# screenshare access
+allow trivalent_t unconfined_t:unix_stream_socket { connectto rw_socket_perms };
 
 
 

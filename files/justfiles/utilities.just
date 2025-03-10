@@ -134,7 +134,7 @@ alias assemble := distrobox-assemble
 # Create distroboxes from a defined manifest
 distrobox-assemble CONTAINER="prompt" ACTION="create" FILE="/etc/distrobox/distrobox.ini":
     #!/usr/bin/bash
-    if [ -n "$(ujust semodule-check harden_container_userns)" ] ; then
+    if [ -z "$(ujust check-container-userns-allowed)" ] ; then
         echo "Distrobox requires that secureblue's harden-container-userns module be disabled"
         echo "Please run 'ujust toggle-container-domain-userns-creation'"
         container_userns_now=""
@@ -152,7 +152,7 @@ distrobox-assemble CONTAINER="prompt" ACTION="create" FILE="/etc/distrobox/distr
 # Create toolbox containers from a defined manifest (this spec will not be expanded)
 toolbox-assemble CONTAINER="prompt" ACTION="create" FILE="/etc/toolbox/toolbox.ini":
     #!/usr/bin/bash
-    if [ -n "$(ujust semodule-check harden_container_userns)" ] ; then
+    if [ -z "$(ujust check-container-userns-allowed)" ] ; then
         echo "Toolbox requires that secureblue's harden-container-userns module be disabled"
         echo "Please run 'ujust toggle-container-domain-userns-creation'"
         container_userns_now=""
@@ -244,7 +244,7 @@ install-steam:
             ;;
         2)
             echo "Distrobox method selected."
-            if [ -n "$(ujust semodule-check harden_container_userns)" ] ; then
+            if [ -z "$(ujust check-container-userns-allowed)" ] ; then
                 echo "Distrobox requires that secureblue's harden-container-userns module be disabled"
                 echo "Please run 'ujust toggle-container-domain-userns-creation'"
                 container_userns_now=""

@@ -78,7 +78,7 @@ allow trivalent_t tmp_t:lnk_file { create unlink };
 allow trivalent_t tmp_t:sock_file { create unlink };
 
 # required for trivalent to be able to detect whether it's the default browser
-allow trivalent_t trivalent_script_exec_t:file { execute getattr read };
+allow trivalent_t trivalent_script_exec_t:file { execute getattr read execute_no_trans ioctl open };
 
 # homedir access
 allow trivalent_t user_home_t:dir { manage_dir_perms };

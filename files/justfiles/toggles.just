@@ -247,39 +247,39 @@ toggle-bash-environment-lockdown skip_approval="false" multiuser="false":
     	user_home=$(getent passwd "$user" | awk -F':' '{ print $6}')
     	[[ -d "$user_home" ]] || {echo "Variable \$user_home for $user is somehow empty (check your getent passwd entries); safely exiting."; exit 1;}
 
-      BASH_ENV_FILES=(
-        "$user_home/.bashrc"
-        "$user_home/.bash_profile"
-        "$user_home/.config/bash-completion"
-        "$user_home/.profile"
-        "$user_home/.bash_logout"
-        "$user_home/.bash_login"
-      )
+        BASH_ENV_FILES=(
+            "$user_home/.bashrc"
+            "$user_home/.bash_profile"
+            "$user_home/.config/bash-completion"
+            "$user_home/.profile"
+            "$user_home/.bash_logout"
+            "$user_home/.bash_login"
+        )
 
-      BASH_ENV_DIRS=(
-        "$user_home/.bashrc.d/"
-        "$user_home/.config/environment.d/"
-      )
+        BASH_ENV_DIRS=(
+            "$user_home/.bashrc.d/"
+            "$user_home/.config/environment.d/"
+        )
 
-      if [ "$pending_status" == "locked" ]; then
-        current_time=$(date -Iminutes | tr ' ' '_')
-        for file in "${BASH_ENV_FILES[@]}"; do
-          cp --preserve=all "$file" "$file_$current_time"
-          rm "$file"
-          touch "$file"
-        done
-        cp /usr/share/secureblue/templates/.bash_profile "$user_home/.bash_profile"
-        cp /usr/share/secureblue/templates/.bashrc "$user_home/.bashrc"
-        for dir in "${BASH_ENV_DIRS[@]}"; do
-          cp --preserve=all -r "$dir" "$dir_$current_time"
-          rm -r "$dir"
-          mkdir "$dir"
-        done
+        if [ "$pending_status" == "locked" ]; then
+            current_time=$(date -Iminutes | tr ' ' '_')
+            for file in "${BASH_ENV_FILES[@]}"; do
+              cp --preserve=all "$file" "$file_$current_time"
+              rm "$file"
+              touch "$file"
+            done
+            for dir in "${BASH_ENV_DIRS[@]}"; do
+              mkdir -p "$dir"
+            done
+            for dir in "${BASH_ENV_DIRS[@]}"; do
+              chattr -R -i "$dir" 
+              cp --preserve=all -r "$dir" "$dir_$current_time"
+              rm -r "$dir"
+              mkdir "$dir"
+            done
+            cp /etc/skel/.bash_profile "$user_home/.bash_profile"
+            cp /etc/skel/.bashrc "$user_home/.bashrc"
         fi
-
-      for dir in "${BASH_ENV_DIRS[@]}"; do
-          mkdir -p "$dir"
-      done
 
       BASH_ENV_FILES_DIRS=("${BASH_ENV_FILES[@]}" "${BASH_ENV_DIRS[@]}")
 

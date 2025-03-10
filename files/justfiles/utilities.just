@@ -177,11 +177,24 @@ enable-flathub-unfiltered:
     #!/usr/bin/bash
     flatpak remote-add --if-not-exists --user flathub https://flathub.org/repo/flathub.flatpakrepo
 
-# search for an installed SELinux module
-semodule-check MODULE:
-    #! /bin/run0 /bin/bash
-    if [ -n "$( semodule -l | grep {{ MODULE }} )" ] ; then
-        semodule -l | grep {{ MODULE }}
+# Checks if container domain user namespaces are allowed. Returns text if they are, nothing if not.
+check-container-userns-allowed:
+    #!/usr/bin/bash
+    set -euo pipefail
+    tmp_unshare_copy=$(mktemp "$HOME/.unshare.XXXXXXXXXX")
+    cp -p "$(which unshare)" "$tmp_unshare_copy"
+    chcon -t 'container_runtime_exec_t' "$tmp_unshare_copy"
+    if "$tmp_unshare_copy" -U true &> /dev/null; then
+        echo 'container userns allowed'
+    fi
+    rm -f "$tmp_unshare_copy"
+
+# Checks if unconfined domain user namespaces are allowed. Returns text if they are, nothing if not.
+check-unconfined-userns-allowed:
+    #!/usr/bin/bash
+    set -euo pipefail
+    if unshare -U true &> /dev/null; then
+        echo 'unconfined userns allowed'
     fi
 
 # Install Steam via choice of 3 methods

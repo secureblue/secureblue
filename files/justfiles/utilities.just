@@ -135,8 +135,8 @@ alias assemble := distrobox-assemble
 distrobox-assemble CONTAINER="prompt" ACTION="create" FILE="/etc/distrobox/distrobox.ini":
     #!/usr/bin/bash
     if [ -z "$(ujust check-container-userns-allowed)" ] ; then
-        echo "Distrobox requires that secureblue's harden-container-userns module be disabled"
-        echo "Please run 'ujust toggle-container-domain-userns-creation'"
+        echo "Distrobox requires container domain user namespaces to work, which are disabled by default for security reasons."
+        echo "You need to run 'ujust toggle-container-domain-userns-creation' to allow this."
         container_userns_now=""
         read -p "Would you like to run 'ujust toggle-container-domain-userns-creation' now? [Y/n] " container_userns_now
         container_userns_now=${container_userns_now:-y}
@@ -153,8 +153,8 @@ distrobox-assemble CONTAINER="prompt" ACTION="create" FILE="/etc/distrobox/distr
 toolbox-assemble CONTAINER="prompt" ACTION="create" FILE="/etc/toolbox/toolbox.ini":
     #!/usr/bin/bash
     if [ -z "$(ujust check-container-userns-allowed)" ] ; then
-        echo "Toolbox requires that secureblue's harden-container-userns module be disabled"
-        echo "Please run 'ujust toggle-container-domain-userns-creation'"
+        echo "Toolbox requires container domain user namespaces to work, which are disabled by default for security reasons."
+        echo "You need to run 'ujust toggle-container-domain-userns-creation' to allow this."
         container_userns_now=""
         read -p "Would you like to run 'ujust toggle-container-domain-userns-creation' now? [Y/n] " container_userns_now
         container_userns_now=${container_userns_now:-y}
@@ -245,8 +245,8 @@ install-steam:
         2)
             echo "Distrobox method selected."
             if [ -z "$(ujust check-container-userns-allowed)" ] ; then
-                echo "Distrobox requires that secureblue's harden-container-userns module be disabled"
-                echo "Please run 'ujust toggle-container-domain-userns-creation'"
+                echo "Distrobox requires container domain user namespaces to work, which are disabled by default for security reasons."
+                echo "You need to run 'ujust toggle-container-domain-userns-creation' to allow this."
                 container_userns_now=""
                 read -p "Would you like to run 'ujust toggle-container-domain-userns-creation' now? [Y/n] " container_userns_now
                 container_userns_now=${container_userns_now:-y}

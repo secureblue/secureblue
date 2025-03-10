@@ -1,7 +1,6 @@
 modules:
     - type: script
       scripts:
-        - rootnoloadbrew.sh
         - removeunusedrepos.sh
         - removesuid.sh
         - regenerateinitramfs.sh

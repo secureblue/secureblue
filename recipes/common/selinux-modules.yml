@@ -1,4 +1,4 @@
 modules:
     - type: script
       scripts:
-        - hardenuserns.sh
+        - installselinuxpolicies.sh

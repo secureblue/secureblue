@@ -1,0 +1,29 @@
+name: PR Approvals
+
+on:
+  pull_request:
+
+jobs:
+  pr-approvals:
+    name: PR Approvals
+    runs-on: ubuntu-latest  
+    env:
+      approvers:
+    steps:
+      - uses: secureblue/approvals-action@ce28f64903343583dd92c84bffedba124d3a6c95 # v0.1.0
+        id: approvers
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          min-required: 2
+          approvers: |
+            EsseLowNitro
+            fiftydinar
+            RoyalOughtness
+            mintpilo
+            mkkvcs
+            RKNF404
+            Rubiginosa
+            ShadowSlayer1441
+            spaceoden
+            TheHooly
+            WavyEbuilder

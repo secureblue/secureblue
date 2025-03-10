@@ -4,10 +4,12 @@ modules:
         - createautostartdir.sh
     - type: script
       scripts:
-        - installrpmfusion.sh
         - unprotectsudo.sh
         - addimageinfo.sh
     - from-file: common/common-packages.yml
+    - type: script
+      scripts:
+        - hardenlogindefs.sh
     - type: files
       files:
         - source: system/usr

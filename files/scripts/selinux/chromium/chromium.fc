@@ -1,6 +1,0 @@
-/usr/lib/chromium-browser/chromium-browser				--	gen_context(system_u:object_r:chromium_exec_t,s0)
-/usr/lib/chromium-browser/chrome_crashpad_handler			--	gen_context(system_u:object_r:chromium_exec_t,s0)
-/usr/lib/chromium-browser/chromium-browser.sh		--	gen_context(system_u:object_r:chromium_exec_t,s0)
-/usr/lib/trivalent/trivalent				--	gen_context(system_u:object_r:chromium_exec_t,s0)
-/usr/lib/trivalent/chrome_crashpad_handler			--	gen_context(system_u:object_r:chromium_exec_t,s0)
-/usr/lib/trivalent/trivalent.sh		--	gen_context(system_u:object_r:chromium_exec_t,s0)

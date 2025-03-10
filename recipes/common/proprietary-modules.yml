@@ -11,7 +11,6 @@ modules:
       - pipewire-libs-extra
       - libfdk-aac
       - gstreamer1-plugins-ugly  
-
       remove:
       - gstreamer1-plugins-ugly-free
       - fdk-aac-free
@@ -26,4 +25,5 @@ modules:
       - libswscale-free  
     - type: script
       scripts:
+        - installrpmfusion.sh
         - removeunusedrepos.sh

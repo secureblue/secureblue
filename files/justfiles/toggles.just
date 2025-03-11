@@ -262,7 +262,7 @@ toggle-bash-environment-lockdown skip_approval="false" multiuser="false":
         )
 
         if [ "$pending_status" == "locked" ]; then
-            current_time=$(date -Iminutes | tr ' ' '_')
+            current_time=$(date -Iseconds)
             for file in "${BASH_ENV_FILES[@]}"; do
               cp --preserve=all "$file" "$file_$current_time"
               rm "$file"

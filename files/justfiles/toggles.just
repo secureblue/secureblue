@@ -267,18 +267,22 @@ toggle-bash-environment-lockdown skip_approval="false" multiuser="false":
               cp --preserve=all "$file" "$file_$current_time"
               rm "$file"
               touch "$file"
+              chmod 400 "$file"
+              chown "$user:" "$file"
+              if [ -f "/etc/skel/$file" ]; then
+                cp "/etc/skel/$file" "$user_home/$file"
+              fi
             done
             for dir in "${BASH_ENV_DIRS[@]}"; do
+              # We need the mkdir command to ensure chattr doesn't error
               mkdir -p "$dir"
-            done
-            for dir in "${BASH_ENV_DIRS[@]}"; do
               chattr -R -i "$dir" 
               cp --preserve=all -r "$dir" "$dir_$current_time"
               rm -r "$dir"
               mkdir "$dir"
+              chmod 400 "$dir"
+              chown "$user:" "$dir"
             done
-            cp /etc/skel/.bash_profile "$user_home/.bash_profile"
-            cp /etc/skel/.bashrc "$user_home/.bashrc"
         fi
 
       BASH_ENV_FILES_DIRS=("${BASH_ENV_FILES[@]}" "${BASH_ENV_DIRS[@]}")

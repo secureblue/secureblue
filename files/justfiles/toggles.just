@@ -220,8 +220,8 @@ toggle-bash-environment-lockdown skip_approval="false" multiuser="false":
       pending_status="locked"
     fi
     echo "${b}WARNING${n} This will overwrite your ~/.bashrc, ~/.bash_profile, ~/.config/bash-completion, ~/.profile, ~/.bash_logout, ~/.bash_login, ~/.bashrc.d/, and ~/.config/environment.d/"
-    echo "This script will create backups of the old versions with the time of script execution appended."
     echo "This is needed to ensure the mitigation is effective."
+    echo "This script will create backups of the old versions with the time of script execution appended."
     echo ".bashrc, .bash_profile, and more will be ""${b}""$pending_status""${n}""."
     echo "Do you understand?"
     echo "Please type in \"YES I UNDERSTAND\" and press enter"

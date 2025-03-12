@@ -9,7 +9,7 @@ toggle-cups:
       systemctl disable cups
       systemctl stop cups
       systemctl daemon-reload
-      echo "Cups disabled."
+      echo "CUPS disabled."
     else
       firewall-cmd --permanent --add-port=631/tcp
       firewall-cmd --permanent --add-port=631/udp
@@ -18,7 +18,9 @@ toggle-cups:
       systemctl enable cups
       systemctl start cups
       systemctl daemon-reload
-      echo "Cups enabled."
+      echo "CUPS enabled."
+      echo "Note: cups-browsed, the printer discovery service, is still disabled for"
+      echo "security reasons. New network printers will need to be added manually."
     fi
 
 # Toggle bluetooth kernel modules on/off (requires reboot)

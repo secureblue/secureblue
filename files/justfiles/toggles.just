@@ -20,7 +20,9 @@ toggle-cups:
       systemctl daemon-reload
       echo "CUPS enabled."
       echo "Note: cups-browsed, the printer discovery service, is still disabled for"
-      echo "security reasons. New network printers will need to be added manually."
+      echo "    security reasons. New network printers will need to be added manually."
+      echo "    If you absolutely need network discovery, you can enable the cups-browsed"
+      echo "    service at your own risk. Secureblue strongly recommends against this."
     fi
 
 # Toggle bluetooth kernel modules on/off (requires reboot)

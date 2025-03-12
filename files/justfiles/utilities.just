@@ -374,12 +374,7 @@ setup-kvm:
 
 								2) # Layering
 										echo "Gnome Boxes layered package selected"
-										if ! [ 'rpm -qa | grep libvirt' ]; then
-												echo "NOTE: this command must be re-run with the same options after a reboot"
-												rpm-ostree install -y gnome-boxes libvirt libvirt-nss qemu qemu-char-spice qemu-device-display-virtio-gpu qemu-device-display-virtio-vga qemu-device-usb-redirect qemu-img qemu-system-x86-core qemu-user-binfmt qemu-user-static virt-v2v
-										else
-												systemctl enable --now libvirtd
-										fi
+										rpm-ostree install -y gnome-boxes
 										;;
 
 						esac

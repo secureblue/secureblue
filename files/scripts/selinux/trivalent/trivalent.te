@@ -91,7 +91,8 @@ allow trivalent_t audio_home_t:lnk_file { manage_lnk_file_perms };
 # screenshare access
 allow trivalent_t unconfined_t:unix_stream_socket { connectto rw_socket_perms };
 
-
+# allow trivalent to interface with flatpaks (necessary for keepassxc extension, for example)
+allow trivalent_t data_home_t:file { execute execute_no_trans };
 
 # xwayland/nvidia
 xserver_exec(trivalent_t)

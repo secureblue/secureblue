@@ -140,16 +140,19 @@ run0 \
     --property="ProtectControlGroups=yes" \
     --property="ProtectHome=read-only" \
     --property="ProtectHostname=yes" \
+    --property="ProtectKernelLogs=yes" \
     --property="ProtectKernelModules=yes" \
     --property="ProtectKernelTunables=yes" \
     --property="ProtectProc=noaccess" \
     --property="ProtectSystem=strict" \
     --property="ReadWritePaths=\"$escaped_path\" \"$escaped_temp_path\"" \
     --property="RestrictAddressFamilies=AF_UNIX" \
+    --property="RestrictNamespaces=yes" \
     --property="RestrictRealtime=yes" \
     --property="RestrictSUIDSGID=yes" \
     --property="SystemCallArchitectures=native" \
     --property="SystemCallFilter=@system-service" \
+    --property="SystemCallFilter=~memfd_create @mount @privileged" \
     /bin/sh -c "$script" 'run0edit' "$filename" "$temp_filename" "$editor"
 rm -f "$temp_filename"
 

@@ -261,13 +261,24 @@ toggle-bash-environment-lockdown skip_approval="false" multiuser="false":
             "$user_home/.config/environment.d/"
         )
 
+        # Purpose of the below block is:
+        #    If the script is locking, 
+        #        to copy the old env files and directories to new copies with the time appended to their name 
+        #        remove immutablility (to allow the script to overwrite any existing immutable environment files)
+        #        create default or blank copies (deleting the old versions)
+
         if [ "$pending_status" == "locked" ]; then
             current_time=$(date -Iseconds)
+            # skel_file converts "$user_home/.bashrc" to ".bashrc"
+            skel_file=$(echo "$file" | sed 's|'${user_home}'/||')
+
             for file in "${BASH_ENV_FILES[@]}"; do
-              cp --preserve=all "$file" "$file_$current_time"
-              rm "$file"
-              if [ -f "/etc/skel/$file" ]; then
-                cp "/etc/skel/$file" "$file"
+              if [ -f "$file" ]; then
+                cp --preserve=all "$file" "$file_$current_time"
+                rm "$file"
+              fi
+              if [ -f "/etc/skel/$skel_file" ]; then
+                cp "/etc/skel/$skel_file" "$file"
               else
                 touch "$file"
               fi
@@ -276,11 +287,11 @@ toggle-bash-environment-lockdown skip_approval="false" multiuser="false":
             done
 
             for dir in "${BASH_ENV_DIRS[@]}"; do
-              # We need the mkdir command to ensure chattr doesn't error
-              mkdir -p "$dir"
-              chattr -R -i "$dir" 
-              cp --preserve=all -r "$dir" "$dir_$current_time"
-              rm -r "$dir"
+              if [ -d "$dir" ]; then
+                chattr -R -i "$dir" 
+                cp --preserve=all -r "$dir" "$dir_$current_time"
+                rm -r "$dir"
+              fi
               mkdir "$dir"
               chmod -R 400 "$dir"
               chown -R "$user:" "$dir"

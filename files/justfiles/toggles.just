@@ -260,6 +260,7 @@ toggle-bash-environment-lockdown:
 # Toggle unconfined domain userns creation
 toggle-unconfined-domain-userns-creation:
     #! /bin/run0 /bin/bash
+    set -euo pipefail
     MODULE_NAME="harden_userns"
 
     if semodule -l | grep -q "$MODULE_NAME"; then
@@ -275,6 +276,7 @@ toggle-unconfined-domain-userns-creation:
 # Toggle container domain userns creation
 toggle-container-domain-userns-creation:
     #! /bin/run0 /bin/bash
+    set -euo pipefail
     MODULE_NAME="harden_container_userns"
 
     if semodule -l | grep -q "$MODULE_NAME"; then
@@ -291,11 +293,13 @@ toggle-container-domain-userns-creation:
             exit 0
         fi
 
-        podman stop --all
-        killall -u "$USER" catatonit
-
         semodule --enable="$MODULE_NAME"
         echo "Module $MODULE_NAME enabled. Container domain userns disabled."
+
+        echo 'Stopping all containers and shutting down podman...'
+        run0 --user="$SUDO_USER" podman stop --all > /dev/null
+        killall -u "$SUDO_USER" catatonit || true
+        echo 'podman has been shut down.'
 
         if pgrep -u root -a -x catatonit &> /dev/null; then
             echo 'WARNING: Catatonit running as root detected, reboot your machine to reset podman state.'

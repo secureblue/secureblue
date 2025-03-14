@@ -6,7 +6,6 @@ set -euo pipefail
 CONTAINER_DIR="/usr/etc/containers"
 ETC_CONTAINER_DIR="/etc/containers"
 MODULE_DIRECTORY="${MODULE_DIRECTORY:-"/tmp/modules"}"
-IMAGE_NAME_FILE="${IMAGE_NAME//\//_}"
 IMAGE_REGISTRY_TITLE=$(echo "$IMAGE_REGISTRY" | cut -d'/' -f2-)
 
 echo "Setting up container signing in policy.json and cosign.yaml for $IMAGE_NAME"

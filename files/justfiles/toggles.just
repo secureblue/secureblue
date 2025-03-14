@@ -291,15 +291,15 @@ toggle-container-domain-userns-creation:
             exit 0
         fi
 
-        if pgrep -u root -a -x catatonit &> /dev/null; then
-            echo 'WARNING: Catatonit running as root detected, reboot your machine to reset podman state.'
-        fi
-
         podman stop --all
         killall -u "$USER" catatonit
 
         semodule --enable="$MODULE_NAME"
         echo "Module $MODULE_NAME enabled. Container domain userns disabled."
+
+        if pgrep -u root -a -x catatonit &> /dev/null; then
+            echo 'WARNING: Catatonit running as root detected, reboot your machine to reset podman state.'
+        fi
     fi
 
 # Toggle MAC Randomization

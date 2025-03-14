@@ -292,7 +292,7 @@ toggle-container-domain-userns-creation:
         fi
 
         if pgrep -u root -a -x catatonit &> /dev/null; then
-            echo 'WARNING: Catatonit running as root detected, reboot you machine to reset podman state.'
+            echo 'WARNING: Catatonit running as root detected, reboot your machine to reset podman state.'
         fi
 
         podman stop --all

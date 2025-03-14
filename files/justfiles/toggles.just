@@ -287,6 +287,7 @@ toggle-bash-environment-lockdown skip_approval="false" multiuser="unselected":
               # skel_file converts "$user_home/.bashrc" to ".bashrc"
               skel_file=$(echo "$file" | sed 's|'${user_home}'/||')
               if [ -f "$file" ]; then
+                chattr -i "$file"
                 cp --preserve=all "$file" "$backup_dest$skel_file"
                 rm "$file"
               fi

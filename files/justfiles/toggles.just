@@ -200,7 +200,7 @@ toggle-xwayland ACTION="prompt":
 bang := if require("sudo") != "" { "sudo bash" } else { "run0 bash" }
 
 # Toggle bash environment lockdown (mitigates LD_PRELOAD attacks)
-toggle-bash-environment-lockdown skip_approval="false" multiuser="false":
+toggle-bash-environment-lockdown skip_approval="false" multiuser="unselected":
     #! {{ "bang" }}
     set -eou pipefail
     # The below lines fetch the minimium and maximium UIDS as configured in /etc/login.defs. Any UIDs within this change are true user ids
@@ -219,10 +219,17 @@ toggle-bash-environment-lockdown skip_approval="false" multiuser="false":
     else
       pending_status="locked"
     fi
-    echo "${b}WARNING${n} This will overwrite your ~/.bashrc, ~/.bash_profile, ~/.config/bash-completion, ~/.profile, ~/.bash_logout, ~/.bash_login, ~/.bashrc.d/, and ~/.config/environment.d/"
-    echo "This is needed to ensure the mitigation is effective."
-    echo "This script will create backups of the old versions with the time of script execution appended."
-    echo ".bashrc, .bash_profile, and more will be ""${b}""$pending_status""${n}""."
+
+    # Below variable is created to only call date once and use the same time across the script despite execution time.
+    current_time=$(date | tr ' ' '_')
+
+    if [ "$pending_status" == "locked" ]; then
+        echo "${b}WARNING${n} This will change your ~/.bashrc, ~/.bash_profile, ~/.config/bash-completion, ~/.profile, ~/.bash_logout, ~/.bash_login, ~/.bashrc.d/, and ~/.config/environment.d/"
+        echo "This is needed to ensure the mitigation is effective."
+        echo "This script will create backups of the old versions in ~/bash_env_files/$current_time."
+    else
+        echo "${b}WARNING${n} .bashrc, .bash_profile, and more will be unlocked and made editable by non-root users. This represents a security risk (see LD_PRELOAD attacks)
+    fi
     echo "Do you understand?"
     echo "Please type in \"YES I UNDERSTAND\" and press enter"
     if [ "{{ skip_approval }}" == "false" ]; then
@@ -231,12 +238,17 @@ toggle-bash-environment-lockdown skip_approval="false" multiuser="false":
             exit
         fi
     fi
-    echo "Do you want this change to apply to ""${b}""all""${n}"" users (""${user_list[@]}"")? [y/N]"
-    echo "Otherwise, it will only apply to the user who launched this script ($SUDO_USER)."
-    if [ "{{ multiuser }}" == "false" ]; then
+
+    if [ "{{ multiuser }}" == "unselected" ]; then
+        echo "Do you want this change to apply to ""${b}""all""${n}"" users (""${user_list[@]}"")? [y/N]"
+        echo "Otherwise, it will only apply to the user who launched this script ($SUDO_USER)."
         read -r REPLY
         # Note this way the default if you press enter is to only effect the user who launched this script
         if [[ "$REPLY" != [yY]* ]]; then
+    	    user_list=("$SUDO_USER")
+        fi
+    else
+        if [ "{{ multiuser }}" == "false" ]; then
     	    user_list=("$SUDO_USER")
         fi
     fi
@@ -263,18 +275,19 @@ toggle-bash-environment-lockdown skip_approval="false" multiuser="false":
 
         # Purpose of the below block is:
         #    If the script is locking, 
-        #        to copy the old env files and directories to new copies with the time appended to their name 
+        #        to copy the old env files and directories to folder with the time with the time appended to their name 
         #        remove immutablility (to allow the script to overwrite any existing immutable environment files)
         #        create default or blank copies (deleting the old versions)
 
         if [ "$pending_status" == "locked" ]; then
-            current_time=$(date -Iseconds)
-            # skel_file converts "$user_home/.bashrc" to ".bashrc"
-            skel_file=$(echo "$file" | sed 's|'${user_home}'/||')
+            backup_dest="$user_home/bash_env_files/$current_time"
+            mkdir -p "$backup_dest"
 
             for file in "${BASH_ENV_FILES[@]}"; do
+              # skel_file converts "$user_home/.bashrc" to ".bashrc"
+              skel_file=$(echo "$file" | sed 's|'${user_home}'/||')
               if [ -f "$file" ]; then
-                cp --preserve=all "$file" "$file_$current_time"
+                cp --preserve=all "$file" "$backup_dest$skel_file"
                 rm "$file"
               fi
               if [ -f "/etc/skel/$skel_file" ]; then
@@ -287,9 +300,11 @@ toggle-bash-environment-lockdown skip_approval="false" multiuser="false":
             done
 
             for dir in "${BASH_ENV_DIRS[@]}"; do
+              # skel_dir converts "$user_home/.bashrc.d/" to ".bashrc.d/"
+              skel_dir=$(echo "$dir" | sed 's|'${user_home}'/||')
               if [ -d "$dir" ]; then
                 chattr -R -i "$dir" 
-                cp --preserve=all -r "$dir" "$dir_$current_time"
+                cp --preserve=all -r "$dir" "$backup_dest$skel_dir"
                 rm -r "$dir"
               fi
               mkdir "$dir"

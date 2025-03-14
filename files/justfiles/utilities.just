@@ -134,7 +134,7 @@ alias assemble := distrobox-assemble
 # Create distroboxes from a defined manifest
 distrobox-assemble CONTAINER="prompt" ACTION="create" FILE="/etc/distrobox/distrobox.ini":
     #!/usr/bin/bash
-    if [ -z "$(ujust check-container-userns-allowed)" ] ; then
+    if [[ "$(ujust check-container-userns-state)" == "disabled" ]]; then
         echo "Distrobox requires container domain user namespaces to work, which are disabled by default for security reasons."
         echo "You need to run 'ujust toggle-container-domain-userns-creation' to allow this."
         container_userns_now=""
@@ -152,7 +152,7 @@ distrobox-assemble CONTAINER="prompt" ACTION="create" FILE="/etc/distrobox/distr
 # Create toolbox containers from a defined manifest (this spec will not be expanded)
 toolbox-assemble CONTAINER="prompt" ACTION="create" FILE="/etc/toolbox/toolbox.ini":
     #!/usr/bin/bash
-    if [ -z "$(ujust check-container-userns-allowed)" ] ; then
+    if [[ "$(ujust check-container-userns-state)" == "disabled" ]]; then
         echo "Toolbox requires container domain user namespaces to work, which are disabled by default for security reasons."
         echo "You need to run 'ujust toggle-container-domain-userns-creation' to allow this."
         container_userns_now=""
@@ -177,21 +177,17 @@ enable-flathub-unfiltered:
     #!/usr/bin/bash
     flatpak remote-add --if-not-exists --user flathub https://flathub.org/repo/flathub.flatpakrepo
 
-# Checks if container domain user namespaces are allowed. Returns text if they are, nothing if not.
-check-container-userns-allowed:
+# Returns the state of container domain user namespaces. (enabled/disabled)
+check-container-userns-state:
     #!/usr/bin/bash
     set -euo pipefail
-    if podman unshare true &> /dev/null; then
-        echo 'container userns allowed'
-    fi
+    [ podman unshare true &> /dev/null ] && echo 'enabled' || echo 'disabled'
 
-# Checks if unconfined domain user namespaces are allowed. Returns text if they are, nothing if not.
-check-unconfined-userns-allowed:
+# Returns the state of unconfined domain user namespaces. (enabled/disabled)
+check-unconfined-userns-state:
     #!/usr/bin/bash
     set -euo pipefail
-    if unshare -U true &> /dev/null; then
-        echo 'unconfined userns allowed'
-    fi
+    [ unshare -U true &> /dev/null ] && echo 'enabled' || echo 'disabled'
 
 # Install Steam via choice of 3 methods
 install-steam:
@@ -240,7 +236,7 @@ install-steam:
             ;;
         2)
             echo "Distrobox method selected."
-            if [ -z "$(ujust check-container-userns-allowed)" ] ; then
+            if [[ "$(ujust check-container-userns-state)" == "disabled" ]]; then
                 echo "Distrobox requires container domain user namespaces to work, which are disabled by default for security reasons."
                 echo "You need to run 'ujust toggle-container-domain-userns-creation' to allow this."
                 container_userns_now=""

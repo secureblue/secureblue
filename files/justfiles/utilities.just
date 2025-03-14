@@ -181,13 +181,13 @@ enable-flathub-unfiltered:
 check-container-userns-state:
     #!/usr/bin/bash
     set -euo pipefail
-    [ podman unshare true &> /dev/null ] && echo 'enabled' || echo 'disabled'
+    podman unshare true &> /dev/null && echo 'enabled' || echo 'disabled'
 
 # Returns the state of unconfined domain user namespaces. (enabled/disabled)
 check-unconfined-userns-state:
     #!/usr/bin/bash
     set -euo pipefail
-    [ unshare -U true &> /dev/null ] && echo 'enabled' || echo 'disabled'
+    unshare -U true &> /dev/null && echo 'enabled' || echo 'disabled'
 
 # Install Steam via choice of 3 methods
 install-steam:

@@ -170,7 +170,7 @@ audit-secureblue AUDIT_FLATPAKS="true":
     fi
 
     UNCONFINED_USERNS_TEST_STRING="Ensuring unconfined user namespace creation disallowed"
-    if ! unshare -U true &> /dev/null; then
+    if [[ "$(ujust check-unconfined-userns-state)" == "disabled" ]]; then
         print_status "$UNCONFINED_USERNS_TEST_STRING" "$STATUS_SUCCESS"
     else
         print_status "$UNCONFINED_USERNS_TEST_STRING" "$STATUS_FAILURE"
@@ -178,16 +178,12 @@ audit-secureblue AUDIT_FLATPAKS="true":
     fi
 
     CONTAINER_USERNS_TEST_STRING="Ensuring container user namespace creation disallowed"
-    tmp_unshare_copy=$(mktemp "$HOME/.unshare.XXXXXXXXXX")
-    cp -p "$(which unshare)" "$tmp_unshare_copy"
-    chcon -t 'container_runtime_exec_t' "$tmp_unshare_copy"
-    if ! "$tmp_unshare_copy" -U true &> /dev/null; then
+    if [[ "$(ujust check-container-userns-state)" == "disabled" ]]; then
         print_status "$CONTAINER_USERNS_TEST_STRING" "$STATUS_SUCCESS"
     else
         print_status "$CONTAINER_USERNS_TEST_STRING" "$STATUS_WARNING"
         suggestions+=("Container domain user namespace creation is permitted	To disallow it, run:	$ ujust toggle-container-domain-userns-creation")
     fi
-    rm -f "$tmp_unshare_copy"
 
     USBGUARD_TEST_STRING="Ensuring usbguard is active"
     if systemctl is-active --quiet usbguard; then

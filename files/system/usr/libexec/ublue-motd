@@ -42,7 +42,7 @@ if [ grep 'kinoite' "$IMAGE_REF_NAME" ]; then
     if [ -f ~/.config/ksplashrc ]; then
         if [ -f /etc/systemd/user/plasma-kwin_wayland.service.d/override.conf]; then
             if [ ! grep 'Engine=none' ~/.config/ksplashrc ] || [ ! grep 'Theme=None' ~/.config/ksplashrc ]; then
-                TIP='**KDE's splash screen does not support disabling xWayland. We recommend disabling the splash screen to avoid needless slowdown.**'
+                TIP='**KDE\'s splash screen does not support disabling xWayland. We recommend disabling the splash screen to avoid needless slowdown.**'
             fi
         fi
     fi

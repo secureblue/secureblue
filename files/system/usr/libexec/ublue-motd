@@ -37,6 +37,16 @@ elif [ "$DIFFERENCE" -ge "$WEEK" ]; then
 else
     TIP='**For secureblue release notifications,** [subscribe:](https://secureblue.dev/faq#releases)'
 fi
-sed -e "s/%IMAGE_REF_NAME%/$IMAGE_REF_NAME/g" -e "s/%IMAGE_TAG%/$IMAGE_TAG/g" -e "s|%TIP%|$TIP|g" /usr/share/ublue-os/motd/secureblue.md | tr '~' '\n' | { command -v glow >/dev/null 2>&1 && glow -s auto -w 78 - || cat; }
 
+if [ grep 'kinoite' "$IMAGE_REF_NAME" ]; then
+    if [ -f ~/.config/ksplashrc ]; then
+        if [ -f /etc/systemd/user/plasma-kwin_wayland.service.d/override.conf]; then
+            if [ ! grep 'Engine=none' ~/.config/ksplashrc && grep 'Theme=None' ~/.config/ksplashrc ]; then
+                TIP='**KDE's splash screen does not support disabling xWayland. We recommend disabling the splash screen to avoid needless slowdown.**'
+            fi
+        fi
+    fi
+fi
+
+sed -e "s/%IMAGE_REF_NAME%/$IMAGE_REF_NAME/g" -e "s/%IMAGE_TAG%/$IMAGE_TAG/g" -e "s|%TIP%|$TIP|g" /usr/share/ublue-os/motd/secureblue.md | tr '~' '\n' | { command -v glow >/dev/null 2>&1 && glow -s auto -w 78 - || cat; }
 

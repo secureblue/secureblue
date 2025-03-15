@@ -1,7 +1,7 @@
 modules:
     - type: containerfile
       snippets:
-        - COPY --from=ghcr.io/ublue-os/${nvidia_kmod_container_name}:${nvidia_kmod_container_tag} /rpms /tmp/rpms
+        - COPY --from=ghcr.io/ublue-os/$nvidia_kmod_container_name:$nvidia_kmod_container_tag /rpms /tmp/rpms
     - type: script
       scripts:
         - installnvidiapackages.sh

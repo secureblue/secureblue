@@ -331,3 +331,91 @@ label-external-drives:
     done
 
     echo -e '\nDone.'
+
+# Convenience utility for layering VPN provider packages
+install-vpn:
+    #!/usr/bin/bash
+    set -euo pipefail
+
+    # supported VPN providers and the security features they need disabled, separated by spaces (the names of the helper functions to be called)
+    declare -A vpn_providers=(
+        ["mullvad"]="enable_unconfined_userns"
+        ["proton"]="" # TODO
+    )
+
+    # helper functions for disabling security features
+    function enable_unconfined_userns() {
+        if [[ "$(ujust check-unconfined-userns-state)" == "enabled" ]] ; then
+            echo 'Unconfined domain user namespaces already enabled, skipping...'
+            return
+        fi
+        echo 'This VPN requires unconfined domain user namespaces to be enabled.'
+        echo 'This will execute "ujust toggle-unconfined-domain-userns-creation". You can also manually do this later if you skip this step.'
+        echo 'Warning: This is a security reduction!'
+        local proceed
+        read -p 'Do you want to continue? [Y/n] ' proceed
+        if ! [[ "$proceed" == [nN]* ]]; then
+            echo 'Enabling unconfined domain user namespaces...'
+            ujust toggle-unconfined-domain-userns-creation
+            echo 'Enabled unconfined domain user namespaces.'
+        fi
+    }
+
+    # VPN install logic
+    function install_mullvad() {
+        local REPO_FILE="/etc/yum.repos.d/mullvad.repo"
+
+        if [ -a "$REPO_FILE" ] || rpm -qa | grep -q "mullvad-vpn"; then
+            echo 'Error: The package "mullvad-vpn" is already installed.'
+            echo 'Aborting...'
+            exit 1
+        fi
+
+        echo 'Installing Mullvad VPN...'
+        # Notice: We're intentionally not enabling `mullvad-early-boot-blocking.service` --now, as that would block network.
+        # It is intended to start on boot and then have it's restrictions lifted as soon as the daemon starts.
+        if ! run0 sh -c 'wget -O /etc/yum.repos.d/mullvad.repo https://repository.mullvad.net/rpm/stable/mullvad.repo
+                && rpm-ostree install --apply-live mullvad-vpn && systemctl enable --now mullvad-daemon.service
+                && systemctl enable mullvad-early-boot-blocking.service'; then
+            echo "Error: The installation didn't complete successfully, aborting..."
+            exit 1
+        fi
+        echo 'Installed successfully.'
+    }
+    function install_proton() {
+        true; # TODO
+    }
+
+    # script start
+    echo 'WARNING: It is strongly recommended that you **not** use VPN provider desktop applications, as they generally require significant security downgrades.'
+    echo 'Instead, it is recommended that you download wireguard profiles from your provider and import them into your desktop environment.'
+    read -p 'If you understand this and still wish to continue, please type "SECURITY DOWNGRADE": ' security_downgrade
+    if [[ "$security_downgrade" != "SECURITY DOWNGRADE" ]]; then
+        echo 'Aborting...'
+        exit 0
+    fi
+    echo
+    echo 'Available VPN providers:'
+    for provider in "${!vpn_providers[@]}"; do
+        echo "- $provider"
+    done
+    echo
+    valid_choice="0"
+    while [[ "$valid_choice" == "0" ]]; do
+        read -p 'Please type the name of your desired provider: ' vpn_choice
+        vpn_choice="${vpn_choice,,}" # to lowercase
+        if [ -z ${vpn_providers["$vpn_choice"]+x} ]; then
+            echo "Invalid provider choice: $vpn_choice. Please try again."
+        else
+            valid_choice="1"
+        fi
+    done
+    IFS=' ' read -ra disable_hardening_arr <<< "${vpn_providers[$vpn_choice]}"
+    for disable_hardening in "${disable_hardening_arr[@]}"; do
+        echo
+        $disable_hardening
+    done
+    echo
+    install_func="install_$vpn_choice"
+    $install_func
+    echo 'Done.'

@@ -313,7 +313,7 @@ toggle-bash-environment-lockdown skip_approval="false" multiuser="unselected":
               chmod -R 500 "$dir"
               chown -R "$user:" "$dir"
             done
-            
+
             chmod -R 500 "$user_home/bash_env_files"
             chown -R "$user:" "$user_home/bash_env_files"            
         fi

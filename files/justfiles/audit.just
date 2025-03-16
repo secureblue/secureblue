@@ -339,12 +339,24 @@ audit-secureblue AUDIT_FLATPAKS="true":
     BASH_ENV_STATUS="locked"
     BASH_ENV_FILES_DIRS=("$HOME/.bashrc" "$HOME/.bash_profile" "$HOME/.config/bash-completion" "$HOME/.profile" "$HOME/.bash_logout" "$HOME/.bash_login" "$HOME/.bashrc.d" "$HOME/.config/environment.d")
     declare -a Unlocked_Files=()
-    BASH_ENV_FILES_DIRS="Ensuring user bash environment is locked down"
-    for file in "${BASH_ENV_FILES[@]}"; do
-        if [ ! -f "$file" ] || ! lsattr "$file" 2>/dev/null | awk '{print $1}' | grep -q 'i'; then
+    BASH_ENV_STRING="Ensuring user bash environment is locked down"
+    for file in "${BASH_ENV_FILES_DIRS[@]}"; do
+    	if [ ! -e "$file" ]; then
             BASH_ENV_STATUS="unlocked"
             Unlocked_Files+=("$file")
+            continue
         fi
+    	FILE_STATUS=$(lsattr "$file" 2>/dev/null | awk '{print $1}' | grep 'i' | tr -d '-')
+        if [ "$FILE_STATUS" != 'i' ] && [ -f "$file" ]; then
+            BASH_ENV_STATUS="unlocked"
+            Unlocked_Files+=("$file")
+            continue
+        fi
+        DIR_STATUS=$(lsattr -d "$file" 2>/dev/null | awk '{print $1}' | grep 'i' | tr -d '-')
+        if [ "$DIR_STATUS" != 'i' ] && [ -d "$file" ]; then
+            BASH_ENV_STATUS="unlocked"
+            Unlocked_Files+=("$file")
+        fi        
     done
 
     if [ "$BASH_ENV_STATUS"  == "locked" ]; then

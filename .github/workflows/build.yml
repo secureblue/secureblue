@@ -70,14 +70,14 @@ jobs:
         if: ${{ contains(env.IMAGE_NAME, 'nvidia') }}
         run: |
           if [[ "$IMAGE_NAME" == *"open"* ]]; then
-            echo "nvidia_kmod_container_name='akmods-nvidia-open'" >> $GITHUB_ENV
+            export nvidia_kmod_container_name='akmods-nvidia-open'
           else
-            echo "nvidia_kmod_container_name='akmods-nvidia'" >> $GITHUB_ENV
+            export nvidia_kmod_container_name='akmods-nvidia'
           fi
           if [[ "$IMAGE_NAME" == *"securecore"* ]]; then
-            echo "nvidia_kmod_container_tag='coreos-testing-41'" >> $GITHUB_ENV
+            export nvidia_kmod_container_tag='coreos-testing-41'
           else
-            echo "nvidia_kmod_container_tag='main-41'" >> $GITHUB_ENV
+            export nvidia_kmod_container_tag='main-41'
           fi
           nvidia_containerfile="./containerfiles/nvidia/Containerfile"
           tmp_nvidia_containerfile='/tmp/nvidia_Containerfile'

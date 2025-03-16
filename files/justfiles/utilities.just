@@ -372,7 +372,7 @@ install-vpn:
         fi
 
         if [[ "$DE" == "unknown" ]]; then
-            echo 'Warning: Unable to identify your desktop environment. Please manually ensure that XWayland is disabled. Skipping...'
+            echo 'Warning: Unable to identify your desktop environment. Please manually ensure that XWayland is enabled. Skipping...'
             return
         fi
 

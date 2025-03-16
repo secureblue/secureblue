@@ -1,7 +1,7 @@
 #!/bin/sh
 # ------------------------------------------------------------------------------
 # run0edit - edit a single file as root.
-# version 0.3.0
+# version 0.3.1-sb
 #
 # Please report issues at: https://github.com/HastD/run0edit/issues
 #
@@ -26,20 +26,22 @@ set -euo pipefail
 # standard utilities.
 PATH=$(command -p env -i sh -c 'echo "$PATH"')
 
-if [ "$(id -u)" = 0 ]; then
-    echo 'run0edit should not be run as root.' >&2
-    exit 1
-fi
 if [ "$#" = 0 ] || [ "$1" = '--help' ]; then
     echo 'run0edit allows a permitted user to edit a file as root.'
     echo 'Usage: run0edit "path/to/file"'
     echo 'To use another text editor, write the path to your text editor of choice to'
     echo '    /etc/run0edit/editor.conf'
     exit
+elif [ "$(id -u)" = 0 ]; then
+    echo 'run0edit should not be run as root.' >&2
+    exit 1
 elif [ "$#" -ne 1 ]; then
     echo 'Error: too many arguments.' >&2
     echo 'run0edit allows a permitted user to edit a file as root.'
     echo 'Usage: run0edit "path/to/file"'
+    exit 1
+elif [ -w "$1" ]; then
+    echo 'File is writable by the current user; run0edit is unnecessary.' >&2
     exit 1
 fi
 
@@ -54,10 +56,10 @@ elif [ -f "$usr_conf_path" -a -r "$usr_conf_path" ]; then
 fi
 if [ -f "$editor" -a -x "$editor" ]; then
     :
-elif command -pv nano > /dev/null; then
-    editor="$(command -pv nano)"
-elif command -pv vi > /dev/null; then
-    editor="$(command -pv vi)"
+elif [ -f '/usr/bin/nano' -a -x '/usr/bin/nano' ]; then
+    editor='/usr/bin/nano'
+elif [ -f '/usr/bin/vi' -a -x '/usr/bin/vi' ]; then
+    editor='/usr/bin/vi'
 else
     echo "Editor not found. Please install either nano or vi, or write the path to" >&2
     echo "the text editor of your choice to /etc/run0edit/editor.conf" >&2

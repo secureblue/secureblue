@@ -3,11 +3,7 @@
 # Tell build process to exit if there are any errors.
 set -oue pipefail
 
-
-
 find /tmp/rpms
-
-
 nvidia_packages_list="/tmp/rpms/kmods/kmod-nvidia*.rpm nvidia-container-toolkit nvidia-driver-cuda"
 
 if [[ "$IMAGE_NAME" == *"securecore"* ]]; then

@@ -374,9 +374,7 @@ install-vpn:
         echo 'Installing Mullvad VPN...'
         # Notice: We're intentionally not enabling `mullvad-early-boot-blocking.service` --now, as that would block network.
         # It is intended to start on boot and then have it's restrictions lifted as soon as the daemon starts.
-        if ! run0 sh -c 'wget -O /etc/yum.repos.d/mullvad.repo https://repository.mullvad.net/rpm/stable/mullvad.repo
-                && rpm-ostree install --apply-live mullvad-vpn && systemctl enable --now mullvad-daemon.service
-                && systemctl enable mullvad-early-boot-blocking.service'; then
+        if ! run0 sh -c 'wget -O /etc/yum.repos.d/mullvad.repo https://repository.mullvad.net/rpm/stable/mullvad.repo && rpm-ostree install --apply-live mullvad-vpn && systemctl enable --now mullvad-daemon.service && systemctl enable mullvad-early-boot-blocking.service'; then
             echo "Error: The installation didn't complete successfully, aborting..."
             exit 1
         fi

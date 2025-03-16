@@ -1,7 +1,7 @@
 #!/bin/sh
 # ------------------------------------------------------------------------------
 # run0edit - edit a single file as root.
-# version 0.2.0
+# version 0.3.0
 #
 # Please report issues at: https://github.com/HastD/run0edit/issues
 #
@@ -22,6 +22,10 @@
 
 set -euo pipefail
 
+# Reset $PATH to a default value to ensure command invocations point to
+# standard utilities.
+PATH=$(command -p env -i sh -c 'echo "$PATH"')
+
 if [ "$(id -u)" = 0 ]; then
     echo 'run0edit should not be run as root.' >&2
     exit 1
@@ -39,30 +43,10 @@ elif [ "$#" -ne 1 ]; then
     exit 1
 fi
 
-filename="$1"
-# Ensure the file either exists and is a regular file, or does not exist but is
-# in a directory that exists.
-if [ -f "$filename" ]; then
-    file_exists=1
-    filename_or_dir="$filename"
-elif [ ! -e "$filename" ]; then
-    directory=$(dirname "$filename")
-    if [ -d "$directory" ]; then
-        file_exists=0
-        filename_or_dir="$directory"
-    else
-        echo 'Invalid argument: directory does not exist!' >&2
-        exit 1
-    fi
-else
-    echo 'Invalid argument: not a regular file!' >&2
-    exit 1
-fi
-
 # Determine text editor to use.
 editor=''
 etc_conf_path='/etc/run0edit/editor.conf'
-usr_conf_path='/usr/share/run0edit/editor.conf'
+usr_conf_path='/usr/etc/run0edit/editor.conf'
 if [ -f "$etc_conf_path" -a -r "$etc_conf_path" ]; then
     editor="$(cat "$etc_conf_path")"
 elif [ -f "$usr_conf_path" -a -r "$usr_conf_path" ]; then
@@ -75,28 +59,38 @@ elif command -pv nano > /dev/null; then
 elif command -pv vi > /dev/null; then
     editor="$(command -pv vi)"
 else
-    # Can't find a text editor, so ask the user.
-    until command -pv "$editor" > /dev/null; do
-        read -p 'Enter path to text editor: ' editor
-        editor="$(command -pv "$editor" || :)"
-    done
+    echo "Editor not found. Please install either nano or vi, or write the path to" >&2
+    echo "the text editor of your choice to /etc/run0edit/editor.conf" >&2
+    exit 1
 fi
 
 # Create a temporary file with a random suffix appended to the filename.
+filename="$1"
+directory=$(dirname "$filename")
 trunc_filename=$(basename "$filename" | head -c 64)
 temp_filename=$(mktemp --tmpdir "${trunc_filename}.XXXXXXXXXX")
 
 # Inner script to be run with elevated privileges:
-if [ "$file_exists" = 1 ]; then
-    script='\
+script='\
+    if [ -f "$1" ]; then
         if ! cp "$1" "$2"; then
             echo "run0edit: failed to copy $1 to temporary file at $2";
             exit 1;
         fi
-        if ! run0 --user="$SUDO_UID" "$3" "$2"; then
-            echo "run0edit: failed to edit temporary file at $2";
+    elif [ ! -e "$1" ]; then
+        if [ ! -d "$(dirname "$1")" ]; then
+            echo "run0edit: invalid argument: directory does not exist";
             exit 1;
         fi
+    else
+        echo "run0edit: invalid argument: not a regular file";
+        exit 1;
+    fi
+    if ! run0 --user="$SUDO_UID" "$3" "$2"; then
+        echo "run0edit: failed to edit temporary file at $2";
+        exit 1;
+    fi
+    if [ -e "$1" ]; then
         if cmp -s "$2" "$1"; then
             echo "run0edit: $1 unchanged";
         else
@@ -104,29 +98,24 @@ if [ "$file_exists" = 1 ]; then
                 echo "run0edit: unable to write temporary file at $2 to $1";
                 exit 1;
             fi
-        fi'
-else
-    script='\
-        if ! run0 --user="$SUDO_UID" "$3" "$2"; then
-            echo "run0edit: failed to edit temporary file at $2";
+        fi
+    elif [ -s "$2" ]; then
+        touch "$1"
+        if ! cp "$2" "$1"; then
+            echo "run0edit: unable to write temporary file at $2 to $1";
             exit 1;
         fi
-        if [ -s "$2" ]; then
-            touch "$1"
-            if ! cp "$2" "$1"; then
-                echo "run0edit: unable to write temporary file at $2 to $1";
-                exit 1;
-            fi
-        else
-            echo "run0edit: $1 not created";
-        fi'
-fi
+    else
+        echo "run0edit: $1 not created";
+    fi'
 
 # Escape backslashes and double-quotes in paths to be passed to ReadWritePaths.
-escaped_path=$(realpath "$filename_or_dir" | sed -e 's/\\/\\\\/g' -e 's/"/\\"/g')
+escaped_dir=$(realpath -m "$directory" | sed -e 's/\\/\\\\/g' -e 's/"/\\"/g')
 escaped_temp_path=$(echo "$temp_filename" | sed -e 's/\\/\\\\/g' -e 's/"/\\"/g')
 
+set +e
 run0 \
+    --description="run0edit \"$filename\"" \
     --property="CapabilityBoundingSet=CAP_DAC_OVERRIDE" \
     --property="DevicePolicy=closed" \
     --property="LockPersonality=yes" \
@@ -145,7 +134,7 @@ run0 \
     --property="ProtectKernelTunables=yes" \
     --property="ProtectProc=noaccess" \
     --property="ProtectSystem=strict" \
-    --property="ReadWritePaths=\"$escaped_path\" \"$escaped_temp_path\"" \
+    --property="ReadWritePaths=\"$escaped_dir\" \"$escaped_temp_path\"" \
     --property="RestrictAddressFamilies=AF_UNIX" \
     --property="RestrictNamespaces=yes" \
     --property="RestrictRealtime=yes" \
@@ -154,5 +143,27 @@ run0 \
     --property="SystemCallFilter=@system-service" \
     --property="SystemCallFilter=~memfd_create @mount @privileged" \
     /bin/sh -c "$script" 'run0edit' "$filename" "$temp_filename" "$editor"
-rm -f "$temp_filename"
+# If $directory does not exist, namespace creation will fail, causing run0 to
+# silently fail with exit status 226:
+# https://www.freedesktop.org/software/systemd/man/latest/systemd.exec.html
+# Catch this and give a more user-friendly error:
+status_code="$?"
+set -e
+case "$status_code" in
+    0)
+        rm -f "$temp_filename"
+        ;;
+    226)
+        echo "run0edit: invalid argument: directory does not exist" >&2
+        rm -f "$temp_filename"
+        exit 1
+        ;;
+    *)
+        # Clean up empty temporary file, but leave it if it's non-empty.
+        if [ ! -s "$temp_filename" ]; then
+            rm -f "$temp_filename"
+        fi
+        exit "$status_code"
+        ;;
+esac
 

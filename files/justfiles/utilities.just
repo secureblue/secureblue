@@ -362,7 +362,7 @@ install-vpn:
     }
     function enable_xwayland() {
         local DE="unknown"
-        local IMAGE="${rpm-ostree status | grep '●'}"
+        local IMAGE="$(rpm-ostree status | grep '●')"
         if [ -n "$(echo "$IMAGE" | grep 'silverblue')" ] ; then
             DE=gnome
         elif [ -n "$(echo "$IMAGE" | grep 'kinoite')" ] ; then

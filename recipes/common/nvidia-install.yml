@@ -1,12 +1,11 @@
 modules:
-
   - type: containerfile
     containerfiles:
       - nvidia
   - type: script
-      scripts:
-        - installnvidiapackages.sh
-        - installnvidiatoolkitpolicy.sh
-        - removeunusedrepos.sh
-        - setearlyloading.sh
-        - setdrmvariables.sh
+    scripts:
+      - installnvidiapackages.sh
+      - installnvidiatoolkitpolicy.sh
+      - removeunusedrepos.sh
+      - setearlyloading.sh
+      - setdrmvariables.sh

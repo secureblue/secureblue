@@ -353,7 +353,7 @@ install-vpn:
         echo 'This will execute "ujust toggle-unconfined-domain-userns-creation". You can also manually do this later if you skip this step.'
         echo 'Warning: This is a security reduction!'
         local proceed
-        read -p 'Do you want to continue? [Y/n] ' proceed
+        read -p 'Do you want to do this now? [Y/n] ' proceed
         if ! [[ "$proceed" == [nN]* ]]; then
             echo 'Enabling unconfined domain user namespaces...'
             ujust toggle-unconfined-domain-userns-creation

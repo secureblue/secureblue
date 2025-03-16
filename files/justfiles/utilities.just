@@ -339,7 +339,7 @@ install-vpn:
 
     # supported VPN providers and the security features they need disabled, separated by spaces (the names of the helper functions to be called)
     declare -A vpn_providers=(
-        ["mullvad"]="enable_unconfined_userns"
+        ["mullvad"]="enable_unconfined_userns enable_xwayland"
         ["proton"]="" # TODO
     )
 
@@ -358,6 +358,56 @@ install-vpn:
             echo 'Enabling unconfined domain user namespaces...'
             ujust toggle-unconfined-domain-userns-creation
             echo 'Enabled unconfined domain user namespaces.'
+        fi
+    }
+    function enable_xwayland() {
+        local DE="unknown"
+        local IMAGE="${rpm-ostree status | grep '●'}"
+        if [ -n "$(echo "$IMAGE" | grep 'silverblue')" ] ; then
+            DE=gnome
+        elif [ -n "$(echo "$IMAGE" | grep 'kinoite')" ] ; then
+            DE=plasma
+        elif [ -n "$(echo "$IMAGE" | grep 'sericea')" ] || [ -n "$(echo "$IMAGE" | grep 'sway')" ] ; then
+            DE=sway
+        fi
+
+        if [[ "$DE" == "unknown" ]]; then
+            echo 'Warning: Unable to identify your desktop environment. Please manually ensure that XWayland is disabled. Skipping...'
+            return
+        fi
+
+        local xwayland_enabled="0"
+        if [ "$DE" == "gnome" ]; then
+            GNOME_XWAYLAND_FILE="/etc/systemd/user/org.gnome.Shell@wayland.service.d/override.conf"
+            if ! test -e $GNOME_XWAYLAND_FILE; then
+                xwayland_enabled="1"
+            fi
+        elif [ "$DE" == "plasma" ]; then
+            PLASMA_XWAYLAND_FILE="/etc/systemd/user/plasma-kwin_wayland.service.d/override.conf"
+            if ! test -e $PLASMA_XWAYLAND_FILE; then
+                xwayland_enabled="1"
+            fi
+        elif [ "$DE" == "sway" ]; then
+            SWAY_XWAYLAND_FILE="/etc/sway/config.d/99-noxwayland.conf"
+            if ! test -e $SWAY_XWAYLAND_FILE; then
+                xwayland_enabled="1"
+            fi
+        fi
+
+        if [[ "$xwayland_enabled" == "1" ]]; then
+            echo 'XWayland already enabled, skipping...'
+            return
+        fi
+
+        echo 'This VPN requires XWayland to be enabled.'
+        echo 'This will execute "ujust toggle-xwayland". You can also manually do this later if you skip this step.'
+        echo 'Warning: This is a security reduction!'
+        local proceed
+        read -p 'Do you want to do this now? [Y/n] ' proceed
+        if ! [[ "$proceed" == [nN]* ]]; then
+            echo 'Enabling XWayland...'
+            ujust toggle-xwayland
+            echo 'Enabled XWayland.'
         fi
     }
 

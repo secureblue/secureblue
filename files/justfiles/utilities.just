@@ -366,7 +366,19 @@ install-vpn:
         local REPO_FILE="/etc/yum.repos.d/mullvad.repo"
         local REPO_URL="https://repository.mullvad.net/rpm/stable/mullvad.repo"
 
-        if [ -a "$REPO_FILE" ] || rpm -qa | grep -q "mullvad-vpn"; then
+        if [ -a "$REPO_FILE" ]; then
+            echo 'Warning: The Mullvad repofile does already exist. It will be overwritten if you continue.'
+            local proceed
+            read -p 'Are you sure you want to continue? [Y/n] '
+            if [[ "$proceed" == [nN]* ]]; then
+                echo 'Aborting...'
+                exit 0
+            fi
+            echo 'Continuing...'
+            echo
+        fi
+
+        if rpm -qa | grep -q "mullvad-vpn"; then
             echo 'Error: The package "mullvad-vpn" is already installed.'
             echo 'Aborting...'
             exit 1

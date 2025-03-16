@@ -310,7 +310,6 @@ toggle-container-domain-userns-creation:
 toggle-mac-randomization:
     #! /bin/run0 /bin/bash
     RAND_MAC_FILE="/etc/NetworkManager/conf.d/rand_mac.conf"
-    randomization_choice=""
 
     if test -e $RAND_MAC_FILE; then
         rm -f $RAND_MAC_FILE
@@ -319,6 +318,7 @@ toggle-mac-randomization:
     else
         echo "MAC randomization can be stable (persisting the same random MAC per access point across disconnects/reboots),"
         echo "or it can be randomized per-connection (every time it connects to the same access point it uses a new MAC)."
+        randomization_choice=""
         read -p "Do you want to use per-connection Wi-Fi MAC address randomization? [y/N] " randomization_choice
 
         if [[ "$randomization_choice" == [Yy]* ]]; then

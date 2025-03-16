@@ -197,12 +197,13 @@ toggle-xwayland ACTION="prompt":
       fi
     fi
 
-bang := if require("sudo") != "" { "sudo bash" } else { "run0 bash" }
-
 # Toggle bash environment lockdown (mitigates LD_PRELOAD attacks)
 toggle-bash-environment-lockdown skip_approval="false" multiuser="unselected":
-    #! {{ "bang" }}
+    #!/bin/run0 /bin/bash
     set -eou pipefail
+    # I'm aware these are source when used in global justfiles, but this makes the script portable to other OSs or when running as a standalone file.
+    b=$(tput bold)
+    n=$(tput sgr0)
     # The below lines fetch the minimium and maximium UIDS as configured in /etc/login.defs. Any UIDs within this change are true user ids
     # rather than system agents, and therefore should be locked down. The user_string variable uses this fetched UID range to find all 
     # existing users and their home directory along with formatting this data for later use. The IFS line simple converts this data data 
@@ -228,7 +229,7 @@ toggle-bash-environment-lockdown skip_approval="false" multiuser="unselected":
         echo "This is needed to ensure the mitigation is effective."
         echo "This script will create backups of the old versions in ~/bash_env_files/$current_time."
     else
-        echo "${b}WARNING${n} .bashrc, .bash_profile, and more will be unlocked and made editable by non-root users. This represents a security risk (see LD_PRELOAD attacks)
+        echo "${b}WARNING${n} .bashrc, .bash_profile, and more will be unlocked and made editable by non-root users. This represents a security risk (see LD_PRELOAD attacks)"
     fi
     echo "Do you understand?"
     echo "Please type in \"YES I UNDERSTAND\" and press enter"
@@ -245,19 +246,19 @@ toggle-bash-environment-lockdown skip_approval="false" multiuser="unselected":
         read -r REPLY
         # Note this way the default if you press enter is to only effect the user who launched this script
         if [[ "$REPLY" != [yY]* ]]; then
-    	    user_list=("$SUDO_USER")
+            user_list=("$SUDO_USER")
         fi
     else
         if [ "{{ multiuser }}" == "false" ]; then
-    	    user_list=("$SUDO_USER")
+            user_list=("$SUDO_USER")
         fi
     fi
 
     chattr_operator=$([ "$pending_status" == "locked" ] && echo "+i" || echo "-i")  
     for user in "${user_list[@]}"; do
-    	echo "Applying for user: $user"
-    	user_home=$(getent passwd "$user" | awk -F':' '{ print $6}')
-    	[[ -d "$user_home" ]] || {echo "Variable \$user_home for $user is somehow empty (check your getent passwd entries); safely exiting."; exit 1;}
+        echo "Applying for user: $user"
+        user_home=$(getent passwd "$user" | awk -F':' '{ print $6}')
+        [ -d "$user_home" ] || { echo "Variable \$user_home for $user is somehow empty (check your getent passwd entries)"; echo "safely exiting."; exit 1; }
 
         BASH_ENV_FILES=(
             "$user_home/.bashrc"
@@ -276,11 +277,11 @@ toggle-bash-environment-lockdown skip_approval="false" multiuser="unselected":
         # Purpose of the below block is:
         #    If the script is locking, 
         #        to copy the old env files and directories to folder with the time with the time appended to their name 
-        #        remove immutablility (to allow the script to overwrite any existing immutable environment files)
+        #        remove immutability (to allow the script to overwrite any existing immutable environment files)
         #        create default or blank copies (deleting the old versions)
 
         if [ "$pending_status" == "locked" ]; then
-            backup_dest="$user_home/bash_env_files/$current_time"
+            backup_dest="$user_home/bash_env_files/$current_time/"
             mkdir -p "$backup_dest"
 
             for file in "${BASH_ENV_FILES[@]}"; do
@@ -288,7 +289,7 @@ toggle-bash-environment-lockdown skip_approval="false" multiuser="unselected":
               skel_file=$(echo "$file" | sed 's|'${user_home}'/||')
               if [ -f "$file" ]; then
                 chattr -i "$file"
-                cp --preserve=all "$file" "$backup_dest$skel_file"
+                rsync -a --mkpath "$file" "$backup_dest$skel_file"
                 rm "$file"
               fi
               if [ -f "/etc/skel/$skel_file" ]; then
@@ -296,8 +297,8 @@ toggle-bash-environment-lockdown skip_approval="false" multiuser="unselected":
               else
                 touch "$file"
               fi
-              chmod 400 "$file"
-              chown "$user:" "$file"
+              chmod -R 500 "$file"
+              chown -R "$user:" "$file"              
             done
 
             for dir in "${BASH_ENV_DIRS[@]}"; do
@@ -305,20 +306,27 @@ toggle-bash-environment-lockdown skip_approval="false" multiuser="unselected":
               skel_dir=$(echo "$dir" | sed 's|'${user_home}'/||')
               if [ -d "$dir" ]; then
                 chattr -R -i "$dir" 
-                cp --preserve=all -r "$dir" "$backup_dest$skel_dir"
+                rsync -a --mkpath "$dir" "$backup_dest$skel_dir"
                 rm -r "$dir"
               fi
-              mkdir "$dir"
-              chmod -R 400 "$dir"
+              mkdir -p "$dir"
+              chmod -R 500 "$dir"
               chown -R "$user:" "$dir"
             done
+            
+            chmod -R 500 "$user_home/bash_env_files"
+            chown -R "$user:" "$user_home/bash_env_files"            
         fi
 
       BASH_ENV_FILES_DIRS=("${BASH_ENV_FILES[@]}" "${BASH_ENV_DIRS[@]}")
+      #echo "${BASH_ENV_FILES_DIRS[@]}"
 
       for fs_object in "${BASH_ENV_FILES_DIRS[@]}"; do
-        recursion_operator=$([ -d "$fs_object" ] && echo "-R" || echo "")  
-        chattr "$chattr_operator" "$recursion_operator" "$fs_object"
+        if [ -d "$fs_object" ]; then
+          chattr "$chattr_operator" "-R" "$fs_object"
+        else
+          chattr "$chattr_operator" "$fs_object"
+        fi
       done
     done
 

@@ -4,6 +4,7 @@
 set -oue pipefail
 
 find /tmp/rpms
+
 nvidia_packages_list="/tmp/rpms/kmods/kmod-nvidia*.rpm nvidia-container-toolkit nvidia-driver-cuda "
 
 if [[ "$IMAGE_NAME" == *"securecore"* ]]; then
@@ -21,3 +22,11 @@ rpm-ostree install $nvidia_config_rpm_location
 sed -i '0,/enabled=0/{s/enabled=0/enabled=1/}' /etc/yum.repos.d/nvidia-container-toolkit.repo
 sed -i '0,/enabled=0/{s/enabled=0/enabled=1\npriority=90/}' /etc/yum.repos.d/negativo17-fedora-nvidia.repo  
 rpm-ostree install $nvidia_packages_list
+
+kmod_version=$(ls /tmp/rpms/kmods/kmod-nvidia*.rpm |  awk -F'-' '{print $(NF-1)}')
+negativo_version=$(rpm -qa | grep nvidia-settings | awk -F':' '{print $(NF)}' | awk -F'-' '{print $(NF-1)}')
+
+if [[ "$kmod_version" != "$negativo_version" ]]; then
+    echo "Version mismatch! kmod_version: ${kmod_version} negativo_version: ${negativo_version}"
+    exit 1
+fi

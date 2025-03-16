@@ -4,7 +4,7 @@
 set -oue pipefail
 
 find /tmp/rpms
-nvidia_packages_list="/tmp/rpms/kmods/kmod-nvidia*.rpm nvidia-container-toolkit nvidia-driver-cuda"
+nvidia_packages_list="/tmp/rpms/kmods/kmod-nvidia*.rpm nvidia-container-toolkit nvidia-driver-cuda "
 
 if [[ "$IMAGE_NAME" == *"securecore"* ]]; then
   nvidia_config_rpm_location="/tmp/rpms/ucore/ublue-os-ucore-nvidia*.rpm"

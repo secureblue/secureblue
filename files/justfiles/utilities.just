@@ -430,3 +430,4 @@ install-vpn:
     install_func="install_$vpn_choice"
     $install_func
     echo 'Done.'
+    echo 'Please reboot your device to fully apply the changes.'

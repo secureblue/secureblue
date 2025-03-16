@@ -319,7 +319,6 @@ toggle-bash-environment-lockdown skip_approval="false" multiuser="unselected":
         fi
 
       BASH_ENV_FILES_DIRS=("${BASH_ENV_FILES[@]}" "${BASH_ENV_DIRS[@]}")
-      #echo "${BASH_ENV_FILES_DIRS[@]}"
 
       for fs_object in "${BASH_ENV_FILES_DIRS[@]}"; do
         if [ -d "$fs_object" ]; then

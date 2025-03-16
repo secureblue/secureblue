@@ -456,11 +456,6 @@ install-vpn:
         exit 0
     fi
     echo
-    echo 'Available VPN providers:'
-    for provider in "${!vpn_providers[@]}"; do
-        echo "- $provider"
-    done
-    echo
     valid_choice="0"
     while [[ "$valid_choice" == "0" ]]; do
         echo 'Please choose your desired provider:'

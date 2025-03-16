@@ -369,7 +369,7 @@ install-vpn:
         if [ -a "$REPO_FILE" ]; then
             echo 'Warning: The Mullvad repofile does already exist. It will be overwritten if you continue.'
             local proceed
-            read -p 'Are you sure you want to continue? [Y/n] '
+            read -p 'Are you sure you want to continue? [Y/n] ' proceed
             if [[ "$proceed" == [nN]* ]]; then
                 echo 'Aborting...'
                 exit 0

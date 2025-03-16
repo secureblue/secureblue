@@ -463,8 +463,8 @@ install-vpn:
     echo
     valid_choice="0"
     while [[ "$valid_choice" == "0" ]]; do
-        read -p 'Please type the name of your desired provider: ' vpn_choice
-        vpn_choice="${vpn_choice,,}" # to lowercase
+        echo 'Please choose your desired provider:'
+        vpn_choice="$(ugum choose ${vpn_providers[@]})"
         if [ -z ${vpn_providers["$vpn_choice"]+x} ]; then
             echo "Invalid provider choice: $vpn_choice. Please try again."
         else

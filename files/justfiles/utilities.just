@@ -536,7 +536,6 @@ install-vpn:
         fi
     done
     echo "You selected $vpn_choice"
-    install_func="install_$vpn_choice"
     IFS=' ' read -ra disable_hardening_arr <<< "${vpn_providers[$vpn_choice]}"
     for disable_hardening in "${disable_hardening_arr[@]}"; do
         echo

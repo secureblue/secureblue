@@ -432,7 +432,7 @@ install-vpn:
             echo
         fi
 
-        if rpm -qa | grep -q "mullvad-vpn"; then
+        if util_checkpackage "mullvad-vpn"; then
             echo 'Error: The package "mullvad-vpn" is already installed.'
             echo 'Aborting...'
             exit 1
@@ -449,6 +449,11 @@ install-vpn:
     }
     function install_proton() {
         true; # TODO
+    }
+
+    function util_checkpackage() {
+        rpm -qa | grep -q "$1"
+        return $?
     }
 
     # script start

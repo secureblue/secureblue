@@ -23,8 +23,8 @@ sed -i '0,/enabled=0/{s/enabled=0/enabled=1/}' /etc/yum.repos.d/nvidia-container
 sed -i '0,/enabled=0/{s/enabled=0/enabled=1\npriority=90/}' /etc/yum.repos.d/negativo17-fedora-nvidia.repo  
 rpm-ostree install $nvidia_packages_list
 
-kmod_version=$(ls /tmp/rpms/kmods/kmod-nvidia*.rpm |  awk -F'-' '{print $(NF-1)}')
-negativo_version=$(rpm -qa | grep nvidia-settings | awk -F':' '{print $(NF)}' | awk -F'-' '{print $(NF-1)}')
+kmod_version=$(ls /tmp/rpms/kmods/kmod-nvidia*.rpm | awk -F'-' '{print $(NF-1)}')
+negativo_version=$(rpm -qa | grep nvidia-modprobe | awk -F':' '{print $(NF)}' | awk -F'-' '{print $(NF-1)}')
 
 echo "kmod_version: ${kmod_version}"
 echo "negativo_version: ${negativo_version}"

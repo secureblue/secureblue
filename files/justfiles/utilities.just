@@ -341,7 +341,7 @@ install-vpn:
     declare -A vpn_providers=(
         ["ivpn"]="" # TODO
         ["mullvad"]="enable_unconfined_userns enable_xwayland"
-        ["proton"]="" # TODO
+        ["proton"]=""
     )
 
     # helper functions for disabling security features

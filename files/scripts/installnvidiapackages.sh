@@ -26,7 +26,9 @@ rpm-ostree install $nvidia_packages_list
 kmod_version=$(ls /tmp/rpms/kmods/kmod-nvidia*.rpm |  awk -F'-' '{print $(NF-1)}')
 negativo_version=$(rpm -qa | grep nvidia-settings | awk -F':' '{print $(NF)}' | awk -F'-' '{print $(NF-1)}')
 
+echo "kmod_version: ${kmod_version}"
+echo "negativo_version: ${negativo_version}"
 if [[ "$kmod_version" != "$negativo_version" ]]; then
-    echo "Version mismatch! kmod_version: ${kmod_version} negativo_version: ${negativo_version}"
+    echo "Version mismatch!"
     exit 1
 fi

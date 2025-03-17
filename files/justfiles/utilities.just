@@ -454,6 +454,7 @@ install-vpn:
         if ! [[ "$proceed2" == [nN]* ]]; then
             INSTALL_CMD="$INSTALL_CMD $PACKAGE_NAME-ui"
         fi
+        # the daemon crashes if started before rebooting, therefore we omit `--now`
         if ! run0 sh -c "wget -O $REPO_FILE $REPO_URL && $INSTALL_CMD && systemctl enable ivpn-service"; then
             echo "Error: The installation didn't complete successfully, aborting..."
             exit 1
@@ -484,7 +485,7 @@ install-vpn:
         fi
 
         echo 'Installing Mullvad VPN...'
-        # Notice: We're intentionally not enabling `mullvad-early-boot-blocking.service` --now, as that would block network.
+        # We're intentionally not enabling `mullvad-early-boot-blocking.service` immediately, as that would block the network.
         # It is intended to start on boot and then have it's restrictions lifted as soon as the daemon starts.
         if ! run0 sh -c "wget -O $REPO_FILE $REPO_URL && rpm-ostree install --assumeyes --apply-live $PACKAGE_NAME && systemctl enable --now mullvad-daemon.service && systemctl enable mullvad-early-boot-blocking.service"; then
             echo "Error: The installation didn't complete successfully, aborting..."

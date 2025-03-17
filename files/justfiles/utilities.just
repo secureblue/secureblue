@@ -448,7 +448,50 @@ install-vpn:
         echo 'Installed successfully.'
     }
     function install_proton() {
-        true; # TODO
+        RPM_URL="https://repo.protonvpn.com/fedora-$(cat /etc/fedora-release | cut -d' ' -f 3)-stable/protonvpn-stable-release/protonvpn-stable-release-1.0.2-1.noarch.rpm"
+        PACKAGE_NAME="proton-vpn-gnome-desktop"
+
+        if util_checkpackage "$PACKAGE_NAME"; then
+            echo "Error: the package \"$PACKAGE_NAME\" is already installed."
+            echo 'Aborting...'
+            exit 1
+        fi
+
+        if util_checkpackage "protonvpn-stable-release"; then
+            echo 'Warning: It appears that the package "protonvpn-stable-release" (repository meta-package) is already installed, but Proton VPN is not.'
+            local proceed
+            read -p 'Do you want to continue? This will use the existing meta-package [Y/n] ' proceed
+            if [[ "$proceed" == [nN]* ]]; then
+                echo 'Aborting...'
+                exit 0
+            fi
+            echo 'Continuing with existing meta-package...'
+            echo
+        else
+            TMP_DIR="$(mktemp)"
+            TMP_RPM="$TMP_DIR/protonvpn-metapackage.rpm"
+            echo 'Installing meta-package...'
+            if ! wget -O "$TMP_RPM" "$RPM_URL"; then
+                echo 'Error: Failed to download meta-package, aborting...'
+                exit 1
+            fi
+            if ! rpm-ostree install --assumeyes --apply-live "$TMP_RPM"; then
+                echo 'Error: Failed to install meta-package, aborting...'
+                exit 1
+            fi
+            echo 'Installed meta-package. Cleaning up...'
+            rm "$TMP_RPM"
+            rmdir "$TMP_DIR"
+            echo 'Done.'
+        fi
+
+        echo
+        echo 'Installing Proton VPN...'
+        if ! rpm-ostree install --assumeyes "$PACKAGE_NAME"; then
+            echo 'Error: Failed to install ProtonVPN, aborting...'
+            exit 1
+        fi
+        echo 'Successfully installed ProtonVPN.'
     }
 
     function util_checkpackage() {

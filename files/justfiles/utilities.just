@@ -425,7 +425,40 @@ install-vpn:
 
     # VPN install logic
     function install_ivpn() { # ref: https://www.ivpn.net/knowledgebase/linux/fedora-silverblue/
-        true; # TODO
+        local REPO_FILE="/etc/yum.repos.d/ivpn.repo"
+        local REPO_URL="https://repo.ivpn.net/stable/fedora/generic/ivpn.repo"
+        local PACKAGE_NAME="ivpn-ui"
+
+        if [ -a "$REPO_FILE" ]; then
+            echo 'Warning: The IVPN repofile does already exist. It will be overwritten if you continue.'
+            local proceed
+            read -p 'Are you sure you want to continue? [Y/n] ' proceed
+            if [[ "$proceed" == [nN]* ]]; then
+                echo 'Aborting...'
+                exit 0
+            fi
+            echo 'Continuing...'
+            echo
+        fi
+
+        if util_checkpackage "ivpn" || util_checkpackage "ivpn-ui"; then
+            echo 'Error: IVPN is already installed.'
+            echo 'Aborting...'
+            exit 1
+        fi
+
+        echo 'Installing IVPN...'
+        local INSTALL_CMD="rpm-ostree install --assumeyes --apply-live $PACKAGE_NAME"
+        local proceed2
+        read -p 'Do you want the IVPN GUI to be installed? [Y/n] ' proceed2
+        if ! [[ "$proceed2" == [nN]* ]]; then
+            INSTALL_CMD="$INSTALL_CMD $PACKAGE_NAME-ui"
+        fi
+        if ! run0 sh -c "wget -O $REPO_FILE $REPO_URL && $INSTALL_CMD && systemctl enable --now ivpn-service"; then
+            echo "Error: The installation didn't complete successfully, aborting..."
+            exit 1
+        fi
+        echo 'Successfully installed IVPN.'
     }
     function install_mullvad() { # ref: https://mullvad.net/de/download/vpn/linux
         local REPO_FILE="/etc/yum.repos.d/mullvad.repo"

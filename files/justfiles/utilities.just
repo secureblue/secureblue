@@ -340,7 +340,7 @@ install-vpn:
     # supported VPN providers and the security features they need disabled, separated by spaces (the names of the helper functions to be called)
     declare -A vpn_providers=(
         ["ivpn"]="" # TODO
-        ["mullvad"]="enable_unconfined_userns enable_xwayland"
+        ["mullvad"]="notice_gui_only enable_unconfined_userns enable_xwayland"
         ["proton"]=""
     )
 
@@ -409,6 +409,17 @@ install-vpn:
             echo 'Enabling XWayland...'
             ujust toggle-xwayland
             echo 'Enabled XWayland.'
+        fi
+    }
+    function notice_gui_only() {
+        echo 'Notice: The following security features only need to be disabled if you intend on using the VPNs graphical user interface.'
+        echo 'If you only intend on using the command-line interface, you can skip to the installation right away.'
+        local proceed
+        read -p 'Do you want to skip to the installation? [y/N] ' proceed
+        if [[ "$proceed" == [yY]* ]]; then
+            echo 'Skipping...'
+            echo
+            util_installvpn
         fi
     }
 
@@ -498,6 +509,12 @@ install-vpn:
         rpm -qa | grep -q "$1"
         return $?
     }
+    function util_installvpn() {
+        echo 'Starting installation...'
+        install_func="install_$vpn_choice"
+        $install_func
+        echo 'Please reboot your device to fully apply the changes.'
+    }
 
     # script start
     echo 'WARNING: It is strongly recommended that you **not** use VPN provider desktop applications, as they generally require significant security downgrades.'
@@ -519,12 +536,11 @@ install-vpn:
         fi
     done
     echo "You selected $vpn_choice"
+    install_func="install_$vpn_choice"
     IFS=' ' read -ra disable_hardening_arr <<< "${vpn_providers[$vpn_choice]}"
     for disable_hardening in "${disable_hardening_arr[@]}"; do
         echo
         $disable_hardening
     done
     echo
-    install_func="install_$vpn_choice"
-    $install_func
-    echo 'Please reboot your device to fully apply the changes.'
+    util_installvpn

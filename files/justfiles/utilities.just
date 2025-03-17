@@ -134,6 +134,17 @@ alias assemble := distrobox-assemble
 # Create distroboxes from a defined manifest
 distrobox-assemble CONTAINER="prompt" ACTION="create" FILE="/etc/distrobox/distrobox.ini":
     #!/usr/bin/bash
+    if [[ "$(ujust check-container-userns-state)" == "disabled" ]]; then
+        echo "Distrobox requires container domain user namespaces to work, which are disabled by default for security reasons."
+        echo "You need to run 'ujust toggle-container-domain-userns-creation' to allow this."
+        container_userns_now=""
+        read -p "Would you like to run 'ujust toggle-container-domain-userns-creation' now? [Y/n] " container_userns_now
+        container_userns_now=${container_userns_now:-y}
+        if [[ "$container_userns_now" == [Yy]* ]]; then
+            echo "Running 'ujust toggle-container-domain-userns-creation'"
+            ujust toggle-container-domain-userns-creation
+        fi
+    fi
     # Distroboxes are gathered from distrobox.ini, please add them there
     source /usr/lib/ujust/ujust.sh
     AssembleList {{ FILE }} {{ ACTION }} {{ CONTAINER }}
@@ -141,6 +152,17 @@ distrobox-assemble CONTAINER="prompt" ACTION="create" FILE="/etc/distrobox/distr
 # Create toolbox containers from a defined manifest (this spec will not be expanded)
 toolbox-assemble CONTAINER="prompt" ACTION="create" FILE="/etc/toolbox/toolbox.ini":
     #!/usr/bin/bash
+    if [[ "$(ujust check-container-userns-state)" == "disabled" ]]; then
+        echo "Toolbox requires container domain user namespaces to work, which are disabled by default for security reasons."
+        echo "You need to run 'ujust toggle-container-domain-userns-creation' to allow this."
+        container_userns_now=""
+        read -p "Would you like to run 'ujust toggle-container-domain-userns-creation' now? [Y/n] " container_userns_now
+        container_userns_now=${container_userns_now:-y}
+        if [[ "$container_userns_now" == [Yy]* ]]; then
+            echo "Running 'ujust toggle-container-domain-userns-creation'"
+            ujust toggle-container-domain-userns-creation
+        fi
+    fi
     # Toolboxes are gathered from toolbox.ini, please add them there
     source /usr/lib/ujust/ujust.sh
     ToolboxAssembleList {{ FILE }} {{ ACTION }} {{ CONTAINER }}
@@ -155,12 +177,17 @@ enable-flathub-unfiltered:
     #!/usr/bin/bash
     flatpak remote-add --if-not-exists --user flathub https://flathub.org/repo/flathub.flatpakrepo
 
-# search for an installed SELinux module
-semodule-check MODULE:
-    #! /bin/run0 /bin/bash
-    if [ -n "$( semodule -l | grep {{ MODULE }} )" ] ; then
-        semodule -l | grep {{ MODULE }}
-    fi
+# Returns the state of container domain user namespaces. (enabled/disabled)
+check-container-userns-state:
+    #!/usr/bin/bash
+    set -euo pipefail
+    podman unshare true &> /dev/null && echo 'enabled' || echo 'disabled'
+
+# Returns the state of unconfined domain user namespaces. (enabled/disabled)
+check-unconfined-userns-state:
+    #!/usr/bin/bash
+    set -euo pipefail
+    unshare -U true &> /dev/null && echo 'enabled' || echo 'disabled'
 
 # Install Steam via choice of 3 methods
 install-steam:
@@ -209,9 +236,9 @@ install-steam:
             ;;
         2)
             echo "Distrobox method selected."
-            if [ -n "$(ujust semodule-check harden_container_userns)" ] ; then
-                echo "Distrobox requires that secureblue's harden-container-userns module be disabled"
-                echo "Please run 'ujust toggle-container-domain-userns-creation'"
+            if [[ "$(ujust check-container-userns-state)" == "disabled" ]]; then
+                echo "Distrobox requires container domain user namespaces to work, which are disabled by default for security reasons."
+                echo "You need to run 'ujust toggle-container-domain-userns-creation' to allow this."
                 container_userns_now=""
                 read -p "Would you like to run 'ujust toggle-container-domain-userns-creation' now? [Y/n] " container_userns_now
                 container_userns_now=${container_userns_now:-y}

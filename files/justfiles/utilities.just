@@ -339,7 +339,7 @@ install-vpn:
 
     # supported VPN providers and the security features they need disabled, separated by spaces (the names of the helper functions to be called)
     declare -A vpn_providers=(
-        ["ivpn"]="" # TODO
+        ["ivpn"]="notice_gui_only enable_unconfined_userns enable_xwayland"
         ["mullvad"]="notice_gui_only enable_unconfined_userns enable_xwayland"
         ["proton"]=""
     )

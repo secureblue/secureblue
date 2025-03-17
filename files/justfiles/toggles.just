@@ -275,9 +275,6 @@ toggle-bash-environment-lockdown skip_approval="false" apply_for_all_users="prom
             "$user_home/.profile"
             "$user_home/.bash_logout"
             "$user_home/.bash_login"
-        )
-
-        BASH_ENV_DIRS=(
             "$user_home/.bashrc.d/"
             "$user_home/.config/environment.d/"
         )
@@ -293,44 +290,37 @@ toggle-bash-environment-lockdown skip_approval="false" apply_for_all_users="prom
             mkdir -p "$backup_dest"
 
             for file in "${BASH_ENV_FILES[@]}"; do
-              [ -d "$file" ]  && echo "Error: A directory path is in the BASH_ENV_FILES array." && exit
               # skel_file converts "$user_home/.bashrc" to ".bashrc"
               skel_file=$(echo "$file" | sed 's|'${user_home}'/||')
-              if [ -f "$file" ]; then
+              if [ ! -f "$file" ] && [ ! -d "$file" ] && [ -e "$file" ]; then
+                echo "Special file detected on absolute filepath ($file) from BASH_ENV_FILES."
+                exit
+              elif [ -f "$file" ]; then
                 chattr -i "$file"
                 rsync -a --mkpath "$file" "$backup_dest$skel_file"
                 rm "$file"
               fi
-              if [ -f "/etc/skel/$skel_file" ]; then
-                cp "/etc/skel/$skel_file" "$file"
-              else
-                touch "$file"
-              fi
-              chmod -R 500 "$file"
-              chown -R "$user:" "$file"              
-            done
-
-            for dir in "${BASH_ENV_DIRS[@]}"; do
-              [ -f "$dir" ]  && echo "Error: A file path is in the BASH_ENV_DIRS array." && exit
-              # skel_dir converts "$user_home/.bashrc.d/" to ".bashrc.d/"
-              skel_dir=$(echo "$dir" | sed 's|'${user_home}'/||')
-              if [ -d "$dir" ]; then
+              elif [ -d "$dir" ]; then
                 chattr -R -i "$dir" 
                 rsync -a --mkpath "$dir" "$backup_dest$skel_dir"
                 rm -r "$dir"
               fi
-              mkdir -p "$dir"
-              chmod -R 500 "$dir"
-              chown -R "$user:" "$dir"
+              # Now we create new empty/default files and directories
+              if [ -f "/etc/skel/$skel_file" ]; then
+                cp "/etc/skel/$skel_file" "$file"
+              else
+                file_path=$(echo "$file" | rev | cut -d'/' -f2- | rev)
+                mkdir -p "$file_path"
+                [ "$file_path" != "$file" ] && touch "$file"
+              fi
+              chmod -R 500 "$file"
+              chown -R "$user:" "$file"              
             done
-
             chmod -R 500 "$user_home/bash_env_files"
             chown -R "$user:" "$user_home/bash_env_files"            
         fi
 
-      BASH_ENV_FILES_DIRS=("${BASH_ENV_FILES[@]}" "${BASH_ENV_DIRS[@]}")
-
-      for fs_object in "${BASH_ENV_FILES_DIRS[@]}"; do
+      for fs_object in "${BASH_ENV_FILES[@]}"; do
         if [ -d "$fs_object" ]; then
           chattr "$chattr_operator" "-R" "$fs_object"
         else

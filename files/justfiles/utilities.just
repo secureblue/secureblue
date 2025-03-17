@@ -454,7 +454,7 @@ install-vpn:
         if ! [[ "$proceed2" == [nN]* ]]; then
             INSTALL_CMD="$INSTALL_CMD $PACKAGE_NAME-ui"
         fi
-        if ! run0 sh -c "wget -O $REPO_FILE $REPO_URL && $INSTALL_CMD && systemctl enable --now ivpn-service"; then
+        if ! run0 sh -c "wget -O $REPO_FILE $REPO_URL && $INSTALL_CMD && systemctl enable ivpn-service"; then
             echo "Error: The installation didn't complete successfully, aborting..."
             exit 1
         fi

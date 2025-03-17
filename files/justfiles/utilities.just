@@ -424,10 +424,10 @@ install-vpn:
     }
 
     # VPN install logic
-    function install_ivpn() {
+    function install_ivpn() { # ref: https://www.ivpn.net/knowledgebase/linux/fedora-silverblue/
         true; # TODO
     }
-    function install_mullvad() {
+    function install_mullvad() { # ref: https://mullvad.net/de/download/vpn/linux
         local REPO_FILE="/etc/yum.repos.d/mullvad.repo"
         local REPO_URL="https://repository.mullvad.net/rpm/stable/mullvad.repo"
 
@@ -458,7 +458,7 @@ install-vpn:
         fi
         echo 'Successfully installed Mullvad VPN.'
     }
-    function install_proton() {
+    function install_proton() { # ref: https://protonvpn.com/support/en/official-linux-vpn-fedora
         RPM_URL="https://repo.protonvpn.com/fedora-$(cat /etc/fedora-release | cut -d' ' -f 3)-stable/protonvpn-stable-release/protonvpn-stable-release-1.0.2-1.noarch.rpm"
         PACKAGE_NAME="proton-vpn-gnome-desktop"
 

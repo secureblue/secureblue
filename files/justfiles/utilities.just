@@ -339,6 +339,7 @@ install-vpn:
 
     # supported VPN providers and the security features they need disabled, separated by spaces (the names of the helper functions to be called)
     declare -A vpn_providers=(
+        ["ivpn"]="" # TODO
         ["mullvad"]="enable_unconfined_userns enable_xwayland"
         ["proton"]="" # TODO
     )
@@ -412,6 +413,9 @@ install-vpn:
     }
 
     # VPN install logic
+    function install_ivpn() {
+        true; # TODO
+    }
     function install_mullvad() {
         local REPO_FILE="/etc/yum.repos.d/mullvad.repo"
         local REPO_URL="https://repository.mullvad.net/rpm/stable/mullvad.repo"

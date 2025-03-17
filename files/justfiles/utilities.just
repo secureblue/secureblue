@@ -445,7 +445,7 @@ install-vpn:
             echo "Error: The installation didn't complete successfully, aborting..."
             exit 1
         fi
-        echo 'Installed successfully.'
+        echo 'Successfully installed Mullvad VPN.'
     }
     function install_proton() {
         RPM_URL="https://repo.protonvpn.com/fedora-$(cat /etc/fedora-release | cut -d' ' -f 3)-stable/protonvpn-stable-release/protonvpn-stable-release-1.0.2-1.noarch.rpm"
@@ -488,10 +488,10 @@ install-vpn:
         echo
         echo 'Installing Proton VPN...'
         if ! rpm-ostree install --assumeyes "$PACKAGE_NAME"; then
-            echo 'Error: Failed to install ProtonVPN, aborting...'
+            echo 'Error: Failed to install Proton VPN, aborting...'
             exit 1
         fi
-        echo 'Successfully installed ProtonVPN.'
+        echo 'Successfully installed Proton VPN.'
     }
 
     function util_checkpackage() {
@@ -527,5 +527,4 @@ install-vpn:
     echo
     install_func="install_$vpn_choice"
     $install_func
-    echo 'Done.'
     echo 'Please reboot your device to fully apply the changes.'

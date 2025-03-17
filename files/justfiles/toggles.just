@@ -198,7 +198,7 @@ toggle-xwayland ACTION="prompt":
     fi
 
 # Toggle bash environment lockdown (mitigates LD_PRELOAD attacks)
-toggle-bash-environment-lockdown skip_approval="false" multiuser="unselected":
+toggle-bash-environment-lockdown skip_approval="false" apply_for_all_users="prompt":
     #!/bin/run0 /bin/bash
     set -eou pipefail
     # I'm aware these are source when used in global justfiles, but this makes the script portable to other OSs or when running as a standalone file.
@@ -226,21 +226,26 @@ toggle-bash-environment-lockdown skip_approval="false" multiuser="unselected":
 
     if [ "$pending_status" == "locked" ]; then
         echo "${b}WARNING${n} This will change your ~/.bashrc, ~/.bash_profile, ~/.config/bash-completion, ~/.profile, ~/.bash_logout, ~/.bash_login, ~/.bashrc.d/, and ~/.config/environment.d/"
-        echo "This is needed to ensure the mitigation is effective."
+        echo "This is needed to ensure the mitigation (see LD_PRELOAD attacks) is effective."
         echo "This script will create backups of the old versions in ~/bash_env_files/$current_time."
     else
         echo "${b}WARNING${n} .bashrc, .bash_profile, and more will be unlocked and made editable by non-root users. This represents a security risk (see LD_PRELOAD attacks)"
     fi
-    echo "Do you understand?"
-    echo "Please type in \"YES I UNDERSTAND\" and press enter"
+
     if [ "{{ skip_approval }}" == "false" ]; then
+        echo "Do you understand?"
+        echo "Please type in \"YES I UNDERSTAND\" and press enter"
         read -r ACCEPT
         if [ "$ACCEPT" != "YES I UNDERSTAND" ]; then
             exit
         fi
+    elif [ "{{ skip_approval }}" != "true" ]; then
+        echo "Invalid skip_approval arguement, only "true", "false", or empty allowed."
+        exit
     fi
 
-    if [ "{{ multiuser }}" == "unselected" ]; then
+    # Note: No need to specially handle the "{{ apply_for_all_users }}" == "true" case as that's the default
+    if [ "{{ apply_for_all_users }}" == "prompt" ]; then
         echo "Do you want this change to apply to ""${b}""all""${n}"" users (""${user_list[@]}"")? [y/N]"
         echo "Otherwise, it will only apply to the user who launched this script ($SUDO_USER)."
         read -r REPLY
@@ -248,10 +253,11 @@ toggle-bash-environment-lockdown skip_approval="false" multiuser="unselected":
         if [[ "$REPLY" != [yY]* ]]; then
             user_list=("$SUDO_USER")
         fi
+    elif [ "{{ apply_for_all_users }}" == "false" ]; then
+        user_list=("$SUDO_USER")
     else
-        if [ "{{ multiuser }}" == "false" ]; then
-            user_list=("$SUDO_USER")
-        fi
+        echo "Invalid apply_for_all_users arguement, only "true", "false", or empty allowed."
+        exit
     fi
 
     chattr_operator=$([ "$pending_status" == "locked" ] && echo "+i" || echo "-i")  
@@ -285,6 +291,7 @@ toggle-bash-environment-lockdown skip_approval="false" multiuser="unselected":
             mkdir -p "$backup_dest"
 
             for file in "${BASH_ENV_FILES[@]}"; do
+              [ -d "$file" ]  && echo "Error: A directory path is in the BASH_ENV_FILES array."; exit
               # skel_file converts "$user_home/.bashrc" to ".bashrc"
               skel_file=$(echo "$file" | sed 's|'${user_home}'/||')
               if [ -f "$file" ]; then
@@ -302,6 +309,7 @@ toggle-bash-environment-lockdown skip_approval="false" multiuser="unselected":
             done
 
             for dir in "${BASH_ENV_DIRS[@]}"; do
+              [ -f "$dir" ]  && echo "Error: A file path is in the BASH_ENV_DIRS array."; exit
               # skel_dir converts "$user_home/.bashrc.d/" to ".bashrc.d/"
               skel_dir=$(echo "$dir" | sed 's|'${user_home}'/||')
               if [ -d "$dir" ]; then

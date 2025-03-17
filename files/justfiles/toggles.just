@@ -338,6 +338,13 @@ toggle-bash-environment-lockdown skip_approval="false" apply_for_all_users="prom
     done
 
     echo "${user_list[@]}" "$pending_status."
+    echo ""
+    echo "Optional Arguments:"
+    echo "ujust toggle-bash-environment-lockdown skip_approval apply_for_all_users"
+    echo "    skip_approval: [true/false]          'true' the user is not prompted to respond 'YES I UNDERSTAND'"; 'false' user is prompted."
+    echo "    apply_for_all_users: [true/false]    'true' change is applied to all users (without prompting); 'false' change is only applied to user currently logged in (without prompting)."
+    echo "Invalid optional arguments are treated as errors."
+    echo ""
     echo "WARNING: until a reboot, any process with an open file descriptor will continue to have the access they had before this script was run."
 
 # Toggle unconfined domain userns creation

@@ -560,16 +560,8 @@ install-vpn:
         exit 0
     fi
     echo
-    valid_choice="0"
-    while [[ "$valid_choice" == "0" ]]; do
-        echo 'Please choose your desired provider:'
-        vpn_choice="$(ugum choose "${!vpn_providers[@]}")"
-        if [ -z ${vpn_providers["$vpn_choice"]+x} ]; then
-            echo "Invalid provider choice: $vpn_choice. Please try again."
-        else
-            valid_choice="1"
-        fi
-    done
+    echo 'Please choose your desired provider'
+    vpn_choice="$(ugum choose "${!vpn_providers[@]}")"
     echo "You selected $vpn_choice"
     IFS=' ' read -ra disable_hardening_arr <<< "${vpn_providers[$vpn_choice]}"
     for disable_hardening in "${disable_hardening_arr[@]}"; do

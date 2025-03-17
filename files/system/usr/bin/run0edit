@@ -78,22 +78,31 @@ script='\
     tmpfile="$2"
     editor="$3"
 
-    # If the file does not exist, ensure the directory exists.
-    if [ ! -e "$filename" ] && [ ! -d "$(dirname "$filename")" ]; then
-        echo "run0edit: invalid argument: directory does not exist"
-        exit 1
+    # If the file does not exist, ensure the directory exists and is writable.
+    if [ ! -e "$filename" ]; then
+        directory="$(dirname "$filename")"
+        if [ ! -d "$directory" ]; then
+            echo "run0edit: invalid argument: directory does not exist"
+            exit 1
+        elif [ ! -w "$directory" ]; then
+            echo "run0edit: $directory is read-only."
+            exit 1
+        fi
     fi
 
-    # If the file exists, ensure it is a regular file.
-    if [ -e "$filename" ] && [ ! -f "$filename" ]; then
-        echo "run0edit: invalid argument: not a regular file"
-        exit 1
-    fi
-
-    # If the file exists, attempt to copy to the temp file.
-    if [ -f "$filename" ] && ! cp "$filename" "$tmpfile"; then
-        echo "run0edit: failed to copy $filename to temporary file at $tmpfile"
-        exit 1
+    # If the file exists, ensure it is a regular file and writable, then
+    # attempt to copy it to the temp file.
+    if [ -e "$filename" ]; then
+        if [ ! -f "$filename" ]; then
+            echo "run0edit: invalid argument: not a regular file"
+            exit 1
+        elif [ ! -w "$filename" ]; then
+            echo "run0edit: $filename is read-only."
+            exit 1
+        elif ! cp "$filename" "$tmpfile"; then
+            echo "run0edit: failed to copy $filename to temporary file at $tmpfile"
+            exit 1
+        fi
     fi
 
     # Attempt to edit the temp file as the original user.

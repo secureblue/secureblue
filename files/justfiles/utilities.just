@@ -427,7 +427,7 @@ install-vpn:
     function install_ivpn() { # ref: https://www.ivpn.net/knowledgebase/linux/fedora-silverblue/
         local REPO_FILE="/etc/yum.repos.d/ivpn.repo"
         local REPO_URL="https://repo.ivpn.net/stable/fedora/generic/ivpn.repo"
-        local PACKAGE_NAME="ivpn-ui"
+        local PACKAGE_NAME="ivpn"
 
         if [ -a "$REPO_FILE" ]; then
             echo 'Warning: The IVPN repofile does already exist. It will be overwritten if you continue.'
@@ -441,7 +441,7 @@ install-vpn:
             echo
         fi
 
-        if util_checkpackage "ivpn" || util_checkpackage "ivpn-ui"; then
+        if util_checkpackage "$PACKAGE_NAME" || util_checkpackage "$PACKAGE_NAME-ui"; then
             echo 'Error: IVPN is already installed.'
             echo 'Aborting...'
             exit 1
@@ -463,6 +463,7 @@ install-vpn:
     function install_mullvad() { # ref: https://mullvad.net/de/download/vpn/linux
         local REPO_FILE="/etc/yum.repos.d/mullvad.repo"
         local REPO_URL="https://repository.mullvad.net/rpm/stable/mullvad.repo"
+        local PACKAGE_NAME="mullvad-vpn"
 
         if [ -a "$REPO_FILE" ]; then
             echo 'Warning: The Mullvad repofile does already exist. It will be overwritten if you continue.'
@@ -476,8 +477,8 @@ install-vpn:
             echo
         fi
 
-        if util_checkpackage "mullvad-vpn"; then
-            echo 'Error: The package "mullvad-vpn" is already installed.'
+        if util_checkpackage "$PACKAGE_NAME"; then
+            echo 'Error: The Mullvad VPN is already installed.'
             echo 'Aborting...'
             exit 1
         fi
@@ -485,7 +486,7 @@ install-vpn:
         echo 'Installing Mullvad VPN...'
         # Notice: We're intentionally not enabling `mullvad-early-boot-blocking.service` --now, as that would block network.
         # It is intended to start on boot and then have it's restrictions lifted as soon as the daemon starts.
-        if ! run0 sh -c "wget -O $REPO_FILE $REPO_URL && rpm-ostree install --assumeyes --apply-live mullvad-vpn && systemctl enable --now mullvad-daemon.service && systemctl enable mullvad-early-boot-blocking.service"; then
+        if ! run0 sh -c "wget -O $REPO_FILE $REPO_URL && rpm-ostree install --assumeyes --apply-live $PACKAGE_NAME && systemctl enable --now mullvad-daemon.service && systemctl enable mullvad-early-boot-blocking.service"; then
             echo "Error: The installation didn't complete successfully, aborting..."
             exit 1
         fi
@@ -496,7 +497,7 @@ install-vpn:
         PACKAGE_NAME="proton-vpn-gnome-desktop"
 
         if util_checkpackage "$PACKAGE_NAME"; then
-            echo "Error: the package \"$PACKAGE_NAME\" is already installed."
+            echo "Error: Proton VPN is already installed."
             echo 'Aborting...'
             exit 1
         fi

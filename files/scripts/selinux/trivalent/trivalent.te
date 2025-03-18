@@ -32,6 +32,7 @@ application_domain(trivalent_script_t, trivalent_script_exec_t)
 role trivalent_script_roles types trivalent_script_t;
 
 gen_require(`
+	class dbus acquire_svc;
 	type audio_home_t;
 	type chrome_sandbox_home_t;
 	type unconfined_t;

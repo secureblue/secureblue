@@ -2,6 +2,7 @@
 audit-secureblue AUDIT_FLATPAKS="true":
     #!/bin/bash
     set -euo pipefail
+    source /usr/lib/ujust/libformatting.sh
 
     STATUS_SUCCESS="SUCCESS"
     STATUS_WARNING="WARNING"
@@ -463,7 +464,7 @@ audit-secureblue AUDIT_FLATPAKS="true":
     done
     # shellcheck disable=SC2050
     if [[ "{{ AUDIT_FLATPAKS }}" == "true" ]]; then
-        printf "Run '\033[1mujust audit-secureblue false\033[22m' to skip flatpak recommendations.\n"
+        echo "Run '${bold}ujust audit-secureblue false${unbold}' to skip flatpak recommendations."
     else
-        printf "Run '\033[1mujust audit-secureblue\033[22m' to audit flatpak settings as well.\n"
+        echo "Run '${bold}ujust audit-secureblue${unbold}' to audit flatpak settings as well."
     fi

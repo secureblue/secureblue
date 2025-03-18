@@ -6,7 +6,13 @@ set -oue pipefail
 find /tmp/rpms
 
 QUALIFIED_KERNEL="$(rpm -qa | grep -P 'kernel-(\d+\.\d+\.\d+)' | sed -E 's/kernel-//')"
-INCOMING_KERNEL_VERSION="$(basename -s .rpm $(ls /tmp/rpms/kernel/kernel-[0-9]*.rpm 2>/dev/null | grep -P 'kernel-(\d+\.\d+\.\d+)' | sed -E 's/kernel-//'))"
+INCOMING_KERNEL_VERSION="$(find '/tmp/rpms/kernel' \
+    -maxdepth 1 \
+    -name 'kernel-[0-9]*.rpm' \
+    -regextype posix-egrep \
+    -regex '.*/kernel-([0-9]+\.[0-9]+\.[0-9]+).*' \
+    -printf '%f' \
+    -quit | sed -e 's/^kernel-//' -e 's/.rpm$//')"
 
 echo "Qualified kernel: $QUALIFIED_KERNEL"
 echo "Incoming kernel version: $INCOMING_KERNEL_VERSION"

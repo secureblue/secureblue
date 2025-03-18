@@ -353,7 +353,7 @@ install-vpn:
         if [ -a "$REPO_FILE" ]; then
             echo 'Warning: The IVPN repofile does already exist. It will be overwritten if you continue.'
             local proceed
-            read -p 'Are you sure you want to continue? [Y/n] ' proceed
+            read -rp 'Are you sure you want to continue? [Y/n] ' proceed
             if [[ "$proceed" == [nN]* ]]; then
                 echo 'Aborting...'
                 exit 0
@@ -371,7 +371,7 @@ install-vpn:
         echo 'Installing IVPN...'
         local INSTALL_CMD="rpm-ostree install --assumeyes --apply-live $PACKAGE_NAME"
         local proceed2
-        read -p 'Do you want the IVPN GUI to be installed? [Y/n] ' proceed2
+        read -rp 'Do you want the IVPN GUI to be installed? [Y/n] ' proceed2
         if ! [[ "$proceed2" == [nN]* ]]; then
             INSTALL_CMD="$INSTALL_CMD $PACKAGE_NAME-ui"
         fi
@@ -390,7 +390,7 @@ install-vpn:
         if [ -a "$REPO_FILE" ]; then
             echo 'Warning: The Mullvad repofile does already exist. It will be overwritten if you continue.'
             local proceed
-            read -p 'Are you sure you want to continue? [Y/n] ' proceed
+            read -rp 'Are you sure you want to continue? [Y/n] ' proceed
             if [[ "$proceed" == [nN]* ]]; then
                 echo 'Aborting...'
                 exit 0
@@ -427,7 +427,7 @@ install-vpn:
         if util_checkpackage "protonvpn-stable-release"; then
             echo 'Warning: It appears that the package "protonvpn-stable-release" (repository meta-package) is already installed, but Proton VPN is not.'
             local proceed
-            read -p 'Do you want to continue? This will use the existing meta-package [Y/n] ' proceed
+            read -rp 'Do you want to continue? This will use the existing meta-package [Y/n] ' proceed
             if [[ "$proceed" == [nN]* ]]; then
                 echo 'Aborting...'
                 exit 0
@@ -469,7 +469,7 @@ install-vpn:
     # script start
     echo 'WARNING: It is strongly recommended that you **not** use VPN provider desktop applications, as they generally require significant security downgrades.'
     echo 'Instead, it is recommended that you download wireguard profiles from your provider and import them into your desktop environment.'
-    read -p 'Do you wish to continue? [y/N] ' proceed
+    read -rp 'Do you wish to continue? [y/N] ' proceed
     if ! [[ "$security_downgrade" == [yY]* ]]; then
         echo 'Aborting...'
         exit 0
@@ -486,7 +486,7 @@ install-vpn:
         echo 'Notice: This VPN requires additional security features to be disabled if you intend to use its graphical interface.'
         echo 'If you only intend on using the command-line interface, you can skip those.'
         local proceed
-        read -p 'Do intend to use the GUI? [Y/n] ' proceed
+        read -rp 'Do intend to use the GUI? [Y/n] ' proceed
         if [[ "$proceed" == [nN]* ]]; then
             echo 'Additional hardening features required for the GUI will not be disabled.'
             needs_gui="0"
@@ -503,7 +503,7 @@ install-vpn:
             echo 'This will execute "ujust toggle-unconfined-domain-userns-creation". You can also manually do this later if you skip this step.'
             echo 'Warning: This is a security reduction!'
             local proceed
-            read -p 'Do you want to do this now? [Y/n] ' proceed
+            read -rp 'Do you want to do this now? [Y/n] ' proceed
             if ! [[ "$proceed" == [nN]* ]]; then
                 echo 'Enabling unconfined domain user namespaces...'
                 ujust toggle-unconfined-domain-userns-creation
@@ -521,7 +521,7 @@ install-vpn:
             echo 'This will execute "ujust toggle-xwayland". You can also manually do this later if you skip this step.'
             echo 'Warning: This is a security reduction!'
             local proceed
-            read -p 'Do you want to do this now? [Y/n] ' proceed
+            read -rp 'Do you want to do this now? [Y/n] ' proceed
             if ! [[ "$proceed" == [nN]* ]]; then
                 echo 'Enabling XWayland...'
                 ujust toggle-xwayland

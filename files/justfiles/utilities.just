@@ -486,8 +486,9 @@ install-vpn:
         if [[ "$proceed_gui" == [nN]* ]]; then
             echo 'Additional hardening features required for the GUI will not be disabled.'
             needs_gui="0"
+        else
+            echo 'Additional hardening features required for the GUI will be disabled.'
         fi
-        echo 'Additional hardening features required for the GUI will be disabled.'
     fi
 
     if [[ "$vpn_requirements" =~ "always_needs_unconfined_userns" || "$vpn_requirements" =~ "gui_needs_unconfined_userns" && "$needs_gui" == "1" ]]; then

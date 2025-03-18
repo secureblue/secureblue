@@ -337,91 +337,12 @@ install-vpn:
     #!/usr/bin/bash
     set -euo pipefail
 
-    # supported VPN providers and the security features they need disabled, separated by spaces (the names of the helper functions to be called)
+    # supported VPN providers and the security features they need disabled, separated by spaces
     declare -A vpn_providers=(
-        ["ivpn"]="notice_gui_only enable_unconfined_userns enable_xwayland"
-        ["mullvad"]="notice_gui_only enable_unconfined_userns enable_xwayland"
+        ["ivpn"]="gui_needs_unconfined_userns gui_needs_xwayland"
+        ["mullvad"]="gui_needs_unconfined_userns gui_needs_xwayland"
         ["proton"]=""
     )
-
-    # helper functions for disabling security features
-    function enable_unconfined_userns() {
-        if [[ "$(ujust check-unconfined-userns-state)" == "enabled" ]] ; then
-            echo 'Unconfined domain user namespaces already enabled, skipping...'
-            return
-        fi
-        echo 'This VPN requires unconfined domain user namespaces to be enabled.'
-        echo 'This will execute "ujust toggle-unconfined-domain-userns-creation". You can also manually do this later if you skip this step.'
-        echo 'Warning: This is a security reduction!'
-        local proceed
-        read -p 'Do you want to do this now? [Y/n] ' proceed
-        if ! [[ "$proceed" == [nN]* ]]; then
-            echo 'Enabling unconfined domain user namespaces...'
-            ujust toggle-unconfined-domain-userns-creation
-            echo 'Enabled unconfined domain user namespaces.'
-        fi
-    }
-    function enable_xwayland() {
-        local DE="unknown"
-        local IMAGE="$(rpm-ostree status | grep '●')"
-        if [ -n "$(echo "$IMAGE" | grep 'silverblue')" ] ; then
-            DE=gnome
-        elif [ -n "$(echo "$IMAGE" | grep 'kinoite')" ] ; then
-            DE=plasma
-        elif [ -n "$(echo "$IMAGE" | grep 'sericea')" ] || [ -n "$(echo "$IMAGE" | grep 'sway')" ] ; then
-            DE=sway
-        fi
-
-        if [[ "$DE" == "unknown" ]]; then
-            echo 'Warning: Unable to identify your desktop environment. Please manually ensure that XWayland is enabled. Skipping...'
-            return
-        fi
-
-        local xwayland_enabled="0"
-        if [ "$DE" == "gnome" ]; then
-            GNOME_XWAYLAND_FILE="/etc/systemd/user/org.gnome.Shell@wayland.service.d/override.conf"
-            if ! test -e $GNOME_XWAYLAND_FILE; then
-                xwayland_enabled="1"
-            fi
-        elif [ "$DE" == "plasma" ]; then
-            PLASMA_XWAYLAND_FILE="/etc/systemd/user/plasma-kwin_wayland.service.d/override.conf"
-            if ! test -e $PLASMA_XWAYLAND_FILE; then
-                xwayland_enabled="1"
-            fi
-        elif [ "$DE" == "sway" ]; then
-            SWAY_XWAYLAND_FILE="/etc/sway/config.d/99-noxwayland.conf"
-            if ! test -e $SWAY_XWAYLAND_FILE; then
-                xwayland_enabled="1"
-            fi
-        fi
-
-        if [[ "$xwayland_enabled" == "1" ]]; then
-            echo 'XWayland already enabled, skipping...'
-            return
-        fi
-
-        echo 'This VPN requires XWayland to be enabled.'
-        echo 'This will execute "ujust toggle-xwayland". You can also manually do this later if you skip this step.'
-        echo 'Warning: This is a security reduction!'
-        local proceed
-        read -p 'Do you want to do this now? [Y/n] ' proceed
-        if ! [[ "$proceed" == [nN]* ]]; then
-            echo 'Enabling XWayland...'
-            ujust toggle-xwayland
-            echo 'Enabled XWayland.'
-        fi
-    }
-    function notice_gui_only() {
-        echo 'Notice: The following security features only need to be disabled if you intend on using the VPNs graphical user interface.'
-        echo 'If you only intend on using the command-line interface, you can skip to the installation right away.'
-        local proceed
-        read -p 'Do you want to skip to the installation? [y/N] ' proceed
-        if [[ "$proceed" == [yY]* ]]; then
-            echo 'Skipping...'
-            echo
-            util_installvpn
-        fi
-    }
 
     # VPN install logic
     function install_ivpn() { # ref: https://www.ivpn.net/knowledgebase/linux/fedora-silverblue/
@@ -544,12 +465,6 @@ install-vpn:
         rpm -qa | grep -q "$1"
         return $?
     }
-    function util_installvpn() {
-        echo 'Starting installation...'
-        install_func="install_$vpn_choice"
-        $install_func
-        echo 'Please reboot your device to fully apply the changes.'
-    }
 
     # script start
     echo 'WARNING: It is strongly recommended that you **not** use VPN provider desktop applications, as they generally require significant security downgrades.'
@@ -563,10 +478,60 @@ install-vpn:
     echo 'Please choose your desired provider'
     vpn_choice="$(ugum choose "${!vpn_providers[@]}")"
     echo "You selected $vpn_choice"
-    IFS=' ' read -ra disable_hardening_arr <<< "${vpn_providers[$vpn_choice]}"
-    for disable_hardening in "${disable_hardening_arr[@]}"; do
+    
+    vpn_requirements="${vpn_providers[$vpn_choice]}"
+    needs_gui="1"
+    if [[ "$vpn_requirements" =~ "gui_" ]]; then
         echo
-        $disable_hardening
-    done
+        echo 'Notice: This VPN requires additional security features to be disabled if you intend to use its graphical interface.'
+        echo 'If you only intend on using the command-line interface, you can skip those.'
+        local proceed
+        read -p 'Do intend to use the GUI? [Y/n] ' proceed
+        if [[ "$proceed" == [nN]* ]]; then
+            echo 'Additional hardening features required for the GUI will not be disabled.'
+            needs_gui="0"
+        fi
+        echo 'Additional hardening features required for the GUI will be disabled.'
+    fi
+
+    if [[ "$vpn_requirements" =~ "always_needs_unconfined_userns" || "$vpn_requirements" =~ "gui_needs_unconfined_userns" && "$needs_gui" == "1" ]]; then
+        echo
+        if [[ "$(ujust check-unconfined-userns-state)" == "enabled" ]] ; then
+            echo 'Unconfined domain user namespaces already enabled, skipping...'
+        else
+            echo 'This VPN requires unconfined domain user namespaces to be enabled.'
+            echo 'This will execute "ujust toggle-unconfined-domain-userns-creation". You can also manually do this later if you skip this step.'
+            echo 'Warning: This is a security reduction!'
+            local proceed
+            read -p 'Do you want to do this now? [Y/n] ' proceed
+            if ! [[ "$proceed" == [nN]* ]]; then
+                echo 'Enabling unconfined domain user namespaces...'
+                ujust toggle-unconfined-domain-userns-creation
+                echo 'Enabled unconfined domain user namespaces.'
+            fi
+        fi
+    fi
+
+    if [[ "$vpn_requirements" =~ "always_needs_xwayland" || "$vpn_requirements" =~ "gui_needs_xwayland" && "$needs_gui" == "1" ]]; then
+        echo
+        if false; then # TODO use standalone check-xwayland-state ujust
+            echo 'XWayland already enabled, skipping...'
+        else
+            echo 'This VPN requires XWayland to be enabled.'
+            echo 'This will execute "ujust toggle-xwayland". You can also manually do this later if you skip this step.'
+            echo 'Warning: This is a security reduction!'
+            local proceed
+            read -p 'Do you want to do this now? [Y/n] ' proceed
+            if ! [[ "$proceed" == [nN]* ]]; then
+                echo 'Enabling XWayland...'
+                ujust toggle-xwayland
+                echo 'Enabled XWayland.'
+            fi
+        fi
+    fi
+
     echo
-    util_installvpn
+    echo 'Starting installation...'
+    install_func="install_$vpn_choice"
+    $install_func
+    echo 'Please reboot your device to fully apply the changes.'

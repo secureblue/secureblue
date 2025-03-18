@@ -460,4 +460,4 @@ audit-secureblue AUDIT_FLATPAKS="true":
         done
         echo
     done
-    echo "Run '{{BOLD}}ujust audit-secureblue false{{NORMAL}}' to skip flatpak recommendations."
+    echo "Run '{{ BOLD }}ujust audit-secureblue false{{ NORMAL }}' to skip flatpak recommendations."

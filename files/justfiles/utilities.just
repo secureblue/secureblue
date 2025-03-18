@@ -148,7 +148,7 @@ distrobox-assemble CONTAINER="prompt" ACTION="create" FILE="/etc/distrobox/distr
     fi
     # Distroboxes are gathered from distrobox.ini, please add them there
     source /usr/lib/ujust/ujust.sh
-    AssembleList "{{FILE}}" "{{ACTION}}" "{{CONTAINER}}"
+    AssembleList "{{ FILE }}" "{{ ACTION }}" "{{ CONTAINER }}"
 
 # Create toolbox containers from a defined manifest (this spec will not be expanded)
 toolbox-assemble CONTAINER="prompt" ACTION="create" FILE="/etc/toolbox/toolbox.ini":
@@ -166,12 +166,12 @@ toolbox-assemble CONTAINER="prompt" ACTION="create" FILE="/etc/toolbox/toolbox.i
     fi
     # Toolboxes are gathered from toolbox.ini, please add them there
     source /usr/lib/ujust/ujust.sh
-    ToolboxAssembleList "{{FILE}}" "{{ACTION}}" "{{CONTAINER}}"
+    ToolboxAssembleList "{{ FILE }}" "{{ ACTION }}" "{{ CONTAINER }}"
 
 # Run a non-flatpak application with standard memory allocator (needs an argument!)
 with-standard-malloc APP:
     #!/usr/bin/bash
-    bwrap --dev-bind / / --ro-bind /dev/null /etc/ld.so.preload "{{APP}}"
+    bwrap --dev-bind / / --ro-bind /dev/null /etc/ld.so.preload "{{ APP }}"
 
 # Add the unfiltered Flathub flatpak repo
 enable-flathub-unfiltered:

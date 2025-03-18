@@ -147,7 +147,7 @@ toggle-gnome-extensions:
 toggle-xwayland ACTION="prompt":
     #! /bin/run0 /bin/bash
     source /usr/lib/ujust/ujust.sh
-    OPTION="{{ACTION}}"
+    OPTION="{{ ACTION }}"
     if [ "$OPTION" = "prompt" ]; then
       IMAGE="$(rpm-ostree status | grep '●')"
       if echo "$IMAGE" | grep -q 'silverblue'; then
@@ -157,7 +157,7 @@ toggle-xwayland ACTION="prompt":
       elif echo "$IMAGE" | grep -qE 'sericea|sway'; then
           OPTION=sway
       else
-        echo "{{BOLD}}Toggling Xwayland (requires logout){{NORMAL}}"
+        echo "{{ BOLD }}Toggling Xwayland (requires logout){{ NORMAL }}"
         echo 'For which DE/WM do you want to toggle Xwayland?'
         OPTION=$(ugum choose "GNOME" "KDE Plasma" "Sway")
       fi
@@ -205,7 +205,7 @@ toggle-xwayland ACTION="prompt":
 toggle-bash-environment-lockdown:
     #!/usr/bin/bash
     BASH_ENV_FILES=("$HOME/.bashrc" "$HOME/.bash_profile")
-    echo "{{BOLD}}WARNING{{NORMAL}} This will overwrite your .bashrc and .bash_profile."
+    echo "{{ BOLD }}WARNING{{ NORMAL }} This will overwrite your .bashrc and .bash_profile."
     echo "This is needed to ensure the mitigation is effective."
     echo "Do you understand?"
     echo "Please type in \"YES I UNDERSTAND\" and press enter"

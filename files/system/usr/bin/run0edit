@@ -1,0 +1,199 @@
+#!/bin/sh
+# ------------------------------------------------------------------------------
+# run0edit - edit a single file as root.
+# version 0.3.2-sb
+#
+# Please report issues at: https://github.com/HastD/run0edit/issues
+#
+# Copyright (C) 2025 Daniel Hast
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     https://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+# ------------------------------------------------------------------------------
+
+set -euo pipefail
+
+# Reset $PATH to a default value to ensure command invocations point to
+# standard utilities.
+PATH=$(command -p env -i sh -c 'echo "$PATH"')
+
+if [ "$#" = 0 ] || [ "$1" = '--help' ]; then
+    echo 'run0edit allows a permitted user to edit a file as root.'
+    echo 'Usage: run0edit "path/to/file"'
+    echo 'To use another text editor, write the path to your text editor of choice to'
+    echo '    /etc/run0edit/editor.conf'
+    exit
+elif [ "$(id -u)" = 0 ]; then
+    echo 'run0edit should not be run as root.' >&2
+    exit 1
+elif [ "$#" -ne 1 ]; then
+    echo 'Error: too many arguments.' >&2
+    echo 'run0edit allows a permitted user to edit a file as root.'
+    echo 'Usage: run0edit "path/to/file"'
+    exit 1
+elif [ -w "$1" ]; then
+    echo 'File is writable by the current user; run0edit is unnecessary.' >&2
+    exit 1
+fi
+
+# Determine text editor to use.
+editor=''
+etc_conf_path='/etc/run0edit/editor.conf'
+usr_conf_path='/usr/etc/run0edit/editor.conf'
+if [ -f "$etc_conf_path" -a -r "$etc_conf_path" ]; then
+    editor="$(cat "$etc_conf_path")"
+elif [ -f "$usr_conf_path" -a -r "$usr_conf_path" ]; then
+    editor="$(cat "$usr_conf_path")"
+fi
+if [ -f "$editor" -a -x "$editor" ]; then
+    :
+elif [ -f '/usr/bin/nano' -a -x '/usr/bin/nano' ]; then
+    editor='/usr/bin/nano'
+elif [ -f '/usr/bin/vi' -a -x '/usr/bin/vi' ]; then
+    editor='/usr/bin/vi'
+else
+    echo "Editor not found. Please install either nano or vi, or write the path to" >&2
+    echo "the text editor of your choice to /etc/run0edit/editor.conf" >&2
+    exit 1
+fi
+
+# Create a temporary file with a random suffix appended to the filename.
+filename="$1"
+directory=$(dirname "$filename")
+trunc_filename=$(basename "$filename" | head -c 64)
+temp_filename=$(mktemp --tmpdir "${trunc_filename}.XXXXXXXXXX")
+
+# Inner script to be run with elevated privileges:
+script='\
+    filename="$1"
+    tmpfile="$2"
+    editor="$3"
+
+    # If the file does not exist, ensure the directory exists and is writable.
+    if [ ! -e "$filename" ]; then
+        directory="$(dirname "$filename")"
+        if [ ! -d "$directory" ]; then
+            echo "run0edit: invalid argument: directory does not exist"
+            exit 1
+        elif [ ! -w "$directory" ]; then
+            echo "run0edit: $directory is read-only."
+            exit 1
+        fi
+    fi
+
+    # If the file exists, ensure it is a regular file and writable, then
+    # attempt to copy it to the temp file.
+    if [ -e "$filename" ]; then
+        if [ ! -f "$filename" ]; then
+            echo "run0edit: invalid argument: not a regular file"
+            exit 1
+        elif [ ! -w "$filename" ]; then
+            echo "run0edit: $filename is read-only."
+            exit 1
+        elif ! cp "$filename" "$tmpfile"; then
+            echo "run0edit: failed to copy $filename to temporary file at $tmpfile"
+            exit 1
+        fi
+    fi
+
+    # Attempt to edit the temp file as the original user.
+    if ! run0 --user="$SUDO_UID" "$editor" "$tmpfile"; then
+        echo "run0edit: failed to edit temporary file at $tmpfile"
+        exit 1
+    fi
+
+    # If the target file exists and has been modified in the temp file, or
+    # if this is a new file that is non-empty, copy temp file to target.
+    if [ -f "$filename" ]; then
+        if ! cmp -s "$tmpfile" "$filename"; then
+            if ! cp "$tmpfile" "$filename"; then
+                echo "run0edit: unable to write temporary file at $tmpfile to $filename"
+                exit 1
+            fi
+        else
+            echo "run0edit: $filename unchanged"
+        fi
+    else
+        if [ -s "$tmpfile" ]; then
+            touch "$filename"
+            if ! cp "$tmpfile" "$filename"; then
+                echo "run0edit: unable to write temporary file at $tmpfile to $filename"
+                exit 1
+            fi
+        else
+            echo "run0edit: $filename not created"
+        fi
+    fi'
+
+# Escape backslashes and double-quotes in paths to be passed to ReadWritePaths.
+if [ -e "$filename" ]; then
+    writable_path="$filename"
+else
+    writable_path="$directory"
+fi
+escaped_path=$(realpath -m "$writable_path" | sed -e 's/\\/\\\\/g' -e 's/"/\\"/g')
+escaped_temp_path=$(echo "$temp_filename" | sed -e 's/\\/\\\\/g' -e 's/"/\\"/g')
+
+set +e
+run0 \
+    --description="run0edit \"$filename\"" \
+    --property="CapabilityBoundingSet=CAP_DAC_OVERRIDE" \
+    --property="DevicePolicy=closed" \
+    --property="LockPersonality=yes" \
+    --property="MemoryDenyWriteExecute=yes" \
+    --property="NoNewPrivileges=yes" \
+    --property="PrivateDevices=yes" \
+    --property="PrivateIPC=yes" \
+    --property="PrivateNetwork=yes" \
+    --property="ProcSubset=pid" \
+    --property="ProtectClock=yes" \
+    --property="ProtectControlGroups=yes" \
+    --property="ProtectHome=read-only" \
+    --property="ProtectHostname=yes" \
+    --property="ProtectKernelLogs=yes" \
+    --property="ProtectKernelModules=yes" \
+    --property="ProtectKernelTunables=yes" \
+    --property="ProtectProc=noaccess" \
+    --property="ProtectSystem=strict" \
+    --property="ReadWritePaths=\"$escaped_path\" \"$escaped_temp_path\"" \
+    --property="RestrictAddressFamilies=AF_UNIX" \
+    --property="RestrictNamespaces=yes" \
+    --property="RestrictRealtime=yes" \
+    --property="RestrictSUIDSGID=yes" \
+    --property="SystemCallArchitectures=native" \
+    --property="SystemCallFilter=@system-service" \
+    --property="SystemCallFilter=~memfd_create @mount @privileged" \
+    /bin/sh -c "$script" 'run0edit' "$filename" "$temp_filename" "$editor"
+# If $directory does not exist, namespace creation will fail, causing run0 to
+# silently fail with exit status 226:
+# https://www.freedesktop.org/software/systemd/man/latest/systemd.exec.html
+# Catch this and give a more user-friendly error:
+status_code="$?"
+set -e
+case "$status_code" in
+    0)
+        rm -f "$temp_filename"
+        ;;
+    226)
+        echo "run0edit: invalid argument: directory does not exist" >&2
+        rm -f "$temp_filename"
+        exit 1
+        ;;
+    *)
+        # Clean up empty temporary file, but leave it if it's non-empty.
+        if [ ! -s "$temp_filename" ]; then
+            rm -f "$temp_filename"
+        fi
+        exit "$status_code"
+        ;;
+esac
+

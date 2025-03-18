@@ -4,7 +4,7 @@ harden-flatpak FLATPAK="":
     var1={{ FLATPAK }}
     flatpak_id="${var1:-}"
     flatpak override --user --filesystem=host-os:ro $flatpak_id
-    uarches="$(/usr/lib64/ld-linux-x86-64.so.2 --help | grep '(supported, searched)' | cut -d'v' -f2)"
+    uarches="$(/usr/lib64/ld-linux-x86-64.so.2 --help | grep '(supported, searched)' | cut -d'v' -f2 || echo '')"
     bestuarch="${uarches:0:1}"
     if [ -z "$bestuarch" ] ; then
         echo "No microarchitecture support detected. Using default x86-64-v1 architecture${flatpak_id:+" for $flatpak_id's malloc"}."

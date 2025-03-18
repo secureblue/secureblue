@@ -346,21 +346,7 @@ install-vpn:
 
     # VPN install logic
     function install_ivpn() { # ref: https://www.ivpn.net/knowledgebase/linux/fedora-silverblue/
-        local REPO_FILE="/etc/yum.repos.d/ivpn.repo"
-        local REPO_URL="https://repo.ivpn.net/stable/fedora/generic/ivpn.repo"
         local PACKAGE_NAME="ivpn"
-
-        if [ -a "$REPO_FILE" ]; then
-            echo 'Warning: The IVPN repofile does already exist. It will be overwritten if you continue.'
-            local proceed
-            read -rp 'Are you sure you want to continue? [Y/n] ' proceed
-            if [[ "$proceed" == [nN]* ]]; then
-                echo 'Aborting...'
-                exit 0
-            fi
-            echo 'Continuing...'
-            echo
-        fi
 
         if util_checkpackage "$PACKAGE_NAME" || util_checkpackage "$PACKAGE_NAME-ui"; then
             echo 'Error: IVPN is already installed.'
@@ -369,34 +355,20 @@ install-vpn:
         fi
 
         echo 'Installing IVPN...'
-        local INSTALL_CMD="rpm-ostree install --assumeyes $PACKAGE_NAME"
+        local INSTALL_PACKAGE="$PACKAGE_NAME"
         local proceed2
         read -rp 'Do you want the IVPN GUI to be installed? [Y/n] ' proceed2
         if ! [[ "$proceed2" == [nN]* ]]; then
-            INSTALL_CMD="$INSTALL_CMD $PACKAGE_NAME-ui"
+            INSTALL_PACKAGE="$INSTALL_PACKAGE $PACKAGE_NAME-ui"
         fi
-        if ! run0 sh -c "wget -O $REPO_FILE $REPO_URL && $INSTALL_CMD"; then
+        if ! run0 sh -c "rpm-ostree install --assumeyes $INSTALL_PACKAGE"; then
             echo "Error: The installation didn't complete successfully, aborting..."
             exit 1
         fi
         echo 'Successfully installed IVPN. Please execute the command "systemctl enable --now ivpn-service" after rebooting.'
     }
     function install_mullvad() { # ref: https://mullvad.net/de/download/vpn/linux
-        local REPO_FILE="/etc/yum.repos.d/mullvad.repo"
-        local REPO_URL="https://repository.mullvad.net/rpm/stable/mullvad.repo"
         local PACKAGE_NAME="mullvad-vpn"
-
-        if [ -a "$REPO_FILE" ]; then
-            echo 'Warning: The Mullvad repofile does already exist. It will be overwritten if you continue.'
-            local proceed
-            read -rp 'Are you sure you want to continue? [Y/n] ' proceed
-            if [[ "$proceed" == [nN]* ]]; then
-                echo 'Aborting...'
-                exit 0
-            fi
-            echo 'Continuing...'
-            echo
-        fi
 
         if util_checkpackage "$PACKAGE_NAME"; then
             echo 'Error: The Mullvad VPN is already installed.'
@@ -405,48 +377,19 @@ install-vpn:
         fi
 
         echo 'Installing Mullvad VPN...'
-        if ! run0 sh -c "wget -O $REPO_FILE $REPO_URL && rpm-ostree install --assumeyes $PACKAGE_NAME"; then
+        if ! run0 sh -c "rpm-ostree install --assumeyes $PACKAGE_NAME"; then
             echo "Error: The installation didn't complete successfully, aborting..."
             exit 1
         fi
         echo 'Successfully installed Mullvad VPN. Please execute the command "systemctl enable --now mullvad-daemon && systemctl enable mullvad-early-boot-blocking" after rebooting.'
     }
     function install_proton() { # ref: https://protonvpn.com/support/en/official-linux-vpn-fedora
-        RPM_URL="https://repo.protonvpn.com/fedora-$(cat /etc/fedora-release | cut -d' ' -f 3)-stable/protonvpn-stable-release/protonvpn-stable-release-1.0.2-1.noarch.rpm"
         PACKAGE_NAME="proton-vpn-gnome-desktop"
 
         if util_checkpackage "$PACKAGE_NAME"; then
             echo "Error: Proton VPN is already installed."
             echo 'Aborting...'
             exit 1
-        fi
-
-        if util_checkpackage "protonvpn-stable-release"; then
-            echo 'Warning: It appears that the package "protonvpn-stable-release" (repository meta-package) is already installed, but Proton VPN is not.'
-            local proceed
-            read -rp 'Do you want to continue? This will use the existing meta-package [Y/n] ' proceed
-            if [[ "$proceed" == [nN]* ]]; then
-                echo 'Aborting...'
-                exit 0
-            fi
-            echo 'Continuing with existing meta-package...'
-            echo
-        else
-            TMP_DIR="$(mktemp)"
-            TMP_RPM="$TMP_DIR/protonvpn-metapackage.rpm"
-            echo 'Installing meta-package...'
-            if ! wget -O "$TMP_RPM" "$RPM_URL"; then
-                echo 'Error: Failed to download meta-package, aborting...'
-                exit 1
-            fi
-            if ! rpm-ostree install --assumeyes --apply-live "$TMP_RPM"; then
-                echo 'Error: Failed to install meta-package, aborting...'
-                exit 1
-            fi
-            echo 'Installed meta-package. Cleaning up...'
-            rm "$TMP_RPM"
-            rmdir "$TMP_DIR"
-            echo 'Done.'
         fi
 
         echo

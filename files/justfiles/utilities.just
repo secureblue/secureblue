@@ -469,8 +469,8 @@ install-vpn:
     # script start
     echo 'WARNING: It is strongly recommended that you **not** use VPN provider desktop applications, as they generally require significant security downgrades.'
     echo 'Instead, it is recommended that you download wireguard profiles from your provider and import them into your desktop environment.'
-    read -p 'If you understand this and still wish to continue, please type "SECURITY DOWNGRADE": ' security_downgrade
-    if [[ "$security_downgrade" != "SECURITY DOWNGRADE" ]]; then
+    read -p 'Do you wish to continue? [y/N] ' proceed
+    if ! [[ "$security_downgrade" == [yY]* ]]; then
         echo 'Aborting...'
         exit 0
     fi

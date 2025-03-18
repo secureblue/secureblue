@@ -369,18 +369,17 @@ install-vpn:
         fi
 
         echo 'Installing IVPN...'
-        local INSTALL_CMD="rpm-ostree install --assumeyes --apply-live $PACKAGE_NAME"
+        local INSTALL_CMD="rpm-ostree install --assumeyes $PACKAGE_NAME"
         local proceed2
         read -rp 'Do you want the IVPN GUI to be installed? [Y/n] ' proceed2
         if ! [[ "$proceed2" == [nN]* ]]; then
             INSTALL_CMD="$INSTALL_CMD $PACKAGE_NAME-ui"
         fi
-        # the daemon crashes if started before rebooting, therefore we omit `--now`
-        if ! run0 sh -c "wget -O $REPO_FILE $REPO_URL && $INSTALL_CMD && systemctl enable ivpn-service"; then
+        if ! run0 sh -c "wget -O $REPO_FILE $REPO_URL && $INSTALL_CMD"; then
             echo "Error: The installation didn't complete successfully, aborting..."
             exit 1
         fi
-        echo 'Successfully installed IVPN.'
+        echo 'Successfully installed IVPN. Please execute the command "systemctl enable --now ivpn-service" after rebooting.'
     }
     function install_mullvad() { # ref: https://mullvad.net/de/download/vpn/linux
         local REPO_FILE="/etc/yum.repos.d/mullvad.repo"
@@ -406,13 +405,11 @@ install-vpn:
         fi
 
         echo 'Installing Mullvad VPN...'
-        # We're intentionally not enabling `mullvad-early-boot-blocking.service` immediately, as that would block the network.
-        # It is intended to start on boot and then have it's restrictions lifted as soon as the daemon starts.
-        if ! run0 sh -c "wget -O $REPO_FILE $REPO_URL && rpm-ostree install --assumeyes --apply-live $PACKAGE_NAME && systemctl enable --now mullvad-daemon.service && systemctl enable mullvad-early-boot-blocking.service"; then
+        if ! run0 sh -c "wget -O $REPO_FILE $REPO_URL && rpm-ostree install --assumeyes $PACKAGE_NAME"; then
             echo "Error: The installation didn't complete successfully, aborting..."
             exit 1
         fi
-        echo 'Successfully installed Mullvad VPN.'
+        echo 'Successfully installed Mullvad VPN. Please execute the command "systemctl enable --now mullvad-daemon && systemctl enable mullvad-early-boot-blocking" after rebooting.'
     }
     function install_proton() { # ref: https://protonvpn.com/support/en/official-linux-vpn-fedora
         RPM_URL="https://repo.protonvpn.com/fedora-$(cat /etc/fedora-release | cut -d' ' -f 3)-stable/protonvpn-stable-release/protonvpn-stable-release-1.0.2-1.noarch.rpm"

@@ -470,7 +470,7 @@ install-vpn:
     echo 'WARNING: It is strongly recommended that you **not** use VPN provider desktop applications, as they generally require significant security downgrades.'
     echo 'Instead, it is recommended that you download wireguard profiles from your provider and import them into your desktop environment.'
     read -rp 'Do you wish to continue? [y/N] ' proceed
-    if ! [[ "$security_downgrade" == [yY]* ]]; then
+    if ! [[ "$proceed" == [yY]* ]]; then
         echo 'Aborting...'
         exit 0
     fi
@@ -478,7 +478,7 @@ install-vpn:
     echo 'Please choose your desired provider'
     vpn_choice="$(ugum choose "${!vpn_providers[@]}")"
     echo "You selected $vpn_choice"
-    
+
     vpn_requirements="${vpn_providers[$vpn_choice]}"
     needs_gui="1"
     if [[ "$vpn_requirements" =~ "gui_" ]]; then

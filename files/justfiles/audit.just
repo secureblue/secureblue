@@ -358,6 +358,7 @@ audit-secureblue AUDIT_FLATPAKS="true":
         print_status "$SECUREBOOT_TEST_STRING" "$STATUS_FAILURE"
     fi
 
+    # shellcheck disable=SC2050
     if [[ "{{ AUDIT_FLATPAKS }}" == "true" ]]; then
         if command -v flatpak &> /dev/null; then
             remotes="$(flatpak remotes -d)"
@@ -460,4 +461,9 @@ audit-secureblue AUDIT_FLATPAKS="true":
         done
         echo
     done
-    echo "Run '{{ BOLD }}ujust audit-secureblue false{{ NORMAL }}' to skip flatpak recommendations."
+    # shellcheck disable=SC2050
+    if [[ "{{ AUDIT_FLATPAKS }}" == "true" ]]; then
+        printf "Run '\033[1mujust audit-secureblue false\033[22m' to skip flatpak recommendations.\n"
+    else
+        printf "Run '\033[1mujust audit-secureblue\033[22m' to audit flatpak settings as well.\n"
+    fi

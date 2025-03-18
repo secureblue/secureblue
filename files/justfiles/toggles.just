@@ -157,7 +157,7 @@ toggle-xwayland ACTION="prompt":
       elif echo "$IMAGE" | grep -qE 'sericea|sway'; then
           OPTION=sway
       else
-        echo "{{ BOLD }}Toggling Xwayland (requires logout){{ NORMAL }}"
+        printf "\033[1mToggling Xwayland (requires logout)\033[22m\n"
         echo 'For which DE/WM do you want to toggle Xwayland?'
         OPTION=$(ugum choose "GNOME" "KDE Plasma" "Sway")
       fi
@@ -205,7 +205,7 @@ toggle-xwayland ACTION="prompt":
 toggle-bash-environment-lockdown:
     #!/usr/bin/bash
     BASH_ENV_FILES=("$HOME/.bashrc" "$HOME/.bash_profile")
-    echo "{{ BOLD }}WARNING{{ NORMAL }} This will overwrite your .bashrc and .bash_profile."
+    printf "\033[1mWARNING:\033[22m This will overwrite your .bashrc and .bash_profile.\n"
     echo "This is needed to ensure the mitigation is effective."
     echo "Do you understand?"
     echo "Please type in \"YES I UNDERSTAND\" and press enter"

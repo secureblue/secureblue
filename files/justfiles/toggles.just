@@ -62,11 +62,11 @@ override-enable-module mod_name:
     #! /bin/run0 /bin/bash
     MOD_NAME="{{ mod_name }}"
     MOD_FILE="/etc/modprobe.d/99-$MOD_NAME.conf"
-    if test -e $MOD_FILE; then
+    if [ -e "$MOD_FILE" ]; then
       echo "$MOD_NAME module is already enabled."
     else
       sh -c 'echo "install $1 /sbin/modprobe --ignore-install $1" >> "$2"' _ "$MOD_NAME" "$MOD_FILE"
-      chmod 644 $MOD_FILE
+      chmod 644 "$MOD_FILE"
       echo "Override created to enable $MOD_NAME module. Reboot to take effect."
     fi
 
@@ -75,8 +75,8 @@ override-reset-module mod_name:
     #! /bin/run0 /bin/bash
     MOD_NAME="{{ mod_name }}"
     MOD_FILE="/etc/modprobe.d/99-$MOD_NAME.conf"
-    if test -e $MOD_FILE; then
-      rm -f $MOD_FILE
+    if [ -e "$MOD_FILE" ]; then
+      rm -f "$MOD_FILE"
       echo "The override for $MOD_NAME module has been reset. Reboot to take effect."
     else
       echo "No override found for $MOD_NAME module."
@@ -147,21 +147,21 @@ toggle-gnome-extensions:
 toggle-xwayland ACTION="prompt":
     #! /bin/run0 /bin/bash
     source /usr/lib/ujust/ujust.sh
-    OPTION={{ ACTION }}
-    if [ "$OPTION" == "prompt" ]; then
+    OPTION="{{ACTION}}"
+    if [ "$OPTION" = "prompt" ]; then
       IMAGE="$(rpm-ostree status | grep '●')"
-      if [ -n "$(echo $IMAGE | grep 'silverblue')" ] ; then
+      if echo "$IMAGE" | grep -q 'silverblue'; then
           OPTION=gnome
-      elif [ -n "$(echo $IMAGE | grep 'kinoite')" ] ; then
+      elif echo "$IMAGE" | grep -q 'kinoite'; then
           OPTION=plasma
-      elif [ -n "$(echo $IMAGE | grep 'sericea')" ] || [ -n "$(echo $IMAGE | grep 'sway')" ] ; then
+      elif echo "$IMAGE" | grep -qE 'sericea|sway'; then
           OPTION=sway
       else
-        echo "${bold}Toggling Xwayland (requires logout)${normal}"
+        echo "{{BOLD}}Toggling Xwayland (requires logout){{NORMAL}}"
         echo 'For which DE/WM do you want to toggle Xwayland?'
         OPTION=$(ugum choose "GNOME" "KDE Plasma" "Sway")
       fi
-    elif [ "$OPTION" == "help" ]; then
+    elif [ "$OPTION" = "help" ]; then
       echo "Usage: ujust toggle-xwayland <option>"
       echo "  <option>: Specify the quick option - 'gnome', 'plasma', or 'sway'"
       echo "  Use 'gnome' to Toggle Xwayland for GNOME."
@@ -169,34 +169,34 @@ toggle-xwayland ACTION="prompt":
       echo "  Use 'sway' to Toggle Xwayland for Sway."
       exit 0
     fi
-    if [ "${OPTION,,}" == "gnome" ]; then
-      GNOME_XWAYLAND_FILE="/etc/systemd/user/org.gnome.Shell@wayland.service.d/override.conf"
-      if test -e $GNOME_XWAYLAND_FILE; then
-        rm -f $GNOME_XWAYLAND_FILE
-        echo "Xwayland for GNOME has been enabled."
+    if [ "${OPTION,,}" = "gnome" ]; then
+      GNOME_XWAYLAND_FILE='/etc/systemd/user/org.gnome.Shell@wayland.service.d/override.conf'
+      if [ -e "$GNOME_XWAYLAND_FILE" ]; then
+        rm -f "$GNOME_XWAYLAND_FILE"
+        echo 'Xwayland for GNOME has been enabled.'
       else
-        cp /usr$GNOME_XWAYLAND_FILE $GNOME_XWAYLAND_FILE
-        chmod 644 $GNOME_XWAYLAND_FILE
-        echo "Xwayland for GNOME has been disabled."
+        cp "/usr$GNOME_XWAYLAND_FILE" "$GNOME_XWAYLAND_FILE"
+        chmod 644 "$GNOME_XWAYLAND_FILE"
+        echo 'Xwayland for GNOME has been disabled.'
       fi
-    elif [ "$OPTION" == "KDE Plasma" ] || [ "${OPTION,,}" == "plasma" ]; then
-      PLASMA_XWAYLAND_FILE="/etc/systemd/user/plasma-kwin_wayland.service.d/override.conf"
-      if test -e $PLASMA_XWAYLAND_FILE; then
-        rm -f $PLASMA_XWAYLAND_FILE
-        echo "Xwayland for KDE Plasma has been enabled."
+    elif [ "$OPTION" = "KDE Plasma" ] || [ "${OPTION,,}" = "plasma" ]; then
+      PLASMA_XWAYLAND_FILE='/etc/systemd/user/plasma-kwin_wayland.service.d/override.conf'
+      if [ -e "$PLASMA_XWAYLAND_FILE" ]; then
+        rm -f "$PLASMA_XWAYLAND_FILE"
+        echo 'Xwayland for KDE Plasma has been enabled.'
       else
-        cp /usr$PLASMA_XWAYLAND_FILE $PLASMA_XWAYLAND_FILE
-        chmod 644 $PLASMA_XWAYLAND_FILE
-        echo "Xwayland for KDE Plasma has been disabled."
+        cp "/usr$PLASMA_XWAYLAND_FILE" "$PLASMA_XWAYLAND_FILE"
+        chmod 644 "$PLASMA_XWAYLAND_FILE"
+        echo 'Xwayland for KDE Plasma has been disabled.'
       fi
-    elif [ "${OPTION,,}" == "sway" ]; then
-      SWAY_XWAYLAND_FILE="/etc/sway/config.d/99-noxwayland.conf"
-      if test -e $SWAY_XWAYLAND_FILE; then
-        rm -f $SWAY_XWAYLAND_FILE
-        echo "Xwayland for Sway has been enabled."
+    elif [ "${OPTION,,}" = "sway" ]; then
+      SWAY_XWAYLAND_FILE='/etc/sway/config.d/99-noxwayland.conf'
+      if [ -e "$SWAY_XWAYLAND_FILE" ]; then
+        rm -f "$SWAY_XWAYLAND_FILE"
+        echo 'Xwayland for Sway has been enabled.'
       else
-        cp /usr$SWAY_XWAYLAND_FILE $SWAY_XWAYLAND_FILE
-        chmod 644 $SWAY_XWAYLAND_FILE
+        cp "/usr$SWAY_XWAYLAND_FILE" "$SWAY_XWAYLAND_FILE"
+        chmod 644 "$SWAY_XWAYLAND_FILE"
         echo "Xwayland for Sway has been disabled."
       fi
     fi
@@ -205,20 +205,20 @@ toggle-xwayland ACTION="prompt":
 toggle-bash-environment-lockdown:
     #!/usr/bin/bash
     BASH_ENV_FILES=("$HOME/.bashrc" "$HOME/.bash_profile")
-    echo "${b}WARNING${n} This will overwrite your .bashrc and .bash_profile."
+    echo "{{BOLD}}WARNING{{NORMAL}} This will overwrite your .bashrc and .bash_profile."
     echo "This is needed to ensure the mitigation is effective."
     echo "Do you understand?"
     echo "Please type in \"YES I UNDERSTAND\" and press enter"
-    read ACCEPT
-    if [ "$ACCEPT" == "YES I UNDERSTAND" ]; then
+    read -r ACCEPT
+    if [ "$ACCEPT" = "YES I UNDERSTAND" ]; then
       if lsattr "${BASH_ENV_FILES[0]}" 2>/dev/null | awk '{print $1}' | grep -q 'i'; then
-        echo "Bash environment '(${BASH_ENV_FILES[@]})' is locked down. Unlocking it."
+        echo "Bash environment '(${BASH_ENV_FILES[*]})' is locked down. Unlocking it."
         for file in "${BASH_ENV_FILES[@]}"; do
             run0 chattr -i "$file"
         done
       else
-        echo "Bash environment '(${BASH_ENV_FILES[@]})' is unlocked. Locking it."
-        echo "
+        echo "Bash environment '(${BASH_ENV_FILES[*]})' is unlocked. Locking it."
+        cat << 'EOF' > ~/.bashrc
     # .bashrc
 
     # Source global definitions
@@ -227,8 +227,8 @@ toggle-bash-environment-lockdown:
     fi
 
     # User specific environment
-    if ! [[ "\$PATH" =~ "\$HOME/.local/bin:\$HOME/bin:" ]]; then
-        PATH="\$HOME/.local/bin:\$HOME/bin:\$PATH"
+    if ! [[ "$PATH" =~ "$HOME/.local/bin:$HOME/bin:" ]]; then
+        PATH="$HOME/.local/bin:$HOME/bin:$PATH"
     fi
     export PATH
 
@@ -236,9 +236,9 @@ toggle-bash-environment-lockdown:
     # export SYSTEMD_PAGER=
 
     unset rc
-          " > ~/.bashrc
+    EOF
 
-        echo "
+        cat << 'EOF' > ~/.bash_profile
     # .bash_profile
 
     # Get the aliases and functions
@@ -247,7 +247,7 @@ toggle-bash-environment-lockdown:
     fi
 
     # User specific environment and startup programs
-        " > ~/.bash_profile
+    EOF
 
         for file in "${BASH_ENV_FILES[@]}"; do
             run0 chattr +i "$file"
@@ -287,7 +287,7 @@ toggle-container-domain-userns-creation:
         echo "Module $MODULE_NAME is not currently enabled. Enabling the hardening, disabling container domain userns (e.g. for distrobox)."
 
         echo 'Warning: This will stop ALL containers and shut down podman.'
-        read -p 'Are you sure you want to do this? (y/N) ' proceed
+        read -rp 'Are you sure you want to do this? (y/N) ' proceed
         if ! [[ "$proceed" == [Yy]* ]]; then
             echo "Aborting..."
             exit 0
@@ -319,7 +319,7 @@ toggle-mac-randomization:
         echo "MAC randomization can be stable (persisting the same random MAC per access point across disconnects/reboots),"
         echo "or it can be randomized per-connection (every time it connects to the same access point it uses a new MAC)."
         randomization_choice=""
-        read -p "Do you want to use per-connection Wi-Fi MAC address randomization? [y/N] " randomization_choice
+        read -rp "Do you want to use per-connection Wi-Fi MAC address randomization? [y/N] " randomization_choice
 
         if [[ "$randomization_choice" == [Yy]* ]]; then
             randomization_level=random

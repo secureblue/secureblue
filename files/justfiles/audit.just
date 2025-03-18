@@ -1,6 +1,7 @@
 # Audit secureblue
 audit-secureblue AUDIT_FLATPAKS="true":
     #!/bin/bash
+    set -euo pipefail
 
     STATUS_SUCCESS="SUCCESS"
     STATUS_WARNING="WARNING"
@@ -104,20 +105,18 @@ audit-secureblue AUDIT_FLATPAKS="true":
         value="$(sed -E "s/.* = (.*)/\1/" <<<"$line")"
         sysctl_hardening["$parameter"]+="$value"
     done
-    sysctl_results="$(sysctl -a 2> >(grep -v "sysctl: permission denied on key "))"
     sysctl_errors=()
-    for sysctl_parameter in "${!hardening[@]}"; do
-        hardened_parameter_value="${hardening["$sysctl_parameter"]}"
-        parameter_name="$(sed -E -e "s/\./\\\./g" -e "s/\*/\.\*/" <<<"$sysctl_parameter")"
-        readarray -t sysctl_parameter_values < <(grep -E "^$key = " <<<"$sysctl_results")
-        for parameter_value in "${sysctl_parameter_values[@]}"; do
-            parameter_value="$(sed -E  -e "s/.* = (.*)/\1/" -e "s/\/ /g" <<<"$result" | tr -s " " )"
-            if [[ "$parameter_value" != "$hardened_parameter_value" && ("$hardened_parameter_value" != 0 && "$parameter_value" != disabled) ]]; then
-                sysctl_errors+=("$sysctl_parameter should be $hardened_parameter_value, found $parameter_value")
-            fi
-        done
+    failure_occurred=0
+    for sysctl_parameter in "${!sysctl_hardening[@]}"; do
+        hardened_parameter_value="${sysctl_hardening["$sysctl_parameter"]}"
+        parameter_value="$(sysctl -bn "$sysctl_parameter" 2>/dev/null)" || continue
+        parameter_value="$(tr -s '[:blank:]' ' ' <<< "$parameter_value")"
+        if [[ "$parameter_value" != "$hardened_parameter_value" && ("$hardened_parameter_value" != 0 && "$parameter_value" != disabled) ]]; then
+            sysctl_errors+=("$sysctl_parameter should be $hardened_parameter_value, found $parameter_value")
+            failure_occurred=1
+        fi
     done
-    if [[ "${#sysctl_errors}" == 0 ]] && cmp -s /usr/etc/sysctl.d/60-hardening.conf /etc/sysctl.d/60-hardening.conf; then
+    if [ "$failure_occurred" = 0 ] && cmp -s /usr/etc/sysctl.d/60-hardening.conf /etc/sysctl.d/60-hardening.conf; then
         print_status "$SYSCTL_TEST_STRING" "$STATUS_SUCCESS"
     else
         print_status "$SYSCTL_TEST_STRING" "$STATUS_FAILURE"
@@ -151,6 +150,7 @@ audit-secureblue AUDIT_FLATPAKS="true":
     PTRACE_TEST_STRING="Ensuring ptrace is forbidden"
     if [[ "$(cat /proc/sys/kernel/yama/ptrace_scope)" == 3 ]]; then
         print_status "$PTRACE_TEST_STRING" "$STATUS_SUCCESS"
+        ptrace_allowed=false
     else
         print_status "$PTRACE_TEST_STRING" "$STATUS_FAILURE"
         ptrace_allowed=true
@@ -202,8 +202,8 @@ audit-secureblue AUDIT_FLATPAKS="true":
 
     SECUREDNS_TEST_STRING="Ensuring system DNS resolution is secure"
     if systemctl is-active --quiet systemd-resolved; then
-        DNSSEC_STATUS="$(grep "DNSSEC" /etc/systemd/resolved.conf.d/10-securedns.conf)"
-        DOT_STATUS="$(grep "DNSOverTLS" /etc/systemd/resolved.conf.d/10-securedns.conf)"
+        DNSSEC_STATUS="$(grep "DNSSEC" /etc/systemd/resolved.conf.d/10-securedns.conf || echo '')"
+        DOT_STATUS="$(grep "DNSOverTLS" /etc/systemd/resolved.conf.d/10-securedns.conf || echo '')"
         if [[ "$DNSSEC_STATUS" == "DNSSEC=true" && "$DOT_STATUS" == "DNSOverTLS=true" ]]; then
             print_status "$SECUREDNS_TEST_STRING" "$STATUS_SUCCESS"
         else

@@ -318,10 +318,10 @@ toggle-mac-randomization:
     else
         echo "MAC randomization can be stable (persisting the same random MAC per access point across disconnects/reboots),"
         echo "or it can be randomized per-connection (every time it connects to the same access point it uses a new MAC)."
-        read -p "Do you want to use per-connection Wi-Fi MAC address randomization? [y/N]" randomization_level
-        randomization_level=${randomization_level:-n}
+        randomization_choice=""
+        read -p "Do you want to use per-connection Wi-Fi MAC address randomization? [y/N] " randomization_choice
 
-        if [ "$randomization_level" == [Yy]* ]; then
+        if [[ "$randomization_choice" == [Yy]* ]]; then
             randomization_level=random
             echo "Selected state: per-connection"
         else

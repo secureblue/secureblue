@@ -485,9 +485,8 @@ install-vpn:
         echo
         echo 'Notice: This VPN requires additional security features to be disabled if you intend to use its graphical interface.'
         echo 'If you only intend on using the command-line interface, you can skip those.'
-        local proceed
-        read -rp 'Do intend to use the GUI? [Y/n] ' proceed
-        if [[ "$proceed" == [nN]* ]]; then
+        read -rp 'Do intend to use the GUI? [Y/n] ' proceed_gui
+        if [[ "$proceed_gui" == [nN]* ]]; then
             echo 'Additional hardening features required for the GUI will not be disabled.'
             needs_gui="0"
         fi
@@ -502,9 +501,8 @@ install-vpn:
             echo 'This VPN requires unconfined domain user namespaces to be enabled.'
             echo 'This will execute "ujust toggle-unconfined-domain-userns-creation". You can also manually do this later if you skip this step.'
             echo 'Warning: This is a security reduction!'
-            local proceed
-            read -rp 'Do you want to do this now? [Y/n] ' proceed
-            if ! [[ "$proceed" == [nN]* ]]; then
+            read -rp 'Do you want to do this now? [Y/n] ' proceed_userns
+            if ! [[ "$proceed_userns" == [nN]* ]]; then
                 echo 'Enabling unconfined domain user namespaces...'
                 ujust toggle-unconfined-domain-userns-creation
                 echo 'Enabled unconfined domain user namespaces.'
@@ -520,9 +518,8 @@ install-vpn:
             echo 'This VPN requires XWayland to be enabled.'
             echo 'This will execute "ujust toggle-xwayland". You can also manually do this later if you skip this step.'
             echo 'Warning: This is a security reduction!'
-            local proceed
-            read -rp 'Do you want to do this now? [Y/n] ' proceed
-            if ! [[ "$proceed" == [nN]* ]]; then
+            read -rp 'Do you want to do this now? [Y/n] ' proceed_xwayland
+            if ! [[ "$proceed_xwayland" == [nN]* ]]; then
                 echo 'Enabling XWayland...'
                 ujust toggle-xwayland
                 echo 'Enabled XWayland.'

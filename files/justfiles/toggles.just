@@ -281,7 +281,7 @@ toggle-bash-environment-lockdown skip_approval="false" apply_for_all_users="prom
 
         # Purpose of the below block is:
         #    If the script is locking, 
-        #        to copy the old env files and directories to folder with the time with the time appended to their name 
+        #        to copy the old env files and directories to folder with the time appended to its name 
         #        remove immutability (to allow the script to overwrite any existing immutable environment files)
         #        create default or blank copies (deleting the old versions)
 

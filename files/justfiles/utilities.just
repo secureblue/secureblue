@@ -385,7 +385,7 @@ install-vpn:
         echo 'Successfully installed Mullvad VPN. Please execute the command "systemctl enable --now mullvad-daemon && systemctl enable mullvad-early-boot-blocking" after rebooting.'
     }
     function install_proton() { # ref: https://protonvpn.com/support/en/official-linux-vpn-fedora
-        PACKAGE_NAME="proton-vpn-gnome-desktop"
+        local PACKAGE_NAME="proton-vpn-gnome-desktop"
 
         if util_checkpackage "$PACKAGE_NAME"; then
             echo "Error: Proton VPN is already installed."

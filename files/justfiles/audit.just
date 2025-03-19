@@ -356,18 +356,18 @@ audit-secureblue AUDIT_FLATPAKS="true":
     done
 
     if [ "$BASH_ENV_STATUS"  == "locked" ]; then
-            print_status "$BASH_ENV_STRING" "$STATUS_SUCCESS"
+        print_status "$BASH_ENV_STRING" "$STATUS_SUCCESS"
     else
-            print_status "$BASH_ENV_STRING" "$STATUS_FAILURE" # 	
-            FMT_UNLOCKED_FILES="	The following files do not appear to be immutable or do not exist:	"
-            FMT_UNLOCKED_FILES+=$(echo "${UNLOCKED_FILES[@]}" | tr ' ' '\t')
-            FMT_UNLOCKED_FILES+="	"
-            FMT_INVALID_FILES="	The following paths appear to exist but are invalid (the file exists but is not a file or directory):	"    
-            FMT_INVALID_FILES+=$(echo "${INVALID_FILES[@]}" | tr ' ' '\t')
-            [[ "${#UNLOCKED_FILES[@]}" -eq 0 ]] && FMT_UNLOCKED_FILES=""
-            [[ "${#INVALID_FILES[@]}" -eq 0 ]] && FMT_INVALID_FILES=""
-            [[ "${#UNLOCKED_FILES[@]}" -eq 0 ]] && [[ "${#INVALID_FILES[@]}" -eq 0 ]] && FMT_UNLOCKED_FILES="    An exception has occurred, please manually verify these files exist and are immutable:    ${BASH_ENV_FILES_DIRS[@]}    "; FMT_INVALID_FILES="" 
-            suggestions+=("Bash environment is not locked down $FMT_UNLOCKED_FILES $FMT_INVALID_FILES	To fix run:	$ ujust toggle-bash-environment-lockdown")
+        print_status "$BASH_ENV_STRING" "$STATUS_FAILURE" # 	
+        FMT_UNLOCKED_FILES="	The following files do not appear to be immutable or do not exist:	"
+        FMT_UNLOCKED_FILES+=$(echo "${UNLOCKED_FILES[@]}" | tr ' ' '\t')
+        FMT_UNLOCKED_FILES+="	"
+        FMT_INVALID_FILES="	The following paths appear to exist but are invalid (the file exists but is not a file or directory):	"    
+        FMT_INVALID_FILES+=$(echo "${INVALID_FILES[@]}" | tr ' ' '\t')
+        [[ "${#UNLOCKED_FILES[@]}" -eq 0 ]] && FMT_UNLOCKED_FILES=""
+        [[ "${#INVALID_FILES[@]}" -eq 0 ]] && FMT_INVALID_FILES=""
+        [[ "${#UNLOCKED_FILES[@]}" -eq 0 ]] && [[ "${#INVALID_FILES[@]}" -eq 0 ]] && FMT_UNLOCKED_FILES="    An exception has occurred, please manually verify these files exist and are immutable:    ${BASH_ENV_FILES_DIRS[@]}    "; FMT_INVALID_FILES="" 
+        suggestions+=("Bash environment is not locked down $FMT_UNLOCKED_FILES $FMT_INVALID_FILES	To fix run:	$ ujust toggle-bash-environment-lockdown")
     fi
 
     if [[ "{{ AUDIT_FLATPAKS }}" == "true" ]]; then

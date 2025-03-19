@@ -295,8 +295,7 @@ toggle-bash-environment-lockdown skip_approval="false" apply_for_all_users="prom
               # skel_file converts "$user_home/.bashrc" to ".bashrc"
               skel_file=$(echo "$file" | sed 's|'${user_home}'/||')
               if [ ! -f "$file" ] && [ ! -d "$file" ] && [ -e "$file" ]; then
-                echo "Special file detected on absolute filepath ($file) from BASH_ENV_FILES."
-                exit
+                echo "Special file detected on absolute filepath ($file) from BASH_ENV_FILES. It will not be modified."
               elif [ -f "$file" ]; then
                 chattr -i "$file"
                 rsync -a --mkpath "$file" "$backup_dest$skel_file"
@@ -307,27 +306,31 @@ toggle-bash-environment-lockdown skip_approval="false" apply_for_all_users="prom
                 rm -r "$file"
               fi
               # Now we create new empty/default files and directories
-              if [ -f "/etc/skel/$skel_file" ]; then
-                cp "/etc/skel/$skel_file" "$file"
+              if [ "${file: -1}" == "/" ]; then
+                install -D -d -o "$user" -g "$user" -m 500 "$file"
+                chattr +i -R "$file"
+              elif [ -f "/etc/skel/$skel_file" ]; then
+                install -D -o "$user" -g "$user" -m 500 "/etc/skel/$skel_file" "$file"
+                chattr +i "$file"
               else
-                file_path=$(echo "$file" | rev | cut -d'/' -f2- | rev)
-                mkdir -p "$file_path"
-                [ "$file_path" != "$file" ] && touch "$file"
+                install -D -o "$user" -g "$user" -m 500 /dev/null "$file"
+                chattr +i "$file"
               fi
-              chmod -R 500 "$file"
-              chown -R "$user:" "$file"              
+             
             done
             chmod -R 500 "$user_home/bash_env_files"
-            chown -R "$user:" "$user_home/bash_env_files"            
-        fi
-
-      for fs_object in "${BASH_ENV_FILES[@]}"; do
-        if [ -d "$fs_object" ]; then
-          chattr "$chattr_operator" "-R" "$fs_object"
+            chown -R "$user:" "$user_home/bash_env_files"
         else
-          chattr "$chattr_operator" "$fs_object"
+            for file in "${BASH_ENV_FILES[@]}"; do
+              if [ ! -f "$file" ] && [ ! -d "$file" ] && [ -e "$file" ]; then
+                echo "Special file detected on absolute filepath ($file) from BASH_ENV_FILES. It will not be modified."
+              elif [ -f "$file" ]; then
+                chattr -i "$file"
+              elif [ -d "$file" ]; then
+                chattr -R -i "$file" 
+              fi
+            done
         fi
-      done
     done
 
     echo "${user_list[@]}" "$pending_status."
@@ -336,7 +339,10 @@ toggle-bash-environment-lockdown skip_approval="false" apply_for_all_users="prom
     echo "Optional Arguments:"
     echo "ujust toggle-bash-environment-lockdown skip_approval apply_for_all_users"
     echo "    skip_approval: [true/false]          'true' the user is not prompted to respond 'YES I UNDERSTAND'; 'false' user is prompted."
-    echo "    apply_for_all_users: [true/false]    'true' change is applied to all users (without prompting); 'false' change is only applied to user currently logged in (without prompting)."
+    echo ""
+    echo "    apply_for_all_users: [true/false]    'true' change is applied to all users (without prompting); 'false' change is only applied" 
+    echo "                                          to user currently logged in (without prompting)."
+    echo ""
     echo "Invalid optional arguments are treated as errors."
 
 # Toggle unconfined domain userns creation

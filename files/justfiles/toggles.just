@@ -294,7 +294,6 @@ toggle-bash-environment-lockdown skip_approval="false" apply_for_all_users="prom
             for file in "${BASH_ENV_FILES[@]}"; do
               # skel_file converts "$user_home/.bashrc" to ".bashrc" 
               skel_file=$(echo "$file" | sed 's|'${user_home}'/||')
-              skel_dir=$(echo "$file" | sed 's|'${PWD}'/|/|')
               if [ ! -f "$file" ] && [ ! -d "$file" ] && [ -e "$file" ]; then
                 echo "Special file detected on absolute filepath ($file) from BASH_ENV_FILES. It will not be modified."
               elif [ -f "$file" ]; then
@@ -303,7 +302,7 @@ toggle-bash-environment-lockdown skip_approval="false" apply_for_all_users="prom
                 rm "$file"
               elif [ -d "$file" ]; then
                 chattr -R -i "$file" 
-                rsync -a --mkpath "$file" "$backup_dest$skel_dir"
+                rsync -a --mkpath "$file" "$backup_dest$skel_file"
                 rm -r "$file"
               fi
               # Now we create new empty/default files and directories

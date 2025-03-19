@@ -63,11 +63,11 @@ else
   exit 1
 fi
 
-SET_PIN_ARG=""
+SET_PIN='no'
 read -p "Would you like to set a PIN? (y/N): " -n 1 -r
 echo
 if [[ $REPLY =~ ^[Yy]$ ]]; then
-  SET_PIN_ARG="--tpm2-with-pin=yes"
+  SET_PIN='yes'
 fi
 
 # Specify Crypt Disk by-uuid
@@ -97,7 +97,11 @@ fi
 
 ## Run crypt enroll
 echo "Enrolling TPM2 unlock requires your existing LUKS2 unlock password"
-systemd-cryptenroll --tpm2-device=auto --tpm2-pcrs=7+14 "$SET_PIN_ARG" "$CRYPT_DISK"
+if [ "$SET_PIN" = 'yes' ]; then
+    systemd-cryptenroll --tpm2-device=auto --tpm2-pcrs=7+14 --tpm2-with-pin=yes "$CRYPT_DISK"
+else
+    systemd-cryptenroll --tpm2-device=auto --tpm2-pcrs=7+14 "$CRYPT_DISK"
+fi
 
 
 if lsinitrd 2>&1 | grep -q tpm2-tss > /dev/null; then

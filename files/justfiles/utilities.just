@@ -345,6 +345,7 @@ install-vpn:
     )
 
     # VPN install logic
+    REPO_REGEX="/^enabled[ =]/ s/0/1/g"
     function install_ivpn() { # ref: https://www.ivpn.net/knowledgebase/linux/fedora-silverblue/
         local PACKAGE_NAME="ivpn"
 
@@ -361,7 +362,7 @@ install-vpn:
         if ! [[ "$proceed2" == [nN]* ]]; then
             INSTALL_PACKAGE="$INSTALL_PACKAGE $PACKAGE_NAME-ui"
         fi
-        if ! run0 sh -c "rpm-ostree install --assumeyes $INSTALL_PACKAGE"; then
+        if ! run0 sh -c "sed -i '$REPO_REGEX' /etc/yum.repos.d/ivpn.repo && rpm-ostree install --assumeyes $INSTALL_PACKAGE"; then
             echo "Error: The installation didn't complete successfully, aborting..."
             exit 1
         fi
@@ -377,7 +378,7 @@ install-vpn:
         fi
 
         echo 'Installing Mullvad VPN...'
-        if ! run0 sh -c "rpm-ostree install --assumeyes $PACKAGE_NAME"; then
+        if ! run0 sh -c "sed -i '$REPO_REGEX' /etc/yum.repos.d/mullvad.repo && rpm-ostree install --assumeyes $PACKAGE_NAME"; then
             echo "Error: The installation didn't complete successfully, aborting..."
             exit 1
         fi
@@ -394,7 +395,7 @@ install-vpn:
 
         echo
         echo 'Installing Proton VPN...'
-        if ! rpm-ostree install --assumeyes "$PACKAGE_NAME"; then
+        if ! run0 sh -c "sed -i '$REPO_REGEX' /etc/yum.repos.d/protonvpn-stable.repo && rpm-ostree install --assumeyes $PACKAGE_NAME"; then
             echo 'Error: Failed to install Proton VPN, aborting...'
             exit 1
         fi

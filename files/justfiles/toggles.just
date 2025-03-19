@@ -217,9 +217,9 @@ toggle-bash-environment-lockdown skip_approval="false" apply_for_all_users="prom
     # $USER_HOME uses getent to lookup their home directory to later check if they have an existing .bashrc file.
     USER_HOME=$(getent passwd $SUDO_USER | cut -d: -f6)
     if lsattr "$USER_HOME/.bashrc" 2>/dev/null | awk '{print $1}' | grep -q 'i'; then
-      pending_status="unlocked"
+        pending_status="unlocked"
     else
-      pending_status="locked"
+        pending_status="locked"
     fi
 
     # Below variable is created to only call date once and use the same time across the script despite execution time.
@@ -290,43 +290,43 @@ toggle-bash-environment-lockdown skip_approval="false" apply_for_all_users="prom
             mkdir -p "$backup_dest"
 
             for file in "${BASH_ENV_FILES[@]}"; do
-              # skel_file converts "$user_home/.bashrc" to ".bashrc" 
-              skel_file=$(echo "$file" | sed 's|'${user_home}'/||')
-              if [ ! -f "$file" ] && [ ! -d "$file" ] && [ -e "$file" ]; then
-                echo "Special file detected on absolute filepath ($file) from BASH_ENV_FILES. It will not be modified."
-              elif [ -f "$file" ]; then
-                chattr -i "$file"
-                rsync -a --mkpath "$file" "$backup_dest$skel_file"
-                rm "$file"
-              elif [ -d "$file" ]; then
-                chattr -R -i "$file" 
-                rsync -a --mkpath "$file" "$backup_dest$skel_file"
-                rm -r "$file"
-              fi
-              # Now we create new empty/default files and directories
-              if [ "${file: -1}" == "/" ]; then
-                install -D -d -o "$user" -g "$user" -m 500 "$file"
-                chattr +i -R "$file"
-              elif [ -f "/etc/skel/$skel_file" ]; then
-                install -D -o "$user" -g "$user" -m 500 "/etc/skel/$skel_file" "$file"
-                chattr +i "$file"
-              else
-                install -D -o "$user" -g "$user" -m 500 /dev/null "$file"
-                chattr +i "$file"
-              fi
-
+                # skel_file converts "$user_home/.bashrc" to ".bashrc" 
+                skel_file=$(echo "$file" | sed 's|'${user_home}'/||')
+                if [ ! -f "$file" ] && [ ! -d "$file" ] && [ -e "$file" ]; then
+                    echo "Special file detected on absolute filepath ($file) from BASH_ENV_FILES. It will not be modified."
+                elif [ -f "$file" ]; then
+                    chattr -i "$file"
+                    rsync -a --mkpath "$file" "$backup_dest$skel_file"
+                    rm "$file"
+                elif [ -d "$file" ]; then
+                    chattr -R -i "$file" 
+                    rsync -a --mkpath "$file" "$backup_dest$skel_file"
+                    rm -r "$file"
+                fi
+                # Now we create new empty/default files and directories
+                if [ "${file: -1}" == "/" ]; then
+                    install -D -d -o "$user" -g "$user" -m 500 "$file"
+                    chattr +i -R "$file"
+                elif [ -f "/etc/skel/$skel_file" ]; then
+                    install -D -o "$user" -g "$user" -m 500 "/etc/skel/$skel_file" "$file"
+                    chattr +i "$file"
+                else
+                    install -D -o "$user" -g "$user" -m 500 /dev/null "$file"
+                    chattr +i "$file"
+                fi
             done
+
             chmod -R 500 "$user_home/bash_env_files"
             chown -R "$user:" "$user_home/bash_env_files"
         else
             for file in "${BASH_ENV_FILES[@]}"; do
-              if [ ! -f "$file" ] && [ ! -d "$file" ] && [ -e "$file" ]; then
-                echo "Special file detected on absolute filepath ($file) from BASH_ENV_FILES. It will not be modified."
-              elif [ -f "$file" ]; then
-                chattr -i "$file"
-              elif [ -d "$file" ]; then
-                chattr -R -i "$file" 
-              fi
+                if [ ! -f "$file" ] && [ ! -d "$file" ] && [ -e "$file" ]; then
+                    echo "Special file detected on absolute filepath ($file) from BASH_ENV_FILES. It will not be modified."
+                elif [ -f "$file" ]; then
+                    chattr -i "$file"
+                elif [ -d "$file" ]; then
+                    chattr -R -i "$file" 
+                fi
             done
         fi
     done

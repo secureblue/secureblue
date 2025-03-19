@@ -32,6 +32,7 @@ application_domain(trivalent_script_t, trivalent_script_exec_t)
 role trivalent_script_roles types trivalent_script_t;
 
 gen_require(`
+	class dbus acquire_svc;
 	type audio_home_t;
 	type chrome_sandbox_home_t;
 	type unconfined_t;
@@ -39,6 +40,7 @@ gen_require(`
 	type http_cache_port_t;
 	type howl_port_t;
 	type pki_ca_port_t;
+	type unconfined_dbusd_t;
 	type user_home_t;
 	type xserver_misc_device_t;
 ')
@@ -93,6 +95,9 @@ allow trivalent_t unconfined_t:unix_stream_socket { connectto rw_socket_perms };
 
 # allow trivalent to interface with flatpaks (necessary for keepassxc extension, for example)
 allow trivalent_t data_home_t:file { execute execute_no_trans };
+
+# allow trivalent to own its mpris daemon
+allow trivalent_t unconfined_dbusd_t:dbus acquire_svc;
 
 # xwayland/nvidia
 xserver_exec(trivalent_t)

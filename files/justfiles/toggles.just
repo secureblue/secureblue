@@ -316,7 +316,7 @@ toggle-bash-environment-lockdown skip_approval="false" apply_for_all_users="prom
                 install -D -o "$user" -g "$user" -m 500 /dev/null "$file"
                 chattr +i "$file"
               fi
-             
+
             done
             chmod -R 500 "$user_home/bash_env_files"
             chown -R "$user:" "$user_home/bash_env_files"

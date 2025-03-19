@@ -337,6 +337,7 @@ audit-secureblue AUDIT_FLATPAKS="true":
     declare -a UNLOCKED_FILES=()
     declare -a INVALID_FILES=()
     BASH_ENV_STRING="Ensuring user bash environment is locked down"
+
     for file in "${BASH_ENV_FILES_DIRS[@]}"; do
         FILE_STATUS=$(lsattr "$file" 2>/dev/null | awk '{print $1}' | grep 'i' | tr -d '-')
         DIR_STATUS=$(lsattr -d "$file" 2>/dev/null | awk '{print $1}' | grep 'i' | tr -d '-')

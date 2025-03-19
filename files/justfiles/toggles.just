@@ -205,8 +205,6 @@ toggle-xwayland ACTION="prompt":
 toggle-bash-environment-lockdown skip_approval="false" apply_for_all_users="prompt":
     #!/bin/run0 /bin/bash
     set -eou pipefail
-    b=$(tput bold)
-    n=$(tput sgr0)
     # The below lines fetch the minimium and maximium UIDS as configured in /etc/login.defs. Any UIDs within this change are true user ids
     # rather than system agents, and therefore should be locked down. The user_string variable uses this fetched UID range to find all 
     # existing users and their home directory along with formatting this data for later use. The IFS line simple converts this data data 

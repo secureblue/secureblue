@@ -388,7 +388,7 @@ install-vpn:
         local PACKAGE_NAME="proton-vpn-gnome-desktop"
 
         if util_checkpackage "$PACKAGE_NAME"; then
-            echo "Error: Proton VPN is already installed."
+            echo 'Error: Proton VPN is already installed.'
             echo 'Aborting...'
             exit 1
         fi

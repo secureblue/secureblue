@@ -3,15 +3,15 @@
 # Modified from https://github.com/ublue-os/bazzite/blob/main/system_files/desktop/shared/usr/libexec/ublue-motd
 
 RPM_OSTREE_STATUS=$(rpm-ostree status --json --booted)
-IMAGE_REF_NAME=$(echo $RPM_OSTREE_STATUS | jq -r '.deployments[0]."container-image-reference" // empty | split("/")[-1]')
-if [ -n "$(echo $RPM_OSTREE_STATUS | grep 'hardened:')" ] ; then
-    IMAGE_TAG=$(echo $RPM_OSTREE_STATUS | jq -r '.deployments[0]."container-image-reference" // empty | split(":")[-1]')
+IMAGE_REF_NAME=$(echo "$RPM_OSTREE_STATUS" | jq -r '.deployments[0]."container-image-reference" // empty | split("/")[-1]')
+if echo "$RPM_OSTREE_STATUS" | grep -q 'hardened:'; then
+    IMAGE_TAG=$(echo "$RPM_OSTREE_STATUS" | jq -r '.deployments[0]."container-image-reference" // empty | split(":")[-1]')
 else
     IMAGE_TAG='ERROR-IMAGE-TAG-MISSING'
 fi
 TIP=""
 
-IMAGE_DATE=$(echo $RPM_OSTREE_STATUS | jq -r '.deployments[0].timestamp')
+IMAGE_DATE=$(echo "$RPM_OSTREE_STATUS" | jq -r '.deployments[0].timestamp')
 CURRENT_SECONDS=$(date +%s)
 DIFFERENCE=$((CURRENT_SECONDS - IMAGE_DATE))
 WEEK=$((7 * 24 * 60 * 60))

@@ -422,7 +422,7 @@ install-vpn:
 
     vpn_requirements="${vpn_providers[$vpn_choice]}"
     needs_gui="1"
-    if [[ "$vpn_requirements" =~ "gui_" ]]; then
+    if [[ "$vpn_requirements" =~ "gui_needs_" ]]; then
         echo
         echo 'Notice: This VPN requires additional security features to be disabled if you intend to use its graphical interface.'
         echo 'If you only intend on using the command-line interface, you can skip those.'

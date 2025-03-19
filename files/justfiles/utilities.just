@@ -408,7 +408,7 @@ install-vpn:
     }
 
     # script start
-    echo 'WARNING: It is strongly recommended that you **not** use VPN provider desktop applications, as they generally require significant security downgrades.'
+    echo 'WARNING: It is strongly recommended that you do **not** use VPN provider desktop applications, as they generally require significant security downgrades.'
     echo 'Instead, it is recommended that you download wireguard profiles from your provider and import them into your desktop environment.'
     read -rp 'Are you sure you want to do this? [y/N] ' proceed
     if ! [[ "$proceed" == [yY]* ]]; then
@@ -426,7 +426,7 @@ install-vpn:
         echo
         echo 'Notice: This VPN requires additional security features to be disabled if you intend to use its graphical interface.'
         echo 'If you only intend on using the command-line interface, you can skip those.'
-        read -rp 'Do intend to use the GUI? [Y/n] ' proceed_gui
+        read -rp 'Do you intend to use the GUI? [Y/n] ' proceed_gui
         if [[ "$proceed_gui" == [nN]* ]]; then
             echo 'Additional hardening features required for the GUI will not be disabled.'
             needs_gui="0"

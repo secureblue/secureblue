@@ -215,7 +215,6 @@ toggle-bash-environment-lockdown skip_approval="false" apply_for_all_users="prom
     uid_max="$(grep -Po '^\s*UID_MAX\s+\K\d+' /etc/login.defs)"
     user_string="$(getent passwd | awk -F':' -v max="$uid_max" -v min="$uid_min" 'max >= $3 && $3 >= min {print $1}' | tr '\n' ',' | sed 's/,*$//')"
     IFS=',' read -ra user_list <<< "$user_string"
-    return "$user_list"
     }
 
     # $SUDO_USER is the user who started the script instead of whichever authorized it via polkit or the root home. From there this 
@@ -257,12 +256,12 @@ toggle-bash-environment-lockdown skip_approval="false" apply_for_all_users="prom
         if [[ "$reply" != [yY]* ]]; then
             user_list=("$SUDO_USER")
         else
-            user_list="$(user_list_lookup)"
+            user_list_lookup
         fi
     elif [ "{{ apply_for_all_users }}" == "false" ]; then
         user_list=("$SUDO_USER")
     elif [ "{{ apply_for_all_users }}" == "true" ]; then
-        user_list="$(user_list_lookup)"
+        user_list_lookup
     else
         echo 'Invalid apply_for_all_users arguement, only "true", "false", or empty allowed.'
         exit

@@ -250,6 +250,7 @@ toggle-bash-environment-lockdown skip_approval="false" apply_for_all_users="prom
     fi
 
     if [ "{{ apply_for_all_users }}" == "prompt" ]; then
+        user_list_lookup
         echo "Do you want this change to apply to ""${b}""all""${n}"" users (""${user_list[@]}"")? [y/N]"
         echo "Otherwise, it will only apply to the user who launched this script ($SUDO_USER)."
         read -r reply

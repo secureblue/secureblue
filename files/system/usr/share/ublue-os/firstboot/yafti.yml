@@ -56,7 +56,7 @@ screens:
             - Contacts: org.gnome.Contacts
             - Disk Usage Analyzer: org.gnome.baobab
             - Document Scanner: org.gnome.SimpleScan
-            - Document Viewer: org.gnome.Evince
+            - Document Viewer: org.gnome.Papers
             - Extensions: org.gnome.Extensions
             - Font Viewer: org.gnome.font-viewer
             - Image Viewer: org.gnome.Loupe
@@ -69,7 +69,16 @@ screens:
           description: Core system applications for the KDE Plasma desktop environment.
           default: false
           packages:
-            - Gwenview: org.kde.gwenview
+            - Calculator: org.kde.kcalc
+            - Camera: org.kde.kamoso
+            - Characters: org.kde.kcharselect
+            - Contacts: org.kde.kontact
+            - Document Scanner: org.kde.skanlite
+            - Document Viewer: org.kde.okular
+            - Image Viewer: org.kde.gwenview
+            - Maps: org.kde.marble
+            - Text Editor: org.kde.kate
+            - Weather: org.kde.kweather
             
         System Apps:
           description: System applications for all desktop environments.

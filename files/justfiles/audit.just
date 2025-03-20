@@ -334,7 +334,6 @@ audit-secureblue AUDIT_FLATPAKS="true":
 
     BASH_ENV_STATUS="locked"
     BASH_ENV_FILES_DIRS=("$HOME/.bashrc" "$HOME/.bash_profile" "$HOME/.config/bash-completion" "$HOME/.profile" "$HOME/.bash_logout" "$HOME/.bash_login" "$HOME/.bashrc.d/" "$HOME/.config/environment.d/")
-    declare -a UNLOCKED_FILES=()
     BASH_ENV_STRING="Ensuring $USER's bash environment is locked down"
 
     for file in "${BASH_ENV_FILES_DIRS[@]}"; do

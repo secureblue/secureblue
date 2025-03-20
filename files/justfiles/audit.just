@@ -340,19 +340,19 @@ audit-secureblue AUDIT_FLATPAKS="true":
 
     for file in "${BASH_ENV_FILES_DIRS[@]}"; do
         if [ "${file: -1}" == "/" ]; then
-            STATUS="$(lsattr -d "$file" 2>/dev/null)"
+            STATUS="$(lsattr -d "$file" 2>/dev/null || echo '')"
         else
-            STATUS="$(lsattr "$file" 2>/dev/null)"
+            STATUS="$(lsattr "$file" 2>/dev/null || echo '')"
         fi
-        STATUS="$(echo "$STATUS" | awk '{print $1}' | grep 'i' | tr -d '-')"
+        STATUS="$(echo "$STATUS" | awk '{print $1}')"
 
         if [ ! -e "$file" ]; then
             BASH_ENV_STATUS="unlocked"
             UNLOCKED_FILES+=("$file")
-        elif [ "$STATUS" != 'i' ] && [ -f "$file" ]; then
+        elif [[ "$STATUS" != *i* ]] && [ -f "$file" ]; then
             BASH_ENV_STATUS="unlocked"
             UNLOCKED_FILES+=("$file")
-        elif [ "$STATUS" != 'i' ] && [ -d "$file" ]; then
+        elif [[ "$STATUS" != *i* ]] && [ -d "$file" ]; then
             BASH_ENV_STATUS="unlocked"
             UNLOCKED_FILES+=("$file")
         elif [ ! -f "$file" ] && [ ! -d "$file" ]; then
@@ -365,7 +365,7 @@ audit-secureblue AUDIT_FLATPAKS="true":
         print_status "$BASH_ENV_STRING" "$STATUS_SUCCESS"
     else
         print_status "$BASH_ENV_STRING" "$STATUS_FAILURE"
-        FMT_UNLOCKED_FILES="\tThe following files do not appear to be immutable or do not exist:\t$(echo "${UNLOCKED_FILES[@]}" | tr ' ' '\t')\t"
+        FMT_UNLOCKED_FILES=$'\tThe following files do not appear to be immutable or do not exist:\t'"$(echo "${UNLOCKED_FILES[@]}" | tr ' ' '\t')"
         suggestions+=("Bash environment is not locked down $FMT_UNLOCKED_FILES	To fix run:	$ ujust toggle-bash-environment-lockdown")
     fi
 

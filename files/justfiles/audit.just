@@ -363,7 +363,7 @@ audit-secureblue AUDIT_FLATPAKS="true":
         print_status "$BASH_ENV_STRING" "$STATUS_SUCCESS"
     else
         print_status "$BASH_ENV_STRING" "$STATUS_FAILURE" # 	
-        FMT_UNLOCKED_FILES="	The following files do not appear to be immutable or do not exist:    $(echo "${UNLOCKED_FILES[@]}" | tr ' ' '\t')    "
+        FMT_UNLOCKED_FILES="'\t'The following files do not appear to be immutable or do not exist:'\t'$(echo "${UNLOCKED_FILES[@]}" | tr ' ' '\t')'\t'"
         suggestions+=("Bash environment is not locked down $FMT_UNLOCKED_FILES	To fix run:	$ ujust toggle-bash-environment-lockdown")
     fi
 

@@ -207,9 +207,8 @@ toggle-bash-environment-lockdown skip_approval="false" apply_for_all_users="prom
     set -eou pipefail
 
     # The below function fetch the minimium and maximium UIDS as configured in /etc/login.defs. Any UIDs within this change are true user ids
-    # rather than system agents, and therefore should be locked down. The user_string variable uses this fetched UID range to find all 
-    # existing users and their home directory along with formatting this data for later use. The IFS line simply converts this data 
-    # into a bash array.
+    # rather than system agents, and therefore should be locked down. The user_string variable uses this fetched UID range to find all existing
+    # users and their home directory along with formatting this data for later use. The IFS line simply converts this data into a bash array.
     function user_list_lookup() {
         uid_min="$(grep -Po '^\s*UID_MIN\s+\K\d+' /etc/login.defs)"
         uid_max="$(grep -Po '^\s*UID_MAX\s+\K\d+' /etc/login.defs)"

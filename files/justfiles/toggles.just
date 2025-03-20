@@ -205,25 +205,30 @@ toggle-xwayland ACTION="prompt":
 toggle-bash-environment-lockdown skip_approval="false" apply_for_all_users="prompt":
     #!/bin/run0 /bin/bash
     set -eou pipefail
+
+    user_list_lookup() {
     # The below lines fetch the minimium and maximium UIDS as configured in /etc/login.defs. Any UIDs within this change are true user ids
     # rather than system agents, and therefore should be locked down. The user_string variable uses this fetched UID range to find all 
-    # existing users and their home directory along with formatting this data for later use. The IFS line simple converts this data data 
+    # existing users and their home directory along with formatting this data for later use. The IFS line simply converts this data 
     # into a bash array.
-    uid_min=$(grep -Po '^\s*UID_MIN\s+\K\d+' /etc/login.defs)
-    uid_max=$(grep -Po '^\s*UID_MAX\s+\K\d+' /etc/login.defs)
-    user_string=$(getent passwd | awk -F':' -v max="$uid_max" -v min="$uid_min" 'max >= $3 && $3 >= min {print $1}' | tr '\n' ',' | sed 's/,*$//')
+    uid_min="$(grep -Po '^\s*UID_MIN\s+\K\d+' /etc/login.defs)"
+    uid_max="$(grep -Po '^\s*UID_MAX\s+\K\d+' /etc/login.defs)"
+    user_string="$(getent passwd | awk -F':' -v max="$uid_max" -v min="$uid_min" 'max >= $3 && $3 >= min {print $1}' | tr '\n' ',' | sed 's/,*$//')"
     IFS=',' read -ra user_list <<< "$user_string"
+    return "$user_list"
+    }
+
     # $SUDO_USER is the user who started the script instead of whichever authorized it via polkit or the root home. From there this 
     # $USER_HOME uses getent to lookup their home directory to later check if they have an existing .bashrc file.
-    USER_HOME=$(getent passwd $SUDO_USER | cut -d: -f6)
-    if lsattr "$USER_HOME/.bashrc" 2>/dev/null | awk '{print $1}' | grep -q 'i'; then
+    user_home="$(getent passwd "$SUDO_USER" | cut -d: -f6)"
+    if lsattr "$user_home/.bashrc" 2>/dev/null | awk '{print $1}' | grep -q 'i'; then
         pending_status="unlocked"
     else
         pending_status="locked"
     fi
 
     # Below variable is created to only call date once and use the same time across the script despite execution time.
-    current_time=$(date | tr ' ' '_')
+    current_time="$(date | tr ' ' '_')"
 
     if [ "$pending_status" == "locked" ]; then
         echo "${b}WARNING${n} This will change your ~/.bashrc, ~/.bash_profile, ~/.config/bash-completion, ~/.profile, ~/.bash_logout, ~/.bash_login, ~/.bashrc.d/, and ~/.config/environment.d/"
@@ -235,37 +240,37 @@ toggle-bash-environment-lockdown skip_approval="false" apply_for_all_users="prom
 
     if [ "{{ skip_approval }}" == "false" ]; then
         echo "Do you understand?"
-        echo "Please type in \"YES I UNDERSTAND\" and press enter"
-        read -r ACCEPT
-        if [ "$ACCEPT" != "YES I UNDERSTAND" ]; then
+        echo 'Please type in "YES I UNDERSTAND" and press enter'
+        read -r accept
+        if [ "$accept" != "YES I UNDERSTAND" ]; then
             exit
         fi
     elif [ "{{ skip_approval }}" != "true" ]; then
-        echo "Invalid skip_approval arguement, only "true", "false", or empty allowed."
+        echo 'Invalid skip_approval arguement, only "true", "false", or empty allowed.'
         exit
     fi
 
     if [ "{{ apply_for_all_users }}" == "prompt" ]; then
         echo "Do you want this change to apply to ""${b}""all""${n}"" users (""${user_list[@]}"")? [y/N]"
         echo "Otherwise, it will only apply to the user who launched this script ($SUDO_USER)."
-        read -r REPLY
-        # Note this way the default if you press enter is to only effect the user who launched this script
-        if [[ "$REPLY" != [yY]* ]]; then
+        read -r reply
+        if [[ "$reply" != [yY]* ]]; then
             user_list=("$SUDO_USER")
+        else
+            user_list="$(user_list_lookup)"
         fi
     elif [ "{{ apply_for_all_users }}" == "false" ]; then
         user_list=("$SUDO_USER")
     elif [ "{{ apply_for_all_users }}" == "true" ]; then
-        :
+        user_list="$(user_list_lookup)"
     else
-        echo "Invalid apply_for_all_users arguement, only "true", "false", or empty allowed."
+        echo 'Invalid apply_for_all_users arguement, only "true", "false", or empty allowed.'
         exit
     fi
-
-    chattr_operator=$([ "$pending_status" == "locked" ] && echo "+i" || echo "-i")  
+ 
     for user in "${user_list[@]}"; do
         echo "Applying for user: $user"
-        user_home=$(getent passwd "$user" | awk -F':' '{ print $6}')
+        user_home="$(getent passwd "$user" | awk -F':' '{ print $6}')"
         [ -d "$user_home" ] || { echo "Variable \$user_home for $user is somehow empty (check your getent passwd entries)"; echo "safely exiting."; exit 1; }
 
         BASH_ENV_FILES=(
@@ -291,7 +296,7 @@ toggle-bash-environment-lockdown skip_approval="false" apply_for_all_users="prom
 
             for file in "${BASH_ENV_FILES[@]}"; do
                 # skel_file converts "$user_home/.bashrc" to ".bashrc" 
-                skel_file=$(echo "$file" | sed 's|'${user_home}'/||')
+                skel_file="$(echo "$file" | sed 's|'${user_home}'/||')"
                 if [ ! -f "$file" ] && [ ! -d "$file" ] && [ -e "$file" ]; then
                     echo "Special file detected on absolute filepath ($file) from BASH_ENV_FILES. It will not be modified."
                 elif [ -f "$file" ]; then

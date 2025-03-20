@@ -202,61 +202,150 @@ toggle-xwayland ACTION="prompt":
     fi
 
 # Toggle bash environment lockdown (mitigates LD_PRELOAD attacks)
-toggle-bash-environment-lockdown:
-    #!/usr/bin/bash
-    BASH_ENV_FILES=("$HOME/.bashrc" "$HOME/.bash_profile")
-    source /usr/lib/ujust/libformatting.sh
-    echo "${bold}WARNING:${unbold} This will overwrite your .bashrc and .bash_profile."
-    echo 'This is needed to ensure the mitigation is effective.'
-    echo 'Do you understand?'
-    echo 'Please type in "YES I UNDERSTAND" and press enter'
-    read -r ACCEPT
-    if [ "$ACCEPT" = "YES I UNDERSTAND" ]; then
-      if lsattr "${BASH_ENV_FILES[0]}" 2>/dev/null | awk '{print $1}' | grep -q 'i'; then
-        echo "Bash environment '(${BASH_ENV_FILES[*]})' is locked down. Unlocking it."
-        for file in "${BASH_ENV_FILES[@]}"; do
-            run0 chattr -i "$file"
-        done
-      else
-        echo "Bash environment '(${BASH_ENV_FILES[*]})' is unlocked. Locking it."
-        cat << 'EOF' > ~/.bashrc
-    # .bashrc
+toggle-bash-environment-lockdown skip_approval="false" apply_for_all_users="prompt":
+    #!/bin/run0 /bin/bash
+    set -eou pipefail
 
-    # Source global definitions
-    if [ -f /etc/bashrc ]; then
-        . /etc/bashrc
-    fi
+    # The below function fetch the minimium and maximium UIDS as configured in /etc/login.defs. Any UIDs within this change are true user ids
+    # rather than system agents, and therefore should be locked down. The user_string variable uses this fetched UID range to find all existing
+    # users and their home directory along with formatting this data for later use. The IFS line simply converts this data into a bash array.
+    function user_list_lookup() {
+        uid_min="$(grep -Po '^\s*UID_MIN\s+\K\d+' /etc/login.defs)"
+        uid_max="$(grep -Po '^\s*UID_MAX\s+\K\d+' /etc/login.defs)"
+        user_string="$(getent passwd | awk -F':' -v max="$uid_max" -v min="$uid_min" 'max >= $3 && $3 >= min {print $1}' | tr '\n' ',' | sed 's/,*$//')"
+        IFS=',' read -ra user_list <<< "$user_string"
+    }
 
-    # User specific environment
-    if ! [[ "$PATH" =~ "$HOME/.local/bin:$HOME/bin:" ]]; then
-        PATH="$HOME/.local/bin:$HOME/bin:$PATH"
-    fi
-    export PATH
-
-    # Uncomment the following line if you don't like systemctl's auto-paging feature:
-    # export SYSTEMD_PAGER=
-
-    unset rc
-    EOF
-
-        cat << 'EOF' > ~/.bash_profile
-    # .bash_profile
-
-    # Get the aliases and functions
-    if [ -f ~/.bashrc ]; then
-        . ~/.bashrc
-    fi
-
-    # User specific environment and startup programs
-    EOF
-
-        for file in "${BASH_ENV_FILES[@]}"; do
-            run0 chattr +i "$file"
-        done
-      fi
+    # $SUDO_USER is the user who started the script instead of whichever authorized it via polkit or the root home. From there this 
+    # $USER_HOME uses getent to lookup their home directory to later check if they have an existing .bashrc file.
+    user_home="$(getent passwd "$SUDO_USER" | cut -d: -f6)"
+    if lsattr "$user_home/.bashrc" 2>/dev/null | awk '{print $1}' | grep -q 'i'; then
+        pending_status="unlocked"
     else
-      echo "Capitalization matters when you type \"YES I UNDERSTAND\""
+        pending_status="locked"
     fi
+
+    # Below variable is created to only call date once and use the same time across the script despite execution time.
+    current_time="$(date | tr ' ' '_')"
+
+    if [ "$pending_status" == "locked" ]; then
+        echo "${b}WARNING${n} This will change your ~/.bashrc, ~/.bash_profile, ~/.config/bash-completion, ~/.profile, ~/.bash_logout, ~/.bash_login, ~/.bashrc.d/, and ~/.config/environment.d/"
+        echo "This is needed to ensure the mitigation (see LD_PRELOAD attacks) is effective."
+        echo "This script will create backups of the old versions in ~/bash_env_files/$current_time."
+    else
+        echo "${b}WARNING${n} .bashrc, .bash_profile, and more will be unlocked and made editable by non-root users. This represents a security risk (see LD_PRELOAD attacks)"
+    fi
+
+    if [ "{{ skip_approval }}" == "false" ]; then
+        echo "Do you understand?"
+        echo 'Please type in "YES I UNDERSTAND" and press enter'
+        read -r accept
+        if [ "$accept" != "YES I UNDERSTAND" ]; then
+            exit
+        fi
+    elif [ "{{ skip_approval }}" != "true" ]; then
+        echo 'Invalid skip_approval arguement, only "true", "false", or empty allowed.'
+        exit
+    fi
+
+    if [ "{{ apply_for_all_users }}" == "prompt" ]; then
+        user_list_lookup
+        echo "Do you want this change to apply to ""${b}""all""${n}"" users (""${user_list[@]}"")? [y/N]"
+        echo "Otherwise, it will only apply to the user who launched this script ($SUDO_USER)."
+        read -r reply
+        if [[ "$reply" != [yY]* ]]; then
+            user_list=("$SUDO_USER")
+        fi
+    elif [ "{{ apply_for_all_users }}" == "false" ]; then
+        user_list=("$SUDO_USER")
+    elif [ "{{ apply_for_all_users }}" == "true" ]; then
+        user_list_lookup
+    else
+        echo 'Invalid apply_for_all_users arguement, only "true", "false", or empty allowed.'
+        exit
+    fi
+
+    for user in "${user_list[@]}"; do
+        echo "Applying for user: $user"
+        user_home="$(getent passwd "$user" | awk -F':' '{ print $6}')"
+        [ -d "$user_home" ] || { echo "Variable \$user_home for $user is somehow empty (check your getent passwd entries)"; echo "safely exiting."; exit 1; }
+
+        BASH_ENV_FILES=(
+            "$user_home/.bashrc"
+            "$user_home/.bash_profile"
+            "$user_home/.config/bash-completion"
+            "$user_home/.profile"
+            "$user_home/.bash_logout"
+            "$user_home/.bash_login"
+            "$user_home/.bashrc.d/"
+            "$user_home/.config/environment.d/"
+        )
+
+        # Purpose of the below block is to actually lock or unlock the current selected user across the configured BASH_ENV_FILES 
+        #    If the script is locking: 
+        #        to copy the old env files and directories to folder with the time appended to its name 
+        #        remove immutability (to allow the script to overwrite any existing immutable environment files)
+        #        create default or blank copies (deleting the old versions)
+        #        add immutability
+
+        if [ "$pending_status" == "locked" ]; then
+            backup_dest="$user_home/bash_env_files/$current_time/"
+            mkdir -p "$backup_dest"
+
+            for file in "${BASH_ENV_FILES[@]}"; do
+                # skel_file converts "$user_home/.bashrc" to ".bashrc" 
+                skel_file="$(echo "$file" | sed 's|'"${user_home}"'/||')"
+                if [ ! -f "$file" ] && [ ! -d "$file" ] && [ -e "$file" ]; then
+                    echo "Special file detected on absolute filepath ($file) from BASH_ENV_FILES. It will not be modified."
+                elif [ -f "$file" ]; then
+                    chattr -i "$file"
+                    rsync -a --mkpath "$file" "$backup_dest$skel_file"
+                    rm "$file"
+                elif [ -d "$file" ]; then
+                    chattr -R -i "$file" 
+                    rsync -a --mkpath "$file" "$backup_dest$skel_file"
+                    rm -r "$file"
+                fi
+
+                # Now we create new empty/default files and directories
+                if [ "${file: -1}" == "/" ]; then
+                    install -D -d -o "$user" -g "$user" -m 500 "$file"
+                    chattr +i -R "$file"
+                elif [ -f "/etc/skel/$skel_file" ]; then
+                    install -D -o "$user" -g "$user" -m 500 "/etc/skel/$skel_file" "$file"
+                    chattr +i "$file"
+                else
+                    install -D -o "$user" -g "$user" -m 500 /dev/null "$file"
+                    chattr +i "$file"
+                fi
+            done
+
+            chmod -R 500 "$user_home/bash_env_files"
+            chown -R "$user:" "$user_home/bash_env_files"
+        else
+            for file in "${BASH_ENV_FILES[@]}"; do
+                if [ ! -f "$file" ] && [ ! -d "$file" ] && [ -e "$file" ]; then
+                    echo "Special file detected on absolute filepath ($file) from BASH_ENV_FILES. It will not be modified."
+                elif [ -f "$file" ]; then
+                    chattr -i "$file"
+                elif [ -d "$file" ]; then
+                    chattr -R -i "$file" 
+                fi
+            done
+        fi
+    done
+
+    echo "${user_list[@]}" "$pending_status."
+    echo "${b}WARNING${n}: until a reboot, any process with an open file descriptor will continue to have the access they had before this script was run."
+    echo ""
+    echo "Optional Arguments:"
+    echo "ujust toggle-bash-environment-lockdown skip_approval apply_for_all_users"
+    echo "    skip_approval: [true/false]          'true' the user is not prompted to respond 'YES I UNDERSTAND'; 'false' user is prompted."
+    echo ""
+    echo "    apply_for_all_users: [true/false]    'true' change is applied to all users (without prompting); 'false' change is only applied" 
+    echo "                                          to user currently logged in (without prompting)."
+    echo ""
+    echo "Invalid optional arguments are treated as errors."
 
 # Toggle unconfined domain userns creation
 toggle-unconfined-domain-userns-creation:

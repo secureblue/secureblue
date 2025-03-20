@@ -258,31 +258,6 @@ audit-secureblue AUDIT_FLATPAKS="true":
         fi
     fi
 
-    BASH_TEST_STRING="Ensuring bash environment lockdown"
-    BASH_ENV_FILES=(~/.bashrc ~/.bash_profile)
-    all_locked=1
-
-    for file in "${BASH_ENV_FILES[@]}"; do
-        if [ -f "$file" ]; then
-            if lsattr "$file" 2>/dev/null | awk '{print $1}' | grep -q 'i'; then
-                continue
-            else
-                all_locked=0
-                break
-            fi
-        else
-            all_locked=0
-            break
-        fi
-    done
-
-    if [ "$all_locked" -eq 1 ]; then
-        print_status "$BASH_TEST_STRING" "$STATUS_SUCCESS"
-    else
-        print_status "$BASH_TEST_STRING" "$STATUS_FAILURE"
-        suggestions+=("The bash environment is not locked down	Run:	$ ujust toggle-bash-environment-lockdown")
-    fi
-
     WHEEL_TEST_STRING="Ensuring user is not a member of wheel"
     if groups | grep -q "\bwheel\b"; then
         print_status "$WHEEL_TEST_STRING" "$STATUS_FAILURE"
@@ -357,6 +332,41 @@ audit-secureblue AUDIT_FLATPAKS="true":
         print_status "$SECUREBOOT_TEST_STRING" "$STATUS_SUCCESS"
     else
         print_status "$SECUREBOOT_TEST_STRING" "$STATUS_FAILURE"
+    fi
+
+    BASH_ENV_STATUS="locked"
+    BASH_ENV_FILES_DIRS=("$HOME/.bashrc" "$HOME/.bash_profile" "$HOME/.config/bash-completion" "$HOME/.profile" "$HOME/.bash_logout" "$HOME/.bash_login" "$HOME/.bashrc.d/" "$HOME/.config/environment.d/")
+    BASH_ENV_STRING="Ensuring $USER's bash environment is locked down"
+
+    for file in "${BASH_ENV_FILES_DIRS[@]}"; do
+        if [ "${file: -1}" == "/" ]; then
+            STATUS="$(lsattr -d "$file" 2>/dev/null)"
+        else
+            STATUS="$(lsattr "$file" 2>/dev/null)"
+        fi
+        STATUS="$(echo "$STATUS" | awk '{print $1}' | grep 'i' | tr -d '-')"
+
+        if [ ! -e "$file" ]; then
+            BASH_ENV_STATUS="unlocked"
+            UNLOCKED_FILES+=("$file")
+        elif [ "$STATUS" != 'i' ] && [ -f "$file" ]; then
+            BASH_ENV_STATUS="unlocked"
+            UNLOCKED_FILES+=("$file")
+        elif [ "$STATUS" != 'i' ] && [ -d "$file" ]; then
+            BASH_ENV_STATUS="unlocked"
+            UNLOCKED_FILES+=("$file")
+        elif [ ! -f "$file" ] && [ ! -d "$file" ]; then
+            BASH_ENV_STATUS="unlocked"
+            UNLOCKED_FILES+=("$file")
+        fi
+    done
+
+    if [ "$BASH_ENV_STATUS" = "locked" ]; then
+        print_status "$BASH_ENV_STRING" "$STATUS_SUCCESS"
+    else
+        print_status "$BASH_ENV_STRING" "$STATUS_FAILURE"
+        FMT_UNLOCKED_FILES="\tThe following files do not appear to be immutable or do not exist:\t$(echo "${UNLOCKED_FILES[@]}" | tr ' ' '\t')\t"
+        suggestions+=("Bash environment is not locked down $FMT_UNLOCKED_FILES	To fix run:	$ ujust toggle-bash-environment-lockdown")
     fi
 
     # shellcheck disable=SC2050

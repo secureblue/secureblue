@@ -333,26 +333,29 @@ audit-secureblue AUDIT_FLATPAKS="true":
     fi
 
     BASH_ENV_STATUS="locked"
-    BASH_ENV_FILES_DIRS=("$HOME/.bashrc" "$HOME/.bash_profile" "$HOME/.config/bash-completion" "$HOME/.profile" "$HOME/.bash_logout" "$HOME/.bash_login" "$HOME/.bashrc.d" "$HOME/.config/environment.d")
+    BASH_ENV_FILES_DIRS=("$HOME/.bashrc" "$HOME/.bash_profile" "$HOME/.config/bash-completion" "$HOME/.profile" "$HOME/.bash_logout" "$HOME/.bash_login" "$HOME/.bashrc.d/" "$HOME/.config/environment.d/")
     declare -a UNLOCKED_FILES=()
-    declare -a INVALID_FILES=()
     BASH_ENV_STRING="Ensuring user bash environment is locked down"
 
     for file in "${BASH_ENV_FILES_DIRS[@]}"; do
-        FILE_STATUS=$(lsattr "$file" 2>/dev/null | awk '{print $1}' | grep 'i' | tr -d '-')
-        DIR_STATUS=$(lsattr -d "$file" 2>/dev/null | awk '{print $1}' | grep 'i' | tr -d '-')
+        if [ "${file: -1}" == "/" ]; then
+            STATUS="$(lsattr -d "$file" 2>/dev/null | awk '{print $1}' | grep 'i' | tr -d '-')"
+        else
+            STATUS="$(lsattr "$file" 2>/dev/null | awk '{print $1}' | grep 'i' | tr -d '-')"
+        fi
+
         if [ ! -e "$file" ]; then
             BASH_ENV_STATUS="unlocked"
             UNLOCKED_FILES+=("$file")
-        elif [ "$FILE_STATUS" != 'i' ] && [ -f "$file" ]; then
+        elif [ "$STATUS" != 'i' ] && [ -f "$file" ]; then
             BASH_ENV_STATUS="unlocked"
             UNLOCKED_FILES+=("$file")
-        elif [ "$DIR_STATUS" != 'i' ] && [ -d "$file" ]; then
+        elif [ "$STATUS" != 'i' ] && [ -d "$file" ]; then
             BASH_ENV_STATUS="unlocked"
             UNLOCKED_FILES+=("$file")
-        else
+        elif [ ! -f "$file" ] && [ ! -d "$file" ]; then
             BASH_ENV_STATUS="unlocked"
-            INVALID_FILES+=("$file")
+            UNLOCKED_FILES+=("$file")
         fi        
     done
 
@@ -363,12 +366,7 @@ audit-secureblue AUDIT_FLATPAKS="true":
         FMT_UNLOCKED_FILES="	The following files do not appear to be immutable or do not exist:	"
         FMT_UNLOCKED_FILES+=$(echo "${UNLOCKED_FILES[@]}" | tr ' ' '\t')
         FMT_UNLOCKED_FILES+="	"
-        FMT_INVALID_FILES="	The following paths appear to exist but are invalid (the file exists but is not a file or directory):	"    
-        FMT_INVALID_FILES+=$(echo "${INVALID_FILES[@]}" | tr ' ' '\t')
-        [[ "${#UNLOCKED_FILES[@]}" -eq 0 ]] && FMT_UNLOCKED_FILES=""
-        [[ "${#INVALID_FILES[@]}" -eq 0 ]] && FMT_INVALID_FILES=""
-        [[ "${#UNLOCKED_FILES[@]}" -eq 0 ]] && [[ "${#INVALID_FILES[@]}" -eq 0 ]] && FMT_UNLOCKED_FILES="    An exception has occurred, please manually verify these files exist and are immutable:    ${BASH_ENV_FILES_DIRS[@]}    "; FMT_INVALID_FILES="" 
-        suggestions+=("Bash environment is not locked down $FMT_UNLOCKED_FILES $FMT_INVALID_FILES	To fix run:	$ ujust toggle-bash-environment-lockdown")
+        suggestions+=("Bash environment is not locked down $FMT_UNLOCKED_FILES	To fix run:	$ ujust toggle-bash-environment-lockdown")
     fi
 
     if [[ "{{ AUDIT_FLATPAKS }}" == "true" ]]; then

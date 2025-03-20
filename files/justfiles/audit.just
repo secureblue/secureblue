@@ -339,10 +339,11 @@ audit-secureblue AUDIT_FLATPAKS="true":
 
     for file in "${BASH_ENV_FILES_DIRS[@]}"; do
         if [ "${file: -1}" == "/" ]; then
-            STATUS="$(lsattr -d "$file" 2>/dev/null | awk '{print $1}' | grep 'i' | tr -d '-')"
+            STATUS="$(lsattr -d "$file" 2>/dev/null)"
         else
-            STATUS="$(lsattr "$file" 2>/dev/null | awk '{print $1}' | grep 'i' | tr -d '-')"
+            STATUS="$(lsattr "$file" 2>/dev/null)"
         fi
+        STATUS="$(echo "$STATUS" | awk '{print $1}' | grep 'i' | tr -d '-')"
 
         if [ ! -e "$file" ]; then
             BASH_ENV_STATUS="unlocked"
@@ -363,7 +364,7 @@ audit-secureblue AUDIT_FLATPAKS="true":
         print_status "$BASH_ENV_STRING" "$STATUS_SUCCESS"
     else
         print_status "$BASH_ENV_STRING" "$STATUS_FAILURE" # 	
-        FMT_UNLOCKED_FILES="	The following files do not appear to be immutable or do not exist:        $(echo "${UNLOCKED_FILES[@]}" | tr ' ' '\t')    "
+        FMT_UNLOCKED_FILES="	The following files do not appear to be immutable or do not exist:    $(echo "${UNLOCKED_FILES[@]}" | tr ' ' '\t')    "
         suggestions+=("Bash environment is not locked down $FMT_UNLOCKED_FILES	To fix run:	$ ujust toggle-bash-environment-lockdown")
     fi
 

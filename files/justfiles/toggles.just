@@ -229,11 +229,11 @@ toggle-bash-environment-lockdown skip_approval="false" apply_for_all_users="prom
     current_time="$(date | tr ' ' '_')"
 
     if [ "$pending_status" == "locked" ]; then
-        echo "${b}WARNING${n} This will change your ~/.bashrc, ~/.bash_profile, ~/.config/bash-completion, ~/.profile, ~/.bash_logout, ~/.bash_login, ~/.bashrc.d/, and ~/.config/environment.d/"
+        echo "${bold}WARNING${normal} This will change your ~/.bashrc, ~/.bash_profile, ~/.config/bash-completion, ~/.profile, ~/.bash_logout, ~/.bash_login, ~/.bashrc.d/, and ~/.config/environment.d/"
         echo "This is needed to ensure the mitigation (see LD_PRELOAD attacks) is effective."
         echo "This script will create backups of the old versions in ~/bash_env_files/$current_time."
     else
-        echo "${b}WARNING${n} .bashrc, .bash_profile, and more will be unlocked and made editable by non-root users. This represents a security risk (see LD_PRELOAD attacks)"
+        echo "${bold}WARNING${normal} .bashrc, .bash_profile, and more will be unlocked and made editable by non-root users. This represents a security risk (see LD_PRELOAD attacks)"
     fi
 
     if [ "{{ skip_approval }}" == "false" ]; then

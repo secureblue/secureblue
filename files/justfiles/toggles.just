@@ -266,7 +266,7 @@ toggle-bash-environment-lockdown skip_approval="false" apply_for_all_users="prom
         echo 'Invalid apply_for_all_users arguement, only "true", "false", or empty allowed.'
         exit
     fi
- 
+
     for user in "${user_list[@]}"; do
         echo "Applying for user: $user"
         user_home="$(getent passwd "$user" | awk -F':' '{ print $6}')"

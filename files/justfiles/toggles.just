@@ -255,8 +255,6 @@ toggle-bash-environment-lockdown skip_approval="false" apply_for_all_users="prom
         read -r reply
         if [[ "$reply" != [yY]* ]]; then
             user_list=("$SUDO_USER")
-        else
-            user_list_lookup
         fi
     elif [ "{{ apply_for_all_users }}" == "false" ]; then
         user_list=("$SUDO_USER")
@@ -283,11 +281,12 @@ toggle-bash-environment-lockdown skip_approval="false" apply_for_all_users="prom
             "$user_home/.config/environment.d/"
         )
 
-        # Purpose of the below block is:
-        #    If the script is locking, 
+        # Purpose of the below block is to actually lock or unlock the current selected user across the configured BASH_ENV_FILES 
+        #    If the script is locking: 
         #        to copy the old env files and directories to folder with the time appended to its name 
         #        remove immutability (to allow the script to overwrite any existing immutable environment files)
         #        create default or blank copies (deleting the old versions)
+        #        add immutability
 
         if [ "$pending_status" == "locked" ]; then
             backup_dest="$user_home/bash_env_files/$current_time/"
@@ -307,6 +306,7 @@ toggle-bash-environment-lockdown skip_approval="false" apply_for_all_users="prom
                     rsync -a --mkpath "$file" "$backup_dest$skel_file"
                     rm -r "$file"
                 fi
+
                 # Now we create new empty/default files and directories
                 if [ "${file: -1}" == "/" ]; then
                     install -D -d -o "$user" -g "$user" -m 500 "$file"

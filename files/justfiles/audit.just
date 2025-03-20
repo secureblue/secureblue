@@ -144,6 +144,8 @@ audit-secureblue AUDIT_FLATPAKS="true":
             echo "> $module is in blacklist.conf but it is loaded"
             if [[ "$module" == "bluetooth" ]]; then
                 bluetooth_loaded=true
+            else
+                bluetooth_loaded=false
             fi
         done
     fi

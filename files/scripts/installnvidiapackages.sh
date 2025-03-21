@@ -24,7 +24,7 @@ rpm-ostree install $nvidia_config_rpm_location
 sed -i '0,/enabled=0/{s/enabled=0/enabled=1/}' /etc/yum.repos.d/nvidia-container-toolkit.repo
 sed -i '0,/enabled=0/{s/enabled=0/enabled=1\npriority=90/}' /etc/yum.repos.d/negativo17-fedora-nvidia.repo
 # required for rpm-ostree to function properly
-# shellcheck disable=SC2086
+# shellcheck disable=SC2068
 rpm-ostree install ${nvidia_packages_list[@]}
 
 kmod_version=$(find /tmp/rpms/kmods -maxdepth 1 -name 'kmod-nvidia*.rpm' | awk -F'-' '{print $(NF-1)}')

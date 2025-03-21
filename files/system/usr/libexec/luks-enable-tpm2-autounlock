@@ -63,11 +63,11 @@ else
   exit 1
 fi
 
-SET_PIN_ARG=""
+SET_PIN='no'
 read -p "Would you like to set a PIN? (y/N): " -n 1 -r
 echo
 if [[ $REPLY =~ ^[Yy]$ ]]; then
-  SET_PIN_ARG=" --tpm2-with-pin=yes "
+  SET_PIN='yes'
 fi
 
 # Specify Crypt Disk by-uuid
@@ -81,7 +81,7 @@ if [[ ! -L "$CRYPT_DISK" ]]; then
 fi
 
 if cryptsetup luksDump "$CRYPT_DISK" | grep systemd-tpm2 > /dev/null; then
-  KEYSLOT=$(cryptsetup luksDump "$CRYPT_DISK" | sed -n '/systemd-tpm2$/,/Keyslot:/p' | grep Keyslot|awk '{print $2}')
+  KEYSLOT=$(cryptsetup luksDump "$CRYPT_DISK" | sed -n '/systemd-tpm2$/,/Keyslot:/p' | grep Keyslot | awk '{print $2}')
   echo "TPM2 already present in LUKS keyslot $KEYSLOT of $CRYPT_DISK."
   read -p "Wipe it and re-enroll? (y/N): " -n 1 -r
   echo
@@ -97,7 +97,7 @@ fi
 
 ## Run crypt enroll
 echo "Enrolling TPM2 unlock requires your existing LUKS2 unlock password"
-systemd-cryptenroll --tpm2-device=auto --tpm2-pcrs=7+14 $SET_PIN_ARG "$CRYPT_DISK"
+systemd-cryptenroll --tpm2-device=auto --tpm2-pcrs=7+14 --tpm2-with-pin="$SET_PIN" "$CRYPT_DISK"
 
 
 if lsinitrd 2>&1 | grep -q tpm2-tss > /dev/null; then

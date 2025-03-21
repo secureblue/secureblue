@@ -9,7 +9,7 @@ cp /usr/etc/authselect/authselect.conf /etc/authselect/authselect.conf
 
 # Ensure we are on signed
 RPM_OSTREE_STATUS=$(rpm-ostree status --json --booted)
-IMAGE_BASE_STRING=$(echo $RPM_OSTREE_STATUS | jq -r '.deployments[0]."container-image-reference" // empty')
+IMAGE_BASE_STRING=$(echo "$RPM_OSTREE_STATUS" | jq -r '.deployments[0]."container-image-reference" // empty')
 echo "Current image base: $IMAGE_BASE_STRING"
 if [[ "$IMAGE_BASE_STRING" == *"signed"* ]]; then
     echo "Already on signed. Exiting..."
@@ -18,5 +18,5 @@ fi
 
 IMAGE_REF_NAME=${IMAGE_BASE_STRING##*/}
 echo "Rebasing to $IMAGE_REF_NAME"
-rpm-ostree rebase ostree-image-signed:docker://ghcr.io/secureblue/$IMAGE_REF_NAME
+rpm-ostree rebase "ostree-image-signed:docker://ghcr.io/secureblue/$IMAGE_REF_NAME"
 

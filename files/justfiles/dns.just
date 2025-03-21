@@ -31,7 +31,7 @@ dns-selector:
     echo "    4) DNSForge - powerful filtering but can be very slow"
     echo "    5) Custom Resolver - use a custom resolver (must support DoT/DoQ, ideally also supports DNSSEC, DoH support is also required to set a browser policy should that be desired)"
     while [[ "$valid_input" == "0" ]]; do
-        read -p "Selection [0-5]: " resolver_selection
+        read -rp "Selection [0-5]: " resolver_selection
         if [[ "$resolver_selection" == [012345]* ]]; then
             valid_input="1"
         else
@@ -65,7 +65,7 @@ dns-selector:
             echo "    3) Social: Standard + social media filtering"
             echo "    4) Family: Social + adult content filtering (also enables safe search in major search engines)"
             while [[ "$valid_input" == "0" ]]; do
-                read -p "Selection [0-4]: " resolver_subselection
+                read -rp "Selection [0-4]: " resolver_subselection
                 if [[ "$resolver_subselection" == [01234]* ]]; then
                     valid_input="1"
                 else
@@ -130,7 +130,7 @@ dns-selector:
             echo "    4) Family: Base + gambling and adult content filtering"
             echo "    5) All: Family + social media filtering"
             while [[ "$valid_input" == "0" ]]; do
-                read -p "Selection [0-5]: " resolver_subselection
+                read -rp "Selection [0-5]: " resolver_subselection
                 if [[ "$resolver_subselection" == [012345]* ]]; then
                     valid_input="1"
                 else
@@ -183,7 +183,7 @@ dns-selector:
             echo "    1) Security: Malware filtering"
             echo "    2) Family: Security + adult content filtering"
             while [[ "$valid_input" == "0" ]]; do
-                read -p "Selection [0-2]: " resolver_subselection
+                read -rp "Selection [0-2]: " resolver_subselection
                 if [[ "$resolver_subselection" == [012]* ]]; then
                     valid_input="1"
                 else
@@ -227,7 +227,7 @@ dns-selector:
             echo "    1) Clean: Standard + adult content filtering"
             echo "    2) Hard: Clean + stricter ad, tracker, and malware filtering"
             while [[ "$valid_input" == "0" ]]; do
-                read -p "Selection [0-2]: " resolver_subselection
+                read -rp "Selection [0-2]: " resolver_subselection
                 if [[ "$resolver_subselection" == [012]* ]]; then
                     valid_input="1"
                 else
@@ -266,29 +266,29 @@ dns-selector:
             echo "NOTE: If the resolver does not support DoT/DoQ or DNSSEC, this process will not work."
             echo ""
             echo "Please provide the technical information."
-            read -p "Please enter the resolver's IP address (e.g. '1.1.1.2'): " resolver_ipv4_address
-            read -p "Does the resolver provide two distinct IP addresses (e.g. '1.1.1.2' and '1.0.0.2')? [Y/n] " resolver_has_second_ip
+            read -rp "Please enter the resolver's IP address (e.g. '1.1.1.2'): " resolver_ipv4_address
+            read -rp "Does the resolver provide two distinct IP addresses (e.g. '1.1.1.2' and '1.0.0.2')? [Y/n] " resolver_has_second_ip
             resolver_has_second_ip=${resolver_has_second_ip:-y}
             if [[ "$resolver_has_second_ip" == [Yy]* ]]; then
-                read -p "Please enter the resolver's second IP address: " resolver_ipv4_address_2
+                read -rp "Please enter the resolver's second IP address: " resolver_ipv4_address_2
             fi
-            read -p "Does the resolver support IPv6 (e.g. '2606:4700:4700::1112')? [Y/n] " resolver_supports_ipv6
+            read -rp "Does the resolver support IPv6 (e.g. '2606:4700:4700::1112')? [Y/n] " resolver_supports_ipv6
             resolver_supports_ipv6=${resolver_supports_ipv6:-y}
             if [[ "$resolver_supports_ipv6" == [Yy]* ]]; then
-                read -p "Please enter the resolver's IPv6 address: " resolver_ipv6_address
+                read -rp "Please enter the resolver's IPv6 address: " resolver_ipv6_address
                 if [[ "$resolver_has_second_ip" == [Yy]* ]]; then
-                    read -p "Please enter the resolver's second IPv6 address: " resolver_ipv6_address_2
+                    read -rp "Please enter the resolver's second IPv6 address: " resolver_ipv6_address_2
                 fi
             fi
-            read -p "Please enter the second resolver's hostname (e.g. 'security.cloudflare-dns.com'): " resolver_hostname
-            read -p "Do you want to enable DNSSEC (this can cause networking issues notably in virtual machines, it is recommended if you do not suffer issues)? [Y/n] " resolver_dnssec
+            read -rp "Please enter the second resolver's hostname (e.g. 'security.cloudflare-dns.com'): " resolver_hostname
+            read -rp "Do you want to enable DNSSEC (this can cause networking issues notably in virtual machines, it is recommended if you do not suffer issues)? [Y/n] " resolver_dnssec
             resolver_dnssec=${resolver_dnssec:-y}
             ;;
     esac
 
-    read -p "Would you like the resolver to be set in the default browser (Trivalent) via management policy? [y/N] " set_browser_policy
+    read -rp "Would you like the resolver to be set in the default browser (Trivalent) via management policy? [y/N] " set_browser_policy
     if [[ "$set_browser_policy" == [Yy]* && "$resolver_selection" == 5 ]]; then
-        read -p "Please enter the second resolver's HTTPS address (e.g. 'https://security.cloudflare-dns.com/dns-query'): " resolver_https_address
+        read -rp "Please enter the second resolver's HTTPS address (e.g. 'https://security.cloudflare-dns.com/dns-query'): " resolver_https_address
     fi
 
     resolved_conf_dns_string=""

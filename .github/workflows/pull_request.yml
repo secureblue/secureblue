@@ -16,6 +16,8 @@ jobs:
       matrix:
         recipe:
           - general/recipe-silverblue-main.yml
+          - general/recipe-silverblue-nvidia.yml
+          - general/recipe-silverblue-nvidia-open.yml
 
     steps:
       - name: Checkout repo

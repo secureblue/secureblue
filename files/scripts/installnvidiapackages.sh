@@ -8,9 +8,9 @@ find /tmp/rpms
 nvidia_packages_list=('/tmp/rpms/kmods/kmod-nvidia*.rpm' 'nvidia-container-toolkit' 'nvidia-driver-cuda')
 
 if [[ "$IMAGE_NAME" == *"securecore"* ]]; then
-  nvidia_config_rpm_location="/tmp/rpms/ucore/ublue-os-ucore-nvidia*.rpm"
+  nvidia_config_rpm_location='/tmp/rpms/ucore/ublue-os-ucore-nvidia*.rpm'
 else
-  nvidia_config_rpm_location="/tmp/rpms/ublue-os/ublue-os-nvidia*.rpm"
+  nvidia_config_rpm_location='/tmp/rpms/ublue-os/ublue-os-nvidia*.rpm'
   nvidia_packages_list+=('libnvidia-fbc' 'libva-nvidia-driver' 'nvidia-driver' 'nvidia-modprobe' 'nvidia-persistenced' 'nvidia-settings')
 fi
 

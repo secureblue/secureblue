@@ -18,6 +18,8 @@ if [ ! -f /etc/yum.repos.d/negativo17-fedora-nvidia.repo ]; then
   curl -L https://negativo17.org/repos/fedora-nvidia.repo -o /etc/yum.repos.d/negativo17-fedora-nvidia.repo
 fi
 
+# required for rpm-ostree to function properly
+# shellcheck disable=SC2086
 rpm-ostree install $nvidia_config_rpm_location
 sed -i '0,/enabled=0/{s/enabled=0/enabled=1/}' /etc/yum.repos.d/nvidia-container-toolkit.repo
 sed -i '0,/enabled=0/{s/enabled=0/enabled=1\npriority=90/}' /etc/yum.repos.d/negativo17-fedora-nvidia.repo  

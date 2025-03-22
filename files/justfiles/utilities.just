@@ -454,7 +454,38 @@ install-vpn:
 
     if [[ "$vpn_requirements" =~ "always_needs_xwayland" || "$vpn_requirements" =~ "gui_needs_xwayland" && "$needs_gui" == "1" ]]; then
         echo
-        if false; then # TODO use standalone check-xwayland-state ujust
+
+        DE="unknown"
+        IMAGE="$(rpm-ostree status | grep '●')"
+        if echo "$IMAGE" | grep -q 'silverblue'; then
+            DE="gnome"
+        elif echo "$IMAGE" | grep -q 'kinoite'; then
+            DE="plasma"
+        elif echo "$IMAGE" | grep -q 'sericea' || echo "$IMAGE" | grep 'sway'; then
+            DE=sway
+        fi
+
+        xwayland_enabled="0"
+        if [[ "$DE" == "gnome" ]]; then
+            GNOME_XWAYLAND_FILE="/etc/systemd/user/org.gnome.Shell@wayland.service.d/override.conf"
+            if ! test -e $GNOME_XWAYLAND_FILE; then
+                xwayland_enabled="1"
+            fi
+        elif [[ "$DE" == "plasma" ]]; then
+            PLASMA_XWAYLAND_FILE="/etc/systemd/user/plasma-kwin_wayland.service.d/override.conf"
+            if ! test -e $PLASMA_XWAYLAND_FILE; then
+                xwayland_enabled="1"
+            fi
+        elif [[ "$DE" == "sway" ]]; then
+            SWAY_XWAYLAND_FILE="/etc/sway/config.d/99-noxwayland.conf"
+            if ! test -e $SWAY_XWAYLAND_FILE; then
+                xwayland_enabled="1"
+            fi
+        fi
+
+        if [[ "$DE" == "unknown" ]]; then
+            echo 'Warning: Unable to identify your desktop environment. Please manually ensure that XWayland is enabled. Skipping...'
+        elif [[ "$xwayland_enabled" == "1" ]]; then
             echo 'XWayland already enabled, skipping...'
         else
             echo 'This VPN requires XWayland to be enabled.'

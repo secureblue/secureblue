@@ -346,10 +346,10 @@ install-vpn:
     )
 
     # VPN install logic
-    REPO_REGEX="/^enabled[ =]/ s/0/1/g"
     # ref: https://www.ivpn.net/knowledgebase/linux/fedora-silverblue/
     # ref: https://mullvad.net/de/download/vpn/linux
     # ref: https://protonvpn.com/support/en/official-linux-vpn-fedora
+    REPO_REGEX="/^enabled[ =]/ s/0/1/g"
     function install_vpn() {
         local INSTRUCTIONS
         local PACKAGE_NAME

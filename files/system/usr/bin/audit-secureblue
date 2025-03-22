@@ -172,9 +172,9 @@ def category(cat: str) -> Callable[..., Check]:
         return check
     return add_category
 
-def command_stdout(args: str | list[str]) -> str:
+def command_stdout(args: str | list[str], check: bool = True) -> str:
     """Run a command in the shell and return the contents of stdout."""
-    return subprocess.run(args, capture_output=True, check=True, text=True).stdout.strip()
+    return subprocess.run(args, capture_output=True, check=check, text=True).stdout.strip()
 
 async def async_command_stdout(args: list[str]) -> str:
     """Asynchronously run a command in the shell and return the contents of stdout."""
@@ -561,7 +561,7 @@ def audit_hardened_malloc(_state):
 
 @audit
 def audit_secureboot(_state):
-    if command_stdout(["mokutil", "--sb-state"]) == "SecureBoot enabled":
+    if command_stdout(["mokutil", "--sb-state"], check=False) == "SecureBoot enabled":
         status = SUCCESS
     else:
         status = FAILURE

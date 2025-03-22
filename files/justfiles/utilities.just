@@ -346,7 +346,10 @@ install-vpn:
 
     # VPN install logic
     REPO_REGEX="/^enabled[ =]/ s/0/1/g"
-    function install_ivpn() { # ref: https://www.ivpn.net/knowledgebase/linux/fedora-silverblue/
+    # ref: https://www.ivpn.net/knowledgebase/linux/fedora-silverblue/
+    # ref: https://mullvad.net/de/download/vpn/linux
+    # ref: https://protonvpn.com/support/en/official-linux-vpn-fedora
+    function install_ivpn() {
         local PACKAGE_NAME="ivpn"
 
         if util_checkpackage "$PACKAGE_NAME" || util_checkpackage "$PACKAGE_NAME-ui"; then
@@ -368,7 +371,7 @@ install-vpn:
         fi
         echo 'Successfully installed IVPN. Please execute the command "systemctl enable --now ivpn-service" after rebooting.'
     }
-    function install_mullvad() { # ref: https://mullvad.net/de/download/vpn/linux
+    function install_mullvad() {
         local PACKAGE_NAME="mullvad-vpn"
 
         if util_checkpackage "$PACKAGE_NAME"; then
@@ -384,7 +387,7 @@ install-vpn:
         fi
         echo 'Successfully installed Mullvad VPN. Please execute the command "systemctl enable --now mullvad-daemon && systemctl enable mullvad-early-boot-blocking" after rebooting.'
     }
-    function install_proton() { # ref: https://protonvpn.com/support/en/official-linux-vpn-fedora
+    function install_proton() {
         local PACKAGE_NAME="proton-vpn-gnome-desktop"
 
         if util_checkpackage "$PACKAGE_NAME"; then

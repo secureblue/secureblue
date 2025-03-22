@@ -467,18 +467,15 @@ install-vpn:
 
         xwayland_enabled="0"
         if [[ "$DE" == "gnome" ]]; then
-            GNOME_XWAYLAND_FILE="/etc/systemd/user/org.gnome.Shell@wayland.service.d/override.conf"
-            if ! test -e $GNOME_XWAYLAND_FILE; then
+            if ! test -e "/etc/systemd/user/org.gnome.Shell@wayland.service.d/override.conf"; then
                 xwayland_enabled="1"
             fi
         elif [[ "$DE" == "plasma" ]]; then
-            PLASMA_XWAYLAND_FILE="/etc/systemd/user/plasma-kwin_wayland.service.d/override.conf"
-            if ! test -e $PLASMA_XWAYLAND_FILE; then
+            if ! test -e "/etc/systemd/user/plasma-kwin_wayland.service.d/override.conf"; then
                 xwayland_enabled="1"
             fi
         elif [[ "$DE" == "sway" ]]; then
-            SWAY_XWAYLAND_FILE="/etc/sway/config.d/99-noxwayland.conf"
-            if ! test -e $SWAY_XWAYLAND_FILE; then
+            if ! test -e "/etc/sway/config.d/99-noxwayland.conf"; then
                 xwayland_enabled="1"
             fi
         fi

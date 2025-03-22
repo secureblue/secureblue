@@ -346,7 +346,6 @@ toggle-bash-environment-lockdown skip_approval="false" apply_for_all_users="prom
     echo "${user_list[@]}" "$pending_status."
     echo "${bold}NOTE${unbold}: until a reboot, any process with an open file descriptor will continue to have the access they had before this script was run."
 
-
 # Toggle unconfined domain userns creation
 toggle-unconfined-domain-userns-creation:
     #! /bin/run0 /bin/bash

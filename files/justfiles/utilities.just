@@ -456,7 +456,7 @@ install-vpn:
         echo
 
         DE="unknown"
-        IMAGE="$(rpm-ostree status | grep '●')"
+        IMAGE="$(rpm-ostree status 2>&- | grep '●')"
         if echo "$IMAGE" | grep -q 'silverblue'; then
             DE="gnome"
         elif echo "$IMAGE" | grep -q 'kinoite'; then

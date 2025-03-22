@@ -1,7 +1,7 @@
 #!/bin/sh
 # ------------------------------------------------------------------------------
 # run0edit - edit a single file as root.
-# version 0.3.2-sb
+# version 0.3.3-sb
 #
 # Please report issues at: https://github.com/HastD/run0edit/issues
 #
@@ -20,10 +20,14 @@
 # limitations under the License.
 # ------------------------------------------------------------------------------
 
-set -euo pipefail
+# Set pipefail if it's supported by the shell, disregard if unsupported.
+# shellcheck disable=SC3040
+( set -o pipefail 2> /dev/null ) && set -o pipefail
+set -eu
 
 # Reset $PATH to a default value to ensure command invocations point to
 # standard utilities.
+# shellcheck disable=SC2016
 PATH=$(command -p env -i sh -c 'echo "$PATH"')
 
 if [ "$#" = 0 ] || [ "$1" = '--help' ]; then
@@ -49,16 +53,16 @@ fi
 editor=''
 etc_conf_path='/etc/run0edit/editor.conf'
 usr_conf_path='/usr/etc/run0edit/editor.conf'
-if [ -f "$etc_conf_path" -a -r "$etc_conf_path" ]; then
+if [ -f "$etc_conf_path" ] && [ -r "$etc_conf_path" ]; then
     editor="$(cat "$etc_conf_path")"
-elif [ -f "$usr_conf_path" -a -r "$usr_conf_path" ]; then
+elif [ -f "$usr_conf_path" ] && [ -r "$usr_conf_path" ]; then
     editor="$(cat "$usr_conf_path")"
 fi
-if [ -f "$editor" -a -x "$editor" ]; then
+if [ -f "$editor" ] && [ -x "$editor" ]; then
     :
-elif [ -f '/usr/bin/nano' -a -x '/usr/bin/nano' ]; then
+elif [ -f '/usr/bin/nano' ] && [ -x '/usr/bin/nano' ]; then
     editor='/usr/bin/nano'
-elif [ -f '/usr/bin/vi' -a -x '/usr/bin/vi' ]; then
+elif [ -f '/usr/bin/vi' ] && [ -x '/usr/bin/vi' ]; then
     editor='/usr/bin/vi'
 else
     echo "Editor not found. Please install either nano or vi, or write the path to" >&2
@@ -73,6 +77,7 @@ trunc_filename=$(basename "$filename" | head -c 64)
 temp_filename=$(mktemp --tmpdir "${trunc_filename}.XXXXXXXXXX")
 
 # Inner script to be run with elevated privileges:
+# shellcheck disable=SC2016
 script='\
     filename="$1"
     tmpfile="$2"

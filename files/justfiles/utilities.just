@@ -48,7 +48,8 @@ enroll-secure-boot-key:
     run0 mokutil --timeout -1
     echo 'The next line will prompt for a MOK password. Input "secureblue".'
     run0 mokutil --import /etc/pki/akmods/certs/akmods-ublue.der
-    echo -e "At next reboot, the mokutil UEFI menu UI will be displayed (*QWERTY* keyboard input and navigation).\nThen, select "Enroll MOK", and input "secureblue" as the password"
+    echo 'At next reboot, the mokutil UEFI menu UI will be displayed (*QWERTY* keyboard input and navigation).'
+    echo 'Then, select "Enroll MOK", and input "secureblue" as the password.'
 
 # Toggle display of the user-motd in terminal
 toggle-user-motd:
@@ -138,7 +139,7 @@ distrobox-assemble CONTAINER="prompt" ACTION="create" FILE="/etc/distrobox/distr
         echo "Distrobox requires container domain user namespaces to work, which are disabled by default for security reasons."
         echo "You need to run 'ujust toggle-container-domain-userns-creation' to allow this."
         container_userns_now=""
-        read -p "Would you like to run 'ujust toggle-container-domain-userns-creation' now? [Y/n] " container_userns_now
+        read -rp "Would you like to run 'ujust toggle-container-domain-userns-creation' now? [Y/n] " container_userns_now
         container_userns_now=${container_userns_now:-y}
         if [[ "$container_userns_now" == [Yy]* ]]; then
             echo "Running 'ujust toggle-container-domain-userns-creation'"
@@ -147,7 +148,7 @@ distrobox-assemble CONTAINER="prompt" ACTION="create" FILE="/etc/distrobox/distr
     fi
     # Distroboxes are gathered from distrobox.ini, please add them there
     source /usr/lib/ujust/ujust.sh
-    AssembleList {{ FILE }} {{ ACTION }} {{ CONTAINER }}
+    AssembleList "{{ FILE }}" "{{ ACTION }}" "{{ CONTAINER }}"
 
 # Create toolbox containers from a defined manifest (this spec will not be expanded)
 toolbox-assemble CONTAINER="prompt" ACTION="create" FILE="/etc/toolbox/toolbox.ini":
@@ -156,7 +157,7 @@ toolbox-assemble CONTAINER="prompt" ACTION="create" FILE="/etc/toolbox/toolbox.i
         echo "Toolbox requires container domain user namespaces to work, which are disabled by default for security reasons."
         echo "You need to run 'ujust toggle-container-domain-userns-creation' to allow this."
         container_userns_now=""
-        read -p "Would you like to run 'ujust toggle-container-domain-userns-creation' now? [Y/n] " container_userns_now
+        read -rp "Would you like to run 'ujust toggle-container-domain-userns-creation' now? [Y/n] " container_userns_now
         container_userns_now=${container_userns_now:-y}
         if [[ "$container_userns_now" == [Yy]* ]]; then
             echo "Running 'ujust toggle-container-domain-userns-creation'"
@@ -165,12 +166,12 @@ toolbox-assemble CONTAINER="prompt" ACTION="create" FILE="/etc/toolbox/toolbox.i
     fi
     # Toolboxes are gathered from toolbox.ini, please add them there
     source /usr/lib/ujust/ujust.sh
-    ToolboxAssembleList {{ FILE }} {{ ACTION }} {{ CONTAINER }}
+    ToolboxAssembleList "{{ FILE }}" "{{ ACTION }}" "{{ CONTAINER }}"
 
 # Run a non-flatpak application with standard memory allocator (needs an argument!)
 with-standard-malloc APP:
     #!/usr/bin/bash
-    bwrap --dev-bind / / --ro-bind /dev/null /etc/ld.so.preload {{ APP }}
+    bwrap --dev-bind / / --ro-bind /dev/null /etc/ld.so.preload "{{ APP }}"
 
 # Add the unfiltered Flathub flatpak repo
 enable-flathub-unfiltered:
@@ -196,13 +197,13 @@ install-steam:
         echo "Steam requires X or Xwayland, which your variant of secureblue has disabled by default."
         echo "Please run 'ujust toggle-xwayland' to re-enable it."
         toggle_xwayland_now=""
-        read -p "Would you like to run 'ujust toggle-xwayland' now? [Y/n] " toggle_xwayland_now
+        read -rp "Would you like to run 'ujust toggle-xwayland' now? [Y/n] " toggle_xwayland_now
         toggle_xwayland_now=${toggle_xwayland_now:-y}
         if [[ "$toggle_xwayland_now" == [Yy]* ]]; then
             echo "Running 'ujust toggle-xwayland'"
             ujust toggle-xwayland
             reboot_now=""
-            read -p "Would you like to reboot now? [y/N] " reboot_now
+            read -rp "Would you like to reboot now? [y/N] " reboot_now
             if [[ "$reboot_now" == [Yy]* ]]; then
                 echo "Rebooting"
                 systemctl reboot
@@ -215,7 +216,7 @@ install-steam:
     echo "    1) Flatpak - will install the steam flatpak from flathub-unverified"
     echo "    2) Distrobox - will set up steam via the bazzite-arch distrobox image"
     while [[ "$valid_input" == "0" ]]; do
-        read -p "Selection [1-2]: " method_selection
+        read -rp "Selection [1-2]: " method_selection
         if [[ "$method_selection" == [12]* ]]; then
             valid_input="1"
         else
@@ -240,7 +241,7 @@ install-steam:
                 echo "Distrobox requires container domain user namespaces to work, which are disabled by default for security reasons."
                 echo "You need to run 'ujust toggle-container-domain-userns-creation' to allow this."
                 container_userns_now=""
-                read -p "Would you like to run 'ujust toggle-container-domain-userns-creation' now? [Y/n] " container_userns_now
+                read -rp "Would you like to run 'ujust toggle-container-domain-userns-creation' now? [Y/n] " container_userns_now
                 container_userns_now=${container_userns_now:-y}
                 if [[ "$container_userns_now" == [Yy]* ]]; then
                     echo "Running 'ujust toggle-container-domain-userns-creation'"
@@ -255,7 +256,7 @@ install-steam:
     esac
 
     echo "Steam requires support for 32-bit processes/syscalls."
-    if [ -n "$(rpm-ostree kargs | grep 'ia32_emulation=0')" ] ; then
+    if rpm-ostree kargs | grep -q 'ia32_emulation=0'; then
         echo "This script will now remove the 'ia32_emulation=0' kernel argument."
         rpm-ostree kargs --delete-if-present="ia32_emulation=0"
     else
@@ -295,7 +296,7 @@ label-external-drives:
     fi
     echo "Warning: This will label your drives mounted on \"$media_path\" such that they are treated as an extension to your home directory. (You can select which ones to label)"
     echo 'If you do not want Trivalent to have access to these drives, do not proceed.'
-    read -p 'Are you sure you want to do this? [y/N] ' warning_proceed
+    read -rp 'Are you sure you want to do this? [y/N] ' warning_proceed
     if ! [[ "$warning_proceed" == [Yy]* ]]; then
         echo 'Aborting.'
         exit 0
@@ -317,7 +318,7 @@ label-external-drives:
             echo "SELinux support is unknown for filesystem $detected_fs, skipping drive \"$dir\"..."
             continue
         fi
-        read -p "Do you want to label \"$dir\"? [y/N] " proceed
+        read -rp "Do you want to label \"$dir\"? [y/N] " proceed
         if ! [[ "$proceed" == [Yy]* ]]; then
             echo 'Skipping...'
             continue

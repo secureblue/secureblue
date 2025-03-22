@@ -3,15 +3,15 @@ harden-flatpak FLATPAK="":
     #!/usr/bin/bash
     var1={{ FLATPAK }}
     flatpak_id="${var1:-}"
-    flatpak override --user --filesystem=host-os:ro $flatpak_id
+    flatpak override --user --filesystem=host-os:ro "$flatpak_id"
     uarches="$(/usr/lib64/ld-linux-x86-64.so.2 --help | grep '(supported, searched)' | cut -d'v' -f2 || echo '')"
     bestuarch="${uarches:0:1}"
     if [ -z "$bestuarch" ] ; then
         echo "No microarchitecture support detected. Using default x86-64-v1 architecture${flatpak_id:+" for $flatpak_id's malloc"}."
-        flatpak override --user --env=LD_PRELOAD=/var/run/host/usr/lib64/libhardened_malloc.so $flatpak_id
+        flatpak override --user --env=LD_PRELOAD=/var/run/host/usr/lib64/libhardened_malloc.so "$flatpak_id"
     else
         echo "x86-64-v$bestuarch support detected. Using x86-64-v$bestuarch microarchitecture${flatpak_id:+" for $flatpak_id's malloc"}."
-        flatpak override --user --env=LD_PRELOAD=/var/run/host/usr/lib64/glibc-hwcaps/x86-64-v"$bestuarch"/libhardened_malloc.so $flatpak_id
+        flatpak override --user --env=LD_PRELOAD=/var/run/host/usr/lib64/glibc-hwcaps/x86-64-v"$bestuarch"/libhardened_malloc.so "$flatpak_id"
     fi
 
 # Harden Flatpaks further by disabling all permissions by default and rejecting known arbitrary DBus names, applies only to the current user
@@ -34,57 +34,57 @@ flatpak-permissions-lockdown:
     echo "NOTE: This will break just about all Flatpaks by default, it is ON YOU to configure them to work with this configuration."
     echo "NOTE 2: This DOES NOT enable hardened_malloc, use the harden-flatpak ujust command."
     echo ""
-    read -p "Would you like to proceed? [y/N] " confirmation
+    read -rp "Would you like to proceed? [y/N] " confirmation
     if [[ "$confirmation" == [Yy]* ]]; then
         echo "-- Share Permissions --"
-        for i in ${kSharePermissions[@]}; do
+        for i in "${kSharePermissions[@]}"; do
             echo "	Rejecting $i..."
-            $kCommand --unshare=$i
+            $kCommand --unshare="$i"
         done
         echo ""
         echo "-- Socket Permissions --"
-        for i in ${kSocketPermissions[@]}; do
+        for i in "${kSocketPermissions[@]}"; do
             echo "	Rejecting $i..."
-            $kCommand --nosocket=$i
+            $kCommand --nosocket="$i"
         done
         echo ""
         echo "-- Device Permissions --"
-        for i in ${kDevicePermissions[@]}; do
+        for i in "${kDevicePermissions[@]}"; do
             echo "	Rejecting $i..."
-            $kCommand --nodevice=$i
+            $kCommand --nodevice="$i"
         done
         echo ""
         echo "-- Feature Permissions --"
-        for i in ${kFeaturePermissions[@]}; do
+        for i in "${kFeaturePermissions[@]}"; do
             echo "	Rejecting $i..."
-            $kCommand --disallow=$i
+            $kCommand --disallow="$i"
         done
         echo ""
         echo "-- Filesystem Permissions --"
-        for i in ${kFilesystemPermissions[@]}; do
+        for i in "${kFilesystemPermissions[@]}"; do
             echo "	Rejecting $i..."
-            $kCommand --nofilesystem=$i
+            $kCommand --nofilesystem="$i"
         done
         echo ""
         echo "-- Dangerous Filesystem Permissions --"
         echo "Note: This is a VERY flawed implementation but it does cover a few blatant sandbox escape methods (such as the .bashrc escape or mounted drive access)"
         echo "It is not possible to cover all files since each file can be requested manually and therefore must be rejected manually"
-        for i in ${kDangerousFilesystemPermissions[@]}; do
+        for i in "${kDangerousFilesystemPermissions[@]}"; do
             echo "	Rejecting $i..."
-            $kCommand --nofilesystem=$i
+            $kCommand --nofilesystem="$i"
         done
         echo ""
         echo "NOTE: The next 2 lockdowns are NOT complete and only cover a list of known names, this can be expanded at any time"
         echo "-- Session Bus Name Access --"
-        for i in ${kKnownSessionBusNames[@]}; do
+        for i in "${kKnownSessionBusNames[@]}"; do
             echo "	Rejecting $i..."
-            $kCommand --no-talk-name=$i
+            $kCommand --no-talk-name="$i"
         done
         echo ""
         echo "-- System Bus Name Access --"
-        for i in ${kKnownSystemBusNames[@]}; do
+        for i in "${kKnownSystemBusNames[@]}"; do
             echo "	Rejecting $i..."
-            $kCommand --system-no-talk-name=$i
+            $kCommand --system-no-talk-name="$i"
         done
         echo ""
         echo "-- Persistent Filesystem Grant --"
@@ -98,9 +98,9 @@ flatpak-permissions-lockdown:
         $kCommand --socket=wayland --device=dri
         echo ""
         echo "-- Granting Flatseal Access to Bus Names --"
-        for i in ${kFlatsealNameAccess[@]}; do
+        for i in "${kFlatsealNameAccess[@]}"; do
             echo "	Granting $i..."
-            $kCommand --talk-name=$i com.github.tchx84.Flatseal
+            $kCommand --talk-name="$i" com.github.tchx84.Flatseal
         done
         echo ""
         echo "Done"
@@ -112,24 +112,25 @@ flatpak-reset-global-overrides:
     GLOBAL_OVERRIDES="$HOME/.local/share/flatpak/overrides/global"
     echo "This will undo the flatpak-harden command, the flatpak-permissions-lockdown command, as well as any other global overrides (individual app overrides will not be affected)."
     echo "It will not delete the file, but simply move it from $GLOBAL_OVERRIDES to $GLOBAL_OVERRIDES.save"
-    mv $GLOBAL_OVERRIDES $GLOBAL_OVERRIDES.save
+    mv "$GLOBAL_OVERRIDES" "$GLOBAL_OVERRIDES.save"
 
 # Setup USBGuard
 setup-usbguard:
     #!/usr/bin/bash
     echo "Notice: This will generate a policy based on your existing connected USB devices."
+    # shellcheck disable=SC2016
     run0 sh -c '
         mkdir -p /var/log/usbguard
         mkdir -p /etc/usbguard
-        chmod 755 /etc/usbguard        
+        chmod 755 /etc/usbguard
         groupadd usbguard
-        usermod -aG usbguard $1
+        usermod -aG usbguard "$SUDO_USER"
         usbguard generate-policy > /etc/usbguard/rules.conf
-        sed -i "/IPCAllowedGroups=wheel/s/$/ usbguard/" /etc/usbguard/usbguard-daemon.conf
+        sed -i "/IPCAllowedGroups=wheel/s/\$/ usbguard/" /etc/usbguard/usbguard-daemon.conf
         restorecon -vR /var/log/usbguard
         systemctl enable --now usbguard.service
-        usbguard add-user $1
-    ' -- $USER
-    if ! [ -n "$(rpm-ostree status | grep '●' | grep 'securecore')" ] ; then
+        usbguard add-user "$SUDO_USER"
+    '
+    if ! rpm-ostree status | grep '●' | grep -q 'securecore'; then
         systemctl enable --user --now usbguard-notifier.service
     fi

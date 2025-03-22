@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
 
-import argparse, enum, filecmp, os.path, re
+import argparse, asyncio, enum, filecmp, inspect, os.path, re, subprocess
 from collections.abc import Callable
-from subprocess import run as subprocess_run, CalledProcessError
-from typing import Any, Generator, NewType, Self
+from subprocess import CalledProcessError
+from typing import Any, AsyncGenerator, Generator, NewType, Self
 
 class AuditError(Exception):
     """Base class for audit errors."""
@@ -53,7 +53,7 @@ class Check:
     def __init__(
         self,
         name: str,
-        call: Generator[Any, [dict[str, Any]], None],
+        call: AsyncGenerator[Any, [dict[str, Any]]],
         category: str | None = None,
         depends: list[str] = []
     ):
@@ -65,11 +65,11 @@ class Check:
         self.reports: list[Report] = []
         self.recs: list[str] = []
 
-    def run(self, state: dict[str, Any], rerun: bool = False) -> Generator[Report, ..., None]:
+    async def run(self, state: dict[str, Any], rerun: bool = False) -> AsyncGenerator[Report, ...]:
         """Run the check and store the results."""
         if self.done and not rerun:
             return
-        for result in (self.call)(state):
+        async for result in (self.call)(state):
             if isinstance(result, tuple):
                 report, recs = result
                 if not isinstance(recs, list):
@@ -112,12 +112,12 @@ class Audit:
             self.categories.append(check.category)
         self.checks.append(check)
 
-    def run(self, exclude: list[str] = []):
+    async def run(self, exclude: list[str] = []):
         print_heading("Audit")
         for check in self.checks:
             if check.category in exclude:
                 continue
-            for report in check.run(self.state):
+            async for report in check.run(self.state):
                 print(report)
             self.recs += check.recs
         print_heading("Recommendations")
@@ -133,16 +133,21 @@ class Audit:
 global_audit = Audit()
 
 def make_check(
-    f: Check | Generator[Any, [dict[str, Any]], None]
+    f: Check | AsyncGenerator[Any, [dict[str, Any]]] | Generator[Any, [dict[str, Any]]]
 ) -> Check:
-    """Make a Check object from a function."""
+    """Make a Check object from a generator."""
     if isinstance(f, Check):
         return f
-    else:
+    elif inspect.isasyncgenfunction(f):
         return Check(name=f.__name__, call=f)
+    else:
+        async def f_async(*args, **kwargs):
+            for item in f(*args, **kwargs):
+                yield item
+        return Check(name=f.__name__, call=f_async)
 
 def audit(
-    f: Check | Generator[Any, [dict[str, Any]], None]
+    f: Check | AsyncGenerator[Any, [dict[str, Any]]]
 ) -> Check:
     """Add a check to the global audit system."""
     check = make_check(f)
@@ -169,11 +174,21 @@ def category(cat: str) -> Callable[..., Check]:
 
 def command_stdout(args: str | list[str]) -> str:
     """Run a command in the shell and return the contents of stdout."""
-    return subprocess_run(args, capture_output=True, check=True, text=True).stdout.strip()
+    return subprocess.run(args, capture_output=True, check=True, text=True).stdout.strip()
+
+async def async_command_stdout(args: list[str]) -> str:
+    """Asynchronously run a command in the shell and return the contents of stdout."""
+    sub = await asyncio.create_subprocess_exec(*args, stdout=subprocess.PIPE, stderr=subprocess.DEVNULL)
+    await sub.wait()
+    if sub.returncode != 0:
+        err = f"async command `{" ".join(args)}` returned nonzero exit code {sub.returncode}"
+        raise CalledProcessError(err)
+    output = await sub.stdout.read()
+    return output.decode("utf-8", errors="replace").strip()
 
 def command_succeeds(args: str | list[str]) -> bool:
     """Run a command in the shell and return the contents of stdout."""
-    return subprocess_run(args, capture_output=True).returncode == 0
+    return subprocess.run(args, capture_output=True).returncode == 0
 
 ###############################################################################
 # Checks to be run go below this line.
@@ -587,10 +602,118 @@ def audit_bash_env_lockdown(_state):
         rec = None
     yield Report("Ensuring current user's bash environment is locked down", status), rec
 
+async def check_flatpak_permissions(name, version, state):
+    """Check permissions for a single flatpak."""
+    warnings = []
+    recs = []
+    status = SUCCESS
+    perms_text = await async_command_stdout(["flatpak", "info", "--show-permissions", name, version])
+    perms = {}
+    for line in perms_text.split("\n"):
+        if not line or line[0] in "[]#":
+            continue
+        key, value_str = line.split("=", maxsplit=1)
+        vals = [val for val in value_str.split(";") if val]
+        perms[key] = vals
+
+    if "shared" in perms:
+        shared = perms["shared"]
+        if "network" in shared:
+            if status != FAILURE:
+                status = WARNING
+            warnings.append(f"{name} has network access")
+            recs.append(f"""{name} has network access
+                        To remove it use Flatseal or run:
+                        $ flatpak override -u --unshare=network {name}""")
+        if "ipc" in shared:
+            status = FAILURE
+            warnings.append(f"{name} has inter-process communications access")
+            recs.append(f"""{name} has inter-process communications access
+                        To remove it use Flatseal or run:
+                        $ flatpak override -u --unshare=ipc {name}""")
+
+    if "sockets" in perms:
+        sockets = perms["sockets"]
+        if "x11" in sockets and "fallback-x11" not in sockets:
+            status = FAILURE
+            warnings.append(f"{name} has x11 access")
+            recs.append(f"""{name} has x11 access
+                        To remove it use Flatseal or run:
+                        $ flatpak override -u --nosocket=x11 {name}""")
+        if "session-bus" in sockets:
+            if status != FAILURE:
+                status = WARNING
+            warnings.append(f"{name} has access to the D-Bus session bus")
+            recs.append(f"""{name} has access to the D-Bus session bus
+                        To remove it use Flatseal or run:
+                        $ flatpak override -u --nosocket=session-bus {name}""")
+        if "system-bus" in sockets:
+            if status != FAILURE:
+                status = WARNING
+            warnings.append(f"{name} has access to the D-Bus system bus")
+            recs.append(f"""{name} has access to the D-Bus system bus
+                        To remove it use Flatseal or run:
+                        $ flatpak override -u --nosocket=system-bus {name}""")
+
+    ld_preloads = []
+    if "LD_PRELOAD" in perms:
+        for s in perms["LD_PRELOAD"]:
+            if s:
+                ld_preloads.append(s.rsplit("/", maxsplit=1)[-1])
+    if "libhardened_malloc.so" not in ld_preloads:
+        status = FAILURE
+        warnings.append(f"{name} is not requesting hardened_malloc")
+        if "libhardened_malloc-light.so" in ld_preloads:
+            status = WARNING
+            warnings.append(f"{name} is requesting hardened_malloc-light")
+        elif "libhardened_malloc-pkey.so" in ld_preloads:
+            status = WARNING
+            warnings.append(f"{name} is requesting hardened_malloc-pkey")
+        recs.append(f"""{name} is not requesting hardened_malloc
+                    To enable it run:
+                    $ ujust harden-flatpak {name}""")
+
+    if not ("filesystems" in perms and "host-os:ro" in perms["filesystems"]):
+        status = FAILURE
+        warnings.append(f"{name} is missing host-os:ro permission")
+        recs.append(f"""{name} is missing host-os:ro permission
+                    This is required to load hardened_malloc.
+                    To add it use Flatseal or run:
+                    $ flatpak override -u --filesystem=host-os:ro {name}""")
+
+    if "features" in perms:
+        features = perms["features"]
+        if state["bluetooth_loaded"] and "bluetooth" in features:
+            status = FAILURE
+            warnings.append(f"{name} has bluetooth access")
+            recs.append(f"""{name} has bluetooth access
+                        To remove it use Flatseal or run:
+                        $ flatpak override -u --disallow=bluetooth {name}""")
+        if state["ptrace_allowed"] and "devel" in features:
+            status = FAILURE
+            warnings.append(f"{name} has ptrace access")
+            recs.append(f"""{name} has ptrace access
+                        To remove it use Flatseal or run:
+                        $ flatpak override -u --disallow=devel {name}""")
+
+    if "devices" in perms and "all" in perms["devices"]:
+        if status != FAILURE:
+            status = WARNING
+        warnings.append(f"""{name} has device=all permission""")
+        recs.append(f"""{name} has device=all permission
+                    This grants access to input devices, GPUs, raw USB, and virtualization
+                    This may also be used as a sandbox escape vector
+                    To remove it use Flatseal or run:
+                    $ flatpak override -u --nodevice=all {name}
+                    If GPU access is required, use device=dri instead:
+                    $ flatpak override -u --device=dri {name}""")
+
+    return name, version, status, warnings, recs
+
 @audit
 @category("flatpak")
 @depends(["audit_modprobe", "audit_ptrace"])
-def audit_flatpaks(state):
+async def audit_flatpaks(state):
     if not command_succeeds("command -v flatpak".split()):
         return
 
@@ -612,125 +735,23 @@ def audit_flatpaks(state):
     for line in command_stdout("flatpak list --columns=application,branch".split()).split("\n"):
         flatpaks.append(line.split("\t"))
 
-    for name, version in flatpaks:
-        warnings = []
-        recs = []
-        status = SUCCESS
-        perms_text = command_stdout(["flatpak", "info", "--show-permissions", name, version])
-        perms = {}
-        for line in perms_text.split("\n"):
-            if not line or line[0] in "[]#":
-                continue
-            key, value_str = line.split("=", maxsplit=1)
-            vals = [val for val in value_str.split(";") if val]
-            perms[key] = vals
-
-        if "shared" in perms:
-            shared = perms["shared"]
-            if "network" in shared:
-                if status != FAILURE:
-                    status = WARNING
-                warnings.append(f"{name} has network access")
-                recs.append(f"""{name} has network access
-                            To remove it use Flatseal or run:
-                            $ flatpak override -u --unshare=network {name}""")
-            if "ipc" in shared:
-                status = FAILURE
-                warnings.append(f"{name} has inter-process communications access")
-                recs.append(f"""{name} has inter-process communications access
-                            To remove it use Flatseal or run:
-                            $ flatpak override -u --unshare=ipc {name}""")
-
-        if "sockets" in perms:
-            sockets = perms["sockets"]
-            if "x11" in sockets and "fallback-x11" not in sockets:
-                status = FAILURE
-                warnings.append(f"{name} has x11 access")
-                recs.append(f"""{name} has x11 access
-                            To remove it use Flatseal or run:
-                            $ flatpak override -u --nosocket=x11 {name}""")
-            if "session-bus" in sockets:
-                if status != FAILURE:
-                    status = WARNING
-                warnings.append(f"{name} has access to the D-Bus session bus")
-                recs.append(f"""{name} has access to the D-Bus session bus
-                            To remove it use Flatseal or run:
-                            $ flatpak override -u --nosocket=session-bus {name}""")
-            if "system-bus" in sockets:
-                if status != FAILURE:
-                    status = WARNING
-                warnings.append(f"{name} has access to the D-Bus system bus")
-                recs.append(f"""{name} has access to the D-Bus system bus
-                            To remove it use Flatseal or run:
-                            $ flatpak override -u --nosocket=system-bus {name}""")
-
-        ld_preloads = []
-        if "LD_PRELOAD" in perms:
-            for s in perms["LD_PRELOAD"]:
-                if s:
-                    ld_preloads.append(s.rsplit("/", maxsplit=1)[-1])
-        if "libhardened_malloc.so" not in ld_preloads:
-            status = FAILURE
-            warnings.append(f"{name} is not requesting hardened_malloc")
-            if "libhardened_malloc-light.so" in ld_preloads:
-                status = WARNING
-                warnings.append(f"{name} is requesting hardened_malloc-light")
-            elif "libhardened_malloc-pkey.so" in ld_preloads:
-                status = WARNING
-                warnings.append(f"{name} is requesting hardened_malloc-pkey")
-            recs.append(f"""{name} is not requesting hardened_malloc
-                        To enable it run:
-                        $ ujust harden-flatpak {name}""")
-
-        if not ("filesystems" in perms and "host-os:ro" in perms["filesystems"]):
-            status = FAILURE
-            warnings.append(f"{name} is missing host-os:ro permission")
-            recs.append(f"""{name} is missing host-os:ro permission
-                        This is required to load hardened_malloc.
-                        To add it use Flatseal or run:
-                        $ flatpak override -u --filesystem=host-os:ro {name}""")
-
-        if "features" in perms:
-            features = perms["features"]
-            if state["bluetooth_loaded"] and "bluetooth" in features:
-                status = FAILURE
-                warnings.append(f"{name} has bluetooth access")
-                recs.append(f"""{name} has bluetooth access
-                            To remove it use Flatseal or run:
-                            $ flatpak override -u --disallow=bluetooth {name}""")
-            if state["ptrace_allowed"] and "devel" in features:
-                status = FAILURE
-                warnings.append(f"{name} has ptrace access")
-                recs.append(f"""{name} has ptrace access
-                            To remove it use Flatseal or run:
-                            $ flatpak override -u --disallow=devel {name}""")
-
-        if "devices" in perms and "all" in perms["devices"]:
-            if status != FAILURE:
-                status = WARNING
-            warnings.append(f"""{name} has device=all permission""")
-            recs.append(f"""{name} has device=all permission
-                        This grants access to input devices, GPUs, raw USB, and virtualization
-                        This may also be used as a sandbox escape vector
-                        To remove it use Flatseal or run:
-                        $ flatpak override -u --nodevice=all {name}
-                        If GPU access is required, use device=dri instead:
-                        $ flatpak override -u --device=dri {name}""")
-
+    checks = [check_flatpak_permissions(name, version, state) for name, version in flatpaks]
+    async for result in asyncio.as_completed(checks):
+        name, version, status, warnings, recs = await result
         yield Report(f"Auditing {name} ({version})", status, warnings), recs
 
-def main():
+async def main():
     parser = argparse.ArgumentParser()
     categories = ",".join(global_audit.categories)
     parser.add_argument("-s", "--skip", default="", help=f"skip categories ({categories})")
     args = parser.parse_args()
     skip = args.skip.split(",")
-    global_audit.run(exclude=skip)
+    await global_audit.run(exclude=skip)
     if "flatpak" in skip:
         print("flatpak settings not audited per user request.")
     else:
         print(f"Use option '{bold("--skip flatpak")}' to skip flatpak recommendations.")
 
 if __name__ == "__main__":
-    main()
+    asyncio.run(main())
 

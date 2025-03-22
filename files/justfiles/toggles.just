@@ -317,18 +317,18 @@ toggle-bash-environment-lockdown skip_approval="false" apply_for_all_users="prom
 
                 # Now we create new empty/default files and directories
                 if [ "${file: -1}" == "/" ]; then
-                    install -D -d -o "$user" -g "$user" -m 500 "$file"
+                    install -D -d -o "$user" -g "$user" -m 700 "$file"
                     chattr +i -R "$file"
                 elif [ -f "/etc/skel/$skel_file" ]; then
-                    install -D -o "$user" -g "$user" -m 500 "/etc/skel/$skel_file" "$file"
+                    install -D -o "$user" -g "$user" -m 700 "/etc/skel/$skel_file" "$file"
                     chattr +i "$file"
                 else
-                    install -D -o "$user" -g "$user" -m 500 /dev/null "$file"
+                    install -D -o "$user" -g "$user" -m 700 /dev/null "$file"
                     chattr +i "$file"
                 fi
             done
 
-            chmod -R 500 "$user_home/bash_env_files"
+            chmod -R 700 "$user_home/bash_env_files"
             chown -R "$user:" "$user_home/bash_env_files"
         else
             for file in "${BASH_ENV_FILES[@]}"; do

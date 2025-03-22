@@ -1,4 +1,4 @@
-set positional-arguments
+set positional-arguments := true
 
 # Audit secureblue
 audit-secureblue *args:

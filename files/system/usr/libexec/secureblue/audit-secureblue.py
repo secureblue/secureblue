@@ -733,12 +733,26 @@ async def audit_flatpaks(state):
 
     flatpaks = []
     for line in command_stdout("flatpak list --columns=application,branch".split()).split("\n"):
-        flatpaks.append(line.split("\t"))
+        name, version = line.split("\t")
+        flatpaks.append((name, version))
+    flatpaks.sort()
 
+    # dict to store results so they can be yielded in sorted order.
+    # The boolean part of the value is whether the data has been sent yet.
+    results = {key: (False, None) for key in flatpaks}
     checks = [check_flatpak_permissions(name, version, state) for name, version in flatpaks]
     async for result in asyncio.as_completed(checks):
         name, version, status, warnings, recs = await result
-        yield Report(f"Auditing {name} ({version})", status, warnings), recs
+        results[(name, version)] = (False, (status, warnings, recs))
+        # yield all lexicographically first results that are ready
+        for (name, version), (sent, data) in results.items():
+            if sent is True:
+                continue
+            if data is None:
+                break
+            (status, warnings, recs) = data
+            yield Report(f"Auditing {name} ({version})", status, warnings), recs
+            results[(name, version)] = (True, None)
 
 async def main():
     parser = argparse.ArgumentParser()

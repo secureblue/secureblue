@@ -136,6 +136,7 @@ audit-secureblue AUDIT_FLATPAKS="true":
 
     MODPROBE_TEST_STRING="Ensuring no modprobe overrides"
     readarray -t unwanted_modules < <(comm -12 <(lsmod | cut -f 1 -d " " | sort) <(grep -E '^(blacklist)|(install)' /usr/etc/modprobe.d/blacklist.conf | cut -f 2 -d " " | sort))
+    bluetooth_loaded=false
     if [[ "${#unwanted_modules[@]}" == 0 ]] && cmp -s /usr/etc/modprobe.d/blacklist.conf /etc/modprobe.d/blacklist.conf; then
         print_status "$MODPROBE_TEST_STRING" "$STATUS_SUCCESS"
     else
@@ -144,8 +145,6 @@ audit-secureblue AUDIT_FLATPAKS="true":
             echo "> $module is in blacklist.conf but it is loaded"
             if [[ "$module" == "bluetooth" ]]; then
                 bluetooth_loaded=true
-            else
-                bluetooth_loaded=false
             fi
         done
     fi

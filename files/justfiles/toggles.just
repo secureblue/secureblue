@@ -201,7 +201,7 @@ toggle-xwayland ACTION="prompt":
       fi
     fi
 
-# Toggle bash environment lockdown (mitigates LD_PRELOAD attacks)
+# Toggle bash environment lockdown (mitigates LD_PRELOAD attacks). Use skip_approval to bypass initial prompt, and apply_for_all_users to bypass secondary prompt.
 toggle-bash-environment-lockdown skip_approval="false" apply_for_all_users="prompt":
     #!/bin/run0 /bin/bash
     set -euo pipefail
@@ -317,18 +317,18 @@ toggle-bash-environment-lockdown skip_approval="false" apply_for_all_users="prom
 
                 # Now we create new empty/default files and directories
                 if [ "${file: -1}" == "/" ]; then
-                    install -D -d -o "$user" -g "$user" -m 500 "$file"
+                    install -D -d -o "$user" -g "$user" -m 700 "$file"
                     chattr +i -R "$file"
                 elif [ -f "/etc/skel/$skel_file" ]; then
-                    install -D -o "$user" -g "$user" -m 500 "/etc/skel/$skel_file" "$file"
+                    install -D -o "$user" -g "$user" -m 700 "/etc/skel/$skel_file" "$file"
                     chattr +i "$file"
                 else
-                    install -D -o "$user" -g "$user" -m 500 /dev/null "$file"
+                    install -D -o "$user" -g "$user" -m 700 /dev/null "$file"
                     chattr +i "$file"
                 fi
             done
 
-            chmod -R 500 "$user_home/bash_env_files"
+            chmod -R 700 "$user_home/bash_env_files"
             chown -R "$user:" "$user_home/bash_env_files"
         else
             for file in "${BASH_ENV_FILES[@]}"; do
@@ -344,16 +344,7 @@ toggle-bash-environment-lockdown skip_approval="false" apply_for_all_users="prom
     done
 
     echo "${user_list[@]}" "$pending_status."
-    echo "${bold}WARNING${unbold}: until a reboot, any process with an open file descriptor will continue to have the access they had before this script was run."
-    echo ""
-    echo "Optional Arguments:"
-    echo "ujust toggle-bash-environment-lockdown skip_approval apply_for_all_users"
-    echo "    skip_approval: [true/false]          'true' the user is not prompted to respond 'YES I UNDERSTAND'; 'false' user is prompted."
-    echo ""
-    echo "    apply_for_all_users: [true/false]    'true' change is applied to all users (without prompting); 'false' change is only applied"
-    echo "                                          to user currently logged in (without prompting)."
-    echo ""
-    echo "Invalid optional arguments are treated as errors."
+    echo "${bold}NOTE${unbold}: until a reboot, any process with an open file descriptor will continue to have the access they had before this script was run."
 
 # Toggle unconfined domain userns creation
 toggle-unconfined-domain-userns-creation:

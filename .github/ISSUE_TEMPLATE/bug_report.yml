@@ -5,39 +5,64 @@ labels: []
 assignees: []
 
 
-**Describe the bug**
-A clear and concise description of what the bug is. Note: requests for alternate or additional community forums or messaging platforms is forbidden. 
+body:
+  - type: input
+    id: description
+    attributes:      
+      label: Description
+      description: Describe the bug
+      placeholder: A clear and concise description of what the bug is.
 
-**To Reproduce**
-Steps to reproduce the behavior:
-1. Go to '...'
-2. Click on '....'
-3. Scroll down to '....'
-4. See error
+  - type: input
+    id: reproduce
+    attributes:      
+      label: Reproduce
+      description: Steps to reproduce
+      placeholder: |
+        Steps to reproduce the behavior:
+        1. Go to '...'
+        2. Click on '....'
+        3. Scroll down to '....'
+        4. See error
 
-**Expected behavior**
-A clear and concise description of what you expected to happen.
+  - type: input
+    id: expected
+    attributes:      
+      label: Expected
+      description: Expected behavior
+      placeholder: A clear and concise description of what you expected to happen.
+      
+  - type: input
+    id: actual
+    attributes:      
+      label: Actual
+      description: Actual behavior
+      placeholder: A clear and concise description of what actually happened
 
 
-**Actual behavior**
-A clear and concise description of what actually happened.
+  - type: input
+    id: image
+    attributes:      
+      label: Image
+      description: Your current image
+      placeholder: `rpm-ostree status` contents.
 
 
-**Your current image**
- - `rpm-ostree status` contents
+  - type: input
+    id: upstream
+    attributes:      
+      label: upstream
+      description: Upstream confirmation
+      placeholder: Confirmation that you cannot repro on the quay.io/fedora-ostree-desktops base image from your image.
 
-**For all images**
-- Confirm you cannot repro on a quay.io/fedora-ostree-desktops base image
-
-
-- type: checkboxes
-  id: declaration
-  attributes:
-    label: Declaration
-    options:
-      - label: I agree to follow this project's [Code of Conduct](https://secureblue.dev/code-of-conduct).
-        required: true
-      - label: I declare that this is not a request for alternate community messaging or social platforms.
-        required: true
-      - label: I declare that I have read the [secureblue website](https://secureblue.dev/#about) and my feature request is in-scope.
-        required: true
+  - type: checkboxes
+    id: declaration
+    attributes:
+      label: Declaration
+      options:
+        - label: I agree to follow this project's [Code of Conduct](https://secureblue.dev/code-of-conduct).
+          required: true
+        - label: I declare that this is not a request for alternate community messaging or social platforms.
+          required: true
+        - label: I declare that I have read the [secureblue website](https://secureblue.dev/#about) and my feature request is in-scope.
+          required: true

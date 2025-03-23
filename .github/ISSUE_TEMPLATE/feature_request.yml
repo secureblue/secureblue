@@ -5,11 +5,6 @@ labels: []
 assignees: []
 
 body:
-  - type: markdown
-    attributes:
-      value: |
-        **Note: requests for alternate or additional community forums or messaging platforms is forbidden.**
-
   - type: input
     id: benefit
     attributes:      

@@ -3,8 +3,8 @@ harden-flatpak FLATPAK="":
     #!/usr/bin/bash
     var1={{ FLATPAK }}
     flatpak_id="${var1:-}"
-    if [[ $flatpak_id =~ "'" ]]; then
-        echo 'Warning: To avoid command execution the flatpak app ID may not contain single quotes.'
+    if [[ "$flatpak_id" =~ "'" ]]; then
+        echo 'WARNING: Single quotes in the argument are forbidden to avoid command execution'
         exit 1
     fi
 

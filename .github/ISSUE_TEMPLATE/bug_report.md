@@ -29,4 +29,4 @@ A clear and concise description of what actually happened.
  - `rpm-ostree status` contents
 
 **For all images**
-- Confirm you cannot repro on a uBlue base image
+- Confirm you cannot repro on a quay.io/fedora-ostree-desktops base image

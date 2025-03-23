@@ -168,6 +168,9 @@ dev_read_sound(trivalent_t)
 dev_write_sound(trivalent_t)
 dev_read_urand(trivalent_t)
 dev_read_rand(trivalent_t)
+dev_read_video_dev(trivalent_t)
+dev_write_video_dev(trivalent_t)
+dev_map_video_dev(trivalent_t)
 
 udev_read_pid_files(trivalent_t)
 

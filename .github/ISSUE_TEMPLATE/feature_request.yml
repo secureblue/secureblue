@@ -1,0 +1,45 @@
+name: Feature request
+description: Suggest an idea for this project
+title: "[FEAT] ... would improve the project"
+labels: []
+assignees: []
+
+body:
+  - type: input
+    id: benefit
+    attributes:      
+      label: Benefit
+      description: Describe the benefit this feature would provide to the project
+      placeholder: A clear and concise description of the benefit. 
+    validations:
+      required: true
+
+  - type: input
+    id: solution
+    attributes:      
+      label: Solution
+      description: Describe the solution you'd like
+      placeholder: A clear and concise description of what specific change you would like.
+    validations:
+      required: true
+
+  - type: input
+    id: alternatives
+    attributes:      
+      label: Alternatives
+      description: Describe alternatives you've considered
+      placeholder: A clear and concise description of any alternative solutions or features you've considered.
+    validations:
+      required: true
+
+  - type: checkboxes
+    id: declaration
+    attributes:
+      label: Declaration
+      options:
+        - label: I agree to follow this project's [Code of Conduct](https://secureblue.dev/code-of-conduct).
+          required: true
+        - label: I declare that this is not a request for alternate community messaging or social platforms.
+          required: true
+        - label: I declare that I have read the [secureblue website](https://secureblue.dev/#about) and my feature request is in-scope.
+          required: true

@@ -11,6 +11,8 @@ body:
       label: Benefit
       description: Describe the benefit this feature would provide to the project
       placeholder: A clear and concise description of the benefit. 
+    validations:
+      required: true
 
   - type: input
     id: solution
@@ -18,6 +20,8 @@ body:
       label: Solution
       description: Describe the solution you'd like
       placeholder: A clear and concise description of what specific change you would like.
+    validations:
+      required: true
 
   - type: input
     id: alternatives
@@ -25,6 +29,8 @@ body:
       label: Alternatives
       description: Describe alternatives you've considered
       placeholder: A clear and concise description of any alternative solutions or features you've considered.
+    validations:
+      required: true
 
   - type: checkboxes
     id: declaration

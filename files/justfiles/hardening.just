@@ -1,8 +1,7 @@
 # Harden flatpaks by preloading hardened_malloc (highest supported hwcap). When called with a flatpak application ID as an argument, applies the overrides to that application instead of globally.
-harden-flatpak FLATPAK="":
+harden-flatpak FLATPAK_APPID="":
     #!/usr/bin/bash
-    var1={{ FLATPAK }}
-    flatpak_id="${var1:-}"
+    flatpak_id="{{ FLATPAK_APPID }}"
     if [[ "$flatpak_id" =~ "'" ]]; then
         echo 'WARNING: Single quotes in the argument are forbidden to avoid command execution'
         exit 1

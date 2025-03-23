@@ -14,7 +14,7 @@ policy_module(trivalent, 1.0.0)
 ## Needed for camera access
 ## </p>
 ## </desc>
-gen_tunable(trivalent_rwmap_v4l, true)
+gen_tunable(trivalent_rwmap_video_dev, true)
 
 
 # trivalent executable
@@ -174,12 +174,12 @@ dev_read_sysfs(trivalent_t)
 dev_rw_dma_dev(trivalent_t)
 dev_rw_dri(trivalent_t)
 dev_rw_generic_usb_dev(trivalent_t)
-dev_read_urand(trivalent_t)
-dev_read_rand(trivalent_t)
 dev_read_sound(trivalent_t)
 dev_write_sound(trivalent_t)
+dev_read_urand(trivalent_t)
+dev_read_rand(trivalent_t)
 
-tunable_policy(`trivalent_rwmap_v4l', `
+tunable_policy(`trivalent_rwmap_video_dev', `
 	dev_read_video_dev(trivalent_t)
 	dev_write_video_dev(trivalent_t)
 	dev_map_video_dev(trivalent_t)

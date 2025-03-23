@@ -8,7 +8,7 @@ assignees: ''
 ---
 
 **Describe the bug**
-A clear and concise description of what the bug is.
+A clear and concise description of what the bug is. Note: requests for alternate or additional community forums or messaging platforms is forbidden. 
 
 **To Reproduce**
 Steps to reproduce the behavior:

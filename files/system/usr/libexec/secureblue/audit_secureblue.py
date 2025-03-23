@@ -709,6 +709,31 @@ def audit_bash_env_lockdown(_state):
     yield Report("Ensuring current user's bash environment is locked down", status), rec
 
 
+@audit
+@categorize("flatpak")
+async def audit_flatpak_remotes(_state):
+    """Audit flatpak remotes."""
+    if not command_succeeds("command -v flatpak".split()):
+        return
+
+    remotes = command_stdout("flatpak remotes --columns=name,url,subset".split()).split("\n")
+    for remote in remotes:
+        name, url, subset = remote.split("\t")
+        warnings = []
+        if url not in [
+            "https://dl.flathub.org/repo/",
+            "https://dl.flathub.org/beta-repo/",
+        ]:
+            status = FAILURE
+            warnings.append(f"{name} is configured with an unknown url")
+        elif subset != "verified":
+            status = FAILURE
+            warnings.append(f"{name} is not a verified repo")
+        else:
+            status = SUCCESS
+        yield Report(f"Auditing flatpak remote {name}", status, warnings)
+
+
 async def check_flatpak_permissions(name, version, state):
     """Check permissions for a single flatpak."""
     warnings = []
@@ -835,33 +860,16 @@ async def check_flatpak_permissions(name, version, state):
                     $ flatpak override -u --device=dri {name}"""
         )
 
-    return name, version, status, warnings, recs
+    return status, warnings, recs
 
 
 @audit
 @categorize("flatpak")
 @depends_on("audit_modprobe", "audit_ptrace")
-async def audit_flatpaks(state):
+async def audit_flatpak_permissions(state):
     """Audit flatpak permissions."""
     if not command_succeeds("command -v flatpak".split()):
         return
-
-    remotes = command_stdout("flatpak remotes --columns=name,url,subset".split()).split("\n")
-    for remote in remotes:
-        name, url, subset = remote.split("\t")
-        warnings = []
-        if url not in [
-            "https://dl.flathub.org/repo/",
-            "https://dl.flathub.org/beta-repo/",
-        ]:
-            status = FAILURE
-            warnings.append(f"{name} is configured with an unknown url")
-        elif subset != "verified":
-            status = FAILURE
-            warnings.append(f"{name} is not a verified repo")
-        else:
-            status = SUCCESS
-        yield Report(f"Auditing flatpak remote {name}", status, warnings)
 
     flatpaks = []
     for line in command_stdout("flatpak list --columns=application,branch".split()).split("\n"):
@@ -869,22 +877,14 @@ async def audit_flatpaks(state):
         flatpaks.append((name, version))
     flatpaks.sort()
 
-    # dict to store results so they can be yielded in sorted order.
-    # The boolean part of the value is whether the data has been sent yet.
-    results = {key: (False, None) for key in flatpaks}
-    checks = [check_flatpak_permissions(name, version, state) for name, version in flatpaks]
-    async for result in asyncio.as_completed(checks):
-        name, version, status, warnings, recs = await result
-        results[(name, version)] = (False, (status, warnings, recs))
-        # yield all lexicographically first results that are ready
-        for (name, version), (sent, data) in results.items():
-            if sent is True:
-                continue
-            if data is None:
-                break
-            (status, warnings, recs) = data
-            yield Report(f"Auditing {name} ({version})", status, warnings), recs
-            results[(name, version)] = (True, None)
+    tasks = {}
+    for name, version in flatpaks:
+        coro = check_flatpak_permissions(name, version, state)
+        tasks[(name, version)] = asyncio.create_task(coro, name=(name, version))
+    # yield flatpak permission reports in lexicographical order
+    for name, version in flatpaks:
+        status, warnings, recs = await tasks[(name, version)]
+        yield Report(f"Auditing {name} ({version})", status, warnings), recs
 
 
 async def main():

@@ -60,7 +60,7 @@ body:
   - type: input
     id: upstream
     attributes:      
-      label: upstream
+      label: Upstream
       description: Upstream confirmation
       placeholder: Confirmation that you cannot repro on the quay.io/fedora-ostree-desktops base image from your image.
     validations:

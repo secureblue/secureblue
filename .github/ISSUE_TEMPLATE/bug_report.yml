@@ -1,11 +1,9 @@
----
 name: Bug report
-about: Something isn't working
+description: Something isn't working
 title: "[BUG] Issue with ..."
-labels: ''
-assignees: ''
+labels: []
+assignees: []
 
----
 
 **Describe the bug**
 A clear and concise description of what the bug is. Note: requests for alternate or additional community forums or messaging platforms is forbidden. 
@@ -29,4 +27,17 @@ A clear and concise description of what actually happened.
  - `rpm-ostree status` contents
 
 **For all images**
-- Confirm you cannot repro on a uBlue base image
+- Confirm you cannot repro on a quay.io/fedora-ostree-desktops base image
+
+
+- type: checkboxes
+  id: declaration
+  attributes:
+    label: Declaration
+    options:
+      - label: I agree to follow this project's [Code of Conduct](https://secureblue.dev/code-of-conduct).
+        required: true
+      - label: I declare that this is not a request for alternate community messaging or social platforms.
+        required: true
+      - label: I declare that I have read the [secureblue website](https://secureblue.dev/#about) and my feature request is in-scope.
+        required: true

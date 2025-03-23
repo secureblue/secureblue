@@ -1,8 +1,8 @@
 name: Feature request
 description: Suggest an idea for this project
 title: "[FEAT] ... would improve the project"
-labels: ''
-assignees: ''
+labels: []
+assignees: []
 
 body:
   - type: markdown

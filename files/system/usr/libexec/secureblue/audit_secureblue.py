@@ -79,9 +79,9 @@ class Check:
         self.call = call
         self.category = category
         if dependencies is None:
-            self.depends = []
+            self.dependencies = []
         else:
-            self.depends = dependencies
+            self.dependencies = dependencies
         self.done = False
         self.reports: list[Report] = []
         self.recs: list[str] = []
@@ -137,7 +137,7 @@ class Audit:
     def add_check(self, check: Check):
         """Add the check to the queue to be run."""
         names = self.names()
-        for dep in check.depends:
+        for dep in check.dependencies:
             if dep not in names:
                 raise DependencyError(f"'{check.name}' requires '{dep}' to be run first.")
         if check.category is not None:
@@ -192,14 +192,12 @@ def audit(f: Check | AsyncGenerator[Any, [dict[str, Any]]]) -> Check:
     return check
 
 
-def depends(deps: str | list[str]) -> Callable[..., Check]:
+def depends_on(*dependencies: str) -> Callable[..., Check]:
     """Add a dependency to a check."""
-    if isinstance(deps, str):
-        deps = [deps]
 
     def add_dependencies(f) -> Check:
         check = make_check(f)
-        check.depends = deps
+        check.dependencies = dependencies
         return check
 
     return add_dependencies
@@ -842,7 +840,7 @@ async def check_flatpak_permissions(name, version, state):
 
 @audit
 @categorize("flatpak")
-@depends(["audit_modprobe", "audit_ptrace"])
+@depends_on("audit_modprobe", "audit_ptrace")
 async def audit_flatpaks(state):
     """Audit flatpak permissions."""
     if not command_succeeds("command -v flatpak".split()):

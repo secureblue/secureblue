@@ -16,10 +16,37 @@ jobs:
       matrix:
         recipe:
           - general/recipe-silverblue-main.yml
+          - general/recipe-silverblue-nvidia.yml
+          - general/recipe-silverblue-nvidia-open.yml
 
     steps:
       - name: Checkout repo
         uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+
+      - name: Gather image data from recipe
+        run: |
+          echo "IMAGE_NAME=$(grep '^name:' ./recipes/${{ matrix.recipe }} | sed 's/^name: //')" >> $GITHUB_ENV
+          echo "IMAGE_MAJOR_VERSION=$(grep '^image-version:' ./recipes/${{ matrix.recipe }} | sed 's/^image-version: //')" >> $GITHUB_ENV
+          BASE_IMAGE=$(grep '^base-image:' ./recipes/${{ matrix.recipe }} | sed 's/^base-image: //')
+          echo "BASE_IMAGE_NAME=$(echo $BASE_IMAGE | sed 's/.*\/.*\///')" >> $GITHUB_ENV
+
+      - name: Gather and apply nvidia data from recipe
+        if: ${{ contains(env.IMAGE_NAME, 'nvidia') }}
+        run: |
+          if [[ "$IMAGE_NAME" == *"open"* ]]; then
+            export nvidia_kmod_container_name='akmods-nvidia-open'
+          else
+            export nvidia_kmod_container_name='akmods-nvidia'
+          fi
+          if [[ "$IMAGE_NAME" == *"securecore"* ]]; then
+            export nvidia_kmod_container_tag='coreos-testing-41'
+          else
+            export nvidia_kmod_container_tag='main-41'
+          fi
+          nvidia_containerfile="./containerfiles/nvidia/Containerfile"
+          tmp_nvidia_containerfile='/tmp/nvidia_Containerfile'
+          envsubst < $nvidia_containerfile > $tmp_nvidia_containerfile && mv $tmp_nvidia_containerfile $nvidia_containerfile
+
 
       - name: Maximize build space
         uses: jlumbroso/free-disk-space@54081f138730dfa15788a46383842cd2f914a1be # v1.3.1

@@ -47,7 +47,7 @@ enroll-secure-boot-key:
     #! /usr/bin/bash
     run0 mokutil --timeout -1
     echo 'The next line will prompt for a MOK password. Input "secureblue".'
-    run0 mokutil --import /etc/pki/akmods/certs/akmods-ublue.der
+    run0 mokutil --import /etc/pki/akmods/certs/akmods-secureblue.der
     echo 'At next reboot, the mokutil UEFI menu UI will be displayed (*QWERTY* keyboard input and navigation).'
     echo 'Then, select "Enroll MOK", and input "secureblue" as the password.'
 

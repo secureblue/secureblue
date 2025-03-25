@@ -44,11 +44,9 @@ if [[ "$IMAGE_NAME" == *"nvidia"* ]]; then
     cat $PRIVATE_KEY_PATH <(echo) $PUBLIC_KEY_CRT_PATH >> $SIGNING_KEY
     # Sign nvidia
     for module in /usr/lib/modules/"${KERNEL_VERSION}"/extra/nvidia/*.ko*; do
-        if [[ "$module_suffix" == ".xz" ]]; then
-            xz --decompress "$module"
-            openssl cms -sign -signer "${SIGNING_KEY}" -binary -in "nvidia" -outform DER -out "nvidia.cms" -nocerts -noattr -nosmimecap
-            /usr/src/kernels/"${KERNEL_VERSION}"/scripts/sign-file -s "nvidia.cms" sha256 "${PUBLIC_KEY_CRT_PATH}" "nvidia"
-            ./sign-check.sh "${KERNEL_VERSION}" "nvidia" "${PUBLIC_KEY_CRT_PATH}"
-            xz -f "${module_basename}"
-        fi
+        xz --decompress "nvidia"
+        openssl cms -sign -signer "${SIGNING_KEY}" -binary -in "nvidia" -outform DER -out "nvidia.cms" -nocerts -noattr -nosmimecap
+        /usr/src/kernels/"${KERNEL_VERSION}"/scripts/sign-file -s "nvidia.cms" sha256 "${PUBLIC_KEY_CRT_PATH}" "nvidia"
+        ./sign-check.sh "${KERNEL_VERSION}" "nvidia" "${PUBLIC_KEY_CRT_PATH}"
+        xz -f "nvidia"
     done

@@ -13,6 +13,8 @@ fi
 curl -Lo /etc/yum.repos.d/negativo17-fedora-nvidia.repo https://negativo17.org/repos/fedora-nvidia.repo
 sed -i '0,/enabled=1/{s/enabled=1/enabled=1\npriority=90/}' /etc/yum.repos.d/negativo17-fedora-nvidia.repo
 
+
+dnf install -y kernel-devel-matched-$(rpm -q "kernel" --queryformat '%{VERSION}')
 dnf install -y akmod-nvidia*.fc${RELEASE}
 
 

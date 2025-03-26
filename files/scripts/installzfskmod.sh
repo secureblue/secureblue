@@ -4,7 +4,7 @@
 set -oue pipefail
 
 dnf install -y https://zfsonlinux.org/fedora/zfs-release-2-6$(rpm --eval "%{dist}").noarch.rpm
-dnf install -y kernel-devel-$(uname -r | awk -F'-' '{print $1}')
+dnf install -y kernel-devel-$(rpm -q "kernel" --queryformat '%{VERSION}')
 dnf install -y zfs
 
 ./signmodules.sh "zfs"

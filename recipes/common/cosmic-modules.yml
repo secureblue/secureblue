@@ -14,3 +14,6 @@ modules:
       system:
         enabled:
           - cosmic-greeter
+    - type: script
+      scripts:
+        - signkernel.sh

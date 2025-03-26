@@ -8,6 +8,7 @@ sed -i '0,/enabled=1/{s/enabled=1/enabled=1\npriority=90/}' /etc/yum.repos.d/neg
 
 dnf install -y akmod-nvidia*.fc${RELEASE}
 
+KERNEL_VERSION="$(rpm -q "kernel" --queryformat '%{VERSION}-%{RELEASE}.%{ARCH}')"
 KERNEL_MODULE_TYPE="kernel"
 if [[ "$IMAGE_NAME" == *"open"* ]]; then
     KERNEL_MODULE_TYPE+="-open"
@@ -21,5 +22,7 @@ modinfo /usr/lib/modules/${KERNEL_VERSION}/extra/nvidia/nvidia{,-drm,-modeset,-p
 
 # View license information
 modinfo -l /usr/lib/modules/${KERNEL_VERSION}/extra/nvidia/nvidia{,-drm,-modeset,-peermem,-uvm}.ko.xz
+
+./signmodules.sh "nvidia"
 
 rm -f /etc/yum.repos.d/negativo17-fedora-multimedia.repo

@@ -1,7 +1,4 @@
 modules:
-    - type: script
-      scripts:
-        - signkernel.sh
     - from-file: common/desktop-packages.yml
     - type: rpm-ostree
       repos:

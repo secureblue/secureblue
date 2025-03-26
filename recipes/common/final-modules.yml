@@ -5,3 +5,4 @@ modules:
         - installrpmfusion.sh
         - removesuid.sh
         - regenerateinitramfs.sh
+        - shredkeys.sh

@@ -100,6 +100,11 @@ jobs:
           registry: 'ghcr.io/wayblueorg'
           pubkey: 'https://raw.githubusercontent.com/wayblueorg/wayblue/live/cosign.pub'
 
+      - name: Retrieve Signing Key
+        shell: bash
+        run: |
+          echo "${{ secrets.KERNEL_PRIVKEY }}" > ./certs/private_key.priv
+
       - name: Build secureblue
         uses: blue-build/github-action@4d8b4df657ec923574611eec6fd7e959416c47f0 # v1.8.1
         with:          

@@ -3,8 +3,6 @@
 # Tell build process to exit if there are any errors.
 set -oue pipefail
 
-find /tmp/rpms
-
 nvidia_packages_list=('nvidia-container-toolkit' 'nvidia-driver-cuda')
 if [[ "$IMAGE_NAME" != *"securecore"* ]]; then
     nvidia_packages_list+=('libnvidia-fbc' 'libva-nvidia-driver' 'nvidia-driver' 'nvidia-modprobe' 'nvidia-persistenced' 'nvidia-settings')
@@ -23,7 +21,7 @@ sed -i '0,/enabled=0/{s/enabled=0/enabled=1\npriority=90/}' /etc/yum.repos.d/neg
 # shellcheck disable=SC2068
 rpm-ostree install ${nvidia_packages_list[@]}
 
-kmod_version=$(find /tmp/rpms/kmods -maxdepth 1 -name 'kmod-nvidia*.rpm' | awk -F'-' '{print $(NF-1)}')
+kmod_version=$(rpm -qa | grep akmod-nvidia | awk -F':' '{print $(NF)}' | awk -F'-' '{print $(NF-1)}')
 negativo_version=$(rpm -qa | grep nvidia-modprobe | awk -F':' '{print $(NF)}' | awk -F'-' '{print $(NF-1)}')
 
 echo "kmod_version: ${kmod_version}"

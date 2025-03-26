@@ -12,3 +12,6 @@ install:
   - distrobox
   - toolbox
   - podman
+
+  # signing deps 
+  - sbsigntools

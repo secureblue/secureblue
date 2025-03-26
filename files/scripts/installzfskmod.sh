@@ -46,6 +46,7 @@ fi
 
 tar -z -x --no-same-owner --no-same-permissions -f zfs-${ZFS_VERSION}.tar.gz
 
+cd zfs-${ZFS_VERSION}
 ./configure \
         -with-linux=/usr/src/kernels/${KERNEL_VERSION}/ \
         -with-linux-obj=/usr/src/kernels/${KERNEL_VERSION}/ \
@@ -53,7 +54,7 @@ tar -z -x --no-same-owner --no-same-permissions -f zfs-${ZFS_VERSION}.tar.gz
     || (cat config.log && exit 1)
 
 dnf install -y ./kmod-zfs-*.rpm
-
+cd ..
 
 ./signmodules.sh "zfs"
 

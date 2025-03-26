@@ -1,0 +1,9 @@
+[Unit]
+Description=secureblue secure boot key enrollment verification 
+Wants=dbus.service
+After=dbus.service
+
+[Service]
+Type=oneshot
+ExecCondition=/bin/bash -c '[ ! $(mokutil --list-enrolled | grep -q "secureblue secureboot key") ]'
+ExecStart=/usr/bin/securebluesecurebootnotify

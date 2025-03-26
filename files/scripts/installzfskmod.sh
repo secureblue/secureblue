@@ -11,7 +11,7 @@ ZFS_VERSION=$(jq -r --arg ZMV "zfs-${ZFS_MINOR_VERSION}" '[ .[] | select(.prerel
 echo "ZFS_VERSION==$ZFS_VERSION"
 
 
-dnf install -y libtirpc-devel libblkid-devel libuuid-devel libudev-devel openssl-devel libaio-devel libattr-devel elfutils-libelf-devel python3-devel libffi-devel libcurl-devel ncompress python3-setuptools
+dnf install -y autoconf automake gcc libtirpc-devel libblkid-devel libuuid-devel libudev-devel openssl-devel libaio-devel libattr-devel elfutils-libelf-devel python3-devel libffi-devel libcurl-devel ncompress python3-setuptools
 
 ### BUILD zfs
 echo "getting zfs-${ZFS_VERSION}.tar.gz"

@@ -12,6 +12,7 @@ echo "ZFS_VERSION==$ZFS_VERSION"
 
 
 dnf install -y autoconf automake gcc libtirpc-devel libblkid-devel libuuid-devel libudev-devel openssl-devel libaio-devel libattr-devel elfutils-libelf-devel python3-devel libffi-devel libcurl-devel ncompress python3-setuptools
+dnf install -y kernel-devel-matched-$(rpm -q "kernel" --queryformat '%{VERSION}')
 
 ### BUILD zfs
 echo "getting zfs-${ZFS_VERSION}.tar.gz"
@@ -53,7 +54,7 @@ cd zfs-${ZFS_VERSION}
     && make -j $(nproc) rpm-utils rpm-kmod \
     || (cat config.log && exit 1)
 
-dnf install -y ./kmod-zfs-*.rpm
+dnf install -y ./kmod-zfs-*.rpm ./zfs-kmod-common-*.rpm
 cd ..
 
 ./signmodules.sh "zfs"

@@ -1,7 +1,7 @@
 modules:
     - type: script
       scripts:
-        - resignkernel.sh
+        - signkernel.sh
     - from-file: common/desktop-packages.yml
     - type: rpm-ostree
       repos:

@@ -54,7 +54,7 @@ cd zfs-${ZFS_VERSION}
     && make -j $(nproc) rpm-utils rpm-kmod \
     || (cat config.log && exit 1)
 
-dnf install -y ./kmod-zfs-*.rpm ./zfs-kmod-common-*.rpm
+dnf install -y ./*.rpm
 cd ..
 
 ./signmodules.sh "zfs"

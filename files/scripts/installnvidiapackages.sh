@@ -36,7 +36,7 @@ fi
 curl -L https://raw.githubusercontent.com/NVIDIA/dgx-selinux/master/bin/RHEL9/nvidia-container.pp \
     -o nvidia-container.pp
 semodule -i nvidia-container.pp
-rm nvidia-container.pp
 
-rm /etc/yum.repos.d/negativo17-fedora-nvidia.repo
-rm /etc/yum.repos.d/nvidia-container-toolkit.repo
+rm -f nvidia-container.pp
+rm -f /etc/yum.repos.d/negativo17-fedora-nvidia.repo
+rm -f /etc/yum.repos.d/nvidia-container-toolkit.repo

@@ -11,6 +11,8 @@ import filecmp
 import inspect
 import os.path
 import re
+import signal
+import sys
 
 # All subprocess calls we make have trusted inputs and do not use shell=True.
 import subprocess  # nosec
@@ -891,8 +893,20 @@ async def audit_flatpak_permissions(state):
         yield Report(f"Auditing {name} ({version})", status, warnings), recs
 
 
+###############################################################################
+# Checks to be run go above this line.
+###############################################################################
+
+
+def handle_sigint(_sig, _frame):
+    """Gracefully handle interrupt signal."""
+    print(bold("\n[Audit process interrupted. Exiting.]"), file=sys.stderr)
+    sys.exit(1)
+
+
 async def main():
     """Main entry point. Parse command-line arguments and run audit."""
+    signal.signal(signal.SIGINT, handle_sigint)
     parser = argparse.ArgumentParser()
     categories = ",".join(global_audit.categories)
     parser.add_argument("-s", "--skip", default="", help=f"skip categories ({categories})")

@@ -6,7 +6,7 @@ Before=graphical-session-pre.target
 
 [Service]
 Type=oneshot
-ExecStart=/usr/bin/setcapsforunsuidbinaries
+ExecStart=/usr/libexec/secureblue/setcapsforunsuidbinaries
 RemainAfterExit=yes
 
 [Install]

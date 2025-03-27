@@ -6,7 +6,7 @@ ConditionPathExists=!/var/lib/secureblue-cleanup.stamp
 
 [Service]
 Type=oneshot
-ExecStart=/usr/bin/securebluecleanup
+ExecStart=/usr/libexec/secureblue/securebluecleanup
 ExecStartPost=/usr/bin/touch /var/lib/secureblue-cleanup.stamp
 
 [Install]

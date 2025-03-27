@@ -5,5 +5,5 @@ After=dbus.service
 
 [Service]
 Type=oneshot
-ExecCondition=/bin/bash -c '[ ! $(mokutil --list-enrolled | grep -q "secureblue secureboot key") ]'
-ExecStart=/usr/bin/securebluesecurebootnotify
+ExecCondition=/bin/bash -c 'if mokutil --list-enrolled >/dev/null 2>&1; then ! mokutil --list-enrolled | grep -q "secureblue secureboot key"; else false; fi'
+ExecStart=/usr/libexec/securebluesecurebootnotify

@@ -6,14 +6,16 @@ Auditing script for secureblue. See https://secureblue.dev/ for more info.
 
 import argparse
 import asyncio
-from collections.abc import Callable
 import enum
 import filecmp
 import inspect
 import os.path
 import re
-import subprocess
-from subprocess import CalledProcessError
+
+# All subprocess calls we make have trusted inputs and do not use shell=True.
+import subprocess  # nosec
+
+from collections.abc import Callable
 from typing import Any, AsyncGenerator, Generator
 
 
@@ -216,7 +218,8 @@ def categorize(cat: str) -> Callable[..., Check]:
 
 def command_stdout(args: str | list[str], check: bool = True) -> str:
     """Run a command in the shell and return the contents of stdout."""
-    return subprocess.run(args, capture_output=True, check=check, text=True).stdout.strip()
+    # We only call this with trusted inputs and do not set shell=True.
+    return subprocess.run(args, capture_output=True, check=check, text=True).stdout.strip()  # nosec
 
 
 class AsyncProcessError(AuditError):
@@ -238,7 +241,8 @@ async def async_command_stdout(cmd: str, *args: str, check: bool = True) -> str:
 
 def command_succeeds(args: str | list[str]) -> bool:
     """Run a command in the shell and return the contents of stdout."""
-    return subprocess.run(args, capture_output=True, check=False).returncode == 0
+    # We only call this with trusted inputs and do not set shell=True.
+    return subprocess.run(args, capture_output=True, check=False).returncode == 0  # nosec
 
 
 ###############################################################################
@@ -305,7 +309,7 @@ def audit_sysctl(_state):
     for sysctl, expected in sysctl_expected.items():
         try:
             actual = command_stdout(["sysctl", "-bn", sysctl])
-        except CalledProcessError:
+        except subprocess.CalledProcessError:
             continue
         actual = re.sub(r"\s+", " ", actual)
         if actual != expected and expected != "0" and actual != "disabled":
@@ -692,7 +696,7 @@ def audit_bash_env_lockdown(_state):
                 cmd = ["lsattr", path]
             try:
                 immutable = "i" in command_stdout(cmd).split()[0]
-            except CalledProcessError:
+            except subprocess.CalledProcessError:
                 immutable = False
             if not immutable:
                 unlocked_files.append(path)

@@ -27,3 +27,4 @@ modules:
     - type: script
       scripts:
         - removedkmshelper.sh
+        - disableswitcheroo.sh

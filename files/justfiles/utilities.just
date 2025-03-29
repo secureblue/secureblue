@@ -365,7 +365,7 @@ setup-kvm:
             		    echo "That is not a valid selection."
                 fi
             done
-            
+
             case "$method_selection" in
                 1) # Flatpak
                     echo "Gnome Boxes flatpak selected"

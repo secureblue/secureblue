@@ -12,3 +12,4 @@ install:
   - distrobox
   - toolbox
   - podman
+  - nvme-cli

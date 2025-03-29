@@ -352,19 +352,19 @@ setup-kvm:
     echo "" # blank space
     case "$software_selection" in
         1)
-						valid_input="0"
-						method_selection=""
-						echo "Please select an installation method"
-						echo "    1) Flatpak - flatpak sandboxing, less powerful"
-						echo "    2) Layering - more powerful, no flatpak sandboxing, still uses SELinux confinement"
-						while [[ "$valid_input" == "0" ]]; do
-								read -p "Selection [1-2]: " method_selection
-								if [[ "$method_selection" == [12]* ]]; then
-										valid_input="1"
-								else
-										echo "That is not a valid selection."
-								fi
-						done
+            valid_input="0"
+            method_selection=""
+            echo "Please select an installation method"
+            echo "    1) Flatpak - flatpak sandboxing, less powerful"
+            echo "    2) Layering - more powerful, unsandboxed, confined by SELinux"
+            while [[ "$valid_input" == "0" ]]; do
+           	    read -p "Selection [1-2]: " method_selection
+                if [[ "$method_selection" == [12]* ]]; then
+            		    valid_input="1"
+                else
+            		    echo "That is not a valid selection."
+                fi
+            done
 
 						case "$method_selection" in
 								1) # Flatpak

@@ -339,8 +339,8 @@ setup-kvm:
     valid_input="0"
     software_selection=""
     echo "Please select which software to install"
-    echo "    1) Gnome Boxes - simpler and more user-friendly, less powerful"
-    echo "    2) virt-manager - harder for new users, more powerful"
+    echo "    1) Gnome Boxes - simpler and more user-friendly"
+    echo "    2) virt-manager - harder for new users, better for more complex use cases"
     while [[ "$valid_input" == "0" ]]; do
         read -p "Selection [1-2]: " method_selection
         if [[ "$method_selection" == [12]* ]]; then
@@ -384,7 +384,7 @@ setup-kvm:
         2)
             echo "Virt-manager selected"
             rpm-ostree install -y libvirt libvirt-nss qemu qemu-char-spice qemu-device-display-virtio-gpu qemu-device-display-virtio-vga qemu-device-usb-redirect qemu-img qemu-system-x86-core qemu-user-binfmt qemu-user-static virt-install virt-manager virt-v2v virt-viewer
-            echo "Check out the RedHat documentation to see which services to enable for your usecase"
+            echo "Check out the Red Hat documentation to see which services to enable for your usecase"
             echo "https://docs.redhat.com/fr/documentation/red_hat_enterprise_linux/9/html/monitoring_and_managing_system_status_and_performance/assembly_optimizing-libvirt-daemons_optimizing-virtual-machine-performance-in-rhel#proc_enabling-modular-libvirt-daemons_assembly_optimizing-libvirt-daemons"
             ;;
     esac

@@ -365,19 +365,19 @@ setup-kvm:
             		    echo "That is not a valid selection."
                 fi
             done
+            
+            case "$method_selection" in
+                1) # Flatpak
+                    echo "Gnome Boxes flatpak selected"
+                    flatpak install flathub-verified org.gnome.Boxes --noninteractive
+                    ;;
 
-						case "$method_selection" in
-								1) # Flatpak
-										echo "Gnome Boxes flatpak selected"
-										flatpak install flathub-verified org.gnome.Boxes
-										;;
+                2) # Layering
+                    echo "Gnome Boxes layered package selected"
+                    rpm-ostree install -y gnome-boxes
+                    ;;
 
-								2) # Layering
-										echo "Gnome Boxes layered package selected"
-										rpm-ostree install -y gnome-boxes
-										;;
-
-						esac
+            esac
 
             ;;
         2)

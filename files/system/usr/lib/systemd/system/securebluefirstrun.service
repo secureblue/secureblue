@@ -6,7 +6,7 @@ ConditionPathExists=!/home/linuxbrew/secureblue-firstrun.stamp
 
 [Service]
 Type=oneshot
-ExecStart=/usr/bin/securebluefirstrun
+ExecStart=/usr/libexec/secureblue/securebluefirstrun
 ExecStartPost=/usr/bin/touch /home/linuxbrew/secureblue-firstrun.stamp
 User=1000
 

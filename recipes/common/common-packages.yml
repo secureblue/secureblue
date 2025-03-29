@@ -12,6 +12,7 @@ install:
   - distrobox
   - toolbox
   - podman
-
+  - nvme-cli
+  
   # signing deps 
   - sbsigntools

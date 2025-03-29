@@ -8,3 +8,4 @@ scripts:
   - disablegeoclue.sh
   - enablesecurebluefirstrun.sh
   - createjustcompletions.sh
+  - enablekeyverification.sh

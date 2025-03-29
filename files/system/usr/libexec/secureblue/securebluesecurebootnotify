@@ -1,0 +1,8 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+selection=$(notify-send -A 'info=More Information' -a 'secureblue' -i 'dialog-warning' 'Secureboot key is not enrolled!' 'Run <i>ujust enroll-secureblue-secure-boot-key</i> to resolve this issue.' -u critical)
+
+if [[ $selection == "info" ]]; then
+  trivalent "https://secureblue.dev/faq#new-key"
+fi

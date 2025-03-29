@@ -382,8 +382,8 @@ setup-kvm:
             ;;
         2)
             echo "Virt-manager selected"
-						rpm-ostree install -y libvirt libvirt-nss qemu qemu-char-spice qemu-device-display-virtio-gpu qemu-device-display-virtio-vga qemu-device-usb-redirect qemu-img qemu-system-x86-core qemu-user-binfmt qemu-user-static virt-install virt-manager virt-v2v virt-viewer
-						echo "Check out the RedHat documentation to see which services to enable for your usecase (recommended to bookmark this link before you reboot)"
-						echo "https://docs.redhat.com/fr/documentation/red_hat_enterprise_linux/9/html/monitoring_and_managing_system_status_and_performance/assembly_optimizing-libvirt-daemons_optimizing-virtual-machine-performance-in-rhel#proc_enabling-modular-libvirt-daemons_assembly_optimizing-libvirt-daemons"
+            rpm-ostree install -y libvirt libvirt-nss qemu qemu-char-spice qemu-device-display-virtio-gpu qemu-device-display-virtio-vga qemu-device-usb-redirect qemu-img qemu-system-x86-core qemu-user-binfmt qemu-user-static virt-install virt-manager virt-v2v virt-viewer
+            echo "Check out the RedHat documentation to see which services to enable for your usecase"
+            echo "https://docs.redhat.com/fr/documentation/red_hat_enterprise_linux/9/html/monitoring_and_managing_system_status_and_performance/assembly_optimizing-libvirt-daemons_optimizing-virtual-machine-performance-in-rhel#proc_enabling-modular-libvirt-daemons_assembly_optimizing-libvirt-daemons"
             ;;
     esac

@@ -21,7 +21,6 @@ if [ -z "$MODULE_NAME" ]; then
   exit 1
 fi
 
-
 KERNEL_VERSION="$(rpm -q "kernel" --queryformat '%{VERSION}-%{RELEASE}.%{ARCH}')"
 
 PUBLIC_KEY_CRT_PATH="./certs/public_key.crt"

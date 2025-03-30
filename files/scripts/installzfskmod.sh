@@ -25,22 +25,19 @@ echo "Import key"
 gpg --yes --keyserver keyserver.ubuntu.com --recv D4598027
 
 echo "Verifying tar.gz signature"
-gpg --verify "zfs-${ZFS_VERSION}.tar.gz.asc" "zfs-${ZFS_VERSION}.tar.gz"
-if [ $? -ne 0 ]; then
+if [ ! gpg --verify "zfs-${ZFS_VERSION}.tar.gz.asc" "zfs-${ZFS_VERSION}.tar.gz" ]; then
     echo "ZFS tarball signature verification FAILED! Exiting..."
     exit 1
 fi
 
 echo "Verifying checksum signature"
-gpg --verify "zfs-${ZFS_VERSION}.sha256.asc"
-if [ $? -ne 0 ]; then
+if [ ! gpg --verify "zfs-${ZFS_VERSION}.sha256.asc" ]; then
     echo "Checksum signature verification FAILED! Exiting..."
     exit 1
 fi
 
 echo "Verifying encrypted checksum"
-gpg --decrypt "zfs-${ZFS_VERSION}.sha256.asc" | sha256sum -c
-if [ $? -ne 0 ]; then
+if [ ! gpg --decrypt "zfs-${ZFS_VERSION}.sha256.asc" | sha256sum -c ]; then
     echo "Checksum verification FAILED! Exiting..."
     exit 1
 fi
@@ -49,8 +46,8 @@ tar -z -x --no-same-owner --no-same-permissions -f "zfs-${ZFS_VERSION}.tar.gz"
 
 cd "zfs-${ZFS_VERSION}"
 ./configure \
-        -with-linux=/usr/src/kernels/${KERNEL_VERSION}/ \
-        -with-linux-obj=/usr/src/kernels/${KERNEL_VERSION}/ \
+        -with-linux="/usr/src/kernels/${KERNEL_VERSION}/" \
+        -with-linux-obj="/usr/src/kernels/${KERNEL_VERSION}/" \
     && make -j "$(nproc)" rpm-utils rpm-kmod \
     || (cat config.log && exit 1)
 

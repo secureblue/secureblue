@@ -48,6 +48,8 @@ fi
 tar -z -x --no-same-owner --no-same-permissions -f "zfs-${ZFS_VERSION}.tar.gz"
 
 cd "zfs-${ZFS_VERSION}"
+# We want to exit if either A or B is false
+# shellcheck disable=SC2015
 ./configure \
         -with-linux="/usr/src/kernels/${KERNEL_VERSION}/" \
         -with-linux-obj="/usr/src/kernels/${KERNEL_VERSION}/" \

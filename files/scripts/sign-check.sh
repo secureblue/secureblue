@@ -13,7 +13,6 @@
 # distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and limitations under the License.
 
-# Tell build process to exit if there are any errors.
 set -oue pipefail
 
 KERNEL="$1"
@@ -23,9 +22,9 @@ PUBLIC_CERT="$3"
 kmod_sig="/tmp/kmod.sig"
 kmod_p7s="/tmp/kmod.p7s"
 kmod_data="/tmp/kmod.data"
-/usr/src/kernels/"${KERNEL}"/scripts/extract-module-sig.pl -s "${module}" > ${kmod_sig}
+/usr/src/kernels/"${KERNEL}"/scripts/extract-module-sig.pl -s "${module}" > "${kmod_sig}
 openssl pkcs7 -inform der -in ${kmod_sig} -out ${kmod_p7s}
-/usr/src/kernels/"${KERNEL}"/scripts/extract-module-sig.pl -0 "${module}" > ${kmod_data}
+/usr/src/kernels/"${KERNEL}"/scripts/extract-module-sig.pl -0 "${module}" > ${kmod_data}"d
 if openssl cms -verify -binary -inform PEM \
     -in ${kmod_p7s} \
     -content ${kmod_data} \

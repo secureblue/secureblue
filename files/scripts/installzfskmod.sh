@@ -13,7 +13,6 @@
 # distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and limitations under the License.
 
-# Tell build process to exit if there are any errors.
 set -oue pipefail
 
 KERNEL_VERSION="$(rpm -q "kernel" --queryformat '%{VERSION}-%{RELEASE}.%{ARCH}')"
@@ -67,7 +66,7 @@ cd "zfs-${ZFS_VERSION}"
         -with-linux="/usr/src/kernels/${KERNEL_VERSION}/" \
         -with-linux-obj="/usr/src/kernels/${KERNEL_VERSION}/" \
     && make -j "$(nproc)" rpm-utils rpm-kmod \
-    || (cat config.log && exit 1)
+    || { cat config.log; exit 1; }
 
 
 dnf install -y ./*.rpm

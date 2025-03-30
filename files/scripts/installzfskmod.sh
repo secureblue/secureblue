@@ -25,19 +25,22 @@ echo "Import key"
 gpg --yes --keyserver keyserver.ubuntu.com --recv D4598027
 
 echo "Verifying tar.gz signature"
-if [[ ! gpg --verify "zfs-${ZFS_VERSION}.tar.gz.asc" "zfs-${ZFS_VERSION}.tar.gz" ]]; then
+if ! gpg --verify "zfs-${ZFS_VERSION}.tar.gz.asc" "zfs-${ZFS_VERSION}.tar.gz"
+then
     echo "ZFS tarball signature verification FAILED! Exiting..."
     exit 1
 fi
 
 echo "Verifying checksum signature"
-if [[ ! gpg --verify "zfs-${ZFS_VERSION}.sha256.asc" ]]; then
+if ! gpg --verify "zfs-${ZFS_VERSION}.sha256.asc"
+then
     echo "Checksum signature verification FAILED! Exiting..."
     exit 1
 fi
 
 echo "Verifying encrypted checksum"
-if [[ ! gpg --decrypt "zfs-${ZFS_VERSION}.sha256.asc" | sha256sum -c ]]; then
+if ! gpg --decrypt "zfs-${ZFS_VERSION}.sha256.asc" | sha256sum -c
+then
     echo "Checksum verification FAILED! Exiting..."
     exit 1
 fi

@@ -46,7 +46,12 @@ jobs:
             RECIPE_PATH="./recipes/${RECIPE}"
           fi
           echo "recipe_path=${RECIPE_PATH}" >> ${GITHUB_OUTPUT}
-          
+      
+      - name: Retrieve Signing Key
+        shell: bash
+        run: |
+          echo "${{ secrets.KERNEL_PRIVKEY }}" > ./files/scripts/certs/private_key.priv
+
       - name: Install BlueBuild
         shell: bash
         env:

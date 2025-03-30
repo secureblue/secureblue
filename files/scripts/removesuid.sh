@@ -1,6 +1,5 @@
 #!/usr/bin/env bash
 
-# Tell build process to exit if there are any errors.
 set -oue pipefail
 
 # Reference: https://gist.github.com/ok-ryoko/1ff42a805d496cb1ca22e5cdf6ddefb0#usrbinchage

@@ -23,10 +23,14 @@ NVIDIA_AKMOD_VERSION="$(basename "$(rpm -q "akmod-nvidia" --queryformat '%{VERSI
 sed -i "s/^MODULE_VARIANT=.*/MODULE_VARIANT=$KERNEL_MODULE_TYPE/" /etc/nvidia/kernel.conf
 akmods --force --kernels "${KERNEL_VERSION}" --kmod "nvidia"
 
+# Depends on word splitting
+# shellcheck disable=SC2086
 modinfo /usr/lib/modules/${KERNEL_VERSION}/extra/nvidia/nvidia{,-drm,-modeset,-peermem,-uvm}.ko.xz > /dev/null || \
     (cat "/var/cache/akmods/nvidia/*.failed.log" && exit 1)
 
 # View license information
+# Depends on word splitting
+# shellcheck disable=SC2086
 modinfo -l /usr/lib/modules/${KERNEL_VERSION}/extra/nvidia/nvidia{,-drm,-modeset,-peermem,-uvm}.ko.xz
 
 ./signmodules.sh "nvidia"

@@ -48,13 +48,12 @@ fi
 tar -z -x --no-same-owner --no-same-permissions -f "zfs-${ZFS_VERSION}.tar.gz"
 
 cd "zfs-${ZFS_VERSION}"
-if [[ ./configure -with-linux="/usr/src/kernels/${KERNEL_VERSION}/" -with-linux-obj="/usr/src/kernels/${KERNEL_VERSION}/" ]]
-then
-    make -j "$(nproc)" rpm-utils rpm-kmod)
-else
-    cat config.log
-    exit 1
-fi
+./configure \
+        -with-linux=/usr/src/kernels/${KERNEL_VERSION}/ \
+        -with-linux-obj=/usr/src/kernels/${KERNEL_VERSION}/ \
+    && make -j "$(nproc)" rpm-utils rpm-kmod \
+    || (cat config.log && exit 1)
+
 
 dnf install -y ./*.rpm
 cd ..

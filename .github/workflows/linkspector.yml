@@ -3,6 +3,7 @@ on:
   pull_request:
     branches:
       - live
+      - staging
 jobs:
   check-links:
     name: Linkspector

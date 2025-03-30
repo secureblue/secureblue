@@ -3,6 +3,7 @@ on:
   pull_request:
     branches:
       - live
+      - staging
 jobs:
   verify-installer-checksum:
     name: Installer Checksum Verification

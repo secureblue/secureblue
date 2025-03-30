@@ -47,10 +47,11 @@ jobs:
           fi
           echo "recipe_path=${RECIPE_PATH}" >> ${GITHUB_OUTPUT}
       
-      - name: Retrieve Signing Key
+      - name: Retrieve Test Signing Key
         shell: bash
         run: |
-          echo "${{ secrets.KERNEL_PRIVKEY }}" > ./files/scripts/certs/private_key.priv
+          cp private_key.priv.test > ./files/scripts/certs/private_key.priv
+          cp public_key.der.test > ../files/system/etc/pki/akmods/certs/akmods-secureblue.der
 
       - name: Install BlueBuild
         shell: bash

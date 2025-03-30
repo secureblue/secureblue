@@ -12,7 +12,7 @@ echo "ZFS_VERSION==$ZFS_VERSION"
 
 
 dnf install -y autoconf automake gcc pv akmods mock libtirpc-devel libblkid-devel libuuid-devel libudev-devel openssl-devel libaio-devel libattr-devel elfutils-libelf-devel python3-devel libffi-devel libcurl-devel ncompress python3-setuptools
-dnf install -y kernel-devel-matched-$(rpm -q "kernel" --queryformat '%{VERSION}')
+dnf install -y "kernel-devel-matched-$(rpm -q 'kernel' --queryformat '%{VERSION}')"
 
 ### BUILD zfs
 echo "getting zfs-${ZFS_VERSION}.tar.gz"
@@ -45,14 +45,18 @@ if [ $? -ne 0 ]; then
     exit 1
 fi
 
-tar -z -x --no-same-owner --no-same-permissions -f zfs-${ZFS_VERSION}.tar.gz
+tar -z -x --no-same-owner --no-same-permissions -f "zfs-${ZFS_VERSION}.tar.gz"
 
-cd zfs-${ZFS_VERSION}
-./configure \
-        -with-linux=/usr/src/kernels/${KERNEL_VERSION}/ \
-        -with-linux-obj=/usr/src/kernels/${KERNEL_VERSION}/ \
-    && make -j $(nproc) rpm-utils rpm-kmod \
-    || (cat config.log && exit 1)
+cd "zfs-${ZFS_VERSION}"
+if [[ ./configure \
+        -with-linux="/usr/src/kernels/${KERNEL_VERSION}/" \
+        -with-linux-obj="/usr/src/kernels/${KERNEL_VERSION}/" ]]
+then
+    make -j "$(nproc)" rpm-utils rpm-kmod)
+else
+    cat config.log
+    exit 1
+fi
 
 dnf install -y ./*.rpm
 cd ..

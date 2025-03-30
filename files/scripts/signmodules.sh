@@ -6,9 +6,7 @@ set -oue pipefail
 MODULE_NAME="$1"
 
 KERNEL_VERSION="$(rpm -q "kernel" --queryformat '%{VERSION}-%{RELEASE}.%{ARCH}')"
-RELEASE="$(rpm -E '%fedora.%_arch')"
 
-PUBLIC_KEY_DER_PATH="./certs/public_key.der"
 PUBLIC_KEY_CRT_PATH="./certs/public_key.crt"
 PRIVATE_KEY_PATH="./certs/private_key.priv"
 SIGNING_KEY="./certs/signing_key.pem"

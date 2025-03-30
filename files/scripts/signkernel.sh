@@ -4,7 +4,6 @@
 set -oue pipefail
 
 KERNEL_VERSION="$(rpm -q "kernel" --queryformat '%{VERSION}-%{RELEASE}.%{ARCH}')"
-RELEASE="$(rpm -E '%fedora.%_arch')"
 
 PUBLIC_KEY_DER_PATH="./certs/public_key.der"
 PUBLIC_KEY_CRT_PATH="./certs/public_key.crt"

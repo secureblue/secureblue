@@ -1,15 +1,16 @@
 # vim: set ft=make :
-# Copyright 2024 secureblue
+# Copyright 2025 Universal Blue
+# Copyright 2025 The Secureblue Authors
 #
-# This file includes code from Universal Blue which is licensed under the Apache License, Version 2.0 (the "License");
+# Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
 #
 #     http://www.apache.org/licenses/LICENSE-2.0
 #
-# Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS"
-# BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language
-# governing permissions and limitations under the License.
+# Unless required by applicable law or agreed to in writing, software distributed under the License is
+# distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and limitations under the License.
 
 uid := `id -u`
 shell := `grep :$(id -u): /etc/passwd | cut -d: -f7`
@@ -48,15 +49,6 @@ enroll-secureblue-secure-boot-key:
     mokutil --timeout -1
     echo 'The next line will prompt for a MOK password. Input "secureblue".'
     mokutil --import /etc/pki/akmods/certs/akmods-secureblue.der
-    echo 'At next reboot, the mokutil UEFI menu UI will be displayed (*QWERTY* keyboard input and navigation).'
-    echo 'Then, select "Enroll MOK", and input "secureblue" as the password.'
-
-# Enroll Nvidia driver & KMOD signing key for secure boot - Enter password "secureblue" if prompted
-enroll-secure-boot-key:
-    #! /usr/bin/bash
-    run0 mokutil --timeout -1
-    echo 'The next line will prompt for a MOK password. Input "secureblue".'
-    run0 mokutil --import /etc/pki/akmods/certs/akmods-ublue.der
     echo 'At next reboot, the mokutil UEFI menu UI will be displayed (*QWERTY* keyboard input and navigation).'
     echo 'Then, select "Enroll MOK", and input "secureblue" as the password.'
 

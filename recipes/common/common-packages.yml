@@ -13,3 +13,6 @@ install:
   - toolbox
   - podman
   - nvme-cli
+  
+  # signing deps 
+  - sbsigntools

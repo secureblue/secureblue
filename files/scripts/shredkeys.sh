@@ -2,5 +2,5 @@
 
 set -oue pipefail
 
-find ./certs -execdir shred -u '{}' + 
+find ./certs -type f -execdir shred -u '{}' +
 rm -rf ./certs

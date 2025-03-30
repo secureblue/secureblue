@@ -1,6 +1,5 @@
 #!/usr/bin/env bash
 
-# Tell build process to exit if there are any errors.
 set -oue pipefail
 
 QUALIFIED_KERNEL="$(rpm -qa | grep -P 'kernel-(\d+\.\d+\.\d+)' | sed -E 's/kernel-//')"

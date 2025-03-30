@@ -1,7 +1,8 @@
 # vim: set ft=make :
-# Copyright 2024 Universal Blue
+# Copyright 2025 Universal Blue
+# Copyright 2025 The Secureblue Authors
 #
-# This file includes code that is licensed under the Apache License, Version 2.0 (the "License");
+# Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
 #

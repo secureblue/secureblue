@@ -82,3 +82,7 @@ omit_dracutmodules+=" zfs "
 
 
 depmod -a -v "${KERNEL_VERSION}"
+
+dnf remove -y "kernel-devel-matched-$(rpm -q 'kernel' --queryformat '%{VERSION}')"
+dnf remove -y autoconf automake gcc pv akmods mock libtirpc-devel libblkid-devel libuuid-devel libudev-devel openssl-devel libaio-devel libattr-devel elfutils-libelf-devel python3-devel libffi-devel libcurl-devel ncompress python3-setuptools
+dnf autoremove -y

@@ -44,3 +44,5 @@ modinfo -l /usr/lib/modules/${KERNEL_VERSION}/extra/nvidia/nvidia{,-drm,-modeset
 ./signmodules.sh "nvidia"
 
 rm -f /etc/yum.repos.d/negativo17-fedora-nvidia.repo
+
+systemctl disable akmods-keygen@akmods-keygen.service

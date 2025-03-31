@@ -359,11 +359,11 @@ setup-kvm:
             echo "    1) Flatpak - flatpak sandboxing, less powerful"
             echo "    2) Layering - more powerful, no flatpak sandboxing"
             while [[ "$valid_input" == "0" ]]; do
-           	    read -p "Selection [1-2]: " method_selection
+                read -p "Selection [1-2]: " method_selection
                 if [[ "$method_selection" == [12]* ]]; then
-            		    valid_input="1"
+            	    valid_input="1"
                 else
-            		    echo "That is not a valid selection."
+                    echo "That is not a valid selection."
                 fi
             done
 

@@ -6,6 +6,17 @@ policy_module(trivalent, 1.0.0)
 # Declarations
 #
 
+## <desc>
+## <p>
+## Allow chromium to read/write/map v4l devices
+## </p>
+## <p>
+## Needed for camera access
+## </p>
+## </desc>
+gen_tunable(trivalent_rwmap_video_dev, true)
+
+
 # trivalent executable
 attribute_role trivalent_roles;
 roleattribute object_r trivalent_roles;
@@ -163,11 +174,16 @@ dev_read_sysfs(trivalent_t)
 dev_rw_dma_dev(trivalent_t)
 dev_rw_dri(trivalent_t)
 dev_rw_generic_usb_dev(trivalent_t)
-dev_read_video_dev(trivalent_t)
 dev_read_sound(trivalent_t)
 dev_write_sound(trivalent_t)
 dev_read_urand(trivalent_t)
 dev_read_rand(trivalent_t)
+
+tunable_policy(`trivalent_rwmap_video_dev', `
+	dev_read_video_dev(trivalent_t)
+	dev_write_video_dev(trivalent_t)
+	dev_map_video_dev(trivalent_t)
+')
 
 udev_read_pid_files(trivalent_t)
 

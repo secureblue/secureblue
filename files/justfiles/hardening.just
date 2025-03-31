@@ -1,18 +1,32 @@
 # Harden flatpaks by preloading hardened_malloc (highest supported hwcap). When called with a flatpak application ID as an argument, applies the overrides to that application instead of globally.
-harden-flatpak FLATPAK="":
+harden-flatpak FLATPAK_APPID="":
     #!/usr/bin/bash
-    var1={{ FLATPAK }}
-    flatpak_id="${var1:-}"
-    flatpak override --user --filesystem=host-os:ro "$flatpak_id"
+    flatpak_id="{{ FLATPAK_APPID }}"
+    if [[ "$flatpak_id" =~ "'" ]]; then
+        echo 'WARNING: Single quotes in the argument are forbidden to avoid command execution'
+        exit 1
+    fi
+
+    hostro_cmd="flatpak override --user --filesystem=host-os:ro"
+    if [[ -n "$flatpak_id" ]]; then
+        hostro_cmd="$hostro_cmd '$flatpak_id'"
+    fi
+    sh -c "$hostro_cmd"
+
     uarches="$(/usr/lib64/ld-linux-x86-64.so.2 --help | grep '(supported, searched)' | cut -d'v' -f2 || echo '')"
     bestuarch="${uarches:0:1}"
+    malloc_cmd="flatpak override --user --env=LD_PRELOAD=/var/run/host/usr/lib64"
     if [ -z "$bestuarch" ] ; then
         echo "No microarchitecture support detected. Using default x86-64-v1 architecture${flatpak_id:+" for $flatpak_id's malloc"}."
-        flatpak override --user --env=LD_PRELOAD=/var/run/host/usr/lib64/libhardened_malloc.so "$flatpak_id"
+        malloc_cmd="$malloc_cmd/libhardened_malloc.so"
     else
         echo "x86-64-v$bestuarch support detected. Using x86-64-v$bestuarch microarchitecture${flatpak_id:+" for $flatpak_id's malloc"}."
-        flatpak override --user --env=LD_PRELOAD=/var/run/host/usr/lib64/glibc-hwcaps/x86-64-v"$bestuarch"/libhardened_malloc.so "$flatpak_id"
+        malloc_cmd="$malloc_cmd/glibc-hwcaps/x86-64-v$bestuarch/libhardened_malloc.so"
     fi
+    if [[ -n "$flatpak_id" ]]; then
+        malloc_cmd="$malloc_cmd '$flatpak_id'"
+    fi
+    sh -c "$malloc_cmd"
 
 # Harden Flatpaks further by disabling all permissions by default and rejecting known arbitrary DBus names, applies only to the current user
 flatpak-permissions-lockdown:

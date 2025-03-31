@@ -25,9 +25,10 @@ for imageType in "${imageTypes[@]}"; do
     fi
 done
 
-
 if $isDeprecated; then
     TIP='**You are on a deprecated image,** [rebase:](https://github.com/secureblue/secureblue/blob/live/files/system/usr/libexec/deprecated-images.json.md)'
+elif mokutil --list-enrolled >/dev/null 2>&1 && ! mokutil --list-enrolled | grep -q "secureblue secureboot key"; then
+    TIP='**Secureboot key is not enrolled! Run `ujust enroll-secureblue-secure-boot-key` to resolve this issue.** [More information](https://secureblue.dev/faq#new-key)'
 elif [ "$IMAGE_TAG" == 'ERROR-IMAGE-TAG-MISSING' ]; then
     TIP='**You are missing an image tag, which is unsupported by secureblue. Rebase to the `latest` tag to ensure you continue to receive updates.**'
 elif [ "$IMAGE_TAG" != "latest" ]; then

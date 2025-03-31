@@ -85,6 +85,6 @@ depmod -a -v "${KERNEL_VERSION}"
 
 rm -f /etc/dnf/protected.d/sudo.conf
 
-dnf remove -y sudo 
+dnf remove -y sudo autoconf automake pv mock libtirpc-devel libblkid-devel libuuid-devel libudev-devel openssl-devel libaio-devel libattr-devel elfutils-libelf-devel python3-devel libffi-devel libcurl-devel ncompress 
 
 systemctl disable akmods-keygen@akmods-keygen.service

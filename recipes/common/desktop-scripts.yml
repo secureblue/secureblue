@@ -8,3 +8,4 @@ scripts:
   - disablemodemmanager.sh
   - disablenfsdaemons.sh
   - disablesssd.sh
+  - disableunconfinedrootfulservices.sh

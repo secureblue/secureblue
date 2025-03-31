@@ -377,9 +377,7 @@ setup-kvm:
                     echo "Gnome Boxes layered package selected"
                     rpm-ostree install -y gnome-boxes
                     ;;
-
             esac
-
             ;;
         2)
             echo "Virt-manager selected"

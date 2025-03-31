@@ -22,9 +22,9 @@ curl "https://api.github.com/repos/openzfs/zfs/releases" -o data.json
 ZFS_VERSION=$(jq -r --arg ZMV "zfs-${ZFS_MINOR_VERSION}" '[ .[] | select(.prerelease==false and .draft==false) | select(.tag_name | startswith($ZMV))][0].tag_name' data.json|cut -f2- -d-)
 echo "ZFS_VERSION==$ZFS_VERSION"
 
-
-dnf install -y autoconf automake gcc pv akmods mock libtirpc-devel libblkid-devel libuuid-devel libudev-devel openssl-devel libaio-devel libattr-devel elfutils-libelf-devel python3-devel libffi-devel libcurl-devel ncompress python3-setuptools
 dnf install -y "kernel-devel-matched-$(rpm -q 'kernel' --queryformat '%{VERSION}')"
+dnf install -y autoconf automake gcc pv akmods mock libtirpc-devel libblkid-devel libuuid-devel libudev-devel openssl-devel libaio-devel libattr-devel elfutils-libelf-devel python3-devel libffi-devel libcurl-devel ncompress python3-setuptools
+
 
 ### BUILD zfs
 echo "getting zfs-${ZFS_VERSION}.tar.gz"

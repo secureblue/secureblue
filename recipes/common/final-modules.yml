@@ -6,3 +6,4 @@ modules:
         - removesuid.sh
         - regenerateinitramfs.sh
         - shredkeys.sh
+        - checksinglekernel.sh

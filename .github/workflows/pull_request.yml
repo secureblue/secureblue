@@ -19,6 +19,9 @@ jobs:
           - general/recipe-silverblue-main.yml
           - general/recipe-silverblue-nvidia.yml
           - general/recipe-silverblue-nvidia-open.yml
+          - securecore/recipe-securecore-zfs-main.yml
+          - securecore/recipe-securecore-zfs-nvidia.yml
+          - securecore/recipe-securecore-zfs-nvidia-open.yml
 
     steps:
       - name: Checkout repo

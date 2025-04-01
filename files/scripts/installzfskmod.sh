@@ -85,6 +85,6 @@ depmod -a -v "${KERNEL_VERSION}"
 
 rm -f /etc/dnf/protected.d/sudo.conf
 
-dnf remove -y sudo autoconf automake mock gcc
+dnf remove -y sudo autoconf automake mock 
 
 systemctl disable akmods-keygen@akmods-keygen.service

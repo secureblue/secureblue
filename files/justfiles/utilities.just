@@ -344,7 +344,8 @@ label-external-drives:
 
 # Install packages to use libvert/qemu/kvm
 setup-kvm:
-    #!/usr/bin/env bash
+    #!/usr/bin/bash
+    set -euo pipefail
     valid_input="0"
     software_selection=""
     echo "Please select which software to install"

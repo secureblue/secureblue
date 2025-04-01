@@ -4,7 +4,6 @@ Before=dbus-broker.service
 
 [Service]
 Type=oneshot
-RemainAfterExit=yes
 ExecCondition=/bin/bash -c '! cmp -s /etc/skel/.config/ksplashrc ~/.config/ksplashrc'
 ExecStart=/usr/libexec/secureblue/disablekdesplash
 

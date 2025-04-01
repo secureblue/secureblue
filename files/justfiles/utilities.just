@@ -351,7 +351,7 @@ setup-kvm:
     echo "    1) Gnome Boxes - simpler and more user-friendly"
     echo "    2) virt-manager - harder for new users, better for more complex use cases"
     while [[ "$valid_input" == "0" ]]; do
-        read -p "Selection [1-2]: " method_selection
+        read -rp "Selection [1-2]: " method_selection
         if [[ "$method_selection" == [12]* ]]; then
             valid_input="1"
         else
@@ -359,7 +359,7 @@ setup-kvm:
         fi
     done
 
-    echo "" # blank space
+    echo
     case "$software_selection" in
         1)
             valid_input="0"
@@ -368,7 +368,7 @@ setup-kvm:
             echo "    1) Flatpak - flatpak sandboxing, less powerful"
             echo "    2) Layering - more powerful, no flatpak sandboxing"
             while [[ "$valid_input" == "0" ]]; do
-                read -p "Selection [1-2]: " method_selection
+                read -rp "Selection [1-2]: " method_selection
                 if [[ "$method_selection" == [12]* ]]; then
             	    valid_input="1"
                 else

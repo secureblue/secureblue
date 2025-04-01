@@ -85,6 +85,6 @@ depmod -a -v "${KERNEL_VERSION}"
 
 rm -f /etc/dnf/protected.d/sudo.conf
 
-dnf remove -y sudo libtirpc-devel libblkid-devel libuuid-devel libudev-devel openssl-devel libaio-devel libattr-devel python3-devel libffi-devel libcurl-devel ncompress 
+dnf remove -y sudo libffi-devel 
 
 systemctl disable akmods-keygen@akmods-keygen.service

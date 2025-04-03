@@ -717,7 +717,7 @@ def audit_bash_env_lockdown(_state):
 
 @audit
 @categorize("flatpak")
-async def audit_flatpak_remotes(_state):
+def audit_flatpak_remotes(_state):
     """Audit flatpak remotes."""
     if not command_succeeds("command -v flatpak".split()):
         return

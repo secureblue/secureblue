@@ -80,5 +80,10 @@ omit_dracutmodules+=" zfs "
 
 ' > /usr/lib/dracut/dracut.conf.d/99-omit-zfs.conf
 
-
 depmod -a -v "${KERNEL_VERSION}"
+
+rm -f /etc/dnf/protected.d/sudo.conf
+
+dnf remove -y sudo autoconf automake mock 
+
+systemctl disable akmods-keygen@akmods-keygen.service

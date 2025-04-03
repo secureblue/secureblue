@@ -46,11 +46,20 @@ gen_require(`
 	class dbus acquire_svc;
 	type audio_home_t;
 	type chrome_sandbox_home_t;
+	type device_t;
+	type dosfs_t;
+	type fs_t;
 	type unconfined_t;
 	type http_port_t;
 	type http_cache_port_t;
 	type howl_port_t;
+	type ld_so_cache_t;
+	type null_device_t;
+	type root_t;
 	type pki_ca_port_t;
+	type nsfs_t;
+	type tmp_t;
+	type tmpfs_t;
 	type unconfined_dbusd_t;
 	type user_home_t;
 	type xserver_misc_device_t;
@@ -258,6 +267,9 @@ optional_policy(`
 allow trivalent_script_t trivalent_t:dir { getattr };
 allow trivalent_script_t self:dir { add_entry_dir_perms };
 allow trivalent_script_t self:file { create };
+allow trivalent_script_t self:user_namespace create;
+allow trivalent_script_t self:cap_userns { sys_ptrace sys_admin setpcap };
+allow trivalent_script_t self:process setcap;
 allow trivalent_script_t user_home_t:dir { search };
 allow trivalent_script_t chrome_sandbox_home_t:dir { manage_dir_perms };
 allow trivalent_script_t chrome_sandbox_home_t:file { manage_file_perms };
@@ -265,6 +277,18 @@ allow trivalent_script_t chrome_sandbox_home_t:lnk_file read;
 allow trivalent_script_t trivalent_home_t:dir { manage_dir_perms };
 allow trivalent_script_t trivalent_home_t:file { manage_file_perms map };
 allow trivalent_script_t trivalent_home_t:lnk_file { manage_lnk_file_perms };
+allow trivalent_script_t nsfs_t:file getattr;
+allow trivalent_script_t ld_so_cache_t:file mounton;
+allow trivalent_script_t root_t:dir mounton;
+allow trivalent_script_t tmp_t:dir mounton;
+allow trivalent_script_t tmpfs_t:dir { mounton create };
+allow trivalent_script_t tmpfs_t:filesystem { unmount mount };
+allow trivalent_script_t device_t:filesystem remount;
+allow trivalent_script_t dosfs_t:filesystem remount;
+allow trivalent_script_t fs_t:filesystem { remount unmount };
+allow trivalent_script_t null_device_t:chr_file mounton;
+allow trivalent_script_t tmp_t:sock_file getattr;
+allow trivalent_script_t trivalent_t:process2 { nosuid_transition nnp_transition };
 
 
 # xwayland/nvidia

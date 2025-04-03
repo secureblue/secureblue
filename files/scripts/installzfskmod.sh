@@ -80,7 +80,6 @@ omit_dracutmodules+=" zfs "
 
 ' > /usr/lib/dracut/dracut.conf.d/99-omit-zfs.conf
 
-
 depmod -a -v "${KERNEL_VERSION}"
 
 rm -f /etc/dnf/protected.d/sudo.conf

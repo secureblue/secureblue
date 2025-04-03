@@ -199,7 +199,7 @@ check-unconfined-userns-state:
     set -euo pipefail
     unshare -U true &> /dev/null && echo 'enabled' || echo 'disabled'
 
-# Install Steam via choice of 3 methods
+# Install Steam via choice of 2 methods
 install-steam:
     #!/usr/bin/bash
     if [ -z "$(pgrep Xwayland)" ] && [ -z "$(pgrep Xorg)" ] ; then
@@ -341,3 +341,9 @@ label-external-drives:
     done
 
     echo -e '\nDone.'
+
+# Layers a comprehensive set of packages for libvirt/qemu/virt-manager
+install-libvirt-packages:
+    rpm-ostree install -y libvirt libvirt-nss qemu qemu-char-spice qemu-device-display-virtio-gpu qemu-device-display-virtio-vga qemu-device-usb-redirect qemu-img qemu-system-x86-core qemu-user-binfmt qemu-user-static virt-install virt-manager virt-v2v virt-viewer
+    echo "Check out the Red Hat documentation to see which services to enable for your usecase:"
+    echo "https://docs.redhat.com/fr/documentation/red_hat_enterprise_linux/9/html/monitoring_and_managing_system_status_and_performance/assembly_optimizing-libvirt-daemons_optimizing-virtual-machine-performance-in-rhel#proc_enabling-modular-libvirt-daemons_assembly_optimizing-libvirt-daemons"

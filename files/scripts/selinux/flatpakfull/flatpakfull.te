@@ -34,6 +34,10 @@ optional_policy(`
 
 	flatpak_run(unconfined_t, unconfined_r)
 	flatpak_run(trivalent_t, unconfined_r)
+	
 	# required for trivalent/flatpak clipboard sharing
     allow trivalent_t flatpak_t:fifo_file write;
+
+	# required for trivalent/flatpak integration
+	allow trivalent_t flatpak_t:process2 { nnp_transition nosuid_transition };
 ')

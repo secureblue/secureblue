@@ -87,3 +87,5 @@ rm -f /etc/dnf/protected.d/sudo.conf
 dnf remove -y sudo autoconf automake mock 
 
 systemctl disable akmods-keygen@akmods-keygen.service
+systemctl disable akmods-keygen.target
+

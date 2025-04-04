@@ -66,7 +66,7 @@ gen_require(`
 ')
 
 # internal
-allow trivalent_t self:process { execmem getcap getsched setcap setrlimit setsched sigkill signal signull };
+allow trivalent_t self:process { dyntransition transition execmem getcap getsched ptrace setcap setrlimit setsched sigkill signal signull };
 allow trivalent_t self:dir { manage_dir_perms };
 allow trivalent_t self:file { manage_file_perms execute map };
 allow trivalent_t self:lnk_file { manage_lnk_file_perms };
@@ -78,7 +78,6 @@ allow trivalent_t self:unix_stream_socket { connectto rw_socket_perms };
 allow trivalent_t self:cap_userns { sys_admin sys_chroot sys_ptrace };
 allow trivalent_t self:capability { dac_read_search sys_admin sys_chroot sys_ptrace };
 allow trivalent_t self:fifo_file { manage_fifo_file_perms relabelfrom relabelto };
-allow trivalent_t self:process { dyntransition transition };
 allow trivalent_t self:dir rw_dir_perms;
 allow trivalent_t self:socket_class_set create_socket_perms;
 allow trivalent_t self:tcp_socket { accept listen };
@@ -269,7 +268,7 @@ allow trivalent_script_t self:dir { add_entry_dir_perms };
 allow trivalent_script_t self:file { create };
 allow trivalent_script_t self:user_namespace create;
 allow trivalent_script_t self:cap_userns { sys_ptrace sys_admin setpcap };
-allow trivalent_script_t self:process setcap;
+allow trivalent_script_t self:process { ptrace setcap setsched };
 allow trivalent_script_t user_home_t:dir { search };
 allow trivalent_script_t chrome_sandbox_home_t:dir { manage_dir_perms };
 allow trivalent_script_t chrome_sandbox_home_t:file { manage_file_perms };

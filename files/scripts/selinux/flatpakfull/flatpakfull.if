@@ -40,6 +40,6 @@ interface(`flatpak_run',`
         attribute_role flatpak_roles;
 	')
 
-    flatpak_domtrans($1)
-    roleattribute $2 flatpak_roles;
+	flatpak_domtrans($1)
+	roleattribute $2 flatpak_roles;
 ')

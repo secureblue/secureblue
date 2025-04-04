@@ -1,1 +1,1 @@
-/usr/bin/nautilus				--	gen_context(system_u:object_r:nautilus_exec_t,s0)
+/usr/bin/nautilus	--	gen_context(system_u:object_r:nautilus_exec_t,s0)

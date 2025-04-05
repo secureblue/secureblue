@@ -132,7 +132,7 @@ class Audit:
         self.checks: list[Check] = []
         self.state: dict[str, Any] = {}
         self.recs: list[str] = []
-        self.categories: list[str] = []
+        self.categories: set[str] = set()
 
     def names(self) -> list[str]:
         """Get a list of the names of all checks."""
@@ -145,7 +145,7 @@ class Audit:
             if dep not in names:
                 raise DependencyError(f"'{check.name}' requires '{dep}' to be run first.")
         if check.category is not None:
-            self.categories.append(check.category)
+            self.categories.add(check.category)
         self.checks.append(check)
 
     async def run(self, exclude: list[str] | None = None):
@@ -153,6 +153,9 @@ class Audit:
         if exclude is None:
             exclude = []
         print_heading("Audit")
+        if exclude:
+            category_word = "category" if len(exclude) == 1 else "categories"
+            print(f"Skipping checks in the following {category_word}: {', '.join(exclude)}")
         for check in self.checks:
             if check.category in exclude:
                 continue
@@ -253,6 +256,7 @@ def command_succeeds(args: str | list[str]) -> bool:
 
 
 @audit
+@categorize("kargs")
 def audit_kargs(_state):
     """Check for hardened kernel arguments."""
     kargs_current = command_stdout(["rpm-ostree", "kargs"]).split()
@@ -887,7 +891,7 @@ async def audit_flatpak_permissions(state):
     for name, version in flatpaks:
         coro = check_flatpak_permissions(name, version, state)
         tasks[(name, version)] = asyncio.create_task(coro, name=(name, version))
-    # yield flatpak permission reports in lexicographical order
+    # Yield flatpak permission reports in lexicographical order
     for name, version in flatpaks:
         status, warnings, recs = await tasks[(name, version)]
         yield Report(f"Auditing {name} ({version})", status, warnings), recs
@@ -901,6 +905,8 @@ async def audit_flatpak_permissions(state):
 def handle_sigint(_sig, _frame):
     """Gracefully handle interrupt signal."""
     print(bold("\n[Audit process interrupted. Exiting.]"), file=sys.stderr)
+    # Suppress output from exceptions in unfinished tasks
+    sys.stderr = None
     sys.exit(1)
 
 
@@ -908,14 +914,15 @@ async def main():
     """Main entry point. Parse command-line arguments and run audit."""
     signal.signal(signal.SIGINT, handle_sigint)
     parser = argparse.ArgumentParser()
-    categories = ",".join(global_audit.categories)
+    categories = ",".join(sorted(global_audit.categories))
     parser.add_argument("-s", "--skip", default="", help=f"skip categories ({categories})")
     args = parser.parse_args()
-    skip = args.skip.split(",")
+    skip = args.skip.split(",") if args.skip else []
+    if any(cat not in global_audit.categories for cat in skip):
+        print(f"Valid arguments to --skip are: {categories}", file=sys.stderr)
+        sys.exit(1)
     await global_audit.run(exclude=skip)
-    if "flatpak" in skip:
-        print("flatpak settings not audited per user request.")
-    else:
+    if "flatpak" not in skip:
         print(f"Use option '{bold('--skip flatpak')}' to skip flatpak recommendations.")
 
 

@@ -15,7 +15,7 @@
 
 set -oue pipefail
 
-MODULE_NAME="$1"
+MODULE_NAME="${1-}"
 if [ -z "$MODULE_NAME" ]; then
   echo "MODULE_NAME is empty. Exiting..."
   exit 1

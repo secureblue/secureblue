@@ -14,6 +14,7 @@ modules:
       - krfb-libs
       - plasma-discover-rpm-ostree
       - kf6-kdesu
+      - kdesu
 
       # depends on fedora-flathub-remote
       - plasma-welcome-fedora

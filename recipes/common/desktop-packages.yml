@@ -33,9 +33,6 @@ remove:
   - fedora-chromium-config
   - fedora-flathub-remote
   - passim
-  - sudo
-  - sudo-python-plugin
-
 
 
 

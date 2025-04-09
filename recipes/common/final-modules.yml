@@ -2,7 +2,6 @@ modules:
     - type: script
       scripts:
         - removeunusedrepos.sh
-        - installrpmfusion.sh
         - removesuid.sh
         - regenerateinitramfs.sh
         - shredkeys.sh

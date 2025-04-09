@@ -1,0 +1,113 @@
+## <summary>trivalent browser</summary>
+
+########################################
+## <summary>
+##	Execute trivalent in the trivalent domain.
+## </summary>
+## <param name="domain">
+## <summary>
+##	Domain allowed to transition.
+## </summary>
+## </param>
+#
+interface(`trivalent_domtrans',`
+	gen_require(`
+		type trivalent_t, trivalent_exec_t;
+	')
+
+	domtrans_pattern($1, trivalent_exec_t, trivalent_t)
+')
+
+
+########################################
+## <summary>
+##	Execute trivalent in the trivalent domain.
+## </summary>
+## <param name="domain">
+## <summary>
+##	Domain allowed to transition.
+## </summary>
+## </param>
+## <param name="role">
+##	<summary>
+##	Role allowed access.
+##	</summary>
+## </param>
+#
+interface(`trivalent_run',`
+	gen_require(`
+		type trivalent_t;
+		attribute_role trivalent_roles;
+	')
+
+	trivalent_domtrans($1)
+	roleattribute $2 trivalent_roles;
+')
+
+
+
+########################################
+## <summary>
+##	Execute trivalent script in the trivalent script domain.
+## </summary>
+## <param name="domain">
+## <summary>
+##	Domain allowed to transition.
+## </summary>
+## </param>
+#
+interface(`trivalent_script_domtrans',`
+	gen_require(`
+		type trivalent_script_t, trivalent_script_exec_t;
+	')
+
+	domtrans_pattern($1, trivalent_script_exec_t, trivalent_script_t)
+')
+
+
+########################################
+## <summary>
+##	Execute trivalent script in the trivalent script domain.
+## </summary>
+## <param name="domain">
+## <summary>
+##	Domain allowed to transition.
+## </summary>
+## </param>
+## <param name="role">
+##	<summary>
+##	Role allowed access.
+##	</summary>
+## </param>
+#
+interface(`trivalent_script_run',`
+	gen_require(`
+		type trivalent_script_t;
+		attribute_role trivalent_script_roles;
+	')
+
+	trivalent_script_domtrans($1)
+	roleattribute $2 trivalent_script_roles;
+')
+
+########################################
+## <summary>
+##      Create trivalent directory in the user home directory
+##      with an correct label.
+## </summary>
+## <param name="domain">
+##      <summary>
+##      Domain allowed access.
+##      </summary>
+## </param>
+#
+interface(`trivalent_filetrans_home_content',`
+	gen_require(`
+		type trivalent_home_t;
+	')
+
+	optional_policy(`
+		gnome_config_filetrans($1, trivalent_home_t, dir, "trivalent")
+		gnome_cache_filetrans($1, trivalent_home_t, dir, "trivalent")
+	')
+')

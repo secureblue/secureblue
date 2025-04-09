@@ -16,7 +16,7 @@ Rebase to: The equivalent image replacing `bluefin` with `silverblue` or `aurora
 
 ## server
 
-Rationale: Upstream decisions have required us to [fork](https://github.com/secureblue/coreos/). This brings with it the following critical migration steps *before* rebasing:
+Rationale: Upstream decisions have required us to fork. This brings with it the following critical migration steps *before* rebasing:
 
 - Password-based auth is no longer supported, ensure you are able to log-in using pubkey or another supported method. If you do not do this, you risk being locked out of your host.
 - Tailscale and cockpit are no longer included by default (but the tailscale repo is). If you need either, ensure you have layered them before rebooting into your new deployment.

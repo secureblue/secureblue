@@ -45,7 +45,7 @@ printf "%s\n\n" \
     "After answering the following questions, your system will be rebased to secureblue."
 
 # Determine if it's a server or desktop
-read -p "Is this for a CoreOS server? (yes/No): " is_server
+read -rp "Is this for a CoreOS server? (yes/No): " is_server
 if is_yes "$is_server"; then
     if ! grep VARIANT=\"CoreOS\" /etc/os-release >/dev/null; then
         echo "The current operating system is based on Fedora Atomic."
@@ -53,7 +53,7 @@ if is_yes "$is_server"; then
         echo "Refusing to proceed."
         exit 1
     fi
-    read -p "Do you need ZFS support? (yes/No): " use_zfs
+    read -rp "Do you need ZFS support? (yes/No): " use_zfs
     image_name=$(is_yes "$use_zfs" && echo "securecore-zfs" || echo "securecore")
 else
     if grep VARIANT=\"CoreOS\" /etc/os-release >/dev/null; then
@@ -79,10 +79,10 @@ else
 fi
 
 # Ask about Nvidia for all options
-read -p "Do you have Nvidia? (yes/No): " use_nvidia
+read -rp "Do you have Nvidia? (yes/No): " use_nvidia
 if is_yes "$use_nvidia"; then
     additional_params+="-nvidia" 
-    read -p "Do you need Nvidia's open drivers? (yes/No): " use_open
+    read -rp "Do you need Nvidia's open drivers? (yes/No): " use_open
     is_yes "$use_open" && additional_params+="-open"
 else
     additional_params+="-main"
@@ -92,7 +92,7 @@ image_name+="$additional_params-hardened"
 
 rebase_command="rpm-ostree rebase ostree-unverified-registry:ghcr.io/secureblue/$image_name:latest"
 
-if [ -n "$(rpm-ostree status | grep '● ostree-image-signed:docker://ghcr.io/secureblue/')" ] ; then
+if rpm-ostree status | grep -q '● ostree-image-signed:docker://ghcr.io/secureblue/'; then
     rebase_command="rpm-ostree rebase ostree-image-signed:docker://ghcr.io/secureblue/$image_name:latest"
 else
     echo "Note: Automatic rebasing to the equivalent signed image will occur on first run."
@@ -100,7 +100,7 @@ fi
 
 printf "Command to execute:\n%s\n\n" "$rebase_command"
 
-read -p "Proceed? (yes/No): " rebase_proceed
+read -rp "Proceed? (yes/No): " rebase_proceed
 if is_yes "$rebase_proceed"; then
     $rebase_command
 fi

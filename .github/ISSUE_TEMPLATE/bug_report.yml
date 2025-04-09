@@ -1,0 +1,74 @@
+name: Bug report
+description: Something isn't working
+title: "[BUG] Issue with ..."
+labels: []
+assignees: []
+
+
+body:
+  - type: input
+    id: description
+    attributes:      
+      label: Description
+      description: Describe the bug
+      placeholder: A clear and concise description of what the bug is.
+    validations:
+      required: true
+
+  - type: input
+    id: reproduce
+    attributes:      
+      label: Reproduce
+      description: Steps to reproduce
+      placeholder: Steps to reproduce the behavior.
+    validations:
+      required: true
+
+  - type: input
+    id: expected
+    attributes:      
+      label: Expected
+      description: Expected behavior
+      placeholder: A clear and concise description of what you expected to happen.
+    validations:
+      required: true
+      
+  - type: input
+    id: actual
+    attributes:      
+      label: Actual
+      description: Actual behavior
+      placeholder: A clear and concise description of what actually happened
+    validations:
+      required: true
+
+  - type: input
+    id: image
+    attributes:      
+      label: Image
+      description: Your current image
+      placeholder: 'rpm-ostree status'
+    validations:
+      required: true
+
+
+  - type: input
+    id: upstream
+    attributes:      
+      label: Upstream
+      description: Upstream confirmation
+      placeholder: Confirmation that you cannot repro on a quay.io/fedora-ostree-desktops base image
+    validations:
+      required: true
+
+  - type: checkboxes
+    id: declaration
+    attributes:
+      label: Declaration
+      options:
+        - label: I agree to follow this project's [Code of Conduct](https://secureblue.dev/code-of-conduct).
+          required: true
+        - label: I declare that this is not a request for alternate community messaging or social platforms.
+          required: true
+        - label: I declare that I have read the [secureblue website](https://secureblue.dev/#about) and my feature request is in-scope.
+          required: true

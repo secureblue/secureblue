@@ -3,22 +3,26 @@ toggle-cups:
     #! /bin/run0 /bin/bash
     if systemctl is-enabled --quiet cups; then
       firewall-cmd --permanent --remove-port=631/tcp
-      firewall-cmd --permanent --remove-port=631/udp 
-      firewall-cmd --reload 
+      firewall-cmd --permanent --remove-port=631/udp
+      firewall-cmd --reload
       systemctl mask cups
       systemctl disable cups
       systemctl stop cups
       systemctl daemon-reload
-      echo "Cups disabled."
+      echo "CUPS disabled."
     else
       firewall-cmd --permanent --add-port=631/tcp
-      firewall-cmd --permanent --add-port=631/udp 
-      firewall-cmd --reload 
+      firewall-cmd --permanent --add-port=631/udp
+      firewall-cmd --reload
       systemctl unmask cups
       systemctl enable cups
       systemctl start cups
       systemctl daemon-reload
-      echo "Cups enabled."
+      echo "CUPS enabled."
+      echo "Note: cups-browsed, the printer discovery service, is still disabled for"
+      echo "    security reasons. New network printers will need to be added manually."
+      echo "    If you absolutely need network discovery, you can enable the cups-browsed"
+      echo "    service at your own risk. Secureblue strongly recommends against this."
     fi
 
 # Toggle bluetooth kernel modules on/off (requires reboot)
@@ -46,7 +50,7 @@ toggle-ghns:
       elif grep -q "ghns=true" "$KDE_GLOBALS_FILE"; then
         sed -i "s/ghns=true/ghns=false/" "$KDE_GLOBALS_FILE"
         echo "GHNS disabled."
-      else 
+      else
         echo "The kdeglobals file is missing the ghns toggle."
       fi
     else
@@ -58,11 +62,11 @@ override-enable-module mod_name:
     #! /bin/run0 /bin/bash
     MOD_NAME="{{ mod_name }}"
     MOD_FILE="/etc/modprobe.d/99-$MOD_NAME.conf"
-    if test -e $MOD_FILE; then
+    if [ -e "$MOD_FILE" ]; then
       echo "$MOD_NAME module is already enabled."
     else
-      sh -c 'echo "install $1 /sbin/modprobe --ignore-install $1" >> "$2"' _ "$MOD_NAME" "$MOD_FILE" 
-      chmod 644 $MOD_FILE
+      sh -c 'echo "install $1 /sbin/modprobe --ignore-install $1" >> "$2"' _ "$MOD_NAME" "$MOD_FILE"
+      chmod 644 "$MOD_FILE"
       echo "Override created to enable $MOD_NAME module. Reboot to take effect."
     fi
 
@@ -71,8 +75,8 @@ override-reset-module mod_name:
     #! /bin/run0 /bin/bash
     MOD_NAME="{{ mod_name }}"
     MOD_FILE="/etc/modprobe.d/99-$MOD_NAME.conf"
-    if test -e $MOD_FILE; then
-      rm -f $MOD_FILE
+    if [ -e "$MOD_FILE" ]; then
+      rm -f "$MOD_FILE"
       echo "The override for $MOD_NAME module has been reset. Reboot to take effect."
     else
       echo "No override found for $MOD_NAME module."
@@ -110,7 +114,7 @@ toggle-anticheat-support:
     elif grep -q "kernel.yama.ptrace_scope = 1" "$SYSCTL_HARDENING_FILE"; then
         sed -i "s/kernel.yama.ptrace_scope = 1/kernel.yama.ptrace_scope = 3/" "$SYSCTL_HARDENING_FILE"
         echo "Anticheat support disabled. ptrace_scope set back to 3."
-    else 
+    else
         echo "The sysctl hardening file is missing the ptrace_scope setting."
     fi
 
@@ -143,21 +147,21 @@ toggle-gnome-extensions:
 toggle-xwayland ACTION="prompt":
     #! /bin/run0 /bin/bash
     source /usr/lib/ujust/ujust.sh
-    OPTION={{ ACTION }}
-    if [ "$OPTION" == "prompt" ]; then
+    OPTION="{{ ACTION }}"
+    if [ "$OPTION" = "prompt" ]; then
       IMAGE="$(rpm-ostree status | grep '●')"
-      if [ -n "$(echo $IMAGE | grep 'silverblue')" ] ; then
+      if echo "$IMAGE" | grep -q 'silverblue'; then
           OPTION=gnome
-      elif [ -n "$(echo $IMAGE | grep 'kinoite')" ] ; then
+      elif echo "$IMAGE" | grep -q 'kinoite'; then
           OPTION=plasma
-      elif [ -n "$(echo $IMAGE | grep 'sericea')" ] || [ -n "$(echo $IMAGE | grep 'sway')" ] ; then
+      elif echo "$IMAGE" | grep -qE 'sericea|sway'; then
           OPTION=sway
       else
-        echo "${bold}Toggling Xwayland (requires logout)${normal}"
+        echo "${bold}Toggling Xwayland (requires logout)${unbold}"
         echo 'For which DE/WM do you want to toggle Xwayland?'
         OPTION=$(ugum choose "GNOME" "KDE Plasma" "Sway")
       fi
-    elif [ "$OPTION" == "help" ]; then
+    elif [ "$OPTION" = "help" ]; then
       echo "Usage: ujust toggle-xwayland <option>"
       echo "  <option>: Specify the quick option - 'gnome', 'plasma', or 'sway'"
       echo "  Use 'gnome' to Toggle Xwayland for GNOME."
@@ -165,122 +169,230 @@ toggle-xwayland ACTION="prompt":
       echo "  Use 'sway' to Toggle Xwayland for Sway."
       exit 0
     fi
-    if [ "${OPTION,,}" == "gnome" ]; then
-      GNOME_XWAYLAND_FILE="/etc/systemd/user/org.gnome.Shell@wayland.service.d/override.conf"
-      if test -e $GNOME_XWAYLAND_FILE; then
-        rm -f $GNOME_XWAYLAND_FILE
-        echo "Xwayland for GNOME has been enabled."
+    if [ "${OPTION,,}" = "gnome" ]; then
+      GNOME_XWAYLAND_FILE='/etc/systemd/user/org.gnome.Shell@wayland.service.d/override.conf'
+      if [ -e "$GNOME_XWAYLAND_FILE" ]; then
+        rm -f "$GNOME_XWAYLAND_FILE"
+        echo 'Xwayland for GNOME has been enabled.'
       else
-        cp /usr$GNOME_XWAYLAND_FILE $GNOME_XWAYLAND_FILE
-        chmod 644 $GNOME_XWAYLAND_FILE
-        echo "Xwayland for GNOME has been disabled."
+        cp "/usr$GNOME_XWAYLAND_FILE" "$GNOME_XWAYLAND_FILE"
+        chmod 644 "$GNOME_XWAYLAND_FILE"
+        echo 'Xwayland for GNOME has been disabled.'
       fi
-    elif [ "$OPTION" == "KDE Plasma" ] || [ "${OPTION,,}" == "plasma" ]; then
-      PLASMA_XWAYLAND_FILE="/etc/systemd/user/plasma-kwin_wayland.service.d/override.conf"
-      if test -e $PLASMA_XWAYLAND_FILE; then
-        rm -f $PLASMA_XWAYLAND_FILE
-        echo "Xwayland for KDE Plasma has been enabled."
+    elif [ "$OPTION" = "KDE Plasma" ] || [ "${OPTION,,}" = "plasma" ]; then
+      PLASMA_XWAYLAND_FILE='/etc/systemd/user/plasma-kwin_wayland.service.d/override.conf'
+      if [ -e "$PLASMA_XWAYLAND_FILE" ]; then
+        rm -f "$PLASMA_XWAYLAND_FILE"
+        echo 'Xwayland for KDE Plasma has been enabled.'
       else
-        cp /usr$PLASMA_XWAYLAND_FILE $PLASMA_XWAYLAND_FILE
-        chmod 644 $PLASMA_XWAYLAND_FILE
-        echo "Xwayland for KDE Plasma has been disabled."
+        cp "/usr$PLASMA_XWAYLAND_FILE" "$PLASMA_XWAYLAND_FILE"
+        chmod 644 "$PLASMA_XWAYLAND_FILE"
+        echo 'Xwayland for KDE Plasma has been disabled.'
       fi
-    elif [ "${OPTION,,}" == "sway" ]; then
-      SWAY_XWAYLAND_FILE="/etc/sway/config.d/99-noxwayland.conf"
-      if test -e $SWAY_XWAYLAND_FILE; then
-        rm -f $SWAY_XWAYLAND_FILE
-        echo "Xwayland for Sway has been enabled."
+    elif [ "${OPTION,,}" = "sway" ]; then
+      SWAY_XWAYLAND_FILE='/etc/sway/config.d/99-noxwayland.conf'
+      if [ -e "$SWAY_XWAYLAND_FILE" ]; then
+        rm -f "$SWAY_XWAYLAND_FILE"
+        echo 'Xwayland for Sway has been enabled.'
       else
-        cp /usr$SWAY_XWAYLAND_FILE $SWAY_XWAYLAND_FILE
-        chmod 644 $SWAY_XWAYLAND_FILE
+        cp "/usr$SWAY_XWAYLAND_FILE" "$SWAY_XWAYLAND_FILE"
+        chmod 644 "$SWAY_XWAYLAND_FILE"
         echo "Xwayland for Sway has been disabled."
       fi
     fi
 
-# Toggle bash environment lockdown (mitigates LD_PRELOAD attacks)
-toggle-bash-environment-lockdown:
-    #!/usr/bin/bash
-    BASH_ENV_FILES=("$HOME/.bashrc" "$HOME/.bash_profile")
-    echo "${b}WARNING${n} This will overwrite your .bashrc and .bash_profile."
-    echo "This is needed to ensure the mitigation is effective."
-    echo "Do you understand?"
-    echo "Please type in \"YES I UNDERSTAND\" and press enter"
-    read ACCEPT
-    if [ "$ACCEPT" == "YES I UNDERSTAND" ]; then
-      if lsattr "${BASH_ENV_FILES[0]}" 2>/dev/null | awk '{print $1}' | grep -q 'i'; then
-        echo "Bash environment '(${BASH_ENV_FILES[@]})' is locked down. Unlocking it."
-        for file in "${BASH_ENV_FILES[@]}"; do
-            run0 chattr -i "$file"
-        done
-      else
-        echo "Bash environment '(${BASH_ENV_FILES[@]})' is unlocked. Locking it."
-        echo "
-    # .bashrc
+# Toggle bash environment lockdown (mitigates LD_PRELOAD attacks). Use skip_approval to bypass initial prompt, and apply_for_all_users to bypass secondary prompt.
+toggle-bash-environment-lockdown skip_approval="false" apply_for_all_users="prompt":
+    #!/bin/run0 /bin/bash
+    set -euo pipefail
+    source /usr/lib/ujust/libformatting.sh
 
-    # Source global definitions
-    if [ -f /etc/bashrc ]; then
-        . /etc/bashrc
-    fi
+    # The below function fetches the minimium and maximium UIDS as configured in /etc/login.defs.
+    # Any UIDs within this change are true user ids rather than system agents, and therefore
+    # should be locked down. The user_string variable uses this fetched UID range to find all
+    # existing users and their home directory along with formatting this data for later use.
+    # The IFS line simply converts this data into a bash array.
+    function user_list_lookup() {
+        uid_min="$(grep -Po '^\s*UID_MIN\s+\K\d+' /etc/login.defs)"
+        uid_max="$(grep -Po '^\s*UID_MAX\s+\K\d+' /etc/login.defs)"
+        user_string="$(getent passwd | awk -F':' -v max="$uid_max" -v min="$uid_min" 'max >= $3 && $3 >= min {print $1}' | tr '\n' ',' | sed 's/,*$//')"
+        IFS=',' read -ra user_list <<< "$user_string"
+    }
 
-    # User specific environment
-    if ! [[ "\$PATH" =~ "\$HOME/.local/bin:\$HOME/bin:" ]]; then
-        PATH="\$HOME/.local/bin:\$HOME/bin:\$PATH"
-    fi
-    export PATH
-
-    # Uncomment the following line if you don't like systemctl's auto-paging feature:
-    # export SYSTEMD_PAGER=
-
-    unset rc
-          " > ~/.bashrc
-
-        echo "
-    # .bash_profile
-
-    # Get the aliases and functions
-    if [ -f ~/.bashrc ]; then
-        . ~/.bashrc
-    fi
-
-    # User specific environment and startup programs
-        " > ~/.bash_profile
-
-        for file in "${BASH_ENV_FILES[@]}"; do
-            run0 chattr +i "$file"
-        done
-      fi
+    # $SUDO_USER is the user who started the script instead of whichever authorized it via polkit
+    # or the root home. From there this $USER_HOME uses getent to lookup their home directory to
+    # later check if they have an existing .bashrc file.
+    user_home="$(getent passwd "$SUDO_USER" | cut -d: -f6)"
+    if lsattr "$user_home/.bashrc" 2>/dev/null | awk '{print $1}' | grep -q 'i'; then
+        pending_status="unlocked"
     else
-      echo "Capitalization matters when you type \"YES I UNDERSTAND\""
+        pending_status="locked"
     fi
+
+    # Below variable is created to only call date once and use the same time across the script
+    # despite execution time.
+    current_time="$(date | tr ' ' '_')"
+
+    if [[ "$pending_status" == "locked" ]]; then
+        echo "${bold}WARNING${unbold} This will change your ~/.bashrc, ~/.bash_profile, ~/.config/bash-completion, ~/.profile, ~/.bash_logout, ~/.bash_login, ~/.bashrc.d/, and ~/.config/environment.d/"
+        echo "This is needed to ensure the mitigation (see LD_PRELOAD attacks) is effective."
+        echo "This script will create backups of the old versions in ~/bash_env_files/$current_time."
+    else
+        echo "${bold}WARNING${unbold} .bashrc, .bash_profile, and more will be unlocked and made editable by non-root users. This represents a security risk (see LD_PRELOAD attacks)"
+    fi
+
+    # shellcheck disable=SC2050
+    if [[ "{{ skip_approval }}" == "false" ]]; then
+        echo "Do you understand?"
+        echo 'Please type in "YES I UNDERSTAND" and press enter'
+        read -r accept
+        if [[ "$accept" != "YES I UNDERSTAND" ]]; then
+            exit
+        fi
+    elif [[ "{{ skip_approval }}" != "true" ]]; then
+        echo 'Invalid skip_approval arguement, only "true", "false", or empty allowed.'
+        exit
+    fi
+
+    # shellcheck disable=SC2050
+    if [[ "{{ apply_for_all_users }}" == "prompt" ]]; then
+        user_list_lookup
+        echo "Do you want this change to apply to ${bold}all${unbold} users (${user_list[*]})? [y/N]"
+        echo "Otherwise, it will only apply to the user who launched this script ($SUDO_USER)."
+        read -r reply
+        if [[ "$reply" != [yY]* ]]; then
+            user_list=("$SUDO_USER")
+        fi
+    elif [[ "{{ apply_for_all_users }}" == "false" ]]; then
+        user_list=("$SUDO_USER")
+    elif [[ "{{ apply_for_all_users }}" == "true" ]]; then
+        user_list_lookup
+    else
+        echo 'Invalid apply_for_all_users arguement, only "true", "false", or empty allowed.'
+        exit
+    fi
+
+    for user in "${user_list[@]}"; do
+        echo "Applying for user: $user"
+        user_home="$(getent passwd "$user" | awk -F':' '{ print $6}')"
+        [ -d "$user_home" ] || { echo "Variable \$user_home for $user is somehow empty (check your getent passwd entries)"; echo "safely exiting."; exit 1; }
+
+        BASH_ENV_FILES=(
+            "$user_home/.bashrc"
+            "$user_home/.bash_profile"
+            "$user_home/.config/bash-completion"
+            "$user_home/.profile"
+            "$user_home/.bash_logout"
+            "$user_home/.bash_login"
+            "$user_home/.bashrc.d/"
+            "$user_home/.config/environment.d/"
+        )
+
+        # Purpose of the below block is to actually lock or unlock the current selected user
+        # across the configured BASH_ENV_FILES
+        #    If the script is locking:
+        #        to copy the old env files and directories to folder with the time appended to its name
+        #        remove immutability (to allow the script to overwrite any existing immutable environment files)
+        #        create default or blank copies (deleting the old versions)
+        #        add immutability
+
+        if [[ "$pending_status" == "locked" ]]; then
+            backup_dest="$user_home/bash_env_files/$current_time/"
+            mkdir -p "$backup_dest"
+
+            for file in "${BASH_ENV_FILES[@]}"; do
+                # skel_file converts "$user_home/.bashrc" to ".bashrc"
+                skel_file="${file#"${user_home}/"}"
+                if [ ! -f "$file" ] && [ ! -d "$file" ] && [ -e "$file" ]; then
+                    echo "Special file detected on absolute filepath ($file) from BASH_ENV_FILES. It will not be modified."
+                elif [ -f "$file" ]; then
+                    chattr -i "$file"
+                    rsync -a --mkpath "$file" "$backup_dest$skel_file"
+                    rm "$file"
+                elif [ -d "$file" ]; then
+                    chattr -R -i "$file"
+                    rsync -a --mkpath "$file" "$backup_dest$skel_file"
+                    rm -r "$file"
+                fi
+
+                # Now we create new empty/default files and directories
+                if [ "${file: -1}" == "/" ]; then
+                    install -D -d -o "$user" -g "$user" -m 700 "$file"
+                    chattr +i -R "$file"
+                elif [ -f "/etc/skel/$skel_file" ]; then
+                    install -D -o "$user" -g "$user" -m 700 "/etc/skel/$skel_file" "$file"
+                    chattr +i "$file"
+                else
+                    install -D -o "$user" -g "$user" -m 700 /dev/null "$file"
+                    chattr +i "$file"
+                fi
+            done
+
+            chmod -R 700 "$user_home/bash_env_files"
+            chown -R "$user:" "$user_home/bash_env_files"
+        else
+            for file in "${BASH_ENV_FILES[@]}"; do
+                if [ ! -f "$file" ] && [ ! -d "$file" ] && [ -e "$file" ]; then
+                    echo "Special file detected on absolute filepath ($file) from BASH_ENV_FILES. It will not be modified."
+                elif [ -f "$file" ]; then
+                    chattr -i "$file"
+                elif [ -d "$file" ]; then
+                    chattr -R -i "$file"
+                fi
+            done
+        fi
+    done
+
+    echo "${user_list[@]}" "$pending_status."
+    echo "${bold}NOTE${unbold}: until a reboot, any process with an open file descriptor will continue to have the access they had before this script was run."
 
 # Toggle unconfined domain userns creation
 toggle-unconfined-domain-userns-creation:
     #! /bin/run0 /bin/bash
+    set -euo pipefail
     MODULE_NAME="harden_userns"
 
     if semodule -l | grep -q "$MODULE_NAME"; then
-        echo "Module $MODULE_NAME is currently enabled. Disabling it..."
+        echo "Module $MODULE_NAME is currently enabled. Disabling the hardening, enabling unconfined domain userns (e.g. for bubblejail)."
         semodule --disable="$MODULE_NAME"
-        echo "Module $MODULE_NAME disabled."
+        echo "Module $MODULE_NAME disabled. Unconfined domain userns enabled."
     else
-        echo "Module $MODULE_NAME is not currently enabled. Enabling it..."
+        echo "Module $MODULE_NAME is not currently enabled. Enabling the hardening, disabling unconfined domain userns (e.g. for bubblejail)."
         semodule --enable="$MODULE_NAME"
-        echo "Module $MODULE_NAME enabled."
+        echo "Module $MODULE_NAME enabled. Unconfined domain userns disabled."
     fi
 
 # Toggle container domain userns creation
 toggle-container-domain-userns-creation:
     #! /bin/run0 /bin/bash
+    set -euo pipefail
     MODULE_NAME="harden_container_userns"
 
     if semodule -l | grep -q "$MODULE_NAME"; then
-        echo "Module $MODULE_NAME is currently enabled. Disabling it..."
+        echo "Module $MODULE_NAME is currently enabled. Disabling the hardening, enabling container domain userns (e.g. for distrobox)."
         semodule --disable="$MODULE_NAME"
-        echo "Module $MODULE_NAME disabled."
+        echo "Module $MODULE_NAME disabled. Container domain userns enabled."
     else
-        echo "Module $MODULE_NAME is not currently enabled. Enabling it..."
+        echo "Module $MODULE_NAME is not currently enabled. Enabling the hardening, disabling container domain userns (e.g. for distrobox)."
+
+        echo 'Warning: This will stop ALL containers and shut down podman.'
+        read -rp 'Are you sure you want to do this? (y/N) ' proceed
+        if ! [[ "$proceed" == [Yy]* ]]; then
+            echo "Aborting..."
+            exit 0
+        fi
+
         semodule --enable="$MODULE_NAME"
-        echo "Module $MODULE_NAME enabled."
+        echo "Module $MODULE_NAME enabled. Container domain userns disabled."
+
+        echo 'Stopping all containers and shutting down podman...'
+        run0 --user="$SUDO_USER" podman stop --all > /dev/null
+        killall -u "$SUDO_USER" catatonit || true
+        echo 'podman has been shut down.'
+
+        if pgrep -u root -a -x catatonit &> /dev/null; then
+            echo 'WARNING: Catatonit running as root detected, reboot your machine to reset podman state.'
+        fi
     fi
 
 # Toggle MAC Randomization
@@ -295,10 +407,10 @@ toggle-mac-randomization:
     else
         echo "MAC randomization can be stable (persisting the same random MAC per access point across disconnects/reboots),"
         echo "or it can be randomized per-connection (every time it connects to the same access point it uses a new MAC)."
-        read -p "Do you want to use per-connection Wi-Fi MAC address randomization? [y/N]" randomization_level
-        randomization_level=${randomization_level:-n}
+        randomization_choice=""
+        read -rp "Do you want to use per-connection Wi-Fi MAC address randomization? [y/N] " randomization_choice
 
-        if [ "$randomization_level" == [Yy]* ]; then
+        if [[ "$randomization_choice" == [Yy]* ]]; then
             randomization_level=random
             echo "Selected state: per-connection"
         else

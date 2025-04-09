@@ -2,3 +2,5 @@ contact_links:
   - name: Discord
     url: https://discord.gg/gNr3Kbks34
     about: Support and Discussion with the Community
+# disable blank issue creation
+blank_issues_enabled: false

@@ -1,0 +1,316 @@
+policy_module(trivalent, 1.0.0)
+
+
+########################################
+#
+# Declarations
+#
+
+## <desc>
+## <p>
+## Allow chromium to read/write/map v4l devices
+## </p>
+## <p>
+## Needed for camera access
+## </p>
+## </desc>
+gen_tunable(trivalent_rwmap_video_dev, true)
+
+
+# trivalent executable
+attribute_role trivalent_roles;
+roleattribute object_r trivalent_roles;
+
+type trivalent_t;
+type trivalent_home_t;
+type trivalent_exec_t;
+domain_type(trivalent_t, trivalent_exec_t)
+application_domain(trivalent_t, trivalent_exec_t)
+
+role trivalent_roles types { trivalent_t trivalent_home_t };
+
+userdom_user_home_content(trivalent_home_t)
+
+# trivalent script
+attribute_role trivalent_script_roles;
+roleattribute object_r trivalent_script_roles;
+
+type trivalent_script_t;
+type trivalent_script_exec_t;
+domain_type(trivalent_script_t, trivalent_script_exec_t)
+application_domain(trivalent_script_t, trivalent_script_exec_t)
+
+role trivalent_script_roles types trivalent_script_t;
+
+gen_require(`
+	class dbus acquire_svc;
+	type audio_home_t;
+	type chrome_sandbox_home_t;
+	type device_t;
+	type dosfs_t;
+	type fs_t;
+	type unconfined_t;
+	type http_port_t;
+	type http_cache_port_t;
+	type howl_port_t;
+	type ld_so_cache_t;
+	type null_device_t;
+	type root_t;
+	type pki_ca_port_t;
+	type nsfs_t;
+	type tmp_t;
+	type tmpfs_t;
+	type unconfined_dbusd_t;
+	type user_home_t;
+	type xserver_misc_device_t;
+')
+
+# internal
+allow trivalent_t self:process { dyntransition transition execmem getcap getsched ptrace setcap setrlimit setsched sigkill signal signull };
+allow trivalent_t self:dir { manage_dir_perms };
+allow trivalent_t self:file { manage_file_perms execute map };
+allow trivalent_t self:lnk_file { manage_lnk_file_perms };
+allow trivalent_t self:fifo_file rw_fifo_file_perms;
+allow trivalent_t self:sem create_sem_perms;
+allow trivalent_t self:netlink_kobject_uevent_socket client_stream_socket_perms;
+allow trivalent_t self:user_namespace create;
+allow trivalent_t self:unix_stream_socket { connectto rw_socket_perms };
+allow trivalent_t self:cap_userns { sys_admin sys_chroot sys_ptrace };
+allow trivalent_t self:capability { dac_read_search sys_admin sys_chroot sys_ptrace };
+allow trivalent_t self:fifo_file { manage_fifo_file_perms relabelfrom relabelto };
+allow trivalent_t self:dir rw_dir_perms;
+allow trivalent_t self:socket_class_set create_socket_perms;
+allow trivalent_t self:tcp_socket { accept listen };
+allow trivalent_t trivalent_exec_t:file execute_no_trans;
+allow trivalent_t chrome_sandbox_home_t:dir { manage_dir_perms };
+allow trivalent_t chrome_sandbox_home_t:file { manage_file_perms execute map };
+allow trivalent_t chrome_sandbox_home_t:lnk_file { manage_lnk_file_perms };
+allow trivalent_t trivalent_home_t:dir { manage_dir_perms };
+allow trivalent_t trivalent_home_t:file { manage_file_perms execute map };
+allow trivalent_t trivalent_home_t:lnk_file { manage_lnk_file_perms };
+allow trivalent_t self:netlink_route_socket nlmsg_read;
+
+# not covered by interfaces
+allow trivalent_t pki_ca_port_t:tcp_socket name_connect;
+allow trivalent_t howl_port_t:udp_socket name_bind;
+allow trivalent_t http_port_t:tcp_socket { name_connect };
+allow trivalent_t http_cache_port_t:tcp_socket { name_connect };
+allow trivalent_t tmp_t:lnk_file { create unlink };
+allow trivalent_t tmp_t:sock_file { create unlink };
+
+# required for trivalent to be able to detect whether it's the default browser
+allow trivalent_t trivalent_script_exec_t:file { execute getattr read execute_no_trans ioctl open };
+
+# homedir access
+allow trivalent_t user_home_t:dir { manage_dir_perms };
+allow trivalent_t user_home_t:file { manage_file_perms };
+allow trivalent_t user_home_t:lnk_file { manage_lnk_file_perms };
+allow trivalent_t audio_home_t:dir { manage_dir_perms };
+allow trivalent_t audio_home_t:file { manage_file_perms };
+allow trivalent_t audio_home_t:lnk_file { manage_lnk_file_perms };
+
+# screenshare access
+allow trivalent_t unconfined_t:unix_stream_socket { connectto rw_socket_perms };
+
+# allow trivalent to interface with flatpaks (necessary for keepassxc extension, for example)
+allow trivalent_t data_home_t:file { execute execute_no_trans };
+
+# allow trivalent to own its mpris daemon
+allow trivalent_t unconfined_dbusd_t:dbus acquire_svc;
+
+# xwayland/nvidia
+xserver_exec(trivalent_t)
+dev_rw_xserver_misc(trivalent_t)
+dev_map_xserver_misc(trivalent_t)
+allow trivalent_t xserver_misc_device_t:chr_file { getattr ioctl map open read write };
+xserver_stream_connect_xdm(trivalent_t)
+xserver_stream_connect(trivalent_t)
+xserver_user_x_domain_template(trivalent, trivalent_t, user_tmpfs_t)
+
+files_list_home(trivalent_t)
+files_search_home(trivalent_t)
+files_read_usr_files(trivalent_t)
+files_read_etc_files(trivalent_t)
+files_read_etc_runtime_files(trivalent_t)
+files_watch_etc_dirs(trivalent_t)
+files_getattr_all_dirs(trivalent_t)
+files_watch_root_dirs(trivalent_t)
+files_read_var_lib_files(trivalent_t)
+files_rw_generic_tmp_dir(trivalent_t)
+files_manage_generic_tmp_files(trivalent_t)
+files_manage_generic_tmp_dirs(trivalent_t)
+files_rw_generic_tmp_sockets(trivalent_t)
+files_rw_tmp_file_leaks(trivalent_t)
+files_map_generic_tmp_files(trivalent_t)
+
+kernel_read_system_state(trivalent_t)
+kernel_read_kernel_sysctls(trivalent_t)
+kernel_read_fs_sysctls(trivalent_t)
+
+# required to connect to wayland
+unconfined_stream_connect(trivalent_t)
+dbus_system_bus_client(trivalent_t)
+dbus_session_bus_client(trivalent_t)
+
+dbus_write_session_tmp_sock_files(trivalent_t)
+devicekit_dbus_chat_disk(trivalent_t)
+devicekit_dbus_chat_power(trivalent_t)
+systemd_dbus_chat_hostnamed(trivalent_t)
+
+fs_rw_inherited_tmpfs_files(trivalent_t)
+fs_getattr_xattr_fs(trivalent_t)
+fs_getattr_tmpfs(trivalent_t)
+fs_manage_tmpfs_files(trivalent_t)
+fs_map_tmpfs_files(trivalent_t)
+fs_search_cgroup_dirs(trivalent_t)
+fs_associate_proc(trivalent_t)
+
+miscfiles_read_all_certs(trivalent_t)
+miscfiles_map_generic_certs(trivalent_t)
+miscfiles_read_localization(trivalent_t)
+miscfiles_watch_localization_dirs(trivalent_t)
+miscfiles_read_hwdata(trivalent_t)
+
+alsa_read_rw_config(trivalent_t)
+pulseaudio_tmpfs_content(trivalent_t)
+pulseaudio_stream_connect(trivalent_t)
+pulseaudio_read_home_files(trivalent_t)
+cups_read_config(trivalent_t)
+cups_stream_connect(trivalent_t)
+
+dev_read_sysfs(trivalent_t)
+dev_rw_dma_dev(trivalent_t)
+dev_rw_dri(trivalent_t)
+dev_rw_generic_usb_dev(trivalent_t)
+dev_read_sound(trivalent_t)
+dev_write_sound(trivalent_t)
+dev_read_urand(trivalent_t)
+dev_read_rand(trivalent_t)
+
+tunable_policy(`trivalent_rwmap_video_dev', `
+	dev_read_video_dev(trivalent_t)
+	dev_write_video_dev(trivalent_t)
+	dev_map_video_dev(trivalent_t)
+')
+
+udev_read_pid_files(trivalent_t)
+
+gnome_search_gconf_data_dir(trivalent_t)
+gnome_manage_cache_home_dir(trivalent_t)
+gnome_manage_generic_cache_files(trivalent_t)
+gnome_manage_generic_cache_sockets(trivalent_t)
+gnome_map_generic_cache_files(trivalent_t)
+gnome_manage_home_config(trivalent_t)
+gnome_exec_config_home_files(trivalent_t)
+gnome_manage_home_config_dirs(trivalent_t)
+gnome_manage_data(trivalent_t)
+gnome_manage_generic_home_files(trivalent_t)
+gnome_manage_generic_home_dirs(trivalent_t)
+gnome_map_generic_data_home_files(trivalent_t)
+gnome_manage_gstreamer_home_files(trivalent_t)
+gnome_dbus_chat_gconfdefault(trivalent_t)
+gnome_dbus_chat_gkeyringd(trivalent_t)
+
+userdom_manage_user_tmp_sockets(trivalent_t)
+userdom_manage_user_tmp_files(trivalent_t)
+userdom_map_tmp_files(trivalent_t)
+userdom_manage_tmpfs_files(trivalent_t)
+userdom_read_inherited_user_tmp_files(trivalent_t)
+userdom_manage_home_certs(trivalent_t)
+userdom_use_user_terminals(trivalent_t)
+userdom_list_user_home_dirs(trivalent_t)
+
+logging_write_journal_files(trivalent_t)
+logging_write_syslog_pid_socket(trivalent_t)
+
+auth_read_passwd_file(trivalent_t)
+
+# needed to be able to xdg-open, which is bin_t
+corecmd_exec_bin(trivalent_t)
+
+pcscd_stream_connect(trivalent_t)
+xserver_use_user_fonts(trivalent_t)
+xserver_map_user_fonts(trivalent_t)
+
+systemd_dbus_chat_hostnamed(trivalent_t)
+systemd_resolved_watch_pid_dirs(trivalent_t)
+init_search_pid_dirs(trivalent_t)
+init_read_state(trivalent_t)
+
+corenet_tcp_connect_all_unreserved_ports(trivalent_t)
+corenet_tcp_connect_generic_port(trivalent_t)
+corenet_tcp_connect_ftp_port(trivalent_t)
+corenet_tcp_connect_http_port(trivalent_t)
+corenet_tcp_connect_ipp_port(trivalent_t)
+corenet_tcp_bind_generic_node(trivalent_t)
+corenet_udp_bind_generic_node(trivalent_t)
+corenet_udp_bind_all_unreserved_ports(trivalent_t)
+sysnet_read_config(trivalent_t)
+sysnet_dns_name_resolve(trivalent_t)
+networkmanager_dbus_chat(trivalent_t)
+
+storage_getattr_fixed_disk_dev(trivalent_t)
+
+optional_policy(`
+	gen_require(`
+		type unconfined_t;
+		role unconfined_r;
+	')
+
+	trivalent_run(trivalent_script_t, unconfined_r)
+	trivalent_script_run(unconfined_t, unconfined_r)
+	trivalent_filetrans_home_content(unconfined_t)
+')
+
+
+allow trivalent_script_t trivalent_t:dir { getattr };
+allow trivalent_script_t self:dir { add_entry_dir_perms };
+allow trivalent_script_t self:file { create };
+allow trivalent_script_t self:user_namespace create;
+allow trivalent_script_t self:cap_userns { sys_ptrace sys_admin setpcap };
+allow trivalent_script_t self:process { ptrace setcap setsched };
+allow trivalent_script_t user_home_t:dir { search };
+allow trivalent_script_t chrome_sandbox_home_t:dir { manage_dir_perms };
+allow trivalent_script_t chrome_sandbox_home_t:file { manage_file_perms };
+allow trivalent_script_t chrome_sandbox_home_t:lnk_file read;
+allow trivalent_script_t trivalent_home_t:dir { manage_dir_perms };
+allow trivalent_script_t trivalent_home_t:file { manage_file_perms map };
+allow trivalent_script_t trivalent_home_t:lnk_file { manage_lnk_file_perms };
+allow trivalent_script_t nsfs_t:file getattr;
+allow trivalent_script_t ld_so_cache_t:file mounton;
+allow trivalent_script_t root_t:dir mounton;
+allow trivalent_script_t tmp_t:dir mounton;
+allow trivalent_script_t tmpfs_t:dir { mounton create };
+allow trivalent_script_t tmpfs_t:filesystem { unmount mount };
+allow trivalent_script_t device_t:filesystem remount;
+allow trivalent_script_t dosfs_t:filesystem remount;
+allow trivalent_script_t fs_t:filesystem { remount unmount };
+allow trivalent_script_t null_device_t:chr_file mounton;
+allow trivalent_script_t tmp_t:sock_file getattr;
+allow trivalent_script_t trivalent_t:process2 { nosuid_transition nnp_transition };
+
+
+# xwayland/nvidia
+xserver_exec(trivalent_script_t)
+dev_rw_xserver_misc(trivalent_script_t)
+dev_map_xserver_misc(trivalent_script_t)
+allow trivalent_script_t xserver_misc_device_t:chr_file { getattr ioctl map open read write };
+
+gnome_manage_data(trivalent_script_t)
+gnome_manage_home_config(trivalent_script_t)
+gnome_manage_home_config_dirs(trivalent_script_t)
+gnome_manage_cache_home_dir(trivalent_script_t)
+gnome_manage_generic_cache_files(trivalent_script_t)
+gnome_manage_generic_cache_sockets(trivalent_script_t)
+gnome_map_generic_cache_files(trivalent_script_t)
+corecmd_exec_shell(trivalent_script_t)
+corecmd_exec_bin(trivalent_script_t)
+files_getattr_all_dirs(trivalent_script_t)
+userdom_list_user_home_dirs(trivalent_script_t)
+kernel_list_proc(trivalent_script_t)
+kernel_read_proc_files(trivalent_script_t)
+kernel_getattr_proc_files(trivalent_script_t)
+kernel_getattr_proc(trivalent_script_t)
+seutil_exec_setfiles(trivalent_script_t)
+seutil_manage_file_contexts(trivalent_script_t)
+userdom_use_inherited_user_terminals(trivalent_script_t)

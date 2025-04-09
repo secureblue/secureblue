@@ -9,7 +9,10 @@ install:
   - just
   - patch
   - p7zip
-  - unrar
   - distrobox
   - toolbox
   - podman
+  - nvme-cli
+  
+  # signing deps 
+  - sbsigntools

@@ -40,6 +40,6 @@ interface(`nautilus_run',`
         attribute_role nautilus_roles;
 	')
 
-    nautilus_domtrans($1)
-    roleattribute $2 nautilus_roles;
+	nautilus_domtrans($1)
+	roleattribute $2 nautilus_roles;
 ')

@@ -3,6 +3,7 @@ on:
   pull_request:
     branches:
       - live
+      - staging
     paths-ignore:
       - "**.md"
 jobs:
@@ -16,10 +17,22 @@ jobs:
       matrix:
         recipe:
           - general/recipe-silverblue-main.yml
+          - general/recipe-silverblue-nvidia.yml
+          - general/recipe-silverblue-nvidia-open.yml
+          - securecore/recipe-securecore-zfs-main.yml
+          - securecore/recipe-securecore-zfs-nvidia.yml
+          - securecore/recipe-securecore-zfs-nvidia-open.yml
 
     steps:
       - name: Checkout repo
         uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+
+      - name: Gather image data from recipe
+        run: |
+          echo "IMAGE_NAME=$(grep '^name:' ./recipes/${{ matrix.recipe }} | sed 's/^name: //')" >> $GITHUB_ENV
+          echo "IMAGE_MAJOR_VERSION=$(grep '^image-version:' ./recipes/${{ matrix.recipe }} | sed 's/^image-version: //')" >> $GITHUB_ENV
+          BASE_IMAGE=$(grep '^base-image:' ./recipes/${{ matrix.recipe }} | sed 's/^base-image: //')
+          echo "BASE_IMAGE_NAME=$(echo $BASE_IMAGE | sed 's/.*\/.*\///')" >> $GITHUB_ENV
 
       - name: Maximize build space
         uses: jlumbroso/free-disk-space@54081f138730dfa15788a46383842cd2f914a1be # v1.3.1
@@ -37,7 +50,13 @@ jobs:
             RECIPE_PATH="./recipes/${RECIPE}"
           fi
           echo "recipe_path=${RECIPE_PATH}" >> ${GITHUB_OUTPUT}
-          
+      
+      - name: Retrieve Test Signing Key
+        shell: bash
+        run: |
+          cp ./.github/workflows/private_key.priv.test ./files/scripts/certs/private_key.priv
+          cp ./.github/workflows/public_key.der.test ./files/system/etc/pki/akmods/certs/akmods-secureblue.der
+
       - name: Install BlueBuild
         shell: bash
         env:
@@ -45,7 +64,7 @@ jobs:
         run: |
           docker create \
             --name blue-build-installer \
-            ghcr.io/blue-build/cli:v0.9.2-installer
+            ghcr.io/blue-build/cli:v0.9.10-installer
           docker cp blue-build-installer:/out/bluebuild /usr/local/bin/bluebuild
           docker rm blue-build-installer
           bluebuild --version

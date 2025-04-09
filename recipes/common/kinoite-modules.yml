@@ -20,3 +20,6 @@ modules:
     files:  
       - source: system/kinoite
         destination: /
+  - type: script
+    scripts:
+      - enabledisablekdesplash.sh

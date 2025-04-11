@@ -22,5 +22,6 @@ modules:
     - type: script
       scripts:
         - enablecommonautoupdate.sh
+        - signkernel.sh
     - type: secureblue-signing
       source: local

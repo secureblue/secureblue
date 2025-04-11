@@ -25,5 +25,4 @@ modules:
       - libswscale-free  
     - type: script
       scripts:
-        - installrpmfusion.sh
         - removeunusedrepos.sh

@@ -102,12 +102,12 @@ interface(`trivalent_script_run',`
 ## </param>
 #
 interface(`trivalent_filetrans_home_content',`
-		gen_require(`
-				type trivalent_home_t;
-		')
+	gen_require(`
+		type trivalent_home_t;
+	')
 
-		optional_policy(`
-			gnome_config_filetrans($1, trivalent_home_t, dir, "trivalent")
-			gnome_cache_filetrans($1, trivalent_home_t, dir, "trivalent")
-		')
+	optional_policy(`
+		gnome_config_filetrans($1, trivalent_home_t, dir, "trivalent")
+		gnome_cache_filetrans($1, trivalent_home_t, dir, "trivalent")
+	')
 ')

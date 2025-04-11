@@ -519,6 +519,5 @@ install-vpn:
 
     echo
     echo 'Starting installation...'
-
     install_vpn "$vpn_choice"
     echo 'Please reboot your device to fully apply the changes.'

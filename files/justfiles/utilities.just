@@ -431,9 +431,8 @@ install-vpn:
     }
 
     # script start
-    echo 'WARNING: It is strongly recommended that you do **not** use VPN provider desktop applications, as they generally require significant security downgrades.'
-    echo 'Instead, it is recommended that you download wireguard profiles from your provider and import them into your desktop environment.'
-    read -rp 'Are you sure you want to do this? [y/N] ' proceed
+    echo 'NOTE: You can also install wireguard profiles from your provider directly into your DE, if you prefer.'
+    read -rp 'Do you want to continue? [y/N] ' proceed
     if ! [[ "$proceed" == [yY]* ]]; then
         echo 'Aborting...'
         exit 0

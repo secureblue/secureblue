@@ -236,8 +236,7 @@ install-steam:
             echo "Disabling hardened_malloc for Steam."
             flatpak override --user --unset-env=LD_PRELOAD --nofilesystem=host-os com.valvesoftware.Steam
             install_mangohud=""
-            read -rp "Would you like to install MangoHud and enable it for all Steam games? [Y/n] " install_mangohud
-            install_mangohud=${install_mangohud:-y}
+            read -rp "Would you like to install MangoHud and enable it for all Steam games? [y/N] " install_mangohud
             if [[ "$install_mangohud" == [Yy]* ]]; then
                 echo "Installing MangoHud flatpak"
                 flatpak install org.freedesktop.Platform.VulkanLayer.MangoHud

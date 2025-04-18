@@ -239,7 +239,7 @@ install-steam:
             read -rp "Would you like to install MangoHud and enable it for all Steam games? [y/N] " install_mangohud
             if [[ "$install_mangohud" == [Yy]* ]]; then
                 echo "Installing MangoHud flatpak"
-                flatpak install org.freedesktop.Platform.VulkanLayer.MangoHud
+                flatpak install -y flathub-verified org.freedesktop.Platform.VulkanLayer.MangoHud/x86_64/24.08
                 echo "Setting --env=MANGOHUD=1 for Steam to enable MangoHud for all games"
                 flatpak override --user --env=MANGOHUD=1 com.valvesoftware.Steam
             fi

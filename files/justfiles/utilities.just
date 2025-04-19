@@ -241,9 +241,9 @@ install-steam:
                 echo "Installing OBS flatpak & Vulkan/OpenGL game capture plugins"
                 flatpak install -y flathub-verified com.obsproject.Studio org.kde.Platform/x86_64/6.6 org.freedesktop.Platform.VulkanLayer.OBSVkCapture/x86_64/24.08
                 flatpak install -y com.obsproject.Studio.Plugin.OBSVkCapture
-                echo "OBS flatpak and Vulkan/OpenGL game capture plugins have been installed"
-                echo "You still need to add `obs-gamecapture %command%` to your game launch options in Steam to enable OBS capture"
-                echo "See OBS-VKCapture documentation for details: https://github.com/nowrep/obs-vkcapture#usage"
+                echo 'OBS flatpak and Vulkan/OpenGL game capture plugins have been installed'
+                echo 'You still need to add `obs-gamecapture %command%` to your game launch options in Steam to enable OBS capture'
+                echo 'See OBS-VKCapture documentation for details: https://github.com/nowrep/obs-vkcapture#usage'
             fi
             ;;
         2)

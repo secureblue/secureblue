@@ -38,9 +38,14 @@ def main():
     print("Before continuing please open a root terminal (via run0) in a seperate tab to potentially restore your old authselect local profile if needed.")
     input("Press Enter to continue...")
 
-    if (sys.argv[1] == '2fa'):
+    if len(sys.argv) > 1:
+        mode = sys.argv[1]
+    else:
+        mode = None
+
+    if (mode == '2fa'):
         pam_auth(0)
-    elif (sys.argv[1] == 'passwordless'):
+    elif (mode == 'passwordless'):
         pam_auth(1)
     else:
         loop = 0
@@ -63,26 +68,26 @@ def pam_auth(pam_type):
     # pam_type == 0 is 2fa
     # pam_type == 1 is passwordless
 
-    time = datetime.datetime.isoformat(datetime.datetime.now()) #Note datetime.now() creates datetime object, and .isoformat converts it to a string
-    os.environ["time"] = time
+    ts = datetime.datetime.isoformat(datetime.datetime.now()) #Note datetime.now() creates datetime object, and .isoformat converts it to a string
+    os.environ["time"] = ts
 
-    result = subprocess.run(["run0","authselect","select", "local",f"--backup={time}"], text=True) # nosec
+    result = subprocess.run(["run0","authselect","select", "local",f"--backup={ts}"], text=True, capture_output=True) # nosec
     if (result.returncode != 0):
         print(result.stderr)
         return
     
-    print(f"A backup of your current authselect local profile has been created at /var/lib/authselect/backups/{os.getenv("time")}.")
-    print(f"If needed you can restore your old profile with this command \'authselect backup-restore /var/lib/authselect/backups/{os.getenv("time")}\'.")
+    print(f"A backup of your current authselect local profile has been created at /var/lib/authselect/backups/{os.getenv('time')}g.")
+    print(f"If needed you can restore your old profile with this command \'authselect backup-restore /var/lib/authselect/backups/{os.getenv('time')}g\'.")
 
-    result = subprocess.run(["run0", "authselect", "enable-feature", "without-pam-u2f-nouserok"], text=True) # nosec
+    result = subprocess.run(["run0", "authselect", "enable-feature", "without-pam-u2f-nouserok"], text=True, capture_output=True) # nosec
     if (result.returncode != 0):
         print(result.stderr)
         return
 
     if (pam_type == 0):
-        result = subprocess.run(["run0", "authselect", "enable-feature", "with-pam-u2f-2fa"], text=True) # nosec
+        result = subprocess.run(["run0", "authselect", "enable-feature", "with-pam-u2f-2fa"], text=True, capture_output=True) # nosec
     elif (pam_type == 1):
-        result = subprocess.run(["run0", "authselect", "enable-feature", "with-pam-u2f"], text=True) # nosec
+        result = subprocess.run(["run0", "authselect", "enable-feature", "with-pam-u2f"], text=True, capture_output=True) # nosec
     if (result.returncode != 0):
         print(result.stderr)
         return
@@ -91,46 +96,58 @@ def pam_auth(pam_type):
     print("When your fido2 key blinks (if it supports PIV), touch it.")
     input("Press Enter to continue...")
 
-    result = subprocess.run("pamu2fcfg", text=True) # nosec
+    result = subprocess.run(["pamu2fcfg"], text=True, capture_output=True) # nosec
     if (result.returncode != 0):
         print(result.stderr)
         return
-    os.environ["fido_key"] = result.stdout
+    os.environ["fido_key"] = result.stdout.strip()
 
     loop = 0
     # chmod of 644 for fido2 files is chosen so user can edit their own configured accepted fido2 keys, and other users can see them (as they are basically public keys) for ease of use
     while (loop == 0):
         key_choice = input("Do you want the currently logged user, all wheel users, or both to add the currently connected fido2 key to their authentication? [current,wheel,both]")
         if (key_choice == "current"):
-            result = subprocess.run("mkdir -p ~/.config/Yubico; echo \"$fido_key\" > ~/.config/Yubico/u2f_keys; chmod 644 ~/.config/Yubico/u2f_keys; chown $USER:$USER ~/.config/Yubico/u2f_keys", text=True, shell=True) # nosec
-            if (result.returncode != 0):
-                print(result.stderr)
-                return
+            path = os.path.join(f"{os.getenv('HOME')}", ".config", "Yubico")
+            os.makedirs(path, exist_ok=True)
+            keyfile = os.path.join(path, "u2f_keys")
+            with open(keyfile, "w") as f:
+                f.write(f"{os.getenv('fido_key')}")
+            os.chmod(keyfile, 0o644)
+            os.chown(keyfile, pwd.getpwnam((f"{os.getenv('USER')}")).pw_uid, pwd.getpwnam((f"{os.getenv('USER')}")).pw_gid)
             loop = 1
         elif (key_choice == "wheel"):
             for user in (grp.getgrnam("wheel")[3]):
                 home = (get_home_directory(user)) 
                 if (home != None):
-                    result = subprocess.run(f"mkdir -p {home}/.config/Yubico; echo \"$fido_key\" > {home}/.config/Yubico/u2f_keys; chmod 644 ~/.config/Yubico/u2f_keys; chown {user}:{user} ~/.config/Yubico/u2f_keys", text=True, shell=True) # nosec
-                    if (result.returncode != 0):
-                        print(result.stderr)
-                    return
+                    path = os.path.join(home, ".config", "Yubico")
+                    os.makedirs(path, exist_ok=True)
+                    keyfile = os.path.join(path, "u2f_keys")
+                    with open(keyfile, "w") as f:
+                        f.write(f"{os.getenv('fido_key')}")
+                    os.chmod(keyfile, 0o644)
+                    os.chown(keyfile, pwd.getpwnam(user).pw_uid, pwd.getpwnam(user).pw_gid)                
                 else:
                     print(f"{user}'s home appears to not exist, no fido key has been configured for it.")
             loop = 1
         elif (key_choice == "both"):
             #Note currently logged in user being a wheel user is not a problem for this, as it will just overwrite fido_key again with the same data
-            result = subprocess.run("mkdir -p ~/.config/Yubico; echo \"$fido_key\" > ~/.config/Yubico/u2f_keys; chmod 644 ~/.config/Yubico/u2f_keys; chown $USER:$USER ~/.config/Yubico/u2f_keys", text=True, shell=True) # nosec
-            if (result.returncode != 0):
-                print(result.stderr)
-                return
+            path = os.path.join(f"{os.getenv('HOME')}", ".config", "Yubico")
+            os.makedirs(path, exist_ok=True)
+            keyfile = os.path.join(path, "u2f_keys")
+            with open(keyfile, "w") as f:
+                f.write(f"{os.getenv('fido_key')}")
+            os.chmod(keyfile, 0o644)
+            os.chown(keyfile, pwd.getpwnam((f"{os.getenv('USER')}")).pw_uid, pwd.getpwnam((f"{os.getenv('USER')}")).pw_gid)
             for user in (grp.getgrnam("wheel")[3]):
                 home = (get_home_directory(user)) 
                 if (home != None):
-                    result = subprocess.run(f"mkdir -p {home}/.config/Yubico; echo \"$fido_key\" > {home}/.config/Yubico/u2f_keys; chmod 644 ~/.config/Yubico/u2f_keys; chown {user}:{user} ~/.config/Yubico/u2f_keys", text=True, shell=True) # nosec
-                    if (result.returncode != 0):
-                        print(result.stderr)
-                    return
+                    path = os.path.join(home, ".config", "Yubico")
+                    os.makedirs(path, exist_ok=True)
+                    keyfile = os.path.join(path, "u2f_keys")
+                    with open(keyfile, "w") as f:
+                        f.write(f"{os.getenv('fido_key')}")
+                    os.chmod(keyfile, 0o644)
+                    os.chown(keyfile, pwd.getpwnam(user).pw_uid, pwd.getpwnam(user).pw_gid)                
                 else:
                     print(f"{user}'s home appears to not exist, no fido key has been configured for it.")
             loop = 1
@@ -138,7 +155,7 @@ def pam_auth(pam_type):
             print("Please use repond either \"current\", \"wheel\", or \"both\"")
 
     print("Congratulations!\nYour secureblue install is now configured to use fido2 PAM.\nNote that fido2 data that PAM uses has been added to ~/.config/Yubico/u2f_keys")
-    print(f"Reminder: To restore the old authset use \'authselect backup-restore /var/lib/authselect/backups/{os.getenv("time")}\'")
+    print(f"Reminder: To restore the old authset use \'authselect backup-restore /var/lib/authselect/backups/{os.getenv('time')}g\'")
     return
 
 #Returns string of given username's home directory

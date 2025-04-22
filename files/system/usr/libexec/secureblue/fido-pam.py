@@ -13,6 +13,7 @@ python3 fido-pam.py passwordless
     This allows you use use an impractically long backup password for your wheel user, and primarily manage
     your device via fido2 authentication.
 
+Using subprocess with shell is unfortunate, but necessary for some parts
 Sources:
 https://developers.yubico.com/pam-u2f/
 https://devblog.jpcaparas.com/use-your-yubikey-as-a-system-level-authentication-pam-module-on-fedora-40-457ae7375254
@@ -62,9 +63,10 @@ def pam_auth(pam_type):
     # pam_type == 0 is 2fa
     # pam_type == 1 is passwordless
 
-    os.environ["time"] = datetime.datetime.isoformat(datetime.datetime.now()) #Note datetime.now() creates datetime object, and .isoformat converts it to a string
+    time = datetime.datetime.isoformat(datetime.datetime.now()) #Note datetime.now() creates datetime object, and .isoformat converts it to a string
+    os.environ["time"] = time
 
-    result = subprocess.run(["run0", "authselect", "select", "local", "--backup=$time"], text=True, shell=True)
+    result = subprocess.run(["run0","authselect","select", "local",f"--backup={time}"], text=True) # nosec
     if (result.returncode != 0):
         print(result.stderr)
         return
@@ -72,15 +74,15 @@ def pam_auth(pam_type):
     print(f"A backup of your current authselect local profile has been created at /var/lib/authselect/backups/{os.getenv("time")}.")
     print(f"If needed you can restore your old profile with this command \'authselect backup-restore /var/lib/authselect/backups/{os.getenv("time")}\'.")
 
-    result = subprocess.run("run0 authselect enable-feature without-pam-u2f-nouserok", text=True, shell=True)
+    result = subprocess.run(["run0", "authselect", "enable-feature", "without-pam-u2f-nouserok"], text=True) # nosec
     if (result.returncode != 0):
         print(result.stderr)
         return
 
     if (pam_type == 0):
-        result = subprocess.run('run0 authselect enable-feature with-pam-u2f-2fa', text=True, shell=True)
+        result = subprocess.run(["run0", "authselect", "enable-feature", "with-pam-u2f-2fa"], text=True) # nosec
     elif (pam_type == 1):
-        result = subprocess.run('run0 authselect enable-feature with-pam-u2f', text=True, shell=True)
+        result = subprocess.run(["run0", "authselect", "enable-feature", "with-pam-u2f"], text=True) # nosec
     if (result.returncode != 0):
         print(result.stderr)
         return
@@ -89,7 +91,7 @@ def pam_auth(pam_type):
     print("When your fido2 key blinks (if it supports PIV), touch it.")
     input("Press Enter to continue...")
 
-    result = subprocess.run("pamu2fcfg", text=True, shell=True)
+    result = subprocess.run("pamu2fcfg", text=True) # nosec
     if (result.returncode != 0):
         print(result.stderr)
         return
@@ -100,7 +102,7 @@ def pam_auth(pam_type):
     while (loop == 0):
         key_choice = input("Do you want the currently logged user, all wheel users, or both to add the currently connected fido2 key to their authentication? [current,wheel,both]")
         if (key_choice == "current"):
-            result = subprocess.run("mkdir -p ~/.config/Yubico; echo \"$fido_key\" > ~/.config/Yubico/u2f_keys; chmod 644 ~/.config/Yubico/u2f_keys; chown $USER:$USER ~/.config/Yubico/u2f_keys", text=True, shell=True)
+            result = subprocess.run("mkdir -p ~/.config/Yubico; echo \"$fido_key\" > ~/.config/Yubico/u2f_keys; chmod 644 ~/.config/Yubico/u2f_keys; chown $USER:$USER ~/.config/Yubico/u2f_keys", text=True, shell=True) # nosec
             if (result.returncode != 0):
                 print(result.stderr)
                 return
@@ -109,7 +111,7 @@ def pam_auth(pam_type):
             for user in (grp.getgrnam("wheel")[3]):
                 home = (get_home_directory(user)) 
                 if (home != None):
-                    result = subprocess.run(f"mkdir -p {home}/.config/Yubico; echo \"$fido_key\" > {home}/.config/Yubico/u2f_keys; chmod 644 ~/.config/Yubico/u2f_keys; chown {user}:{user} ~/.config/Yubico/u2f_keys", text=True, shell=True)
+                    result = subprocess.run(f"mkdir -p {home}/.config/Yubico; echo \"$fido_key\" > {home}/.config/Yubico/u2f_keys; chmod 644 ~/.config/Yubico/u2f_keys; chown {user}:{user} ~/.config/Yubico/u2f_keys", text=True, shell=True) #nosec
                     if (result.returncode != 0):
                         print(result.stderr)
                     return
@@ -118,14 +120,14 @@ def pam_auth(pam_type):
             loop = 1
         elif (key_choice == "both"):
             #Note currently logged in user being a wheel user is not a problem for this, as it will just overwrite fido_key again with the same data
-            result = subprocess.run("mkdir -p ~/.config/Yubico; echo \"$fido_key\" > ~/.config/Yubico/u2f_keys; chmod 644 ~/.config/Yubico/u2f_keys; chown $USER:$USER ~/.config/Yubico/u2f_keys", text=True, shell=True)
+            result = subprocess.run("mkdir -p ~/.config/Yubico; echo \"$fido_key\" > ~/.config/Yubico/u2f_keys; chmod 644 ~/.config/Yubico/u2f_keys; chown $USER:$USER ~/.config/Yubico/u2f_keys", text=True, shell=True) # nosec
             if (result.returncode != 0):
                 print(result.stderr)
                 return
             for user in (grp.getgrnam("wheel")[3]):
                 home = (get_home_directory(user)) 
                 if (home != None):
-                    result = subprocess.run(f"mkdir -p {home}/.config/Yubico; echo \"$fido_key\" > {home}/.config/Yubico/u2f_keys; chmod 644 ~/.config/Yubico/u2f_keys; chown {user}:{user} ~/.config/Yubico/u2f_keys", text=True, shell=True)
+                    result = subprocess.run(f"mkdir -p {home}/.config/Yubico; echo \"$fido_key\" > {home}/.config/Yubico/u2f_keys; chmod 644 ~/.config/Yubico/u2f_keys; chown {user}:{user} ~/.config/Yubico/u2f_keys", text=True, shell=True) # nosec
                     if (result.returncode != 0):
                         print(result.stderr)
                     return

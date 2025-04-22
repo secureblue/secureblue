@@ -12,6 +12,16 @@ python3 fido-pam.py passwordless
     This allows using just fido2 authentication systemwide for pam.
     This allows you use use an impractically long backup password for your wheel user, and primarily manage
     your device via fido2 authentication.
+
+Sources:
+https://developers.yubico.com/pam-u2f/
+https://devblog.jpcaparas.com/use-your-yubikey-as-a-system-level-authentication-pam-module-on-fedora-40-457ae7375254
+https://github.com/secureblue/secureblue/issues/809
+https://docs.python.org/3/library/subprocess.html
+https://docs.python.org/3/library/subprocess.html#subprocess.CompletedProcess
+https://github.com/Zer0CoolX/Fedora-KDE-Yubikey-U2F-2FA-Logins-Guide
+https://www.mankier.com/8/authselect
+https://docs.python.org/3/library/grp.html
 """
 
 import sys
@@ -47,6 +57,7 @@ def main():
                 print("Please use repond either \"2fa\", \"passwordless\", or \"exit\" to exit")
     return
 
+#Handles authselect config and adding fido2 keys to users
 def pam_auth(pam_type):
     # pam_type == 0 is 2fa
     # pam_type == 1 is passwordless
@@ -127,6 +138,7 @@ def pam_auth(pam_type):
     print(f"Reminder: To restore the old authset use \'authselect backup-restore /var/lib/authselect/backups/{os.getenv("time")}\'")
     return
 
+#Returns string of given username's home directory
 def get_home_directory(username):
     try:
         user_info = pwd.getpwnam(username)

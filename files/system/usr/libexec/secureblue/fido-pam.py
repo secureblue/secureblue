@@ -111,7 +111,7 @@ def pam_auth(pam_type):
             for user in (grp.getgrnam("wheel")[3]):
                 home = (get_home_directory(user)) 
                 if (home != None):
-                    result = subprocess.run(f"mkdir -p {home}/.config/Yubico; echo \"$fido_key\" > {home}/.config/Yubico/u2f_keys; chmod 644 ~/.config/Yubico/u2f_keys; chown {user}:{user} ~/.config/Yubico/u2f_keys", text=True, shell=True) #nosec
+                    result = subprocess.run(f"mkdir -p {home}/.config/Yubico; echo \"$fido_key\" > {home}/.config/Yubico/u2f_keys; chmod 644 ~/.config/Yubico/u2f_keys; chown {user}:{user} ~/.config/Yubico/u2f_keys", text=True, shell=True) # nosec
                     if (result.returncode != 0):
                         print(result.stderr)
                     return

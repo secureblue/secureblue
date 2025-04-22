@@ -77,7 +77,7 @@ def pam_auth(pam_type):
         return
     
     print(f"A backup of your current authselect local profile has been created at /var/lib/authselect/backups/{os.getenv('time')}g.")
-    print(f"If needed you can restore your old profile with this command \'authselect backup-restore /var/lib/authselect/backups/{os.getenv('time')}g\'.")
+    print(f"If needed you can restore your old profile with this command \'authselect backup-restore /var/lib/authselect/backups/{os.getenv('time')}\'.")
 
     result = subprocess.run(["run0", "authselect", "enable-feature", "without-pam-u2f-nouserok"], text=True, capture_output=True) # nosec
     if (result.returncode != 0):
@@ -155,7 +155,7 @@ def pam_auth(pam_type):
             print("Please use repond either \"current\", \"wheel\", or \"both\"")
 
     print("Congratulations!\nYour secureblue install is now configured to use fido2 PAM.\nNote that fido2 data that PAM uses has been added to ~/.config/Yubico/u2f_keys")
-    print(f"Reminder: To restore the old authset use \'authselect backup-restore /var/lib/authselect/backups/{os.getenv('time')}g\'")
+    print(f"Reminder: To restore the old authset use \'authselect backup-restore /var/lib/authselect/backups/{os.getenv('time')}\'")
     return
 
 #Returns string of given username's home directory

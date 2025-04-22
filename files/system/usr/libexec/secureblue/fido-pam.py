@@ -96,10 +96,11 @@ def pam_auth(pam_type):
     os.environ["fido_key"] = result.stdout
 
     loop = 0
+    # chmod of 644 for fido2 files is chosen so user can edit their own configured accepted fido2 keys, and other users can see them (as they are basically public keys) for ease of use
     while (loop == 0):
         key_choice = input("Do you want the currently logged user, all wheel users, or both to add the currently connected fido2 key to their authentication? [current,wheel,both]")
         if (key_choice == "current"):
-            result = subprocess.run("mkdir -p ~/.config/Yubico; echo \"$fido_key\" > ~/.config/Yubico/u2f_keys", text=True, shell=True)
+            result = subprocess.run("mkdir -p ~/.config/Yubico; echo \"$fido_key\" > ~/.config/Yubico/u2f_keys; chmod 644 ~/.config/Yubico/u2f_keys; chown $USER:$USER ~/.config/Yubico/u2f_keys", text=True, shell=True)
             if (result.returncode != 0):
                 print(result.stderr)
                 return
@@ -108,7 +109,7 @@ def pam_auth(pam_type):
             for user in (grp.getgrnam("wheel")[3]):
                 home = (get_home_directory(user)) 
                 if (home != None):
-                    result = subprocess.run(f"mkdir -p {home}/.config/Yubico; echo \"$fido_key\" > {home}/.config/Yubico/u2f_keys", text=True, shell=True)
+                    result = subprocess.run(f"mkdir -p {home}/.config/Yubico; echo \"$fido_key\" > {home}/.config/Yubico/u2f_keys; chmod 644 ~/.config/Yubico/u2f_keys; chown {user}:{user} ~/.config/Yubico/u2f_keys", text=True, shell=True)
                     if (result.returncode != 0):
                         print(result.stderr)
                     return
@@ -117,14 +118,14 @@ def pam_auth(pam_type):
             loop = 1
         elif (key_choice == "both"):
             #Note currently logged in user being a wheel user is not a problem for this, as it will just overwrite fido_key again with the same data
-            result = subprocess.run("mkdir -p ~/.config/Yubico; echo \"$fido_key\" > ~/.config/Yubico/u2f_keys", text=True, shell=True)
+            result = subprocess.run("mkdir -p ~/.config/Yubico; echo \"$fido_key\" > ~/.config/Yubico/u2f_keys; chmod 644 ~/.config/Yubico/u2f_keys; chown $USER:$USER ~/.config/Yubico/u2f_keys", text=True, shell=True)
             if (result.returncode != 0):
                 print(result.stderr)
                 return
             for user in (grp.getgrnam("wheel")[3]):
                 home = (get_home_directory(user)) 
                 if (home != None):
-                    result = subprocess.run(f"mkdir -p {home}/.config/Yubico; echo \"$fido_key\" > {home}/.config/Yubico/u2f_keys", text=True, shell=True)
+                    result = subprocess.run(f"mkdir -p {home}/.config/Yubico; echo \"$fido_key\" > {home}/.config/Yubico/u2f_keys; chmod 644 ~/.config/Yubico/u2f_keys; chown {user}:{user} ~/.config/Yubico/u2f_keys", text=True, shell=True)
                     if (result.returncode != 0):
                         print(result.stderr)
                     return

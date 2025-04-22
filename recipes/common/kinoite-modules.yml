@@ -13,7 +13,7 @@ modules:
       - krfb
       - krfb-libs
       - plasma-discover-rpm-ostree
-      
+
       # depends on fedora-flathub-remote
       - plasma-welcome-fedora
   - type: files

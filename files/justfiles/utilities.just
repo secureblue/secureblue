@@ -339,3 +339,185 @@ install-libvirt-packages:
     rpm-ostree install -y libvirt libvirt-nss qemu qemu-char-spice qemu-device-display-virtio-gpu qemu-device-display-virtio-vga qemu-device-usb-redirect qemu-img qemu-system-x86-core qemu-user-binfmt qemu-user-static virt-install virt-manager virt-v2v virt-viewer
     echo "Check out the Red Hat documentation to see which services to enable for your usecase:"
     echo "https://docs.redhat.com/fr/documentation/red_hat_enterprise_linux/9/html/monitoring_and_managing_system_status_and_performance/assembly_optimizing-libvirt-daemons_optimizing-virtual-machine-performance-in-rhel#proc_enabling-modular-libvirt-daemons_assembly_optimizing-libvirt-daemons"
+
+# Convenience utility for layering VPN provider packages
+install-vpn:
+    #!/usr/bin/bash
+    set -euo pipefail
+
+    # supported VPN providers and the security features they need disabled, separated by spaces
+    declare -A vpn_providers=(
+        ["ivpn"]="gui_needs_unconfined_userns gui_needs_xwayland"
+        ["mullvad"]="gui_needs_unconfined_userns gui_needs_xwayland"
+        ["proton"]=""
+    )
+
+    # VPN install logic
+    # ref: https://www.ivpn.net/knowledgebase/linux/fedora-silverblue/
+    # ref: https://mullvad.net/de/download/vpn/linux
+    # ref: https://protonvpn.com/support/en/official-linux-vpn-fedora
+    REPO_REGEX="/^enabled[ =]/ s/0/1/g"
+    function install_vpn() {
+        local INSTRUCTIONS
+        local PACKAGE_NAME
+        local REPO_NAME
+        case "$1" in
+            "ivpn")
+                PACKAGE_NAME="ivpn"
+                REPO_NAME="$PACKAGE_NAME"
+
+                if util_checkpackage "$PACKAGE_NAME" || util_checkpackage "$PACKAGE_NAME-ui"; then
+                    echo 'Error: IVPN is already installed.'
+                    echo 'Aborting...'
+                    exit 1
+                fi
+
+                echo 'Installing IVPN...'
+                local proceed2
+                read -rp 'Do you want the IVPN GUI to be installed? [Y/n] ' proceed2
+                if ! [[ "$proceed2" == [nN]* ]]; then
+                    PACKAGE_NAME="$PACKAGE_NAME $PACKAGE_NAME-ui"
+                fi
+                INSTRUCTIONS='Successfully installed IVPN. Please execute the command "systemctl enable --now ivpn-service" after rebooting.'
+                ;;
+
+            "mullvad")
+                PACKAGE_NAME="mullvad-vpn"
+                REPO_NAME="mullvad"
+
+                if util_checkpackage "$PACKAGE_NAME"; then
+                    echo 'Error: The Mullvad VPN is already installed.'
+                    echo 'Aborting...'
+                    exit 1
+                fi
+
+                echo 'Installing Mullvad VPN...'
+                INSTRUCTIONS='Successfully installed Mullvad VPN. Please execute the command "systemctl enable --now mullvad-daemon && systemctl enable mullvad-early-boot-blocking" after rebooting.'
+                ;;
+
+            "proton")
+                PACKAGE_NAME="proton-vpn-gnome-desktop"
+                REPO_NAME="protonvpn-stable"
+
+                if util_checkpackage "$PACKAGE_NAME"; then
+                    echo 'Error: Proton VPN is already installed.'
+                    echo 'Aborting...'
+                    exit 1
+                fi
+
+                echo 'Installing Proton VPN...'
+                INSTRUCTIONS='Successfully installed Proton VPN.'
+                ;;
+
+            *)
+                echo 'Invalid choice'
+                exit 1
+                ;;
+        esac
+
+        if ! run0 sh -c "sed -i '$REPO_REGEX' /etc/yum.repos.d/$REPO_NAME.repo && rpm-ostree install --assumeyes $PACKAGE_NAME"; then
+            echo "Error: The installation didn't complete successfully, aborting..."
+            exit 1
+        fi
+
+        echo "$INSTRUCTIONS"
+    }
+
+    function util_checkpackage() {
+        rpm -qa | grep -q "$1"
+        return $?
+    }
+
+    # script start
+    echo 'NOTE: You can also install wireguard profiles from your provider directly into your DE, if you prefer.'
+    read -rp 'Do you want to continue? [y/N] ' proceed
+    if ! [[ "$proceed" == [yY]* ]]; then
+        echo 'Aborting...'
+        exit 0
+    fi
+    echo
+    echo 'Please choose your desired provider'
+    vpn_choice="$(ugum choose "${!vpn_providers[@]}")"
+    echo "You selected $vpn_choice"
+
+    vpn_requirements="${vpn_providers[$vpn_choice]}"
+    needs_gui="1"
+    if [[ "$vpn_requirements" =~ "gui_needs_" ]]; then
+        echo
+        echo 'Notice: This VPN requires additional security features to be disabled if you intend to use its graphical interface.'
+        echo 'If you only intend on using the command-line interface, you can skip those.'
+        read -rp 'Do you intend to use the GUI? [Y/n] ' proceed_gui
+        if [[ "$proceed_gui" == [nN]* ]]; then
+            echo 'Additional hardening features required for the GUI will not be disabled.'
+            needs_gui="0"
+        else
+            echo 'Additional hardening features required for the GUI will be disabled.'
+        fi
+    fi
+
+    if [[ "$vpn_requirements" =~ "always_needs_unconfined_userns" || "$vpn_requirements" =~ "gui_needs_unconfined_userns" && "$needs_gui" == "1" ]]; then
+        echo
+        if [[ "$(ujust check-unconfined-userns-state)" == "enabled" ]] ; then
+            echo 'Unconfined domain user namespaces already enabled, skipping...'
+        else
+            echo 'This VPN requires unconfined domain user namespaces to be enabled.'
+            echo 'This will execute "ujust toggle-unconfined-domain-userns-creation". You can also manually do this later if you skip this step.'
+            echo 'Warning: This is a security reduction!'
+            read -rp 'Do you want to do this now? [Y/n] ' proceed_userns
+            if ! [[ "$proceed_userns" == [nN]* ]]; then
+                echo 'Enabling unconfined domain user namespaces...'
+                ujust toggle-unconfined-domain-userns-creation
+                echo 'Enabled unconfined domain user namespaces.'
+            fi
+        fi
+    fi
+
+    if [[ "$vpn_requirements" =~ "always_needs_xwayland" || "$vpn_requirements" =~ "gui_needs_xwayland" && "$needs_gui" == "1" ]]; then
+        echo
+
+        DE="unknown"
+        IMAGE="$(rpm-ostree status 2>&- | grep '●')"
+        if echo "$IMAGE" | grep -q 'silverblue'; then
+            DE="gnome"
+        elif echo "$IMAGE" | grep -q 'kinoite'; then
+            DE="plasma"
+        elif echo "$IMAGE" | grep -q 'sericea' || echo "$IMAGE" | grep 'sway'; then
+            DE=sway
+        fi
+
+        xwayland_enabled="0"
+        if [[ "$DE" == "gnome" ]]; then
+            if ! test -e "/etc/systemd/user/org.gnome.Shell@wayland.service.d/override.conf"; then
+                xwayland_enabled="1"
+            fi
+        elif [[ "$DE" == "plasma" ]]; then
+            if ! test -e "/etc/systemd/user/plasma-kwin_wayland.service.d/override.conf"; then
+                xwayland_enabled="1"
+            fi
+        elif [[ "$DE" == "sway" ]]; then
+            if ! test -e "/etc/sway/config.d/99-noxwayland.conf"; then
+                xwayland_enabled="1"
+            fi
+        fi
+
+        if [[ "$DE" == "unknown" ]]; then
+            echo 'Warning: Unable to identify your desktop environment. Please manually ensure that XWayland is enabled. Skipping...'
+        elif [[ "$xwayland_enabled" == "1" ]]; then
+            echo 'XWayland already enabled, skipping...'
+        else
+            echo 'This VPN requires XWayland to be enabled.'
+            echo 'This will execute "ujust toggle-xwayland". You can also manually do this later if you skip this step.'
+            echo 'Warning: This is a security reduction!'
+            read -rp 'Do you want to do this now? [Y/n] ' proceed_xwayland
+            if ! [[ "$proceed_xwayland" == [nN]* ]]; then
+                echo 'Enabling XWayland...'
+                ujust toggle-xwayland
+                echo 'Enabled XWayland.'
+            fi
+        fi
+    fi
+
+    echo
+    echo 'Starting installation...'
+    install_vpn "$vpn_choice"
+    echo 'Please reboot your device to fully apply the changes.'

@@ -15,7 +15,6 @@
 *.patch linguist-detectable=true
 *.patch linguist-language=diff
 
-
 *.cil linguist-detectable=true
 *.cil linguist-language=CIL
 

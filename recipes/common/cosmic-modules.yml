@@ -5,11 +5,6 @@ modules:
         - NetworkManager-openvpn
         - cosmic-store
         - cosmic-player
-      remove:
-        - gnome-software
-        - gnome-software-rpm-ostree
-        - gnome-software-fedora-langpacks
-        - epiphany-runtime
     - type: systemd
       system:
         enabled:

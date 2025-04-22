@@ -1,0 +1,8 @@
+[mullvad-stable]
+name=Mullvad VPN
+baseurl=https://repository.mullvad.net/rpm/stable/$basearch
+type=rpm
+enabled=0
+gpgcheck=1
+gpgkey=https://repository.mullvad.net/rpm/mullvad-keyring.asc
+includepkgs=mullvad-vpn

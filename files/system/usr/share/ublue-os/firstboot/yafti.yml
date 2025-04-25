@@ -87,6 +87,15 @@ screens:
             - Flatseal (Permission Manager): com.github.tchx84.Flatseal
             - Warehouse (App Installer/Manager): io.github.flattool.Warehouse
 
+  can-we-harden-your-kargs:
+    source: yafti.screen.consent
+    values:
+      title: Kernel arguments hardening
+      description: |
+        This step will enable hardening for kernel arguments.
+      actions:
+        - run: ujust set-kargs-hardening non-interactive
+
   final-screen:
     source: yafti.screen.title
     values:

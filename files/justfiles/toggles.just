@@ -137,10 +137,10 @@ toggle-gnome-extensions:
     GSETTING="org.gnome.shell allow-extension-installation"
     if $(gsettings get $GSETTING); then
       gsettings reset $GSETTING
-      echo "Support for GNOME user extensions have been disabled"
+      echo "Support for GNOME user extensions is now disabled"
     else
       gsettings set $GSETTING true
-      echo "Support for GNOME user extensions have been enabled"
+      echo "Support for GNOME user extensions is now enabled"
     fi
 
 # Toggle Xwayland support

@@ -430,3 +430,15 @@ toggle-mac-randomization:
         echo "MAC randomization enabled."
         systemctl restart NetworkManager
     fi
+
+# Toggle GNOME Thumbnailer
+toggle-gnome-thumbnailer:
+    #!/usr/bin/bash
+    GSETTING="org.gnome.desktop.thumbnailers disable-all"
+    if $(gsettings get $GSETTING); then
+      gsettings set $GSETTING false
+      echo "The GNOME thumbnailer is now enabled"
+    else
+      gsettings set $GSETTING true
+      echo "The GNOME thumbnailer is now disabled"
+    fi

@@ -6,7 +6,7 @@ set-kargs-hardening MODE="":
         echo 'WARNING: Single quotes in the argument are forbidden to avoid command execution'
         exit 1
     fi
-    if [[ "$mode" != "silent" ]]; then
+    if [[ "$mode" != "non-interactive" ]]; then
         read -rp "Do you need support for 32-bit processes/syscalls? (This is mostly used by legacy software, with some exceptions, such as Steam) [y/N]: " YES
         if [[ "$YES" == [Yy]* ]]; then
             echo "Keeping 32-bit support."

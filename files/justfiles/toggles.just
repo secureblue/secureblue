@@ -134,6 +134,7 @@ toggle-gnome-jit-js:
 # Toggle support for using GNOME user extensions
 toggle-gnome-extensions:
     #!/usr/bin/bash
+    set -euo pipefail
     GSETTING="org.gnome.shell allow-extension-installation"
     if $(gsettings get $GSETTING); then
       gsettings reset $GSETTING

@@ -434,6 +434,7 @@ toggle-mac-randomization:
 # Toggle GNOME Thumbnailer
 toggle-gnome-thumbnailer:
     #!/usr/bin/bash
+    set -euo pipefail
     GSETTING="org.gnome.desktop.thumbnailers disable-all"
     if $(gsettings get $GSETTING); then
       gsettings set $GSETTING false

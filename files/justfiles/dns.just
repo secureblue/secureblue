@@ -50,7 +50,9 @@ dns-selector:
                 rm $policy_file
                 echo "Removed browser policy."
             fi
-            rm $resolved_conf
+            if [[ -f "$resolved_conf" ]]; then
+                rm $resolved_conf
+            fi
             systemctl restart systemd-resolved
             echo "Configuration file for resolved removed and service restarted."
             exit 0
@@ -299,10 +301,10 @@ dns-selector:
     EOF
     else
         read -rp "Would you like the resolver to be set in the default browser (Trivalent) via management policy? [y/N] " set_browser_policy
-        if [[ "$set_browser_policy" == [Yy]* && "$resolver_selection" == 5 ]]; then
+        if [[ "$set_browser_policy" == [Yy]* && "$resolver_selection" == 6 ]]; then
             read -rp "Please enter the second resolver's HTTPS address (e.g. 'https://security.cloudflare-dns.com/dns-query'): " resolver_https_address
         fi
-    
+
         resolved_conf_dns_string=""
         resolved_conf_dns_string+="DNS="
         resolved_conf_dns_string+=" $resolver_ipv4_address"
@@ -319,12 +321,12 @@ dns-selector:
                 resolved_conf_dns_string+="#$resolver_hostname"
             fi
         fi
-    
+
         resolved_conf_dnssec_string=""
         if [[ "$resolver_dnssec" == [Yy]* ]]; then
             resolved_conf_dnssec_string+="DNSSEC=true"
         fi
-    
+
         cat << EOF > "$resolved_conf"
     [Resolve]
     DNSOverTLS=true

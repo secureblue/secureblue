@@ -21,12 +21,13 @@ dns-selector:
     resolver_https_address=""
     set_browser_policy=""
     opportunistic=""
+    clear_state=""
 
     echo "Below will be some options to set the DNS resolver for systemd-resolved."
     echo "All resolvers support DNS-over-TLS (DoT) or DNS-over-QUIC (DoQ), DNS-over-HTTPS (DoH), and DNSSEC."
     echo "Please select which DNS resolver you would like to set:"
     echo "    0) Network Default - do nothing, rely purely on the network for resolution"
-    echo "    1) Opportunistic Security - try to upgrade to DoT (encrypted DNS) resolution and/or DNSSEC enforcement (this configuration may break networking)"
+    echo "    1) Opportunistic Upgrade - try to upgrade to DoT (encrypted DNS) resolution and/or DNSSEC enforcement (this configuration may break networking)"
     echo "    2) Control D - has content filtering, anycast"
     echo "    3) Mullvad - has content filtering, anycast"
     echo "    4) Cloudflare - very fast with some data collection, anycast"
@@ -45,23 +46,11 @@ dns-selector:
     echo "" # blank space
     case "$resolver_selection" in
         0)
+            clear_state="1"
             echo "Resetting resolved to default state."
-            if [[ -f "$policy_file" ]]; then
-                rm $policy_file
-                echo "Removed browser policy."
-            fi
-            if [[ -f "$resolved_conf" ]]; then
-                rm $resolved_conf
-            fi
-            systemctl restart systemd-resolved
-            echo "Configuration file for resolved removed and service restarted."
-            exit 0
             ;;
         1)
-            if [[ -f "$policy_file" ]]; then
-                rm $policy_file
-                echo "Removed browser policy."
-            fi
+            clear_state="1"
             opportunistic="1"
             ;;
         2)
@@ -297,12 +286,24 @@ dns-selector:
             ;;
     esac
 
+    if [[ "$clear_state" == "1" ]]; then
+        if [[ -f "$policy_file" ]]; then
+            rm $policy_file
+            echo "Removed browser policy."
+        fi
+    fi
+
     if [[ "$opportunistic" == "1" ]]; then
         cat << EOF > "$resolved_conf"
     [Resolve]
     DNSOverTLS=opportunistic
     DNSSEC=allow-downgrade
     EOF
+    elif [[ "$clear_state" == "1" ]]; then
+        if [[ -f "$resolved_conf" ]]; then
+            rm $resolved_conf
+        fi
+        echo "Configuration file for resolved removed."
     else
         read -rp "Would you like the resolver to be set in the default browser (Trivalent) via management policy? [y/N] " set_browser_policy
         if [[ "$set_browser_policy" == [Yy]* && "$resolver_selection" == 6 ]]; then
@@ -341,7 +342,7 @@ dns-selector:
 
     systemctl restart systemd-resolved
 
-    echo "Config file for resolved configured with selected resolver and service restarted."
+    echo "Configation for resolved set and service restarted."
 
     if [[ "$set_browser_policy" != [Yy]* ]]; then
         exit 0

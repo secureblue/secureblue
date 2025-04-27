@@ -291,7 +291,7 @@ dns-selector:
             ;;
     esac
 
-    if [ opportunistic == "1" ] then;
+    if [ "$opportunistic" == "1" ]; then
         cat << EOF > "$resolved_conf"
     [Resolve]
     DNSOverTLS=opportunistic

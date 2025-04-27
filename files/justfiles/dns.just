@@ -58,6 +58,10 @@ dns-selector:
             exit 0
             ;;
         1)
+            if [[ -f "$policy_file" ]]; then
+                rm $policy_file
+                echo "Removed browser policy."
+            fi
             opportunistic="1"
             ;;
         2)
@@ -133,7 +137,11 @@ dns-selector:
             echo "    0) No filtering"
             echo "    1) Standard: Ad and tracker filtering"
             echo "    2) Base: Standard + malware filtering"
-            echo "    3) Extended: Base + social media filtering"
+            echo "    3) Extended: Base + soci
+            if [[ -f "$policy_file" ]]; then
+                rm $policy_file
+                echo "Removed browser policy."
+            fial media filtering"
             echo "    4) Family: Base + gambling and adult content filtering"
             echo "    5) All: Family + social media filtering"
             while [[ "$valid_input" == "0" ]]; do

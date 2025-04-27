@@ -25,8 +25,8 @@ dns-selector:
     echo "Below will be some options to set the DNS resolver for systemd-resolved."
     echo "All resolvers support DNS-over-TLS (DoT) or DNS-over-QUIC (DoQ), DNS-over-HTTPS (DoH), and DNSSEC."
     echo "Please select which DNS resolver you would like to set:"
-    echo "    0) Network Default - do nothing special, rely purely on the network for resolution"
-    echo "    1) Opportunistic Security - try to upgrade to DoT (encrypted) resolution and/or DNSSEC enforcement (this may break networking)"
+    echo "    0) Network Default - do nothing, rely purely on the network for resolution"
+    echo "    1) Opportunistic Security - try to upgrade to DoT (encrypted DNS) resolution and/or DNSSEC enforcement (this configuration may break networking)"
     echo "    2) Control D - has content filtering, anycast"
     echo "    3) Mullvad - has content filtering, anycast"
     echo "    4) Cloudflare - very fast with some data collection, anycast"
@@ -293,7 +293,7 @@ dns-selector:
             ;;
     esac
 
-    if [ "$opportunistic" == "1" ]; then
+    if [[ "$opportunistic" == "1" ]]; then
         cat << EOF > "$resolved_conf"
     [Resolve]
     DNSOverTLS=opportunistic

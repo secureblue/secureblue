@@ -10,3 +10,6 @@ enabled-extensions = []
 gtk-theme='adw-gtk3'
 font-antialiasing="rgba"
 monospace-font-name="Monospace 12"
+
+[org.gnome.desktop.thumbnailers]
+disable-all=true

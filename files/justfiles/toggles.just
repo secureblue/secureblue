@@ -417,16 +417,8 @@ toggle-mac-randomization:
             randomization_level=stable
             echo "Selected state: per-network (stable)"
         fi
-        cat <<EOL > $RAND_MAC_FILE
-    [device-mac-randomization]
-    # "yes" is already the default for scanning
-    wifi.scan-rand-mac-address=yes
-
-    [connection-mac-randomization]
-    # Generate a random MAC for each Network and associate the two permanently.
-    ethernet.cloned-mac-address=stable
-    wifi.cloned-mac-address=$randomization_level
-    EOL
+        cp /usr$RAND_MAC_FILE $RAND_MAC_FILE
+        sed -i "s/wifi.cloned-mac-address=stable/wifi.cloned-mac-address=$randomization_level/" $RAND_MAC_FILE
         echo "MAC randomization enabled."
         systemctl restart NetworkManager
     fi

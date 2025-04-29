@@ -410,15 +410,12 @@ toggle-mac-randomization:
         randomization_choice=""
         read -rp "Do you want to use per-connection Wi-Fi MAC address randomization? [y/N] " randomization_choice
 
-        if [[ "$randomization_choice" == [Yy]* ]]; then
-            randomization_level=random
-            echo "Selected state: per-connection"
-        else
-            randomization_level=stable
-            echo "Selected state: per-network (stable)"
-        fi
         cp /usr$RAND_MAC_FILE $RAND_MAC_FILE
-        sed -i "s/wifi.cloned-mac-address=stable/wifi.cloned-mac-address=$randomization_level/" $RAND_MAC_FILE
-        echo "MAC randomization enabled."
+        if [[ "$randomization_choice" == [Yy]* ]]; then
+            sed -i 's/wifi.cloned-mac-address=stable/wifi.cloned-mac-address=random/g' $RAND_MAC_FILE
+            echo "Per-connection MAC randomization enabled."
+        else
+            echo "Stable MAC randomization enabled."
+        fi
         systemctl restart NetworkManager
     fi

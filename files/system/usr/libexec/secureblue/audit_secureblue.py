@@ -17,7 +17,7 @@ import sys
 # All subprocess calls we make have trusted inputs and do not use shell=True.
 import subprocess  # nosec
 
-from collections.abc import Callable
+from collections.abc import Callable, Iterable
 from typing import Any, AsyncGenerator, Generator
 
 
@@ -250,6 +250,24 @@ def command_succeeds(args: str | list[str]) -> bool:
     return subprocess.run(args, capture_output=True, check=False).returncode == 0  # nosec
 
 
+def parse_config(stream: Iterable[str], *, sep: str = "=", comment: str = "#"):
+    """
+    Parse a text stream as a simple configuration file, yielding a sequence of keys and values
+    separated by the given separator ("=" by default).
+    """
+    for line in stream:
+        line = line.strip()
+        if not line or line.startswith(comment):
+            continue
+        split = line.split(sep, maxsplit=1)
+        key = split[0].strip()
+        if len(split) == 2:
+            value = split[1].strip()
+        else:
+            value = None
+        yield key, value
+
+
 ###############################################################################
 # Checks to be run go below this line.
 ###############################################################################
@@ -299,11 +317,7 @@ def audit_sysctl(_state):
     with open("/usr/etc/sysctl.d/60-hardening.conf", "r", encoding="utf-8") as f:
         conf = f.readlines()
     sysctl_expected = {}
-    for line in conf:
-        line = line.strip()
-        if not line or line[0] == "#":
-            continue
-        key, value = line.split("=", maxsplit=1)
+    for key, value in parse_config(conf):
         sysctl_expected[key.strip()] = value.strip()
     status = SUCCESS
     sysctl_errors = []
@@ -351,7 +365,7 @@ def audit_modprobe(state):
             blacklisted_modules.append(words[1])
     unwanted_modules = []
     with open("/proc/modules", "r", encoding="utf-8") as f:
-        for line in f.readlines():
+        for line in f:
             mod = line.split()[0]
             if mod in blacklisted_modules:
                 unwanted_modules.append(mod)
@@ -464,14 +478,14 @@ def audit_dns(_state):
             with open(
                 "/etc/systemd/resolved.conf.d/10-securedns.conf", "r", encoding="utf-8"
             ) as f:
-                for line in f.readlines():
-                    if line.strip() == "DNSSEC=true":
+                for key, value in parse_config(f):
+                    if key == "DNSSEC" and value == "true":
                         dnssec = True
-                    if line.strip() == "DNSOverTLS=true":
+                    if key == "DNSOverTLS" and value == "true":
                         dot = True
                     if dnssec and dot:
                         break
-        except FileNotFoundError:
+        except (FileNotFoundError, PermissionError):
             pass
         if dnssec and dot:
             status = SUCCESS
@@ -486,6 +500,33 @@ def audit_dns(_state):
                 To start and enable it, run:
                 $ systemctl enable --now systemd-resolved"""
     yield Report("Ensuring system DNS resolution is secure", status), rec
+
+
+@audit
+def audit_mac_randomization(_state):
+    """Ensure MAC randomization is enabled."""
+    status = FAILURE
+    try:
+        with open("/etc/NetworkManager/conf.d/rand_mac.conf", "r", encoding="utf-8") as f:
+            ethernet = False
+            wifi = False
+            for key, value in parse_config(f):
+                if key == "ethernet.cloned-mac-address" and value in ["random", "stable"]:
+                    ethernet = True
+                if key == "wifi.cloned-mac-address" and value in ["random", "stable"]:
+                    wifi = True
+                if ethernet and wifi:
+                    status = SUCCESS
+                    break
+    except (FileNotFoundError, PermissionError):
+        pass
+    if status == FAILURE:
+        rec = """MAC randomization is not enabled
+                To enable it, run:
+                $ ujust toggle-mac-randomization"""
+    else:
+        rec = None
+    yield Report("Ensuring MAC randomization is enabled", status), rec
 
 
 @audit
@@ -627,8 +668,8 @@ def audit_kde_ghns(_state):
     try:
         with open("/etc/xdg/kdeglobals", "r", encoding="utf-8") as f:
             status = FAILURE
-            for line in f.readlines():
-                if line.strip() == "ghns=false":
+            for key, value in parse_config(f):
+                if key == "ghns" and value == "false":
                     status = SUCCESS
     except FileNotFoundError:
         return
@@ -645,6 +686,9 @@ def audit_hardened_malloc(_state):
     except FileNotFoundError:
         status = FAILURE
         warnings.append("ld.so.preload not found")
+    except PermissionError:
+        status = FAILURE
+        warnings.append("Permission denied to read ld.so.preload")
     else:
         if preloaded == ["libhardened_malloc.so"]:
             status = SUCCESS

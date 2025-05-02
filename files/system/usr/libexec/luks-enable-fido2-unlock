@@ -74,8 +74,10 @@ if [[ ! -L "$CRYPT_DISK" ]]; then
   exit 1
 fi
 
-if cryptsetup luksDump "$CRYPT_DISK" | grep systemd-fido2 > /dev/null; then
-  KEYSLOT=$(cryptsetup luksDump "$CRYPT_DISK" | sed -n '/systemd-fido2$/,/Keyslot:/p' | grep Keyslot|awk '{print $2}')
+CRYPT_DISK_INFO=$(cryptsetup luksDump "$CRYPT_DISK")
+KEYSLOT=$(echo "$CRYPT_DISK_INFO" | sed -n '/systemd-fido2$/,/Keyslot:/p' | grep Keyslot|awk '{print $2}')
+
+if echo "$CRYPT_DISK_INFO" | grep systemd-fido2 > /dev/null; then
   echo "FIDO2 already present in LUKS keyslot $KEYSLOT of $CRYPT_DISK."
   read -p "Wipe it and re-enroll? (y/N): " -n 1 -r
   echo
@@ -91,7 +93,12 @@ fi
 echo "Enrolling FIDO2 unlock requires your existing LUKS unlock password"
 systemd-cryptenroll --fido2-device=auto "$CRYPT_DISK"
 cp /etc/crypttab /etc/crypttab.known-good
-sed -i "s/UUID=$RD_LUKS_UUID none discard/UUID=$RD_LUKS_UUID - fido2-device=auto - discard/" /etc/crypttab
+sed -i "s/UUID=$(echo "$RD_LUKS_UUID" | cut -c6-) none discard/UUID=$(echo "$RD_LUKS_UUID" | cut -c6-) none - fido2-device=auto - discard/" /etc/crypttab
+
+# Sets the new fido2 keyslot as preferred if it's the only one currently configured. (Users with more than one configured are presumed advanced and capable of their own priority management.)
+if [ echo "$CRYPT_DISK_INFO" | grep -c "systemd-fido2" -eq "1" ]; then
+  cryptsetup config --key-slot "$keyslot" --priority "prefer" "$CRYPT_DISK"
+fi
 
 echo "Creating backup key"
 systemd-cryptenroll --recovery-key "$CRYPT_DISK" > "/var/home/$SUDO_USER/luks_backup_key.txt"
@@ -111,7 +118,7 @@ else
 fi
 
 echo "Congratulations!"
-echo "Your system is now configured to use FIDO2 unlocking via the hardware key you used earlier. If you previously used TPM luks unlocking, ensure you run 'ujust remove-luks-tpm-unlock'. Otherwise, the system will likely default to TPM auto-unlocking on boot."
+echo "Your system is now configured to use FIDO2 unlocking via the hardware key you used earlier. If you previously used TPM luks unlocking, ensure you run 'ujust remove-luks-tpm-unlock'. Otherwise, the system will continue to accept the comparatively insecure tpm credentials."
 echo ""
 echo "REMINDER: Store on another computer, on an encrypted drive, the script created backup key (which is at /var/home/$SUDO_USER/luks_backup_key.txt)"
 

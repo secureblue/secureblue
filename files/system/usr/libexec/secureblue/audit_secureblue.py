@@ -76,12 +76,15 @@ class Check:
         self,
         name: str,
         call: AsyncGenerator[Any, [dict[str, Any]]],
+        *,
+        stateful: bool = False,
         category: str | None = None,
         dependencies: list[str] | None = None,
     ):
         self.name = name
         self.call = call
         self.category = category
+        self.stateful = stateful
         if dependencies is None:
             self.dependencies = []
         else:
@@ -90,11 +93,19 @@ class Check:
         self.reports: list[Report] = []
         self.recs: list[str] = []
 
-    async def run(self, state: dict[str, Any], rerun: bool = False) -> AsyncGenerator[Report, ...]:
+    async def run(
+        self, state: dict[str, Any] | None = None, rerun: bool = False
+    ) -> AsyncGenerator[Report, ...]:
         """Run the check and store the results."""
         if self.done and not rerun:
             return
-        async for result in (self.call)(state):
+        if self.stateful:
+            if state is None:
+                state = {}
+            gen = (self.call)(state)
+        else:
+            gen = (self.call)()
+        async for result in gen:
             if isinstance(result, tuple):
                 report, recs = result
                 if not isinstance(recs, list):
@@ -182,14 +193,15 @@ def make_check(
     """Make a Check object from a generator."""
     if isinstance(f, Check):
         return f
+    stateful = bool(len(inspect.signature(f).parameters))
     if inspect.isasyncgenfunction(f):
-        return Check(name=f.__name__, call=f)
+        return Check(name=f.__name__, call=f, stateful=stateful)
 
     async def f_async(*args, **kwargs):
         for item in f(*args, **kwargs):
             yield item
 
-    return Check(name=f.__name__, call=f_async)
+    return Check(name=f.__name__, call=f_async, stateful=stateful)
 
 
 def audit(f: Check | AsyncGenerator[Any, [dict[str, Any]]]) -> Check:
@@ -275,7 +287,7 @@ def parse_config(stream: Iterable[str], *, sep: str = "=", comment: str = "#"):
 
 @audit
 @categorize("kargs")
-def audit_kargs(_state):
+def audit_kargs():
     """Check for hardened kernel arguments."""
     kargs_current = command_stdout(["rpm-ostree", "kargs"]).split()
     kargs_expected = [
@@ -312,7 +324,7 @@ def audit_kargs(_state):
 
 
 @audit
-def audit_sysctl(_state):
+def audit_sysctl():
     """Check for sysctl overrides."""
     with open("/usr/etc/sysctl.d/60-hardening.conf", "r", encoding="utf-8") as f:
         conf = f.readlines()
@@ -339,7 +351,7 @@ def audit_sysctl(_state):
 
 
 @audit
-def audit_signed_image(_state):
+def audit_signed_image():
     """Check that the secureblue image is signed."""
     ostree_status = command_stdout(["rpm-ostree", "status"])
     if "● ostree-image-signed" in ostree_status:
@@ -397,7 +409,7 @@ def audit_ptrace(state):
 
 
 @audit
-def audit_authselect(_state):
+def audit_authselect():
     """Ensure no authselect overrides have been made."""
     cmp = filecmp.dircmp("/usr/etc/authselect", "/etc/authselect", shallow=False, ignore=[])
     if cmp.left_only or cmp.right_only or cmp.diff_files or cmp.funny_files:
@@ -408,7 +420,7 @@ def audit_authselect(_state):
 
 
 @audit
-def audit_container_policy(_state):
+def audit_container_policy():
     """Ensure container policy has not been modified."""
     unmodified = filecmp.cmp("/usr/etc/containers/policy.json", "/etc/containers/policy.json")
     local_override = os.path.isfile(os.path.expanduser("~/.config/containers/policy.json"))
@@ -420,7 +432,7 @@ def audit_container_policy(_state):
 
 
 @audit
-def audit_unconfined_userns(_state):
+def audit_unconfined_userns():
     """Ensure unconfined-domain processes cannot create user namespaces."""
     if command_stdout(["ujust", "check-unconfined-userns-state"]) == "disabled":
         status = SUCCESS
@@ -434,7 +446,7 @@ def audit_unconfined_userns(_state):
 
 
 @audit
-def audit_container_userns(_state):
+def audit_container_userns():
     """Ensure container-domain processes cannot create user namespaces."""
     if command_stdout(["ujust", "check-container-userns-state"]) == "disabled":
         status = SUCCESS
@@ -448,7 +460,7 @@ def audit_container_userns(_state):
 
 
 @audit
-def audit_usbguard(_state):
+def audit_usbguard():
     """Ensure usbguard is active."""
     if command_succeeds("systemctl is-active --quiet usbguard".split()):
         status = SUCCESS
@@ -458,7 +470,7 @@ def audit_usbguard(_state):
 
 
 @audit
-def audit_chronyd(_state):
+def audit_chronyd():
     """Ensure chronyd is active."""
     if command_succeeds("systemctl is-active --quiet chronyd".split()):
         status = SUCCESS
@@ -468,7 +480,7 @@ def audit_chronyd(_state):
 
 
 @audit
-def audit_dns(_state):
+def audit_dns():
     """Ensure system DNS resolution is active and secure."""
     rec = None
     if command_succeeds("systemctl is-active --quiet systemd-resolved".split()):
@@ -503,7 +515,7 @@ def audit_dns(_state):
 
 
 @audit
-def audit_mac_randomization(_state):
+def audit_mac_randomization():
     """Ensure MAC randomization is enabled."""
     status = FAILURE
     try:
@@ -530,7 +542,7 @@ def audit_mac_randomization(_state):
 
 
 @audit
-def audit_rpm_ostree_timer(_state):
+def audit_rpm_ostree_timer():
     """Ensure rpm-ostree automatic updates are enabled."""
     if command_succeeds("systemctl is-enabled --quiet rpm-ostreed-automatic.timer".split()):
         status = SUCCESS
@@ -544,7 +556,7 @@ def audit_rpm_ostree_timer(_state):
 
 
 @audit
-def audit_podman_auto_update(_state):
+def audit_podman_auto_update():
     """Ensure podman automatic updates are enabled."""
     if command_succeeds("systemctl is-enabled --quiet podman-auto-update.timer".split()):
         status = SUCCESS
@@ -558,7 +570,7 @@ def audit_podman_auto_update(_state):
 
 
 @audit
-def audit_podman_global_auto_update(_state):
+def audit_podman_global_auto_update():
     """Ensure podman automatic updates are enabled globally."""
     if command_succeeds("systemctl --global is-enabled --quiet podman-auto-update.timer".split()):
         status = SUCCESS
@@ -572,7 +584,7 @@ def audit_podman_global_auto_update(_state):
 
 
 @audit
-def audit_flatpak_auto_update(_state):
+def audit_flatpak_auto_update():
     """Ensure flatpak automatic updates are enabled."""
     if not command_succeeds("command -v flatpak".split()):
         return
@@ -598,7 +610,7 @@ def audit_flatpak_auto_update(_state):
 
 
 @audit
-def audit_wheel(_state):
+def audit_wheel():
     """Ensure the current user is not in the wheel group."""
     if "wheel" in command_stdout("groups").split():
         status = FAILURE
@@ -608,7 +620,7 @@ def audit_wheel(_state):
 
 
 @audit
-def audit_xwayland(_state):
+def audit_xwayland():
     """Check whether xwayland is disabled."""
     if os.path.isfile("/etc/systemd/user/org.gnome.Shell@wayland.service.d/override.conf"):
         status = SUCCESS
@@ -630,7 +642,7 @@ def audit_xwayland(_state):
 
 
 @audit
-def audit_gnome_extensions(_state):
+def audit_gnome_extensions():
     """Ensure GNOME user extensions are not allowed to be installed."""
     if not command_succeeds("command -v gnome-shell".split()):
         return
@@ -643,7 +655,7 @@ def audit_gnome_extensions(_state):
 
 
 @audit
-def audit_selinux(_state):
+def audit_selinux():
     """Ensure SELinux is in enforcing mode."""
     if command_stdout("getenforce") == "Enforcing":
         status = SUCCESS
@@ -653,7 +665,7 @@ def audit_selinux(_state):
 
 
 @audit
-def audit_environment_file(_state):
+def audit_environment_file():
     """Ensure /etc/environment has not been modified."""
     if filecmp.cmp("/usr/etc/environment", "/etc/environment"):
         status = SUCCESS
@@ -663,7 +675,7 @@ def audit_environment_file(_state):
 
 
 @audit
-def audit_kde_ghns(_state):
+def audit_kde_ghns():
     """Ensure KDE GHNS is disabled."""
     try:
         with open("/etc/xdg/kdeglobals", "r", encoding="utf-8") as f:
@@ -677,7 +689,7 @@ def audit_kde_ghns(_state):
 
 
 @audit
-def audit_hardened_malloc(_state):
+def audit_hardened_malloc():
     """Ensure hardened_malloc is set to be preloaded in place of the default system malloc."""
     warnings = []
     try:
@@ -708,7 +720,7 @@ def audit_hardened_malloc(_state):
 
 
 @audit
-def audit_secureboot(_state):
+def audit_secureboot():
     """Ensure secureboot is enabled."""
     if command_stdout(["mokutil", "--sb-state"], check=False) == "SecureBoot enabled":
         status = SUCCESS
@@ -718,7 +730,7 @@ def audit_secureboot(_state):
 
 
 @audit
-def audit_bash_env_lockdown(_state):
+def audit_bash_env_lockdown():
     """Ensure the current user's bash environment is locked down."""
     bash_env_paths = map(
         os.path.expanduser,
@@ -765,7 +777,7 @@ def audit_bash_env_lockdown(_state):
 
 @audit
 @categorize("flatpak")
-def audit_flatpak_remotes(_state):
+def audit_flatpak_remotes():
     """Audit flatpak remotes."""
     if not command_succeeds("command -v flatpak".split()):
         return

@@ -17,7 +17,7 @@ import sys
 # All subprocess calls we make have trusted inputs and do not use shell=True.
 import subprocess  # nosec
 
-from collections.abc import Callable, Iterable
+from collections.abc import Callable, Iterable, Sequence
 from typing import Any, AsyncGenerator, Generator
 
 
@@ -32,7 +32,7 @@ class Status(enum.Enum):
     WARNING = enum.auto()
     FAILURE = enum.auto()
 
-    def in_color(self) -> str:
+    def to_str_in_color(self) -> str:
         """Colored text representation of the status."""
         match self:
             case Status.SUCCESS:
@@ -41,7 +41,7 @@ class Status(enum.Enum):
                 color_code = 33  # yellow
             case Status.FAILURE:
                 color_code = 31  # red
-        return f"\x1b\x5b{color_code}m{self.name}\x1b\x5b39m"
+        return f"\x1b[{color_code}m{self.name}\x1b[39m"
 
 
 SUCCESS = Status.SUCCESS
@@ -52,7 +52,14 @@ FAILURE = Status.FAILURE
 class Report:
     """A result of a check to be reported."""
 
-    def __init__(self, desc: str, status: Status, warnings: str | list[str] | None = None):
+    def __init__(
+        self,
+        desc: str,
+        status: Status,
+        *,
+        warnings: str | list[str] | None = None,
+        recs: str | list[str] | None = None,
+    ):
         self.description = desc
         self.status = status
         if warnings is None:
@@ -61,12 +68,18 @@ class Report:
             self.warnings = [warnings]
         else:
             self.warnings = warnings
+        if recs is None:
+            self.recs = []
+        elif isinstance(recs, str):
+            self.recs = [recs]
+        else:
+            self.recs = recs
 
     def __str__(self) -> str:
-        s = f"{self.description + '...':<68} [ {self.status.in_color()} ]"
+        report_str = f"{self.description + '...':<68} [ {self.status.to_str_in_color()} ]"
         for warning in self.warnings:
-            s += f"\n> {warning}"
-        return s
+            report_str += f"\n> {warning}"
+        return report_str
 
 
 class Check:
@@ -75,14 +88,14 @@ class Check:
     def __init__(
         self,
         name: str,
-        call: AsyncGenerator[Any, [dict[str, Any]]],
+        callback: Callable[..., AsyncGenerator[Report]],
         *,
         stateful: bool = False,
         category: str | None = None,
-        dependencies: list[str] | None = None,
+        dependencies: Sequence[str] | None = None,
     ):
         self.name = name
-        self.call = call
+        self.callback = callback
         self.category = category
         self.stateful = stateful
         if dependencies is None:
@@ -95,40 +108,31 @@ class Check:
 
     async def run(
         self, state: dict[str, Any] | None = None, rerun: bool = False
-    ) -> AsyncGenerator[Report, ...]:
+    ) -> AsyncGenerator[Report]:
         """Run the check and store the results."""
         if self.done and not rerun:
             return
         if self.stateful:
             if state is None:
                 state = {}
-            gen = (self.call)(state)
+            gen = (self.callback)(state)
         else:
-            gen = (self.call)()
-        async for result in gen:
-            if isinstance(result, tuple):
-                report, recs = result
-                if not isinstance(recs, list):
-                    if recs is None:
-                        recs = []
-                    else:
-                        recs = [recs]
-                self.reports.append(report)
-                self.recs += recs
-                yield report
-            else:
-                yield result
+            gen = (self.callback)()
+        async for report in gen:
+            self.reports.append(report)
+            self.recs += report.recs
+            yield report
         self.done = True
 
 
 def bold(text: str) -> str:
     """Bolds the text using ANSI escape codes."""
-    return f"\x1b\x5b1m{text}\x1b\x5b22m"
+    return f"\x1b[1m{text}\x1b[22m"
 
 
 def print_heading(text: str, width: int = 80):
     """Formats the text as a heading and prints to the terminal."""
-    print(f"\n\x1b\x5b1;38;5;228m\x1b\x5b48;5;63m{text}\x1b\x5b0m")
+    print(f"\n\x1b[1;38;5;228m\x1b[48;5;63m{text}\x1b[0m")
     print("=" * width)
 
 
@@ -188,23 +192,25 @@ global_audit = Audit()
 
 
 def make_check(
-    f: Check | AsyncGenerator[Any, [dict[str, Any]]] | Generator[Any, [dict[str, Any]]],
+    f: Check | Callable[..., AsyncGenerator[Report]] | Callable[..., Generator[Report]],
 ) -> Check:
     """Make a Check object from a generator."""
     if isinstance(f, Check):
         return f
     stateful = bool(len(inspect.signature(f).parameters))
     if inspect.isasyncgenfunction(f):
-        return Check(name=f.__name__, call=f, stateful=stateful)
+        return Check(name=f.__name__, callback=f, stateful=stateful)
 
     async def f_async(*args, **kwargs):
         for item in f(*args, **kwargs):
             yield item
 
-    return Check(name=f.__name__, call=f_async, stateful=stateful)
+    return Check(name=f.__name__, callback=f_async, stateful=stateful)
 
 
-def audit(f: Check | AsyncGenerator[Any, [dict[str, Any]]]) -> Check:
+def audit(
+    f: Check | Callable[..., AsyncGenerator[Report]] | Callable[..., Generator[Report]],
+) -> Check:
     """Add a check to the global audit system."""
     check = make_check(f)
     global_audit.add_check(check)
@@ -233,7 +239,7 @@ def categorize(cat: str) -> Callable[..., Check]:
     return add_category
 
 
-def command_stdout(args: str | list[str], check: bool = True) -> str:
+def command_stdout(*args: str, check: bool = True) -> str:
     """Run a command in the shell and return the contents of stdout."""
     # We only call this with trusted inputs and do not set shell=True.
     return subprocess.run(args, capture_output=True, check=check, text=True).stdout.strip()  # nosec
@@ -252,17 +258,22 @@ async def async_command_stdout(cmd: str, *args: str, check: bool = True) -> str:
     if check and sub.returncode != 0:
         err = f"async command `{cmd} {' '.join(args)}` returned nonzero exit code {sub.returncode}"
         raise AsyncProcessError(err)
+    if sub.stdout is None:
+        err = f"Failed to get stdout for async command `{cmd} {' '.join(args)}`"
+        raise AsyncProcessError(err)
     output = await sub.stdout.read()
     return output.decode("utf-8", errors="replace").strip()
 
 
-def command_succeeds(args: str | list[str]) -> bool:
+def command_succeeds(*args: str) -> bool:
     """Run a command in the shell and return the contents of stdout."""
     # We only call this with trusted inputs and do not set shell=True.
     return subprocess.run(args, capture_output=True, check=False).returncode == 0  # nosec
 
 
-def parse_config(stream: Iterable[str], *, sep: str = "=", comment: str = "#"):
+def parse_config(
+    stream: Iterable[str], *, sep: str = "=", comment: str = "#"
+) -> Generator[tuple[str, str | None]]:
     """
     Parse a text stream as a simple configuration file, yielding a sequence of keys and values
     separated by the given separator ("=" by default).
@@ -289,7 +300,7 @@ def parse_config(stream: Iterable[str], *, sep: str = "=", comment: str = "#"):
 @categorize("kargs")
 def audit_kargs():
     """Check for hardened kernel arguments."""
-    kargs_current = command_stdout(["rpm-ostree", "kargs"]).split()
+    kargs_current = command_stdout("rpm-ostree", "kargs").split()
     kargs_expected = [
         "init_on_alloc=1",
         "init_on_free=1",
@@ -340,7 +351,7 @@ def audit_sysctl():
         sysctl_errors.append("/etc/sysctl.d/60-hardening.conf has been modified")
     for sysctl, expected in sysctl_expected.items():
         try:
-            actual = command_stdout(["sysctl", "-bn", sysctl])
+            actual = command_stdout("sysctl", "-bn", sysctl)
         except subprocess.CalledProcessError:
             continue
         actual = re.sub(r"\s+", " ", actual)
@@ -353,7 +364,7 @@ def audit_sysctl():
 @audit
 def audit_signed_image():
     """Check that the secureblue image is signed."""
-    ostree_status = command_stdout(["rpm-ostree", "status"])
+    ostree_status = command_stdout("rpm-ostree", "status")
     if "● ostree-image-signed" in ostree_status:
         status = SUCCESS
         recs = None
@@ -362,7 +373,7 @@ def audit_signed_image():
         recs = """The current image is not signed.
             To rebase to a signed image download and run or re-run install_secureblue.sh
             from the secureblue github."""
-    yield Report("Ensuring a signed image is in use", status), recs
+    yield Report("Ensuring a signed image is in use", status, recs=recs)
 
 
 @audit
@@ -392,19 +403,22 @@ def audit_modprobe(state):
         status = FAILURE
         warnings.append(f"{mod} is in blacklist.conf but it is loaded")
     state["bluetooth_loaded"] = "bluetooth" in unwanted_modules
-    yield Report("Ensuring no modprobe overrides", status, warnings)
+    yield Report("Ensuring no modprobe overrides", status, warnings=warnings)
 
 
 @audit
 def audit_ptrace(state):
     """Ensure the ptrace syscall is forbidden."""
     with open("/proc/sys/kernel/yama/ptrace_scope", "r", encoding="utf-8") as f:
-        if f.read().strip() == "3":
+        ptrace_scope = int(f.read())
+    state["ptrace_allowed"] = ptrace_scope < 3
+    match ptrace_scope:
+        case 3:
             status = SUCCESS
-            state["ptrace_allowed"] = False
-        else:
+        case 0:
             status = FAILURE
-            state["ptrace_allowed"] = True
+        case _:
+            status = WARNING
     yield Report("Ensuring ptrace is forbidden", status)
 
 
@@ -434,7 +448,7 @@ def audit_container_policy():
 @audit
 def audit_unconfined_userns():
     """Ensure unconfined-domain processes cannot create user namespaces."""
-    if command_stdout(["ujust", "check-unconfined-userns-state"]) == "disabled":
+    if command_stdout("ujust", "check-unconfined-userns-state") == "disabled":
         status = SUCCESS
         recs = None
     else:
@@ -442,13 +456,13 @@ def audit_unconfined_userns():
         recs = """Unconfined domain user namespace creation is permitted
                 To disallow it, run:
                 $ ujust toggle-unconfined-domain-userns-creation"""
-    yield Report("Ensuring unconfined user namespace creation disallowed", status), recs
+    yield Report("Ensuring unconfined user namespace creation disallowed", status, recs=recs)
 
 
 @audit
 def audit_container_userns():
     """Ensure container-domain processes cannot create user namespaces."""
-    if command_stdout(["ujust", "check-container-userns-state"]) == "disabled":
+    if command_stdout("ujust", "check-container-userns-state") == "disabled":
         status = SUCCESS
         recs = []
     else:
@@ -456,13 +470,13 @@ def audit_container_userns():
         recs = """Container domain user namespace creation is permitted
                 To disallow it, run:
                 $ ujust toggle-container-domain-userns-creation"""
-    yield Report("Ensuring container user namespace creation disallowed", status), recs
+    yield Report("Ensuring container user namespace creation disallowed", status, recs=recs)
 
 
 @audit
 def audit_usbguard():
     """Ensure usbguard is active."""
-    if command_succeeds("systemctl is-active --quiet usbguard".split()):
+    if command_succeeds(*"systemctl is-active --quiet usbguard".split()):
         status = SUCCESS
     else:
         status = FAILURE
@@ -472,7 +486,7 @@ def audit_usbguard():
 @audit
 def audit_chronyd():
     """Ensure chronyd is active."""
-    if command_succeeds("systemctl is-active --quiet chronyd".split()):
+    if command_succeeds(*"systemctl is-active --quiet chronyd".split()):
         status = SUCCESS
     else:
         status = FAILURE
@@ -483,13 +497,11 @@ def audit_chronyd():
 def audit_dns():
     """Ensure system DNS resolution is active and secure."""
     rec = None
-    if command_succeeds("systemctl is-active --quiet systemd-resolved".split()):
+    if command_succeeds(*"systemctl is-active --quiet systemd-resolved".split()):
         dnssec = False
         dot = False
         try:
-            with open(
-                "/etc/systemd/resolved.conf.d/10-securedns.conf", "r", encoding="utf-8"
-            ) as f:
+            with open("/etc/systemd/resolved.conf.d/10-securedns.conf", "r", encoding="utf-8") as f:
                 for key, value in parse_config(f):
                     if key == "DNSSEC" and value == "true":
                         dnssec = True
@@ -511,7 +523,7 @@ def audit_dns():
         rec = """systemd-resolved is inactive
                 To start and enable it, run:
                 $ systemctl enable --now systemd-resolved"""
-    yield Report("Ensuring system DNS resolution is secure", status), rec
+    yield Report("Ensuring system DNS resolution is secure", status, recs=rec)
 
 
 @audit
@@ -538,13 +550,13 @@ def audit_mac_randomization():
                 $ ujust toggle-mac-randomization"""
     else:
         rec = None
-    yield Report("Ensuring MAC randomization is enabled", status), rec
+    yield Report("Ensuring MAC randomization is enabled", status, recs=rec)
 
 
 @audit
 def audit_rpm_ostree_timer():
     """Ensure rpm-ostree automatic updates are enabled."""
-    if command_succeeds("systemctl is-enabled --quiet rpm-ostreed-automatic.timer".split()):
+    if command_succeeds(*"systemctl is-enabled --quiet rpm-ostreed-automatic.timer".split()):
         status = SUCCESS
         rec = None
     else:
@@ -552,13 +564,13 @@ def audit_rpm_ostree_timer():
         rec = """rpm-ostreed-automatic.timer is disabled
                 To enable, run:
                 $ systemctl enable --now rpm-ostreed-automatic.timer"""
-    yield Report("Ensuring rpm-ostreed-automatic.timer is enabled", status), rec
+    yield Report("Ensuring rpm-ostreed-automatic.timer is enabled", status, recs=rec)
 
 
 @audit
 def audit_podman_auto_update():
     """Ensure podman automatic updates are enabled."""
-    if command_succeeds("systemctl is-enabled --quiet podman-auto-update.timer".split()):
+    if command_succeeds(*"systemctl is-enabled --quiet podman-auto-update.timer".split()):
         status = SUCCESS
         rec = None
     else:
@@ -566,13 +578,13 @@ def audit_podman_auto_update():
         rec = """podman-auto-update.timer is disabled
                 To enable, run:
                 $ systemctl enable --now podman-auto-update.timer"""
-    yield Report("Ensuring podman-auto-update.timer is enabled", status), rec
+    yield Report("Ensuring podman-auto-update.timer is enabled", status, recs=rec)
 
 
 @audit
 def audit_podman_global_auto_update():
     """Ensure podman automatic updates are enabled globally."""
-    if command_succeeds("systemctl --global is-enabled --quiet podman-auto-update.timer".split()):
+    if command_succeeds(*"systemctl --global is-enabled --quiet podman-auto-update.timer".split()):
         status = SUCCESS
         rec = None
     else:
@@ -580,15 +592,15 @@ def audit_podman_global_auto_update():
         rec = """podman-auto-update.timer is not enabled globally
                 To enable, run:
                 $ systemctl enable --global podman-auto-update.timer"""
-    yield Report("Ensuring podman-auto-update.timer is enabled globally", status), rec
+    yield Report("Ensuring podman-auto-update.timer is enabled globally", status, recs=rec)
 
 
 @audit
 def audit_flatpak_auto_update():
     """Ensure flatpak automatic updates are enabled."""
-    if not command_succeeds("command -v flatpak".split()):
+    if not command_succeeds(*"command -v flatpak".split()):
         return
-    if command_succeeds("systemctl --global is-enabled --quiet flatpak-user-update.timer".split()):
+    if command_succeeds(*"systemctl --global is-enabled --quiet flatpak-user-update.timer".split()):
         status = SUCCESS
         rec = None
     else:
@@ -596,9 +608,9 @@ def audit_flatpak_auto_update():
         rec = """flatpak-user-update.timer is not enabled globally
                 To enable, run:
                 $ systemctl enable --global flatpak-user-update.timer"""
-    yield Report("Ensuring flatpak-user-update.timer is enabled globally", status), rec
+    yield Report("Ensuring flatpak-user-update.timer is enabled globally", status, recs=rec)
 
-    if command_succeeds("systemctl is-enabled --quiet flatpak-system-update.timer".split()):
+    if command_succeeds(*"systemctl is-enabled --quiet flatpak-system-update.timer".split()):
         status = SUCCESS
         rec = None
     else:
@@ -606,7 +618,7 @@ def audit_flatpak_auto_update():
         rec = """flatpak-system-update.timer is not enabled globally
                 To enable, run:
                 $ systemctl enable --now flatpak-system-update.timer"""
-    yield Report("Ensuring flatpak-system-update.timer is enabled", status), rec
+    yield Report("Ensuring flatpak-system-update.timer is enabled", status, recs=rec)
 
 
 @audit
@@ -622,36 +634,36 @@ def audit_wheel():
 @audit
 def audit_xwayland():
     """Check whether xwayland is disabled."""
-    if os.path.isfile("/etc/systemd/user/org.gnome.Shell@wayland.service.d/override.conf"):
-        status = SUCCESS
-    else:
-        status = FAILURE
-    yield Report("Ensuring xwayland is disabled for GNOME", status)
-
-    if os.path.isfile("/etc/systemd/user/plasma-kwin_wayland.service.d/override.conf"):
-        status = SUCCESS
-    else:
-        status = FAILURE
-    yield Report("Ensuring xwayland is disabled for KDE Plasma", status)
-
-    if os.path.isfile("/etc/sway/config.d/99-noxwayland.conf"):
-        status = SUCCESS
-    else:
-        status = FAILURE
-    yield Report("Ensuring xwayland is disabled for Sway", status)
+    paths = {
+        "GNOME": "/etc/systemd/user/org.gnome.Shell@wayland.service.d/override.conf",
+        "KDE Plasma": "/etc/systemd/user/plasma-kwin_wayland.service.d/override.conf",
+        "Sway": "/etc/sway/config.d/99-noxwayland.conf",
+    }
+    for de, path in paths.items():
+        if os.path.isfile(path):
+            status = SUCCESS
+            rec = None
+        else:
+            status = FAILURE
+            rec = f"""Xwayland is enabled for {de}. To disable, run:
+                $ ujust toggle-xwayland"""
+        yield Report(f"Ensuring xwayland is disabled for {de}", status, recs=rec)
 
 
 @audit
 def audit_gnome_extensions():
     """Ensure GNOME user extensions are not allowed to be installed."""
-    if not command_succeeds("command -v gnome-shell".split()):
+    if not command_succeeds(*"command -v gnome-shell".split()):
         return
-    allowed = command_stdout("gsettings get org.gnome.shell allow-extension-installation".split())
+    allowed = command_stdout(*"gsettings get org.gnome.shell allow-extension-installation".split())
     if allowed == "false":
         status = SUCCESS
+        rec = None
     else:
         status = FAILURE
-    yield Report("Ensuring GNOME user extensions are disabled", status)
+        rec = """GNOME user extensions are enabled. To disable, run:
+            $ ujust toggle-gnome-extensions"""
+    yield Report("Ensuring GNOME user extensions are disabled", status, recs=rec)
 
 
 @audit
@@ -659,9 +671,13 @@ def audit_selinux():
     """Ensure SELinux is in enforcing mode."""
     if command_stdout("getenforce") == "Enforcing":
         status = SUCCESS
+        rec = None
     else:
         status = FAILURE
-    yield Report("Ensuring SELinux is in Enforcing mode", status)
+        rec = """SELinux is in Permissive mode
+            To set to Enforcing mode, run:
+            $ run0 setenforce 1"""
+    yield Report("Ensuring SELinux is in Enforcing mode", status, recs=rec)
 
 
 @audit
@@ -680,12 +696,17 @@ def audit_kde_ghns():
     try:
         with open("/etc/xdg/kdeglobals", "r", encoding="utf-8") as f:
             status = FAILURE
+            rec = None
             for key, value in parse_config(f):
                 if key == "ghns" and value == "false":
                     status = SUCCESS
+                    rec = f"""KDE GHNS is enabled
+                        To disable, add the following line to /etc/xdg/kdeglobals:
+                        {bold("ghns=false")}"""
+                    break
     except FileNotFoundError:
         return
-    yield Report("Ensuring KDE GHNS is disabled", status)
+    yield Report("Ensuring KDE GHNS is disabled", status, recs=rec)
 
 
 @audit
@@ -716,13 +737,13 @@ def audit_hardened_malloc():
         else:
             status = FAILURE
             warnings.append("hardened_malloc not set")
-    yield Report("Ensuring hardened_malloc is set in ld.so.preload", status, warnings)
+    yield Report("Ensuring hardened_malloc is set in ld.so.preload", status, warnings=warnings)
 
 
 @audit
 def audit_secureboot():
     """Ensure secureboot is enabled."""
-    if command_stdout(["mokutil", "--sb-state"], check=False) == "SecureBoot enabled":
+    if command_stdout("mokutil", "--sb-state", check=False) == "SecureBoot enabled":
         status = SUCCESS
     else:
         status = FAILURE
@@ -757,7 +778,7 @@ def audit_bash_env_lockdown():
             else:
                 cmd = ["lsattr", path]
             try:
-                immutable = "i" in command_stdout(cmd).split()[0]
+                immutable = "i" in command_stdout(*cmd).split()[0]
             except subprocess.CalledProcessError:
                 immutable = False
             if not immutable:
@@ -767,22 +788,22 @@ def audit_bash_env_lockdown():
         rec = f"""Bash environment is not locked down
                 The following files do not appear to be immutable or do not exist:
                 {"\n".join(unlocked_files)}
-                To fix run:
+                To fix, run:
                 $ ujust toggle-bash-environment-lockdown"""
     else:
         status = SUCCESS
         rec = None
-    yield Report("Ensuring current user's bash environment is locked down", status), rec
+    yield Report("Ensuring current user's bash environment is locked down", status, recs=rec)
 
 
 @audit
 @categorize("flatpak")
 def audit_flatpak_remotes():
     """Audit flatpak remotes."""
-    if not command_succeeds("command -v flatpak".split()):
+    if not command_succeeds(*"command -v flatpak".split()):
         return
 
-    remotes = command_stdout("flatpak remotes --columns=name,url,subset".split()).split("\n")
+    remotes = command_stdout(*"flatpak remotes --columns=name,url,subset".split()).split("\n")
     for remote in remotes:
         name, url, subset = remote.split("\t")
         warnings = []
@@ -797,7 +818,7 @@ def audit_flatpak_remotes():
             warnings.append(f"{name} is not a verified repo")
         else:
             status = SUCCESS
-        yield Report(f"Auditing flatpak remote {name}", status, warnings)
+        yield Report(f"Auditing flatpak remote {name}", status, warnings=warnings)
 
 
 async def check_flatpak_permissions(name, version, state):
@@ -934,11 +955,11 @@ async def check_flatpak_permissions(name, version, state):
 @depends_on("audit_modprobe", "audit_ptrace")
 async def audit_flatpak_permissions(state):
     """Audit flatpak permissions."""
-    if not command_succeeds("command -v flatpak".split()):
+    if not command_succeeds(*"command -v flatpak".split()):
         return
 
     flatpaks = []
-    for line in command_stdout("flatpak list --columns=application,branch".split()).split("\n"):
+    for line in command_stdout(*"flatpak list --columns=application,branch".split()).split("\n"):
         name, version = line.split("\t")
         flatpaks.append((name, version))
     flatpaks.sort()
@@ -946,11 +967,11 @@ async def audit_flatpak_permissions(state):
     tasks = {}
     for name, version in flatpaks:
         coro = check_flatpak_permissions(name, version, state)
-        tasks[(name, version)] = asyncio.create_task(coro, name=(name, version))
+        tasks[(name, version)] = asyncio.create_task(coro, name=str((name, version)))
     # Yield flatpak permission reports in lexicographical order
     for name, version in flatpaks:
         status, warnings, recs = await tasks[(name, version)]
-        yield Report(f"Auditing {name} ({version})", status, warnings), recs
+        yield Report(f"Auditing {name} ({version})", status, warnings=warnings, recs=recs)
 
 
 ###############################################################################

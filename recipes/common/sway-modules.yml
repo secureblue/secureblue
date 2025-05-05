@@ -1,0 +1,4 @@
+modules:
+    - type: rpm-ostree
+      remove:
+        - xdg-desktop-portal-wlr

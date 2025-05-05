@@ -136,7 +136,7 @@ def audit_sysctl():
     for key, value in parse_config(conf):
         if value is None:
             raise ValueError(f"Failed to parse sysctl value for {key}")
-        sysctl_expected[key.strip()] = value.strip()
+        sysctl_expected[key] = value
     status = SUCCESS
     sysctl_errors = []
     with open("/etc/sysctl.d/60-hardening.conf", "r", encoding="utf-8") as f:
@@ -498,9 +498,9 @@ def audit_kde_ghns():
             for key, value in parse_config(f):
                 if key == "ghns" and value == "false":
                     status = SUCCESS
-                    rec = f"""KDE GHNS is enabled
-                        To disable, add the following line to /etc/xdg/kdeglobals:
-                        {bold("ghns=false")}"""
+                    rec = """KDE GHNS is enabled
+                        To disable, run:
+                        $ ujust toggle-ghns"""
                     break
     except FileNotFoundError:
         return

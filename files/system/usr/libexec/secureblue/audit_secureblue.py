@@ -17,13 +17,13 @@ import sys
 import subprocess  # nosec
 
 from collections.abc import Iterable
-from typing import Generator
+from typing import Final, Generator
 
 from auditor import AuditError, Report, Status, audit, bold, categorize, depends_on, global_audit
 
-SUCCESS = Status.SUCCESS
-WARNING = Status.WARNING
-FAILURE = Status.FAILURE
+SUCCESS: Final = Status.SUCCESS
+WARNING: Final = Status.WARNING
+FAILURE: Final = Status.FAILURE
 
 
 def command_stdout(*args: str, check: bool = True) -> str:

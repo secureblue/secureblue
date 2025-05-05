@@ -7,6 +7,7 @@ Auditing script for secureblue. See https://secureblue.dev/ for more info.
 import argparse
 import asyncio
 import filecmp
+import glob
 import os.path
 import re
 import signal
@@ -120,6 +121,12 @@ def audit_kargs():
         yield Report(f"Checking for {karg} karg", status)
 
 
+def validate_sysctl(actual: str, expected: str) -> bool:
+    """Validate a sysctl value against an expected value."""
+    actual = re.sub(r"\s+", " ", actual.strip())
+    return actual in (expected, "disabled")
+
+
 @audit
 def audit_sysctl():
     """Check for sysctl overrides."""
@@ -138,14 +145,17 @@ def audit_sysctl():
         status = WARNING
         sysctl_errors.append("/etc/sysctl.d/60-hardening.conf has been modified")
     for sysctl, expected in sysctl_expected.items():
-        try:
-            actual = command_stdout("sysctl", "-bn", sysctl)
-        except subprocess.CalledProcessError:
-            continue
-        actual = re.sub(r"\s+", " ", actual)
-        if actual != expected and expected != "0" and actual != "disabled":
-            status = FAILURE
-            sysctl_errors.append(f"{sysctl} should be {expected}, found {actual}")
+        sysctl_path = f"/proc/sys/{sysctl.replace('.', '/')}"
+        for path in glob.iglob(sysctl_path):
+            try:
+                with open(path, "r", encoding="utf-8") as f:
+                    actual = f.read().strip()
+            except PermissionError:
+                continue
+            if not validate_sysctl(actual, expected):
+                status = FAILURE
+                sysctl_errors.append(f"{sysctl} should be {expected}, found {actual}")
+                break
     yield Report("Ensuring no sysctl overrides", status, warnings=sysctl_errors)
 
 

@@ -556,7 +556,7 @@ def audit_bash_env_lockdown():
         [
             "~/.bashrc",
             "~/.bash_profile",
-            "~/.config/bash-completion",
+            "~/.config/bash_completion",
             "~/.profile",
             "~/.bash_logout",
             "~/.bash_login",

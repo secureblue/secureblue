@@ -427,6 +427,7 @@ toggle-mac-randomization:
     ethernet.cloned-mac-address=stable
     wifi.cloned-mac-address=$randomization_level
     EOL
+        chmod 644 $RAND_MAC_FILE
         echo "MAC randomization enabled."
         systemctl restart NetworkManager
     fi

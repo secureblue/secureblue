@@ -125,8 +125,9 @@ def audit_kargs():
 def validate_sysctl(sysctl: str, actual: str, expected: str) -> bool:
     """Validate a sysctl value against an expected value."""
     actual = re.sub(r"\s+", " ", actual.strip())
-    if sysctl == "fs.binfmt_misc.status":
-        return actual in (expected, "disabled")
+    replace = {"disabled": "0", "enabled": "1"}
+    if actual in replace:
+        actual = replace[actual]
     if sysctl == "kernel.sysrq":
         # Both 0 and 4 are secure values for this setting. For details, see:
         # https://www.kernel.org/doc/html/latest/admin-guide/sysrq.html
@@ -221,13 +222,17 @@ def audit_ptrace(state):
             rec = None
         case 0:
             status = FAILURE
-            rec = f"""ptrace is allowed and {bold("unrestricted")}!
+            rec = f"""ptrace is allowed and {bold("unrestricted")} (ptrace_scope = 0)!
+                For more info on what this means, see:
+                https://www.kernel.org/doc/html/latest/admin-guide/LSM/Yama.html
                 To forbid ptrace, run:
                 $ ujust toggle-ptrace-scope
                 To allow restricted ptrace, run the above command twice."""
         case _:
             status = WARNING
-            rec = """ptrace is allowed, but restricted.
+            rec = f"""ptrace is allowed, but restricted (ptrace_scope = {ptrace_scope}).
+                For more info on what this means, see:
+                https://www.kernel.org/doc/html/latest/admin-guide/LSM/Yama.html
                 To forbid ptrace, run:
                 $ ujust toggle-ptrace-scope"""
     yield Report("Ensuring ptrace is forbidden", status, recs=rec)
@@ -322,36 +327,30 @@ def audit_dns():
     rec = None
     warning = None
     if command_succeeds(*"systemctl is-active --quiet systemd-resolved".split()):
-        dnssec = False
-        dot = False
-        dot_opportunistic = False
+        dnssec = None
+        dot = None
         conf_path = "/etc/systemd/resolved.conf.d/10-securedns.conf"
         try:
             with open(conf_path, "r", encoding="utf-8") as f:
                 for key, value in parse_config(f):
-                    match key, value:
-                        case "DNSSEC", "true":
-                            dnssec = True
-                        case "DNSOverTLS", "true":
-                            dot = True
-                        case "DNSOverTLS", "opportunistic":
-                            dot_opportunistic = True
-                    if dnssec and dot:
-                        break
+                    if key == "DNSSEC":
+                        dnssec = value
+                    elif key == "DNSOverTLS":
+                        dot = value
         except FileNotFoundError:
             status = FAILURE
         except PermissionError:
             status = UNKNOWN
             warning = f"Unable to read file {conf_path}"
         else:
-            if dnssec and dot:
+            if dnssec == "true" and dot == "true":
                 status = SUCCESS
-            elif dot_opportunistic:
+            elif dot == "opportunistic":
                 status = WARNING
             else:
                 status = FAILURE
         if status in (WARNING, FAILURE):
-            caveat = " (opportunistic DNS-over-TLS only)" if dot_opportunistic else ""
+            caveat = " (opportunistic DNS-over-TLS only)" if dot == "opportunistic" else ""
             rec = f"""System DNS resolution is not secure{caveat}
                     To select a secure resolver, run:
                     $ ujust dns-selector

@@ -448,10 +448,14 @@ def audit_flatpak_auto_update():
 def audit_wheel():
     """Ensure the current user is not in the wheel group."""
     if "wheel" in command_stdout("groups").split():
+        rec = f"""Current user is in the wheel group.
+            To set up a separate wheel account, follow the instructions here:
+            {bold("https://secureblue.dev/install#wheel")}"""
         status = FAILURE
     else:
+        rec = None
         status = SUCCESS
-    yield Report("Ensuring user is not a member of wheel", status)
+    yield Report("Ensuring user is not a member of wheel", status, recs=rec)
 
 
 @audit
@@ -478,7 +482,9 @@ def audit_gnome_extensions():
     """Ensure GNOME user extensions are not allowed to be installed."""
     if not command_succeeds(*"command -v gnome-shell".split()):
         return
-    allowed = command_stdout(*"gsettings get org.gnome.shell allow-extension-installation".split())
+    allowed = command_stdout(
+        *"command -p gsettings get org.gnome.shell allow-extension-installation".split()
+    )
     if allowed == "false":
         status = SUCCESS
         rec = None
@@ -506,11 +512,20 @@ def audit_selinux():
 @audit
 def audit_environment_file():
     """Ensure /etc/environment has not been modified."""
-    if filecmp.cmp("/usr/etc/environment", "/etc/environment"):
-        status = SUCCESS
-    else:
+    try:
+        if filecmp.cmp("/usr/etc/environment", "/etc/environment"):
+            status = SUCCESS
+            warning = None
+        else:
+            status = WARNING
+            warning = "/etc/environment has been modified"
+    except FileNotFoundError:
         status = WARNING
-    yield Report("Ensuring no environment file overrides", status)
+        warning = "/etc/environment has been deleted"
+    except PermissionError:
+        status = WARNING
+        warning = "/etc/environment cannot be read"
+    yield Report("Ensuring no environment file overrides", status, warnings=warning)
 
 
 @audit
@@ -824,6 +839,7 @@ def warn_if_root():
     if os.getuid() == 0:
         print_err("\n*** WARNING: Running audit script as root is not recommended. ***")
         print_err("*** Some results may be inaccurate, misleading, or incomplete. ***\n")
+
 
 async def main():
     """Main entry point. Parse command-line arguments and run audit."""

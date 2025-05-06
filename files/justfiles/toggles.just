@@ -431,3 +431,19 @@ toggle-mac-randomization:
         echo "MAC randomization enabled."
         systemctl restart NetworkManager
     fi
+
+# Toggle support for screenshots on wlroots
+toggle-wlr-screenshot-support:
+    #!/usr/bin/bash
+    IMAGE="$(rpm-ostree status | grep '●')"
+    if ! echo "$IMAGE" | grep -qE 'sericea|sway'; then
+        echo "This toggle is only relevant on Sericea"
+        exit 0
+    fi
+
+    PACKAGE_NAME="wlr-screenshot-support"
+    if rpm -qa | grep -q "$PACKAGE_NAME"; then
+        rpm-ostree uninstall "$PACKAGE_NAME"
+    else 
+        rpm-ostree install "$PACKAGE_NAME"
+    fi

@@ -845,6 +845,15 @@ async def audit_flatpak_permissions(state):
         yield Report(f"Auditing {name} ({version})", status, warnings=warnings, recs=recs)
 
 
+@audit
+def audit_wlroot_screencopy():
+    """Ensure wlroots screencopy support is not present."""
+    if command_succeeds("rpm", "-qa", "|", "grep", "-q", "xdg-desktop-portal-wlr"):
+        status = FAILURE
+    else:
+        status = SUCCESS
+    yield Report("Ensuring wlroots screencopy support is not present", status)
+
 ###############################################################################
 # Checks to be run go above this line.
 ###############################################################################

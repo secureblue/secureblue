@@ -24,6 +24,7 @@ from auditor import AuditError, Report, Status, audit, bold, categorize, depends
 SUCCESS: Final = Status.SUCCESS
 WARNING: Final = Status.WARNING
 FAILURE: Final = Status.FAILURE
+UNKNOWN: Final = Status.UNKNOWN
 
 
 def command_stdout(*args: str, check: bool = True) -> str:
@@ -121,10 +122,17 @@ def audit_kargs():
         yield Report(f"Checking for {karg} karg", status)
 
 
-def validate_sysctl(actual: str, expected: str) -> bool:
+def validate_sysctl(sysctl: str, actual: str, expected: str) -> bool:
     """Validate a sysctl value against an expected value."""
     actual = re.sub(r"\s+", " ", actual.strip())
-    return actual in (expected, "disabled")
+    replace = {"disabled": "0", "enabled": "1"}
+    if actual in replace:
+        actual = replace[actual]
+    if sysctl == "kernel.sysrq":
+        # Both 0 and 4 are secure values for this setting. For details, see:
+        # https://www.kernel.org/doc/html/latest/admin-guide/sysrq.html
+        return actual in (expected, "0", "4")
+    return actual == expected
 
 
 @audit
@@ -134,8 +142,6 @@ def audit_sysctl():
         conf = f.readlines()
     sysctl_expected = {}
     for key, value in parse_config(conf):
-        if value is None:
-            raise ValueError(f"Failed to parse sysctl value for {key}")
         sysctl_expected[key] = value
     status = SUCCESS
     sysctl_errors = []
@@ -152,7 +158,7 @@ def audit_sysctl():
                     actual = f.read().strip()
             except PermissionError:
                 continue
-            if not validate_sysctl(actual, expected):
+            if not validate_sysctl(sysctl, actual, expected):
                 status = FAILURE
                 sysctl_errors.append(f"{sysctl} should be {expected}, found {actual}")
                 break
@@ -213,11 +219,23 @@ def audit_ptrace(state):
     match ptrace_scope:
         case 3:
             status = SUCCESS
+            rec = None
         case 0:
             status = FAILURE
+            rec = f"""ptrace is allowed and {bold("unrestricted")} (ptrace_scope = 0)!
+                For more info on what this means, see:
+                https://www.kernel.org/doc/html/latest/admin-guide/LSM/Yama.html
+                To forbid ptrace, run:
+                $ ujust toggle-ptrace-scope
+                To allow restricted ptrace, run the above command twice."""
         case _:
             status = WARNING
-    yield Report("Ensuring ptrace is forbidden", status)
+            rec = f"""ptrace is allowed, but restricted (ptrace_scope = {ptrace_scope}).
+                For more info on what this means, see:
+                https://www.kernel.org/doc/html/latest/admin-guide/LSM/Yama.html
+                To forbid ptrace, run:
+                $ ujust toggle-ptrace-scope"""
+    yield Report("Ensuring ptrace is forbidden", status, recs=rec)
 
 
 @audit
@@ -234,13 +252,17 @@ def audit_authselect():
 @audit
 def audit_container_policy():
     """Ensure container policy has not been modified."""
-    unmodified = filecmp.cmp("/usr/etc/containers/policy.json", "/etc/containers/policy.json")
-    local_override = os.path.isfile(os.path.expanduser("~/.config/containers/policy.json"))
-    if unmodified and not local_override:
-        status = SUCCESS
-    else:
+    status = SUCCESS
+    warnings = []
+    policy_file = "/etc/containers/policy.json"
+    if not filecmp.cmp(f"/usr{policy_file}", policy_file):
         status = FAILURE
-    yield Report("Ensuring no container policy overrides", status)
+        warnings.append(f"{policy_file} has been modified")
+    local_override = "~/.config/containers/policy.json"
+    if os.path.isfile(os.path.expanduser(local_override)):
+        status = FAILURE
+        warnings.append(f"{local_override} exists")
+    yield Report("Ensuring no container policy overrides", status, warnings=warnings)
 
 
 @audit
@@ -276,9 +298,14 @@ def audit_usbguard():
     """Ensure usbguard is active."""
     if command_succeeds(*"systemctl is-active --quiet usbguard".split()):
         status = SUCCESS
+        rec = None
     else:
         status = FAILURE
-    yield Report("Ensuring usbguard is active", status)
+        rec = """USBGuard is not active. To set up USBGuard, run:
+            $ ujust setup-usbguard
+            Caution: if you have already set up USBGuard, this will overwrite the
+            existing policy."""
+    yield Report("Ensuring usbguard is active", status, recs=rec)
 
 
 @audit
@@ -286,50 +313,64 @@ def audit_chronyd():
     """Ensure chronyd is active."""
     if command_succeeds(*"systemctl is-active --quiet chronyd".split()):
         status = SUCCESS
+        rec = None
     else:
         status = FAILURE
-    yield Report("Ensuring chronyd is active", status)
+        rec = """chronyd is not active. To enable, run:
+            $ systemctl enable --now chronyd"""
+    yield Report("Ensuring chronyd is active", status, recs=rec)
 
 
 @audit
 def audit_dns():
     """Ensure system DNS resolution is active and secure."""
     rec = None
+    warning = None
     if command_succeeds(*"systemctl is-active --quiet systemd-resolved".split()):
-        dnssec = False
-        dot = False
+        dnssec = None
+        dot = None
+        conf_path = "/etc/systemd/resolved.conf.d/10-securedns.conf"
         try:
-            with open("/etc/systemd/resolved.conf.d/10-securedns.conf", "r", encoding="utf-8") as f:
+            with open(conf_path, "r", encoding="utf-8") as f:
                 for key, value in parse_config(f):
-                    if key == "DNSSEC" and value == "true":
-                        dnssec = True
-                    if key == "DNSOverTLS" and value == "true":
-                        dot = True
-                    if dnssec and dot:
-                        break
-        except (FileNotFoundError, PermissionError):
-            pass
-        if dnssec and dot:
-            status = SUCCESS
-        else:
+                    if key == "DNSSEC":
+                        dnssec = value
+                    elif key == "DNSOverTLS":
+                        dot = value
+        except FileNotFoundError:
             status = FAILURE
-            rec = """System DNS resolution is not secure
+        except PermissionError:
+            status = UNKNOWN
+            warning = f"Unable to read file {conf_path}"
+        else:
+            if dnssec == "true" and dot == "true":
+                status = SUCCESS
+            elif dot == "opportunistic":
+                status = WARNING
+            else:
+                status = FAILURE
+        if status in (WARNING, FAILURE):
+            caveat = " (opportunistic DNS-over-TLS only)" if dot == "opportunistic" else ""
+            rec = f"""System DNS resolution is not secure{caveat}
                     To select a secure resolver, run:
-                    $ ujust dns-selector"""
+                    $ ujust dns-selector
+                    If you are using a VPN, you may want to disregard this recommendation."""
     else:
         status = FAILURE
         rec = """systemd-resolved is inactive
                 To start and enable it, run:
                 $ systemctl enable --now systemd-resolved"""
-    yield Report("Ensuring system DNS resolution is secure", status, recs=rec)
+    yield Report("Ensuring system DNS resolution is secure", status, warnings=warning, recs=rec)
 
 
 @audit
 def audit_mac_randomization():
     """Ensure MAC randomization is enabled."""
     status = FAILURE
+    warning = None
+    conf_path = "/etc/NetworkManager/conf.d/rand_mac.conf"
     try:
-        with open("/etc/NetworkManager/conf.d/rand_mac.conf", "r", encoding="utf-8") as f:
+        with open(conf_path, "r", encoding="utf-8") as f:
             ethernet = False
             wifi = False
             for key, value in parse_config(f):
@@ -340,15 +381,18 @@ def audit_mac_randomization():
                 if ethernet and wifi:
                     status = SUCCESS
                     break
-    except (FileNotFoundError, PermissionError):
+    except FileNotFoundError:
         pass
+    except PermissionError:
+        status = UNKNOWN
+        warning = f"Unable to read file {conf_path}"
     if status == FAILURE:
         rec = """MAC randomization is not enabled
                 To enable it, run:
                 $ ujust toggle-mac-randomization"""
     else:
         rec = None
-    yield Report("Ensuring MAC randomization is enabled", status, recs=rec)
+    yield Report("Ensuring MAC randomization is enabled", status, warnings=warning, recs=rec)
 
 
 @audit
@@ -423,10 +467,14 @@ def audit_flatpak_auto_update():
 def audit_wheel():
     """Ensure the current user is not in the wheel group."""
     if "wheel" in command_stdout("groups").split():
+        rec = f"""Current user is in the wheel group.
+            To set up a separate wheel account, follow the instructions here:
+            {bold("https://secureblue.dev/install#wheel")}"""
         status = FAILURE
     else:
+        rec = None
         status = SUCCESS
-    yield Report("Ensuring user is not a member of wheel", status)
+    yield Report("Ensuring user is not a member of wheel", status, recs=rec)
 
 
 @audit
@@ -453,7 +501,9 @@ def audit_gnome_extensions():
     """Ensure GNOME user extensions are not allowed to be installed."""
     if not command_succeeds(*"command -v gnome-shell".split()):
         return
-    allowed = command_stdout(*"gsettings get org.gnome.shell allow-extension-installation".split())
+    allowed = command_stdout(
+        *"command -p gsettings get org.gnome.shell allow-extension-installation".split()
+    )
     if allowed == "false":
         status = SUCCESS
         rec = None
@@ -481,11 +531,20 @@ def audit_selinux():
 @audit
 def audit_environment_file():
     """Ensure /etc/environment has not been modified."""
-    if filecmp.cmp("/usr/etc/environment", "/etc/environment"):
-        status = SUCCESS
-    else:
+    try:
+        if filecmp.cmp("/usr/etc/environment", "/etc/environment"):
+            status = SUCCESS
+            warning = None
+        else:
+            status = WARNING
+            warning = "/etc/environment has been modified"
+    except FileNotFoundError:
         status = WARNING
-    yield Report("Ensuring no environment file overrides", status)
+        warning = "/etc/environment has been deleted"
+    except PermissionError:
+        status = WARNING
+        warning = "/etc/environment cannot be read"
+    yield Report("Ensuring no environment file overrides", status, warnings=warning)
 
 
 @audit
@@ -494,13 +553,13 @@ def audit_kde_ghns():
     try:
         with open("/etc/xdg/kdeglobals", "r", encoding="utf-8") as f:
             status = FAILURE
-            rec = None
+            rec = """KDE GHNS is enabled
+                To disable, run:
+                $ ujust toggle-ghns"""
             for key, value in parse_config(f):
                 if key == "ghns" and value == "false":
                     status = SUCCESS
-                    rec = """KDE GHNS is enabled
-                        To disable, run:
-                        $ ujust toggle-ghns"""
+                    rec = None
                     break
     except FileNotFoundError:
         return
@@ -603,6 +662,8 @@ def audit_flatpak_remotes():
 
     remotes = command_stdout(*"flatpak remotes --columns=name,url,subset".split()).split("\n")
     for remote in remotes:
+        if not remote:
+            continue
         name, url, subset = remote.split("\t")
         warnings = []
         if url not in [
@@ -758,6 +819,8 @@ async def audit_flatpak_permissions(state):
 
     flatpaks = []
     for line in command_stdout(*"flatpak list --columns=application,branch".split()).split("\n"):
+        if not line:
+            continue
         name, version = line.split("\t")
         flatpaks.append((name, version))
     flatpaks.sort()
@@ -777,17 +840,30 @@ async def audit_flatpak_permissions(state):
 ###############################################################################
 
 
+def print_err(text: str):
+    """Print text to stderr in bold."""
+    print(bold(text), file=sys.stderr)
+
+
 def handle_sigint(_sig, _frame):
     """Gracefully handle interrupt signal."""
-    print(bold("\n[Audit process interrupted. Exiting.]"), file=sys.stderr)
+    print_err("\n[Audit process interrupted. Exiting.]")
     # Suppress output from exceptions in unfinished tasks
     sys.stderr = None
     sys.exit(1)
 
 
+def warn_if_root():
+    """If run as root, warn that this is not recommended."""
+    if os.getuid() == 0:
+        print_err("\n*** WARNING: Running audit script as root is not recommended. ***")
+        print_err("*** Some results may be misleading or incomplete. ***\n")
+
+
 async def main():
     """Main entry point. Parse command-line arguments and run audit."""
     signal.signal(signal.SIGINT, handle_sigint)
+    warn_if_root()
     parser = argparse.ArgumentParser()
     categories = ",".join(sorted(global_audit.categories))
     parser.add_argument("-s", "--skip", default="", help=f"skip categories ({categories})")
@@ -799,6 +875,7 @@ async def main():
     await global_audit.run(exclude=skip)
     if "flatpak" not in skip:
         print(f"Use option '{bold('--skip flatpak')}' to skip flatpak recommendations.")
+    warn_if_root()
 
 
 if __name__ == "__main__":

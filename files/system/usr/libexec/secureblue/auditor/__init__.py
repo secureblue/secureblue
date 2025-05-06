@@ -21,6 +21,7 @@ class Status(enum.Enum):
     SUCCESS = enum.auto()
     WARNING = enum.auto()
     FAILURE = enum.auto()
+    UNKNOWN = enum.auto()
 
     def to_str_in_color(self) -> str:
         """Colored text representation of the status."""
@@ -31,6 +32,8 @@ class Status(enum.Enum):
                 color_code = 33  # yellow
             case Status.FAILURE:
                 color_code = 31  # red
+            case Status.UNKNOWN:
+                color_code = 36  # cyan
         return f"\x1b[{color_code}m{self.name}\x1b[39m"
 
 

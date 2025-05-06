@@ -858,7 +858,7 @@ def warn_if_root():
     """If run as root, warn that this is not recommended."""
     if os.getuid() == 0:
         print_err("\n*** WARNING: Running audit script as root is not recommended. ***")
-        print_err("*** Some results may be inaccurate, misleading, or incomplete. ***\n")
+        print_err("*** Some results may be misleading or incomplete. ***\n")
 
 
 async def main():

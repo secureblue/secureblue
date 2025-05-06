@@ -223,13 +223,13 @@ def audit_ptrace(state):
             status = FAILURE
             rec = f"""ptrace is allowed and {bold("unrestricted")}!
                 To forbid ptrace, run:
-                $ ujust toggle-anticheat-support
+                $ ujust toggle-ptrace-scope
                 To allow restricted ptrace, run the above command twice."""
         case _:
             status = WARNING
             rec = """ptrace is allowed, but restricted.
                 To forbid ptrace, run:
-                $ ujust toggle-anticheat-support"""
+                $ ujust toggle-ptrace-scope"""
     yield Report("Ensuring ptrace is forbidden", status, recs=rec)
 
 
@@ -293,9 +293,14 @@ def audit_usbguard():
     """Ensure usbguard is active."""
     if command_succeeds(*"systemctl is-active --quiet usbguard".split()):
         status = SUCCESS
+        rec = None
     else:
         status = FAILURE
-    yield Report("Ensuring usbguard is active", status)
+        rec = """USBGuard is not active. To set up USBGuard, run:
+            $ ujust setup-usbguard
+            Caution: if you have already set up USBGuard, this will overwrite the
+            existing policy."""
+    yield Report("Ensuring usbguard is active", status, recs=rec)
 
 
 @audit
@@ -303,9 +308,12 @@ def audit_chronyd():
     """Ensure chronyd is active."""
     if command_succeeds(*"systemctl is-active --quiet chronyd".split()):
         status = SUCCESS
+        rec = None
     else:
         status = FAILURE
-    yield Report("Ensuring chronyd is active", status)
+        rec = """chronyd is not active. To enable, run:
+            $ systemctl enable --now chronyd"""
+    yield Report("Ensuring chronyd is active", status, recs=rec)
 
 
 @audit

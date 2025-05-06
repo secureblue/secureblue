@@ -234,7 +234,7 @@ toggle-bash-environment-lockdown skip_approval="false" apply_for_all_users="prom
     current_time="$(date | tr ' ' '_')"
 
     if [[ "$pending_status" == "locked" ]]; then
-        echo "${bold}WARNING${unbold} This will change your ~/.bashrc, ~/.bash_profile, ~/.config/bash-completion, ~/.profile, ~/.bash_logout, ~/.bash_login, ~/.bashrc.d/, and ~/.config/environment.d/"
+        echo "${bold}WARNING${unbold} This will change your ~/.bashrc, ~/.bash_profile, ~/.config/bash_completion, ~/.profile, ~/.bash_logout, ~/.bash_login, ~/.bashrc.d/, and ~/.config/environment.d/"
         echo "This is needed to ensure the mitigation (see LD_PRELOAD attacks) is effective."
         echo "This script will create backups of the old versions in ~/bash_env_files/$current_time."
     else
@@ -280,7 +280,7 @@ toggle-bash-environment-lockdown skip_approval="false" apply_for_all_users="prom
         BASH_ENV_FILES=(
             "$user_home/.bashrc"
             "$user_home/.bash_profile"
-            "$user_home/.config/bash-completion"
+            "$user_home/.config/bash_completion"
             "$user_home/.profile"
             "$user_home/.bash_logout"
             "$user_home/.bash_login"

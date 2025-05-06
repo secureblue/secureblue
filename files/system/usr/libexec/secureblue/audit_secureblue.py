@@ -218,11 +218,19 @@ def audit_ptrace(state):
     match ptrace_scope:
         case 3:
             status = SUCCESS
+            rec = None
         case 0:
             status = FAILURE
+            rec = f"""ptrace is allowed and {bold("unrestricted")}!
+                To forbid ptrace, run:
+                $ ujust toggle-anticheat-support
+                To allow restricted ptrace, run the above command twice."""
         case _:
             status = WARNING
-    yield Report("Ensuring ptrace is forbidden", status)
+            rec = """ptrace is allowed, but restricted.
+                To forbid ptrace, run:
+                $ ujust toggle-anticheat-support"""
+    yield Report("Ensuring ptrace is forbidden", status, recs=rec)
 
 
 @audit
@@ -239,13 +247,17 @@ def audit_authselect():
 @audit
 def audit_container_policy():
     """Ensure container policy has not been modified."""
-    unmodified = filecmp.cmp("/usr/etc/containers/policy.json", "/etc/containers/policy.json")
-    local_override = os.path.isfile(os.path.expanduser("~/.config/containers/policy.json"))
-    if unmodified and not local_override:
-        status = SUCCESS
-    else:
+    status = SUCCESS
+    warnings = []
+    policy_file = "/etc/containers/policy.json"
+    if not filecmp.cmp(f"/usr{policy_file}", policy_file):
         status = FAILURE
-    yield Report("Ensuring no container policy overrides", status)
+        warnings.append(f"{policy_file} has been modified")
+    local_override = "~/.config/containers/policy.json"
+    if os.path.isfile(os.path.expanduser(local_override)):
+        status = FAILURE
+        warnings.append(f"{local_override} exists")
+    yield Report("Ensuring no container policy overrides", status, warnings=warnings)
 
 
 @audit

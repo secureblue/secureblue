@@ -628,6 +628,8 @@ def audit_flatpak_remotes():
 
     remotes = command_stdout(*"flatpak remotes --columns=name,url,subset".split()).split("\n")
     for remote in remotes:
+        if not remote:
+            continue
         name, url, subset = remote.split("\t")
         warnings = []
         if url not in [
@@ -783,6 +785,8 @@ async def audit_flatpak_permissions(state):
 
     flatpaks = []
     for line in command_stdout(*"flatpak list --columns=application,branch".split()).split("\n"):
+        if not line:
+            continue
         name, version = line.split("\t")
         flatpaks.append((name, version))
     flatpaks.sort()

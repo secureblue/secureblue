@@ -664,6 +664,18 @@ def audit_bash_env_lockdown():
 
 
 @audit
+def audit_wlroot_screenshot():
+    """Ensure wlroots screenshot support is not present."""
+    if command_succeeds(*"rpm -qa | grep -q xdg-desktop-portal-wlr".split()):
+        status = FAILURE
+        rec = """wlroots screenshot support is enabled
+            To disable, run:
+            $ ujust toggle-wlr-screenshot-support"""
+    else:
+        status = SUCCESS
+    yield Report("Ensuring wlroots screenshot support is not present", status)
+
+@audit
 @categorize("flatpak")
 def audit_flatpak_remotes():
     """Audit flatpak remotes."""
@@ -843,16 +855,6 @@ async def audit_flatpak_permissions(state):
     for name, version in flatpaks:
         status, warnings, recs = await tasks[(name, version)]
         yield Report(f"Auditing {name} ({version})", status, warnings=warnings, recs=recs)
-
-
-@audit
-def audit_wlroot_screencopy():
-    """Ensure wlroots screencopy support is not present."""
-    if command_succeeds("rpm", "-qa", "|", "grep", "-q", "xdg-desktop-portal-wlr"):
-        status = FAILURE
-    else:
-        status = SUCCESS
-    yield Report("Ensuring wlroots screencopy support is not present", status)
 
 ###############################################################################
 # Checks to be run go above this line.

@@ -442,8 +442,19 @@ toggle-wlr-screenshot-support:
     fi
 
     PACKAGE_NAME="wlr-screenshot-support"
-    if rpm -qa | grep -q "$PACKAGE_NAME"; then
+    if rpm -qa | grep -q "$PACKAGE_NAME" && ; then
+        echo "wlroots screenshot support is enabled. Disabling..."
         rpm-ostree uninstall "$PACKAGE_NAME"
+        echo "wlroots screenshot support disabled. Reboot to take effect."
     else 
+        echo "wlroots screenshot support is disabled."
+        read -rp "Enabling screenshot support on wlroots has negative security implications. Are you sure you want to do this? (y/N) " proceed
+        if ! [[ "$proceed" == [Yy]* ]]; then
+            echo "Aborting..."
+            exit 0
+        fi
+
+        echo "Enabling wlroots screenshot support..."
         rpm-ostree install "$PACKAGE_NAME"
+        echo "wlroots screenshot support enabled. Reboot to take effect."
     fi

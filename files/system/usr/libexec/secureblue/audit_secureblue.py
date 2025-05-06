@@ -806,17 +806,29 @@ async def audit_flatpak_permissions(state):
 ###############################################################################
 
 
+def print_err(text: str):
+    """Print text to stderr in bold."""
+    print(bold(text), file=sys.stderr)
+
+
 def handle_sigint(_sig, _frame):
     """Gracefully handle interrupt signal."""
-    print(bold("\n[Audit process interrupted. Exiting.]"), file=sys.stderr)
+    print_err("\n[Audit process interrupted. Exiting.]")
     # Suppress output from exceptions in unfinished tasks
     sys.stderr = None
     sys.exit(1)
 
 
+def warn_if_root():
+    """If run as root, warn that this is not recommended."""
+    if os.getuid() == 0:
+        print_err("\n*** WARNING: Running audit script as root is not recommended. ***")
+        print_err("*** Some results may be inaccurate, misleading, or incomplete. ***\n")
+
 async def main():
     """Main entry point. Parse command-line arguments and run audit."""
     signal.signal(signal.SIGINT, handle_sigint)
+    warn_if_root()
     parser = argparse.ArgumentParser()
     categories = ",".join(sorted(global_audit.categories))
     parser.add_argument("-s", "--skip", default="", help=f"skip categories ({categories})")
@@ -828,6 +840,7 @@ async def main():
     await global_audit.run(exclude=skip)
     if "flatpak" not in skip:
         print(f"Use option '{bold('--skip flatpak')}' to skip flatpak recommendations.")
+    warn_if_root()
 
 
 if __name__ == "__main__":

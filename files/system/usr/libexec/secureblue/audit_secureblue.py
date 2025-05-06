@@ -24,6 +24,7 @@ from auditor import AuditError, Report, Status, audit, bold, categorize, depends
 SUCCESS: Final = Status.SUCCESS
 WARNING: Final = Status.WARNING
 FAILURE: Final = Status.FAILURE
+UNKNOWN: Final = Status.UNKNOWN
 
 
 def command_stdout(*args: str, check: bool = True) -> str:
@@ -121,10 +122,16 @@ def audit_kargs():
         yield Report(f"Checking for {karg} karg", status)
 
 
-def validate_sysctl(actual: str, expected: str) -> bool:
+def validate_sysctl(sysctl: str, actual: str, expected: str) -> bool:
     """Validate a sysctl value against an expected value."""
     actual = re.sub(r"\s+", " ", actual.strip())
-    return actual in (expected, "disabled")
+    if sysctl == "fs.binfmt_misc.status":
+        return actual in (expected, "disabled")
+    if sysctl == "kernel.sysrq":
+        # Both 0 and 4 are secure values for this setting. For details, see:
+        # https://www.kernel.org/doc/html/latest/admin-guide/sysrq.html
+        return actual in (expected, "0", "4")
+    return actual == expected
 
 
 @audit
@@ -134,8 +141,6 @@ def audit_sysctl():
         conf = f.readlines()
     sysctl_expected = {}
     for key, value in parse_config(conf):
-        if value is None:
-            raise ValueError(f"Failed to parse sysctl value for {key}")
         sysctl_expected[key] = value
     status = SUCCESS
     sysctl_errors = []
@@ -152,7 +157,7 @@ def audit_sysctl():
                     actual = f.read().strip()
             except PermissionError:
                 continue
-            if not validate_sysctl(actual, expected):
+            if not validate_sysctl(sysctl, actual, expected):
                 status = FAILURE
                 sysctl_errors.append(f"{sysctl} should be {expected}, found {actual}")
                 break
@@ -295,41 +300,58 @@ def audit_chronyd():
 def audit_dns():
     """Ensure system DNS resolution is active and secure."""
     rec = None
+    warning = None
     if command_succeeds(*"systemctl is-active --quiet systemd-resolved".split()):
         dnssec = False
         dot = False
+        dot_opportunistic = False
+        conf_path = "/etc/systemd/resolved.conf.d/10-securedns.conf"
         try:
-            with open("/etc/systemd/resolved.conf.d/10-securedns.conf", "r", encoding="utf-8") as f:
+            with open(conf_path, "r", encoding="utf-8") as f:
                 for key, value in parse_config(f):
-                    if key == "DNSSEC" and value == "true":
-                        dnssec = True
-                    if key == "DNSOverTLS" and value == "true":
-                        dot = True
+                    match key, value:
+                        case "DNSSEC", "true":
+                            dnssec = True
+                        case "DNSOverTLS", "true":
+                            dot = True
+                        case "DNSOverTLS", "opportunistic":
+                            dot_opportunistic = True
                     if dnssec and dot:
                         break
-        except (FileNotFoundError, PermissionError):
-            pass
-        if dnssec and dot:
-            status = SUCCESS
-        else:
+        except FileNotFoundError:
             status = FAILURE
-            rec = """System DNS resolution is not secure
+        except PermissionError:
+            status = UNKNOWN
+            warning = f"Unable to read file {conf_path}"
+        else:
+            if dnssec and dot:
+                status = SUCCESS
+            elif dot_opportunistic:
+                status = WARNING
+            else:
+                status = FAILURE
+        if status in (WARNING, FAILURE):
+            caveat = " (opportunistic DNS-over-TLS only)" if dot_opportunistic else ""
+            rec = f"""System DNS resolution is not secure{caveat}
                     To select a secure resolver, run:
-                    $ ujust dns-selector"""
+                    $ ujust dns-selector
+                    If you are using a VPN, you may want to disregard this recommendation."""
     else:
         status = FAILURE
         rec = """systemd-resolved is inactive
                 To start and enable it, run:
                 $ systemctl enable --now systemd-resolved"""
-    yield Report("Ensuring system DNS resolution is secure", status, recs=rec)
+    yield Report("Ensuring system DNS resolution is secure", status, warnings=warning, recs=rec)
 
 
 @audit
 def audit_mac_randomization():
     """Ensure MAC randomization is enabled."""
     status = FAILURE
+    warning = None
+    conf_path = "/etc/NetworkManager/conf.d/rand_mac.conf"
     try:
-        with open("/etc/NetworkManager/conf.d/rand_mac.conf", "r", encoding="utf-8") as f:
+        with open(conf_path, "r", encoding="utf-8") as f:
             ethernet = False
             wifi = False
             for key, value in parse_config(f):
@@ -340,15 +362,18 @@ def audit_mac_randomization():
                 if ethernet and wifi:
                     status = SUCCESS
                     break
-    except (FileNotFoundError, PermissionError):
+    except FileNotFoundError:
         pass
+    except PermissionError:
+        status = UNKNOWN
+        warning = f"Unable to read file {conf_path}"
     if status == FAILURE:
         rec = """MAC randomization is not enabled
                 To enable it, run:
                 $ ujust toggle-mac-randomization"""
     else:
         rec = None
-    yield Report("Ensuring MAC randomization is enabled", status, recs=rec)
+    yield Report("Ensuring MAC randomization is enabled", status, warnings=warning, recs=rec)
 
 
 @audit
@@ -494,13 +519,13 @@ def audit_kde_ghns():
     try:
         with open("/etc/xdg/kdeglobals", "r", encoding="utf-8") as f:
             status = FAILURE
-            rec = None
+            rec = """KDE GHNS is enabled
+                To disable, run:
+                $ ujust toggle-ghns"""
             for key, value in parse_config(f):
                 if key == "ghns" and value == "false":
                     status = SUCCESS
-                    rec = """KDE GHNS is enabled
-                        To disable, run:
-                        $ ujust toggle-ghns"""
+                    rec = None
                     break
     except FileNotFoundError:
         return

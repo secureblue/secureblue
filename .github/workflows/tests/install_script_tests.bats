@@ -96,32 +96,8 @@ fi
   [[ "$output" == *"sericea-main-hardened"* ]]
 }
 
-@test "Test command for wayblue-wayfire-main-hardened" {
-  run bash -c "echo -e 'no\n4\nno\nno' | bash '$INSTALL_SCRIPT'"
-  [ "$status" -eq 0 ]
-  [[ "$output" == *"wayblue-wayfire-main-hardened"* ]]
-}
-
-@test "Test command for wayblue-sway-main-hardened" {
-  run bash -c "echo -e 'no\n5\nno\nno' | bash '$INSTALL_SCRIPT'"
-  [ "$status" -eq 0 ]
-  [[ "$output" == *"wayblue-sway-main-hardened"* ]]
-}
-
-@test "Test command for wayblue-river-main-hardened" {
-  run bash -c "echo -e 'no\n6\nno\nno' | bash '$INSTALL_SCRIPT'"
-  [ "$status" -eq 0 ]
-  [[ "$output" == *"wayblue-river-main-hardened"* ]]
-}
-
-@test "Test command for wayblue-hyprland-main-hardened" {
-  run bash -c "echo -e 'no\n7\nno\nno' | bash '$INSTALL_SCRIPT'"
-  [ "$status" -eq 0 ]
-  [[ "$output" == *"wayblue-hyprland-main-hardened"* ]]
-}
-
 @test "Test command for cosmic-main-hardened" {
-  run bash -c "echo -e 'no\n8\nno\nno' | bash '$INSTALL_SCRIPT'"
+  run bash -c "echo -e 'no\n4\nno\nno' | bash '$INSTALL_SCRIPT'"
   [ "$status" -eq 0 ]
   [[ "$output" == *"cosmic-main-hardened"* ]]
 }

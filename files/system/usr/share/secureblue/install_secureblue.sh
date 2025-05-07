@@ -30,10 +30,6 @@ desktop_image_types=(
     "silverblue"
     "kinoite"
     "sericea"
-    "wayblue-wayfire"
-    "wayblue-sway"
-    "wayblue-river"
-    "wayblue-hyprland"
     "cosmic"
 )
 
@@ -64,8 +60,8 @@ else
     fi
     printf "%s\n" \
         "Select a desktop." \
-        "Silverblue is recommended." \
-        "Wayblue images are currently in beta." \
+        "Silverblue images are recommended." \
+        "Sericea images are recommended for tiling WM users." \
         "Cosmic images are considered experimental."
     PS3=$'Enter your desktop choice: '
     select image_name in "${desktop_image_types[@]}"; do
@@ -92,7 +88,7 @@ image_name+="$additional_params-hardened"
 
 rebase_command="rpm-ostree rebase ostree-unverified-registry:ghcr.io/secureblue/$image_name:latest"
 
-if rpm-ostree status | grep -q '● ostree-image-signed:docker://ghcr.io/secureblue/'; then
+if rpm-ostree status | grep -q '●.*ghcr\.io/secureblue/'; then
     rebase_command="rpm-ostree rebase ostree-image-signed:docker://ghcr.io/secureblue/$image_name:latest"
 else
     echo "Note: Automatic rebasing to the equivalent signed image will occur on first run."

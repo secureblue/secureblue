@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/python3
 
 """
 Auditing script for secureblue. See https://secureblue.dev/ for more info.

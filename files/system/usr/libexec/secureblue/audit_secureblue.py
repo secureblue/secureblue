@@ -12,6 +12,7 @@ import os.path
 import re
 import signal
 import sys
+import traceback
 
 # All subprocess calls we make have trusted inputs and do not use shell=True.
 import subprocess  # nosec
@@ -175,8 +176,8 @@ def audit_signed_image():
     else:
         status = FAILURE
         recs = """The current image is not signed.
-            To rebase to a signed image download and run or re-run install_secureblue.sh
-            from the secureblue github."""
+            To rebase to a signed image, download and run or re-run install_secureblue.sh
+            from the secureblue GitHub repository."""
     yield Report("Ensuring a signed image is in use", status, recs=recs)
 
 
@@ -316,7 +317,8 @@ def audit_chronyd():
         rec = None
     else:
         status = FAILURE
-        rec = """chronyd is not active. To enable, run:
+        rec = """chronyd is inactive.
+            To start and enable it, run:
             $ systemctl enable --now chronyd"""
     yield Report("Ensuring chronyd is active", status, recs=rec)
 
@@ -594,7 +596,15 @@ def audit_hardened_malloc():
         else:
             status = FAILURE
             warnings.append("hardened_malloc not set")
-    yield Report("Ensuring hardened_malloc is set in ld.so.preload", status, warnings=warnings)
+    if status == SUCCESS:
+        rec = None
+    else:
+        rec = """/etc/ld.so.preload has been modified.
+            To reset it and enable hardened_malloc system-wide, run:
+            $ run0 cp /usr/etc/ld.so.preload /etc/ld.so.preload"""
+    yield Report(
+        "Ensuring hardened_malloc is set in ld.so.preload", status, warnings=warnings, recs=rec
+    )
 
 
 @audit
@@ -841,8 +851,8 @@ async def audit_flatpak_permissions(state):
 
 
 def print_err(text: str):
-    """Print text to stderr in bold."""
-    print(bold(text), file=sys.stderr)
+    """Print text to stderr in bold and red."""
+    print(f"\x1b[1m\x1b[31m{text}\x1b[0m", file=sys.stderr)
 
 
 def handle_sigint(_sig, _frame):
@@ -860,7 +870,7 @@ def warn_if_root():
         print_err("*** Some results may be misleading or incomplete. ***\n")
 
 
-async def main():
+async def main() -> int:
     """Main entry point. Parse command-line arguments and run audit."""
     signal.signal(signal.SIGINT, handle_sigint)
     warn_if_root()
@@ -872,11 +882,20 @@ async def main():
     if any(cat not in global_audit.categories for cat in skip):
         print(f"Valid arguments to --skip are: {categories}", file=sys.stderr)
         sys.exit(1)
-    await global_audit.run(exclude=skip)
+    error_occurred = False
+    async for check, err in global_audit.run(exclude=skip):
+        print_err(f"\n*** Error in check '{check.name}' ***")
+        traceback.print_exception(err)
+        print_err("\n*** Continuing... ***")
+        error_occurred = True
     if "flatpak" not in skip:
         print(f"Use option '{bold('--skip flatpak')}' to skip flatpak recommendations.")
     warn_if_root()
+    if error_occurred:
+        print_err("\n*** WARNING: Unexpected error occurred. ***")
+        return 1
+    return 0
 
 
 if __name__ == "__main__":
-    asyncio.run(main())
+    sys.exit(asyncio.run(main()))

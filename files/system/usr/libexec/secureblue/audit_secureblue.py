@@ -666,14 +666,15 @@ def audit_bash_env_lockdown():
 @audit
 def audit_wlroot_screenshot():
     """Ensure wlroots screenshot support is not present."""
-    if command_succeeds(*"rpm -qa | grep -q xdg-desktop-portal-wlr".split()):
+    if command_succeeds(*"rpm -q xdg-desktop-portal-wlr".split()):
         status = FAILURE
         rec = """wlroots screenshot support is enabled
             To disable, run:
             $ ujust toggle-wlr-screenshot-support"""
     else:
         status = SUCCESS
-    yield Report("Ensuring wlroots screenshot support is not present", status)
+        rec = None
+    yield Report("Ensuring wlroots screenshot support is not present", status, recs=rec)
 
 @audit
 @categorize("flatpak")

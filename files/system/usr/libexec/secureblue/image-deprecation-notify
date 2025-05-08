@@ -5,20 +5,9 @@ set -euo pipefail
 
 RPM_OSTREE_STATUS=$(rpm-ostree status --json --booted)
 IMAGE_REF_NAME=$(echo "$RPM_OSTREE_STATUS" | jq -r '.deployments[0]."container-image-reference" // empty | split("/")[-1]')
-if echo "$RPM_OSTREE_STATUS" | grep -q 'hardened:'; then
-    IMAGE_TAG=$(echo "$RPM_OSTREE_STATUS" | jq -r '.deployments[0]."container-image-reference" // empty | split(":")[-1]')
-else
-    IMAGE_TAG='ERROR-IMAGE-TAG-MISSING'
-fi
-TIP=""
-
-IMAGE_DATE=$(echo "$RPM_OSTREE_STATUS" | jq -r '.deployments[0].timestamp')
-CURRENT_SECONDS=$(date +%s)
-DIFFERENCE=$((CURRENT_SECONDS - IMAGE_DATE))
-WEEK=$((7 * 24 * 60 * 60))
 
 readarray -t imageTypes < <(jq -r '.imageTypes[]' /usr/libexec/deprecated-images.json)
-isDeprecated=false
+
 for imageType in "${imageTypes[@]}"; do
     if [[ "$IMAGE_REF_NAME" == *"$imageType"* ]]; then
         selection=$(notify-send -A 'info=More Information' -a 'secureblue' -i 'dialog-warning' 'Deprecated image is detected!' 'Run <i>ujust rebase-secureblue</i> to resolve this issue.' -u critical)

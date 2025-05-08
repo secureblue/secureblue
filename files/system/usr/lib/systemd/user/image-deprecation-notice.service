@@ -1,0 +1,8 @@
+[Unit]
+Description=Image deprecation notification service 
+Wants=dbus.service
+After=dbus.service
+
+[Service]
+Type=oneshot
+ExecStart=/usr/libexec/secureblue/image-deprecation-notify

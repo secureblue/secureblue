@@ -1,0 +1,9 @@
+[Unit]
+Description=Hyprland deprication notification service 
+Wants=dbus.service
+After=dbus.service
+
+[Service]
+Type=oneshot
+ExecCondition=/bin/bash -c 'if rpm-ostree status -b | grep -q "hyprland"; else false; fi'
+ExecStart=/usr/libexec/secureblue/hyprland-deprication-notify

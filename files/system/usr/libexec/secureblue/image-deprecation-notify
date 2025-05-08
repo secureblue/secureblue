@@ -21,7 +21,7 @@ readarray -t imageTypes < <(jq -r '.imageTypes[]' /usr/libexec/deprecated-images
 isDeprecated=false
 for imageType in "${imageTypes[@]}"; do
     if [[ "$IMAGE_REF_NAME" == *"$imageType"* ]]; then
-        selection=$(notify-send -A 'info=More Information' -a 'secureblue' -i 'dialog-warning' 'Depricated image is detected!' 'Run <i>ujust rebase-secureblue</i> to resolve this issue.' -u critical)
+        selection=$(notify-send -A 'info=More Information' -a 'secureblue' -i 'dialog-warning' 'Deprecated image is detected!' 'Run <i>ujust rebase-secureblue</i> to resolve this issue.' -u critical)
         break
     fi
 done

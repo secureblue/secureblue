@@ -27,5 +27,5 @@ for imageType in "${imageTypes[@]}"; do
 done
 
 if [[ $selection == "info" ]]; then
-  trivalent "https://secureblue.dev/faq#new-key"
+  trivalent "https://github.com/secureblue/secureblue/blob/live/files/system/usr/libexec/deprecated-images.json.md"
 fi

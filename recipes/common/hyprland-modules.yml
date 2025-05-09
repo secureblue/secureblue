@@ -1,4 +1,0 @@
-modules:    
-    - type: script
-      scripts:
-        - disablehyprlandxwayland.sh

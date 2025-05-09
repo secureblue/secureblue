@@ -75,8 +75,8 @@ if [[ ! -L "$CRYPT_DISK" ]]; then
 fi
 
 CRYPT_DISK_INFO=$(cryptsetup luksDump "$CRYPT_DISK")
+# Note: we use { grep "Keyslot" || true; } below to mask the nonzero return code if fido2 has not been setup yet
 KEYSLOT=$(echo "$CRYPT_DISK_INFO" | sed -n '/systemd-fido2$/,/Keyslot:/p' | { grep "Keyslot" || true; } | awk '{print $2}') 
-# Note: we use { grep "Keyslot" || true; } above to mask the nonzero return code if fido2 has not been setup yet
 
 if echo "$CRYPT_DISK_INFO" | grep systemd-fido2 > /dev/null; then
   echo "FIDO2 already present in LUKS keyslot $KEYSLOT of $CRYPT_DISK."

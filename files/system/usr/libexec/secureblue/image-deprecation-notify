@@ -1,19 +1,7 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-# Modified from https://github.com/ublue-os/bazzite/blob/main/system_files/desktop/shared/usr/libexec/ublue-motd
-
-RPM_OSTREE_STATUS=$(rpm-ostree status --json --booted)
-IMAGE_REF_NAME=$(echo "$RPM_OSTREE_STATUS" | jq -r '.deployments[0]."container-image-reference" // empty | split("/")[-1]')
-
-readarray -t imageTypes < <(jq -r '.imageTypes[]' /usr/libexec/deprecated-images.json)
-
-for imageType in "${imageTypes[@]}"; do
-    if [[ "$IMAGE_REF_NAME" == *"$imageType"* ]]; then
-        selection=$(notify-send -A 'info=More Information' -a 'secureblue' -i 'dialog-warning' 'Deprecated image is detected!' 'Run <i>ujust rebase-secureblue</i> to resolve this issue.' -u critical)
-        break
-    fi
-done
+selection=$(notify-send -A 'info=More Information' -a 'secureblue' -i 'dialog-warning' 'Deprecated image is detected!' 'Run <i>ujust rebase-secureblue</i> to resolve this issue.' -u critical)
 
 if [[ $selection == "info" ]]; then
   trivalent "https://github.com/secureblue/secureblue/blob/live/files/system/usr/libexec/deprecated-images.json.md"

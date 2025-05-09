@@ -5,4 +5,5 @@ After=dbus.service
 
 [Service]
 Type=oneshot
+ExecCondition=/usr/libexec/secureblue/image-deprecation-check
 ExecStart=/usr/libexec/secureblue/image-deprecation-notify

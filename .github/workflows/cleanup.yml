@@ -10,6 +10,7 @@ concurrency:
 jobs:
   delete-older-than-90:
     runs-on: ubuntu-latest
+    if: github.triggering_actor == 'royaloughtness' || ${{ github.event_name == 'schedule' }}
     permissions:
       packages: write
     steps:

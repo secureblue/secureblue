@@ -1,0 +1,4 @@
+modules:
+    - type: script
+      scripts:
+        - installselinuxpolicies.sh

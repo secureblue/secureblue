@@ -65,6 +65,15 @@
                   }
               }
           ],
+          "quay.io/fedora-ostree-desktops": [
+              {
+                  "type": "sigstoreSigned",
+                  "keyPath": "/usr/etc/pki/containers/quay.io-fedora-ostree-desktops.pub",
+                  "signedIdentity": {
+                      "type": "matchRepository"
+                  }
+              }
+          ],
           "ghcr.io/ublue-os": [
               {
                   "type": "sigstoreSigned",

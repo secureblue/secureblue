@@ -1,5 +1,6 @@
 type: script
 scripts:
+  - removesudo.sh
   - installandroidudev.sh
   - disablecups.sh
   - disablesshd.sh
@@ -8,3 +9,4 @@ scripts:
   - disablemodemmanager.sh
   - disablenfsdaemons.sh
   - disablesssd.sh
+  - disableunconfinedrootfulservices.sh

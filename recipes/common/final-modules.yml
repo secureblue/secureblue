@@ -4,3 +4,5 @@ modules:
         - removeunusedrepos.sh
         - removesuid.sh
         - regenerateinitramfs.sh
+        - shredkeys.sh
+        - checksinglekernel.sh

@@ -1,15 +1,16 @@
 # vim: set ft=make :
-# Copyright 2024 secureblue
+# Copyright 2025 Universal Blue
+# Copyright 2025 The Secureblue Authors
 #
-# This file includes code from Universal Blue which is licensed under the Apache License, Version 2.0 (the "License");
+# Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
 #
 #     http://www.apache.org/licenses/LICENSE-2.0
 #
-# Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS"
-# BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language
-# governing permissions and limitations under the License.
+# Unless required by applicable law or agreed to in writing, software distributed under the License is
+# distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and limitations under the License.
 
 uid := `id -u`
 shell := `grep :$(id -u): /etc/passwd | cut -d: -f7`
@@ -42,12 +43,14 @@ regenerate-grub:
       grub2-mkconfig -o /etc/grub2.cfg
     fi
 
-# Enroll Nvidia driver & KMOD signing key for secure boot - Enter password "universalblue" if prompted
-enroll-secure-boot-key:
-    run0 mokutil --timeout -1
-    echo 'The next line will prompt for a MOK password. Then, input "universalblue"'
-    run0 mokutil --import /etc/pki/akmods/certs/akmods-ublue.der
-    echo 'At next reboot, the mokutil UEFI menu UI will be displayed (*QWERTY* keyboard input and navigation).\nThen, select "Enroll MOK", and input "universalblue" as the password'
+# Enroll secureblue's signing key for secure boot - Enter password "secureblue" if prompted
+enroll-secureblue-secure-boot-key:
+    #! /bin/run0 /bin/bash
+    mokutil --timeout -1
+    echo 'The next line will prompt for a MOK password. Input "secureblue".'
+    mokutil --import /etc/pki/akmods/certs/akmods-secureblue.der
+    echo 'At next reboot, the mokutil UEFI menu UI will be displayed (*QWERTY* keyboard input and navigation).'
+    echo 'Then, select "Enroll MOK", and input "secureblue" as the password.'
 
 # Toggle display of the user-motd in terminal
 toggle-user-motd:
@@ -64,6 +67,7 @@ toggle-user-motd:
 # Update device firmware
 [no-exit-message]
 update-firmware:
+    #!/usr/bin/bash
     fwupdmgr refresh --force
     fwupdmgr get-updates
     fwupdmgr update
@@ -124,6 +128,7 @@ debug-info:
 
 # Rerun Yafti
 rerun-yafti:
+    #!/usr/bin/bash
     yafti -f /usr/share/ublue-os/firstboot/yafti.yml
 
 alias assemble := distrobox-assemble
@@ -131,48 +136,83 @@ alias assemble := distrobox-assemble
 # Create distroboxes from a defined manifest
 distrobox-assemble CONTAINER="prompt" ACTION="create" FILE="/etc/distrobox/distrobox.ini":
     #!/usr/bin/bash
+    if [[ "$(ujust check-container-userns-state)" == "disabled" ]]; then
+        echo "Distrobox requires container domain user namespaces to work, which are disabled by default for security reasons."
+        echo "You need to run 'ujust toggle-container-domain-userns-creation' to allow this."
+        container_userns_now=""
+        read -rp "Would you like to run 'ujust toggle-container-domain-userns-creation' now? [Y/n] " container_userns_now
+        container_userns_now=${container_userns_now:-y}
+        if [[ "$container_userns_now" == [Yy]* ]]; then
+            echo "Running 'ujust toggle-container-domain-userns-creation'"
+            ujust toggle-container-domain-userns-creation
+        fi
+    fi
     # Distroboxes are gathered from distrobox.ini, please add them there
     source /usr/lib/ujust/ujust.sh
-    AssembleList {{ FILE }} {{ ACTION }} {{ CONTAINER }}
+    AssembleList "{{ FILE }}" "{{ ACTION }}" "{{ CONTAINER }}"
 
 # Create toolbox containers from a defined manifest (this spec will not be expanded)
 toolbox-assemble CONTAINER="prompt" ACTION="create" FILE="/etc/toolbox/toolbox.ini":
     #!/usr/bin/bash
+    if [[ "$(ujust check-container-userns-state)" == "disabled" ]]; then
+        echo "Toolbox requires container domain user namespaces to work, which are disabled by default for security reasons."
+        echo "You need to run 'ujust toggle-container-domain-userns-creation' to allow this."
+        container_userns_now=""
+        read -rp "Would you like to run 'ujust toggle-container-domain-userns-creation' now? [Y/n] " container_userns_now
+        container_userns_now=${container_userns_now:-y}
+        if [[ "$container_userns_now" == [Yy]* ]]; then
+            echo "Running 'ujust toggle-container-domain-userns-creation'"
+            ujust toggle-container-domain-userns-creation
+        fi
+    fi
     # Toolboxes are gathered from toolbox.ini, please add them there
     source /usr/lib/ujust/ujust.sh
-    ToolboxAssembleList {{ FILE }} {{ ACTION }} {{ CONTAINER }}
+    ToolboxAssembleList "{{ FILE }}" "{{ ACTION }}" "{{ CONTAINER }}"
 
 # Run a non-flatpak application with standard memory allocator (needs an argument!)
 with-standard-malloc APP:
     #!/usr/bin/bash
-    bwrap --dev-bind / / --ro-bind /dev/null /etc/ld.so.preload {{ APP }}
+    bwrap --dev-bind / / --ro-bind /dev/null /etc/ld.so.preload "{{ APP }}"
 
 # Add the unfiltered Flathub flatpak repo
 enable-flathub-unfiltered:
     #!/usr/bin/bash
     flatpak remote-add --if-not-exists --user flathub https://flathub.org/repo/flathub.flatpakrepo
 
-# search for an installed SELinux module
-semodule-check MODULE:
-    #! /bin/run0 /bin/bash
-    if [ -n "$( semodule -l | grep {{ MODULE }} )" ] ; then
-        semodule -l | grep {{ MODULE }}
+# Returns the state of container domain user namespaces. (enabled/disabled)
+check-container-userns-state:
+    #!/usr/bin/bash
+    set -euo pipefail
+    if [ "$(whoami)" = 'root' ]; then
+        semodule -l | grep -q 'harden_container_userns' && echo 'disabled' || echo 'enabled'
+    else
+        podman unshare true &> /dev/null && echo 'enabled' || echo 'disabled'
     fi
 
-# Install Steam via choice of 3 methods
+# Returns the state of unconfined domain user namespaces. (enabled/disabled)
+check-unconfined-userns-state:
+    #!/usr/bin/bash
+    set -euo pipefail
+    if [ "$(whoami)" = 'root' ]; then
+        semodule -l | grep -q 'harden_userns' && echo 'disabled' || echo 'enabled'
+    else
+        unshare -U true &> /dev/null && echo 'enabled' || echo 'disabled'
+    fi
+
+# Install Steam via choice of 2 methods
 install-steam:
     #!/usr/bin/bash
     if [ -z "$(pgrep Xwayland)" ] && [ -z "$(pgrep Xorg)" ] ; then
         echo "Steam requires X or Xwayland, which your variant of secureblue has disabled by default."
         echo "Please run 'ujust toggle-xwayland' to re-enable it."
         toggle_xwayland_now=""
-        read -p "Would you like to run 'ujust toggle-xwayland' now? [Y/n] " toggle_xwayland_now
+        read -rp "Would you like to run 'ujust toggle-xwayland' now? [Y/n] " toggle_xwayland_now
         toggle_xwayland_now=${toggle_xwayland_now:-y}
         if [[ "$toggle_xwayland_now" == [Yy]* ]]; then
             echo "Running 'ujust toggle-xwayland'"
             ujust toggle-xwayland
             reboot_now=""
-            read -p "Would you like to reboot now? [y/N] " reboot_now
+            read -rp "Would you like to reboot now? [y/N] " reboot_now
             if [[ "$reboot_now" == [Yy]* ]]; then
                 echo "Rebooting"
                 systemctl reboot
@@ -185,7 +225,7 @@ install-steam:
     echo "    1) Flatpak - will install the steam flatpak from flathub-unverified"
     echo "    2) Distrobox - will set up steam via the bazzite-arch distrobox image"
     while [[ "$valid_input" == "0" ]]; do
-        read -p "Selection [1-2]: " method_selection
+        read -rp "Selection [1-2]: " method_selection
         if [[ "$method_selection" == [12]* ]]; then
             valid_input="1"
         else
@@ -206,11 +246,11 @@ install-steam:
             ;;
         2)
             echo "Distrobox method selected."
-            if [ -n "$(ujust semodule-check harden_container_userns)" ] ; then
-                echo "Distrobox requires that secureblue's harden-container-userns module be disabled"
-                echo "Please run 'ujust toggle-container-domain-userns-creation'"
+            if [[ "$(ujust check-container-userns-state)" == "disabled" ]]; then
+                echo "Distrobox requires container domain user namespaces to work, which are disabled by default for security reasons."
+                echo "You need to run 'ujust toggle-container-domain-userns-creation' to allow this."
                 container_userns_now=""
-                read -p "Would you like to run 'ujust toggle-container-domain-userns-creation' now? [Y/n] " container_userns_now
+                read -rp "Would you like to run 'ujust toggle-container-domain-userns-creation' now? [Y/n] " container_userns_now
                 container_userns_now=${container_userns_now:-y}
                 if [[ "$container_userns_now" == [Yy]* ]]; then
                     echo "Running 'ujust toggle-container-domain-userns-creation'"
@@ -225,7 +265,7 @@ install-steam:
     esac
 
     echo "Steam requires support for 32-bit processes/syscalls."
-    if [ -n "$(rpm-ostree kargs | grep 'ia32_emulation=0')" ] ; then
+    if rpm-ostree kargs | grep -q 'ia32_emulation=0'; then
         echo "This script will now remove the 'ia32_emulation=0' kernel argument."
         rpm-ostree kargs --delete-if-present="ia32_emulation=0"
     else
@@ -250,3 +290,242 @@ uninstall-docker:
 rebase-secureblue:
     #!/usr/bin/bash
     /usr/bin/bash /usr/share/secureblue/install_secureblue.sh
+
+# Apply SELinux type "user_home_t" on external drives to allow access from Trivalent
+label-external-drives:
+    #!/usr/bin/bash
+    set -euo pipefail
+    media_path="/run/media/$USER/"
+    selabel="user_home_t"
+    supported_fs=("ext2" "ext3" "ext4" "jfs" "xfs" "btrfs") # ref: https://wiki.gentoo.org/wiki/SELinux/FAQ#Can_I_use_SELinux_with_any_file_system.3F
+
+    if [ -z "$( ls -A "$media_path" 2>&- )" ]; then
+        echo "You don't have any drives mounted in \"$media_path\", aborting."
+        exit 0
+    fi
+    echo "Warning: This will label your drives mounted on \"$media_path\" such that they are treated as an extension to your home directory. (You can select which ones to label)"
+    echo 'If you do not want Trivalent to have access to these drives, do not proceed.'
+    read -rp 'Are you sure you want to do this? [y/N] ' warning_proceed
+    if ! [[ "$warning_proceed" == [Yy]* ]]; then
+        echo 'Aborting.'
+        exit 0
+    fi
+
+    for dir in "$media_path"*/
+    do
+        echo
+        if [[ "$dir" =~ "'" ]]; then
+            echo "WARNING: Single quotes in drive labels are forbidden to avoid command execution, skipping drive \"$dir\"..."
+            continue
+        fi
+        if [[ "$(stat -c '%U' "$dir")" != "$USER" ]]; then
+            echo "Drive root folder is not owned by you, skipping drive \"$dir\"..."
+            continue
+        fi
+        detected_fs="$(df -T "$dir" | awk '{print $2}' | sed -n 2p)"
+        if ! printf "%s\n" "${supported_fs[@]}" | grep -Fxq "$detected_fs"; then
+            echo "SELinux support is unknown for filesystem $detected_fs, skipping drive \"$dir\"..."
+            continue
+        fi
+        read -rp "Do you want to label \"$dir\"? [y/N] " proceed
+        if ! [[ "$proceed" == [Yy]* ]]; then
+            echo 'Skipping...'
+            continue
+        fi
+        echo "Labeling drive mounted on \"$dir\" with $selabel"
+        dir=${dir%*/} # remove trailing slash
+        if ! run0 sh -c "semanage fcontext -a -t $selabel '$dir(/.*)?' && restorecon -r '$dir'"; then
+            echo 'Execution failed, aborting.'
+            exit 1
+        fi
+    done
+
+    echo -e '\nDone.'
+
+# Layers a comprehensive set of packages for libvirt/qemu/virt-manager
+install-libvirt-packages:
+    rpm-ostree install -y libvirt libvirt-nss qemu qemu-char-spice qemu-device-display-virtio-gpu qemu-device-display-virtio-vga qemu-device-usb-redirect qemu-img qemu-system-x86-core qemu-user-binfmt qemu-user-static virt-install virt-manager virt-v2v virt-viewer
+    echo "Check out the Red Hat documentation to see which services to enable for your usecase:"
+    echo "https://docs.redhat.com/fr/documentation/red_hat_enterprise_linux/9/html/monitoring_and_managing_system_status_and_performance/assembly_optimizing-libvirt-daemons_optimizing-virtual-machine-performance-in-rhel#proc_enabling-modular-libvirt-daemons_assembly_optimizing-libvirt-daemons"
+
+# Convenience utility for layering VPN provider packages
+install-vpn:
+    #!/usr/bin/bash
+    set -euo pipefail
+
+    # supported VPN providers and the security features they need disabled, separated by spaces
+    declare -A vpn_providers=(
+        ["ivpn"]="gui_needs_unconfined_userns gui_needs_xwayland"
+        ["mullvad"]="gui_needs_unconfined_userns gui_needs_xwayland"
+        ["proton"]=""
+    )
+
+    # VPN install logic
+    # ref: https://www.ivpn.net/knowledgebase/linux/fedora-silverblue/
+    # ref: https://mullvad.net/de/download/vpn/linux
+    # ref: https://protonvpn.com/support/en/official-linux-vpn-fedora
+    REPO_REGEX="/^enabled[ =]/ s/0/1/g"
+    function install_vpn() {
+        local INSTRUCTIONS
+        local PACKAGE_NAME
+        local REPO_NAME
+        case "$1" in
+            "ivpn")
+                PACKAGE_NAME="ivpn"
+                REPO_NAME="$PACKAGE_NAME"
+
+                if util_checkpackage "$PACKAGE_NAME" || util_checkpackage "$PACKAGE_NAME-ui"; then
+                    echo 'Error: IVPN is already installed.'
+                    echo 'Aborting...'
+                    exit 1
+                fi
+
+                echo 'Installing IVPN...'
+                local proceed2
+                read -rp 'Do you want the IVPN GUI to be installed? [Y/n] ' proceed2
+                if ! [[ "$proceed2" == [nN]* ]]; then
+                    PACKAGE_NAME="$PACKAGE_NAME $PACKAGE_NAME-ui"
+                fi
+                INSTRUCTIONS='Successfully installed IVPN. Please execute the command "systemctl enable --now ivpn-service" after rebooting.'
+                ;;
+
+            "mullvad")
+                PACKAGE_NAME="mullvad-vpn"
+                REPO_NAME="mullvad"
+
+                if util_checkpackage "$PACKAGE_NAME"; then
+                    echo 'Error: The Mullvad VPN is already installed.'
+                    echo 'Aborting...'
+                    exit 1
+                fi
+
+                echo 'Installing Mullvad VPN...'
+                INSTRUCTIONS='Successfully installed Mullvad VPN. Please execute the command "systemctl enable --now mullvad-daemon && systemctl enable mullvad-early-boot-blocking" after rebooting.'
+                ;;
+
+            "proton")
+                PACKAGE_NAME="proton-vpn-gnome-desktop"
+                REPO_NAME="protonvpn-stable"
+
+                if util_checkpackage "$PACKAGE_NAME"; then
+                    echo 'Error: Proton VPN is already installed.'
+                    echo 'Aborting...'
+                    exit 1
+                fi
+
+                echo 'Installing Proton VPN...'
+                INSTRUCTIONS='Successfully installed Proton VPN.'
+                ;;
+
+            *)
+                echo 'Invalid choice'
+                exit 1
+                ;;
+        esac
+
+        if ! run0 sh -c "sed -i '$REPO_REGEX' /etc/yum.repos.d/$REPO_NAME.repo && rpm-ostree install --assumeyes $PACKAGE_NAME"; then
+            echo "Error: The installation didn't complete successfully, aborting..."
+            exit 1
+        fi
+
+        echo "$INSTRUCTIONS"
+    }
+
+    function util_checkpackage() {
+        rpm -qa | grep -q "$1"
+        return $?
+    }
+
+    # script start
+    echo 'NOTE: You can also install wireguard profiles from your provider directly into your DE, if you prefer.'
+    read -rp 'Do you want to continue? [y/N] ' proceed
+    if ! [[ "$proceed" == [yY]* ]]; then
+        echo 'Aborting...'
+        exit 0
+    fi
+    echo
+    echo 'Please choose your desired provider'
+    vpn_choice="$(ugum choose "${!vpn_providers[@]}")"
+    echo "You selected $vpn_choice"
+
+    vpn_requirements="${vpn_providers[$vpn_choice]}"
+    needs_gui="1"
+    if [[ "$vpn_requirements" =~ "gui_needs_" ]]; then
+        echo
+        echo 'Notice: This VPN requires additional security features to be disabled if you intend to use its graphical interface.'
+        echo 'If you only intend on using the command-line interface, you can skip those.'
+        read -rp 'Do you intend to use the GUI? [Y/n] ' proceed_gui
+        if [[ "$proceed_gui" == [nN]* ]]; then
+            echo 'Additional hardening features required for the GUI will not be disabled.'
+            needs_gui="0"
+        else
+            echo 'Additional hardening features required for the GUI will be disabled.'
+        fi
+    fi
+
+    if [[ "$vpn_requirements" =~ "always_needs_unconfined_userns" || "$vpn_requirements" =~ "gui_needs_unconfined_userns" && "$needs_gui" == "1" ]]; then
+        echo
+        if [[ "$(ujust check-unconfined-userns-state)" == "enabled" ]] ; then
+            echo 'Unconfined domain user namespaces already enabled, skipping...'
+        else
+            echo 'This VPN requires unconfined domain user namespaces to be enabled.'
+            echo 'This will execute "ujust toggle-unconfined-domain-userns-creation". You can also manually do this later if you skip this step.'
+            echo 'Warning: This is a security reduction!'
+            read -rp 'Do you want to do this now? [Y/n] ' proceed_userns
+            if ! [[ "$proceed_userns" == [nN]* ]]; then
+                echo 'Enabling unconfined domain user namespaces...'
+                ujust toggle-unconfined-domain-userns-creation
+                echo 'Enabled unconfined domain user namespaces.'
+            fi
+        fi
+    fi
+
+    if [[ "$vpn_requirements" =~ "always_needs_xwayland" || "$vpn_requirements" =~ "gui_needs_xwayland" && "$needs_gui" == "1" ]]; then
+        echo
+
+        DE="unknown"
+        IMAGE="$(rpm-ostree status 2>&- | grep '●')"
+        if echo "$IMAGE" | grep -q 'silverblue'; then
+            DE="gnome"
+        elif echo "$IMAGE" | grep -q 'kinoite'; then
+            DE="plasma"
+        elif echo "$IMAGE" | grep -q 'sericea' || echo "$IMAGE" | grep 'sway'; then
+            DE=sway
+        fi
+
+        xwayland_enabled="0"
+        if [[ "$DE" == "gnome" ]]; then
+            if ! test -e "/etc/systemd/user/org.gnome.Shell@wayland.service.d/override.conf"; then
+                xwayland_enabled="1"
+            fi
+        elif [[ "$DE" == "plasma" ]]; then
+            if ! test -e "/etc/systemd/user/plasma-kwin_wayland.service.d/override.conf"; then
+                xwayland_enabled="1"
+            fi
+        elif [[ "$DE" == "sway" ]]; then
+            if ! test -e "/etc/sway/config.d/99-noxwayland.conf"; then
+                xwayland_enabled="1"
+            fi
+        fi
+
+        if [[ "$DE" == "unknown" ]]; then
+            echo 'Warning: Unable to identify your desktop environment. Please manually ensure that XWayland is enabled. Skipping...'
+        elif [[ "$xwayland_enabled" == "1" ]]; then
+            echo 'XWayland already enabled, skipping...'
+        else
+            echo 'This VPN requires XWayland to be enabled.'
+            echo 'This will execute "ujust toggle-xwayland". You can also manually do this later if you skip this step.'
+            echo 'Warning: This is a security reduction!'
+            read -rp 'Do you want to do this now? [Y/n] ' proceed_xwayland
+            if ! [[ "$proceed_xwayland" == [nN]* ]]; then
+                echo 'Enabling XWayland...'
+                ujust toggle-xwayland
+                echo 'Enabled XWayland.'
+            fi
+        fi
+    fi
+
+    echo
+    echo 'Starting installation...'
+    install_vpn "$vpn_choice"
+    echo 'Please reboot your device to fully apply the changes.'

@@ -1,24 +1,25 @@
 # Add additional boot parameters for hardening (requires reboot)
 set-kargs-hardening:
     #!/usr/bin/bash
-    read -p "Do you need support for 32-bit processes/syscalls? (This is mostly used by legacy software, with some exceptions, such as Steam) [y/N]: " YES
+    read -rp "Do you need support for 32-bit processes/syscalls? (This is mostly used by legacy software, with some exceptions, such as Steam) [y/N]: " YES
     if [[ "$YES" == [Yy]* ]]; then
         echo "Keeping 32-bit support."
     else
         IAEMU_NO="--append-if-missing=ia32_emulation=0"
         echo "Disabling 32-bit support, for the next boot."
     fi
-    read -p "Do you want to force disable Simultaneous Multithreading (SMT) / Hyperthreading? (This can cause a reduction in the performance of certain tasks in favor of security) (Note that in most hardware SMT will be disabled anyways to mitigate a known vulnerability, this turns it off on all hardware regardless) [y/N]: " YES
+    read -rp "Do you want to force disable Simultaneous Multithreading (SMT) / Hyperthreading? (This can cause a reduction in the performance of certain tasks in favor of security) (Note that in most hardware SMT will be disabled anyways to mitigate a known vulnerability, this turns it off on all hardware regardless) [y/N]: " YES
     if [[ "$YES" == [Yy]* ]]; then
         NOSMT_YES="--append-if-missing=nosmt=force"
         echo "Force disabling SMT/Hyperthreading."
     else
         echo "Not force disabling SMT/Hyperthreading."
     fi
-    read -p "Would you like to set additional (unstable) hardening kargs? (Warning: Setting these kargs may lead to boot or stability issues on some hardware.) [y/N]: " YES
+    read -rp "Would you like to set additional (unstable) hardening kargs? (Warning: Setting these kargs may lead to boot or stability issues on some hardware.) [y/N]: " YES
     if [[ "$YES" == [Yy]* ]]; then
     UNSTABLE_YES="--append-if-missing=efi=disable_early_pci_dma \
         --append-if-missing=gather_data_sampling=force \
+        --append-if-missing=amd_iommu=force_isolation \
         --append-if-missing=debugfs=off"
         echo "Setting unstable hardening kargs."
     else
@@ -38,7 +39,6 @@ set-kargs-hardening:
       --append-if-missing=random.trust_bootloader=off \
       --append-if-missing=iommu=force \
       --append-if-missing=intel_iommu=on \
-      --append-if-missing=amd_iommu=force_isolation \
       --append-if-missing=iommu.passthrough=0 \
       --append-if-missing=iommu.strict=1 \
       --append-if-missing=pti=on \
@@ -92,3 +92,12 @@ set-kargs-nvidia:
       --append-if-missing=modprobe.blacklist=nouveau \
       --append-if-missing=nvidia-drm.modeset=1 \
       --append-if-missing=nvidia-drm.fbdev=1
+
+# Remove nvidia kargs
+remove-kargs-nvidia:
+    #!/usr/bin/bash
+    rpm-ostree kargs \
+      --delete-if-present=rd.driver.blacklist=nouveau \
+      --delete-if-present=modprobe.blacklist=nouveau \
+      --delete-if-present=nvidia-drm.modeset=1 \
+      --delete-if-present=nvidia-drm.fbdev=1

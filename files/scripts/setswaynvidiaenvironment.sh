@@ -1,10 +1,10 @@
 #!/usr/bin/env bash
 
-# Tell build process to exit if there are any errors.
 set -oue pipefail
 
 rm /etc/sway/environment
 
+# shellcheck disable=SC2016
 echo '
 
 # This file is a part of Fedora configuration for Sway and will be sourced

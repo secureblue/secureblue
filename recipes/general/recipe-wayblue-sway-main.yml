@@ -4,11 +4,11 @@ description: "wayblue sway main, hardened"
 
 base-image: ghcr.io/wayblueorg/sway
 
-image-version: 41
+image-version: 42
 
 modules:
   - from-file: common/common-modules.yml
   - from-file: common/sway-modules.yml
   - from-file: common/desktop-modules.yml
-  - from-file: common/hardenuserns-modules.yml
+  - from-file: common/selinux-modules.yml
   - from-file: common/final-modules.yml

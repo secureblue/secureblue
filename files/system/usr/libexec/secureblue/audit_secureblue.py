@@ -521,31 +521,26 @@ def audit_wheel():
 @depends_on("audit_signed_image")
 def audit_xwayland(state):
     """Check whether xwayland is disabled."""
-    image = state["image"]
-    image_data = [
-        (
-            Image.SILVERBLUE,
-            "GNOME",
-            "/etc/systemd/user/org.gnome.Shell@wayland.service.d/override.conf",
-        ),
-        (
-            Image.KINOITE,
-            "KDE Plasma",
-            "/etc/systemd/user/plasma-kwin_wayland.service.d/override.conf",
-        ),
-        (Image.SERICEA, "Sway", "/etc/sway/config.d/99-noxwayland.conf"),
-    ]
-    for de, name, path in image_data:
-        if image != de:
-            continue
-        if os.path.isfile(path):
-            status = SUCCESS
-            rec = None
-        else:
-            status = FAILURE
-            rec = f"""Xwayland is enabled for {name}. To disable, run:
-                $ ujust toggle-xwayland"""
-        yield Report(f"Ensuring xwayland is disabled for {name}", status, recs=rec)
+    match state["image"]:
+        case Image.SILVERBLUE:
+            de = "GNOME"
+            path = "/etc/systemd/user/org.gnome.Shell@wayland.service.d/override.conf"
+        case Image.KINOITE:
+            de = "KDE Plasma"
+            path = "/etc/systemd/user/plasma-kwin_wayland.service.d/override.conf"
+        case Image.SERICEA:
+            de = "Sway"
+            path = "/etc/sway/config.d/99-noxwayland.conf"
+        case _:
+            return
+    if os.path.isfile(path):
+        status = SUCCESS
+        rec = None
+    else:
+        status = FAILURE
+        rec = f"""Xwayland is enabled for {de}. To disable, run:
+            $ ujust toggle-xwayland"""
+    yield Report(f"Ensuring xwayland is disabled for {de}", status, recs=rec)
 
 
 @audit

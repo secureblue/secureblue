@@ -8,9 +8,9 @@ import argparse
 import asyncio
 import filecmp
 import glob
+import json
 import os.path
 import re
-import rpm
 import signal
 import sys
 import traceback
@@ -20,6 +20,8 @@ import subprocess  # nosec
 
 from collections.abc import Iterable
 from typing import Final, Generator
+
+import rpm
 
 from auditor import AuditError, Report, Status, audit, bold, categorize, depends_on, global_audit
 
@@ -79,6 +81,13 @@ def parse_config(
         else:
             value = None
         yield key, value
+
+
+def is_rpm_package_installed(name: str) -> bool:
+    """Checks if the given RPM package is installed."""
+    ts = rpm.TransactionSet()
+    matches = ts.dbMatch("name", name)
+    return len(matches) > 0
 
 
 ###############################################################################
@@ -168,10 +177,12 @@ def audit_sysctl():
 
 
 @audit
-def audit_signed_image():
+def audit_signed_image(state):
     """Check that the secureblue image is signed."""
-    ostree_status = command_stdout("rpm-ostree", "status")
-    if "● ostree-image-signed" in ostree_status:
+    ostree_status = command_stdout("rpm-ostree", "status", "--json")
+    image_ref = json.loads(ostree_status)["deployments"][0]["container-image-reference"]
+    state["image_ref"] = image_ref
+    if image_ref.startswith("ostree-image-signed:"):
         status = SUCCESS
         recs = None
     else:
@@ -481,28 +492,37 @@ def audit_wheel():
 
 
 @audit
-def audit_xwayland():
+@depends_on("audit_signed_image")
+def audit_xwayland(state):
     """Check whether xwayland is disabled."""
-    paths = {
-        "GNOME": "/etc/systemd/user/org.gnome.Shell@wayland.service.d/override.conf",
-        "KDE Plasma": "/etc/systemd/user/plasma-kwin_wayland.service.d/override.conf",
-        "Sway": "/etc/sway/config.d/99-noxwayland.conf",
-    }
-    for de, path in paths.items():
+    image_ref = state["image_ref"]
+    image_data = [
+        (
+            "silverblue",
+            "GNOME",
+            "/etc/systemd/user/org.gnome.Shell@wayland.service.d/override.conf",
+        ),
+        ("kinoite", "KDE Plasma", "/etc/systemd/user/plasma-kwin_wayland.service.d/override.conf"),
+        ("sericea", "Sway", "/etc/sway/config.d/99-noxwayland.conf"),
+    ]
+    for de, name, path in image_data:
+        if de not in image_ref:
+            continue
         if os.path.isfile(path):
             status = SUCCESS
             rec = None
         else:
             status = FAILURE
-            rec = f"""Xwayland is enabled for {de}. To disable, run:
+            rec = f"""Xwayland is enabled for {name}. To disable, run:
                 $ ujust toggle-xwayland"""
-        yield Report(f"Ensuring xwayland is disabled for {de}", status, recs=rec)
+        yield Report(f"Ensuring xwayland is disabled for {name}", status, recs=rec)
 
 
 @audit
-def audit_gnome_extensions():
+@depends_on("audit_signed_image")
+def audit_gnome_extensions(state):
     """Ensure GNOME user extensions are not allowed to be installed."""
-    if not command_succeeds(*"command -v gnome-shell".split()):
+    if "silverblue" not in state["image_ref"]:
         return
     allowed = command_stdout(
         *"command -p gsettings get org.gnome.shell allow-extension-installation".split()
@@ -551,22 +571,30 @@ def audit_environment_file():
 
 
 @audit
-def audit_kde_ghns():
+@depends_on("audit_signed_image")
+def audit_kde_ghns(state):
     """Ensure KDE GHNS is disabled."""
+    if "kinoite" not in state["image_ref"]:
+        return
+    status = FAILURE
+    warning = None
     try:
         with open("/etc/xdg/kdeglobals", "r", encoding="utf-8") as f:
-            status = FAILURE
-            rec = """KDE GHNS is enabled
-                To disable, run:
-                $ ujust toggle-ghns"""
             for key, value in parse_config(f):
                 if key == "ghns" and value == "false":
                     status = SUCCESS
-                    rec = None
                     break
-    except FileNotFoundError:
-        return
-    yield Report("Ensuring KDE GHNS is disabled", status, recs=rec)
+    except (FileNotFoundError, PermissionError):
+        status = WARNING
+        warning = "/etc/xdg/kdeglobals not found or inaccessible"
+    rec = (
+        """KDE GHNS is enabled
+        To disable, run:
+        $ ujust toggle-ghns"""
+        if status == FAILURE
+        else None
+    )
+    yield Report("Ensuring KDE GHNS is disabled", status, warnings=warning, recs=rec)
 
 
 @audit
@@ -665,8 +693,11 @@ def audit_bash_env_lockdown():
 
 
 @audit
-def audit_wlroot_screenshot():
+@depends_on("audit_signed_image")
+def audit_wlroot_screenshot(state):
     """Ensure wlroots screenshot support is not present."""
+    if "sericea" not in state["image_ref"]:
+        return
     if is_rpm_package_installed("xdg-desktop-portal-wlr"):
         status = FAILURE
         rec = """wlroots screenshot support is enabled
@@ -676,6 +707,7 @@ def audit_wlroot_screenshot():
         status = SUCCESS
         rec = None
     yield Report("Ensuring wlroots screenshot support is not present", status, recs=rec)
+
 
 @audit
 @categorize("flatpak")
@@ -858,16 +890,10 @@ async def audit_flatpak_permissions(state):
         status, warnings, recs = await tasks[(name, version)]
         yield Report(f"Auditing {name} ({version})", status, warnings=warnings, recs=recs)
 
+
 ###############################################################################
 # Checks to be run go above this line.
 ###############################################################################
-
-
-def is_rpm_package_installed(name: str) -> bool:
-    """Checks if the given RPM package is installed."""
-    ts = rpm.TransactionSet()
-    matches = ts.dbMatch("name", name)
-    return len(matches) > 0
 
 
 def print_err(text: str):

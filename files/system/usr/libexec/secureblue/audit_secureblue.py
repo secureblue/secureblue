@@ -98,6 +98,7 @@ class Image(enum.Enum):
     KINOITE = enum.auto()
     SERICEA = enum.auto()
     COSMIC = enum.auto()
+    COREOS = enum.auto()
 
     @classmethod
     def from_image_ref(cls, image_ref: str):
@@ -110,6 +111,8 @@ class Image(enum.Enum):
             return cls.SERICEA
         if "cosmic" in image_ref:
             return cls.COSMIC
+        if "securecore" in image_ref:
+            return cls.COREOS
         return None
 
 

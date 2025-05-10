@@ -3,8 +3,8 @@ modules:
     files:  
       - source: system/sericea
         destination: /
-      - type: rpm-ostree
-        repos:
-          - https://copr.fedorainfracloud.org/coprs/secureblue/wlr-screenshot-support/repo/fedora-%OS_VERSION%/secureblue-wlr-screenshot-support-fedora-%OS_VERSION%.repo
-        remove:
-          - xdg-desktop-portal-wlr
+  - type: rpm-ostree
+    repos:
+      - https://copr.fedorainfracloud.org/coprs/secureblue/wlr-screenshot-support/repo/fedora-%OS_VERSION%/secureblue-wlr-screenshot-support-fedora-%OS_VERSION%.repo
+    remove:
+      - xdg-desktop-portal-wlr

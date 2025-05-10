@@ -587,13 +587,12 @@ def audit_kde_ghns(state):
     except (FileNotFoundError, PermissionError):
         status = WARNING
         warning = "/etc/xdg/kdeglobals not found or inaccessible"
-    rec = (
-        """KDE GHNS is enabled
-        To disable, run:
-        $ ujust toggle-ghns"""
-        if status == FAILURE
-        else None
-    )
+    if status == FAILURE:
+        rec = """KDE GHNS is enabled
+            To disable, run:
+            $ ujust toggle-ghns"""
+    else:
+        rec = None
     yield Report("Ensuring KDE GHNS is disabled", status, warnings=warning, recs=rec)
 
 

@@ -27,3 +27,7 @@ modules:
     - type: script
       scripts:
         - removedkmshelper.sh
+    - type: files
+      files:  
+        - source: system/silverblue
+          destination: /

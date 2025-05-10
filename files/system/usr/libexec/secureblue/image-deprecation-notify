@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-selection=$(notify-send -A 'info=More Information' -a 'secureblue' -i 'dialog-warning' 'Deprecated image is detected!' 'Run <i>ujust rebase-secureblue</i> to resolve this issue.' -u critical)
+selection=$(notify-send -A 'info=More Information' -a 'secureblue' -i 'dialog-warning' 'This image is deprecated!' 'Run <i>ujust rebase-secureblue</i> to resolve this issue.' -u critical)
 
 if [[ $selection == "info" ]]; then
   trivalent "https://github.com/secureblue/secureblue/blob/live/files/system/usr/libexec/deprecated-images.json.md"

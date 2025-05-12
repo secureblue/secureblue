@@ -88,7 +88,7 @@ if echo "$CRYPT_DISK_INFO" | grep systemd-fido2 > /dev/null; then
     echo "Exiting..."
     [[ "$0" = "${BASH_SOURCE[0]}" ]] && exit 1 || return 1
   fi
-  systemd-cryptenroll --wipe-slot="fido2"
+  systemd-cryptenroll --wipe-slot="fido2" "$CRYPT_DISK"
 fi
 
 ## Run crypt enroll

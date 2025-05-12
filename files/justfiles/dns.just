@@ -26,7 +26,7 @@ dns-selector:
     echo "Below will be some options to set the DNS resolver for systemd-resolved."
     echo "All resolvers support DNS-over-TLS (DoT) or DNS-over-QUIC (DoQ), DNS-over-HTTPS (DoH), and DNSSEC."
     echo "Please select which DNS resolver you would like to set:"
-    echo "    0) Network Default - do nothing, rely purely on the network for resolution"
+    echo "    0) Network Default - do nothing, rely purely on the network for resolution (when using a VPN, this option is best to guarentee usage of the VPN's DNS resolver)"
     echo "    1) Opportunistic Upgrade - try to upgrade to DoT (encrypted DNS) resolution and/or DNSSEC enforcement (this configuration may break networking)"
     echo "    2) Control D - has content filtering, anycast"
     echo "    3) Mullvad - has content filtering, anycast"

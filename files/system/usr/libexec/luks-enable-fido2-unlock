@@ -87,8 +87,9 @@ if echo "$CRYPT_DISK_INFO" | grep systemd-fido2 > /dev/null; then
     echo "Either clear the existing FIDO2 keyslot before retrying, else choose 'y' next time."
     echo "Exiting..."
     [[ "$0" = "${BASH_SOURCE[0]}" ]] && exit 1 || return 1
+  else
+    systemd-cryptenroll --wipe-slot="fido2" "$CRYPT_DISK"
   fi
-  systemd-cryptenroll --wipe-slot="fido2" "$CRYPT_DISK"
 fi
 
 ## Run crypt enroll

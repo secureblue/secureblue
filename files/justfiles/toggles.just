@@ -234,7 +234,7 @@ toggle-bash-environment-lockdown skip_approval="false" apply_for_all_users="prom
     current_time="$(date | tr ' ' '_')"
 
     if [[ "$pending_status" == "locked" ]]; then
-        echo "${bold}WARNING${unbold} This will change your ~/.bashrc, ~/.bash_profile, ~/.config/bash-completion, ~/.profile, ~/.bash_logout, ~/.bash_login, ~/.bashrc.d/, and ~/.config/environment.d/"
+        echo "${bold}WARNING${unbold} This will change your ~/.bashrc, ~/.bash_profile, ~/.config/bash_completion, ~/.profile, ~/.bash_logout, ~/.bash_login, ~/.bashrc.d/, and ~/.config/environment.d/"
         echo "This is needed to ensure the mitigation (see LD_PRELOAD attacks) is effective."
         echo "This script will create backups of the old versions in ~/bash_env_files/$current_time."
     else
@@ -280,7 +280,7 @@ toggle-bash-environment-lockdown skip_approval="false" apply_for_all_users="prom
         BASH_ENV_FILES=(
             "$user_home/.bashrc"
             "$user_home/.bash_profile"
-            "$user_home/.config/bash-completion"
+            "$user_home/.config/bash_completion"
             "$user_home/.profile"
             "$user_home/.bash_logout"
             "$user_home/.bash_login"
@@ -427,6 +427,34 @@ toggle-mac-randomization:
     ethernet.cloned-mac-address=stable
     wifi.cloned-mac-address=$randomization_level
     EOL
+        chmod 644 $RAND_MAC_FILE
         echo "MAC randomization enabled."
         systemctl restart NetworkManager
+    fi
+
+# Toggle support for screenshots on wlroots
+toggle-wlr-screenshot-support:
+    #!/usr/bin/bash
+    IMAGE="$(rpm-ostree status | grep '●')"
+    if ! echo "$IMAGE" | grep -qE 'sericea|sway'; then
+        echo "This toggle is only relevant on Sericea"
+        exit 0
+    fi
+
+    PACKAGE_NAME="wlr-screenshot-support"
+    if rpm -q "$PACKAGE_NAME" 1>/dev/null; then
+        echo "wlroots screenshot support is enabled. Disabling..."
+        rpm-ostree uninstall "$PACKAGE_NAME"
+        echo "wlroots screenshot support disabled. Reboot to take effect."
+    else 
+        echo "wlroots screenshot support is disabled."
+        read -rp "Enabling screenshot support on wlroots has negative security implications. Are you sure you want to do this? (y/N) " proceed
+        if ! [[ "$proceed" == [Yy]* ]]; then
+            echo "Aborting..."
+            exit 0
+        fi
+
+        echo "Enabling wlroots screenshot support..."
+        rpm-ostree install "$PACKAGE_NAME"
+        echo "wlroots screenshot support enabled. Reboot to take effect."
     fi

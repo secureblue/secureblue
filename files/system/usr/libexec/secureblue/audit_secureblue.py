@@ -153,6 +153,9 @@ def audit_kargs():
         "ia32_emulation=0",
         "l1tf=full,force",
         "kvm-intel.vmentry_l1d_flush=always",
+        "nosmt=force",
+        "oops=panic",
+        "loglevel=0",
     ]
     for karg in kargs_expected:
         status = SUCCESS if karg in kargs_current else FAILURE

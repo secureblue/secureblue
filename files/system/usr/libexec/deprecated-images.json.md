@@ -2,6 +2,26 @@
 
 The following image types have been deprecated:
 
+## wayblue-hyprland
+
+Rationale: Our Hyprland images have low usage. More importantly though, Hyprland has a long history of antagonism towards security improvements. Please see https://bugs.gentoo.org/930831#c6 for more info.
+Rebase to: One of secureblue's `sericea` images.
+
+## wayblue-sway
+
+Rationale: Deduplication and supply chain improvements. We already have `sericea` images that pull directly from Fedora, without depending on ublue's akmods. Wayblue on the other hand still depends on ublue's akmods.
+Rebase to: One of secureblue's `sericea` images.
+
+## wayblue-wayfire
+
+Rationale: Lack of usage and consolidation. Stats report no usage.
+Rebase to: One of secureblue's `sericea` images.
+
+## wayblue-river
+
+Rationale: Low usage and consolidation. Stats report very low usage.
+Rebase to: One of secureblue's `sericea` images.
+
 ## userns
 
 Rationale: See https://github.com/secureblue/secureblue/releases/tag/v4.3.0

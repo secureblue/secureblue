@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/python3
 
 """
 Framework for system auditing.
@@ -151,7 +151,9 @@ class Audit:
             self.categories.add(check.category)
         self.checks.append(check)
 
-    async def run(self, exclude: list[str] | None = None):
+    async def run(
+        self, exclude: list[str] | None = None
+    ) -> AsyncGenerator[tuple[Check, Exception]]:
         """Runs each stored check, prints their reports, then prints their recommendations."""
         if exclude is None:
             exclude = []
@@ -162,9 +164,13 @@ class Audit:
         for check in self.checks:
             if check.category in exclude:
                 continue
-            async for report in check.run(self.state):
-                print(report)
-            self.recs += check.recs
+            try:
+                async for report in check.run(self.state):
+                    print(report)
+            except Exception as e:
+                yield check, e
+            else:
+                self.recs += check.recs
         print_heading("Recommendations")
         for rec in self.recs:
             rec_lines = [line.strip() for line in rec.split("\n")]

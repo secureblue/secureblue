@@ -75,10 +75,11 @@ if [[ ! -L "$CRYPT_DISK" ]]; then
 fi
 
 CRYPT_DISK_INFO=$(cryptsetup luksDump "$CRYPT_DISK")
-KEYSLOT=$(echo "$CRYPT_DISK_INFO" | sed -n '/systemd-fido2$/,/Keyslot:/p' | grep Keyslot|awk '{print $2}')
+# Note: we use { grep "Keyslot" || true; } below to mask the nonzero return code if fido2 has not been setup yet
+before_cryptenroll_keyslot=$(echo "$CRYPT_DISK_INFO" | sed -n '/systemd-fido2$/,/Keyslot:/p' | { grep "Keyslot" || true; } | awk '{print $2}') 
 
 if echo "$CRYPT_DISK_INFO" | grep systemd-fido2 > /dev/null; then
-  echo "FIDO2 already present in LUKS keyslot $KEYSLOT of $CRYPT_DISK."
+  echo "FIDO2 already present in LUKS keyslot $before_cryptenroll_keyslot of $CRYPT_DISK."
   read -p "Wipe it and re-enroll? (y/N): " -n 1 -r
   echo
   if [[ $REPLY =~ ^[Nn]$ ]]; then
@@ -97,7 +98,8 @@ sed -i "s/UUID=$(echo "$RD_LUKS_UUID" | cut -c6-) none discard/UUID=$(echo "$RD_
 
 # Sets the new fido2 keyslot as preferred if it's the only one currently configured. (Users with more than one configured are presumed advanced and capable of their own priority management.)
 if [ echo "$CRYPT_DISK_INFO" | grep -c "systemd-fido2" -eq "1" ]; then
-  cryptsetup config --key-slot "$keyslot" --priority "prefer" "$CRYPT_DISK"
+  after_cryptenroll_keyslot=$(echo "$CRYPT_DISK_INFO" | sed -n '/systemd-fido2$/,/Keyslot:/p' | { grep "Keyslot" || true; } | awk '{print $2}') 
+  cryptsetup config --key-slot "$after_cryptenroll_keyslot" --priority "prefer" "$CRYPT_DISK"
 fi
 
 echo "Creating backup key"

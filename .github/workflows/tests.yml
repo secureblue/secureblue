@@ -10,6 +10,8 @@ on:
 jobs:
   run_tests:
     runs-on: ubuntu-24.04
+    permissions:
+      contents: read
     name: Install Bats and run tests
     steps:
       - name: Checkout repo

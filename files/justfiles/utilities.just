@@ -172,7 +172,18 @@ toolbox-assemble CONTAINER="prompt" ACTION="create" FILE="/etc/toolbox/toolbox.i
 # Run a non-flatpak application with standard memory allocator (needs an argument!)
 with-standard-malloc APP:
     #!/usr/bin/bash
-    bwrap --dev-bind / / --ro-bind /dev/null /etc/ld.so.preload "{{ APP }}"
+    if [[ "$(ujust check-unconfined-userns-state)" == 'disabled' ]]; then
+    	cat >&2 <<-'EOF'
+    Bubblewrap requires unconfined-domain user namespaces to work, which are
+    disabled by default for security reasons. For more information, see:
+        https://secureblue.dev/articles/userns
+    To allow this anyway, run:
+        ujust toggle-unconfined-domain-userns-creation
+    EOF
+        exit 1
+    fi
+    app="{{ APP }}"
+    bwrap --dev-bind / / --ro-bind /dev/null /etc/ld.so.preload "$app"
 
 # Add the unfiltered Flathub flatpak repo
 enable-flathub-unfiltered:
@@ -183,13 +194,21 @@ enable-flathub-unfiltered:
 check-container-userns-state:
     #!/usr/bin/bash
     set -euo pipefail
-    podman unshare true &> /dev/null && echo 'enabled' || echo 'disabled'
+    if [ "$(whoami)" = 'root' ]; then
+        semodule -l | grep -q 'harden_container_userns' && echo 'disabled' || echo 'enabled'
+    else
+        podman unshare true &> /dev/null && echo 'enabled' || echo 'disabled'
+    fi
 
 # Returns the state of unconfined domain user namespaces. (enabled/disabled)
 check-unconfined-userns-state:
     #!/usr/bin/bash
     set -euo pipefail
-    unshare -U true &> /dev/null && echo 'enabled' || echo 'disabled'
+    if [ "$(whoami)" = 'root' ]; then
+        semodule -l | grep -q 'harden_userns' && echo 'disabled' || echo 'enabled'
+    else
+        unshare -U true &> /dev/null && echo 'enabled' || echo 'disabled'
+    fi
 
 # Install Steam via choice of 2 methods
 install-steam:

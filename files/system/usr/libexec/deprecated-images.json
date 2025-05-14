@@ -6,6 +6,10 @@
       "server",
       "bluefin",
       "aurora",
-      "userns"
+      "userns",
+      "wayblue-hyprland",
+      "wayblue-sway",
+      "wayblue-wayfire",
+      "wayblue-river"
     ]
 }

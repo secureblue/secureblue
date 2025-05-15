@@ -1,7 +1,6 @@
 #!/bin/sh
 # ------------------------------------------------------------------------------
 # run0edit - edit a single file as root.
-# version 0.3.3-sb
 #
 # Please report issues at: https://github.com/HastD/run0edit/issues
 #
@@ -20,6 +19,8 @@
 # limitations under the License.
 # ------------------------------------------------------------------------------
 
+readonly version=0.4.0-secureblue
+
 # Set pipefail if it's supported by the shell, disregard if unsupported.
 # shellcheck disable=SC3040
 ( set -o pipefail 2> /dev/null ) && set -o pipefail
@@ -30,29 +31,72 @@ set -eu
 # shellcheck disable=SC2016
 PATH=$(command -p env -i sh -c 'echo "$PATH"')
 
-if [ "$#" = 0 ] || [ "$1" = '--help' ]; then
-    echo 'run0edit allows a permitted user to edit a file as root.'
-    echo 'Usage: run0edit "path/to/file"'
-    echo 'To use another text editor, write the path to your text editor of choice to'
-    echo '    /etc/run0edit/editor.conf'
-    exit
-elif [ "$(id -u)" = 0 ]; then
-    echo 'run0edit should not be run as root.' >&2
+print_usage() {
+    cat <<-'EOF'
+run0edit allows a permitted user to edit a file as root.
+
+Usage: run0edit [--] FILE
+Usage: run0edit --help | -h | --version | -v
+
+To use another text editor, write the path to your text editor of choice to
+    /etc/run0edit/editor.conf
+EOF
+}
+
+filename=""
+
+while [ "$#" -gt 0 ]; do
+    case "$1" in
+        -v|--version)
+            echo "run0edit $version"
+            exit
+            ;;
+        -h|--help)
+            print_usage
+            exit
+            ;;
+        --)
+            shift
+            break
+            ;;
+        -*)
+            echo "run0edit: unknown option $1"
+            exit 1
+            ;;
+        *)
+            if [ -n "$filename" ]; then
+                echo 'Error: too many positional arguments.' >&2
+                exit 1
+            fi
+            filename="$1"
+            shift
+            ;;
+    esac
+done
+
+# Handle positional arguments after --
+while [ "$#" -gt 0 ]; do
+    if [ -n "$filename" ]; then
+        echo 'run0edit: too many positional arguments.' >&2
+        echo 'Run with --help for usage info.' >&2
+        exit 1
+    fi
+    filename="$1"
+    shift
+done
+
+if [ -z "$filename" ]; then
+    echo 'run0edit: missing argument' >&2
     exit 1
-elif [ "$#" -ne 1 ]; then
-    echo 'Error: too many arguments.' >&2
-    echo 'run0edit allows a permitted user to edit a file as root.'
-    echo 'Usage: run0edit "path/to/file"'
-    exit 1
-elif [ -w "$1" ]; then
+elif [ -w "$filename" ]; then
     echo 'File is writable by the current user; run0edit is unnecessary.' >&2
     exit 1
 fi
 
 # Determine text editor to use.
 editor=''
-etc_conf_path='/etc/run0edit/editor.conf'
-usr_conf_path='/usr/etc/run0edit/editor.conf'
+readonly etc_conf_path='/etc/run0edit/editor.conf'
+readonly usr_conf_path='/usr/etc/run0edit/editor.conf'
 if [ -f "$etc_conf_path" ] && [ -r "$etc_conf_path" ]; then
     editor="$(cat "$etc_conf_path")"
 elif [ -f "$usr_conf_path" ] && [ -r "$usr_conf_path" ]; then
@@ -71,21 +115,43 @@ else
 fi
 
 # Create a temporary file with a random suffix appended to the filename.
-filename="$1"
-directory=$(dirname "$filename")
-trunc_filename=$(basename "$filename" | head -c 64)
-temp_filename=$(mktemp --tmpdir "${trunc_filename}.XXXXXXXXXX")
+directory=$(dirname -- "$filename")
+trunc_filename=$(basename -- "$filename" | head -c 64)
+temp_filename=$(mktemp --tmpdir -- "${trunc_filename}.XXXXXXXXXX")
 
 # Inner script to be run with elevated privileges:
 # shellcheck disable=SC2016
 script='\
+    ( set -o pipefail 2> /dev/null ) && set -o pipefail
+    set -eu
+    PATH=$(command -p env -i sh -c "echo \"\$PATH\"")
     filename="$1"
     tmpfile="$2"
     editor="$3"
+    edit_immutable=no
+
+    ask_immutable() {
+        if command -pv lsattr > /dev/null; then
+            immutable_flag=$(lsattr -- "$1" | cut -d " " -f1 | tr -d "-")
+        else
+            immutable_flag=""
+        fi
+        if [ "$immutable_flag" = i ]; then
+            echo "WARNING: $1 has the immutable flag."
+            printf "Temporarily remove the flag to edit the file? [y/N] "
+            read -r edit_immutable
+            case "$edit_immutable" in
+                y*|Y*) true ;;
+                *) false ;;
+            esac
+        else
+            false
+        fi
+    }
 
     # If the file does not exist, ensure the directory exists and is writable.
     if [ ! -e "$filename" ]; then
-        directory="$(dirname "$filename")"
+        directory="$(dirname -- "$filename")"
         if [ ! -d "$directory" ]; then
             echo "run0edit: invalid argument: directory does not exist"
             exit 1
@@ -102,16 +168,22 @@ script='\
             echo "run0edit: invalid argument: not a regular file"
             exit 1
         elif [ ! -w "$filename" ]; then
-            echo "run0edit: $filename is read-only."
-            exit 1
-        elif ! cp "$filename" "$tmpfile"; then
+            if ask_immutable "$filename"; then
+                edit_immutable=yes
+            fi
+            if [ "$edit_immutable" != yes ]; then
+                echo "run0edit: $filename is read-only."
+                exit 1
+            fi
+        fi
+        if ! cp -- "$filename" "$tmpfile"; then
             echo "run0edit: failed to copy $filename to temporary file at $tmpfile"
             exit 1
         fi
     fi
 
     # Attempt to edit the temp file as the original user.
-    if ! run0 --user="$SUDO_UID" "$editor" "$tmpfile"; then
+    if ! run0 --user="$SUDO_UID" -- "$editor" "$tmpfile"; then
         echo "run0edit: failed to edit temporary file at $tmpfile"
         exit 1
     fi
@@ -119,9 +191,20 @@ script='\
     # If the target file exists and has been modified in the temp file, or
     # if this is a new file that is non-empty, copy temp file to target.
     if [ -f "$filename" ]; then
-        if ! cmp -s "$tmpfile" "$filename"; then
-            if ! cp "$tmpfile" "$filename"; then
+        if ! cmp -s -- "$tmpfile" "$filename"; then
+            [ "$edit_immutable" = yes ] && chattr -i -- "$filename"
+            cp -- "$tmpfile" "$filename"
+            cp_exit_status="$?"
+            if [ "$edit_immutable" = yes ]; then
+                chattr +i -- "$filename"
+                echo "File edited and immutable flag reapplied."
+            fi
+            if [ "$cp_exit_status" != 0 ]; then
                 echo "run0edit: unable to write temporary file at $tmpfile to $filename"
+                exit 1
+            elif [ "$edit_immutable" != yes ] && ! cmp -s -- "$tmpfile" "$filename"; then
+                echo "WARNING: contents of $filename does not match contents of edited tempfile."
+                echo "File contents may be corrupted!"
                 exit 1
             fi
         else
@@ -129,8 +212,8 @@ script='\
         fi
     else
         if [ -s "$tmpfile" ]; then
-            touch "$filename"
-            if ! cp "$tmpfile" "$filename"; then
+            touch -- "$filename"
+            if ! cp -- "$tmpfile" "$filename"; then
                 echo "run0edit: unable to write temporary file at $tmpfile to $filename"
                 exit 1
             fi
@@ -145,13 +228,13 @@ if [ -e "$filename" ]; then
 else
     writable_path="$directory"
 fi
-escaped_path=$(realpath -m "$writable_path" | sed -e 's/\\/\\\\/g' -e 's/"/\\"/g')
+escaped_path=$(realpath -m -- "$writable_path" | sed -e 's/\\/\\\\/g' -e 's/"/\\"/g')
 escaped_temp_path=$(echo "$temp_filename" | sed -e 's/\\/\\\\/g' -e 's/"/\\"/g')
 
 set +e
-run0 \
+SYSTEMD_ADJUST_TERMINAL_TITLE=false run0 \
     --description="run0edit \"$filename\"" \
-    --property="CapabilityBoundingSet=CAP_DAC_OVERRIDE" \
+    --property="CapabilityBoundingSet=CAP_DAC_OVERRIDE CAP_FOWNER CAP_LINUX_IMMUTABLE" \
     --property="DevicePolicy=closed" \
     --property="LockPersonality=yes" \
     --property="MemoryDenyWriteExecute=yes" \
@@ -186,17 +269,17 @@ status_code="$?"
 set -e
 case "$status_code" in
     0)
-        rm -f "$temp_filename"
+        rm -f -- "$temp_filename"
         ;;
     226)
         echo "run0edit: invalid argument: directory does not exist" >&2
-        rm -f "$temp_filename"
+        rm -f -- "$temp_filename"
         exit 1
         ;;
     *)
         # Clean up empty temporary file, but leave it if it's non-empty.
         if [ ! -s "$temp_filename" ]; then
-            rm -f "$temp_filename"
+            rm -f -- "$temp_filename"
         fi
         exit "$status_code"
         ;;

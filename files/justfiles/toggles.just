@@ -136,11 +136,11 @@ toggle-gnome-extensions:
     #!/usr/bin/bash
     set -euo pipefail
     GSETTING="org.gnome.shell allow-extension-installation"
-    if $(gsettings get $GSETTING); then
-      gsettings set $GSETTING false
+    if $(command -p gsettings get $GSETTING); then
+      command -p gsettings set $GSETTING false
       echo "Support for GNOME user extensions is now disabled"
     else
-      gsettings set $GSETTING true
+      command -p gsettings set $GSETTING true
       echo "Support for GNOME user extensions is now enabled"
     fi
 

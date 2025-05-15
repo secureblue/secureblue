@@ -20,25 +20,48 @@ class Status(enum.Enum):
     """Status of a system check."""
 
     SUCCESS = 0
-    CAUTION = 1
-    WARNING = 2
-    FAILURE = 3
-    UNKNOWN = 4
+    WARNING = 1
+    FAILURE = 2
+    UNKNOWN = 3
 
     def to_str_in_color(self) -> str:
         """Colored text representation of the status."""
         match self:
             case Status.SUCCESS:
-                color_code = 2  # green
-            case Status.CAUTION:
-                color_code = 227  # yellow
+                color_code = 32  # green
             case Status.WARNING:
-                color_code = 214  # orange
+                color_code = 33  # yellow
             case Status.FAILURE:
-                color_code = 1  # red
+                color_code = 31  # red
             case Status.UNKNOWN:
-                color_code = 6  # cyan
-        return f"\x1b[38;5;{color_code}m{self.name}\x1b[39m"
+                color_code = 36  # cyan
+        return f"\x1b[{color_code}m{self.name}\x1b[39m"
+
+    def downgrade_to(self, other: Self) -> Self:
+        """Returns the more severe of the two statuses."""
+        return max(self, other, key=lambda status: status.value)
+
+
+class FlatpakStatus(enum.Enum):
+    """Status of a system check."""
+
+    SAFE = 0
+    LIKELY_SAFE = 1
+    POSSIBLY_UNSAFE = 2
+    UNSAFE = 3
+
+    def to_str_in_color(self) -> str:
+        """Colored text representation of the status."""
+        match self:
+            case FlatpakStatus.SAFE:
+                color_code = 2  # green
+            case FlatpakStatus.LIKELY_SAFE:
+                color_code = 227  # yellow
+            case FlatpakStatus.POSSIBLY_UNSAFE:
+                color_code = 214  # orange
+            case FlatpakStatus.UNSAFE:
+                color_code = 1  # red
+        return f"\x1b[38;5;{color_code}m{self.name.replace('_', ' ')}\x1b[39m"
 
     def downgrade_to(self, other: Self) -> Self:
         """Returns the more severe of the two statuses."""
@@ -51,7 +74,7 @@ class Report:
     def __init__(
         self,
         desc: str,
-        status: Status,
+        status: Status | FlatpakStatus,
         *,
         warnings: str | list[str] | None = None,
         recs: str | list[str] | None = None,
@@ -71,10 +94,10 @@ class Report:
         else:
             self.recs = recs
 
-    def __str__(self) -> str:
+    def to_str(self, width: int = 80) -> str:
         status_tag = f" [ {self.status.to_str_in_color()} ]"
-        width = 80 - len(self.status.name) - 5
-        report_str = f"{(self.description + '...').ljust(width)}{status_tag}"
+        desc_width = width - len(self.status.name) - 5
+        report_str = f"{(self.description + '...').ljust(desc_width, '.')}{status_tag}"
         for warning in self.warnings:
             report_str += f"\n> {warning}"
         return report_str
@@ -162,12 +185,12 @@ class Audit:
         self.checks.append(check)
 
     async def run(
-        self, exclude: list[str] | None = None
+        self, *, exclude: list[str] | None = None, width: int = 80
     ) -> AsyncGenerator[tuple[Check, Exception]]:
         """Runs each stored check, prints their reports, then prints their recommendations."""
         if exclude is None:
             exclude = []
-        print_heading("Audit")
+        print_heading("Audit", width=width)
         if exclude:
             category_word = "category" if len(exclude) == 1 else "categories"
             print(f"Skipping checks in the following {category_word}: {', '.join(exclude)}")
@@ -176,12 +199,12 @@ class Audit:
                 continue
             try:
                 async for report in check.run(self.state):
-                    print(report)
+                    print(report.to_str(width=width))
             except Exception as e:
                 yield check, e
             else:
                 self.recs += check.recs
-        print_heading("Recommendations")
+        print_heading("Recommendations", width=width)
         for rec in self.recs:
             rec_lines = [line.strip() for line in rec.split("\n")]
             for i, line in enumerate(rec_lines):
@@ -199,14 +222,16 @@ class Audit:
             if check.category in exclude:
                 continue
             async for report in check.run(self.state):
-                yield json.dumps({
+                yield json.dumps(
+                    {
                         "name": check.name,
                         "category": check.category,
                         "description": report.description,
                         "status": report.status.name.lower(),
                         "warnings": report.warnings,
                         "recommendations": report.recs,
-                    })
+                    }
+                )
 
 
 global_audit = Audit()

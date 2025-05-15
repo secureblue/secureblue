@@ -10,6 +10,7 @@ import enum
 import filecmp
 import glob
 import json
+import os
 import os.path
 import re
 import signal
@@ -24,10 +25,19 @@ from typing import Final, Generator
 
 import rpm
 
-from auditor import AuditError, Report, Status, audit, bold, categorize, depends_on, global_audit
+from auditor import (
+    AuditError,
+    FlatpakStatus,
+    Report,
+    Status,
+    audit,
+    bold,
+    categorize,
+    depends_on,
+    global_audit,
+)
 
 SUCCESS: Final = Status.SUCCESS
-CAUTION: Final = Status.CAUTION
 WARNING: Final = Status.WARNING
 FAILURE: Final = Status.FAILURE
 UNKNOWN: Final = Status.UNKNOWN
@@ -769,11 +779,17 @@ def audit_flatpak_remotes():
         yield Report(f"Auditing flatpak remote {name}", status, warnings=warnings)
 
 
+SAFE: Final = FlatpakStatus.SAFE
+LIKELY_SAFE: Final = FlatpakStatus.LIKELY_SAFE
+POSSIBLY_UNSAFE: Final = FlatpakStatus.POSSIBLY_UNSAFE
+UNSAFE: Final = FlatpakStatus.UNSAFE
+
+
 async def check_flatpak_permissions(name, version, state):
     """Check permissions for a single flatpak."""
     warnings = []
     recs = []
-    status = SUCCESS
+    status = SAFE
     perms_text = await async_command_stdout("flatpak", "info", "--show-permissions", name, version)
     perms = {}
     for line in perms_text.split("\n"):
@@ -786,7 +802,7 @@ async def check_flatpak_permissions(name, version, state):
     if "shared" in perms:
         shared = perms["shared"]
         if "network" in shared:
-            status = status.downgrade_to(CAUTION)
+            status = status.downgrade_to(LIKELY_SAFE)
             warnings.append(f"{name} has network access")
             recs.append(
                 f"""{name} has network access
@@ -794,7 +810,7 @@ async def check_flatpak_permissions(name, version, state):
                         $ flatpak override -u --unshare=network {name}"""
             )
         if "ipc" in shared:
-            status = status.downgrade_to(WARNING)
+            status = status.downgrade_to(POSSIBLY_UNSAFE)
             warnings.append(f"{name} has inter-process communications access")
             recs.append(
                 f"""{name} has inter-process communications access
@@ -805,7 +821,7 @@ async def check_flatpak_permissions(name, version, state):
     if "sockets" in perms:
         sockets = perms["sockets"]
         if "x11" in sockets and "fallback-x11" not in sockets:
-            status = status.downgrade_to(WARNING)
+            status = status.downgrade_to(POSSIBLY_UNSAFE)
             warnings.append(f"{name} has x11 access")
             recs.append(
                 f"""{name} has x11 access
@@ -813,14 +829,14 @@ async def check_flatpak_permissions(name, version, state):
                         $ flatpak override -u --nosocket=x11 {name}"""
             )
         if "pulseaudio" in sockets:
-            status = status.downgrade_to(CAUTION)
+            status = status.downgrade_to(LIKELY_SAFE)
             warnings.append(f"{name} has access to the PulseAudio socket")
             recs.append(f"""{name} has access to the PulseAudio socket.
                         This grants access to audio and microphones.
                         To remove it use Flatseal or run:
                         $ flatpak override -u --nosocket=pulseaudio {name}""")
         if "session-bus" in sockets:
-            status = status.downgrade_to(WARNING)
+            status = status.downgrade_to(POSSIBLY_UNSAFE)
             warnings.append(f"{name} has access to the D-Bus session bus")
             recs.append(
                 f"""{name} has access to the D-Bus session bus
@@ -828,7 +844,7 @@ async def check_flatpak_permissions(name, version, state):
                         $ flatpak override -u --nosocket=session-bus {name}"""
             )
         if "system-bus" in sockets:
-            status = status.downgrade_to(WARNING)
+            status = status.downgrade_to(POSSIBLY_UNSAFE)
             warnings.append(f"{name} has access to the D-Bus system bus")
             recs.append(
                 f"""{name} has access to the D-Bus system bus
@@ -840,26 +856,26 @@ async def check_flatpak_permissions(name, version, state):
         devices = perms["devices"]
         device_checks = {
             "all": {
-                "status": WARNING,
+                "status": POSSIBLY_UNSAFE,
                 "access": "input devices, GPUs, raw USB, and virtualization",
                 "sandbox_escape": True,
                 "note": f"""If GPU access is required, use device=dri instead:
                     $ flatpak override -u --device=dri {name}""",
             },
             "input": {
-                "status": CAUTION,
+                "status": LIKELY_SAFE,
                 "access": "input devices",
                 "sandbox_escape": False,
                 "note": "",
             },
             "shm": {
-                "status": WARNING,
+                "status": POSSIBLY_UNSAFE,
                 "access": "shared memory",
                 "sandbox_escape": True,
                 "note": "",
             },
             "kvm": {
-                "status": WARNING,
+                "status": POSSIBLY_UNSAFE,
                 "access": "kernel-based virtualization",
                 "sandbox_escape": False,
                 "note": "",
@@ -891,13 +907,13 @@ async def check_flatpak_permissions(name, version, state):
             if s:
                 ld_preloads.append(s.rsplit("/", maxsplit=1)[-1])
     if "libhardened_malloc.so" not in ld_preloads:
-        status = status.downgrade_to(WARNING)
+        status = status.downgrade_to(POSSIBLY_UNSAFE)
         warnings.append(f"{name} is not requesting hardened_malloc")
         if "libhardened_malloc-light.so" in ld_preloads:
-            status = status.downgrade_to(CAUTION)
+            status = status.downgrade_to(LIKELY_SAFE)
             warnings.append(f"{name} is requesting hardened_malloc-light")
         elif "libhardened_malloc-pkey.so" in ld_preloads:
-            status = status.downgrade_to(CAUTION)
+            status = status.downgrade_to(LIKELY_SAFE)
             warnings.append(f"{name} is requesting hardened_malloc-pkey")
         recs.append(
             f"""{name} is not requesting hardened_malloc
@@ -906,7 +922,7 @@ async def check_flatpak_permissions(name, version, state):
         )
 
     if not ("filesystems" in perms and "host-os:ro" in perms["filesystems"]):
-        status = status.downgrade_to(WARNING)
+        status = status.downgrade_to(POSSIBLY_UNSAFE)
         warnings.append(f"{name} is missing host-os:ro permission")
         recs.append(
             f"""{name} is missing host-os:ro permission
@@ -918,7 +934,7 @@ async def check_flatpak_permissions(name, version, state):
     if "features" in perms:
         features = perms["features"]
         if state["bluetooth_loaded"] and "bluetooth" in features:
-            status = status.downgrade_to(WARNING)
+            status = status.downgrade_to(POSSIBLY_UNSAFE)
             warnings.append(f"{name} has bluetooth access")
             recs.append(
                 f"""{name} has bluetooth access
@@ -926,7 +942,7 @@ async def check_flatpak_permissions(name, version, state):
                         $ flatpak override -u --disallow=bluetooth {name}"""
             )
         if state["ptrace_allowed"] and "devel" in features:
-            status = status.downgrade_to(WARNING)
+            status = status.downgrade_to(POSSIBLY_UNSAFE)
             warnings.append(f"{name} has ptrace access")
             recs.append(
                 f"""{name} has ptrace access
@@ -938,7 +954,7 @@ async def check_flatpak_permissions(name, version, state):
     if "filesystems" in perms:
         filesystems = perms["filesystems"]
         if "host" in filesystems:
-            status = FAILURE
+            status = UNSAFE
             warnings.append(f"{name} has filesystem=host permission")
             recs.append(
                 f"""{name} has filesystem=host permission.
@@ -947,7 +963,7 @@ async def check_flatpak_permissions(name, version, state):
                     $ flatpak override -u --nofilesystem=host {name}"""
             )
         if "home" in filesystems:
-            status = FAILURE
+            status = UNSAFE
             warnings.append(f"{name} has filesystem=home permission")
             recs.append(
                 f"""{name} has filesystem=home permission.
@@ -982,7 +998,7 @@ async def check_flatpak_permissions(name, version, state):
             )
 
     if arbitrary_permissions:
-        status = status.downgrade_to(WARNING)
+        status = status.downgrade_to(POSSIBLY_UNSAFE)
         warnings.append(f"{name} can acquire arbitrary permissions")
 
     return status, warnings, recs
@@ -1039,6 +1055,11 @@ def warn_if_root():
         print_err("*** Some results may be misleading or incomplete. ***\n")
 
 
+def get_width() -> int:
+    """Get the width in columns to be used for reports."""
+    return min(max(80, os.get_terminal_size().columns), 100)
+
+
 async def main() -> int:
     """Main entry point. Parse command-line arguments and run audit."""
     signal.signal(signal.SIGINT, handle_sigint)
@@ -1057,7 +1078,7 @@ async def main() -> int:
         async for report_json in global_audit.run_json(exclude=skip):
             print(report_json)
         return 0
-    async for check, err in global_audit.run(exclude=skip):
+    async for check, err in global_audit.run(exclude=skip, width=get_width()):
         print_err(f"\n*** Error in check '{check.name}' ***")
         traceback.print_exception(err)
         print_err("\n*** Continuing... ***")

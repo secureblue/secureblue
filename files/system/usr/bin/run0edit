@@ -19,7 +19,7 @@
 # limitations under the License.
 # ------------------------------------------------------------------------------
 
-readonly version=0.4.0-secureblue
+readonly version=0.4.1-secureblue
 
 # Set pipefail if it's supported by the shell, disregard if unsupported.
 # shellcheck disable=SC3040
@@ -109,13 +109,25 @@ elif [ -f '/usr/bin/nano' ] && [ -x '/usr/bin/nano' ]; then
 elif [ -f '/usr/bin/vi' ] && [ -x '/usr/bin/vi' ]; then
     editor='/usr/bin/vi'
 else
-    echo "Editor not found. Please install either nano or vi, or write the path to" >&2
-    echo "the text editor of your choice to /etc/run0edit/editor.conf" >&2
+    echo 'Editor not found. Please install either nano or vi, or write the path to' >&2
+    echo 'the text editor of your choice to /etc/run0edit/editor.conf' >&2
     exit 1
 fi
 
+readonly_filesystem() {
+    if [ -r "$1" ] && command -pv findmnt >/dev/null; then
+        command -p findmnt -nru -o OPTIONS --target "$1" | tr ',' '\n' | grep -q '^ro$'
+    else
+        false
+    fi
+}
+
 # Create a temporary file with a random suffix appended to the filename.
 directory=$(dirname -- "$filename")
+if readonly_filesystem "$filename" || readonly_filesystem "$directory"; then
+    echo "run0edit: $filename is on a read-only filesystem." >&2
+    exit 1
+fi
 trunc_filename=$(basename -- "$filename" | head -c 64)
 temp_filename=$(mktemp --tmpdir -- "${trunc_filename}.XXXXXXXXXX")
 
@@ -128,19 +140,32 @@ script='\
     filename="$1"
     tmpfile="$2"
     editor="$3"
-    edit_immutable=no
+    edit_immutable="no"
+
+    readonly_filesystem() {
+        if command -v findmnt >/dev/null; then
+            findmnt -nru -o OPTIONS --target "$1" | tr "," "\n" | grep -q "^ro\$"
+        else
+            false
+        fi
+    }
 
     ask_immutable() {
-        if command -pv lsattr > /dev/null; then
-            immutable_flag=$(lsattr -- "$1" 2>/dev/null | cut -d " " -f1 | tr -d "-" || echo "")
+        if command -v lsattr >/dev/null; then
+            immutable_flag=$(lsattr -d -- "$1" 2>/dev/null | cut -d " " -f1 | tr -d "-" || echo "")
         else
             immutable_flag=""
         fi
         if [ "$immutable_flag" = i ]; then
             echo "WARNING: $1 has the immutable flag."
-            printf "Temporarily remove the flag to edit the file? [y/N] "
-            read -r edit_immutable
-            case "$edit_immutable" in
+            if [ -d "$1" ]; then
+                printf "Temporarily remove the flag to create a file in the directory? [y/N] "
+            else
+                printf "Temporarily remove the flag to edit the file? [y/N] "
+            fi
+            ask_immutable_response=""
+            read -r ask_immutable_response
+            case "$ask_immutable_response" in
                 y*|Y*) true ;;
                 *) false ;;
             esac
@@ -156,8 +181,17 @@ script='\
             echo "run0edit: invalid argument: directory does not exist"
             exit 1
         elif [ ! -w "$directory" ]; then
-            echo "run0edit: $directory is read-only."
-            exit 1
+            if readonly_filesystem "$directory"; then
+                echo "run0edit: $directory is on a read-only filesystem."
+                exit 1
+            fi
+            if ask_immutable "$directory"; then
+                edit_immutable="yes"
+            fi
+            if [ "$edit_immutable" = "no" ]; then
+                echo "run0edit: $directory is read-only."
+                exit 1
+            fi
         fi
     fi
 
@@ -168,10 +202,14 @@ script='\
             echo "run0edit: invalid argument: not a regular file"
             exit 1
         elif [ ! -w "$filename" ]; then
-            if ask_immutable "$filename"; then
-                edit_immutable=yes
+            if readonly_filesystem "$filename"; then
+                echo "run0edit: $filename is on a read-only filesystem."
+                exit 1
             fi
-            if [ "$edit_immutable" != yes ]; then
+            if ask_immutable "$filename"; then
+                edit_immutable="yes"
+            fi
+            if [ "$edit_immutable" = "no" ]; then
                 echo "run0edit: $filename is read-only."
                 exit 1
             fi
@@ -192,17 +230,19 @@ script='\
     # if this is a new file that is non-empty, copy temp file to target.
     if [ -f "$filename" ]; then
         if ! cmp -s -- "$tmpfile" "$filename"; then
-            [ "$edit_immutable" = yes ] && chattr -i -- "$filename"
+            [ "$edit_immutable" = "yes" ] && chattr -i -- "$filename"
+            set +e
             cp -- "$tmpfile" "$filename"
             cp_exit_status="$?"
-            if [ "$edit_immutable" = yes ]; then
+            set -e
+            if [ "$edit_immutable" = "yes" ]; then
                 chattr +i -- "$filename"
                 echo "File edited and immutable flag reapplied."
             fi
             if [ "$cp_exit_status" != 0 ]; then
                 echo "run0edit: unable to write temporary file at $tmpfile to $filename"
                 exit 1
-            elif [ "$edit_immutable" != yes ] && ! cmp -s -- "$tmpfile" "$filename"; then
+            elif [ "$edit_immutable" = "yes" ] && ! cmp -s -- "$tmpfile" "$filename"; then
                 echo "WARNING: contents of $filename does not match contents of edited tempfile."
                 echo "File contents may be corrupted!"
                 exit 1
@@ -212,9 +252,22 @@ script='\
         fi
     else
         if [ -s "$tmpfile" ]; then
+            [ "$edit_immutable" = "yes" ] && chattr -i -- "$directory"
             touch -- "$filename"
-            if ! cp -- "$tmpfile" "$filename"; then
+            set +e
+            cp -- "$tmpfile" "$filename"
+            cp_exit_status="$?"
+            set -e
+            if [ "$edit_immutable" = "yes" ]; then
+                chattr +i -- "$directory"
+                echo "File created and immutable flag reapplied to directory."
+            fi
+            if [ "$cp_exit_status" != 0 ]; then
                 echo "run0edit: unable to write temporary file at $tmpfile to $filename"
+                exit 1
+            elif [ "$edit_immutable" = "yes" ] && ! cmp -s -- "$tmpfile" "$filename"; then
+                echo "WARNING: contents of $filename does not match contents of tempfile."
+                echo "File contents may be corrupted!"
                 exit 1
             fi
         else

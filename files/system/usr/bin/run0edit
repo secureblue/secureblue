@@ -132,7 +132,7 @@ script='\
 
     ask_immutable() {
         if command -pv lsattr > /dev/null; then
-            immutable_flag=$(lsattr -- "$1" | cut -d " " -f1 | tr -d "-")
+            immutable_flag=$(lsattr -- "$1" 2>/dev/null | cut -d " " -f1 | tr -d "-" || echo "")
         else
             immutable_flag=""
         fi

@@ -6,9 +6,10 @@ Framework for system auditing.
 
 import enum
 import inspect
+import json
 
 from collections.abc import Callable, Sequence
-from typing import Any, AsyncGenerator, Generator
+from typing import Any, AsyncGenerator, Generator, Self
 
 
 class AuditError(Exception):
@@ -18,23 +19,30 @@ class AuditError(Exception):
 class Status(enum.Enum):
     """Status of a system check."""
 
-    SUCCESS = enum.auto()
-    WARNING = enum.auto()
-    FAILURE = enum.auto()
-    UNKNOWN = enum.auto()
+    SUCCESS = 0
+    CAUTION = 1
+    WARNING = 2
+    FAILURE = 3
+    UNKNOWN = 4
 
     def to_str_in_color(self) -> str:
         """Colored text representation of the status."""
         match self:
             case Status.SUCCESS:
-                color_code = 32  # green
+                color_code = 2  # green
+            case Status.CAUTION:
+                color_code = 227  # yellow
             case Status.WARNING:
-                color_code = 33  # yellow
+                color_code = 214  # orange
             case Status.FAILURE:
-                color_code = 31  # red
+                color_code = 1  # red
             case Status.UNKNOWN:
-                color_code = 36  # cyan
-        return f"\x1b[{color_code}m{self.name}\x1b[39m"
+                color_code = 6  # cyan
+        return f"\x1b[38;5;{color_code}m{self.name}\x1b[39m"
+
+    def downgrade_to(self, other: Self) -> Self:
+        """Returns the more severe of the two statuses."""
+        return max(self, other, key=lambda status: status.value)
 
 
 class Report:
@@ -64,7 +72,9 @@ class Report:
             self.recs = recs
 
     def __str__(self) -> str:
-        report_str = f"{self.description + '...':<68} [ {self.status.to_str_in_color()} ]"
+        status_tag = f" [ {self.status.to_str_in_color()} ]"
+        width = 80 - len(self.status.name) - 5
+        report_str = f"{(self.description + '...').ljust(width)}{status_tag}"
         for warning in self.warnings:
             report_str += f"\n> {warning}"
         return report_str
@@ -180,6 +190,23 @@ class Audit:
                 if line[0] in ["$", "#"]:
                     rec_lines[i] = bold(line)
             print("\n  ".join(rec_lines) + "\n")
+
+    async def run_json(self, exclude: list[str] | None = None) -> AsyncGenerator[str]:
+        """Runs each stored check and prints the results as JSON."""
+        if exclude is None:
+            exclude = []
+        for check in self.checks:
+            if check.category in exclude:
+                continue
+            async for report in check.run(self.state):
+                yield json.dumps({
+                        "name": check.name,
+                        "category": check.category,
+                        "description": report.description,
+                        "status": report.status.name.lower(),
+                        "warnings": report.warnings,
+                        "recommendations": report.recs,
+                    })
 
 
 global_audit = Audit()

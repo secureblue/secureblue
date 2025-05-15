@@ -27,6 +27,7 @@ import rpm
 from auditor import AuditError, Report, Status, audit, bold, categorize, depends_on, global_audit
 
 SUCCESS: Final = Status.SUCCESS
+CAUTION: Final = Status.CAUTION
 WARNING: Final = Status.WARNING
 FAILURE: Final = Status.FAILURE
 UNKNOWN: Final = Status.UNKNOWN
@@ -138,7 +139,6 @@ def audit_kargs():
         "random.trust_bootloader=off",
         "iommu=force",
         "intel_iommu=on",
-        "amd_iommu=force_isolation",
         "iommu.passthrough=0",
         "iommu.strict=1",
         "pti=on",
@@ -147,18 +147,24 @@ def audit_kargs():
         "spectre_v2=on",
         "spec_store_bypass_disable=on",
         "l1d_flush=on",
-        "gather_data_sampling=force",
-        "efi=disable_early_pci_dma",
-        "debugfs=off",
-        "ia32_emulation=0",
         "l1tf=full,force",
         "kvm-intel.vmentry_l1d_flush=always",
-        "nosmt=force",
-        "oops=panic",
         "loglevel=0",
     ]
     for karg in kargs_expected:
         status = SUCCESS if karg in kargs_current else FAILURE
+        yield Report(f"Checking for {karg} karg", status)
+    kargs_expected_warn = [
+        "ia32_emulation=0",
+        "nosmt=force",
+        "efi=disable_early_pci_dma",
+        "gather_data_sampling=force",
+        "amd_iommu=force_isolation",
+        "debugfs=off",
+        "oops=panic",
+    ]
+    for karg in kargs_expected_warn:
+        status = SUCCESS if karg in kargs_current else WARNING
         yield Report(f"Checking for {karg} karg", status)
 
 
@@ -771,7 +777,7 @@ async def check_flatpak_permissions(name, version, state):
     perms_text = await async_command_stdout("flatpak", "info", "--show-permissions", name, version)
     perms = {}
     for line in perms_text.split("\n"):
-        if not line or line[0] in "[]#":
+        if not line or line[0] in "[#":
             continue
         key, value_str = line.split("=", maxsplit=1)
         vals = [val for val in value_str.split(";") if val]
@@ -780,8 +786,7 @@ async def check_flatpak_permissions(name, version, state):
     if "shared" in perms:
         shared = perms["shared"]
         if "network" in shared:
-            if status != FAILURE:
-                status = WARNING
+            status = status.downgrade_to(CAUTION)
             warnings.append(f"{name} has network access")
             recs.append(
                 f"""{name} has network access
@@ -789,7 +794,7 @@ async def check_flatpak_permissions(name, version, state):
                         $ flatpak override -u --unshare=network {name}"""
             )
         if "ipc" in shared:
-            status = FAILURE
+            status = status.downgrade_to(WARNING)
             warnings.append(f"{name} has inter-process communications access")
             recs.append(
                 f"""{name} has inter-process communications access
@@ -800,16 +805,22 @@ async def check_flatpak_permissions(name, version, state):
     if "sockets" in perms:
         sockets = perms["sockets"]
         if "x11" in sockets and "fallback-x11" not in sockets:
-            status = FAILURE
+            status = status.downgrade_to(WARNING)
             warnings.append(f"{name} has x11 access")
             recs.append(
                 f"""{name} has x11 access
                         To remove it use Flatseal or run:
                         $ flatpak override -u --nosocket=x11 {name}"""
             )
+        if "pulseaudio" in sockets:
+            status = status.downgrade_to(CAUTION)
+            warnings.append(f"{name} has access to the PulseAudio socket")
+            recs.append(f"""{name} has access to the PulseAudio socket.
+                        This grants access to audio and microphones.
+                        To remove it use Flatseal or run:
+                        $ flatpak override -u --nosocket=pulseaudio {name}""")
         if "session-bus" in sockets:
-            if status != FAILURE:
-                status = WARNING
+            status = status.downgrade_to(WARNING)
             warnings.append(f"{name} has access to the D-Bus session bus")
             recs.append(
                 f"""{name} has access to the D-Bus session bus
@@ -817,13 +828,61 @@ async def check_flatpak_permissions(name, version, state):
                         $ flatpak override -u --nosocket=session-bus {name}"""
             )
         if "system-bus" in sockets:
-            if status != FAILURE:
-                status = WARNING
+            status = status.downgrade_to(WARNING)
             warnings.append(f"{name} has access to the D-Bus system bus")
             recs.append(
                 f"""{name} has access to the D-Bus system bus
                         To remove it use Flatseal or run:
                         $ flatpak override -u --nosocket=system-bus {name}"""
+            )
+
+    if "devices" in perms:
+        devices = perms["devices"]
+        device_checks = {
+            "all": {
+                "status": WARNING,
+                "access": "input devices, GPUs, raw USB, and virtualization",
+                "sandbox_escape": True,
+                "note": f"""If GPU access is required, use device=dri instead:
+                    $ flatpak override -u --device=dri {name}""",
+            },
+            "input": {
+                "status": CAUTION,
+                "access": "input devices",
+                "sandbox_escape": False,
+                "note": "",
+            },
+            "shm": {
+                "status": WARNING,
+                "access": "shared memory",
+                "sandbox_escape": True,
+                "note": "",
+            },
+            "kvm": {
+                "status": WARNING,
+                "access": "kernel-based virtualization",
+                "sandbox_escape": False,
+                "note": "",
+            },
+        }
+        for device in devices:
+            if device in device_checks:
+                device_data = device_checks[device]
+            else:
+                continue
+            status = status.downgrade_to(device_data["status"])
+            warnings.append(f"{name} has device={device} permission")
+            if device_data["sandbox_escape"]:
+                sandbox_escape_note = "This may also be used as a sandbox escape vector."
+            else:
+                sandbox_escape_note = ""
+            recs.append(
+                f"""{name} has device={device} permission
+                        This grants access to {device_data["access"]}.
+                        {sandbox_escape_note}
+                        To remove it use Flatseal or run:
+                        $ flatpak override -u --nodevice={device} {name}
+                        {device_data["note"]}"""
             )
 
     ld_preloads = []
@@ -832,13 +891,13 @@ async def check_flatpak_permissions(name, version, state):
             if s:
                 ld_preloads.append(s.rsplit("/", maxsplit=1)[-1])
     if "libhardened_malloc.so" not in ld_preloads:
-        status = FAILURE
+        status = status.downgrade_to(WARNING)
         warnings.append(f"{name} is not requesting hardened_malloc")
         if "libhardened_malloc-light.so" in ld_preloads:
-            status = WARNING
+            status = status.downgrade_to(CAUTION)
             warnings.append(f"{name} is requesting hardened_malloc-light")
         elif "libhardened_malloc-pkey.so" in ld_preloads:
-            status = WARNING
+            status = status.downgrade_to(CAUTION)
             warnings.append(f"{name} is requesting hardened_malloc-pkey")
         recs.append(
             f"""{name} is not requesting hardened_malloc
@@ -847,7 +906,7 @@ async def check_flatpak_permissions(name, version, state):
         )
 
     if not ("filesystems" in perms and "host-os:ro" in perms["filesystems"]):
-        status = FAILURE
+        status = status.downgrade_to(WARNING)
         warnings.append(f"{name} is missing host-os:ro permission")
         recs.append(
             f"""{name} is missing host-os:ro permission
@@ -859,7 +918,7 @@ async def check_flatpak_permissions(name, version, state):
     if "features" in perms:
         features = perms["features"]
         if state["bluetooth_loaded"] and "bluetooth" in features:
-            status = FAILURE
+            status = status.downgrade_to(WARNING)
             warnings.append(f"{name} has bluetooth access")
             recs.append(
                 f"""{name} has bluetooth access
@@ -867,7 +926,7 @@ async def check_flatpak_permissions(name, version, state):
                         $ flatpak override -u --disallow=bluetooth {name}"""
             )
         if state["ptrace_allowed"] and "devel" in features:
-            status = FAILURE
+            status = status.downgrade_to(WARNING)
             warnings.append(f"{name} has ptrace access")
             recs.append(
                 f"""{name} has ptrace access
@@ -875,19 +934,56 @@ async def check_flatpak_permissions(name, version, state):
                         $ flatpak override -u --disallow=devel {name}"""
             )
 
-    if "devices" in perms and "all" in perms["devices"]:
-        if status != FAILURE:
-            status = WARNING
-        warnings.append(f"""{name} has device=all permission""")
-        recs.append(
-            f"""{name} has device=all permission
-                    This grants access to input devices, GPUs, raw USB, and virtualization
-                    This may also be used as a sandbox escape vector
+    arbitrary_permissions = False
+    if "filesystems" in perms:
+        filesystems = perms["filesystems"]
+        if "host" in filesystems:
+            status = FAILURE
+            warnings.append(f"{name} has filesystem=host permission")
+            recs.append(
+                f"""{name} has filesystem=host permission.
+                    This grants access to all system files.
                     To remove it use Flatseal or run:
-                    $ flatpak override -u --nodevice=all {name}
-                    If GPU access is required, use device=dri instead:
-                    $ flatpak override -u --device=dri {name}"""
-        )
+                    $ flatpak override -u --nofilesystem=host {name}"""
+            )
+        if "home" in filesystems:
+            status = FAILURE
+            warnings.append(f"{name} has filesystem=home permission")
+            recs.append(
+                f"""{name} has filesystem=home permission.
+                    This grants access to all user files.
+                    To remove it use Flatseal or run:
+                    $ flatpak override -u --nofilesystem=home {name}"""
+            )
+
+        prefixes = ("xdg-data", "~/.local/share")
+        suffixes = ("", ":create", ":rw")
+        for prefix in prefixes:
+            path = f"{prefix}/flatpak/overrides"
+            for suffix in suffixes:
+                if f"{path}{suffix}" in filesystems:
+                    arbitrary_permissions = True
+                    recs.append(
+                        f"""{name} can modify flatpak overrides.
+                            This grants the ability to acquire arbitrary permissions.
+                            To remove it use Flatseal or run:
+                            $ flatpak override -u --nofilesystem={path} {name}"""
+                    )
+                    break
+
+    for bus_name in ("org.freedesktop.Flatpak", "org.freedesktop.impl.portal.PermissionStore"):
+        if bus_name in perms and "talk" in perms[bus_name]:
+            arbitrary_permissions = True
+            recs.append(
+                f"""{name} can talk to {bus_name} on the session bus.
+                    This grants the ability to acquire arbitrary permissions.
+                    To remove it use Flatseal or run:
+                    $ flatpak override -u --no-talk-name={bus_name} {name}"""
+            )
+
+    if arbitrary_permissions:
+        status = status.downgrade_to(WARNING)
+        warnings.append(f"{name} can acquire arbitrary permissions")
 
     return status, warnings, recs
 
@@ -950,12 +1046,17 @@ async def main() -> int:
     parser = argparse.ArgumentParser()
     categories = ",".join(sorted(global_audit.categories))
     parser.add_argument("-s", "--skip", default="", help=f"skip categories ({categories})")
+    parser.add_argument("-j", "--json", action="store_true", help="display output as JSON")
     args = parser.parse_args()
     skip = args.skip.split(",") if args.skip else []
     if any(cat not in global_audit.categories for cat in skip):
         print(f"Valid arguments to --skip are: {categories}", file=sys.stderr)
         sys.exit(1)
     error_occurred = False
+    if args.json:
+        async for report_json in global_audit.run_json(exclude=skip):
+            print(report_json)
+        return 0
     async for check, err in global_audit.run(exclude=skip):
         print_err(f"\n*** Error in check '{check.name}' ***")
         traceback.print_exception(err)

@@ -30,9 +30,11 @@ remove:
   - firefox
   - firefox-langpacks
   - fuse
+  - passim
   - fedora-chromium-config
   - fedora-flathub-remote
-  - passim
+  - fedora-third-party
+  - fedora-workstation-repositories
 
 
 

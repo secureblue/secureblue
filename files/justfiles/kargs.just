@@ -1,6 +1,7 @@
 # Add additional boot parameters for hardening (requires reboot)
 set-kargs-hardening:
     #!/usr/bin/bash
+    # https://docs.kernel.org/admin-guide/kernel-parameters.html
     read -rp "Do you need support for 32-bit processes/syscalls? (This is mostly used by legacy software, with some exceptions, such as Steam) [y/N]: " YES
     if [[ "$YES" == [Yy]* ]]; then
         echo "Keeping 32-bit support."
@@ -20,7 +21,8 @@ set-kargs-hardening:
     UNSTABLE_YES="--append-if-missing=efi=disable_early_pci_dma \
         --append-if-missing=gather_data_sampling=force \
         --append-if-missing=amd_iommu=force_isolation \
-        --append-if-missing=debugfs=off"
+        --append-if-missing=debugfs=off \
+        --append-if-missing=oops=panic"
         echo "Setting unstable hardening kargs."
     else
         echo "Not setting unstable hardening kargs."
@@ -48,7 +50,8 @@ set-kargs-hardening:
       --append-if-missing=spec_store_bypass_disable=on \
       --append-if-missing=l1d_flush=on \
       --append-if-missing=l1tf=full,force \
-      --append-if-missing=kvm-intel.vmentry_l1d_flush=always
+      --append-if-missing=kvm-intel.vmentry_l1d_flush=always \
+      --append-if-missing=loglevel=0
     echo "Hardening kargs applied."
 
 # Remove all hardening boot parameters (requires reboot)
@@ -81,7 +84,9 @@ remove-kargs-hardening:
       --delete-if-present="ia32_emulation=0" \
       --delete-if-present="l1tf=full,force" \
       --delete-if-present="kvm-intel.vmentry_l1d_flush=always" \
-      --delete-if-present="nosmt=force"
+      --delete-if-present="nosmt=force" \
+      --delete-if-present="oops=panic" \
+      --delete-if-present="loglevel=0"
     echo "Hardening kargs removed."
 
 # Set nvidia kargs

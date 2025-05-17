@@ -9,3 +9,4 @@ modules:
     remove:
       - xdg-desktop-portal-wlr
       - fedora-third-party
+      - fedora-workstation-repositories

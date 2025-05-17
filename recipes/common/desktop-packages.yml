@@ -32,9 +32,6 @@ remove:
   - fuse
   - passim
   - fedora-chromium-config
-  - fedora-flathub-remote
-  - fedora-third-party
-  - fedora-workstation-repositories
 
 
 

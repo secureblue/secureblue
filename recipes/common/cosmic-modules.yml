@@ -5,6 +5,10 @@ modules:
         - NetworkManager-openvpn
         - cosmic-store
         - cosmic-player
+      remove:
+        - fedora-flathub-remote
+        - fedora-third-party
+        - fedora-workstation-repositories
     - type: systemd
       system:
         enabled:

@@ -20,48 +20,25 @@ class Status(enum.Enum):
     """Status of a system check."""
 
     SUCCESS = 0
-    WARNING = 1
-    FAILURE = 2
-    UNKNOWN = 3
+    NOTICE = 1
+    WARNING = 2
+    FAILURE = 3
+    UNKNOWN = 4
 
     def to_str_in_color(self) -> str:
         """Colored text representation of the status."""
         match self:
             case Status.SUCCESS:
                 color_code = 32  # green
+            case Status.NOTICE:
+                color_code = 36  # cyan
             case Status.WARNING:
                 color_code = 33  # yellow
             case Status.FAILURE:
                 color_code = 31  # red
             case Status.UNKNOWN:
-                color_code = 36  # cyan
+                color_code = 37  # white
         return f"\x1b[{color_code}m{self.name}\x1b[39m"
-
-    def downgrade_to(self, other: Self) -> Self:
-        """Returns the more severe of the two statuses."""
-        return max(self, other, key=lambda status: status.value)
-
-
-class FlatpakStatus(enum.Enum):
-    """Status of a system check."""
-
-    SAFE = 0
-    LIKELY_SAFE = 1
-    POSSIBLY_UNSAFE = 2
-    UNSAFE = 3
-
-    def to_str_in_color(self) -> str:
-        """Colored text representation of the status."""
-        match self:
-            case FlatpakStatus.SAFE:
-                color_code = 2  # green
-            case FlatpakStatus.LIKELY_SAFE:
-                color_code = 227  # yellow
-            case FlatpakStatus.POSSIBLY_UNSAFE:
-                color_code = 214  # orange
-            case FlatpakStatus.UNSAFE:
-                color_code = 1  # red
-        return f"\x1b[38;5;{color_code}m{self.name.replace('_', ' ')}\x1b[39m"
 
     def downgrade_to(self, other: Self) -> Self:
         """Returns the more severe of the two statuses."""
@@ -74,7 +51,7 @@ class Report:
     def __init__(
         self,
         desc: str,
-        status: Status | FlatpakStatus,
+        status: Status,
         *,
         warnings: str | list[str] | None = None,
         recs: str | list[str] | None = None,

@@ -19,7 +19,7 @@
 # limitations under the License.
 # ------------------------------------------------------------------------------
 
-readonly version=0.4.1-secureblue
+readonly version=0.4.2-secureblue
 
 # Set pipefail if it's supported by the shell, disregard if unsupported.
 # shellcheck disable=SC3040
@@ -150,28 +150,24 @@ script='\
         fi
     }
 
+    is_immutable() {
+        immutable_flag=$(lsattr -d -- "$1" 2>/dev/null | cut -d " " -f1 | tr -d "-" || echo "")
+        [ "$immutable_flag" = "i" ]
+    }
+
     ask_immutable() {
-        if command -v lsattr >/dev/null; then
-            immutable_flag=$(lsattr -d -- "$1" 2>/dev/null | cut -d " " -f1 | tr -d "-" || echo "")
+        echo "WARNING: $1 has the immutable flag."
+        if [ -d "$1" ]; then
+            printf "Temporarily remove the flag to create a file in the directory? [y/N] "
         else
-            immutable_flag=""
+            printf "Temporarily remove the flag to edit the file? [y/N] "
         fi
-        if [ "$immutable_flag" = i ]; then
-            echo "WARNING: $1 has the immutable flag."
-            if [ -d "$1" ]; then
-                printf "Temporarily remove the flag to create a file in the directory? [y/N] "
-            else
-                printf "Temporarily remove the flag to edit the file? [y/N] "
-            fi
-            ask_immutable_response=""
-            read -r ask_immutable_response
-            case "$ask_immutable_response" in
-                y*|Y*) true ;;
-                *) false ;;
-            esac
-        else
-            false
-        fi
+        ask_immutable_response=""
+        read -r ask_immutable_response
+        case "$ask_immutable_response" in
+            y*|Y*) true ;;
+            *) false ;;
+        esac
     }
 
     # If the file does not exist, ensure the directory exists and is writable.
@@ -184,11 +180,14 @@ script='\
             if readonly_filesystem "$directory"; then
                 echo "run0edit: $directory is on a read-only filesystem."
                 exit 1
-            fi
-            if ask_immutable "$directory"; then
-                edit_immutable="yes"
-            fi
-            if [ "$edit_immutable" = "no" ]; then
+            elif is_immutable "$directory"; then
+                if ask_immutable "$directory"; then
+                    edit_immutable="yes"
+                else
+                    echo "run0edit: user declined to remove immutable flag; exiting."
+                    exit
+                fi
+            else
                 echo "run0edit: $directory is read-only."
                 exit 1
             fi
@@ -205,11 +204,14 @@ script='\
             if readonly_filesystem "$filename"; then
                 echo "run0edit: $filename is on a read-only filesystem."
                 exit 1
-            fi
-            if ask_immutable "$filename"; then
-                edit_immutable="yes"
-            fi
-            if [ "$edit_immutable" = "no" ]; then
+            elif is_immutable "$filename"; then
+                if ask_immutable "$filename"; then
+                    edit_immutable="yes"
+                else
+                    echo "run0edit: user declined to remove immutable flag; exiting."
+                    exit
+                fi
+            else
                 echo "run0edit: $filename is read-only."
                 exit 1
             fi
@@ -230,14 +232,19 @@ script='\
     # if this is a new file that is non-empty, copy temp file to target.
     if [ -f "$filename" ]; then
         if ! cmp -s -- "$tmpfile" "$filename"; then
-            [ "$edit_immutable" = "yes" ] && chattr -i -- "$filename"
-            set +e
-            cp -- "$tmpfile" "$filename"
-            cp_exit_status="$?"
-            set -e
             if [ "$edit_immutable" = "yes" ]; then
+                chattr -i -- "$filename"
+                set +e
+                cp -- "$tmpfile" "$filename"
+                cp_exit_status="$?"
+                set -e
                 chattr +i -- "$filename"
                 echo "File edited and immutable flag reapplied."
+            else
+                set +e
+                cp -- "$tmpfile" "$filename"
+                cp_exit_status="$?"
+                set -e
             fi
             if [ "$cp_exit_status" != 0 ]; then
                 echo "run0edit: unable to write temporary file at $tmpfile to $filename"
@@ -252,15 +259,21 @@ script='\
         fi
     else
         if [ -s "$tmpfile" ]; then
-            [ "$edit_immutable" = "yes" ] && chattr -i -- "$directory"
-            touch -- "$filename"
-            set +e
-            cp -- "$tmpfile" "$filename"
-            cp_exit_status="$?"
-            set -e
             if [ "$edit_immutable" = "yes" ]; then
+                chattr -i -- "$directory"
+                touch -- "$filename"
+                set +e
+                cp -- "$tmpfile" "$filename"
+                cp_exit_status="$?"
+                set -e
                 chattr +i -- "$directory"
                 echo "File created and immutable flag reapplied to directory."
+            else
+                touch -- "$filename"
+                set +e
+                cp -- "$tmpfile" "$filename"
+                cp_exit_status="$?"
+                set -e
             fi
             if [ "$cp_exit_status" != 0 ]; then
                 echo "run0edit: unable to write temporary file at $tmpfile to $filename"

@@ -7,7 +7,8 @@ modules:
           - NetworkManager-openvpn
           - cosmic-store
           - cosmic-player
-        remove:
+      remove:
+        packages:
           - fedora-flathub-remote
           - fedora-third-party
           - fedora-workstation-repositories

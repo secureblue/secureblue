@@ -25,7 +25,4 @@ modules:
           - libavutil-free  
           - libpostproc-free  
           - libswresample-free  
-          - libswscale-free  
-    - type: script
-      scripts:
-        - removeunusedrepos.sh
+          - libswscale-free 

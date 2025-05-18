@@ -6,13 +6,13 @@ modules:
       install:
         install-weak-deps: false
         packages:
-        - heif-pixbuf-loader
-        - ffmpeg
-        - ffmpeg-libs
-        - ffmpegthumbnailer
-        - pipewire-libs-extra
-        - libfdk-aac
-        - gstreamer1-plugins-ugly  
+          - heif-pixbuf-loader
+          - ffmpeg
+          - ffmpeg-libs
+          - ffmpegthumbnailer
+          - pipewire-libs-extra
+          - libfdk-aac
+          - gstreamer1-plugins-ugly  
       remove:
         packages:
           - gstreamer1-plugins-ugly-free

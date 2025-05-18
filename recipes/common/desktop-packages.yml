@@ -1,37 +1,42 @@
-type: rpm-ostree
+type: dnf
 repos:
-  - https://copr.fedorainfracloud.org/coprs/secureblue/bubblejail/repo/fedora-%OS_VERSION%/secureblue-bubblejail-fedora-%OS_VERSION%.repo
-  - https://repo.secureblue.dev/secureblue.repo
-  - https://copr.fedorainfracloud.org/coprs/secureblue/branding/repo/fedora-%OS_VERSION%/secureblue-branding-fedora-%OS_VERSION%.repo
+  copr:
+    - secureblue/bubblejail
+    - secureblue/branding
+  files:
+    - https://repo.secureblue.dev/secureblue.repo
 install:
-  - headsetcontrol
-  - trivalent
-  - secureblue-logos
-  - mediainfo
-  - bubblejail
-  - usbguard-notifier
-  - usbguard
-  - setools
-  - fscrypt
-  - vim
-  - wl-clipboard
-  - alsa-firmware
-  
-  # yubikey enablement
-  - pam-u2f
-  - pam_yubico
-  - pamu2fcfg
-  - yubikey-manager
+  install-weak-deps: false
+  packages:
+    - headsetcontrol
+    - trivalent
+    - secureblue-logos
+    - mediainfo
+    - bubblejail
+    - usbguard-notifier
+    - usbguard
+    - setools
+    - fscrypt
+    - vim
+    - wl-clipboard
+    - alsa-firmware
+    
+    # yubikey enablement
+    - pam-u2f
+    - pam_yubico
+    - pamu2fcfg
+    - yubikey-manager
 
-  # ensure universal font coverage
-  - google-noto-fonts-all
+    # ensure universal font coverage
+    - google-noto-fonts-all
 remove:
-  - fedora-logos
-  - firefox
-  - firefox-langpacks
-  - fuse
-  - passim
-  - fedora-chromium-config
+  packages:
+    - fedora-logos
+    - firefox
+    - firefox-langpacks
+    - fuse
+    - passim
+    - fedora-chromium-config
 
 
 

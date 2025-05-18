@@ -1,20 +1,22 @@
 modules:
-    - type: rpm-ostree
+    - type: dnf
+      repos:
+        files:
+          - https://pkgs.tailscale.com/stable/fedora/tailscale.repo
       install:
-        - setools-console
-        - usbguard
-        - firewalld
-        - policycoreutils-python-utils
+        install-weak-deps: false
+        packages:
+          - setools-console
+          - usbguard
+          - firewalld
+          - policycoreutils-python-utils
       remove:
-        - sudo
-        
+        packages:
+          - sudo
     - type: files
       files:
         - source: system/server
           destination: /
-    - type: script
-      scripts:
-        - addtailscalerepo.sh
     - type: script
       scripts:
         - excludepcsc.sh

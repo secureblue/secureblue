@@ -1,19 +1,22 @@
-type: rpm-ostree
+type: dnf
 repos: 
-  - https://copr.fedorainfracloud.org/coprs/secureblue/hardened_malloc/repo/fedora-%OS_VERSION%/secureblue-hardened_malloc-fedora-%OS_VERSION%.repo
+  copr:
+  - secureblue/hardened_malloc
 install:
-  - hardened_malloc
+  install-weak-deps: false
+  packages:
+    - hardened_malloc
 
-  # missing upstream
-  - openssl
-  - just
-  - patch
-  - p7zip
-  - distrobox
-  - toolbox
-  - podman
-  - nvme-cli
-  - hdparm
-  
-  # signing deps 
-  - sbsigntools
+    # missing upstream
+    - openssl
+    - just
+    - patch
+    - p7zip
+    - distrobox
+    - toolbox
+    - podman
+    - nvme-cli
+    - hdparm
+    
+    # signing deps 
+    - sbsigntools

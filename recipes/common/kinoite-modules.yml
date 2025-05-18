@@ -1,22 +1,26 @@
 modules:
-  - type: rpm-ostree
+  - type: dnf
     repos:
-      - https://repo.secureblue.dev/secureblue.repo
+      files:
+        - https://repo.secureblue.dev/secureblue.repo
     install:
-      - trivalent-qt6-ui
+      install-weak-deps: false
+      packages:
+        - trivalent-qt6-ui
     remove:
-      - kde-connect
-      - kde-connect-libs
-      - kdeconnectd
-      - fedora-chromium-config-kde
-      - fedora-flathub-remote
-      - fuse-encfs
-      - krfb
-      - krfb-libs
-      - plasma-discover-rpm-ostree
+      packages:
+        - kde-connect
+        - kde-connect-libs
+        - kdeconnectd
+        - fedora-chromium-config-kde
+        - fedora-flathub-remote
+        - fuse-encfs
+        - krfb
+        - krfb-libs
+        - plasma-discover-rpm-ostree
 
-      # depends on fedora-flathub-remote
-      - plasma-welcome-fedora
+        # depends on fedora-flathub-remote
+        - plasma-welcome-fedora
   - type: files
     files:  
       - source: system/kinoite

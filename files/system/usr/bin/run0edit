@@ -140,10 +140,9 @@ script=$(cat <<-'END_OF_INNER_SCRIPT'
 set -eu
 # shellcheck disable=SC2016
 PATH=$(command -p env -i sh -c 'echo "$PATH"')
-filename="$1"
-tmpfile="$2"
-editor="$3"
-edit_immutable='no'
+readonly filename="$1"
+readonly tmpfile="$2"
+readonly editor="$3"
 
 readonly_filesystem() {
     if command -v findmnt >/dev/null; then
@@ -173,55 +172,77 @@ ask_immutable() {
     esac
 }
 
-# If the file does not exist, ensure the directory exists and is writable.
-if [ ! -e "$filename" ]; then
+handle_readonly() {
+    handle_readonly_retval='no'
+    if readonly_filesystem "$1"; then
+        echo "run0edit: $1 is on a read-only filesystem."
+        exit 1
+    elif is_immutable "$1"; then
+        if ask_immutable "$1"; then
+            handle_readonly_retval='yes'
+        else
+            echo 'run0edit: user declined to remove immutable flag; exiting.'
+            exit
+        fi
+    else
+        echo "run0edit: $1 is read-only."
+        exit 1
+    fi
+}
+
+copy_to_dest() {
+    readonly chattr_target_path="$1"
+    readonly edit_immutable="$2"
+    if [ "$edit_immutable" = 'yes' ]; then
+        chattr -i -- "$chattr_target_path"
+        touch -- "$filename"
+        set +e
+        cp -- "$tmpfile" "$filename"
+        cp_exit_status="$?"
+        set -e
+        chattr +i -- "$chattr_target_path"
+        echo 'Immutable flag reapplied.'
+    else
+        touch -- "$filename"
+        set +e
+        cp -- "$tmpfile" "$filename"
+        cp_exit_status="$?"
+        set -e
+    fi
+    if [ "$cp_exit_status" != 0 ]; then
+        echo "run0edit: unable to write temporary file at $tmpfile to $filename"
+        exit 1
+    elif [ "$edit_immutable" = 'yes' ] && ! cmp -s -- "$tmpfile" "$filename"; then
+        echo "WARNING: contents of $filename does not match contents of edited tempfile."
+        echo 'File contents may be corrupted!'
+        exit 1
+    fi
+}
+
+immutable='no'
+if [ -e "$filename" ]; then
+    # If the file exists, ensure it is a regular file and writable, then
+    # attempt to copy it to the temp file.
+    if [ ! -f "$filename" ]; then
+        echo 'run0edit: invalid argument: not a regular file'
+        exit 1
+    elif [ ! -w "$filename" ]; then
+        handle_readonly "$filename"
+        immutable="$handle_readonly_retval"
+    fi
+    if ! cp -- "$filename" "$tmpfile"; then
+        echo "run0edit: failed to copy $filename to temporary file at $tmpfile"
+        exit 1
+    fi
+else
+    # If the file does not exist, ensure the directory exists and is writable.
     directory="$(dirname -- "$filename")"
     if [ ! -d "$directory" ]; then
         echo 'run0edit: invalid argument: directory does not exist'
         exit 1
     elif [ ! -w "$directory" ]; then
-        if readonly_filesystem "$directory"; then
-            echo "run0edit: $directory is on a read-only filesystem."
-            exit 1
-        elif is_immutable "$directory"; then
-            if ask_immutable "$directory"; then
-                edit_immutable='yes'
-            else
-                echo 'run0edit: user declined to remove immutable flag; exiting.'
-                exit
-            fi
-        else
-            echo "run0edit: $directory is read-only."
-            exit 1
-        fi
-    fi
-fi
-
-# If the file exists, ensure it is a regular file and writable, then
-# attempt to copy it to the temp file.
-if [ -e "$filename" ]; then
-    if [ ! -f "$filename" ]; then
-        echo 'run0edit: invalid argument: not a regular file'
-        exit 1
-    elif [ ! -w "$filename" ]; then
-        if readonly_filesystem "$filename"; then
-            echo "run0edit: $filename is on a read-only filesystem."
-            exit 1
-        elif is_immutable "$filename"; then
-            if ask_immutable "$filename"; then
-                edit_immutable='yes'
-            else
-                echo 'run0edit: user declined to remove immutable flag; exiting.'
-                exit
-            fi
-        else
-            echo "run0edit: $filename is read-only."
-            exit 1
-        fi
-    fi
-    if ! cp -- "$filename" "$tmpfile"; then
-        echo "run0edit: failed to copy $filename to temporary file at $tmpfile"
-        exit 1
+        handle_readonly "$directory"
+        immutable="$handle_readonly_retval"
     fi
 fi
 
@@ -235,57 +256,13 @@ fi
 # if this is a new file that is non-empty, copy temp file to target.
 if [ -f "$filename" ]; then
     if ! cmp -s -- "$tmpfile" "$filename"; then
-        if [ "$edit_immutable" = 'yes' ]; then
-            chattr -i -- "$filename"
-            set +e
-            cp -- "$tmpfile" "$filename"
-            cp_exit_status="$?"
-            set -e
-            chattr +i -- "$filename"
-            echo 'File edited and immutable flag reapplied.'
-        else
-            set +e
-            cp -- "$tmpfile" "$filename"
-            cp_exit_status="$?"
-            set -e
-        fi
-        if [ "$cp_exit_status" != 0 ]; then
-            echo "run0edit: unable to write temporary file at $tmpfile to $filename"
-            exit 1
-        elif [ "$edit_immutable" = 'yes' ] && ! cmp -s -- "$tmpfile" "$filename"; then
-            echo "WARNING: contents of $filename does not match contents of edited tempfile."
-            echo 'File contents may be corrupted!'
-            exit 1
-        fi
+        copy_to_dest "$filename" "$immutable"
     else
         echo "run0edit: $filename unchanged"
     fi
 else
     if [ -s "$tmpfile" ]; then
-        if [ "$edit_immutable" = 'yes' ]; then
-            chattr -i -- "$directory"
-            touch -- "$filename"
-            set +e
-            cp -- "$tmpfile" "$filename"
-            cp_exit_status="$?"
-            set -e
-            chattr +i -- "$directory"
-            echo 'File created and immutable flag reapplied to directory.'
-        else
-            touch -- "$filename"
-            set +e
-            cp -- "$tmpfile" "$filename"
-            cp_exit_status="$?"
-            set -e
-        fi
-        if [ "$cp_exit_status" != 0 ]; then
-            echo "run0edit: unable to write temporary file at $tmpfile to $filename"
-            exit 1
-        elif [ "$edit_immutable" = 'yes' ] && ! cmp -s -- "$tmpfile" "$filename"; then
-            echo "WARNING: contents of $filename does not match contents of tempfile."
-            echo 'File contents may be corrupted!'
-            exit 1
-        fi
+        copy_to_dest "$directory" "$immutable"
     else
         echo "run0edit: $filename not created"
     fi

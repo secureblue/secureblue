@@ -87,6 +87,8 @@ if echo "$CRYPT_DISK_INFO" | grep systemd-fido2 > /dev/null; then
     echo "Either clear the existing FIDO2 keyslot before retrying, else choose 'y' next time."
     echo "Exiting..."
     [[ "$0" = "${BASH_SOURCE[0]}" ]] && exit 1 || return 1
+  else
+    systemd-cryptenroll --wipe-slot="fido2" "$CRYPT_DISK"
   fi
 fi
 
@@ -96,8 +98,9 @@ systemd-cryptenroll --fido2-device=auto "$CRYPT_DISK"
 cp /etc/crypttab /etc/crypttab.known-good
 sed -i "s/UUID=$(echo "$RD_LUKS_UUID" | cut -c6-) none discard/UUID=$(echo "$RD_LUKS_UUID" | cut -c6-) none - fido2-device=auto - discard/" /etc/crypttab
 
+CRYPT_DISK_INFO=$(cryptsetup luksDump "$CRYPT_DISK")
 # Sets the new fido2 keyslot as preferred if it's the only one currently configured. (Users with more than one configured are presumed advanced and capable of their own priority management.)
-if [ echo "$CRYPT_DISK_INFO" | grep -c "systemd-fido2" -eq "1" ]; then
+if [ "$(echo "$CRYPT_DISK_INFO" | grep -c "systemd-fido2")" -eq "1" ]; then
   after_cryptenroll_keyslot=$(echo "$CRYPT_DISK_INFO" | sed -n '/systemd-fido2$/,/Keyslot:/p' | { grep "Keyslot" || true; } | awk '{print $2}') 
   cryptsetup config --key-slot "$after_cryptenroll_keyslot" --priority "prefer" "$CRYPT_DISK"
 fi

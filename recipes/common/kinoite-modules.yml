@@ -9,6 +9,7 @@ modules:
       - kde-connect-libs
       - kdeconnectd
       - fedora-chromium-config-kde
+      - fedora-flathub-remote
       - fuse-encfs
       - krfb
       - krfb-libs

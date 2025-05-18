@@ -30,9 +30,8 @@ remove:
   - firefox
   - firefox-langpacks
   - fuse
-  - fedora-chromium-config
-  - fedora-flathub-remote
   - passim
+  - fedora-chromium-config
 
 
 

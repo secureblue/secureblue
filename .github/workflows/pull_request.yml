@@ -16,6 +16,9 @@ jobs:
       fail-fast: false 
       matrix:
         recipe:
+          - general/recipe-cosmic-main.yml
+          - general/recipe-sericea-main.yml
+          - general/recipe-kinoite-main.yml
           - general/recipe-silverblue-main.yml
           - general/recipe-silverblue-nvidia.yml
           - general/recipe-silverblue-nvidia-open.yml

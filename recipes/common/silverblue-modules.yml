@@ -21,6 +21,9 @@ modules:
         - fedora-chromium-config-gnome
         - gnome-software-rpm-ostree
         - totem-video-thumbnailer
+        - fedora-flathub-remote
+        - fedora-third-party
+        - fedora-workstation-repositories
     - type: gschema-overrides
       include:
         - zz1-secureblue.gschema.override

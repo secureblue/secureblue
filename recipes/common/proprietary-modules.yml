@@ -14,17 +14,18 @@ modules:
         - libfdk-aac
         - gstreamer1-plugins-ugly  
       remove:
-        - gstreamer1-plugins-ugly-free
-        - fdk-aac-free
-        - ffmpeg-free
-        - libavcodec-free  
-        - libavdevice-free
-        - libavfilter-free
-        - libavformat-free  
-        - libavutil-free  
-        - libpostproc-free  
-        - libswresample-free  
-        - libswscale-free  
+        packages:
+          - gstreamer1-plugins-ugly-free
+          - fdk-aac-free
+          - ffmpeg-free
+          - libavcodec-free  
+          - libavdevice-free
+          - libavfilter-free
+          - libavformat-free  
+          - libavutil-free  
+          - libpostproc-free  
+          - libswresample-free  
+          - libswscale-free  
     - type: script
       scripts:
         - removeunusedrepos.sh

@@ -1,10 +1,12 @@
 modules:
     - from-file: common/desktop-packages.yml
-    - type: rpm-ostree
+    - type: dnf
       repos:
-        - https://copr.fedorainfracloud.org/coprs/secureblue/trivalent/repo/fedora-%OS_VERSION%/secureblue-trivalent-fedora-%OS_VERSION%.repo
+        copr:
+          - secureblue/trivalent
       install:
-        - trivalent-subresource-filter
+        packages:
+          - trivalent-subresource-filter
     - from-file: common/desktop-scripts.yml
     - type: fonts
       fonts:

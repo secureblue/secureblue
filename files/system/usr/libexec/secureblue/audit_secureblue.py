@@ -806,7 +806,7 @@ async def check_flatpak_permissions(name, version, state):
     if "sockets" in perms:
         sockets = perms["sockets"]
         if "x11" in sockets and "fallback-x11" not in sockets:
-            status = status.downgrade_to(WARNING)
+            status = status.downgrade_to(FAILURE)
             warnings.append(f"{name} has x11 access")
             recs.append(
                 f"""{name} has x11 access
@@ -841,7 +841,7 @@ async def check_flatpak_permissions(name, version, state):
         devices = perms["devices"]
         device_checks = {
             "all": {
-                "status": WARNING,
+                "status": FAILURE,
                 "access": "input devices, GPUs, raw USB, and virtualization",
                 "sandbox_escape": True,
                 "note": f"""If GPU access is required, use device=dri instead:
@@ -853,15 +853,21 @@ async def check_flatpak_permissions(name, version, state):
                 "sandbox_escape": False,
                 "note": "",
             },
-            "shm": {
+            "kvm": {
                 "status": WARNING,
+                "access": "kernel-based virtualization",
+                "sandbox_escape": False,
+                "note": "",
+            },
+            "shm": {
+                "status": FAILURE,
                 "access": "shared memory",
                 "sandbox_escape": True,
                 "note": "",
             },
-            "kvm": {
-                "status": WARNING,
-                "access": "kernel-based virtualization",
+            "usb": {
+                "status": NOTICE,
+                "access": "raw USB device access",
                 "sandbox_escape": False,
                 "note": "",
             },
@@ -939,7 +945,7 @@ async def check_flatpak_permissions(name, version, state):
     if "filesystems" in perms:
         filesystems = perms["filesystems"]
         if "host" in filesystems:
-            status = FAILURE
+            status = status.downgrade_to(FAILURE)
             warnings.append(f"{name} has filesystem=host permission")
             recs.append(
                 f"""{name} has filesystem=host permission.
@@ -948,7 +954,7 @@ async def check_flatpak_permissions(name, version, state):
                     $ flatpak override -u --nofilesystem=host {name}"""
             )
         if "home" in filesystems:
-            status = FAILURE
+            status = status.downgrade_to(FAILURE)
             warnings.append(f"{name} has filesystem=home permission")
             recs.append(
                 f"""{name} has filesystem=home permission.
@@ -983,7 +989,7 @@ async def check_flatpak_permissions(name, version, state):
             )
 
     if arbitrary_permissions:
-        status = FAILURE
+        status = status.downgrade_to(FAILURE)
         warnings.append(f"{name} can acquire arbitrary permissions")
 
     return status, warnings, recs

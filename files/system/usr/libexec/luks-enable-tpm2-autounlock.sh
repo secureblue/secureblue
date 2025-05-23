@@ -103,7 +103,7 @@ systemd-cryptenroll --tpm2-device=auto --tpm2-pcrs=7+14 --tpm2-with-pin="$SET_PI
 
 # Sets the new tpm keyslot as preferred if it's the only one currently configured. (Users with more than one configured are presumed advanced and capable of their own priority management. Not certain how or why you'd have more than one tpm2 keyslot regardless.)
 if [ "$(echo "$CRYPT_DISK_INFO" | grep -c "systemd-tpm2")" -eq "1" ]; then
-  after_KEYSLOT==$(echo "$CRYPT_DISK_INFO" | sed -n '/systemd-tpm2$/,/Keyslot:/p' | { grep "Keyslot" || true; } | awk '{print $2}') 
+  after_KEYSLOT=$(echo "$CRYPT_DISK_INFO" | sed -n '/systemd-tpm2$/,/Keyslot:/p' | { grep "Keyslot" || true; } | awk '{print $2}')
   cryptsetup config --key-slot "$after_KEYSLOT" --priority "prefer" "$CRYPT_DISK"
 fi
 

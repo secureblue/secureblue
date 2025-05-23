@@ -72,6 +72,7 @@ class Report:
             self.recs = recs
 
     def to_str(self, width: int = 80) -> str:
+        """Represent the report as a string formatted to the given width."""
         status_tag = f" [ {self.status.to_str_in_color()} ]"
         desc_width = width - len(self.status.name) - 5
         gray_start = "\x1b[38;5;241m"

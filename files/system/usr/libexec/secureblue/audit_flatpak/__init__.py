@@ -4,6 +4,7 @@
 Flatpak permissions checks for secureblue auditing script.
 """
 
+from dataclasses import dataclass, field
 from typing import Final
 
 from auditor import Status
@@ -13,7 +14,56 @@ NOTICE: Final = Status.NOTICE
 WARNING: Final = Status.WARNING
 FAILURE: Final = Status.FAILURE
 
-ALIASES: Final = {
+
+@dataclass
+class Permissions:
+    """Object representing permissions for a flatpak app."""
+
+    permissions: dict[str, list[str]] = field(default_factory=dict)
+    environment: dict[str, str] = field(default_factory=dict)
+    session_bus_talk: list[str] = field(default_factory=list)
+    session_bus_own: list[str] = field(default_factory=list)
+    system_bus_talk: list[str] = field(default_factory=list)
+    system_bus_own: list[str] = field(default_factory=list)
+
+
+def parse_flatpak_permissions(perms_text: str) -> Permissions:
+    """Get permissions for an installed flatpak."""
+    perms = Permissions()
+    section = None
+    for line in perms_text.split("\n"):
+        line = line.strip()
+        if not line or line.startswith("#"):
+            continue
+        if line.startswith("["):
+            section = line.strip("[]")
+            continue
+        key, value = line.split("=", maxsplit=1)
+        match section:
+            case "Session Bus Policy":
+                match value:
+                    case "talk":
+                        perms.session_bus_talk.append(key)
+                    case "own":
+                        perms.session_bus_own.append(key)
+                    case _:
+                        raise ValueError(f"Unknown session bus permission '{value}'")
+            case "System Bus Policy":
+                match value:
+                    case "talk":
+                        perms.system_bus_talk.append(key)
+                    case "own":
+                        perms.system_bus_own.append(key)
+                    case _:
+                        raise ValueError(f"Unknown system bus permission '{value}'")
+            case "Environment":
+                perms.environment[key] = value
+            case _:
+                perms.permissions[key] = [val for val in value.split(";") if val]
+    return perms
+
+
+ALIASES: dict[str, str] = {
     "xdg-cache": "~/.cache",
     "xdg-config": "~/.config",
     "xdg-data": "~/.local/share",
@@ -41,7 +91,7 @@ def parse_fs_permission(perm: str) -> tuple[str, bool, bool, bool]:
         path = perm.removesuffix(":create")
     else:
         path = perm
-    path = path.lstrip("!").rstrip("/")
+    path = path.removeprefix("!").rstrip("/")
     is_alias = False
     for name, alias in ALIASES.items():
         if path.startswith(alias):
@@ -51,176 +101,113 @@ def parse_fs_permission(perm: str) -> tuple[str, bool, bool, bool]:
     return path, readonly, negated, is_alias
 
 
+FLATPAK_OVERRIDE_OPTIONS: dict[str, tuple[str, str]] = {
+    "shared": ("share", "unshare"),
+    "sockets": ("socket", "nosocket"),
+    "devices": ("device", "nodevice"),
+    "features": ("allow", "disallow"),
+}
+
+
+@dataclass(frozen=True)
+class PermissionCheck:
+    """A flatpak permission to be checked, and how it's reported if present."""
+
+    category: str
+    permission: str
+    status: Status
+    description: str | None = None
+    note: str | None = None
+    endnote: str | None = None
+    sandbox_escape: bool = False
+    arbitrary_permissions: bool = False
+
+    def warning(self, name: str) -> str:
+        """Give the warning text for if the check fails."""
+        perm_type = FLATPAK_OVERRIDE_OPTIONS[self.category][0]
+        description = self.description or f"has {perm_type}={self.permission}"
+        return f"{name} {description}"
+
+    def recommendation(self, name: str) -> str:
+        """Give the recommendation text for if the check fails."""
+        if self.sandbox_escape:
+            sandbox_escape_note = "This may also be used as a sandbox escape vector."
+        else:
+            sandbox_escape_note = ""
+        option = FLATPAK_OVERRIDE_OPTIONS[self.category][1]
+        rec = f"""{self.warning(name)}.
+            {self.note or ""}
+            {sandbox_escape_note}
+            To remove this permission, use Flatseal or run:
+            $ flatpak override -u --{option}={self.permission} {name}
+            {self.endnote or ""}"""
+        return "\n".join(line.strip() for line in rec.split("\n") if line.strip())
+
+
+FLATPAK_PERMISSION_CHECKS: list[PermissionCheck] = [
+    PermissionCheck("shared", "network", NOTICE, "has network access"),
+    PermissionCheck("shared", "ipc", NOTICE, "has inter-process communications access"),
+    PermissionCheck("sockets", "x11", FAILURE, "has X11 access"),
+    PermissionCheck("sockets", "pulseaudio", WARNING, "has access to the PulseAudio socket"),
+    PermissionCheck(
+        "sockets",
+        "session-bus",
+        FAILURE,
+        "has access to the D-Bus session bus",
+        note="This grants access to audio and microphones.",
+    ),
+    PermissionCheck("sockets", "system-bus", FAILURE, "has access to the D-Bus system bus"),
+    PermissionCheck(
+        "devices",
+        "all",
+        FAILURE,
+        note="This grants access to input devices, GPUs, raw USB, and virtualization.",
+        sandbox_escape=True,
+        endnote="If GPU access is required, allow device=dri instead.",
+    ),
+    PermissionCheck("devices", "input", NOTICE, note="This grants access to input devices."),
+    PermissionCheck(
+        "devices", "kvm", WARNING, note="This grants access to kernel-based virtualization."
+    ),
+    PermissionCheck(
+        "devices", "shm", FAILURE, note="This grants access to shared memory.", sandbox_escape=True
+    ),
+    PermissionCheck(
+        "devices", "usb", WARNING, note="This grants raw USB device access.", sandbox_escape=True
+    ),
+    PermissionCheck("features", "bluetooth", WARNING, "has bluetooth access"),
+    PermissionCheck("features", "devel", WARNING, "has ptrace access"),
+]
+
+
 def check_flatpak_permissions(
-    name: str, perms: dict[str, list[str]], bluetooth_loaded: bool, ptrace_allowed: bool
+    name: str, perms: Permissions, bluetooth_loaded: bool, ptrace_allowed: bool
 ) -> tuple[Status, list[str], list[str]]:
     """Check permissions for a single flatpak."""
     warnings = []
     recs = []
     status = SUCCESS
-
-    if "shared" in perms:
-        shared = perms["shared"]
-        if "network" in shared:
-            status = status.downgrade_to(NOTICE)
-            warnings.append(f"{name} has network access")
-            recs.append(
-                f"""{name} has network access.
-                        To remove it use Flatseal or run:
-                        $ flatpak override -u --unshare=network {name}"""
-            )
-        if "ipc" in shared:
-            status = status.downgrade_to(WARNING)
-            warnings.append(f"{name} has inter-process communications access")
-            recs.append(
-                f"""{name} has inter-process communications access.
-                        To remove it use Flatseal or run:
-                        $ flatpak override -u --unshare=ipc {name}"""
-            )
-
-    if "sockets" in perms:
-        sockets = perms["sockets"]
-        if "x11" in sockets and "fallback-x11" not in sockets:
-            status = status.downgrade_to(FAILURE)
-            warnings.append(f"{name} has x11 access")
-            recs.append(
-                f"""{name} has x11 access.
-                        To remove it use Flatseal or run:
-                        $ flatpak override -u --nosocket=x11 {name}"""
-            )
-        if "pulseaudio" in sockets:
-            status = status.downgrade_to(WARNING)
-            warnings.append(f"{name} has access to the PulseAudio socket")
-            recs.append(f"""{name} has access to the PulseAudio socket.
-                        This grants access to audio and microphones.
-                        To remove it use Flatseal or run:
-                        $ flatpak override -u --nosocket=pulseaudio {name}""")
-        if "session-bus" in sockets:
-            status = status.downgrade_to(FAILURE)
-            warnings.append(f"{name} has access to the D-Bus session bus")
-            recs.append(
-                f"""{name} has access to the D-Bus session bus.
-                        To remove it use Flatseal or run:
-                        $ flatpak override -u --nosocket=session-bus {name}"""
-            )
-        if "system-bus" in sockets:
-            status = status.downgrade_to(FAILURE)
-            warnings.append(f"{name} has access to the D-Bus system bus")
-            recs.append(
-                f"""{name} has access to the D-Bus system bus.
-                        To remove it use Flatseal or run:
-                        $ flatpak override -u --nosocket=system-bus {name}"""
-            )
-
-    if "devices" in perms:
-        devices = perms["devices"]
-        device_checks = {
-            "all": {
-                "status": FAILURE,
-                "access": "input devices, GPUs, raw USB, and virtualization",
-                "sandbox_escape": True,
-                "note": f"""If GPU access is required, use device=dri instead:
-                    $ flatpak override -u --device=dri {name}""",
-            },
-            "input": {
-                "status": NOTICE,
-                "access": "input devices",
-                "sandbox_escape": False,
-                "note": "",
-            },
-            "kvm": {
-                "status": WARNING,
-                "access": "kernel-based virtualization",
-                "sandbox_escape": False,
-                "note": "",
-            },
-            "shm": {
-                "status": FAILURE,
-                "access": "shared memory",
-                "sandbox_escape": True,
-                "note": "",
-            },
-            "usb": {
-                "status": WARNING,
-                "access": "raw USB device access",
-                "sandbox_escape": True,
-                "note": "",
-            },
-        }
-        for device in devices:
-            if device in device_checks:
-                device_data = device_checks[device]
-            else:
-                continue
-            status = status.downgrade_to(device_data["status"])
-            warnings.append(f"{name} has device={device} permission")
-            if device_data["sandbox_escape"]:
-                sandbox_escape_note = "This may also be used as a sandbox escape vector."
-            else:
-                sandbox_escape_note = ""
-            recs.append(
-                f"""{name} has device={device} permission.
-                        This grants access to {device_data["access"]}.
-                        {sandbox_escape_note}
-                        To remove it use Flatseal or run:
-                        $ flatpak override -u --nodevice={device} {name}
-                        {device_data["note"]}"""
-            )
-
-    ld_preloads = []
-    if "LD_PRELOAD" in perms:
-        for s in perms["LD_PRELOAD"]:
-            if s:
-                ld_preloads.append(s.rsplit("/", maxsplit=1)[-1])
-    if "libhardened_malloc.so" not in ld_preloads:
-        status = status.downgrade_to(WARNING)
-        warnings.append(f"{name} is not requesting hardened_malloc")
-        if "libhardened_malloc-light.so" in ld_preloads:
-            status = status.downgrade_to(NOTICE)
-            warnings.append(f"{name} is requesting hardened_malloc-light")
-        elif "libhardened_malloc-pkey.so" in ld_preloads:
-            status = status.downgrade_to(NOTICE)
-            warnings.append(f"{name} is requesting hardened_malloc-pkey")
-        recs.append(
-            f"""{name} is not requesting hardened_malloc.
-                    To enable it run:
-                    $ ujust harden-flatpak {name}"""
-        )
-
-    if "features" in perms:
-        features = perms["features"]
-        if bluetooth_loaded and "bluetooth" in features:
-            status = status.downgrade_to(WARNING)
-            warnings.append(f"{name} has bluetooth access")
-            recs.append(
-                f"""{name} has bluetooth access.
-                        To remove it use Flatseal or run:
-                        $ flatpak override -u --disallow=bluetooth {name}"""
-            )
-        if ptrace_allowed and "devel" in features:
-            status = status.downgrade_to(WARNING)
-            warnings.append(f"{name} has ptrace access")
-            recs.append(
-                f"""{name} has ptrace access.
-                        To remove it use Flatseal or run:
-                        $ flatpak override -u --disallow=devel {name}"""
-            )
-
-    if not ("filesystems" in perms and "host-os:ro" in perms["filesystems"]):
-        status = status.downgrade_to(WARNING)
-        warnings.append(f"{name} is missing host-os:ro permission")
-        recs.append(
-            f"""{name} is missing host-os:ro permission.
-                    This is required to load hardened_malloc.
-                    To add it use Flatseal or run:
-                    $ flatpak override -u --filesystem=host-os:ro {name}"""
-        )
-
     arbitrary_permissions = False
-    if "filesystems" in perms:
-        filesystems = perms["filesystems"]
-        filesystems_ro = {}
-        filesystems_rw = {}
+
+    for check in FLATPAK_PERMISSION_CHECKS:
+        if check.category not in perms.permissions:
+            continue
+        if check.permission in perms.permissions[check.category]:
+            if check.category == "features":
+                if check.permission == "bluetooth" and not bluetooth_loaded:
+                    continue
+                if check.permission == "devel" and not ptrace_allowed:
+                    continue
+            status = status.downgrade_to(check.status)
+            warnings.append(check.warning(name))
+            recs.append(check.recommendation(name))
+            if check.arbitrary_permissions:
+                arbitrary_permissions = True
+
+    filesystems = perms.permissions.get("filesystems")
+    filesystems_ro = {}
+    filesystems_rw = {}
+    if filesystems is not None:
         for perm in filesystems:
             path, readonly, negated, is_alias = parse_fs_permission(perm)
             if negated:
@@ -230,7 +217,7 @@ def check_flatpak_permissions(
             else:
                 filesystems_rw[path] = is_alias
 
-        dangerous_dirs: Final = {
+        dangerous_dirs = {
             "host": {
                 "status": FAILURE,
                 "access": "all system files",
@@ -262,7 +249,7 @@ def check_flatpak_permissions(
                 recs.append(
                     f"""{name} has filesystem={path} permission.
                         This grants access to {dir_data["access"]}.
-                        To remove it use Flatseal or run:
+                        To remove this permission, use Flatseal or run:
                         $ flatpak override -u --nofilesystem={path} {name}"""
                 )
 
@@ -275,19 +262,50 @@ def check_flatpak_permissions(
             recs.append(
                 f"""{name} can modify flatpak overrides.
                     This grants the ability to acquire arbitrary permissions.
-                    To remove it use Flatseal or run:
+                    To remove this permission, use Flatseal or run:
                     $ flatpak override -u --nofilesystem={override_path} {name}"""
             )
 
+    if filesystems is None or ("host-os" not in filesystems_ro and "host-os" not in filesystems_rw):
+        status = status.downgrade_to(WARNING)
+        warnings.append(f"{name} is missing host-os:ro permission")
+        recs.append(
+            f"""{name} is missing host-os:ro permission.
+                This is required to load hardened_malloc.
+                To add this permission, use Flatseal or run:
+                $ flatpak override -u --filesystem=host-os:ro {name}"""
+        )
+
     for bus_name in ("org.freedesktop.Flatpak", "org.freedesktop.impl.portal.PermissionStore"):
-        if bus_name in perms and "talk" in perms[bus_name]:
+        if bus_name in perms.session_bus_talk:
             arbitrary_permissions = True
             recs.append(
                 f"""{name} can talk to {bus_name} on the session bus.
                     This grants the ability to acquire arbitrary permissions.
-                    To remove it use Flatseal or run:
+                    To remove this permission, use Flatseal or run:
                     $ flatpak override -u --no-talk-name={bus_name} {name}"""
             )
+
+    ld_preload = perms.environment.get("LD_PRELOAD")
+    if ld_preload is None:
+        ld_preload_files = []
+    else:
+        ld_preload_files = [s.rsplit("/", maxsplit=1)[-1] for s in ld_preload.split()]
+    if "libhardened_malloc.so" not in ld_preload_files:
+        warnings.append(f"{name} is not requesting hardened_malloc")
+        if "libhardened_malloc-light.so" in ld_preload_files:
+            status = status.downgrade_to(NOTICE)
+            warnings.append(f"{name} is requesting hardened_malloc-light")
+        elif "libhardened_malloc-pkey.so" in ld_preload_files:
+            status = status.downgrade_to(NOTICE)
+            warnings.append(f"{name} is requesting hardened_malloc-pkey")
+        else:
+            status = status.downgrade_to(WARNING)
+        recs.append(
+            f"""{name} is not requesting hardened_malloc.
+                To enable it, run:
+                $ ujust harden-flatpak {name}"""
+        )
 
     if arbitrary_permissions:
         status = status.downgrade_to(FAILURE)

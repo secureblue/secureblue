@@ -26,7 +26,7 @@ from typing import Final, Generator
 import rpm
 
 from auditor import AuditError, Report, Status, audit, bold, categorize, depends_on, global_audit
-from audit_flatpak import check_flatpak_permissions
+from audit_flatpak import check_flatpak_permissions, parse_flatpak_permissions
 
 SUCCESS: Final = Status.SUCCESS
 NOTICE: Final = Status.NOTICE
@@ -173,9 +173,9 @@ def audit_kargs():
 def validate_sysctl(sysctl: str, actual: str, expected: str) -> bool:
     """Validate a sysctl value against an expected value."""
     actual = re.sub(r"\s+", " ", actual.strip())
-    replace = {"disabled": "0", "enabled": "1"}
-    if actual in replace:
-        actual = replace[actual]
+    replace = {"disabled": "0", "enabled": "1"}.get(actual)
+    if replace is not None:
+        actual = replace
     if sysctl == "kernel.sysrq":
         # Both 0 and 4 are secure values for this setting. For details, see:
         # https://www.kernel.org/doc/html/latest/admin-guide/sysrq.html
@@ -704,12 +704,8 @@ def audit_bash_env_lockdown():
         elif not os.path.isfile(path) and not os.path.isdir(path):
             unlocked_files.append(path)
         else:
-            if path[-1] == "/":
-                cmd = ["lsattr", "-d", path]
-            else:
-                cmd = ["lsattr", path]
             try:
-                immutable = "i" in command_stdout(*cmd).split()[0]
+                immutable = "i" in command_stdout("lsattr", "-d", path).split()[0]
             except subprocess.CalledProcessError:
                 immutable = False
             if not immutable:
@@ -771,17 +767,9 @@ def audit_flatpak_remotes():
         yield Report(f"Auditing flatpak remote {name}", status, warnings=warnings)
 
 
-async def get_flatpak_permissions(name: str, version: str) -> dict[str, list[str]]:
+async def get_flatpak_permissions(name: str, version: str) -> str:
     """Get permissions for an installed flatpak."""
-    perms_text = await async_command_stdout("flatpak", "info", "--show-permissions", name, version)
-    perms = {}
-    for line in perms_text.split("\n"):
-        if not line or line[0] in "[#":
-            continue
-        key, value_str = line.split("=", maxsplit=1)
-        vals = [val for val in value_str.split(";") if val]
-        perms[key] = vals
-    return perms
+    return await async_command_stdout("flatpak", "info", "--show-permissions", name, version)
 
 
 @audit
@@ -806,7 +794,8 @@ async def audit_flatpak_permissions(state):
         tasks[(name, version)] = asyncio.create_task(coro, name=str((name, version)))
     # Yield flatpak permission reports in lexicographical order
     for name, version in flatpaks:
-        perms = await tasks[(name, version)]
+        perms_text = await tasks[(name, version)]
+        perms = parse_flatpak_permissions(perms_text)
         status, warnings, recs = check_flatpak_permissions(
             name, perms, state["bluetooth_loaded"], state["ptrace_allowed"]
         )

@@ -157,6 +157,7 @@ FLATPAK_PERMISSION_CHECKS: list[PermissionCheck] = [
         note="This grants access to audio and microphones.",
     ),
     PermissionCheck("sockets", "system-bus", FAILURE, "has access to the D-Bus system bus"),
+    PermissionCheck("sockets", "ssh-auth", WARNING, "has access to the SSH agent"),
     PermissionCheck(
         "devices",
         "all",

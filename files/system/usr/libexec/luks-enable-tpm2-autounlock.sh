@@ -102,8 +102,8 @@ echo "Enrolling TPM2 unlock requires your existing LUKS2 unlock password"
 systemd-cryptenroll --tpm2-device=auto --tpm2-pcrs=7+14 --tpm2-with-pin="$SET_PIN" "$CRYPT_DISK"
 
 # Sets the new tpm keyslot as preferred if it's the only one currently configured. (Users with more than one configured are presumed advanced and capable of their own priority management. Not certain how or why you'd have more than one tpm2 keyslot regardless.)
-if [ echo "$CRYPT_DISK_INFO" | grep -c "systemd-tpm2" -eq "1" ]; then
-  cryptsetup config --key-slot "$keyslot" --priority "prefer" "$CRYPT_DISK"
+if ! echo "$CRYPT_DISK_INFO" | grep -c "systemd-tpm2"; then
+  cryptsetup config --key-slot "$KEYSLOT" --priority "prefer" "$CRYPT_DISK"
 fi
 
 if lsinitrd 2>&1 | grep -q tpm2-tss > /dev/null; then

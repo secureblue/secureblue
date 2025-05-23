@@ -76,7 +76,7 @@ class Report:
         desc_width = width - len(self.status.name) - 5
         gray_start = "\x1b[38;5;241m"
         reset_color = "\x1b[39m"
-        desc_with_sep = f"{self.description}... {gray_start}".ljust(desc_width, "…") + reset_color
+        desc_with_sep = f"{self.description} {gray_start}".ljust(desc_width, "…") + reset_color
         report_str = desc_with_sep + status_tag
         for warning in self.warnings:
             report_str += f"\n> {warning}"

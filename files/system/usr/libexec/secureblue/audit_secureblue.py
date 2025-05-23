@@ -131,37 +131,37 @@ def audit_kargs():
     kargs_expected = [
         "init_on_alloc=1",
         "init_on_free=1",
-        "slab_nomerge",
-        "page_alloc.shuffle=1",
-        "randomize_kstack_offset=on",
-        "vsyscall=none",
-        "lockdown=confidentiality",
-        "random.trust_cpu=off",
-        "random.trust_bootloader=off",
-        "iommu=force",
         "intel_iommu=on",
         "iommu.passthrough=0",
         "iommu.strict=1",
-        "pti=on",
-        "module.sig_enforce=1",
-        "mitigations=auto,nosmt",
-        "spectre_v2=on",
-        "spec_store_bypass_disable=on",
+        "iommu=force",
+        "kvm-intel.vmentry_l1d_flush=always",
         "l1d_flush=on",
         "l1tf=full,force",
-        "kvm-intel.vmentry_l1d_flush=always",
+        "lockdown=confidentiality",
         "loglevel=0",
+        "mitigations=auto,nosmt",
+        "module.sig_enforce=1",
+        "page_alloc.shuffle=1",
+        "pti=on",
+        "random.trust_bootloader=off",
+        "random.trust_cpu=off",
+        "randomize_kstack_offset=on",
+        "slab_nomerge",
+        "spec_store_bypass_disable=on",
+        "spectre_v2=on",
+        "vsyscall=none",
     ]
     for karg in kargs_expected:
         status = SUCCESS if karg in kargs_current else FAILURE
         yield Report(f"Checking for {karg} karg", status)
     kargs_expected_warn = [
-        "ia32_emulation=0",
-        "nosmt=force",
-        "efi=disable_early_pci_dma",
-        "gather_data_sampling=force",
         "amd_iommu=force_isolation",
         "debugfs=off",
+        "efi=disable_early_pci_dma",
+        "gather_data_sampling=force",
+        "ia32_emulation=0",
+        "nosmt=force",
         "oops=panic",
     ]
     for karg in kargs_expected_warn:
@@ -322,7 +322,7 @@ def audit_unconfined_userns():
         recs = None
     else:
         status = FAILURE
-        recs = """Unconfined domain user namespace creation is permitted
+        recs = """Unconfined domain user namespace creation is permitted.
                 To disallow it, run:
                 $ ujust toggle-unconfined-domain-userns-creation"""
     yield Report("Ensuring unconfined user namespace creation disallowed", status, recs=recs)
@@ -336,7 +336,7 @@ def audit_container_userns():
         recs = []
     else:
         status = WARNING
-        recs = """Container domain user namespace creation is permitted
+        recs = """Container domain user namespace creation is permitted.
                 To disallow it, run:
                 $ ujust toggle-container-domain-userns-creation"""
     yield Report("Ensuring container user namespace creation disallowed", status, recs=recs)
@@ -401,13 +401,13 @@ def audit_dns():
                 status = FAILURE
         if status in (WARNING, FAILURE):
             caveat = " (opportunistic DNS-over-TLS only)" if dot == "opportunistic" else ""
-            rec = f"""System DNS resolution is not secure{caveat}
+            rec = f"""System DNS resolution is not secure{caveat}.
                     To select a secure resolver, run:
                     $ ujust dns-selector
                     If you are using a VPN, you may want to disregard this recommendation."""
     else:
         status = FAILURE
-        rec = """systemd-resolved is inactive
+        rec = """systemd-resolved is inactive.
                 To start and enable it, run:
                 $ systemctl enable --now systemd-resolved"""
     yield Report("Ensuring system DNS resolution is secure", status, warnings=warning, recs=rec)
@@ -437,7 +437,7 @@ def audit_mac_randomization():
         status = UNKNOWN
         warning = f"Unable to read file {conf_path}"
     if status == FAILURE:
-        rec = """MAC randomization is not enabled
+        rec = """MAC randomization is not enabled.
                 To enable it, run:
                 $ ujust toggle-mac-randomization"""
     else:
@@ -453,7 +453,7 @@ def audit_rpm_ostree_timer():
         rec = None
     else:
         status = FAILURE
-        rec = """rpm-ostreed-automatic.timer is disabled
+        rec = """rpm-ostreed-automatic.timer is disabled.
                 To enable, run:
                 $ systemctl enable --now rpm-ostreed-automatic.timer"""
     yield Report("Ensuring rpm-ostreed-automatic.timer is enabled", status, recs=rec)
@@ -467,7 +467,7 @@ def audit_podman_auto_update():
         rec = None
     else:
         status = FAILURE
-        rec = """podman-auto-update.timer is disabled
+        rec = """podman-auto-update.timer is disabled.
                 To enable, run:
                 $ systemctl enable --now podman-auto-update.timer"""
     yield Report("Ensuring podman-auto-update.timer is enabled", status, recs=rec)
@@ -481,7 +481,7 @@ def audit_podman_global_auto_update():
         rec = None
     else:
         status = FAILURE
-        rec = """podman-auto-update.timer is not enabled globally
+        rec = """podman-auto-update.timer is not enabled globally.
                 To enable, run:
                 $ systemctl enable --global podman-auto-update.timer"""
     yield Report("Ensuring podman-auto-update.timer is enabled globally", status, recs=rec)
@@ -497,7 +497,7 @@ def audit_flatpak_auto_update():
         rec = None
     else:
         status = FAILURE
-        rec = """flatpak-user-update.timer is not enabled globally
+        rec = """flatpak-user-update.timer is not enabled globally.
                 To enable, run:
                 $ systemctl enable --global flatpak-user-update.timer"""
     yield Report("Ensuring flatpak-user-update.timer is enabled globally", status, recs=rec)
@@ -507,7 +507,7 @@ def audit_flatpak_auto_update():
         rec = None
     else:
         status = FAILURE
-        rec = """flatpak-system-update.timer is not enabled globally
+        rec = """flatpak-system-update.timer is not enabled globally.
                 To enable, run:
                 $ systemctl enable --now flatpak-system-update.timer"""
     yield Report("Ensuring flatpak-system-update.timer is enabled", status, recs=rec)
@@ -580,7 +580,7 @@ def audit_selinux():
         rec = None
     else:
         status = FAILURE
-        rec = """SELinux is in Permissive mode
+        rec = """SELinux is in Permissive mode.
             To set to Enforcing mode, run:
             $ run0 setenforce 1"""
     yield Report("Ensuring SELinux is in Enforcing mode", status, recs=rec)
@@ -623,7 +623,7 @@ def audit_kde_ghns(state):
         status = WARNING
         warning = "/etc/xdg/kdeglobals not found or inaccessible"
     if status == FAILURE:
-        rec = """KDE GHNS is enabled
+        rec = """KDE GHNS is enabled.
             To disable, run:
             $ ujust toggle-ghns"""
     else:
@@ -715,7 +715,7 @@ def audit_bash_env_lockdown():
                 unlocked_files.append(path)
     if unlocked_files:
         status = FAILURE
-        rec = f"""Bash environment is not locked down
+        rec = f"""Bash environment is not locked down.
                 The following files do not appear to be immutable or do not exist:
                 {"\n".join(unlocked_files)}
                 To fix, run:
@@ -734,7 +734,7 @@ def audit_wlroot_screenshot(state):
         return
     if is_rpm_package_installed("xdg-desktop-portal-wlr"):
         status = FAILURE
-        rec = """wlroots screenshot support is enabled
+        rec = """wlroots screenshot support is enabled.
             To disable, run:
             $ ujust toggle-wlr-screenshot-support"""
     else:
@@ -770,11 +770,46 @@ def audit_flatpak_remotes():
         yield Report(f"Auditing flatpak remote {name}", status, warnings=warnings)
 
 
-async def check_flatpak_permissions(name, version, state):
-    """Check permissions for a single flatpak."""
-    warnings = []
-    recs = []
-    status = SUCCESS
+ALIASES: Final = {
+    "xdg-cache": "~/.cache",
+    "xdg-config": "~/.config",
+    "xdg-data": "~/.local/share",
+    "xdg-desktop": "~/Desktop",
+    "xdg-documents": "~/Documents",
+    "xdg-downloads": "~/Downloads",
+    "xdg-music": "~/Music",
+    "xdg-pictures": "~/Pictures",
+    "xdg-public-share": "~/Public",
+    "xdg-templates": "~/Templates",
+    "xdg-videos": "~/Videos",
+    "home": "~",  # "~" must be the last entry in the dict
+}
+
+
+def parse_fs_permission(perm: str) -> tuple[str, bool, bool, bool]:
+    """Parse flatpak filesystem permission string."""
+    readonly = perm.endswith(":ro")
+    negated = perm.startswith("!")
+    if perm.endswith(":ro"):
+        path = perm.removesuffix(":ro")
+    elif perm.endswith(":rw"):
+        path = perm.removesuffix(":rw")
+    elif perm.endswith(":create"):
+        path = perm.removesuffix(":create")
+    else:
+        path = perm
+    path = path.lstrip("!").rstrip("/")
+    is_alias = False
+    for name, alias in ALIASES.items():
+        if path.startswith(alias):
+            path = path.replace(alias, name, count=1)
+            is_alias = True
+            break
+    return path, readonly, negated, is_alias
+
+
+async def get_flatpak_permissions(name: str, version: str) -> dict[str, list[str]]:
+    """Get permissions for an installed flatpak."""
     perms_text = await async_command_stdout("flatpak", "info", "--show-permissions", name, version)
     perms = {}
     for line in perms_text.split("\n"):
@@ -783,6 +818,17 @@ async def check_flatpak_permissions(name, version, state):
         key, value_str = line.split("=", maxsplit=1)
         vals = [val for val in value_str.split(";") if val]
         perms[key] = vals
+    return perms
+
+
+async def check_flatpak_permissions(
+    name: str, version: str, state: dict
+) -> tuple[Status, list[str], list[str]]:
+    """Check permissions for a single flatpak."""
+    warnings = []
+    recs = []
+    status = SUCCESS
+    perms = await get_flatpak_permissions(name, version)
 
     if "shared" in perms:
         shared = perms["shared"]
@@ -790,7 +836,7 @@ async def check_flatpak_permissions(name, version, state):
             status = status.downgrade_to(NOTICE)
             warnings.append(f"{name} has network access")
             recs.append(
-                f"""{name} has network access
+                f"""{name} has network access.
                         To remove it use Flatseal or run:
                         $ flatpak override -u --unshare=network {name}"""
             )
@@ -798,7 +844,7 @@ async def check_flatpak_permissions(name, version, state):
             status = status.downgrade_to(WARNING)
             warnings.append(f"{name} has inter-process communications access")
             recs.append(
-                f"""{name} has inter-process communications access
+                f"""{name} has inter-process communications access.
                         To remove it use Flatseal or run:
                         $ flatpak override -u --unshare=ipc {name}"""
             )
@@ -809,7 +855,7 @@ async def check_flatpak_permissions(name, version, state):
             status = status.downgrade_to(FAILURE)
             warnings.append(f"{name} has x11 access")
             recs.append(
-                f"""{name} has x11 access
+                f"""{name} has x11 access.
                         To remove it use Flatseal or run:
                         $ flatpak override -u --nosocket=x11 {name}"""
             )
@@ -821,18 +867,18 @@ async def check_flatpak_permissions(name, version, state):
                         To remove it use Flatseal or run:
                         $ flatpak override -u --nosocket=pulseaudio {name}""")
         if "session-bus" in sockets:
-            status = status.downgrade_to(WARNING)
+            status = status.downgrade_to(FAILURE)
             warnings.append(f"{name} has access to the D-Bus session bus")
             recs.append(
-                f"""{name} has access to the D-Bus session bus
+                f"""{name} has access to the D-Bus session bus.
                         To remove it use Flatseal or run:
                         $ flatpak override -u --nosocket=session-bus {name}"""
             )
         if "system-bus" in sockets:
-            status = status.downgrade_to(WARNING)
+            status = status.downgrade_to(FAILURE)
             warnings.append(f"{name} has access to the D-Bus system bus")
             recs.append(
-                f"""{name} has access to the D-Bus system bus
+                f"""{name} has access to the D-Bus system bus.
                         To remove it use Flatseal or run:
                         $ flatpak override -u --nosocket=system-bus {name}"""
             )
@@ -866,9 +912,9 @@ async def check_flatpak_permissions(name, version, state):
                 "note": "",
             },
             "usb": {
-                "status": NOTICE,
+                "status": WARNING,
                 "access": "raw USB device access",
-                "sandbox_escape": False,
+                "sandbox_escape": True,
                 "note": "",
             },
         }
@@ -884,7 +930,7 @@ async def check_flatpak_permissions(name, version, state):
             else:
                 sandbox_escape_note = ""
             recs.append(
-                f"""{name} has device={device} permission
+                f"""{name} has device={device} permission.
                         This grants access to {device_data["access"]}.
                         {sandbox_escape_note}
                         To remove it use Flatseal or run:
@@ -907,19 +953,9 @@ async def check_flatpak_permissions(name, version, state):
             status = status.downgrade_to(NOTICE)
             warnings.append(f"{name} is requesting hardened_malloc-pkey")
         recs.append(
-            f"""{name} is not requesting hardened_malloc
+            f"""{name} is not requesting hardened_malloc.
                     To enable it run:
                     $ ujust harden-flatpak {name}"""
-        )
-
-    if not ("filesystems" in perms and "host-os:ro" in perms["filesystems"]):
-        status = status.downgrade_to(WARNING)
-        warnings.append(f"{name} is missing host-os:ro permission")
-        recs.append(
-            f"""{name} is missing host-os:ro permission
-                    This is required to load hardened_malloc.
-                    To add it use Flatseal or run:
-                    $ flatpak override -u --filesystem=host-os:ro {name}"""
         )
 
     if "features" in perms:
@@ -928,7 +964,7 @@ async def check_flatpak_permissions(name, version, state):
             status = status.downgrade_to(WARNING)
             warnings.append(f"{name} has bluetooth access")
             recs.append(
-                f"""{name} has bluetooth access
+                f"""{name} has bluetooth access.
                         To remove it use Flatseal or run:
                         $ flatpak override -u --disallow=bluetooth {name}"""
             )
@@ -936,47 +972,83 @@ async def check_flatpak_permissions(name, version, state):
             status = status.downgrade_to(WARNING)
             warnings.append(f"{name} has ptrace access")
             recs.append(
-                f"""{name} has ptrace access
+                f"""{name} has ptrace access.
                         To remove it use Flatseal or run:
                         $ flatpak override -u --disallow=devel {name}"""
             )
 
+    if not ("filesystems" in perms and "host-os:ro" in perms["filesystems"]):
+        status = status.downgrade_to(WARNING)
+        warnings.append(f"{name} is missing host-os:ro permission")
+        recs.append(
+            f"""{name} is missing host-os:ro permission.
+                    This is required to load hardened_malloc.
+                    To add it use Flatseal or run:
+                    $ flatpak override -u --filesystem=host-os:ro {name}"""
+        )
+
     arbitrary_permissions = False
     if "filesystems" in perms:
         filesystems = perms["filesystems"]
-        if "host" in filesystems:
-            status = status.downgrade_to(FAILURE)
-            warnings.append(f"{name} has filesystem=host permission")
-            recs.append(
-                f"""{name} has filesystem=host permission.
-                    This grants access to all system files.
-                    To remove it use Flatseal or run:
-                    $ flatpak override -u --nofilesystem=host {name}"""
-            )
-        if "home" in filesystems:
-            status = status.downgrade_to(FAILURE)
-            warnings.append(f"{name} has filesystem=home permission")
-            recs.append(
-                f"""{name} has filesystem=home permission.
-                    This grants access to all user files.
-                    To remove it use Flatseal or run:
-                    $ flatpak override -u --nofilesystem=home {name}"""
-            )
+        filesystems_ro = {}
+        filesystems_rw = {}
+        for perm in filesystems:
+            path, readonly, negated, is_alias = parse_fs_permission(perm)
+            if negated:
+                continue
+            if readonly:
+                filesystems_ro[path] = is_alias
+            else:
+                filesystems_rw[path] = is_alias
 
-        prefixes = ("xdg-data", "~/.local/share")
-        suffixes = ("", ":create", ":rw")
-        for prefix in prefixes:
-            path = f"{prefix}/flatpak/overrides"
-            for suffix in suffixes:
-                if f"{path}{suffix}" in filesystems:
-                    arbitrary_permissions = True
-                    recs.append(
-                        f"""{name} can modify flatpak overrides.
-                            This grants the ability to acquire arbitrary permissions.
-                            To remove it use Flatseal or run:
-                            $ flatpak override -u --nofilesystem={path} {name}"""
-                    )
-                    break
+        dangerous_dirs: Final = {
+            "host": {
+                "status": FAILURE,
+                "access": "all system files",
+            },
+            "home": {
+                "status": FAILURE,
+                "access": "all user files",
+            },
+            "xdg-config": {
+                "status": FAILURE,
+                "access": "other applications' configuration files",
+            },
+            "xdg-cache": {
+                "status": FAILURE,
+                "access": "other applications' cache files",
+            },
+            "xdg-data": {
+                "status": FAILURE,
+                "access": "other applications' data files",
+            },
+        }
+        for path, dir_data in dangerous_dirs.items():
+            if path in filesystems_rw:
+                status = status.downgrade_to(dir_data["status"])
+                is_alias = filesystems_rw[path]
+                if is_alias:
+                    path = path.replace(path, ALIASES[path], count=1)
+                warnings.append(f"{name} has filesystem={path} permission")
+                recs.append(
+                    f"""{name} has filesystem={path} permission.
+                        This grants access to {dir_data["access"]}.
+                        To remove it use Flatseal or run:
+                        $ flatpak override -u --nofilesystem={path} {name}"""
+                )
+
+        override_path = "xdg-data/flatpak/overrides"
+        if override_path in filesystems_rw:
+            arbitrary_permissions = True
+            is_alias = filesystems_rw[override_path]
+            if is_alias:
+                override_path = override_path.replace("xdg-data", ALIASES["xdg-data"], count=1)
+            recs.append(
+                f"""{name} can modify flatpak overrides.
+                    This grants the ability to acquire arbitrary permissions.
+                    To remove it use Flatseal or run:
+                    $ flatpak override -u --nofilesystem={override_path} {name}"""
+            )
 
     for bus_name in ("org.freedesktop.Flatpak", "org.freedesktop.impl.portal.PermissionStore"):
         if bus_name in perms and "talk" in perms[bus_name]:

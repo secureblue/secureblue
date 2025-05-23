@@ -81,10 +81,10 @@ if [[ ! -L "$CRYPT_DISK" ]]; then
 fi
 
 CRYPT_DISK_INFO=$(cryptsetup luksDump "$CRYPT_DISK")
-pre_KEYSLOT=$(echo "$CRYPT_DISK_INFO" | sed -n '/systemd-tpm2$/,/Keyslot:/p' | { grep "Keyslot" || true; } | awk '{print $2}') 
+existing_KEYSLOT=$(echo "$CRYPT_DISK_INFO" | sed -n '/systemd-tpm2$/,/Keyslot:/p' | { grep "Keyslot" || true; } | awk '{print $2}') 
 
 if echo "$CRYPT_DISK_INFO" | grep systemd-tpm2 > /dev/null; then
-  echo "TPM2 already present in LUKS keyslot $pre_KEYSLOT of $CRYPT_DISK."
+  echo "TPM2 already present in LUKS keyslot $existing_KEYSLOT of $CRYPT_DISK."
   read -p "Wipe it and re-enroll? (y/N): " -n 1 -r
   echo
   if [[ $REPLY =~ ^[Yy]$ ]]; then
@@ -103,8 +103,8 @@ systemd-cryptenroll --tpm2-device=auto --tpm2-pcrs=7+14 --tpm2-with-pin="$SET_PI
 
 # Sets the new tpm keyslot as preferred if it's the only one currently configured. (Users with more than one configured are presumed advanced and capable of their own priority management. Not certain how or why you'd have more than one tpm2 keyslot regardless.)
 if [ "$(echo "$CRYPT_DISK_INFO" | grep -c "systemd-tpm2")" -eq "1" ]; then
-  after_KEYSLOT=$(echo "$CRYPT_DISK_INFO" | sed -n '/systemd-tpm2$/,/Keyslot:/p' | { grep "Keyslot" || true; } | awk '{print $2}')
-  cryptsetup config --key-slot "$after_KEYSLOT" --priority "prefer" "$CRYPT_DISK"
+  new_KEYSLOT=$(echo "$CRYPT_DISK_INFO" | sed -n '/systemd-tpm2$/,/Keyslot:/p' | { grep "Keyslot" || true; } | awk '{print $2}')
+  cryptsetup config --key-slot "$new_KEYSLOT" --priority "prefer" "$CRYPT_DISK"
 fi
 
 if lsinitrd 2>&1 | grep -q tpm2-tss > /dev/null; then

@@ -1,32 +1,68 @@
 # Harden flatpaks by preloading hardened_malloc (highest supported hwcap). When called with a flatpak application ID as an argument, applies the overrides to that application instead of globally.
 harden-flatpak FLATPAK_APPID="":
     #!/usr/bin/bash
-    flatpak_id="{{ FLATPAK_APPID }}"
-    if [[ "$flatpak_id" =~ "'" ]]; then
-        echo 'WARNING: Single quotes in the argument are forbidden to avoid command execution'
+    set -euo pipefail
+    readonly flatpak_id="{{ FLATPAK_APPID }}"
+    if [[ -n "$flatpak_id" ]] && ! flatpak list --columns=application | grep -Fqx "$flatpak_id"; then
+        echo "Error: '$flatpak_id' is not the application ID of an installed flatpak." >&2
         exit 1
     fi
 
-    hostro_cmd="flatpak override --user --filesystem=host-os:ro"
-    if [[ -n "$flatpak_id" ]]; then
-        hostro_cmd="$hostro_cmd '$flatpak_id'"
-    fi
-    sh -c "$hostro_cmd"
+    best_uarch="$(/usr/lib64/ld-linux-x86-64.so.2 --help | grep -F '(supported, searched)' \
+        | grep -o 'x86-64-v[[:digit:]]*' | sort -nr | head -n1 || echo '')"
+    readonly best_uarch
+    readonly hmalloc_path="/var/run/host/usr/lib64/${best_uarch:+"glibc-hwcaps/$best_uarch/"}libhardened_malloc.so"
+    readonly override_dir="$HOME/.local/share/flatpak/overrides"
 
-    uarches="$(/usr/lib64/ld-linux-x86-64.so.2 --help | grep '(supported, searched)' | cut -d'v' -f2 || echo '')"
-    bestuarch="${uarches:0:1}"
-    malloc_cmd="flatpak override --user --env=LD_PRELOAD=/var/run/host/usr/lib64"
-    if [ -z "$bestuarch" ] ; then
-        echo "No microarchitecture support detected. Using default x86-64-v1 architecture${flatpak_id:+" for $flatpak_id's malloc"}."
-        malloc_cmd="$malloc_cmd/libhardened_malloc.so"
-    else
-        echo "x86-64-v$bestuarch support detected. Using x86-64-v$bestuarch microarchitecture${flatpak_id:+" for $flatpak_id's malloc"}."
-        malloc_cmd="$malloc_cmd/glibc-hwcaps/x86-64-v$bestuarch/libhardened_malloc.so"
-    fi
+    has_host_os_access() {
+        grep -Eqx 'filesystems=(.*;)?host-os(:ro)?(;.*)?' "$override_dir/$1"
+    }
+
+    remove_no_host_os() {
+        sed -Ei '/^filesystems=/s/!host-os(;|$)//' "$override_dir/$1"
+    }
+
+    has_ld_preload() {
+        grep -Fqx "LD_PRELOAD=$hmalloc_path" "$override_dir/$1"
+    }
+
+    remove_ld_preload_override() {
+        sed -i '/^LD_PRELOAD=/d' "$override_dir/$1"
+    }
+
+    harden_flatpaks_global() {
+        flatpak override --user --filesystem=host-os:ro
+        flatpak override --user --env=LD_PRELOAD="$hmalloc_path"
+    }
+
+    harden_flatpak_app() {
+        if has_host_os_access 'global'; then
+            remove_no_host_os "$1"
+        else
+            flatpak override --user --filesystem=host-os:ro "$1"
+        fi
+        if has_ld_preload 'global'; then
+            remove_ld_preload_override "$1"
+        else
+            flatpak override --user --env=LD_PRELOAD="$hmalloc_path" "$1"
+        fi
+    }
+
+    readonly hmalloc_description="hardened_malloc${best_uarch:+" (µarch $best_uarch)"}"
+
     if [[ -n "$flatpak_id" ]]; then
-        malloc_cmd="$malloc_cmd '$flatpak_id'"
+        # If hardened_malloc isn't applied globally, inform the user
+        if ! has_host_os_access 'global' || ! has_ld_preload 'global'; then
+            echo 'Warning: hardened_malloc is not being applied by default to flatpaks.'
+            echo 'To change this (which is recommended), run:'
+            echo '    ujust harden-flatpak'
+        fi
+        harden_flatpak_app "$flatpak_id"
+        echo "$hmalloc_description applied to flatpak $flatpak_id"
+    else
+        harden_flatpaks_global
+        echo "$hmalloc_description applied to all flatpaks by default."
     fi
-    sh -c "$malloc_cmd"
 
 # Harden Flatpaks further by disabling all permissions by default and rejecting known arbitrary DBus names, applies only to the current user
 flatpak-permissions-lockdown:

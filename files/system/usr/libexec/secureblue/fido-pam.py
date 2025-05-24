@@ -165,3 +165,6 @@ def get_home_directory(username):
         return user_info.pw_dir
     except KeyError:
         return None  # User not found
+
+if __name__ == "__main__":
+    main()

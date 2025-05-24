@@ -266,11 +266,11 @@ dns-selector:
             echo "NOTE: If the resolver does not support DoT/DoQ or DNSSEC, this process will not work."
             echo ""
             echo "Please provide the technical information."
-            read -rp "Please enter the resolver's IP address (e.g. '1.1.1.2'): " resolver_ipv4_address
-            read -rp "Does the resolver provide two distinct IP addresses (e.g. '1.1.1.2' and '1.0.0.2')? [Y/n] " resolver_has_second_ip
+            read -rp "Please enter the resolver's IPv4 address (e.g. '1.1.1.2'): " resolver_ipv4_address
+            read -rp "Does the resolver provide two distinct IPv4 addresses (e.g. '1.1.1.2' and '1.0.0.2')? [Y/n] " resolver_has_second_ip
             resolver_has_second_ip=${resolver_has_second_ip:-y}
             if [[ "$resolver_has_second_ip" == [Yy]* ]]; then
-                read -rp "Please enter the resolver's second IP address: " resolver_ipv4_address_2
+                read -rp "Please enter the resolver's second IPv4 address: " resolver_ipv4_address_2
             fi
             read -rp "Does the resolver support IPv6 (e.g. '2606:4700:4700::1112')? [Y/n] " resolver_supports_ipv6
             resolver_supports_ipv6=${resolver_supports_ipv6:-y}

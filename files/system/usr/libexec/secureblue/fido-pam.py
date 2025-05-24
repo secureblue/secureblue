@@ -34,7 +34,10 @@ import pwd
 
 # Entry point, parse arguements
 def main():
-    
+    if (os.geteuid() != 0):
+        print("This script must be run with root (run0).")
+        exit(1)
+
     print("Before continuing please open a root terminal (via run0) in a seperate tab to potentially restore your old authselect local profile if needed.")
     input("Press Enter to continue...")
 

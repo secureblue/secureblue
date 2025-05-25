@@ -835,7 +835,11 @@ def warn_if_root():
 
 def get_width() -> int:
     """Get the width in columns to be used for reports."""
-    return min(max(80, os.get_terminal_size().columns), 100)
+    try:
+        width = min(max(80, os.get_terminal_size().columns), 100)
+    except OSError:
+        width = 80
+    return width
 
 
 async def main() -> int:

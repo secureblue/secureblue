@@ -357,5 +357,6 @@ dns-selector:
         "DnsOverHttpsTemplates": "$resolver_https_address"
     }
     EOF
+    chmod 644 "$policy_file"
 
     echo "Browser policy set with selected resolver."

@@ -3,9 +3,10 @@ harden-flatpak FLATPAK_APPID="":
     #!/usr/bin/bash
     set -euo pipefail
     flatpak_id="{{ FLATPAK_APPID }}"
-    if [[ -n "$flatpak_id" ]] && ! flatpak list --columns=application | grep -Fqx "$flatpak_id"; then
+    installed_app_ids="$(flatpak list --columns=application --app)"
+    if [[ -n "$flatpak_id" ]] && ! echo "$installed_app_ids" | grep -Fqx "$flatpak_id"; then
         echo "'$flatpak_id' is not the application ID of an installed flatpak."
-        readarray -t matching_ids < <(flatpak list --columns=application --app | grep -Fi "$flatpak_id")
+        readarray -t matching_ids < <(echo "$installed_app_ids" | grep -Fi "$flatpak_id")
         if (( ${#matching_ids[@]} == 0 )); then
             echo "No matching IDs found; exiting."
             exit 1
@@ -13,7 +14,7 @@ harden-flatpak FLATPAK_APPID="":
         echo "Did you mean one of the following? (enter number to select, any letter to cancel)"
         select selected_id in "${matching_ids[@]}"; do
             if [[ -z "$selected_id" ]]; then
-                exit 1;
+                exit 1
             fi
             flatpak_id="$selected_id"
             break

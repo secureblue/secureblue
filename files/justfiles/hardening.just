@@ -2,11 +2,24 @@
 harden-flatpak FLATPAK_APPID="":
     #!/usr/bin/bash
     set -euo pipefail
-    readonly flatpak_id="{{ FLATPAK_APPID }}"
+    flatpak_id="{{ FLATPAK_APPID }}"
     if [[ -n "$flatpak_id" ]] && ! flatpak list --columns=application | grep -Fqx "$flatpak_id"; then
-        echo "Error: '$flatpak_id' is not the application ID of an installed flatpak." >&2
-        exit 1
+        echo "'$flatpak_id' is not the application ID of an installed flatpak."
+        readarray -t matching_ids < <(flatpak list --columns=application --app | grep -Fi "$flatpak_id")
+        if (( ${#matching_ids[@]} == 0 )); then
+            echo "No matching IDs found; exiting."
+            exit 1
+        fi
+        echo "Did you mean one of the following? (enter number to select, any letter to cancel)"
+        select selected_id in "${matching_ids[@]}"; do
+            if [[ -z "$selected_id" ]]; then
+                exit 1;
+            fi
+            flatpak_id="$selected_id"
+            break
+        done
     fi
+    readonly flatpak_id
 
     best_uarch="$(/usr/lib64/ld-linux-x86-64.so.2 --help | grep -F '(supported, searched)' \
         | grep -o 'x86-64-v[[:digit:]]*' | sort -nr | head -n1 || echo '')"

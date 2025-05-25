@@ -781,7 +781,9 @@ async def audit_flatpak_permissions(state):
         return
 
     flatpaks = []
-    for line in command_stdout(*"flatpak list --columns=application,branch".split()).split("\n"):
+    for line in command_stdout(*"flatpak list --app --columns=application,branch".split()).split(
+        "\n"
+    ):
         if not line:
             continue
         name, version = line.split("\t")
@@ -799,7 +801,11 @@ async def audit_flatpak_permissions(state):
         status, warnings, recs = check_flatpak_permissions(
             name, perms, state["bluetooth_loaded"], state["ptrace_allowed"]
         )
-        yield Report(f"Auditing {name} ({version})", status, warnings=warnings, recs=recs)
+        if version == "stable":
+            report_text = f"Auditing {name}"
+        else:
+            report_text = f"Auditing {name} ({version})"
+        yield Report(report_text, status, warnings=warnings, recs=recs)
 
 
 ###############################################################################

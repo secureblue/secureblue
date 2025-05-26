@@ -6,9 +6,10 @@ Framework for system auditing.
 
 import enum
 import inspect
+import json
 
 from collections.abc import Callable, Sequence
-from typing import Any, AsyncGenerator, Generator
+from typing import Any, AsyncGenerator, Generator, Self
 
 
 class AuditError(Exception):
@@ -18,23 +19,30 @@ class AuditError(Exception):
 class Status(enum.Enum):
     """Status of a system check."""
 
-    SUCCESS = enum.auto()
-    WARNING = enum.auto()
-    FAILURE = enum.auto()
-    UNKNOWN = enum.auto()
+    SUCCESS = 0
+    NOTICE = 1
+    WARNING = 2
+    FAILURE = 3
+    UNKNOWN = 4
 
     def to_str_in_color(self) -> str:
         """Colored text representation of the status."""
         match self:
             case Status.SUCCESS:
                 color_code = 32  # green
+            case Status.NOTICE:
+                color_code = 36  # cyan
             case Status.WARNING:
                 color_code = 33  # yellow
             case Status.FAILURE:
                 color_code = 31  # red
             case Status.UNKNOWN:
-                color_code = 36  # cyan
+                color_code = 37  # white
         return f"\x1b[{color_code}m{self.name}\x1b[39m"
+
+    def downgrade_to(self, other: Self) -> Self:
+        """Returns the more severe of the two statuses."""
+        return max(self, other, key=lambda status: status.value)
 
 
 class Report:
@@ -63,8 +71,14 @@ class Report:
         else:
             self.recs = recs
 
-    def __str__(self) -> str:
-        report_str = f"{self.description + '...':<68} [ {self.status.to_str_in_color()} ]"
+    def to_str(self, width: int = 80) -> str:
+        """Represent the report as a string formatted to the given width."""
+        status_tag = f" [ {self.status.to_str_in_color()} ]"
+        desc_width = width - len(self.status.name) - 5
+        gray_start = "\x1b[38;5;241m"
+        reset_color = "\x1b[39m"
+        desc_with_sep = f"{self.description} {gray_start}".ljust(desc_width, "…") + reset_color
+        report_str = desc_with_sep + status_tag
         for warning in self.warnings:
             report_str += f"\n> {warning}"
         return report_str
@@ -152,12 +166,12 @@ class Audit:
         self.checks.append(check)
 
     async def run(
-        self, exclude: list[str] | None = None
+        self, *, exclude: list[str] | None = None, width: int = 80
     ) -> AsyncGenerator[tuple[Check, Exception]]:
         """Runs each stored check, prints their reports, then prints their recommendations."""
         if exclude is None:
             exclude = []
-        print_heading("Audit")
+        print_heading("Audit", width=width)
         if exclude:
             category_word = "category" if len(exclude) == 1 else "categories"
             print(f"Skipping checks in the following {category_word}: {', '.join(exclude)}")
@@ -166,12 +180,12 @@ class Audit:
                 continue
             try:
                 async for report in check.run(self.state):
-                    print(report)
+                    print(report.to_str(width=width))
             except Exception as e:
                 yield check, e
             else:
                 self.recs += check.recs
-        print_heading("Recommendations")
+        print_heading("Recommendations", width=width)
         for rec in self.recs:
             rec_lines = [line.strip() for line in rec.split("\n")]
             for i, line in enumerate(rec_lines):
@@ -180,6 +194,25 @@ class Audit:
                 if line[0] in ["$", "#"]:
                     rec_lines[i] = bold(line)
             print("\n  ".join(rec_lines) + "\n")
+
+    async def run_json(self, exclude: list[str] | None = None) -> AsyncGenerator[str]:
+        """Runs each stored check and prints the results as JSON."""
+        if exclude is None:
+            exclude = []
+        for check in self.checks:
+            if check.category in exclude:
+                continue
+            async for report in check.run(self.state):
+                yield json.dumps(
+                    {
+                        "name": check.name,
+                        "category": check.category,
+                        "description": report.description,
+                        "status": report.status.name.lower(),
+                        "warnings": report.warnings,
+                        "recommendations": report.recs,
+                    }
+                )
 
 
 global_audit = Audit()

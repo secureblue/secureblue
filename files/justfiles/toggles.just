@@ -431,4 +431,3 @@ toggle-mac-randomization:
         echo "MAC randomization enabled."
         systemctl restart NetworkManager
     fi
-

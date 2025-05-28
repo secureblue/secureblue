@@ -724,23 +724,6 @@ def audit_bash_env_lockdown():
 
 
 @audit
-@depends_on("audit_signed_image")
-def audit_wlroot_screenshot(state):
-    """Ensure wlroots screenshot support is not present."""
-    if state["image"] != Image.SERICEA:
-        return
-    if is_rpm_package_installed("xdg-desktop-portal-wlr"):
-        status = FAILURE
-        rec = """wlroots screenshot support is enabled.
-            To disable, run:
-            $ ujust toggle-wlr-screenshot-support"""
-    else:
-        status = SUCCESS
-        rec = None
-    yield Report("Ensuring wlroots screenshot support is not present", status, recs=rec)
-
-
-@audit
 @categorize("flatpak")
 def audit_flatpak_remotes():
     """Audit flatpak remotes."""

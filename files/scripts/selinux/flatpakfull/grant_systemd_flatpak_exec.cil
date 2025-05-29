@@ -1,1 +1,3 @@
+
+
 (allow init_t flatpak_exec_t (file (execute execute_no_trans open read map)))

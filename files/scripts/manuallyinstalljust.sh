@@ -15,9 +15,9 @@ set -oue pipefail
 # distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and limitations under the License.
 
-VER=$(basename $(curl -Ls -o /dev/null -w %{url_effective} https://github.com/casey/just/releases/latest))
-curl -fLs --create-dirs https://github.com/casey/just/releases/download/${VER}/just-${VER}-x86_64-unknown-linux-musl.tar.gz -o /tmp/just-${VER}-x86_64-unknown-linux-musl.tar.gz
-curl -fLs --create-dirs https://github.com/casey/just/releases/download/${VER}/SHA256SUMS -o /tmp/SHA256SUMS
+VER="$(basename $(curl -Ls -o /dev/null -w '%{url_effective}' https://github.com/casey/just/releases/latest))"
+curl -fLs --create-dirs "https://github.com/casey/just/releases/download/${VER}/just-${VER}-x86_64-unknown-linux-musl.tar.gz" -o "/tmp/just-${VER}-x86_64-unknown-linux-musl.tar.gz"
+curl -fLs --create-dirs "https://github.com/casey/just/releases/download/${VER}/SHA256SUMS" -o /tmp/SHA256SUMS
 cd /tmp
 if ! sha256sum -c SHA256SUMS --ignore-missing
 then
@@ -25,7 +25,7 @@ then
     exit 1
 fi
 cd -
-mkdir -p /tmp/just && tar -xzf /tmp/just-${VER}-x86_64-unknown-linux-musl.tar.gz -C /tmp/just/
+mkdir -p /tmp/just && tar -xzf "/tmp/just-${VER}-x86_64-unknown-linux-musl.tar.gz" -C /tmp/just/
 cp /tmp/just/just /usr/bin/just && chmod 0755 /usr/bin/just
 cp /tmp/just/completions/just.bash /usr/share/bash-completion/completions/just
 rm /tmp/just-x86_64-unknown-linux-musl.tar.gz

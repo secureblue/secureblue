@@ -340,6 +340,10 @@ dns-selector:
     EOF
     fi
 
+    if [[ -f "$resolved_conf" ]]; then
+        chmod 644 "$resolved_conf"
+    fi
+
     systemctl restart systemd-resolved
 
     echo "Configation for resolved set and service restarted."
@@ -353,5 +357,6 @@ dns-selector:
         "DnsOverHttpsTemplates": "$resolver_https_address"
     }
     EOF
+    chmod 644 "$policy_file"
 
     echo "Browser policy set with selected resolver."

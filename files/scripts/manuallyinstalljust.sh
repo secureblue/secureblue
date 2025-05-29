@@ -28,5 +28,5 @@ cd -
 mkdir -p /tmp/just && tar -xzf "/tmp/just-${VER}-x86_64-unknown-linux-musl.tar.gz" -C /tmp/just/
 cp /tmp/just/just /usr/bin/just && chmod 0755 /usr/bin/just
 cp /tmp/just/completions/just.bash /usr/share/bash-completion/completions/just
-rm /tmp/just-x86_64-unknown-linux-musl.tar.gz
+rm "/tmp/just-${VER}-x86_64-unknown-linux-musl.tar.gz"
 rm -r /tmp/just/

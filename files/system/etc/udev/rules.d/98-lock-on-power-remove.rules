@@ -1,0 +1,2 @@
+# Lock sessions when AC power is unplugged
+ACTION=="change", SUBSYSTEM=="power_supply", ENV{POWER_SUPPLY_ONLINE}=="0", RUN+="/usr/libexec/secureblue/lockonacdisconnect.sh"

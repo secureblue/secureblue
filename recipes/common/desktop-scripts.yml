@@ -10,3 +10,4 @@ scripts:
   - disablenfsdaemons.sh
   - disablesssd.sh
   - disableunconfinedrootfulservices.sh
+  - lockonacdisconnect.sh

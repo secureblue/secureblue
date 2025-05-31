@@ -19,22 +19,22 @@ class AuditError(Exception):
 class Status(enum.Enum):
     """Status of a system check."""
 
-    SUCCESS = 0
-    NOTICE = 1
-    WARNING = 2
-    FAILURE = 3
+    PASS = 0
+    INFO = 1
+    WARN = 2
+    FAIL = 3
     UNKNOWN = 4
 
     def to_str_in_color(self) -> str:
         """Colored text representation of the status."""
         match self:
-            case Status.SUCCESS:
+            case Status.PASS:
                 color_code = 32  # green
-            case Status.NOTICE:
+            case Status.INFO:
                 color_code = 36  # cyan
-            case Status.WARNING:
+            case Status.WARN:
                 color_code = 33  # yellow
-            case Status.FAILURE:
+            case Status.FAIL:
                 color_code = 31  # red
             case Status.UNKNOWN:
                 color_code = 37  # white

@@ -65,12 +65,6 @@ harden-flatpak FLATPAK_APPID="":
     readonly hmalloc_description="hardened_malloc${best_uarch:+" (µarch $best_uarch)"}"
 
     if [[ -n "$flatpak_id" ]]; then
-        # If hardened_malloc isn't applied globally, inform the user
-        if ! has_host_os_access 'global' || ! has_ld_preload 'global'; then
-            echo 'Warning: hardened_malloc is not being applied by default to flatpaks.'
-            echo 'To change this (which is recommended), run:'
-            echo '    ujust harden-flatpak'
-        fi
         harden_flatpak_app "$flatpak_id"
         echo "$hmalloc_description applied to flatpak $flatpak_id"
     else

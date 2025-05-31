@@ -9,10 +9,10 @@ from typing import Final
 
 from auditor import Status
 
-SUCCESS: Final = Status.SUCCESS
-NOTICE: Final = Status.NOTICE
-WARNING: Final = Status.WARNING
-FAILURE: Final = Status.FAILURE
+PASS: Final = Status.PASS
+INFO: Final = Status.INFO
+WARN: Final = Status.WARN
+FAIL: Final = Status.FAIL
 
 
 @dataclass
@@ -145,39 +145,39 @@ class PermissionCheck:
 
 
 FLATPAK_PERMISSION_CHECKS: list[PermissionCheck] = [
-    PermissionCheck("shared", "network", NOTICE, "has network access"),
-    PermissionCheck("shared", "ipc", NOTICE, "has inter-process communications access"),
-    PermissionCheck("sockets", "x11", FAILURE, "has X11 access"),
-    PermissionCheck("sockets", "pulseaudio", WARNING, "has access to the PulseAudio socket"),
+    PermissionCheck("shared", "network", INFO, "has network access"),
+    PermissionCheck("shared", "ipc", INFO, "has inter-process communications access"),
+    PermissionCheck("sockets", "x11", FAIL, "has X11 access"),
+    PermissionCheck("sockets", "pulseaudio", WARN, "has access to the PulseAudio socket"),
     PermissionCheck(
         "sockets",
         "session-bus",
-        FAILURE,
+        FAIL,
         "has access to the D-Bus session bus",
         note="This grants access to audio and microphones.",
     ),
-    PermissionCheck("sockets", "system-bus", FAILURE, "has access to the D-Bus system bus"),
-    PermissionCheck("sockets", "ssh-auth", WARNING, "has access to the SSH agent"),
+    PermissionCheck("sockets", "system-bus", FAIL, "has access to the D-Bus system bus"),
+    PermissionCheck("sockets", "ssh-auth", WARN, "has access to the SSH agent"),
     PermissionCheck(
         "devices",
         "all",
-        FAILURE,
+        FAIL,
         note="This grants access to input devices, GPUs, raw USB, and virtualization.",
         sandbox_escape=True,
         endnote="If GPU access is required, allow device=dri instead.",
     ),
-    PermissionCheck("devices", "input", NOTICE, note="This grants access to input devices."),
+    PermissionCheck("devices", "input", INFO, note="This grants access to input devices."),
     PermissionCheck(
-        "devices", "kvm", WARNING, note="This grants access to kernel-based virtualization."
+        "devices", "kvm", WARN, note="This grants access to kernel-based virtualization."
     ),
     PermissionCheck(
-        "devices", "shm", FAILURE, note="This grants access to shared memory.", sandbox_escape=True
+        "devices", "shm", FAIL, note="This grants access to shared memory.", sandbox_escape=True
     ),
     PermissionCheck(
-        "devices", "usb", WARNING, note="This grants raw USB device access.", sandbox_escape=True
+        "devices", "usb", WARN, note="This grants raw USB device access.", sandbox_escape=True
     ),
-    PermissionCheck("features", "bluetooth", WARNING, "has bluetooth access"),
-    PermissionCheck("features", "devel", WARNING, "has ptrace access"),
+    PermissionCheck("features", "bluetooth", WARN, "has bluetooth access"),
+    PermissionCheck("features", "devel", WARN, "has ptrace access"),
 ]
 
 
@@ -187,7 +187,7 @@ def check_flatpak_permissions(
     """Check permissions for a single flatpak."""
     warnings = []
     recs = []
-    status = SUCCESS
+    status = PASS
     arbitrary_permissions = False
 
     for check in FLATPAK_PERMISSION_CHECKS:
@@ -220,23 +220,23 @@ def check_flatpak_permissions(
 
         dangerous_dirs = {
             "host": {
-                "status": FAILURE,
+                "status": FAIL,
                 "access": "all system files",
             },
             "home": {
-                "status": FAILURE,
+                "status": FAIL,
                 "access": "all user files",
             },
             "xdg-config": {
-                "status": FAILURE,
+                "status": FAIL,
                 "access": "other applications' configuration files",
             },
             "xdg-cache": {
-                "status": FAILURE,
+                "status": FAIL,
                 "access": "other applications' cache files",
             },
             "xdg-data": {
-                "status": FAILURE,
+                "status": FAIL,
                 "access": "other applications' data files",
             },
         }
@@ -268,7 +268,7 @@ def check_flatpak_permissions(
             )
 
     if filesystems is None or ("host-os" not in filesystems_ro and "host-os" not in filesystems_rw):
-        status = status.downgrade_to(WARNING)
+        status = status.downgrade_to(WARN)
         warnings.append(f"{name} is missing host-os:ro permission")
         recs.append(
             f"""{name} is missing host-os:ro permission.
@@ -295,13 +295,13 @@ def check_flatpak_permissions(
     if "libhardened_malloc.so" not in ld_preload_files:
         warnings.append(f"{name} is not requesting hardened_malloc")
         if "libhardened_malloc-light.so" in ld_preload_files:
-            status = status.downgrade_to(NOTICE)
+            status = status.downgrade_to(INFO)
             warnings.append(f"{name} is requesting hardened_malloc-light")
         elif "libhardened_malloc-pkey.so" in ld_preload_files:
-            status = status.downgrade_to(NOTICE)
+            status = status.downgrade_to(INFO)
             warnings.append(f"{name} is requesting hardened_malloc-pkey")
         else:
-            status = status.downgrade_to(WARNING)
+            status = status.downgrade_to(WARN)
         recs.append(
             f"""{name} is not requesting hardened_malloc.
                 To enable it, run:
@@ -309,7 +309,7 @@ def check_flatpak_permissions(
         )
 
     if arbitrary_permissions:
-        status = status.downgrade_to(FAILURE)
+        status = status.downgrade_to(FAIL)
         warnings.append(f"{name} can acquire arbitrary permissions")
 
     return status, warnings, recs

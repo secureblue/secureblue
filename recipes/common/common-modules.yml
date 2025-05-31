@@ -9,6 +9,7 @@ modules:
     - from-file: common/common-packages.yml
     - type: script
       scripts:
+        - manuallyinstalljust.sh
         - hardenlogindefs.sh
     - type: files
       files:

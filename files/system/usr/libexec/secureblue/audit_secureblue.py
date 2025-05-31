@@ -15,6 +15,7 @@ import os.path
 import re
 import signal
 import sys
+import textwrap
 import traceback
 
 # All subprocess calls we make have trusted inputs and do not use shell=True.
@@ -660,7 +661,7 @@ def audit_hardened_malloc():
         else:
             status = FAIL
             warnings.append("hardened_malloc not set")
-    if status == SUCCESS:
+    if status == PASS:
         rec = None
     else:
         rec = """/etc/ld.so.preload has been modified.
@@ -825,11 +826,61 @@ def get_width() -> int:
     return width
 
 
+def format_legend_entry(status: Status, description: str, width: int = 80) -> str:
+    """Format legend entry"""
+    key_str = f"[{status.to_str_in_color()}]: "
+    key_str_width = len(status.name) + 4
+    description = re.sub(r"\s+", " ", description.strip())
+    lines = textwrap.wrap(description, width=width - key_str_width)
+    if not lines:
+        return f"{key_str}\n"
+    entry = f"{key_str}{lines[0]}\n"
+    for line in lines[1:]:
+        entry += f"{' ' * key_str_width}{line}\n"
+    return entry
+
+
+def get_legend(width: int = 80) -> str:
+    """Get legend to be printed with --help option."""
+    legend = "The following status indicators accompany checks run by the audit script:\n\n"
+    status_descriptions: dict[Status, str] = {
+        FAIL: "check failed - the configuration may be less secure.",
+        WARN: "partial failure, or less significant issue detected.",
+        PASS: "check passed - no problems detected.",
+        UNKNOWN: "unable to perform check (usually due to a file permission issue).",
+    }
+    for status, desc in status_descriptions.items():
+        legend += format_legend_entry(status, desc, width)
+    legend += "\nFor flatpak checks, the status indicators have more specific meanings:\n\n"
+    flatpak_status_descriptions: dict[Status, str] = {
+        FAIL: """app has permissions that can be used as sandbox escapes, allow it to modify
+            its own permissions, or otherwise grant very broad access to the system (e.g. access
+            to certain directories, direct D-Bus access, X11).""",
+        WARN: """app has permissions that have some sandbox escape potential or otherwise
+            weaken security (e.g. PulseAudio, Bluetooth, not using hardened_malloc).""",
+        INFO: """no potential sandbox escapes detected but some permissions could increase
+            attack surface or have privacy implications (e.g. network access).""",
+        PASS: "no app permissions flagged (however, not all permissions are audited).",
+    }
+    for status, desc in flatpak_status_descriptions.items():
+        legend += format_legend_entry(status, desc, width)
+    legend += "\n" + textwrap.fill(textwrap.dedent("""
+        Note that some flatpak apps require broad permissions to function. Permissions being
+        flagged by the audit script do not necessarily mean that action should be taken.
+    """.strip("\n")), width=width)
+    return legend
+
+
 async def main() -> int:
     """Main entry point. Parse command-line arguments and run audit."""
     signal.signal(signal.SIGINT, handle_sigint)
     warn_if_root()
-    parser = argparse.ArgumentParser()
+    parser = argparse.ArgumentParser(
+        prog="ujust audit-secureblue",
+        formatter_class=argparse.RawDescriptionHelpFormatter,
+        description="Audit secureblue configuration for security",
+        epilog=get_legend(),
+    )
     categories = ",".join(sorted(global_audit.categories))
     parser.add_argument("-s", "--skip", default="", help=f"skip categories ({categories})")
     parser.add_argument("-j", "--json", action="store_true", help="display output as JSON")

@@ -3,6 +3,9 @@ modules:
     files:  
       - source: system/sericea
         destination: /
+  - type: script
+    scripts:
+      - disablewlrportals.sh
   - type: rpm-ostree
     remove:
       - fedora-flathub-remote

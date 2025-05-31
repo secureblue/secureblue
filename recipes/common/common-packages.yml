@@ -6,7 +6,6 @@ install:
 
   # missing upstream
   - openssl
-  - just
   - patch
   - p7zip
   - distrobox

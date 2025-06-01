@@ -405,7 +405,7 @@ install-vpn:
                 REPO_NAME="mullvad"
 
                 if util_checkpackage "$PACKAGE_NAME"; then
-                    echo 'Error: The Mullvad VPN is already installed.'
+                    echo 'Error: Mullvad VPN is already installed.'
                     echo 'Aborting...'
                     exit 1
                 fi

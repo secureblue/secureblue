@@ -3,29 +3,21 @@ harden-flatpak FLATPAK_APPID="":
     #!/usr/bin/bash
     set -euo pipefail
     flatpak_id="{{ FLATPAK_APPID }}"
-    installed_app_ids="$(flatpak list --columns=application --app)"
-    if [[ -n "$flatpak_id" ]] && ! echo "$installed_app_ids" | grep -Fqx "$flatpak_id"; then
-        echo "'$flatpak_id' is not the application ID of an installed flatpak."
-        readarray -t matching_ids < <(echo "$installed_app_ids" | grep -Fi "$flatpak_id")
-        if (( ${#matching_ids[@]} == 0 )); then
-            echo "No matching IDs found; exiting."
-            exit 1
-        fi
-        echo "Did you mean one of the following? (enter number to select, any letter to cancel)"
-        select selected_id in "${matching_ids[@]}"; do
-            if [[ -z "$selected_id" ]]; then
-                exit 1
-            fi
-            flatpak_id="$selected_id"
-            break
-        done
-    fi
-    readonly flatpak_id
 
+    # Determine best microarchitecture to use for hardened_malloc
     best_uarch="$(/usr/lib64/ld-linux-x86-64.so.2 --help | grep -F '(supported, searched)' \
         | grep -o 'x86-64-v[[:digit:]]*' | sort -nr | head -n1 || echo '')"
     readonly best_uarch
     readonly hmalloc_path="/var/run/host/usr/lib64/${best_uarch:+"glibc-hwcaps/$best_uarch/"}libhardened_malloc.so"
+    readonly hmalloc_description="hardened_malloc${best_uarch:+" (µarch $best_uarch)"}"
+
+    if [[ -z "$flatpak_id" ]]; then
+        flatpak override --user --filesystem=host-os:ro
+        flatpak override --user --env=LD_PRELOAD="$hmalloc_path"
+        echo "$hmalloc_description applied to all flatpaks by default."
+        exit
+    fi
+
     readonly override_dir="$HOME/.local/share/flatpak/overrides"
 
     has_host_os_access() {
@@ -44,11 +36,6 @@ harden-flatpak FLATPAK_APPID="":
         sed -i '/^LD_PRELOAD=/d' "$override_dir/$1"
     }
 
-    harden_flatpaks_global() {
-        flatpak override --user --filesystem=host-os:ro
-        flatpak override --user --env=LD_PRELOAD="$hmalloc_path"
-    }
-
     harden_flatpak_app() {
         if has_host_os_access 'global'; then
             remove_no_host_os "$1"
@@ -62,15 +49,26 @@ harden-flatpak FLATPAK_APPID="":
         fi
     }
 
-    readonly hmalloc_description="hardened_malloc${best_uarch:+" (µarch $best_uarch)"}"
-
-    if [[ -n "$flatpak_id" ]]; then
-        harden_flatpak_app "$flatpak_id"
-        echo "$hmalloc_description applied to flatpak $flatpak_id"
-    else
-        harden_flatpaks_global
-        echo "$hmalloc_description applied to all flatpaks by default."
+    installed_app_ids="$(flatpak list --columns=application --app)"
+    if ! echo "$installed_app_ids" | grep -Fqx "$flatpak_id"; then
+        echo "'$flatpak_id' is not the application ID of an installed flatpak."
+        readarray -t matching_ids < <(echo "$installed_app_ids" | grep -Fi "$flatpak_id")
+        if (( ${#matching_ids[@]} == 0 )); then
+            echo "No matching IDs found; exiting."
+            exit 1
+        fi
+        echo "Did you mean one of the following? (enter number to select, any letter to cancel)"
+        select selected_id in "${matching_ids[@]}"; do
+            if [[ -z "$selected_id" ]]; then
+                exit 1
+            fi
+            flatpak_id="$selected_id"
+            break
+        done
     fi
+
+    harden_flatpak_app "$flatpak_id"
+    echo "$hmalloc_description applied to flatpak $flatpak_id"
 
 # Harden Flatpaks further by disabling all permissions by default and rejecting known arbitrary DBus names, applies only to the current user
 flatpak-permissions-lockdown:

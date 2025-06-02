@@ -1,9 +1,17 @@
 name: ruff
-on: [push, pull_request]
+on:
+  push:
+    paths:
+      - '**.py'
+      - 'ruff.toml'
+  pull_request:
+    paths:
+      - '**.py'
+      - 'ruff.toml'
 jobs:
   ruff:
     name: Ruff (Python linter)
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683  # v4.2.2
       - name: Install Python
@@ -16,3 +24,5 @@ jobs:
           pip install ruff
       - name: Run Ruff
         run: ruff check --output-format=github .
+      - name: Check code formatting
+        run: ruff format --diff

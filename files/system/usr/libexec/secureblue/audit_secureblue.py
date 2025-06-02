@@ -876,10 +876,15 @@ def get_legend(width: int = 80) -> str:
     }
     for status, desc in flatpak_status_descriptions.items():
         legend += format_legend_entry(status, desc, width)
-    legend += "\n" + textwrap.fill(textwrap.dedent("""
-        Note that some flatpak apps require broad permissions to function. Permissions being
-        flagged by the audit script do not necessarily mean that action should be taken.
-    """.strip("\n")), width=width)
+    legend += "\n" + textwrap.fill(
+        textwrap.dedent(
+            """\
+            Note that some flatpak apps require broad permissions to function. Permissions being
+            flagged by the audit script do not necessarily mean that action should be taken.
+            """
+        ),
+        width=width,
+    )
     return legend
 
 

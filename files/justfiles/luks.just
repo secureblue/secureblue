@@ -1,4 +1,5 @@
 # vim: set ft=make :
+
 # Copyright 2025 Universal Blue
 # Copyright 2025 The Secureblue Authors
 #

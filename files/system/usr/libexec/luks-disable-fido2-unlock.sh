@@ -19,13 +19,13 @@ set -eou pipefail
 
 echo "WARNING this script will remove ALL currently configured fido2 luks unlock slots."
 echo ""
-echo "This script utilizes systemd-cryptenroll for removing fido2 auto-unlock. You can review systemd-cryptenroll's manpage for more information." \
-"This will modify your system and disable fido2 auto-unlock of your LUKS partition! This script is designed to work with it's corresponding secureblue" \
+echo "This script utilizes systemd-cryptenroll for removing fido2 unlock. You can review systemd-cryptenroll's manpage for more information." \
+"This will modify your system and disable fido2 unlock of your LUKS partition! This script is designed to work with it's corresponding secureblue" \
 "fido2 enable script. If you manually enabled fido2 unlock, you may need to manually edit /etc/crypttab or restore a known good backup you may have created." 
 echo ""
 echo "INFO if no other nonfido2 slot is currently configured, script will fail. This is a safety precaution systemd-cryptenroll implements."
 echo "WARNING if you have not added an additional method, the recovery key will be the only avaliable unlock method after this script is run"
-read -p "Are you sure are good with this and want to disable fido2 auto-unlock? (y/N): " -n 1 -r
+read -p "Are you sure are good with this and want to disable fido2 unlock? (y/N): " -n 1 -r
 echo
 if [[ ! $REPLY =~ ^[Yy]$ ]]; then
   [[ "$0" = "${BASH_SOURCE[0]}" ]] && exit 1 || return 1 # handle exits from shell or function but don't exit interactive shell
@@ -84,4 +84,4 @@ else
   echo "No systemd-fido2 found in LUKS to wipe"
 fi
 
-echo "FIDO2 auto-unlock disabled..."
+echo "FIDO2 unlock disabled..."

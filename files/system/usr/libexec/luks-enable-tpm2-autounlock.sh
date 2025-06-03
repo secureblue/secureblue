@@ -13,7 +13,7 @@
 # distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and limitations under the License.
 
-## setup auto-unlock LUKS2 encrypted root on Fedora/Silverblue/maybe others
+## setup unlock LUKS2 encrypted root on Fedora/Silverblue/maybe others
 set -eou pipefail
 
 
@@ -24,12 +24,12 @@ echo "All AMD Zen2 and Zen3 Processors are known to be affected!"
 echo "All AMD Zen1 processors are also likely affected, with Zen4 unknown!"
 echo "If you have an AMD CPU, you likely shouldn't use this!"
 echo "----------------------------------------------------------------------------"
-echo "This script uses systemd-cryptenroll to enable TPM2 auto-unlock."
+echo "This script uses systemd-cryptenroll to enable TPM2 unlock."
 echo "You can review systemd-cryptenroll's manpage for more information."
 echo "This script will modify your system."
-echo "It will enable TPM2 auto-unlock of your LUKS partition for your root device!"
+echo "It will enable TPM2 unlock of your LUKS partition for your root device!"
 echo "It will bind to PCR 7 and 14 which is tied to your secureboot and moklist state."
-read -p "Are you sure are good with this and want to enable TPM2 auto-unlock? (y/N): " -n 1 -r
+read -p "Are you sure are good with this and want to enable TPM2 unlock? (y/N): " -n 1 -r
 echo
 if [[ ! $REPLY =~ ^[Yy]$ ]]; then
   [[ "$0" = "${BASH_SOURCE[0]}" ]] && exit 1 || return 1 # handle exits from shell or function but don't exit interactive shell
@@ -63,13 +63,6 @@ else
   exit 1
 fi
 
-SET_PIN='no'
-read -p "Would you like to set a PIN? (y/N): " -n 1 -r
-echo
-if [[ $REPLY =~ ^[Yy]$ ]]; then
-  SET_PIN='yes'
-fi
-
 # Specify Crypt Disk by-uuid
 CRYPT_DISK="/dev/disk/by-uuid/$DISK_UUID"
 
@@ -99,7 +92,7 @@ fi
 
 ## Run crypt enroll
 echo "Enrolling TPM2 unlock requires your existing LUKS2 unlock password"
-systemd-cryptenroll --tpm2-device=auto --tpm2-pcrs=7+14 --tpm2-with-pin="$SET_PIN" "$CRYPT_DISK"
+systemd-cryptenroll --tpm2-device=auto --tpm2-pcrs=7+14 --tpm2-with-pin=yes "$CRYPT_DISK"
 
 # Sets the new tpm keyslot as preferred if it's the only one currently configured. (Users with more than one configured are presumed advanced and capable of their own priority management. Not certain how or why you'd have more than one tpm2 keyslot regardless.)
 if [ "$(echo "$CRYPT_DISK_INFO" | grep -c "systemd-tpm2")" -eq "1" ]; then
@@ -122,7 +115,7 @@ fi
 
 ## Now reboot
 echo
-echo "TPM2 LUKS auto-unlock configured. Reboot now."
+echo "TPM2 LUKS unlock configured. Reboot now."
 
 
 # References:

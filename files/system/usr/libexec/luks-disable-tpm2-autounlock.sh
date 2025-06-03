@@ -13,15 +13,15 @@
 # distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and limitations under the License.
 
-## disable auto-unlock LUKS2 encrypted root on Fedora/Silverblue/maybe others
+## disable unlock LUKS2 encrypted root on Fedora/Silverblue/maybe others
 set -euo pipefail
 
 [ "$UID" -eq 0 ] || { echo "This script must be run as root."; exit 1;}
 
-echo "This script utilizes systemd-cryptenroll for removing tpm2 auto-unlock."
+echo "This script utilizes systemd-cryptenroll for removing tpm2 unlock."
 echo "You can review systemd-cryptenroll's manpage for more information."
-echo "This will modify your system and disable TPM2 auto-unlock of your LUKS partition!"
-read -p "Are you sure are good with this and want to disable TPM2 auto-unlock? (y/N): " -n 1 -r
+echo "This will modify your system and disable TPM2 unlock of your LUKS partition!"
+read -p "Are you sure are good with this and want to disable TPM2 unlock? (y/N): " -n 1 -r
 echo
 if [[ ! $REPLY =~ ^[Yy]$ ]]; then
   [[ "$0" = "${BASH_SOURCE[0]}" ]] && exit 1 || return 1 # handle exits from shell or function but don't exit interactive shell
@@ -92,4 +92,4 @@ else
   echo "TPM2 is not configured in 'rpm-ostree initramfs'..."
 fi
 
-echo "TPM2 auto-unlock disabled..."
+echo "TPM2 unlock disabled..."

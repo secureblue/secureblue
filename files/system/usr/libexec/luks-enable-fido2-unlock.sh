@@ -20,9 +20,9 @@ set -eou pipefail
 echo "WARNING LUKS drive encryption must have been enabled at install time for this script to run" 
 echo "ENSURE you save the backup key this script creates at /var/home/$SUDO_USER/luks_backup_key.txt ON ANOTHER COMPUTER"
 echo ""
-echo "This script uses systemd-cryptenroll to enable FIDO2 auto-unlock. You can review systemd-cryptenroll's manpage for more information." \
+echo "This script uses systemd-cryptenroll to enable FIDO2 unlock. You can review systemd-cryptenroll's manpage for more information." \
 "If you previously used TPM luks unlocking, ensure you run 'ujust remove-luks-tpm-unlock' AFTER running this script." \
-"Otherwise, the system will likely default to TPM auto-unlocking on boot."
+"Otherwise, the system will likely default to TPM unlocking on boot."
 echo ""
 echo "If you are using usbguard, plug in your hardware key, run 'usbguard list-devices'. Identify which number on the left is" \
 "your device then run 'usbguard allow-device <number> -p'. You must exit this script with ctrl-C and do this now, BEFORE proceeding"
@@ -30,7 +30,7 @@ echo ""
 echo "WARNING this script is designed not to, but could clear stored secrets on your fido2 key. Ensure you have backup options for" \
 "any sites you may use FIDO2 based authentication on this key."
 echo ""
-read -p "Are you sure are good with this and want to enable FIDO2 auto-unlock? (y/N): " -n 1 -r
+read -p "Are you sure are good with this and want to enable FIDO2 unlock? (y/N): " -n 1 -r
 echo
 if [[ ! $REPLY =~ ^[Yy]$ ]]; then
   [[ "$0" = "${BASH_SOURCE[0]}" ]] && exit 1 || return 1 # handle exits from shell or function but don't exit interactive shell

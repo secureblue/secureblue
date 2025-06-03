@@ -1,7 +1,5 @@
 #!/usr/bin/env bash
 
-set -oue pipefail
-
 # Copyright 2025 Universal Blue
 # Copyright 2025 The Secureblue Authors
 #
@@ -14,6 +12,8 @@ set -oue pipefail
 # Unless required by applicable law or agreed to in writing, software distributed under the License is
 # distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and limitations under the License.
+
+set -oue pipefail
 
 IMAGE_PRETTY_NAME="secureblue"
 IMAGE_LIKE="fedora"

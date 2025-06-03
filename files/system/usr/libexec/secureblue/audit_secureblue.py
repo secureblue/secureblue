@@ -1,5 +1,17 @@
 #!/usr/bin/python3
 
+# Copyright 2025 The Secureblue Authors
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software distributed under the License is
+# distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and limitations under the License.
+
 """
 Auditing script for secureblue. See https://secureblue.dev/ for more info.
 """
@@ -864,10 +876,15 @@ def get_legend(width: int = 80) -> str:
     }
     for status, desc in flatpak_status_descriptions.items():
         legend += format_legend_entry(status, desc, width)
-    legend += "\n" + textwrap.fill(textwrap.dedent("""
-        Note that some flatpak apps require broad permissions to function. Permissions being
-        flagged by the audit script do not necessarily mean that action should be taken.
-    """.strip("\n")), width=width)
+    legend += "\n" + textwrap.fill(
+        textwrap.dedent(
+            """\
+            Note that some flatpak apps require broad permissions to function. Permissions being
+            flagged by the audit script do not necessarily mean that action should be taken.
+            """
+        ),
+        width=width,
+    )
     return legend
 
 

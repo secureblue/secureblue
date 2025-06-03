@@ -4,7 +4,6 @@ title: "[BUG] Issue with ..."
 labels: []
 assignees: []
 
-
 body:
   - type: input
     id: description

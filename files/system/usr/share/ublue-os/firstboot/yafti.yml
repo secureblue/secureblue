@@ -96,4 +96,4 @@ screens:
         - "Post-install Instructions":
             run: /usr/bin/xdg-open https://secureblue.dev/install#post-install
       description: |
-        Complete your secureblue installation by following the Post-install README.
+        Complete your secureblue installation by following the Post-install Instructions.

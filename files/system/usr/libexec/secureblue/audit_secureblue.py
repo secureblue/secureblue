@@ -144,7 +144,7 @@ def audit_kargs():
     warnings = []
     rec = None
 
-    kargs_current = command_stdout("rpm-ostree", "kargs").split()
+    kargs_current = frozenset(command_stdout("rpm-ostree", "kargs").split())
     kargs_expected = [
         "init_on_alloc=1",
         "init_on_free=1",

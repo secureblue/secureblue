@@ -145,7 +145,7 @@ def audit_kargs():
     rec = None
 
     kargs_current = frozenset(command_stdout("rpm-ostree", "kargs").split())
-    kargs_expected = [
+    kargs_expected = (
         "init_on_alloc=1",
         "init_on_free=1",
         "intel_iommu=on",
@@ -168,11 +168,11 @@ def audit_kargs():
         "spec_store_bypass_disable=on",
         "spectre_v2=on",
         "vsyscall=none",
-    ]
-    kargs_missing = [karg for karg in kargs_expected if karg not in kargs_current]
-    for karg in kargs_missing:
-        status = status.downgrade_to(FAIL)
-        warnings.append(f"Missing kernel argument: {karg}")
+    )
+    for karg in kargs_expected:
+        if karg not in kargs_current:
+            status = status.downgrade_to(FAIL)
+            warnings.append(f"Missing kernel argument: {karg}")
 
     karg_32bit = "ia32_emulation=0"
     if karg_32bit not in kargs_current:
@@ -184,17 +184,17 @@ def audit_kargs():
         status = status.downgrade_to(WARN)
         warnings.append(f"Missing kernel argument: {karg_nosmt} (force-disable SMT)")
 
-    kargs_expected_warn = [
+    kargs_expected_unstable = (
         "amd_iommu=force_isolation",
         "debugfs=off",
         "efi=disable_early_pci_dma",
         "gather_data_sampling=force",
         "oops=panic",
-    ]
-    kargs_missing_warn = [karg for karg in kargs_expected_warn if karg not in kargs_current]
-    for karg in kargs_missing_warn:
-        status = status.downgrade_to(WARN)
-        warnings.append(f"Missing kernel argument (unstable): {karg}")
+    )
+    for karg in kargs_expected_unstable:
+        if karg not in kargs_current:
+            status = status.downgrade_to(WARN)
+            warnings.append(f"Missing kernel argument (unstable): {karg}")
 
     if status != PASS:
         rec = """To set hardened kernel arguments, run:

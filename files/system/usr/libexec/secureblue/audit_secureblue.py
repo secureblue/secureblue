@@ -138,11 +138,14 @@ class Image(enum.Enum):
 
 
 @audit
-@categorize("kargs")
 def audit_kargs():
     """Check for hardened kernel arguments."""
-    kargs_current = command_stdout("rpm-ostree", "kargs").split()
-    kargs_expected = [
+    status = PASS
+    warnings = []
+    rec = None
+
+    kargs_current = frozenset(command_stdout("rpm-ostree", "kargs").split())
+    kargs_expected = (
         "init_on_alloc=1",
         "init_on_free=1",
         "intel_iommu=on",
@@ -165,22 +168,39 @@ def audit_kargs():
         "spec_store_bypass_disable=on",
         "spectre_v2=on",
         "vsyscall=none",
-    ]
+    )
     for karg in kargs_expected:
-        status = PASS if karg in kargs_current else FAIL
-        yield Report(f"Checking for {karg} karg", status)
-    kargs_expected_warn = [
+        if karg not in kargs_current:
+            status = status.downgrade_to(FAIL)
+            warnings.append(f"Missing kernel argument: {karg}")
+
+    karg_32bit = "ia32_emulation=0"
+    if karg_32bit not in kargs_current:
+        status = status.downgrade_to(WARN)
+        warnings.append(f"Missing kernel argument: {karg_32bit} (32-bit support)")
+
+    karg_nosmt = "nosmt=force"
+    if karg_nosmt not in kargs_current:
+        status = status.downgrade_to(WARN)
+        warnings.append(f"Missing kernel argument: {karg_nosmt} (force-disable SMT)")
+
+    kargs_expected_unstable = (
         "amd_iommu=force_isolation",
         "debugfs=off",
         "efi=disable_early_pci_dma",
         "gather_data_sampling=force",
-        "ia32_emulation=0",
-        "nosmt=force",
         "oops=panic",
-    ]
-    for karg in kargs_expected_warn:
-        status = PASS if karg in kargs_current else WARN
-        yield Report(f"Checking for {karg} karg", status)
+    )
+    for karg in kargs_expected_unstable:
+        if karg not in kargs_current:
+            status = status.downgrade_to(WARN)
+            warnings.append(f"Missing kernel argument (unstable): {karg}")
+
+    if status != PASS:
+        rec = """To set hardened kernel arguments, run:
+            $ ujust set-kargs-hardening"""
+
+    yield Report("Checking for hardened kernel arguments", status, warnings=warnings, recs=rec)
 
 
 def validate_sysctl(sysctl: str, actual: str, expected: str) -> bool:

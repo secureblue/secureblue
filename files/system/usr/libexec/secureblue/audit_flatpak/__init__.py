@@ -113,7 +113,7 @@ def parse_fs_permission(perm: str) -> tuple[str, bool, bool, bool]:
     return path, readonly, negated, is_alias
 
 
-FLATPAK_OVERRIDE_OPTIONS: dict[str, tuple[str, str]] = {
+FLATPAK_OVERRIDE_OPTIONS: Final[dict[str, tuple[str, str]]] = {
     "shared": ("share", "unshare"),
     "sockets": ("socket", "nosocket"),
     "devices": ("device", "nodevice"),
@@ -190,6 +190,11 @@ FLATPAK_PERMISSION_CHECKS: list[PermissionCheck] = [
     ),
     PermissionCheck("features", "bluetooth", WARN, "has bluetooth access"),
     PermissionCheck("features", "devel", WARN, "has ptrace access"),
+]
+
+ARBITRARY_PERMISSIONS_EXPECTED: list[str] = [
+    "com.github.tchx84.Flatseal",
+    "io.github.flattool.Warehouse",
 ]
 
 
@@ -272,12 +277,13 @@ def check_flatpak_permissions(
             is_alias = filesystems_rw[override_path]
             if is_alias:
                 override_path = override_path.replace("xdg-data", ALIASES["xdg-data"], count=1)
-            recs.append(
-                f"""{name} can modify flatpak overrides.
-                    This grants the ability to acquire arbitrary permissions.
-                    To remove this permission, use Flatseal or run:
-                    $ flatpak override -u --nofilesystem={override_path} {name}"""
-            )
+            if name not in ARBITRARY_PERMISSIONS_EXPECTED:
+                recs.append(
+                    f"""{name} can modify flatpak overrides.
+                        This grants the ability to acquire arbitrary permissions.
+                        To remove this permission, use Flatseal or run:
+                        $ flatpak override -u --nofilesystem={override_path} {name}"""
+                )
 
     if filesystems is None or ("host-os" not in filesystems_ro and "host-os" not in filesystems_rw):
         status = status.downgrade_to(WARN)
@@ -292,12 +298,13 @@ def check_flatpak_permissions(
     for bus_name in ("org.freedesktop.Flatpak", "org.freedesktop.impl.portal.PermissionStore"):
         if bus_name in perms.session_bus_talk:
             arbitrary_permissions = True
-            recs.append(
-                f"""{name} can talk to {bus_name} on the session bus.
-                    This grants the ability to acquire arbitrary permissions.
-                    To remove this permission, use Flatseal or run:
-                    $ flatpak override -u --no-talk-name={bus_name} {name}"""
-            )
+            if name not in ARBITRARY_PERMISSIONS_EXPECTED:
+                recs.append(
+                    f"""{name} can talk to {bus_name} on the session bus.
+                        This grants the ability to acquire arbitrary permissions.
+                        To remove this permission, use Flatseal or run:
+                        $ flatpak override -u --no-talk-name={bus_name} {name}"""
+                )
 
     ld_preload = perms.environment.get("LD_PRELOAD")
     if ld_preload is None:
@@ -321,7 +328,14 @@ def check_flatpak_permissions(
         )
 
     if arbitrary_permissions:
-        status = status.downgrade_to(FAIL)
-        warnings.append(f"{name} can acquire arbitrary permissions")
+        if name in ARBITRARY_PERMISSIONS_EXPECTED:
+            status = status.downgrade_to(INFO)
+            warnings.append(
+                f"""{name} can acquire arbitrary permissions.
+                However, this is required for its functionality."""
+            )
+        else:
+            status = status.downgrade_to(FAIL)
+            warnings.append(f"{name} can acquire arbitrary permissions")
 
     return status, warnings, recs

@@ -1,4 +1,5 @@
 name: installer-checksum
+permissions: read-all
 on: 
   pull_request:
     branches:

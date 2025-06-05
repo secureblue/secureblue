@@ -1,4 +1,5 @@
 name: build-secureblue
+permissions: read-all
 on:
   schedule:
     - cron: "00 6 * * *" # build at 6:00 UTC every day 

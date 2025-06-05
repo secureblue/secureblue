@@ -1,5 +1,7 @@
 name: PR Approvals
 
+permissions: read-all
+
 on:
   pull_request:
 

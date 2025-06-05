@@ -1,4 +1,7 @@
 name: run-tests
+
+permissions: read-all
+
 on:
   pull_request:
     branches:

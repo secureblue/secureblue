@@ -1,11 +1,10 @@
 <p align="center">
   <a href="https://github.com/secureblue/secureblue">
-    <img src="https://github.com/secureblue/secureblue/blob/live/docs/secureblue.png" href="https://github.com/secureblue/secureblue" width=180 />
+    <img src="https://github.com/secureblue/secureblue/blob/live/docs/secureblue.png" href="https://github.com/secureblue/secureblue" alt="secureblue logo" width=180 />
   </a>
 </p>
 
 <h1 align="center">secureblue</h1>
-
 
 [![secureblue](https://github.com/secureblue/secureblue/actions/workflows/build.yml/badge.svg)](https://github.com/secureblue/secureblue/actions/workflows/build.yml)
 [![trivy](https://github.com/secureblue/secureblue/actions/workflows/trivy.yml/badge.svg)](https://github.com/secureblue/secureblue/actions/workflows/trivy.yml)

@@ -191,6 +191,10 @@ class Audit:
         if exclude:
             category_word = "category" if len(exclude) == 1 else "categories"
             print(f"Skipping checks in the following {category_word}: {', '.join(exclude)}")
+        self._run_checks(self.checks)
+        self._print_recs(self.recs)
+
+    async def _run_checks(checks: list[Check]):
         for check in self.checks:
             if check.category in exclude:
                 continue
@@ -201,6 +205,8 @@ class Audit:
                 yield check, e
             else:
                 self.recs += check.recs
+
+    async def _print_recs(recs: list[str]):
         print_heading("Recommendations", width=width)
         for rec in self.recs:
             rec_lines = [line.strip() for line in rec.split("\n")]

@@ -274,7 +274,8 @@ optional_policy(`
 ')
 
 
-allow trivalent_script_t trivalent_t:dir { getattr };
+allow trivalent_script_t trivalent_t:dir { getattr search };
+allow trivalent_script_t trivalent_t:file { open read };
 allow trivalent_script_t self:dir { add_entry_dir_perms };
 allow trivalent_script_t self:file { create };
 allow trivalent_script_t self:user_namespace create;

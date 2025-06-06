@@ -36,14 +36,6 @@ def print_err(text: str):
     print(f"\x1b[1m\x1b[31m{text}\x1b[0m", file=sys.stderr)
 
 
-def handle_sigint(_sig, _frame):
-    """Gracefully handle interrupt signal."""
-    print_err("\n[Audit process interrupted. Exiting.]")
-    # Suppress output from exceptions in unfinished tasks
-    sys.stderr = None
-    sys.exit(1)
-
-
 def warn_if_root():
     """If run as root, warn that this is not recommended."""
     if not os.getuid():

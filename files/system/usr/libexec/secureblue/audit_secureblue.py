@@ -37,7 +37,6 @@ from utils import (
     warn_if_root,
     get_width,
     get_legend,
-    handle_sigint,
     parse_config,
     command_stdout,
     Image,
@@ -725,6 +724,14 @@ async def audit_flatpak_permissions(state):
 ###############################################################################
 # Checks to be run go above this line.
 ###############################################################################
+
+
+def handle_sigint(_sig, _frame):
+    """Gracefully handle interrupt signal."""
+    print_err("\n[Audit process interrupted. Exiting.]")
+    # Suppress output from exceptions in unfinished tasks
+    sys.stderr = None
+    sys.exit(1)
 
 
 async def main() -> int:

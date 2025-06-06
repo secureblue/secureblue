@@ -233,22 +233,22 @@ def check_flatpak_permissions(
     _check_fs_permissions(flatpak_permissions_state, perms)
     _handle_flatpak_buses(flatpak_permissions_state, perms)
     _check_ld_preload(flatpak_permissions_state, perms)
-    _handle_arbitrary_permissions(flatpak_permissions_state)
+    if flatpak_permissions_state.arbitrary_permissions:
+        _handle_arbitrary_permissions(flatpak_permissions_state)
 
     return flatpak_permissions_state
 
 
 def _handle_arbitrary_permissions(state: FlatpakPermissionsState):
-    if state.arbitrary_permissions:
-        if state.name in ARBITRARY_PERMISSIONS_EXPECTED:
-            state.status = state.status.downgrade_to(Status.INFO)
-            state.warnings.append(
-                f"""{state.name} can acquire arbitrary permissions.
-                However, this is required for its functionality."""
-            )
-        else:
-            state.status = state.status.downgrade_to(Status.FAIL)
-            state.warnings.append(f"{state.name} can acquire arbitrary permissions")
+    if state.name in ARBITRARY_PERMISSIONS_EXPECTED:
+        state.status = state.status.downgrade_to(Status.INFO)
+        state.warnings.append(
+            f"""{state.name} can acquire arbitrary permissions.
+            However, this is required for its functionality."""
+        )
+    else:
+        state.status = state.status.downgrade_to(Status.FAIL)
+        state.warnings.append(f"{state.name} can acquire arbitrary permissions")
 
 
 def _check_ld_preload(state: FlatpakPermissionsState, perms: Permissions):
@@ -287,12 +287,12 @@ def _handle_flatpak_buses(state: FlatpakPermissionsState, perms: Permissions):
                 )
 
 
-def _is_valid_predefined_check(
+def _predefined_check_applies(
     check: PermissionCheck,
     existing_permissions: Permissions,
     bluetooth_loaded: bool,
     ptrace_allowed: bool,
-):
+) -> bool:
     is_irrelevant_permission = check.category == "features" and (
         (check.permission == "bluetooth" and not bluetooth_loaded)
         or (check.permission == "devel" and not ptrace_allowed)
@@ -311,9 +311,7 @@ def _check_predefined_flatpak_permissions(
     ptrace_allowed: bool,
 ):
     for check in FLATPAK_PERMISSION_CHECKS:
-        if _is_valid_predefined_check(
-            check, existing_permissions, bluetooth_loaded, ptrace_allowed
-        ):
+        if _predefined_check_applies(check, existing_permissions, bluetooth_loaded, ptrace_allowed):
             state.status = state.status.downgrade_to(check.status)
             state.warnings.append(check.warning(state.name))
             state.recs.append(check.recommendation(state.name))

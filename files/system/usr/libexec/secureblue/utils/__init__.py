@@ -26,9 +26,16 @@ import subprocess  # nosec
 import sys
 import textwrap
 from collections.abc import Iterable
-from typing import Generator
+from typing import Generator, Final
 from auditor import Status, AuditError
 import rpm
+
+
+PASS: Final = Status.PASS
+INFO: Final = Status.INFO
+WARN: Final = Status.WARN
+FAIL: Final = Status.FAIL
+UNKNOWN: Final = Status.UNKNOWN
 
 
 def print_err(text: str):
@@ -70,23 +77,23 @@ def get_legend(width: int = 80) -> str:
     """Get legend to be printed with --help option."""
     legend = "The following status indicators accompany checks run by the audit script:\n\n"
     status_descriptions: dict[Status, str] = {
-        Status.FAIL: "check failed - the configuration may be less secure.",
-        Status.WARN: "partial failure, or less significant issue detected.",
-        Status.PASS: "check passed - no problems detected.",
-        Status.UNKNOWN: "unable to perform check (usually due to a file permission issue).",
+        FAIL: "check failed - the configuration may be less secure.",
+        WARN: "partial failure, or less significant issue detected.",
+        PASS: "check passed - no problems detected.",
+        UNKNOWN: "unable to perform check (usually due to a file permission issue).",
     }
     for status, desc in status_descriptions.items():
         legend += _format_legend_entry(status, desc, width)
     legend += "\nFor flatpak checks, the status indicators have more specific meanings:\n\n"
     flatpak_status_descriptions: dict[Status, str] = {
-        Status.FAIL: """app has permissions that can be used as sandbox escapes, allow it to modify
+        FAIL: """app has permissions that can be used as sandbox escapes, allow it to modify
             its own permissions, or otherwise grant very broad access to the system (e.g. access
             to certain directories, direct D-Bus access, X11).""",
-        Status.WARN: """app has permissions that have some sandbox escape potential or otherwise
+        WARN: """app has permissions that have some sandbox escape potential or otherwise
             weaken security (e.g. PulseAudio, Bluetooth, not using hardened_malloc).""",
-        Status.INFO: """no potential sandbox escapes detected but some permissions could increase
+        INFO: """no potential sandbox escapes detected but some permissions could increase
             attack surface or have privacy implications (e.g. network access).""",
-        Status.PASS: "no app permissions flagged (however, not all permissions are audited).",
+        PASS: "no app permissions flagged (however, not all permissions are audited).",
     }
     for status, desc in flatpak_status_descriptions.items():
         legend += _format_legend_entry(status, desc, width)

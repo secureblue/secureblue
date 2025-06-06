@@ -21,6 +21,11 @@ from typing import Final
 
 from auditor import Status
 
+PASS: Final = Status.PASS
+INFO: Final = Status.INFO
+WARN: Final = Status.WARN
+FAIL: Final = Status.FAIL
+
 
 @dataclass
 class Permissions:
@@ -161,47 +166,47 @@ class DirectoryInfo:
 
 
 FLATPAK_PERMISSION_CHECKS: list[PermissionCheck] = [
-    PermissionCheck("shared", "network", Status.INFO, "has network access"),
-    PermissionCheck("shared", "ipc", Status.INFO, "has inter-process communications access"),
-    PermissionCheck("sockets", "x11", Status.FAIL, "has X11 access"),
-    PermissionCheck("sockets", "pulseaudio", Status.WARN, "has access to the PulseAudio socket"),
+    PermissionCheck("shared", "network", INFO, "has network access"),
+    PermissionCheck("shared", "ipc", INFO, "has inter-process communications access"),
+    PermissionCheck("sockets", "x11", FAIL, "has X11 access"),
+    PermissionCheck("sockets", "pulseaudio", WARN, "has access to the PulseAudio socket"),
     PermissionCheck(
         "sockets",
         "session-bus",
-        Status.FAIL,
+        FAIL,
         "has access to the D-Bus session bus",
         note="This grants access to audio and microphones.",
     ),
-    PermissionCheck("sockets", "system-bus", Status.FAIL, "has access to the D-Bus system bus"),
-    PermissionCheck("sockets", "ssh-auth", Status.WARN, "has access to the SSH agent"),
+    PermissionCheck("sockets", "system-bus", FAIL, "has access to the D-Bus system bus"),
+    PermissionCheck("sockets", "ssh-auth", WARN, "has access to the SSH agent"),
     PermissionCheck(
         "devices",
         "all",
-        Status.FAIL,
+        FAIL,
         note="This grants access to input devices, GPUs, raw USB, and virtualization.",
         sandbox_escape=True,
         endnote="If GPU access is required, allow device=dri instead.",
     ),
-    PermissionCheck("devices", "input", Status.INFO, note="This grants access to input devices."),
+    PermissionCheck("devices", "input", INFO, note="This grants access to input devices."),
     PermissionCheck(
-        "devices", "kvm", Status.WARN, note="This grants access to kernel-based virtualization."
+        "devices", "kvm", WARN, note="This grants access to kernel-based virtualization."
     ),
     PermissionCheck(
         "devices",
         "shm",
-        Status.FAIL,
+        FAIL,
         note="This grants access to shared memory.",
         sandbox_escape=True,
     ),
     PermissionCheck(
         "devices",
         "usb",
-        Status.WARN,
+        WARN,
         note="This grants raw USB device access.",
         sandbox_escape=True,
     ),
-    PermissionCheck("features", "bluetooth", Status.WARN, "has bluetooth access"),
-    PermissionCheck("features", "devel", Status.WARN, "has ptrace access"),
+    PermissionCheck("features", "bluetooth", WARN, "has bluetooth access"),
+    PermissionCheck("features", "devel", WARN, "has ptrace access"),
 ]
 
 ARBITRARY_PERMISSIONS_EXPECTED: list[str] = [
@@ -225,7 +230,7 @@ def check_flatpak_permissions(
     name: str, perms: Permissions, bluetooth_loaded: bool, ptrace_allowed: bool
 ) -> FlatpakPermissionsState:
     """Check permissions for a single flatpak."""
-    flatpak_permissions_state = FlatpakPermissionsState([], [], Status.PASS, False, name)
+    flatpak_permissions_state = FlatpakPermissionsState([], [], PASS, False, name)
 
     _check_predefined_flatpak_permissions(
         flatpak_permissions_state, perms, bluetooth_loaded, ptrace_allowed
@@ -233,22 +238,22 @@ def check_flatpak_permissions(
     _check_fs_permissions(flatpak_permissions_state, perms)
     _handle_flatpak_buses(flatpak_permissions_state, perms)
     _check_ld_preload(flatpak_permissions_state, perms)
-    if flatpak_permissions_state.arbitrary_permissions:
-        _handle_arbitrary_permissions(flatpak_permissions_state)
+    _handle_arbitrary_permissions(flatpak_permissions_state)
 
     return flatpak_permissions_state
 
 
 def _handle_arbitrary_permissions(state: FlatpakPermissionsState):
-    if state.name in ARBITRARY_PERMISSIONS_EXPECTED:
-        state.status = state.status.downgrade_to(Status.INFO)
-        state.warnings.append(
-            f"""{state.name} can acquire arbitrary permissions.
-            However, this is required for its functionality."""
-        )
-    else:
-        state.status = state.status.downgrade_to(Status.FAIL)
-        state.warnings.append(f"{state.name} can acquire arbitrary permissions")
+    if state.arbitrary_permissions:
+        if state.name in ARBITRARY_PERMISSIONS_EXPECTED:
+            state.status = state.status.downgrade_to(INFO)
+            state.warnings.append(
+                f"""{state.name} can acquire arbitrary permissions.
+                However, this is required for its functionality."""
+            )
+        else:
+            state.status = state.status.downgrade_to(FAIL)
+            state.warnings.append(f"{state.name} can acquire arbitrary permissions")
 
 
 def _check_ld_preload(state: FlatpakPermissionsState, perms: Permissions):
@@ -260,13 +265,13 @@ def _check_ld_preload(state: FlatpakPermissionsState, perms: Permissions):
     if "libhardened_malloc.so" not in ld_preload_files:
         state.warnings.append(f"{state.name} is not requesting hardened_malloc")
         if "libhardened_malloc-light.so" in ld_preload_files:
-            state.status = state.status.downgrade_to(Status.INFO)
+            state.status = state.status.downgrade_to(INFO)
             state.warnings.append(f"{state.name} is requesting hardened_malloc-light")
         elif "libhardened_malloc-pkey.so" in ld_preload_files:
-            state.status = state.status.downgrade_to(Status.INFO)
+            state.status = state.status.downgrade_to(INFO)
             state.warnings.append(f"{state.name} is requesting hardened_malloc-pkey")
         else:
-            state.status = state.status.downgrade_to(Status.WARN)
+            state.status = state.status.downgrade_to(WARN)
         state.recs.append(
             f"""{state.name} is not requesting hardened_malloc.
                     To enable it, run:
@@ -320,11 +325,11 @@ def _check_predefined_flatpak_permissions(
 
 def _check_dangerous_dirs(state: FlatpakPermissionsState, filesystems_rw: dict[str, bool]):
     dangerous_dirs: list[DirectoryInfo] = [
-        DirectoryInfo("host", "all system files", Status.FAIL),
-        DirectoryInfo("home", "all user files", Status.FAIL),
-        DirectoryInfo("xdg-config", "other applications' configuration files", Status.FAIL),
-        DirectoryInfo("xdg-cache", "other applications' cache files", Status.FAIL),
-        DirectoryInfo("xdg-data", "other applications' data files", Status.FAIL),
+        DirectoryInfo("host", "all system files", FAIL),
+        DirectoryInfo("home", "all user files", FAIL),
+        DirectoryInfo("xdg-config", "other applications' configuration files", FAIL),
+        DirectoryInfo("xdg-cache", "other applications' cache files", FAIL),
+        DirectoryInfo("xdg-data", "other applications' data files", FAIL),
     ]
 
     for directory in dangerous_dirs:
@@ -350,7 +355,7 @@ def _check_hardened_malloc_access(
     filesystems_ro: dict[str, bool],
 ):
     if filesystems is None or ("host-os" not in filesystems_ro and "host-os" not in filesystems_rw):
-        state.status = state.status.downgrade_to(Status.WARN)
+        state.status = state.status.downgrade_to(WARN)
         state.warnings.append(f"{state.name} is missing host-os:ro permission")
         state.recs.append(
             f"""{state.name} is missing host-os:ro permission.

@@ -101,7 +101,7 @@ def parse_fs_permission(perm: str) -> tuple[str, bool, bool, bool]:
     is_alias = False
     for name, alias in ALIASES.items():
         if path.startswith(alias):
-            path = path.replace(alias, name, count=1)
+            path = path.replace(alias, name, 1)
             is_alias = True
             break
     return path, readonly, negated, is_alias
@@ -156,6 +156,7 @@ class DirectoryInfo:
     path: str
     description: str
     status: Status
+
 
 FLATPAK_PERMISSION_CHECKS: list[PermissionCheck] = [
     PermissionCheck("shared", "network", Status.INFO, "has network access"),
@@ -270,6 +271,7 @@ def _handle_flatpak_buses(state: FlatpakPermissionsState, perms: Permissions):
                 )
 
 
+# #lizard forgives
 def _check_predefined_flatpak_permissions(
         state: FlatpakPermissionsState,
         existing_permissions: Permissions,

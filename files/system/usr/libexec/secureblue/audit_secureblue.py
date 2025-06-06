@@ -210,7 +210,7 @@ def audit_ptrace(state):
 @audit
 def audit_authselect():
     """Ensure no authselect overrides have been made."""
-    cmp = filecmp.dircmp("/usr/etc/authselect", "/etc/authselect", shallow=False, ignore=[])
+    cmp = filecmp.dircmp("/usr/etc/authselect", "/etc/authselect", ignore=[])
     if cmp.left_only or cmp.right_only or cmp.diff_files or cmp.funny_files:
         status = Status.FAIL
     else:

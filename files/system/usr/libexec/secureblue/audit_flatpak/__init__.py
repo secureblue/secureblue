@@ -271,13 +271,13 @@ def _handle_flatpak_buses(state: FlatpakPermissionsState, perms: Permissions):
                 )
 
 
-# #lizard forgives
 def _check_predefined_flatpak_permissions(
         state: FlatpakPermissionsState,
         existing_permissions: Permissions,
         bluetooth_loaded: bool,
         ptrace_allowed: bool
 ):
+    # #lizard forgives
     for check in FLATPAK_PERMISSION_CHECKS:
         if check.category not in existing_permissions.permissions:
             continue

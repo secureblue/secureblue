@@ -32,8 +32,19 @@ import subprocess  # nosec
 
 from auditor import Report, Status, audit, bold, categorize, depends_on, global_audit
 from audit_flatpak import check_flatpak_permissions, parse_flatpak_permissions
-from utils import print_err, warn_if_root, get_width, get_legend, handle_sigint, parse_config, command_stdout, Image, \
-    command_succeeds, validate_sysctl, get_flatpak_permissions
+from utils import (
+    print_err,
+    warn_if_root,
+    get_width,
+    get_legend,
+    handle_sigint,
+    parse_config,
+    command_stdout,
+    Image,
+    command_succeeds,
+    validate_sysctl,
+    get_flatpak_permissions,
+)
 
 
 @audit
@@ -631,7 +642,7 @@ def audit_bash_env_lockdown():
                 unlocked_files.append(path)
     if unlocked_files:
         status = Status.FAIL
-        unlocked_files_string="\n".join(unlocked_files)
+        unlocked_files_string = "\n".join(unlocked_files)
         rec = f"""Bash environment is not locked down.
                 The following files do not appear to be immutable or do not exist:
                 {unlocked_files_string}
@@ -668,6 +679,7 @@ def audit_flatpak_remotes():
         else:
             status = Status.PASS
         yield Report(f"Auditing flatpak remote {name}", status, warnings=warnings)
+
 
 @audit
 @categorize("flatpak")
@@ -706,12 +718,14 @@ async def audit_flatpak_permissions(state):
             report_text,
             flatpak_permissions_state.status,
             warnings=flatpak_permissions_state.warnings,
-            recs=flatpak_permissions_state.recs
+            recs=flatpak_permissions_state.recs,
         )
+
 
 ###############################################################################
 # Checks to be run go above this line.
 ###############################################################################
+
 
 async def main() -> int:
     """Main entry point. Parse command-line arguments and run audit."""
@@ -748,6 +762,7 @@ async def main() -> int:
         print_err("\n*** WARNING: Unexpected error occurred. ***")
         return 1
     return 0
+
 
 if __name__ == "__main__":
     sys.exit(asyncio.run(main()))

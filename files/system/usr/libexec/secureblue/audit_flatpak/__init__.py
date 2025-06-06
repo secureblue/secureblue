@@ -21,6 +21,7 @@ from typing import Final
 
 from auditor import Status
 
+
 @dataclass
 class Permissions:
     """Object representing permissions for a flatpak app."""
@@ -149,6 +150,7 @@ class PermissionCheck:
             {self.endnote or ""}"""
         return "\n".join(line.strip() for line in rec.split("\n") if line.strip())
 
+
 @dataclass(frozen=True)
 class DirectoryInfo:
     """Info about a directory to check."""
@@ -185,10 +187,18 @@ FLATPAK_PERMISSION_CHECKS: list[PermissionCheck] = [
         "devices", "kvm", Status.WARN, note="This grants access to kernel-based virtualization."
     ),
     PermissionCheck(
-        "devices", "shm", Status.FAIL, note="This grants access to shared memory.", sandbox_escape=True
+        "devices",
+        "shm",
+        Status.FAIL,
+        note="This grants access to shared memory.",
+        sandbox_escape=True,
     ),
     PermissionCheck(
-        "devices", "usb", Status.WARN, note="This grants raw USB device access.", sandbox_escape=True
+        "devices",
+        "usb",
+        Status.WARN,
+        note="This grants raw USB device access.",
+        sandbox_escape=True,
     ),
     PermissionCheck("features", "bluetooth", Status.WARN, "has bluetooth access"),
     PermissionCheck("features", "devel", Status.WARN, "has ptrace access"),
@@ -199,9 +209,11 @@ ARBITRARY_PERMISSIONS_EXPECTED: list[str] = [
     "io.github.flattool.Warehouse",
 ]
 
+
 @dataclass
 class FlatpakPermissionsState:
     """The state of a flatpak's permissions."""
+
     warnings: list[str]
     recs: list[str]
     status: Status
@@ -215,13 +227,16 @@ def check_flatpak_permissions(
     """Check permissions for a single flatpak."""
     flatpak_permissions_state = FlatpakPermissionsState([], [], Status.PASS, False, name)
 
-    _check_predefined_flatpak_permissions(flatpak_permissions_state, perms, bluetooth_loaded, ptrace_allowed)
+    _check_predefined_flatpak_permissions(
+        flatpak_permissions_state, perms, bluetooth_loaded, ptrace_allowed
+    )
     _check_fs_permissions(flatpak_permissions_state, perms)
     _handle_flatpak_buses(flatpak_permissions_state, perms)
     _check_ld_preload(flatpak_permissions_state, perms)
     _handle_arbitrary_permissions(flatpak_permissions_state)
 
     return flatpak_permissions_state
+
 
 def _handle_arbitrary_permissions(state: FlatpakPermissionsState):
     if state.arbitrary_permissions:
@@ -258,6 +273,7 @@ def _check_ld_preload(state: FlatpakPermissionsState, perms: Permissions):
                     $ ujust harden-flatpak {state.name}"""
         )
 
+
 def _handle_flatpak_buses(state: FlatpakPermissionsState, perms: Permissions):
     for bus_name in ("org.freedesktop.Flatpak", "org.freedesktop.impl.portal.PermissionStore"):
         if bus_name in perms.session_bus_talk:
@@ -272,44 +288,45 @@ def _handle_flatpak_buses(state: FlatpakPermissionsState, perms: Permissions):
 
 
 def _is_valid_predefined_check(
-        check: PermissionCheck,
-        existing_permissions: Permissions,
-        bluetooth_loaded: bool,
-        ptrace_allowed: bool
+    check: PermissionCheck,
+    existing_permissions: Permissions,
+    bluetooth_loaded: bool,
+    ptrace_allowed: bool,
 ):
     is_irrelevant_permission = check.category == "features" and (
-            (check.permission == "bluetooth" and not bluetooth_loaded) or
-            (check.permission == "devel" and not ptrace_allowed)
+        (check.permission == "bluetooth" and not bluetooth_loaded)
+        or (check.permission == "devel" and not ptrace_allowed)
     )
-    return (not is_irrelevant_permission
-            and check.category in existing_permissions.permissions
-            and check.permission in existing_permissions.permissions[check.category])
+    return (
+        not is_irrelevant_permission
+        and check.category in existing_permissions.permissions
+        and check.permission in existing_permissions.permissions[check.category]
+    )
 
 
 def _check_predefined_flatpak_permissions(
-        state: FlatpakPermissionsState,
-        existing_permissions: Permissions,
-        bluetooth_loaded: bool,
-        ptrace_allowed: bool
+    state: FlatpakPermissionsState,
+    existing_permissions: Permissions,
+    bluetooth_loaded: bool,
+    ptrace_allowed: bool,
 ):
     for check in FLATPAK_PERMISSION_CHECKS:
-        if _is_valid_predefined_check(check, existing_permissions, bluetooth_loaded, ptrace_allowed):
+        if _is_valid_predefined_check(
+            check, existing_permissions, bluetooth_loaded, ptrace_allowed
+        ):
             state.status = state.status.downgrade_to(check.status)
             state.warnings.append(check.warning(state.name))
             state.recs.append(check.recommendation(state.name))
             state.arbitrary_permissions |= check.arbitrary_permissions
 
 
-def _check_dangerous_dirs(
-        state: FlatpakPermissionsState,
-        filesystems_rw: dict[str, bool]
-):
+def _check_dangerous_dirs(state: FlatpakPermissionsState, filesystems_rw: dict[str, bool]):
     dangerous_dirs: list[DirectoryInfo] = [
         DirectoryInfo("host", "all system files", Status.FAIL),
         DirectoryInfo("home", "all user files", Status.FAIL),
         DirectoryInfo("xdg-config", "other applications' configuration files", Status.FAIL),
         DirectoryInfo("xdg-cache", "other applications' cache files", Status.FAIL),
-        DirectoryInfo("xdg-data", "other applications' data files", Status.FAIL)
+        DirectoryInfo("xdg-data", "other applications' data files", Status.FAIL),
     ]
 
     for directory in dangerous_dirs:
@@ -329,10 +346,10 @@ def _check_dangerous_dirs(
 
 
 def _check_hardened_malloc_access(
-        state: FlatpakPermissionsState,
-        filesystems: list[str] | None,
-        filesystems_rw: dict[str, bool],
-        filesystems_ro: dict[str, bool],
+    state: FlatpakPermissionsState,
+    filesystems: list[str] | None,
+    filesystems_rw: dict[str, bool],
+    filesystems_ro: dict[str, bool],
 ):
     if filesystems is None or ("host-os" not in filesystems_ro and "host-os" not in filesystems_rw):
         state.status = state.status.downgrade_to(Status.WARN)
@@ -345,10 +362,7 @@ def _check_hardened_malloc_access(
         )
 
 
-def _check_overrides_access(
-        state: FlatpakPermissionsState,
-        filesystems_rw: dict[str, bool]
-):
+def _check_overrides_access(state: FlatpakPermissionsState, filesystems_rw: dict[str, bool]):
     override_path = "xdg-data/flatpak/overrides"
     if override_path in filesystems_rw:
         state.arbitrary_permissions = True

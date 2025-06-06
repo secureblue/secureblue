@@ -20,6 +20,7 @@ import asyncio
 import enum
 import os
 import re
+
 # All subprocess calls we make have trusted inputs and do not use shell=True.
 import subprocess  # nosec
 import sys
@@ -108,6 +109,7 @@ def get_legend(width: int = 80) -> str:
     )
     return legend
 
+
 def command_stdout(*args: str, check: bool = True) -> str:
     """Run a command in the shell and return the contents of stdout."""
     # We only call this with trusted inputs and do not set shell=True.
@@ -195,9 +197,11 @@ class Image(enum.Enum):
             return cls.COREOS
         return None
 
+
 async def get_flatpak_permissions(name: str, version: str) -> str:
     """Get permissions for an installed flatpak."""
     return await async_command_stdout("flatpak", "info", "--show-permissions", name, version)
+
 
 def validate_sysctl(sysctl: str, actual: str, expected: str) -> bool:
     """Validate a sysctl value against an expected value."""

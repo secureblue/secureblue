@@ -51,7 +51,7 @@ Rebase to: The equivalent image replacing `-framework` with `-main`. For example
 
 ## main-laptop
 
-Rationale: Upstream recommendations have changed and improvements are being made to PPD. 
+Rationale: Upstream recommendations have changed and improvements are being made to PPD.
 
 Rebase to: The equivalent image without `-laptop`. For example, for `kinoite-main-laptop-hardened`, rebase to `kinoite-main-hardened`.
 

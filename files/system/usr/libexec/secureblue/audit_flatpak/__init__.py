@@ -21,12 +21,6 @@ from typing import Final
 
 from auditor import Status
 
-PASS: Final = Status.PASS
-INFO: Final = Status.INFO
-WARN: Final = Status.WARN
-FAIL: Final = Status.FAIL
-
-
 @dataclass
 class Permissions:
     """Object representing permissions for a flatpak app."""
@@ -157,39 +151,39 @@ class PermissionCheck:
 
 
 FLATPAK_PERMISSION_CHECKS: list[PermissionCheck] = [
-    PermissionCheck("shared", "network", INFO, "has network access"),
-    PermissionCheck("shared", "ipc", INFO, "has inter-process communications access"),
-    PermissionCheck("sockets", "x11", FAIL, "has X11 access"),
-    PermissionCheck("sockets", "pulseaudio", WARN, "has access to the PulseAudio socket"),
+    PermissionCheck("shared", "network", Status.INFO, "has network access"),
+    PermissionCheck("shared", "ipc", Status.INFO, "has inter-process communications access"),
+    PermissionCheck("sockets", "x11", Status.FAIL, "has X11 access"),
+    PermissionCheck("sockets", "pulseaudio", Status.WARN, "has access to the PulseAudio socket"),
     PermissionCheck(
         "sockets",
         "session-bus",
-        FAIL,
+        Status.FAIL,
         "has access to the D-Bus session bus",
         note="This grants access to audio and microphones.",
     ),
-    PermissionCheck("sockets", "system-bus", FAIL, "has access to the D-Bus system bus"),
-    PermissionCheck("sockets", "ssh-auth", WARN, "has access to the SSH agent"),
+    PermissionCheck("sockets", "system-bus", Status.FAIL, "has access to the D-Bus system bus"),
+    PermissionCheck("sockets", "ssh-auth", Status.WARN, "has access to the SSH agent"),
     PermissionCheck(
         "devices",
         "all",
-        FAIL,
+        Status.FAIL,
         note="This grants access to input devices, GPUs, raw USB, and virtualization.",
         sandbox_escape=True,
         endnote="If GPU access is required, allow device=dri instead.",
     ),
-    PermissionCheck("devices", "input", INFO, note="This grants access to input devices."),
+    PermissionCheck("devices", "input", Status.INFO, note="This grants access to input devices."),
     PermissionCheck(
-        "devices", "kvm", WARN, note="This grants access to kernel-based virtualization."
+        "devices", "kvm", Status.WARN, note="This grants access to kernel-based virtualization."
     ),
     PermissionCheck(
-        "devices", "shm", FAIL, note="This grants access to shared memory.", sandbox_escape=True
+        "devices", "shm", Status.FAIL, note="This grants access to shared memory.", sandbox_escape=True
     ),
     PermissionCheck(
-        "devices", "usb", WARN, note="This grants raw USB device access.", sandbox_escape=True
+        "devices", "usb", Status.WARN, note="This grants raw USB device access.", sandbox_escape=True
     ),
-    PermissionCheck("features", "bluetooth", WARN, "has bluetooth access"),
-    PermissionCheck("features", "devel", WARN, "has ptrace access"),
+    PermissionCheck("features", "bluetooth", Status.WARN, "has bluetooth access"),
+    PermissionCheck("features", "devel", Status.WARN, "has ptrace access"),
 ]
 
 ARBITRARY_PERMISSIONS_EXPECTED: list[str] = [
@@ -197,16 +191,84 @@ ARBITRARY_PERMISSIONS_EXPECTED: list[str] = [
     "io.github.flattool.Warehouse",
 ]
 
+@dataclass
+class FlatpakPermissionsState:
+    """The state of a flatpak's permissions."""
+    warnings: list[str]
+    recs: list[str]
+    status: Status
+    arbitrary_permissions: bool
+    name: str
+
 
 def check_flatpak_permissions(
     name: str, perms: Permissions, bluetooth_loaded: bool, ptrace_allowed: bool
-) -> tuple[Status, list[str], list[str]]:
+) -> FlatpakPermissionsState:
     """Check permissions for a single flatpak."""
-    warnings = []
-    recs = []
-    status = PASS
-    arbitrary_permissions = False
+    flatpak_permissions_state = FlatpakPermissionsState([], [], Status.PASS, False, name)
 
+    _check_predefined_flatpak_permissions(flatpak_permissions_state, perms, bluetooth_loaded, ptrace_allowed)
+    _check_fs_permissions(flatpak_permissions_state, perms)
+    _handle_flatpak_buses(flatpak_permissions_state, perms)
+    _check_ld_preload(flatpak_permissions_state, perms)
+    _handle_arbitrary_permissions(flatpak_permissions_state)
+
+    return flatpak_permissions_state
+
+def _handle_arbitrary_permissions(state: FlatpakPermissionsState):
+    if state.arbitrary_permissions:
+        if state.name in ARBITRARY_PERMISSIONS_EXPECTED:
+            state.status = state.status.downgrade_to(Status.INFO)
+            state.warnings.append(
+                f"""{state.name} can acquire arbitrary permissions.
+                However, this is required for its functionality."""
+            )
+        else:
+            state.status = state.status.downgrade_to(Status.FAIL)
+            state.warnings.append(f"{state.name} can acquire arbitrary permissions")
+
+
+def _check_ld_preload(state: FlatpakPermissionsState, perms: Permissions):
+    ld_preload = perms.environment.get("LD_PRELOAD")
+    if ld_preload is None:
+        ld_preload_files = []
+    else:
+        ld_preload_files = [s.rsplit("/", maxsplit=1)[-1] for s in ld_preload.split()]
+    if "libhardened_malloc.so" not in ld_preload_files:
+        state.warnings.append(f"{state.name} is not requesting hardened_malloc")
+        if "libhardened_malloc-light.so" in ld_preload_files:
+            state.status = state.status.downgrade_to(Status.INFO)
+            state.warnings.append(f"{state.name} is requesting hardened_malloc-light")
+        elif "libhardened_malloc-pkey.so" in ld_preload_files:
+            state.status = state.status.downgrade_to(Status.INFO)
+            state.warnings.append(f"{state.name} is requesting hardened_malloc-pkey")
+        else:
+            state.status = state.status.downgrade_to(Status.WARN)
+        state.recs.append(
+            f"""{state.name} is not requesting hardened_malloc.
+                    To enable it, run:
+                    $ ujust harden-flatpak {state.name}"""
+        )
+
+def _handle_flatpak_buses(state: FlatpakPermissionsState, perms: Permissions):
+    for bus_name in ("org.freedesktop.Flatpak", "org.freedesktop.impl.portal.PermissionStore"):
+        if bus_name in perms.session_bus_talk:
+            state.arbitrary_permissions = True
+            if state.name not in ARBITRARY_PERMISSIONS_EXPECTED:
+                state.recs.append(
+                    f"""{state.name} can talk to {bus_name} on the session bus.
+                        This grants the ability to acquire arbitrary permissions.
+                        To remove this permission, use Flatseal or run:
+                        $ flatpak override -u --no-talk-name={bus_name} {state.name}"""
+                )
+
+
+def _check_predefined_flatpak_permissions(
+        state: FlatpakPermissionsState,
+        perms: Permissions,
+        bluetooth_loaded: bool,
+        ptrace_allowed: bool
+):
     for check in FLATPAK_PERMISSION_CHECKS:
         if check.category not in perms.permissions:
             continue
@@ -216,12 +278,13 @@ def check_flatpak_permissions(
                     continue
                 if check.permission == "devel" and not ptrace_allowed:
                     continue
-            status = status.downgrade_to(check.status)
-            warnings.append(check.warning(name))
-            recs.append(check.recommendation(name))
+            state.status = state.status.downgrade_to(check.status)
+            state.warnings.append(check.warning(state.name))
+            state.recs.append(check.recommendation(state.name))
             if check.arbitrary_permissions:
-                arbitrary_permissions = True
+                state.arbitrary_permissions = True
 
+def _check_fs_permissions(state: FlatpakPermissionsState, perms: Permissions):
     filesystems = perms.permissions.get("filesystems")
     filesystems_ro = {}
     filesystems_rw = {}
@@ -237,105 +300,60 @@ def check_flatpak_permissions(
 
         dangerous_dirs = {
             "host": {
-                "status": FAIL,
+                "status": Status.FAIL,
                 "access": "all system files",
             },
             "home": {
-                "status": FAIL,
+                "status": Status.FAIL,
                 "access": "all user files",
             },
             "xdg-config": {
-                "status": FAIL,
+                "status": Status.FAIL,
                 "access": "other applications' configuration files",
             },
             "xdg-cache": {
-                "status": FAIL,
+                "status": Status.FAIL,
                 "access": "other applications' cache files",
             },
             "xdg-data": {
-                "status": FAIL,
+                "status": Status.FAIL,
                 "access": "other applications' data files",
             },
         }
         for path, dir_data in dangerous_dirs.items():
             if path in filesystems_rw:
-                status = status.downgrade_to(dir_data["status"])
+                state.status = state.status.downgrade_to(dir_data["status"])
                 is_alias = filesystems_rw[path]
                 if is_alias:
                     path = path.replace(path, ALIASES[path], count=1)
-                warnings.append(f"{name} has filesystem={path} permission")
-                recs.append(
-                    f"""{name} has filesystem={path} permission.
-                        This grants access to {dir_data["access"]}.
-                        To remove this permission, use Flatseal or run:
-                        $ flatpak override -u --nofilesystem={path} {name}"""
+                state.warnings.append(f"{state.name} has filesystem={path} permission")
+                state.recs.append(
+                    f"""{state.name} has filesystem={path} permission.
+                            This grants access to {dir_data["access"]}.
+                            To remove this permission, use Flatseal or run:
+                            $ flatpak override -u --nofilesystem={path} {state.name}"""
                 )
 
         override_path = "xdg-data/flatpak/overrides"
         if override_path in filesystems_rw:
-            arbitrary_permissions = True
+            state.arbitrary_permissions = True
             is_alias = filesystems_rw[override_path]
             if is_alias:
                 override_path = override_path.replace("xdg-data", ALIASES["xdg-data"], count=1)
-            if name not in ARBITRARY_PERMISSIONS_EXPECTED:
-                recs.append(
-                    f"""{name} can modify flatpak overrides.
-                        This grants the ability to acquire arbitrary permissions.
-                        To remove this permission, use Flatseal or run:
-                        $ flatpak override -u --nofilesystem={override_path} {name}"""
+            if state.name not in ARBITRARY_PERMISSIONS_EXPECTED:
+                state.recs.append(
+                    f"""{state.name} can modify flatpak overrides.
+                            This grants the ability to acquire arbitrary permissions.
+                            To remove this permission, use Flatseal or run:
+                            $ flatpak override -u --nofilesystem={override_path} {state.name}"""
                 )
 
     if filesystems is None or ("host-os" not in filesystems_ro and "host-os" not in filesystems_rw):
-        status = status.downgrade_to(WARN)
-        warnings.append(f"{name} is missing host-os:ro permission")
-        recs.append(
-            f"""{name} is missing host-os:ro permission.
-                This is required to load hardened_malloc.
-                To add this permission, use Flatseal or run:
-                $ flatpak override -u --filesystem=host-os:ro {name}"""
+        state.status = state.status.downgrade_to(Status.WARN)
+        state.warnings.append(f"{state.name} is missing host-os:ro permission")
+        state.recs.append(
+            f"""{state.name} is missing host-os:ro permission.
+                    This is required to load hardened_malloc.
+                    To add this permission, use Flatseal or run:
+                    $ flatpak override -u --filesystem=host-os:ro {state.name}"""
         )
-
-    for bus_name in ("org.freedesktop.Flatpak", "org.freedesktop.impl.portal.PermissionStore"):
-        if bus_name in perms.session_bus_talk:
-            arbitrary_permissions = True
-            if name not in ARBITRARY_PERMISSIONS_EXPECTED:
-                recs.append(
-                    f"""{name} can talk to {bus_name} on the session bus.
-                        This grants the ability to acquire arbitrary permissions.
-                        To remove this permission, use Flatseal or run:
-                        $ flatpak override -u --no-talk-name={bus_name} {name}"""
-                )
-
-    ld_preload = perms.environment.get("LD_PRELOAD")
-    if ld_preload is None:
-        ld_preload_files = []
-    else:
-        ld_preload_files = [s.rsplit("/", maxsplit=1)[-1] for s in ld_preload.split()]
-    if "libhardened_malloc.so" not in ld_preload_files:
-        warnings.append(f"{name} is not requesting hardened_malloc")
-        if "libhardened_malloc-light.so" in ld_preload_files:
-            status = status.downgrade_to(INFO)
-            warnings.append(f"{name} is requesting hardened_malloc-light")
-        elif "libhardened_malloc-pkey.so" in ld_preload_files:
-            status = status.downgrade_to(INFO)
-            warnings.append(f"{name} is requesting hardened_malloc-pkey")
-        else:
-            status = status.downgrade_to(WARN)
-        recs.append(
-            f"""{name} is not requesting hardened_malloc.
-                To enable it, run:
-                $ ujust harden-flatpak {name}"""
-        )
-
-    if arbitrary_permissions:
-        if name in ARBITRARY_PERMISSIONS_EXPECTED:
-            status = status.downgrade_to(INFO)
-            warnings.append(
-                f"""{name} can acquire arbitrary permissions.
-                However, this is required for its functionality."""
-            )
-        else:
-            status = status.downgrade_to(FAIL)
-            warnings.append(f"{name} can acquire arbitrary permissions")
-
-    return status, warnings, recs

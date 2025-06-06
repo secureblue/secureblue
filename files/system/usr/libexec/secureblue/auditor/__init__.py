@@ -158,6 +158,18 @@ class DependencyError(AuditError):
     """A check's dependency requirements were not satisfied."""
 
 
+def _print_recs(recs: list[str], width: int = 80):
+    print_heading("Recommendations", width=width)
+    for rec in recs:
+        rec_lines = [line.strip() for line in rec.split("\n")]
+        for i, line in enumerate(rec_lines):
+            if not line:
+                continue
+            if line[0] in ["$", "#"]:
+                rec_lines[i] = bold(line)
+        print("\n  ".join(rec_lines) + "\n")
+
+
 class Audit:
     """A system audit."""
 
@@ -191,31 +203,18 @@ class Audit:
         if exclude:
             category_word = "category" if len(exclude) == 1 else "categories"
             print(f"Skipping checks in the following {category_word}: {', '.join(exclude)}")
-        self._run_checks(self.checks)
-        self._print_recs(self.recs)
-
-    async def _run_checks(checks: list[Check]):
         for check in self.checks:
             if check.category in exclude:
                 continue
             try:
                 async for report in check.run(self.state):
                     print(report.to_str(width=width))
+            # pylint: disable=broad-exception-caught
             except Exception as e:
                 yield check, e
             else:
                 self.recs += check.recs
-
-    async def _print_recs(recs: list[str]):
-        print_heading("Recommendations", width=width)
-        for rec in self.recs:
-            rec_lines = [line.strip() for line in rec.split("\n")]
-            for i, line in enumerate(rec_lines):
-                if not line:
-                    continue
-                if line[0] in ["$", "#"]:
-                    rec_lines[i] = bold(line)
-            print("\n  ".join(rec_lines) + "\n")
+        _print_recs(self.recs)
 
     async def run_json(self, exclude: list[str] | None = None) -> AsyncGenerator[str]:
         """Runs each stored check and prints the results as JSON."""

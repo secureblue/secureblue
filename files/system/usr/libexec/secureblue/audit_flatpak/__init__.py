@@ -149,6 +149,13 @@ class PermissionCheck:
             {self.endnote or ""}"""
         return "\n".join(line.strip() for line in rec.split("\n") if line.strip())
 
+@dataclass(frozen=True)
+class DirectoryInfo:
+    """Info about a directory to check."""
+
+    path: str
+    description: str
+    status: Status
 
 FLATPAK_PERMISSION_CHECKS: list[PermissionCheck] = [
     PermissionCheck("shared", "network", Status.INFO, "has network access"),
@@ -265,14 +272,14 @@ def _handle_flatpak_buses(state: FlatpakPermissionsState, perms: Permissions):
 
 def _check_predefined_flatpak_permissions(
         state: FlatpakPermissionsState,
-        perms: Permissions,
+        existing_permissions: Permissions,
         bluetooth_loaded: bool,
         ptrace_allowed: bool
 ):
     for check in FLATPAK_PERMISSION_CHECKS:
-        if check.category not in perms.permissions:
+        if check.category not in existing_permissions.permissions:
             continue
-        if check.permission in perms.permissions[check.category]:
+        if check.permission in existing_permissions.permissions[check.category]:
             if check.category == "features":
                 if check.permission == "bluetooth" and not bluetooth_loaded:
                     continue
@@ -298,40 +305,27 @@ def _check_fs_permissions(state: FlatpakPermissionsState, perms: Permissions):
             else:
                 filesystems_rw[path] = is_alias
 
-        dangerous_dirs = {
-            "host": {
-                "status": Status.FAIL,
-                "access": "all system files",
-            },
-            "home": {
-                "status": Status.FAIL,
-                "access": "all user files",
-            },
-            "xdg-config": {
-                "status": Status.FAIL,
-                "access": "other applications' configuration files",
-            },
-            "xdg-cache": {
-                "status": Status.FAIL,
-                "access": "other applications' cache files",
-            },
-            "xdg-data": {
-                "status": Status.FAIL,
-                "access": "other applications' data files",
-            },
-        }
-        for path, dir_data in dangerous_dirs.items():
-            if path in filesystems_rw:
-                state.status = state.status.downgrade_to(dir_data["status"])
-                is_alias = filesystems_rw[path]
+        dangerous_dirs: list[DirectoryInfo] = [
+            DirectoryInfo("host", "all system files", Status.FAIL),
+            DirectoryInfo("home", "all user files", Status.FAIL),
+            DirectoryInfo("xdg-config", "other applications' configuration files", Status.FAIL),
+            DirectoryInfo("xdg-cache", "other applications' cache files", Status.FAIL),
+            DirectoryInfo("xdg-data", "other applications' data files", Status.FAIL)
+        ]
+
+        for directory in dangerous_dirs:
+            if directory.path in filesystems_rw:
+                aliased_path = directory.path
+                state.status = state.status.downgrade_to(directory.status)
+                is_alias = filesystems_rw[directory.path]
                 if is_alias:
-                    path = path.replace(path, ALIASES[path], count=1)
-                state.warnings.append(f"{state.name} has filesystem={path} permission")
+                    aliased_path = directory.path.replace(path, ALIASES[directory.path], count=1)
+                state.warnings.append(f"{state.name} has filesystem={directory.path} permission")
                 state.recs.append(
-                    f"""{state.name} has filesystem={path} permission.
-                            This grants access to {dir_data["access"]}.
+                    f"""{state.name} has filesystem={aliased_path} permission.
+                            This grants access to {directory.description}.
                             To remove this permission, use Flatseal or run:
-                            $ flatpak override -u --nofilesystem={path} {state.name}"""
+                            $ flatpak override -u --nofilesystem={aliased_path} {state.name}"""
                 )
 
         override_path = "xdg-data/flatpak/overrides"

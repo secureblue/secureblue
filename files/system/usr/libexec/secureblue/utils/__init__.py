@@ -20,13 +20,14 @@ import asyncio
 import enum
 import os
 import re
-import rpm
-import subprocess
+# All subprocess calls we make have trusted inputs and do not use shell=True.
+import subprocess  # nosec
 import sys
 import textwrap
 from collections.abc import Iterable
 from typing import Generator
 from auditor import Status, AuditError
+import rpm
 
 
 def print_err(text: str):
@@ -110,6 +111,7 @@ def get_legend(width: int = 80) -> str:
 def command_stdout(*args: str, check: bool = True) -> str:
     """Run a command in the shell and return the contents of stdout."""
     # We only call this with trusted inputs and do not set shell=True.
+    # nosemgrep: dangerous-subprocess-use-audit
     return subprocess.run(args, capture_output=True, check=check, text=True).stdout.strip()  # nosec
 
 
@@ -119,6 +121,7 @@ class AsyncProcessError(AuditError):
 
 async def async_command_stdout(cmd: str, *args: str, check: bool = True) -> str:
     """Asynchronously run a command in the shell and return the contents of stdout."""
+    # nosemgrep: dangerous-subprocess-use-audit
     sub = await asyncio.create_subprocess_exec(
         cmd, *args, stdout=subprocess.PIPE, stderr=subprocess.DEVNULL
     )
@@ -137,7 +140,7 @@ async def async_command_stdout(cmd: str, *args: str, check: bool = True) -> str:
 def command_succeeds(*args: str) -> bool:
     """Run a command in the shell and return the contents of stdout."""
     # We only call this with trusted inputs and do not set shell=True.
-    # pylint: disable=use-implicit-booleaness-not-comparison-to-zero
+    # nosemgrep: dangerous-subprocess-use-audit
     return subprocess.run(args, capture_output=True, check=False).returncode == 0  # nosec
 
 

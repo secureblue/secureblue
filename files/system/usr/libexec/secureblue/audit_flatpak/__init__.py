@@ -271,23 +271,33 @@ def _handle_flatpak_buses(state: FlatpakPermissionsState, perms: Permissions):
                 )
 
 
+def _is_valid_predefined_check(
+        check: PermissionCheck,
+        existing_permissions: Permissions,
+        bluetooth_loaded: bool,
+        ptrace_allowed: bool
+):
+    is_irrelevant_permission = check.category == "features" and (
+            (check.permission == "bluetooth" and not bluetooth_loaded) or
+            (check.permission == "devel" and not ptrace_allowed)
+    )
+    return (not is_irrelevant_permission
+            and check.category in existing_permissions.permissions
+            and check.permission in existing_permissions.permissions[check.category])
+
+
 def _check_predefined_flatpak_permissions(
         state: FlatpakPermissionsState,
         existing_permissions: Permissions,
         bluetooth_loaded: bool,
         ptrace_allowed: bool
 ):
-    for check in (c for c in FLATPAK_PERMISSION_CHECKS if c.category in existing_permissions.permissions):
-        if check.permission in existing_permissions.permissions[check.category]:
-            is_irrelevant_permission = check.category == "features" and (
-                (check.permission == "bluetooth" and not bluetooth_loaded) or
-                (check.permission == "devel" and not ptrace_allowed)
-            )
-            if not is_irrelevant_permission:
-                state.status = state.status.downgrade_to(check.status)
-                state.warnings.append(check.warning(state.name))
-                state.recs.append(check.recommendation(state.name))
-                state.arbitrary_permissions |= check.arbitrary_permissions
+    for check in FLATPAK_PERMISSION_CHECKS:
+        if _is_valid_predefined_check(check, existing_permissions, bluetooth_loaded, ptrace_allowed):
+            state.status = state.status.downgrade_to(check.status)
+            state.warnings.append(check.warning(state.name))
+            state.recs.append(check.recommendation(state.name))
+            state.arbitrary_permissions |= check.arbitrary_permissions
 
 
 def _check_dangerous_dirs(

@@ -291,6 +291,71 @@ def _check_predefined_flatpak_permissions(
             if check.arbitrary_permissions:
                 state.arbitrary_permissions = True
 
+
+def _check_dangerous_dirs(
+        state: FlatpakPermissionsState,
+        filesystems_rw: dict[str, bool]
+):
+    dangerous_dirs: list[DirectoryInfo] = [
+        DirectoryInfo("host", "all system files", Status.FAIL),
+        DirectoryInfo("home", "all user files", Status.FAIL),
+        DirectoryInfo("xdg-config", "other applications' configuration files", Status.FAIL),
+        DirectoryInfo("xdg-cache", "other applications' cache files", Status.FAIL),
+        DirectoryInfo("xdg-data", "other applications' data files", Status.FAIL)
+    ]
+
+    for directory in dangerous_dirs:
+        if directory.path in filesystems_rw:
+            aliased_path = directory.path
+            state.status = state.status.downgrade_to(directory.status)
+            is_alias = filesystems_rw[directory.path]
+            if is_alias:
+                aliased_path = directory.path.replace(directory.path, ALIASES[directory.path], 1)
+            state.warnings.append(f"{state.name} has filesystem={directory.path} permission")
+            state.recs.append(
+                f"""{state.name} has filesystem={aliased_path} permission.
+                        This grants access to {directory.description}.
+                        To remove this permission, use Flatseal or run:
+                        $ flatpak override -u --nofilesystem={aliased_path} {state.name}"""
+            )
+
+
+def _check_hardened_malloc_access(
+        state: FlatpakPermissionsState,
+        filesystems: list[str] | None,
+        filesystems_rw: dict[str, bool],
+        filesystems_ro: dict[str, bool],
+):
+    if filesystems is None or ("host-os" not in filesystems_ro and "host-os" not in filesystems_rw):
+        state.status = state.status.downgrade_to(Status.WARN)
+        state.warnings.append(f"{state.name} is missing host-os:ro permission")
+        state.recs.append(
+            f"""{state.name} is missing host-os:ro permission.
+                    This is required to load hardened_malloc.
+                    To add this permission, use Flatseal or run:
+                    $ flatpak override -u --filesystem=host-os:ro {state.name}"""
+        )
+
+
+def _check_overrides_access(
+        state: FlatpakPermissionsState,
+        filesystems_rw: dict[str, bool]
+):
+    override_path = "xdg-data/flatpak/overrides"
+    if override_path in filesystems_rw:
+        state.arbitrary_permissions = True
+        is_alias = filesystems_rw[override_path]
+        if is_alias:
+            override_path = override_path.replace("xdg-data", ALIASES["xdg-data"], 1)
+        if state.name not in ARBITRARY_PERMISSIONS_EXPECTED:
+            state.recs.append(
+                f"""{state.name} can modify flatpak overrides.
+                                This grants the ability to acquire arbitrary permissions.
+                                To remove this permission, use Flatseal or run:
+                                $ flatpak override -u --nofilesystem={override_path} {state.name}"""
+            )
+
+
 def _check_fs_permissions(state: FlatpakPermissionsState, perms: Permissions):
     filesystems = perms.permissions.get("filesystems")
     filesystems_ro = {}
@@ -304,50 +369,6 @@ def _check_fs_permissions(state: FlatpakPermissionsState, perms: Permissions):
                 filesystems_ro[path] = is_alias
             else:
                 filesystems_rw[path] = is_alias
-
-        dangerous_dirs: list[DirectoryInfo] = [
-            DirectoryInfo("host", "all system files", Status.FAIL),
-            DirectoryInfo("home", "all user files", Status.FAIL),
-            DirectoryInfo("xdg-config", "other applications' configuration files", Status.FAIL),
-            DirectoryInfo("xdg-cache", "other applications' cache files", Status.FAIL),
-            DirectoryInfo("xdg-data", "other applications' data files", Status.FAIL)
-        ]
-
-        for directory in dangerous_dirs:
-            if directory.path in filesystems_rw:
-                aliased_path = directory.path
-                state.status = state.status.downgrade_to(directory.status)
-                is_alias = filesystems_rw[directory.path]
-                if is_alias:
-                    aliased_path = directory.path.replace(path, ALIASES[directory.path], count=1)
-                state.warnings.append(f"{state.name} has filesystem={directory.path} permission")
-                state.recs.append(
-                    f"""{state.name} has filesystem={aliased_path} permission.
-                            This grants access to {directory.description}.
-                            To remove this permission, use Flatseal or run:
-                            $ flatpak override -u --nofilesystem={aliased_path} {state.name}"""
-                )
-
-        override_path = "xdg-data/flatpak/overrides"
-        if override_path in filesystems_rw:
-            state.arbitrary_permissions = True
-            is_alias = filesystems_rw[override_path]
-            if is_alias:
-                override_path = override_path.replace("xdg-data", ALIASES["xdg-data"], count=1)
-            if state.name not in ARBITRARY_PERMISSIONS_EXPECTED:
-                state.recs.append(
-                    f"""{state.name} can modify flatpak overrides.
-                            This grants the ability to acquire arbitrary permissions.
-                            To remove this permission, use Flatseal or run:
-                            $ flatpak override -u --nofilesystem={override_path} {state.name}"""
-                )
-
-    if filesystems is None or ("host-os" not in filesystems_ro and "host-os" not in filesystems_rw):
-        state.status = state.status.downgrade_to(Status.WARN)
-        state.warnings.append(f"{state.name} is missing host-os:ro permission")
-        state.recs.append(
-            f"""{state.name} is missing host-os:ro permission.
-                    This is required to load hardened_malloc.
-                    To add this permission, use Flatseal or run:
-                    $ flatpak override -u --filesystem=host-os:ro {state.name}"""
-        )
+        _check_dangerous_dirs(state, filesystems_rw)
+        _check_overrides_access(state, filesystems_rw)
+    _check_hardened_malloc_access(state, filesystems, filesystems_rw, filesystems_ro)

@@ -121,7 +121,7 @@ class AsyncProcessError(AuditError):
 
 async def async_command_stdout(cmd: str, *args: str, check: bool = True) -> str:
     """Asynchronously run a command in the shell and return the contents of stdout."""
-    # nosemgrep: dangerous-subprocess-use-audit
+    # nosemgrep: dangerous-subprocess-use-audit, dangerous-asyncio-create-exec-audit
     sub = await asyncio.create_subprocess_exec(
         cmd, *args, stdout=subprocess.PIPE, stderr=subprocess.DEVNULL
     )

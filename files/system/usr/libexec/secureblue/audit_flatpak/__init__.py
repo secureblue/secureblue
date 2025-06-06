@@ -277,21 +277,17 @@ def _check_predefined_flatpak_permissions(
         bluetooth_loaded: bool,
         ptrace_allowed: bool
 ):
-    # #lizard forgives
-    for check in FLATPAK_PERMISSION_CHECKS:
-        if check.category not in existing_permissions.permissions:
-            continue
+    for check in (c for c in FLATPAK_PERMISSION_CHECKS if c.category in existing_permissions.permissions):
         if check.permission in existing_permissions.permissions[check.category]:
-            if check.category == "features":
-                if check.permission == "bluetooth" and not bluetooth_loaded:
-                    continue
-                if check.permission == "devel" and not ptrace_allowed:
-                    continue
-            state.status = state.status.downgrade_to(check.status)
-            state.warnings.append(check.warning(state.name))
-            state.recs.append(check.recommendation(state.name))
-            if check.arbitrary_permissions:
-                state.arbitrary_permissions = True
+            is_irrelevant_permission = check.category == "features" and (
+                (check.permission == "bluetooth" and not bluetooth_loaded) or
+                (check.permission == "devel" and not ptrace_allowed)
+            )
+            if not is_irrelevant_permission:
+                state.status = state.status.downgrade_to(check.status)
+                state.warnings.append(check.warning(state.name))
+                state.recs.append(check.recommendation(state.name))
+                state.arbitrary_permissions |= check.arbitrary_permissions
 
 
 def _check_dangerous_dirs(

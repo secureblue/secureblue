@@ -107,6 +107,7 @@ fi
 
 echo "Creating backup key"
 systemd-cryptenroll --recovery-key "$CRYPT_DISK" > "/var/home/luks_backup_key.txt"
+chmod 644 "/var/home/luks_backup_key.txt"
 
 if lsinitrd 2>&1 | grep -q fido2 > /dev/null; then
   ## add fido2 to initramfs

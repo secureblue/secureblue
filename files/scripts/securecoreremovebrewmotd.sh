@@ -1,3 +1,5 @@
+#!/usr/bin/env bash
+
 # Copyright 2025 The Secureblue Authors
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -10,28 +12,6 @@
 # distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and limitations under the License.
 
-modules:
-    - type: rpm-ostree
-      install:
-        - setools-console
-        - usbguard
-        - firewalld
-        - policycoreutils-python-utils
-      remove:
-        - sudo
-        
-    - type: files
-      files:
-        - source: system/server
-          destination: /
-    - type: script
-      scripts:
-        - addtailscalerepo.sh
-    - type: script
-      scripts:
-        - excludepcsc.sh
-        - setserverdefaultzone.sh
-        - setservermotd.sh
-        - removebrewjust.sh
-        - removesuid.sh
-        - securecoreremovebrewmotd.sh
+set -oue pipefail
+
+sed -i '/brew help/d' /usr/share/ublue-os/motd/secureblue.md

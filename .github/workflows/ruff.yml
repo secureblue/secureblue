@@ -1,4 +1,5 @@
 name: ruff
+permissions: read-all
 on:
   pull_request:
     paths:

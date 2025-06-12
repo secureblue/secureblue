@@ -192,14 +192,13 @@ def _format_recommendation_text(rec_text: str, mergeable_names: list[str] | None
 
 def _print_recs(recs: list[Recommendation], width: int = 80):
     print_heading("Recommendations", width=width)
-    ordinary_recs = [rec for rec in recs if rec.mergeable_name is None]
-    mergeable_recs = [rec for rec in recs if rec.mergeable_name is not None]
-    # Print non-mergeable recommendations first
-    for rec in ordinary_recs:
-        print(_format_recommendation_text(rec.text))
-    merged_recs_data = {rec.text: [] for rec in mergeable_recs}
-    for rec in mergeable_recs:
-        merged_recs_data[rec.text].append(rec.mergeable_name)
+    merged_recs_data = {rec.text: [] for rec in recs if rec.mergeable_name is not None}
+    for rec in recs:
+        if rec.mergeable_name is None:
+            # Print non-mergeable recommendations first
+            print(_format_recommendation_text(rec.text))
+        else:
+            merged_recs_data[rec.text].append(rec.mergeable_name)
     for rec_template, names in merged_recs_data.items():
         print(_format_recommendation_text(rec_template, mergeable_names=names))
 

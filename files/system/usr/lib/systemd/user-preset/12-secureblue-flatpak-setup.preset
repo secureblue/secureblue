@@ -1,0 +1,2 @@
+enable secureblue-flatpak-setup.service
+enable secureblue-flatpak-setup.timer

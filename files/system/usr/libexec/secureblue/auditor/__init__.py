@@ -16,6 +16,7 @@
 Framework for system auditing.
 """
 
+import dataclasses
 import enum
 import inspect
 import json
@@ -57,16 +58,42 @@ class Status(enum.Enum):
         return max(self, other, key=lambda status: status.value)
 
 
+@dataclasses.dataclass
+class Recommendation:
+    """A recommendation for user action to be taken."""
+
+    text: str
+    mergeable_name: str | None = None
+
+    def __init__(self, rec: str | Self, mergeable_name: str | None = None):
+        self.text = rec.text if isinstance(rec, Recommendation) else str(rec)
+        if isinstance(rec, Recommendation):
+            self.text = rec.text
+        else:
+            self.text = str(rec)
+        if mergeable_name is not None:
+            self.mergeable_name = mergeable_name
+        elif isinstance(rec, Recommendation):
+            self.mergeable_name = rec.mergeable_name
+        else:
+            self.mergeable_name = None
+
+
 class Report:
     """A result of a check to be reported."""
+
+    description: str
+    status: Status
+    warnings: list[str]
+    recs: list[Recommendation]
 
     def __init__(
         self,
         desc: str,
         status: Status,
         *,
-        warnings: str | list[str] | None = None,
-        recs: str | list[str] | None = None,
+        warnings: str | Sequence[str] | None = None,
+        recs: str | Recommendation | Sequence[str | Recommendation] | None = None,
     ):
         self.description = desc
         self.status = status
@@ -75,13 +102,13 @@ class Report:
         elif isinstance(warnings, str):
             self.warnings = [warnings]
         else:
-            self.warnings = warnings
+            self.warnings = list(warnings)
         if recs is None:
             self.recs = []
-        elif isinstance(recs, str):
-            self.recs = [recs]
+        elif isinstance(recs, (str, Recommendation)):
+            self.recs = [Recommendation(recs)]
         else:
-            self.recs = recs
+            self.recs = [Recommendation(rec) for rec in recs]
 
     def to_str(self, width: int = 80) -> str:
         """Represent the report as a string formatted to the given width."""
@@ -100,29 +127,18 @@ class Report:
         return report_str
 
 
+@dataclasses.dataclass
 class Check:
     """A single check done as part of an audit."""
 
-    def __init__(
-        self,
-        name: str,
-        callback: Callable[..., AsyncGenerator[Report]],
-        *,
-        stateful: bool = False,
-        category: str | None = None,
-        dependencies: Sequence[str] | None = None,
-    ):
-        self.name = name
-        self.callback = callback
-        self.category = category
-        self.stateful = stateful
-        if dependencies is None:
-            self.dependencies = []
-        else:
-            self.dependencies = dependencies
-        self.done = False
-        self.reports: list[Report] = []
-        self.recs: list[str] = []
+    name: str
+    callback: Callable[..., AsyncGenerator[Report]]
+    category: str | None = None
+    stateful: bool = False
+    dependencies: list[str] = dataclasses.field(default_factory=list)
+    done: bool = False
+    reports: list[Report] = dataclasses.field(default_factory=list)
+    recs: list[Recommendation] = dataclasses.field(default_factory=list)
 
     async def run(
         self, state: dict[str, Any] | None = None, rerun: bool = False
@@ -158,16 +174,34 @@ class DependencyError(AuditError):
     """A check's dependency requirements were not satisfied."""
 
 
-def _print_recs(recs: list[str], width: int = 80):
+def _format_recommendation_text(rec_text: str, mergeable_names: list[str] | None = None) -> str:
+    rec_lines = []
+    for line in rec_text.split("\n"):
+        line = line.strip()
+        if not line:
+            continue
+        if mergeable_names is not None and line == "[[NAMES]]":
+            for name in mergeable_names:
+                rec_lines.append("  " + name)
+        elif line[0] in ("$", "#"):
+            rec_lines.append(bold(line))
+        else:
+            rec_lines.append(line)
+    return "\n  ".join(rec_lines) + "\n"
+
+
+def _print_recs(recs: list[Recommendation], width: int = 80):
     print_heading("Recommendations", width=width)
-    for rec in recs:
-        rec_lines = [line.strip() for line in rec.split("\n")]
-        for i, line in enumerate(rec_lines):
-            if not line:
-                continue
-            if line[0] in ["$", "#"]:
-                rec_lines[i] = bold(line)
-        print("\n  ".join(rec_lines) + "\n")
+    ordinary_recs = [rec for rec in recs if rec.mergeable_name is None]
+    mergeable_recs = [rec for rec in recs if rec.mergeable_name is not None]
+    # Print non-mergeable recommendations first
+    for rec in ordinary_recs:
+        print(_format_recommendation_text(rec.text))
+    merged_recs_data = {rec.text: [] for rec in mergeable_recs}
+    for rec in mergeable_recs:
+        merged_recs_data[rec.text].append(rec.mergeable_name)
+    for rec_template, names in merged_recs_data.items():
+        print(_format_recommendation_text(rec_template, mergeable_names=names))
 
 
 class Audit:
@@ -176,7 +210,7 @@ class Audit:
     def __init__(self):
         self.checks: list[Check] = []
         self.state: dict[str, Any] = {}
-        self.recs: list[str] = []
+        self.recs: list[Recommendation] = []
         self.categories: set[str] = set()
 
     def names(self) -> list[str]:
@@ -224,6 +258,9 @@ class Audit:
             if check.category in exclude:
                 continue
             async for report in check.run(self.state):
+                recs = [
+                    {"text": rec.text, "mergeable_name": rec.mergeable_name} for rec in report.recs
+                ]
                 yield json.dumps(
                     {
                         "name": check.name,
@@ -231,7 +268,7 @@ class Audit:
                         "description": report.description,
                         "status": report.status.name.lower(),
                         "warnings": report.warnings,
-                        "recommendations": report.recs,
+                        "recommendations": recs,
                     }
                 )
 
@@ -274,7 +311,7 @@ def depends_on(*dependencies: str) -> Callable[..., Check]:
 
     def add_dependencies(f) -> Check:
         check = make_check(f)
-        check.dependencies = dependencies
+        check.dependencies += list(dependencies)
         return check
 
     return add_dependencies

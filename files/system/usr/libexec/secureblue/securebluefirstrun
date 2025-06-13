@@ -19,3 +19,9 @@ set -euo pipefail
 # Install required brew packages
 /home/linuxbrew/.linuxbrew/bin/brew install fzf gum glow
 
+flatpak remote-delete --system --force fedora
+flatpak remote-delete --user --force fedora
+flatpak remote-delete --system --force flathub
+flatpak remote-delete --user --force flathub
+flatpak remove --system --noninteractive --all
+  

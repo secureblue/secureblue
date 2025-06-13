@@ -10,29 +10,6 @@ screens:
       description: |
         This guided installer will help you get started with your new system.
 
-  can-we-harden-your-flatpaks:
-    source: yafti.screen.consent
-    values:
-      title: Flatpak hardening
-      description: |
-        This step will enable hardening for installed flatpaks.
-      actions:
-        - run: ujust harden-flatpak
-
-  can-we-modify-your-flatpaks:
-    source: yafti.screen.consent
-    values:
-      title: Flathub setup
-      description: |
-        This step will remove all Fedora and Flathub Flatpaks from your system and replace them with Flathub's Verified repository. It will not reinstall your flatpaks. It will also disable the system flatpaks in favor of user flatpaks.
-      actions:
-        - run: flatpak remote-delete --system --force fedora
-        - run: flatpak remote-delete --user --force fedora
-        - run: flatpak remote-delete --system --force flathub
-        - run: flatpak remote-delete --user --force flathub
-        - run: flatpak remove --system --noninteractive --all
-        - run: flatpak remote-add --if-not-exists --user --subset=verified flathub-verified https://flathub.org/repo/flathub.flatpakrepo
-  
   applications:
     source: yafti.screen.package
     values:
@@ -47,6 +24,7 @@ screens:
           description: Core system applications for the GNOME desktop environment.
           default: false
           packages:
+            - Audio Player: org.gnome.Decibels
             - Calculator: org.gnome.Calculator
             - Calendar: org.gnome.Calendar
             - Camera: org.gnome.Snapshot
@@ -63,12 +41,14 @@ screens:
             - Logs: org.gnome.Logs
             - Maps: org.gnome.Maps
             - Text Editor: org.gnome.TextEditor
+            - Video Player: org.gnome.Showtime
             - Weather: org.gnome.Weather
 
         Core KDE Plasma Apps:
           description: Core system applications for the KDE Plasma desktop environment.
           default: false
           packages:
+            - Audio Player: org.kde.amarok
             - Calculator: org.kde.kcalc
             - Camera: org.kde.kamoso
             - Characters: org.kde.kcharselect
@@ -78,6 +58,7 @@ screens:
             - Image Viewer: org.kde.gwenview
             - Maps: org.kde.marble
             - Text Editor: org.kde.kate
+            - Video Player: org.kde.haruna
             - Weather: org.kde.kweather
             
         System Apps:

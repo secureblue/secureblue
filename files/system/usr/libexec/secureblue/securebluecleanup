@@ -29,6 +29,12 @@ if [[ "$IMAGE_BASE_STRING" == *"signed"* ]]; then
     exit 0
 fi
 
+flatpak remote-delete --system --force fedora
+flatpak remote-delete --user --force fedora
+flatpak remote-delete --system --force flathub
+flatpak remote-delete --user --force flathub
+flatpak remove --system --noninteractive --all
+
 IMAGE_REF_NAME=${IMAGE_BASE_STRING##*/}
 echo "Rebasing to $IMAGE_REF_NAME"
 rpm-ostree rebase "ostree-image-signed:docker://ghcr.io/secureblue/$IMAGE_REF_NAME"

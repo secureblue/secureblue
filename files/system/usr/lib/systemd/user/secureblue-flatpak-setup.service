@@ -7,4 +7,4 @@ ConditionPathExists=!~/.config/secureblue/secureblue-flatpak-setup.stamp
 [Service]
 Type=oneshot
 ExecStart=/usr/libexec/secureblue/secureblueflatpaksetup
-ExecStartPost=mkdir ~/.config/secureblue && touch ~/.config/secureblue/secureblue-flatpak-setup.stamp
+ExecStartPost=bash -c 'mkdir -p ~/.config/secureblue && touch ~/.config/secureblue/secureblue-flatpak-setup.stamp'

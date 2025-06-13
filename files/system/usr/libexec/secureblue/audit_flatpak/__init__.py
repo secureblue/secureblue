@@ -8,9 +8,11 @@
 #
 #     http://www.apache.org/licenses/LICENSE-2.0
 #
-# Unless required by applicable law or agreed to in writing, software distributed under the License is
-# distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-# See the License for the specific language governing permissions and limitations under the License.
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
 
 """
 Flatpak permissions checks for secureblue auditing script.
@@ -43,7 +45,7 @@ def parse_flatpak_permissions(perms_text: str) -> Permissions:
     """Get permissions for an installed flatpak."""
     perms = Permissions()
     section = None
-    for line in perms_text.split("\n"):
+    for line in perms_text.splitlines():
         line = line.strip()
         if not line or line.startswith("#"):
             continue
@@ -159,9 +161,8 @@ class PermissionCheck:
             $ flatpak override -u --{option}={self.permission} com.example.Example
             (replacing "com.example.Example" with the flatpak app ID)
             {self.endnote or ""}"""
-        return Recommendation(
-            "\n".join(line.strip() for line in rec.split("\n") if line.strip()), mergeable_name=name
-        )
+        rec = "\n".join(line.strip() for line in rec.splitlines() if line.strip())
+        return Recommendation(rec, mergeable_name=name)
 
 
 @dataclass(frozen=True)

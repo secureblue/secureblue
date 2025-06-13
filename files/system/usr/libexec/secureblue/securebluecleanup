@@ -20,20 +20,20 @@ cp /usr/etc/authselect/fingerprint-auth /etc/authselect/fingerprint-auth
 cp /usr/etc/authselect/dconf-db /etc/authselect/dconf-db
 cp /usr/etc/authselect/authselect.conf /etc/authselect/authselect.conf
 
-# Ensure we are on signed
-RPM_OSTREE_STATUS=$(rpm-ostree status --json --booted)
-IMAGE_BASE_STRING=$(echo "$RPM_OSTREE_STATUS" | jq -r '.deployments[0]."container-image-reference" // empty')
-echo "Current image base: $IMAGE_BASE_STRING"
-if [[ "$IMAGE_BASE_STRING" == *"signed"* ]]; then
-    echo "Already on signed. Exiting..."
-    exit 0
-fi
-
 flatpak remote-delete --system --force fedora
 flatpak remote-delete --user --force fedora
 flatpak remote-delete --system --force flathub
 flatpak remote-delete --user --force flathub
 flatpak remove --system --noninteractive --all
+
+# Ensure we are on signed
+RPM_OSTREE_STATUS=$(rpm-ostree status --json --booted)
+IMAGE_BASE_STRING=$(echo "$RPM_OSTREE_STATUS" | jq -r '.deployments[0]."container-image-reference" // empty')
+echo "Current image base: $IMAGE_BASE_STRING"
+if [[ "$IMAGE_BASE_STRING" == *"ostree-image-signed"* ]]; then
+    echo "Already on signed. Exiting..."
+    exit 0
+fi
 
 IMAGE_REF_NAME=${IMAGE_BASE_STRING##*/}
 echo "Rebasing to $IMAGE_REF_NAME"

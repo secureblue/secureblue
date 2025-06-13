@@ -20,3 +20,4 @@ scripts:
   - enablesecurebluefirstrun.sh
   - createjustcompletions.sh
   - enablekeyverification.sh
+  - removefedoraflatpakremoteservice.sh

@@ -24,7 +24,7 @@ import inspect
 import json
 
 from collections.abc import Callable, Sequence
-from typing import Any, AsyncGenerator, Generator, Self
+from typing import Any, AsyncGenerator, ClassVar, Final, Generator, Self
 
 
 class AuditError(Exception):
@@ -66,6 +66,7 @@ class Recommendation:
 
     text: str
     mergeable_name: str | None = None
+    NAMES_PLACEHOLDER: ClassVar[Final[str]] = "[[NAMES_PLACEHOLDER]]"
 
     def __init__(self, rec: str | Self, mergeable_name: str | None = None):
         self.text = rec.text if isinstance(rec, Recommendation) else str(rec)
@@ -179,10 +180,10 @@ class DependencyError(AuditError):
 def _format_recommendation_text(rec_text: str, mergeable_names: list[str] | None = None) -> str:
     rec_lines_raw = [line.strip() for line in rec_text.splitlines() if line.strip()]
     rec_lines_formatted = []
+    name_text_lines = [] if mergeable_names is None else ["  " + name for name in mergeable_names]
     for line in rec_lines_raw:
-        if mergeable_names is not None and line == "[[NAMES]]":
-            for name in mergeable_names:
-                rec_lines_formatted.append("  " + name)
+        if line == Recommendation.NAMES_PLACEHOLDER:
+            rec_lines_formatted += name_text_lines
         elif line[0] in ("$", "#"):
             rec_lines_formatted.append(bold(line))
         else:

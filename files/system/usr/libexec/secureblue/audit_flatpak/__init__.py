@@ -154,7 +154,7 @@ class PermissionCheck:
             sandbox_escape_note = ""
         option = FLATPAK_OVERRIDE_OPTIONS[self.category][1]
         rec = f"""The following flatpak app(s) {self.description or self.default_description()}:
-            [[NAMES]]
+            {Recommendation.NAMES_PLACEHOLDER}
             {self.note or ""}
             {sandbox_escape_note}
             To remove this permission from an app, use Flatseal or run:
@@ -283,12 +283,12 @@ def _check_ld_preload(state: FlatpakPermissionsState, perms: Permissions):
             state.status = state.status.downgrade_to(WARN)
         state.recs.append(
             Recommendation(
-                """The following flatpak app(s) are not requesting hardened_malloc:
-                [[NAMES]]
-                To enable it for an app, run:
-                $ ujust harden-flatpak com.example.Example
-                (replacing "com.example.Example" with the flatpak app ID)
-            """,
+                f"""The following flatpak app(s) are not requesting hardened_malloc:
+                    {Recommendation.NAMES_PLACEHOLDER}
+                    To enable it for an app, run:
+                    $ ujust harden-flatpak com.example.Example
+                    (replacing "com.example.Example" with the flatpak app ID)
+                """,
                 mergeable_name=state.name,
             )
         )
@@ -302,12 +302,12 @@ def _handle_flatpak_buses(state: FlatpakPermissionsState, perms: Permissions):
                 state.recs.append(
                     Recommendation(
                         f"""The following flatpak app(s) can talk to {bus_name} on the session bus:
-                        [[NAMES]]
-                        This grants the ability to acquire arbitrary permissions.
-                        To remove this permission from an app, use Flatseal or run:
-                        $ flatpak override -u --no-talk-name={bus_name} com.example.Example
-                        (replacing "com.example.Example" with the flatpak app ID)
-                    """,
+                            {Recommendation.NAMES_PLACEHOLDER}
+                            This grants the ability to acquire arbitrary permissions.
+                            To remove this permission from an app, use Flatseal or run:
+                            $ flatpak override -u --no-talk-name={bus_name} com.example.Example
+                            (replacing "com.example.Example" with the flatpak app ID)
+                        """,
                         mergeable_name=state.name,
                     )
                 )
@@ -364,12 +364,12 @@ def _check_dangerous_dirs(state: FlatpakPermissionsState, filesystems_rw: dict[s
             state.recs.append(
                 Recommendation(
                     f"""The following flatpak app(s) have filesystem={aliased_path} permission:
-                    [[NAMES]]
-                    This grants access to {directory.description}.
-                    To remove this permission from an app, use Flatseal or run:
-                    $ flatpak override -u --nofilesystem={aliased_path} com.example.Example
-                    (replacing "com.example.Example" with the flatpak app ID)
-                """,
+                        {Recommendation.NAMES_PLACEHOLDER}
+                        This grants access to {directory.description}.
+                        To remove this permission from an app, use Flatseal or run:
+                        $ flatpak override -u --nofilesystem={aliased_path} com.example.Example
+                        (replacing "com.example.Example" with the flatpak app ID)
+                    """,
                     mergeable_name=state.name,
                 )
             )
@@ -386,13 +386,13 @@ def _check_hardened_malloc_access(
         state.warnings.append(f"{state.name} is missing host-os:ro permission")
         state.recs.append(
             Recommendation(
-                """The following flatpak app(s) are missing host-os:ro permission:
-                [[NAMES]]
-                This is required to load hardened_malloc.
-                To add this permission to an app, use Flatseal or run:
-                $ flatpak override -u --filesystem=host-os:ro com.example.Example
-                (replacing "com.example.Example" with the flatpak app ID)
-            """,
+                f"""The following flatpak app(s) are missing host-os:ro permission:
+                    {Recommendation.NAMES_PLACEHOLDER}
+                    This is required to load hardened_malloc.
+                    To add this permission to an app, use Flatseal or run:
+                    $ flatpak override -u --filesystem=host-os:ro com.example.Example
+                    (replacing "com.example.Example" with the flatpak app ID)
+                """,
                 mergeable_name=state.name,
             )
         )
@@ -409,12 +409,12 @@ def _check_overrides_access(state: FlatpakPermissionsState, filesystems_rw: dict
             state.recs.append(
                 Recommendation(
                     f"""The following flatpak app(s) can modify flatpak overrides:
-                    [[NAMES]]
-                    This grants the ability to acquire arbitrary permissions.
-                    To remove this permission from an app, use Flatseal or run:
-                    $ flatpak override -u --nofilesystem={override_path} com.example.Example
-                    (replacing "com.example.Example" with the flatpak app ID)
-                """,
+                        {Recommendation.NAMES_PLACEHOLDER}
+                        This grants the ability to acquire arbitrary permissions.
+                        To remove this permission from an app, use Flatseal or run:
+                        $ flatpak override -u --nofilesystem={override_path} com.example.Example
+                        (replacing "com.example.Example" with the flatpak app ID)
+                    """,
                     mergeable_name=state.name,
                 )
             )

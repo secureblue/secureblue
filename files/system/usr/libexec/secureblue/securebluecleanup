@@ -20,10 +20,10 @@ cp /usr/etc/authselect/fingerprint-auth /etc/authselect/fingerprint-auth
 cp /usr/etc/authselect/dconf-db /etc/authselect/dconf-db
 cp /usr/etc/authselect/authselect.conf /etc/authselect/authselect.conf
 
-flatpak remote-delete --system --force fedora
-flatpak remote-delete --user --force fedora
-flatpak remote-delete --system --force flathub
-flatpak remote-delete --user --force flathub
+flatpak remote-delete --system --force fedora || true
+flatpak remote-delete --user --force fedora || true
+flatpak remote-delete --system --force flathub || true
+flatpak remote-delete --user --force flathub || true
 flatpak remove --system --noninteractive --all
 
 # Ensure we are on signed

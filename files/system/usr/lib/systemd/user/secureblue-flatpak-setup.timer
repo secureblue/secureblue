@@ -2,7 +2,8 @@
 Description=secureblue flatpak setup
 
 [Timer]
-OnBootSec=1s
+RandomizedDelaySec=1s
+OnBootSec=2s
 Persistent=true
 
 [Install]

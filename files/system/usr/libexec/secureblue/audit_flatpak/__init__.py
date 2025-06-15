@@ -8,9 +8,11 @@
 #
 #     http://www.apache.org/licenses/LICENSE-2.0
 #
-# Unless required by applicable law or agreed to in writing, software distributed under the License is
-# distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-# See the License for the specific language governing permissions and limitations under the License.
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
 
 """
 Flatpak permissions checks for secureblue auditing script.
@@ -19,7 +21,7 @@ Flatpak permissions checks for secureblue auditing script.
 from dataclasses import dataclass, field
 from typing import Final
 
-from auditor import Status
+from auditor import Status, Recommendation
 
 PASS: Final = Status.PASS
 INFO: Final = Status.INFO
@@ -43,7 +45,7 @@ def parse_flatpak_permissions(perms_text: str) -> Permissions:
     """Get permissions for an installed flatpak."""
     perms = Permissions()
     section = None
-    for line in perms_text.split("\n"):
+    for line in perms_text.splitlines():
         line = line.strip()
         if not line or line.startswith("#"):
             continue
@@ -134,26 +136,33 @@ class PermissionCheck:
     sandbox_escape: bool = False
     arbitrary_permissions: bool = False
 
+    def default_description(self) -> str:
+        """Default description if other description isn't provided."""
+        perm_type = FLATPAK_OVERRIDE_OPTIONS[self.category][0]
+        return f"have {perm_type}={self.permission} permission"
+
     def warning(self, name: str) -> str:
         """Give the warning text for if the check fails."""
-        perm_type = FLATPAK_OVERRIDE_OPTIONS[self.category][0]
-        description = self.description or f"has {perm_type}={self.permission}"
+        description = self.description or self.default_description()
         return f"{name} {description}"
 
-    def recommendation(self, name: str) -> str:
-        """Give the recommendation text for if the check fails."""
+    def recommendation(self, name: str) -> Recommendation:
+        """Give the recommendation for if the check fails."""
         if self.sandbox_escape:
             sandbox_escape_note = "This may also be used as a sandbox escape vector."
         else:
             sandbox_escape_note = ""
         option = FLATPAK_OVERRIDE_OPTIONS[self.category][1]
-        rec = f"""{self.warning(name)}.
+        rec = f"""The following flatpak app(s) {self.description or self.default_description()}:
+            {Recommendation.NAMES_PLACEHOLDER}
             {self.note or ""}
             {sandbox_escape_note}
-            To remove this permission, use Flatseal or run:
-            $ flatpak override -u --{option}={self.permission} {name}
+            To remove this permission from an app, use Flatseal or run:
+            $ flatpak override -u --{option}={self.permission} com.example.Example
+            (replacing "com.example.Example" with the flatpak app ID)
             {self.endnote or ""}"""
-        return "\n".join(line.strip() for line in rec.split("\n") if line.strip())
+        rec = "\n".join(line.strip() for line in rec.splitlines() if line.strip())
+        return Recommendation(rec, mergeable_name=name)
 
 
 @dataclass(frozen=True)
@@ -166,19 +175,19 @@ class DirectoryInfo:
 
 
 FLATPAK_PERMISSION_CHECKS: list[PermissionCheck] = [
-    PermissionCheck("shared", "network", INFO, "has network access"),
-    PermissionCheck("shared", "ipc", INFO, "has inter-process communications access"),
-    PermissionCheck("sockets", "x11", FAIL, "has X11 access"),
-    PermissionCheck("sockets", "pulseaudio", WARN, "has access to the PulseAudio socket"),
+    PermissionCheck("shared", "network", INFO, "have network access"),
+    PermissionCheck("shared", "ipc", INFO, "have inter-process communications access"),
+    PermissionCheck("sockets", "x11", FAIL, "have X11 access"),
+    PermissionCheck("sockets", "pulseaudio", WARN, "have access to the PulseAudio socket"),
     PermissionCheck(
         "sockets",
         "session-bus",
         FAIL,
-        "has access to the D-Bus session bus",
+        "have access to the D-Bus session bus",
         note="This grants access to audio and microphones.",
     ),
-    PermissionCheck("sockets", "system-bus", FAIL, "has access to the D-Bus system bus"),
-    PermissionCheck("sockets", "ssh-auth", WARN, "has access to the SSH agent"),
+    PermissionCheck("sockets", "system-bus", FAIL, "have access to the D-Bus system bus"),
+    PermissionCheck("sockets", "ssh-auth", WARN, "have access to the SSH agent"),
     PermissionCheck(
         "devices",
         "all",
@@ -205,8 +214,8 @@ FLATPAK_PERMISSION_CHECKS: list[PermissionCheck] = [
         note="This grants raw USB device access.",
         sandbox_escape=True,
     ),
-    PermissionCheck("features", "bluetooth", WARN, "has bluetooth access"),
-    PermissionCheck("features", "devel", WARN, "has ptrace access"),
+    PermissionCheck("features", "bluetooth", WARN, "have bluetooth access"),
+    PermissionCheck("features", "devel", WARN, "have ptrace access"),
 ]
 
 ARBITRARY_PERMISSIONS_EXPECTED: list[str] = [
@@ -220,7 +229,7 @@ class FlatpakPermissionsState:
     """The state of a flatpak's permissions."""
 
     warnings: list[str]
-    recs: list[str]
+    recs: list[Recommendation]
     status: Status
     arbitrary_permissions: bool
     name: str
@@ -273,9 +282,15 @@ def _check_ld_preload(state: FlatpakPermissionsState, perms: Permissions):
         else:
             state.status = state.status.downgrade_to(WARN)
         state.recs.append(
-            f"""{state.name} is not requesting hardened_malloc.
-                    To enable it, run:
-                    $ ujust harden-flatpak {state.name}"""
+            Recommendation(
+                f"""The following flatpak app(s) are not requesting hardened_malloc:
+                    {Recommendation.NAMES_PLACEHOLDER}
+                    To enable it for an app, run:
+                    $ ujust harden-flatpak com.example.Example
+                    (replacing "com.example.Example" with the flatpak app ID)
+                """,
+                mergeable_name=state.name,
+            )
         )
 
 
@@ -285,10 +300,16 @@ def _handle_flatpak_buses(state: FlatpakPermissionsState, perms: Permissions):
             state.arbitrary_permissions = True
             if state.name not in ARBITRARY_PERMISSIONS_EXPECTED:
                 state.recs.append(
-                    f"""{state.name} can talk to {bus_name} on the session bus.
-                        This grants the ability to acquire arbitrary permissions.
-                        To remove this permission, use Flatseal or run:
-                        $ flatpak override -u --no-talk-name={bus_name} {state.name}"""
+                    Recommendation(
+                        f"""The following flatpak app(s) can talk to {bus_name} on the session bus:
+                            {Recommendation.NAMES_PLACEHOLDER}
+                            This grants the ability to acquire arbitrary permissions.
+                            To remove this permission from an app, use Flatseal or run:
+                            $ flatpak override -u --no-talk-name={bus_name} com.example.Example
+                            (replacing "com.example.Example" with the flatpak app ID)
+                        """,
+                        mergeable_name=state.name,
+                    )
                 )
 
 
@@ -341,10 +362,16 @@ def _check_dangerous_dirs(state: FlatpakPermissionsState, filesystems_rw: dict[s
                 aliased_path = directory.path.replace(directory.path, ALIASES[directory.path], 1)
             state.warnings.append(f"{state.name} has filesystem={directory.path} permission")
             state.recs.append(
-                f"""{state.name} has filesystem={aliased_path} permission.
+                Recommendation(
+                    f"""The following flatpak app(s) have filesystem={aliased_path} permission:
+                        {Recommendation.NAMES_PLACEHOLDER}
                         This grants access to {directory.description}.
-                        To remove this permission, use Flatseal or run:
-                        $ flatpak override -u --nofilesystem={aliased_path} {state.name}"""
+                        To remove this permission from an app, use Flatseal or run:
+                        $ flatpak override -u --nofilesystem={aliased_path} com.example.Example
+                        (replacing "com.example.Example" with the flatpak app ID)
+                    """,
+                    mergeable_name=state.name,
+                )
             )
 
 
@@ -358,10 +385,16 @@ def _check_hardened_malloc_access(
         state.status = state.status.downgrade_to(WARN)
         state.warnings.append(f"{state.name} is missing host-os:ro permission")
         state.recs.append(
-            f"""{state.name} is missing host-os:ro permission.
+            Recommendation(
+                f"""The following flatpak app(s) are missing host-os:ro permission:
+                    {Recommendation.NAMES_PLACEHOLDER}
                     This is required to load hardened_malloc.
-                    To add this permission, use Flatseal or run:
-                    $ flatpak override -u --filesystem=host-os:ro {state.name}"""
+                    To add this permission to an app, use Flatseal or run:
+                    $ flatpak override -u --filesystem=host-os:ro com.example.Example
+                    (replacing "com.example.Example" with the flatpak app ID)
+                """,
+                mergeable_name=state.name,
+            )
         )
 
 
@@ -374,10 +407,16 @@ def _check_overrides_access(state: FlatpakPermissionsState, filesystems_rw: dict
             override_path = override_path.replace("xdg-data", ALIASES["xdg-data"], 1)
         if state.name not in ARBITRARY_PERMISSIONS_EXPECTED:
             state.recs.append(
-                f"""{state.name} can modify flatpak overrides.
-                                This grants the ability to acquire arbitrary permissions.
-                                To remove this permission, use Flatseal or run:
-                                $ flatpak override -u --nofilesystem={override_path} {state.name}"""
+                Recommendation(
+                    f"""The following flatpak app(s) can modify flatpak overrides:
+                        {Recommendation.NAMES_PLACEHOLDER}
+                        This grants the ability to acquire arbitrary permissions.
+                        To remove this permission from an app, use Flatseal or run:
+                        $ flatpak override -u --nofilesystem={override_path} com.example.Example
+                        (replacing "com.example.Example" with the flatpak app ID)
+                    """,
+                    mergeable_name=state.name,
+                )
             )
 
 

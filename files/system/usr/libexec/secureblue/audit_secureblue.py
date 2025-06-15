@@ -8,9 +8,11 @@
 #
 #     http://www.apache.org/licenses/LICENSE-2.0
 #
-# Unless required by applicable law or agreed to in writing, software distributed under the License is
-# distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-# See the License for the specific language governing permissions and limitations under the License.
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
 
 """
 Auditing script for secureblue. See https://secureblue.dev/ for more info.
@@ -667,7 +669,7 @@ def audit_flatpak_remotes():
     if not command_succeeds(*"command -v flatpak".split()):
         return
 
-    remotes = command_stdout(*"flatpak remotes --columns=name,url,subset".split()).split("\n")
+    remotes = command_stdout(*"flatpak remotes --columns=name,url,subset".split()).splitlines()
     for remote in remotes:
         if not remote:
             continue

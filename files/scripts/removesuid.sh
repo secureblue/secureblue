@@ -70,6 +70,7 @@ find /usr -type f -perm /2000 |
     done
 
 rm -f /usr/bin/chsh
+rm -f /usr/bin/chfn
 rm -f /usr/bin/pkexec
 rm -f /usr/bin/sudo
 rm -f /usr/bin/su
@@ -85,7 +86,6 @@ set_caps_if_present() {
 }
 
 set_caps_if_present "cap_dac_read_search,cap_audit_write=ep" "/usr/bin/chage"
-set_caps_if_present "cap_chown,cap_dac_override,cap_fowner,cap_audit_write=ep" "/usr/bin/chfn"
 set_caps_if_present "cap_dac_read_search=ep" "/usr/libexec/openssh/ssh-keysign"
 set_caps_if_present "cap_sys_admin=ep" "/usr/bin/fusermount3"
 set_caps_if_present "cap_dac_read_search,cap_audit_write=ep" "/usr/sbin/unix_chkpwd"

@@ -25,6 +25,7 @@ install:
   - podman
   - nvme-cli
   - hdparm
+  - wireguard-tools
   
   # signing deps 
   - sbsigntools

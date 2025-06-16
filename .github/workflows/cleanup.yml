@@ -1,5 +1,5 @@
 name: Cleanup Old Images
-permissions: read-all
+permissions: {}
 on:
   schedule:
     - cron: "15 0 * * 0" # 0015 UTC on Sundays

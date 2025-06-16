@@ -13,8 +13,10 @@
 type: rpm-ostree
 repos: 
   - https://copr.fedorainfracloud.org/coprs/secureblue/hardened_malloc/repo/fedora-%OS_VERSION%/secureblue-hardened_malloc-fedora-%OS_VERSION%.repo
+  - https://copr.fedorainfracloud.org/coprs/secureblue/run0edit/repo/fedora-%OS_VERSION%/secureblue-run0edit-fedora-%OS_VERSION%.repo
 install:
   - hardened_malloc
+  - run0edit
 
   # missing upstream
   - openssl

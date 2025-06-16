@@ -50,10 +50,13 @@ jobs:
           persist-credentials: false
 
       - name: Gather image data from recipe
+        shell: bash
+        env:
+          RECIPE: ${{ matrix.recipe }}
         run: |
-          echo "IMAGE_NAME=$(grep '^name:' ./recipes/${{ matrix.recipe }} | sed 's/^name: //')" >> $GITHUB_ENV
-          echo "IMAGE_MAJOR_VERSION=$(grep '^image-version:' ./recipes/${{ matrix.recipe }} | sed 's/^image-version: //')" >> $GITHUB_ENV
-          BASE_IMAGE=$(grep '^base-image:' ./recipes/${{ matrix.recipe }} | sed 's/^base-image: //')
+          echo "IMAGE_NAME=$(grep '^name:' ./recipes/${RECIPE} | sed 's/^name: //')" >> $GITHUB_ENV
+          echo "IMAGE_MAJOR_VERSION=$(grep '^image-version:' ./recipes/${RECIPE}| sed 's/^image-version: //')" >> $GITHUB_ENV
+          BASE_IMAGE=$(grep '^base-image:' ./recipes/${RECIPE} | sed 's/^base-image: //')
           echo "BASE_IMAGE_NAME=$(echo $BASE_IMAGE | sed 's/.*\/.*\///')" >> $GITHUB_ENV
 
       - name: Verify base image
@@ -66,8 +69,10 @@ jobs:
 
       - name: Retrieve Signing Key
         shell: bash
+        env:
+          KERNEL_PRIVKEY: ${{ secrets.KERNEL_PRIVKEY }}
         run: |
-          echo "${{ secrets.KERNEL_PRIVKEY }}" > ./files/scripts/certs/private_key.priv
+          echo "${KERNEL_PRIVKEY}" > ./files/scripts/certs/private_key.priv
 
       - name: Build secureblue
         uses: blue-build/github-action@4d8b4df657ec923574611eec6fd7e959416c47f0 # v1.8.1

@@ -17,6 +17,7 @@ select = [
     "TC", # flake8-type-checking
     "ARG", # flake8-unused-arguments
     "I", # isort
+    "C90", # mccabe
     "N", # pep8-naming
     "E", # pycodestyle error
     "W", # pycodestyle warning

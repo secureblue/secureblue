@@ -574,12 +574,9 @@ def audit_hardened_malloc():
     try:
         with open("/etc/ld.so.preload", encoding="utf-8") as f:
             preloaded = f.read().split()
-    except FileNotFoundError:
+    except (FileNotFoundError, PermissionError):
         status = FAIL
-        warnings.append("ld.so.preload not found")
-    except PermissionError:
-        status = FAIL
-        warnings.append("Permission denied to read ld.so.preload")
+        warnings.append("ld.so.preload not found or unreadable")
     else:
         if preloaded == ["libhardened_malloc.so"]:
             status = PASS

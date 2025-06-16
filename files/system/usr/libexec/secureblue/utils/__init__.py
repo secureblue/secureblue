@@ -27,7 +27,7 @@ import re
 import subprocess  # nosec
 import sys
 import textwrap
-from collections.abc import Generator, Iterable
+from collections.abc import Iterable
 from typing import Final
 
 import rpm
@@ -148,20 +148,20 @@ def command_succeeds(*args: str) -> bool:
 
 
 def parse_config(
-    stream: Iterable[str], *, sep: str = "=", comment: str = "#"
-) -> Generator[tuple[str, str | None]]:
+    stream: Iterable[str], *, sep: str = "=", comment: str = "#", section_start: str = "["
+) -> dict[str, str]:
     """
-    Parse a text stream as a simple configuration file, yielding a sequence of keys and values
-    separated by the given separator ("=" by default).
+    Parse a text stream as a simple configuration file with keys and values separated
+    by the given separator ("=" by default).
     """
+    config = {}
     for raw_line in stream:
         line = raw_line.strip()
-        if not line or line.startswith(comment):
+        if sep not in line or line.startswith((comment, section_start)):
             continue
-        split = line.split(sep, maxsplit=1)
-        key = split[0].strip()
-        value = split[1].strip() if len(split) > 1 else None
-        yield key, value
+        key, value = line.split(sep, maxsplit=1)
+        config[key.strip()] = value.strip()
+    return config
 
 
 def is_rpm_package_installed(name: str) -> bool:

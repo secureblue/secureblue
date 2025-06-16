@@ -127,11 +127,7 @@ def audit_sysctl():
     sysctl_file = "/etc/sysctl.d/60-hardening.conf"
     with open(f"/usr{sysctl_file}", encoding="utf-8") as f:
         conf = f.readlines()
-    sysctl_expected: dict[str, str] = {}
-    for key, value in parse_config(conf):
-        if value is None:
-            raise ValueError(f"failed to parse /usr{sysctl_file}")
-        sysctl_expected[key] = value
+    sysctl_expected = parse_config(conf)
     status = PASS
     sysctl_errors = []
     with open(sysctl_file, encoding="utf-8") as f:
@@ -323,11 +319,9 @@ def audit_dns():
         conf_path = "/etc/systemd/resolved.conf.d/10-securedns.conf"
         try:
             with open(conf_path, encoding="utf-8") as f:
-                for key, value in parse_config(f):
-                    if key == "DNSSEC":
-                        dnssec = value
-                    elif key == "DNSOverTLS":
-                        dot = value
+                config = parse_config(f)
+                dnssec = config.get("DNSSEC")
+                dot = config.get("DNSOverTLS")
         except FileNotFoundError:
             status = FAIL
         except PermissionError:
@@ -362,21 +356,17 @@ def audit_mac_randomization():
     conf_path = "/etc/NetworkManager/conf.d/rand_mac.conf"
     try:
         with open(conf_path, encoding="utf-8") as f:
-            ethernet = False
-            wifi = False
-            for key, value in parse_config(f):
-                if key == "ethernet.cloned-mac-address" and value in ["random", "stable"]:
-                    ethernet = True
-                if key == "wifi.cloned-mac-address" and value in ["random", "stable"]:
-                    wifi = True
-                if ethernet and wifi:
-                    status = PASS
-                    break
+            config = parse_config(f)
     except FileNotFoundError:
         pass
     except PermissionError:
         status = UNKNOWN
         warning = f"Unable to read file {conf_path}"
+    else:
+        ethernet = config.get("ethernet.cloned-mac-address") in ("random", "stable")
+        wifi = config.get("wifi.cloned-mac-address") in ("random", "stable")
+        if ethernet and wifi:
+            status = PASS
     if status == FAIL:
         rec = """MAC randomization is not enabled.
                 To enable it, run:
@@ -560,13 +550,13 @@ def audit_kde_ghns(state):
     warning = None
     try:
         with open("/etc/xdg/kdeglobals", encoding="utf-8") as f:
-            for key, value in parse_config(f):
-                if key == "ghns" and value == "false":
-                    status = PASS
-                    break
+            config = parse_config(f)
     except (FileNotFoundError, PermissionError):
         status = WARN
         warning = "/etc/xdg/kdeglobals not found or inaccessible"
+    else:
+        if config.get("ghns") == "false":
+            status = PASS
     if status == FAIL:
         rec = """KDE GHNS is enabled.
             To disable, run:

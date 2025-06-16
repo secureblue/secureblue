@@ -22,9 +22,8 @@ import dataclasses
 import enum
 import inspect
 import json
-
-from collections.abc import Callable, Sequence
-from typing import Any, AsyncGenerator, ClassVar, Final, Generator, Self
+from collections.abc import AsyncGenerator, Callable, Generator, Sequence
+from typing import Any, ClassVar, Final, Self
 
 
 class AuditError(Exception):
@@ -193,7 +192,9 @@ def _format_recommendation_text(rec_text: str, mergeable_names: list[str] | None
 
 def _print_recs(recs: list[Recommendation], width: int = 80):
     print_heading("Recommendations", width=width)
-    merged_recs_data = {rec.text: [] for rec in recs if rec.mergeable_name is not None}
+    merged_recs_data: dict[str, list[str]] = {
+        rec.text: [] for rec in recs if rec.mergeable_name is not None
+    }
     for rec in recs:
         if rec.mergeable_name is None:
             # Print non-mergeable recommendations first

@@ -21,7 +21,7 @@ Flatpak permissions checks for secureblue auditing script.
 from dataclasses import dataclass, field
 from typing import Final
 
-from auditor import Status, Recommendation
+from auditor import Recommendation, Status
 
 PASS: Final = Status.PASS
 INFO: Final = Status.INFO
@@ -41,39 +41,40 @@ class Permissions:
     system_bus_own: list[str] = field(default_factory=list)
 
 
+def _parse_config_sections(conf_text: str) -> dict[str | None, dict[str, str]]:
+    """Parse config file into sections containing key-value mappings"""
+    sections = {}
+    current_section = None
+    for raw_line in conf_text.splitlines():
+        line = raw_line.strip()
+        if not line or line.startswith("#"):
+            continue
+        if line.startswith("[") and line.endswith("]"):
+            current_section = line[1:-1]
+            sections[current_section] = {}
+            continue
+        key, value = line.split("=", maxsplit=1)
+        sections[current_section][key] = value
+    return sections
+
+
 def parse_flatpak_permissions(perms_text: str) -> Permissions:
     """Get permissions for an installed flatpak."""
     perms = Permissions()
-    section = None
-    for line in perms_text.splitlines():
-        line = line.strip()
-        if not line or line.startswith("#"):
-            continue
-        if line.startswith("["):
-            section = line.strip("[]")
-            continue
-        key, value = line.split("=", maxsplit=1)
+    sections = _parse_config_sections(perms_text)
+    for section, lines in sections.items():
         match section:
             case "Session Bus Policy":
-                match value:
-                    case "talk":
-                        perms.session_bus_talk.append(key)
-                    case "own":
-                        perms.session_bus_own.append(key)
-                    case _:
-                        raise ValueError(f"Unknown session bus permission '{value}'")
+                perms.session_bus_talk = [key for key, value in lines.items() if value == "talk"]
+                perms.session_bus_own = [key for key, value in lines.items() if value == "own"]
             case "System Bus Policy":
-                match value:
-                    case "talk":
-                        perms.system_bus_talk.append(key)
-                    case "own":
-                        perms.system_bus_own.append(key)
-                    case _:
-                        raise ValueError(f"Unknown system bus permission '{value}'")
+                perms.system_bus_talk = [key for key, value in lines.items() if value == "talk"]
+                perms.system_bus_own = [key for key, value in lines.items() if value == "own"]
             case "Environment":
-                perms.environment[key] = value
+                perms.environment = lines
             case _:
-                perms.permissions[key] = [val for val in value.split(";") if val]
+                for key, value in lines.items():
+                    perms.permissions[key] = [val for val in value.split(";") if val]
     return perms
 
 

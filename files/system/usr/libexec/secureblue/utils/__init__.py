@@ -27,14 +27,11 @@ import re
 import subprocess  # nosec
 import sys
 import textwrap
-
-from collections.abc import Iterable
-from typing import Generator, Final
+from collections.abc import Generator, Iterable
+from typing import Final
 
 import rpm
-
-from auditor import Status, AuditError
-
+from auditor import AuditError, Status
 
 PASS: Final = Status.PASS
 INFO: Final = Status.INFO
@@ -157,16 +154,13 @@ def parse_config(
     Parse a text stream as a simple configuration file, yielding a sequence of keys and values
     separated by the given separator ("=" by default).
     """
-    for line in stream:
-        line = line.strip()
+    for raw_line in stream:
+        line = raw_line.strip()
         if not line or line.startswith(comment):
             continue
         split = line.split(sep, maxsplit=1)
         key = split[0].strip()
-        if len(split) == 2:
-            value = split[1].strip()
-        else:
-            value = None
+        value = split[1].strip() if len(split) > 1 else None
         yield key, value
 
 

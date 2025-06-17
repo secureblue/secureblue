@@ -16,7 +16,6 @@ scripts:
   - setfilepermissions.sh
   - httpsmirrors.sh
   - createmissingdirectories.sh
-  - generatemachineid.sh
   - disablegeoclue.sh
   - enablesecurebluefirstrun.sh
   - createjustcompletions.sh

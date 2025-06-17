@@ -47,8 +47,8 @@ if ! [ -d "/etc/pki/containers" ]; then
     mkdir -p "/etc/pki/containers"
 fi
 
-cp "$MODULE_DIRECTORY/secureblue-signing/policy.json" $CONTAINER_DIR/policy.json
-cp "$MODULE_DIRECTORY/secureblue-signing/policy.json" $ETC_CONTAINER_DIR/policy.json
+cp "$MODULE_DIRECTORY/secureblue-signing/policy.json" "$CONTAINER_DIR/policy.json"
+cp "$MODULE_DIRECTORY/secureblue-signing/policy.json" "$ETC_CONTAINER_DIR/policy.json"
 
 # covering our bases here since /usr/etc is technically unsupported, reevaluate once bootc is the primary deployment tool
 cp "/etc/pki/containers/$IMAGE_NAME.pub" "/usr/etc/pki/containers/$IMAGE_REGISTRY_TITLE.pub"

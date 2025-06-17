@@ -1,3 +1,5 @@
+#!/usr/bin/env bash
+
 # Copyright 2025 The Secureblue Authors
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -10,15 +12,8 @@
 # distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and limitations under the License.
 
-type: script
-scripts:
-  - authselect.sh
-  - setfilepermissions.sh
-  - httpsmirrors.sh
-  - createmissingdirectories.sh
-  - generatemachineid.sh
-  - disablegeoclue.sh
-  - enablesecurebluefirstrun.sh
-  - createjustcompletions.sh
-  - enablekeyverification.sh
-  - removefedoraflatpakremoteservice.sh
+set -oue pipefail
+
+MACHINE_ID=a07f0d483b90852bd4ecd97668519991
+
+echo $MACHINE_ID >/etc/machine-id

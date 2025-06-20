@@ -35,6 +35,7 @@ curl -L -O "https://github.com/openzfs/zfs/releases/download/zfs-${ZFS_VERSION}/
 echo "Import key"
 # https://openzfs.github.io/openzfs-docs/Project%20and%20Community/Signing%20Keys.html
 gpg --yes --keyserver keyserver.ubuntu.com --recv D4598027
+gpg --yes --keyserver keyserver.ubuntu.com --recv C6AF658B
 
 echo "Verifying tar.gz signature"
 if ! gpg --verify "zfs-${ZFS_VERSION}.tar.gz.asc" "zfs-${ZFS_VERSION}.tar.gz"

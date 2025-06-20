@@ -15,4 +15,5 @@
 set -euo pipefail
 
 flatpak remote-add --if-not-exists --user --subset=verified flathub-verified https://flathub.org/repo/flathub.flatpakrepo
+flatpak install --user com.github.tchx84.Flatseal
 ujust harden-flatpak

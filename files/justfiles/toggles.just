@@ -21,7 +21,10 @@ toggle-cups:
       systemctl disable cups
       systemctl stop cups
       systemctl daemon-reload
-      echo "CUPS disabled."
+      systemctl stop avahi-daemon
+      systemctl disable avahi-daemon
+      systemctl mask avahi-daemon
+      echo "CUPS & avahi-daemon disabled"
     else
       firewall-cmd --permanent --add-port=631/tcp
       firewall-cmd --permanent --add-port=631/udp
@@ -35,6 +38,8 @@ toggle-cups:
       echo "    security reasons. New network printers will need to be added manually."
       echo "    If you absolutely need network discovery, you can enable the cups-browsed"
       echo "    service at your own risk. Secureblue strongly recommends against this."
+      echo "    If your printer/scanner is connected via USB, you would have to unmask"
+      echo "    and enable avahi-daemon.service as well."
     fi
 
 # Toggle bluetooth kernel modules on/off (requires reboot)

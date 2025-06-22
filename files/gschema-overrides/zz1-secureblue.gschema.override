@@ -25,5 +25,5 @@ font-antialiasing="rgba"
 monospace-font-name="Monospace 12"
 
 [org.gnome.desktop.background]
-picture-uri='file://usr/share/backgrounds/secureblue/secureblue-blue.svg'
-picture-uri-dark='file://usr/share/backgrounds/secureblue/secureblue-black.svg'
+picture-uri='file:///usr/share/backgrounds/secureblue/secureblue-blue.svg'
+picture-uri-dark='file:///usr/share/backgrounds/secureblue/secureblue-black.svg'

@@ -59,33 +59,6 @@ jobs:
         with:
           persist-credentials: false
 
-      - name: Set variant
-        shell: bash
-        id: set_variant
-        env:
-          IMAGE_NAME: ${{ matrix.image }}
-        run: |
-          case "$IMAGE_NAME" in
-            *silverblue*)
-              VARIANT="silverblue"
-              ;;
-            *kinoite*)
-              VARIANT="kinoite"
-              ;;
-            *sericea*)
-              VARIANT="sericea"
-              ;;
-            *cosmic*)
-              VARIANT="cosmic"
-              ;;
-            *)
-              echo "Error: Unknown image variant: $IMAGE_NAME" >&2
-              exit 1
-              ;;
-          esac
-
-          echo "VARIANT=${VARIANT}" >> ${GITHUB_OUTPUT}
-
       - name: Setup Branding Repo
         id: setup-branding-repo
         shell: bash
@@ -99,7 +72,6 @@ jobs:
         id: iso_build
         env:
           IMAGE_NAME: ${{ matrix.image }}
-          VARIANT: ${{ steps.set_variant.outputs.variant }}
         with:
           arch: x86_64
           image_name: ${{ env.IMAGE_NAME}}
@@ -112,7 +84,6 @@ jobs:
           enrollment_password: "secureblue"
           secure_boot_key_url: "https://github.com/secureblue/secureblue/raw/refs/heads/live/files/system/etc/pki/akmods/certs/akmods-secureblue.der"
           repos: "/github/workspace/secureblue.repo /etc/yum.repos.d/fedora.repo /etc/yum.repos.d/fedora-updates.repo"
-
 
       - name: Rename ISO and sign CHECKSUM
         id: rename

@@ -140,12 +140,12 @@ class PermissionCheck:
     def default_description(self) -> str:
         """Default description if other description isn't provided."""
         perm_type = FLATPAK_OVERRIDE_OPTIONS[self.category][0]
-        return f"have {perm_type}={self.permission} permission"
+        return f"{perm_type}={self.permission} permission"
 
     def warning(self, name: str) -> str:
         """Give the warning text for if the check fails."""
         description = self.description or self.default_description()
-        return f"{name} {description}"
+        return f"{name} has {description}"
 
     def recommendation(self, name: str) -> Recommendation:
         """Give the recommendation for if the check fails."""
@@ -154,7 +154,8 @@ class PermissionCheck:
         else:
             sandbox_escape_note = ""
         option = FLATPAK_OVERRIDE_OPTIONS[self.category][1]
-        rec = f"""The following flatpak app(s) {self.description or self.default_description()}:
+        description = self.description or self.default_description()
+        rec = f"""The following flatpak app(s) have {description}:
             {Recommendation.NAMES_PLACEHOLDER}
             {self.note or ""}
             {sandbox_escape_note}
@@ -176,19 +177,19 @@ class DirectoryInfo:
 
 
 FLATPAK_PERMISSION_CHECKS: list[PermissionCheck] = [
-    PermissionCheck("shared", "network", INFO, "have network access"),
-    PermissionCheck("shared", "ipc", INFO, "have inter-process communications access"),
-    PermissionCheck("sockets", "x11", FAIL, "have X11 access"),
-    PermissionCheck("sockets", "pulseaudio", WARN, "have access to the PulseAudio socket"),
+    PermissionCheck("shared", "network", INFO, "network access"),
+    PermissionCheck("shared", "ipc", INFO, "inter-process communications access"),
+    PermissionCheck("sockets", "x11", FAIL, "X11 access"),
+    PermissionCheck("sockets", "pulseaudio", WARN, "access to the PulseAudio socket"),
     PermissionCheck(
         "sockets",
         "session-bus",
         FAIL,
-        "have access to the D-Bus session bus",
+        "access to the D-Bus session bus",
         note="This grants access to audio and microphones.",
     ),
-    PermissionCheck("sockets", "system-bus", FAIL, "have access to the D-Bus system bus"),
-    PermissionCheck("sockets", "ssh-auth", WARN, "have access to the SSH agent"),
+    PermissionCheck("sockets", "system-bus", FAIL, "access to the D-Bus system bus"),
+    PermissionCheck("sockets", "ssh-auth", WARN, "access to the SSH agent"),
     PermissionCheck(
         "devices",
         "all",
@@ -215,8 +216,8 @@ FLATPAK_PERMISSION_CHECKS: list[PermissionCheck] = [
         note="This grants raw USB device access.",
         sandbox_escape=True,
     ),
-    PermissionCheck("features", "bluetooth", WARN, "have bluetooth access"),
-    PermissionCheck("features", "devel", WARN, "have ptrace access"),
+    PermissionCheck("features", "bluetooth", WARN, "bluetooth access"),
+    PermissionCheck("features", "devel", WARN, "ptrace access"),
 ]
 
 ARBITRARY_PERMISSIONS_EXPECTED: list[str] = [

@@ -4,6 +4,7 @@ Description=secureblue update verification timer
 [Timer]
 RandomizedDelaySec=1m
 OnBootSec=2m
+OnUnitActiveSec=1d
 Persistent=true
 
 [Install]

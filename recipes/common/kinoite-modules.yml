@@ -36,3 +36,4 @@ modules:
   - type: script
     scripts:
       - enabledisablekdesplash.sh
+      - setdefaultkdewallpapers.sh

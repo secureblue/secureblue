@@ -29,6 +29,5 @@ modules:
       scripts:
         - enableflatpakautoupdate.sh
         - fixupstreamicdloaderbug.sh
-    - type: yafti
     - type: brew 
       brew-analytics: false

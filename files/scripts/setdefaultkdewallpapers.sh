@@ -12,16 +12,10 @@
 # distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and limitations under the License.
 
-set -euo pipefail
+set -oue pipefail
 
-flatpak remote-add --if-not-exists --user --subset=verified flathub-verified https://flathub.org/repo/flathub.flatpakrepo
-ujust harden-flatpak
+ln -sf /usr/share/backgrounds/secureblue/secureblue-blue.png /usr/share/backgrounds/default.png
+ln -sf /usr/share/backgrounds/secureblue/secureblue-black.png /usr/share/backgrounds/default-dark.png
 
-RPM_OSTREE_STATUS=$(rpm-ostree status --json --booted)
-IMAGE_REF_NAME=$(echo "$RPM_OSTREE_STATUS" | jq -r '.deployments[0]."container-image-reference" // empty | split("/")[-1]')
-flatpak install --user com.github.tchx84.Flatseal -y
-
-if [[ "$IMAGE_REF_NAME" == *"silverblue"* ]]; then
-    flatpak install --user io.github.flattool.Warehouse -y
-fi
-
+ln -sf /usr/share/backgrounds/default.png /usr/share/backgrounds/default.jxl
+ln -sf /usr/share/backgrounds/default-dark.png /usr/share/backgrounds/default-dark.jxl

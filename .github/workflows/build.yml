@@ -17,6 +17,8 @@ on:
     - cron: "00 6 * * *" # build at 6:00 UTC every day 
     
   push:
+    branches-ignore: # don't rebuild for dependabot
+      - 'dependabot/**'
     paths-ignore: # don't rebuild if only documentation has changed
       - "**.md"
       

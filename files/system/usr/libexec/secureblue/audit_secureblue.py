@@ -26,6 +26,7 @@ import json
 import os
 import os.path
 import signal
+import stat
 
 # All subprocess calls we make have trusted inputs and do not use shell=True.
 import subprocess  # nosec
@@ -522,25 +523,6 @@ def audit_selinux():
 
 
 @audit
-def audit_environment_file():
-    """Ensure /etc/environment has not been modified."""
-    try:
-        if filecmp.cmp("/usr/etc/environment", "/etc/environment"):
-            status = PASS
-            warning = None
-        else:
-            status = WARN
-            warning = "/etc/environment has been modified"
-    except FileNotFoundError:
-        status = WARN
-        warning = "/etc/environment has been deleted"
-    except PermissionError:
-        status = WARN
-        warning = "/etc/environment cannot be read"
-    yield Report("Ensuring no environment file overrides", status, warnings=warning)
-
-
-@audit
 @depends_on("audit_signed_image")
 def audit_kde_ghns(state):
     """Ensure KDE GHNS is disabled."""
@@ -567,37 +549,103 @@ def audit_kde_ghns(state):
 
 
 @audit
+def audit_environment_file():
+    """Ensure /etc/environment has not been modified."""
+    status = PASS
+    warnings = []
+    rec = None
+    env_file = "/etc/environment"
+    usr_env_file = "/usr" + env_file
+    try:
+        with open(env_file, encoding="utf8") as f:
+            env_contents = f.read()
+        with open(usr_env_file, encoding="utf8") as f:
+            usr_env_contents = f.read()
+    except FileNotFoundError:
+        status = FAIL
+        warnings.append(f"{env_file} has been deleted")
+    except PermissionError:
+        status = FAIL
+        warnings.append(f"{env_file} cannot be read")
+    else:
+        if env_contents != usr_env_contents:
+            status = WARN
+            warnings.append(f"{env_file} has been modified")
+            ld_preload_expected = [
+                line for line in usr_env_contents.splitlines() if line.startswith("LD_PRELOAD=")
+            ]
+            ld_preload_actual = [
+                line for line in env_contents.splitlines() if line.startswith("LD_PRELOAD=")
+            ]
+            if ld_preload_expected != ld_preload_actual:
+                status = FAIL
+                warnings.append(f"LD_PRELOAD has been modified in {env_file}")
+
+    if status != PASS:
+        rec = f"""{env_file} has been modified. To reset it, run:
+            $ run0 cp -p '{usr_env_file}' '{env_file}'"""
+    yield Report("Ensuring no environment file overrides", status, warnings=warnings, recs=rec)
+
+
+@audit
+def audit_ld_preload():
+    """Ensure ld.so.preload exists and is readable only by root."""
+    status = PASS
+    warnings = []
+    rec = None
+    ld_so_preload = "/etc/ld.so.preload"
+    try:
+        stat_result = os.stat(ld_so_preload)
+    except FileNotFoundError:
+        status = FAIL
+        warnings.append(f"{ld_so_preload} not found")
+    else:
+        mode = stat.S_IMODE(stat_result.st_mode)
+        expected_mode = 0o600
+        if mode != expected_mode:
+            status = WARN
+            warnings.append(f"{ld_so_preload} has mode {mode:o} (expected {expected_mode:o})")
+        if stat_result.st_uid != 0:
+            status = FAIL
+            warnings.append(f"{ld_so_preload} is owned by a non-root user!")
+    if status != PASS:
+        rec = f"""{ld_so_preload} has been modified or deleted.
+            To reset it and enable hardened_malloc for system processes, run:
+            $ run0 cp -p /usr{ld_so_preload} {ld_so_preload}"""
+    yield Report(
+        "Ensuring ld.so.preload has expected permissions", status, warnings=warnings, recs=rec
+    )
+
+
+@audit
 def audit_hardened_malloc():
     """Ensure hardened_malloc is set to be preloaded in place of the default system malloc."""
     rec = None
     warnings = []
-    try:
-        with open("/etc/ld.so.preload", encoding="utf-8") as f:
-            preloaded = f.read().split()
-    except (FileNotFoundError, PermissionError):
-        status = FAIL
-        warnings.append("ld.so.preload not found or unreadable")
+
+    ld_preload = os.environ.get("LD_PRELOAD")
+    preloads = [] if ld_preload is None else ld_preload.split()
+    if preloads == ["libhardened_malloc.so"]:
+        status = PASS
+    elif "libhardened_malloc.so" in preloads:
+        status = WARN
+        warnings.append("hardened_malloc set, but LD_PRELOAD has been modified")
+    elif "libhardened_malloc-light.so" in preloads:
+        status = WARN
+        warnings.append("'light' variant of hardened_malloc set")
+    elif "libhardened_malloc-pkey.so" in preloads:
+        status = WARN
+        warnings.append("'pkey' variant of hardened_malloc set")
     else:
-        if preloaded == ["libhardened_malloc.so"]:
-            status = PASS
-        elif "libhardened_malloc.so" in preloaded:
-            status = WARN
-            warnings.append("hardened_malloc set, but ld.so.preload has been modified")
-        elif "libhardened_malloc-light.so" in preloaded:
-            status = WARN
-            warnings.append("'light' variant of hardened_malloc set")
-        elif "libhardened_malloc-pkey.so" in preloaded:
-            status = WARN
-            warnings.append("'pkey' variant of hardened_malloc set")
-        else:
-            status = FAIL
-            warnings.append("hardened_malloc not set")
+        status = FAIL
+        warnings.append("libhardened_malloc not set in LD_PRELOAD")
+
     if status != PASS:
-        rec = """/etc/ld.so.preload has been modified.
-            To reset it and enable hardened_malloc system-wide, run:
-            $ run0 cp /usr/etc/ld.so.preload /etc/ld.so.preload"""
+        rec = """The LD_PRELOAD environment variable has been modified.
+            Check that LD_PRELOAD=libhardened_malloc.so is set in /etc/environment and
+            has not been overridden in /etc/profile.d or related configuration files."""
     yield Report(
-        "Ensuring hardened_malloc is set in ld.so.preload", status, warnings=warnings, recs=rec
+        "Ensuring hardened_malloc is set to be preloaded", status, warnings=warnings, recs=rec
     )
 
 

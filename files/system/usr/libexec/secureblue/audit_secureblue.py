@@ -605,31 +605,30 @@ def audit_ld_preload():
 def audit_hardened_malloc():
     """Ensure hardened_malloc is set to be preloaded in place of the default system malloc."""
     rec = None
-    warnings = []
-
     ld_preload = os.environ.get("LD_PRELOAD")
     preloads = [] if ld_preload is None else ld_preload.split()
     if preloads == ["libhardened_malloc.so"]:
         status = PASS
+        warning = None
     elif "libhardened_malloc.so" in preloads:
         status = WARN
-        warnings.append("hardened_malloc set, but LD_PRELOAD has been modified")
+        warning = "hardened_malloc set, but LD_PRELOAD has been modified"
     elif "libhardened_malloc-light.so" in preloads:
         status = WARN
-        warnings.append("'light' variant of hardened_malloc set")
+        warning = "'light' variant of hardened_malloc set"
     elif "libhardened_malloc-pkey.so" in preloads:
         status = WARN
-        warnings.append("'pkey' variant of hardened_malloc set")
+        warning = "'pkey' variant of hardened_malloc set"
     else:
         status = FAIL
-        warnings.append("libhardened_malloc not set in LD_PRELOAD")
+        warning = "libhardened_malloc not set in LD_PRELOAD"
 
     if status != PASS:
-        rec = """The LD_PRELOAD environment variable has been modified.
-            Check that LD_PRELOAD=libhardened_malloc.so is set in /etc/environment and
-            has not been overridden in /etc/profile.d or related configuration files."""
+        rec = """The LD_PRELOAD environment variable has been modified or is unset.
+            Check that LD_PRELOAD=libhardened_malloc.so has not been overridden in
+            /etc/profile.d or related configuration files."""
     yield Report(
-        "Ensuring hardened_malloc is set to be preloaded", status, warnings=warnings, recs=rec
+        "Ensuring hardened_malloc is set to be preloaded", status, warnings=warning, recs=rec
     )
 
 

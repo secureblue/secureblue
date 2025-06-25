@@ -26,26 +26,26 @@ import json
 import os
 import os.path
 import signal
-import sys
-import traceback
 
 # All subprocess calls we make have trusted inputs and do not use shell=True.
 import subprocess  # nosec
+import sys
+import traceback
 from typing import Final
 
-from auditor import Report, Status, audit, bold, categorize, depends_on, global_audit
 from audit_flatpak import check_flatpak_permissions, parse_flatpak_permissions
+from auditor import Report, Status, audit, bold, categorize, depends_on, global_audit
 from utils import (
-    print_err,
-    warn_if_root,
-    get_width,
-    get_legend,
-    parse_config,
-    command_stdout,
     Image,
+    command_stdout,
     command_succeeds,
-    validate_sysctl,
     get_flatpak_permissions,
+    get_legend,
+    get_width,
+    parse_config,
+    print_err,
+    validate_sysctl,
+    warn_if_root,
 )
 
 PASS: Final = Status.PASS
@@ -124,23 +124,22 @@ def audit_kargs():
 @audit
 def audit_sysctl():
     """Check for sysctl overrides."""
-    with open("/usr/etc/sysctl.d/60-hardening.conf", "r", encoding="utf-8") as f:
+    sysctl_file = "/etc/sysctl.d/60-hardening.conf"
+    with open(f"/usr{sysctl_file}", encoding="utf-8") as f:
         conf = f.readlines()
-    sysctl_expected = {}
-    for key, value in parse_config(conf):
-        sysctl_expected[key] = value
+    sysctl_expected = parse_config(conf)
     status = PASS
     sysctl_errors = []
-    with open("/etc/sysctl.d/60-hardening.conf", "r", encoding="utf-8") as f:
+    with open(sysctl_file, encoding="utf-8") as f:
         etc_conf = f.readlines()
     if conf != etc_conf:
         status = WARN
-        sysctl_errors.append("/etc/sysctl.d/60-hardening.conf has been modified")
+        sysctl_errors.append(f"{sysctl_file} has been modified")
     for sysctl, expected in sysctl_expected.items():
         sysctl_path = f"/proc/sys/{sysctl.replace('.', '/')}"
         for path in glob.iglob(sysctl_path):
             try:
-                with open(path, "r", encoding="utf-8") as f:
+                with open(path, encoding="utf-8") as f:
                     actual = f.read().strip()
             except PermissionError:
                 continue
@@ -171,7 +170,7 @@ def audit_signed_image(state):
 @audit
 def audit_modprobe(state):
     """Check that the kernel module blacklist has not been overridden."""
-    with open("/usr/etc/modprobe.d/blacklist.conf", "r", encoding="utf-8") as f:
+    with open("/usr/etc/modprobe.d/blacklist.conf", encoding="utf-8") as f:
         conf = f.readlines()
     blacklisted_modules = []
     for line in conf:
@@ -179,7 +178,7 @@ def audit_modprobe(state):
         if words and words[0] in ["blacklist", "install"]:
             blacklisted_modules.append(words[1])
     unwanted_modules = []
-    with open("/proc/modules", "r", encoding="utf-8") as f:
+    with open("/proc/modules", encoding="utf-8") as f:
         for line in f:
             mod = line.split()[0]
             if mod in blacklisted_modules:
@@ -187,7 +186,7 @@ def audit_modprobe(state):
     unwanted_modules.sort()
     status = PASS
     warnings = []
-    with open("/etc/modprobe.d/blacklist.conf", "r", encoding="utf-8") as f:
+    with open("/etc/modprobe.d/blacklist.conf", encoding="utf-8") as f:
         if f.readlines() != conf:
             status = WARN
             warnings.append("/etc/modprobe.d/blacklist.conf has been modified")
@@ -201,9 +200,8 @@ def audit_modprobe(state):
 @audit
 def audit_ptrace(state):
     """Ensure the ptrace syscall is forbidden."""
-    with open("/proc/sys/kernel/yama/ptrace_scope", "r", encoding="utf-8") as f:
+    with open("/proc/sys/kernel/yama/ptrace_scope", encoding="utf-8") as f:
         ptrace_scope = int(f.read())
-    state["ptrace_allowed"] = ptrace_scope < 3
     match ptrace_scope:
         case 3:
             status = PASS
@@ -223,17 +221,17 @@ def audit_ptrace(state):
                 https://www.kernel.org/doc/html/latest/admin-guide/LSM/Yama.html
                 To forbid ptrace, run:
                 $ ujust toggle-ptrace-scope"""
+    state["ptrace_allowed"] = status != PASS
     yield Report("Ensuring ptrace is forbidden", status, recs=rec)
 
 
 @audit
 def audit_authselect():
     """Ensure no authselect overrides have been made."""
+    status = PASS
     cmp = filecmp.dircmp("/usr/etc/authselect", "/etc/authselect", shallow=False, ignore=[])
     if cmp.left_only or cmp.right_only or cmp.diff_files or cmp.funny_files:
         status = FAIL
-    else:
-        status = PASS
     yield Report("Ensuring no authselect overrides", status)
 
 
@@ -272,7 +270,7 @@ def audit_container_userns():
     """Ensure container-domain processes cannot create user namespaces."""
     if command_stdout("ujust", "check-container-userns-state") == "disabled":
         status = PASS
-        recs = []
+        recs = None
     else:
         status = WARN
         recs = """Container domain user namespace creation is permitted.
@@ -284,7 +282,7 @@ def audit_container_userns():
 @audit
 def audit_usbguard():
     """Ensure usbguard is active."""
-    if command_succeeds(*"systemctl is-active --quiet usbguard".split()):
+    if command_succeeds("systemctl", "is-active", "--quiet", "usbguard"):
         status = PASS
         rec = None
     else:
@@ -299,7 +297,7 @@ def audit_usbguard():
 @audit
 def audit_chronyd():
     """Ensure chronyd is active."""
-    if command_succeeds(*"systemctl is-active --quiet chronyd".split()):
+    if command_succeeds("systemctl", "is-active", "--quiet", "chronyd"):
         status = PASS
         rec = None
     else:
@@ -315,17 +313,15 @@ def audit_dns():
     """Ensure system DNS resolution is active and secure."""
     rec = None
     warning = None
-    if command_succeeds(*"systemctl is-active --quiet systemd-resolved".split()):
+    if command_succeeds("systemctl", "is-active", "--quiet", "systemd-resolved"):
         dnssec = None
         dot = None
         conf_path = "/etc/systemd/resolved.conf.d/10-securedns.conf"
         try:
-            with open(conf_path, "r", encoding="utf-8") as f:
-                for key, value in parse_config(f):
-                    if key == "DNSSEC":
-                        dnssec = value
-                    elif key == "DNSOverTLS":
-                        dot = value
+            with open(conf_path, encoding="utf-8") as f:
+                config = parse_config(f)
+                dnssec = config.get("DNSSEC")
+                dot = config.get("DNSOverTLS")
         except FileNotFoundError:
             status = FAIL
         except PermissionError:
@@ -359,22 +355,18 @@ def audit_mac_randomization():
     warning = None
     conf_path = "/etc/NetworkManager/conf.d/rand_mac.conf"
     try:
-        with open(conf_path, "r", encoding="utf-8") as f:
-            ethernet = False
-            wifi = False
-            for key, value in parse_config(f):
-                if key == "ethernet.cloned-mac-address" and value in ["random", "stable"]:
-                    ethernet = True
-                if key == "wifi.cloned-mac-address" and value in ["random", "stable"]:
-                    wifi = True
-                if ethernet and wifi:
-                    status = PASS
-                    break
+        with open(conf_path, encoding="utf-8") as f:
+            config = parse_config(f)
     except FileNotFoundError:
         pass
     except PermissionError:
         status = UNKNOWN
         warning = f"Unable to read file {conf_path}"
+    else:
+        ethernet = config.get("ethernet.cloned-mac-address") in ("random", "stable")
+        wifi = config.get("wifi.cloned-mac-address") in ("random", "stable")
+        if ethernet and wifi:
+            status = PASS
     if status == FAIL:
         rec = """MAC randomization is not enabled.
                 To enable it, run:
@@ -387,7 +379,7 @@ def audit_mac_randomization():
 @audit
 def audit_rpm_ostree_timer():
     """Ensure rpm-ostree automatic updates are enabled."""
-    if command_succeeds(*"systemctl is-enabled --quiet rpm-ostreed-automatic.timer".split()):
+    if command_succeeds("systemctl", "is-enabled", "--quiet", "rpm-ostreed-automatic.timer"):
         status = PASS
         rec = None
     else:
@@ -401,7 +393,7 @@ def audit_rpm_ostree_timer():
 @audit
 def audit_podman_auto_update():
     """Ensure podman automatic updates are enabled."""
-    if command_succeeds(*"systemctl is-enabled --quiet podman-auto-update.timer".split()):
+    if command_succeeds("systemctl", "is-enabled", "--quiet", "podman-auto-update.timer"):
         status = PASS
         rec = None
     else:
@@ -415,7 +407,9 @@ def audit_podman_auto_update():
 @audit
 def audit_podman_global_auto_update():
     """Ensure podman automatic updates are enabled globally."""
-    if command_succeeds(*"systemctl --global is-enabled --quiet podman-auto-update.timer".split()):
+    if command_succeeds(
+        "systemctl", "--global", "is-enabled", "--quiet", "podman-auto-update.timer"
+    ):
         status = PASS
         rec = None
     else:
@@ -429,9 +423,11 @@ def audit_podman_global_auto_update():
 @audit
 def audit_flatpak_auto_update():
     """Ensure flatpak automatic updates are enabled."""
-    if not command_succeeds(*"command -v flatpak".split()):
+    if not command_succeeds("command", "-v", "flatpak"):
         return
-    if command_succeeds(*"systemctl --global is-enabled --quiet flatpak-user-update.timer".split()):
+    if command_succeeds(
+        "systemctl", "--global", "is-enabled", "--quiet", "flatpak-user-update.timer"
+    ):
         status = PASS
         rec = None
     else:
@@ -441,7 +437,7 @@ def audit_flatpak_auto_update():
                 $ systemctl enable --global flatpak-user-update.timer"""
     yield Report("Ensuring flatpak-user-update.timer is enabled globally", status, recs=rec)
 
-    if command_succeeds(*"systemctl is-enabled --quiet flatpak-system-update.timer".split()):
+    if command_succeeds("systemctl", "is-enabled", "--quiet", "flatpak-system-update.timer"):
         status = PASS
         rec = None
     else:
@@ -499,7 +495,7 @@ def audit_gnome_extensions(state):
     if state["image"] != Image.SILVERBLUE:
         return
     allowed = command_stdout(
-        *"command -p gsettings get org.gnome.shell allow-extension-installation".split()
+        "command", "-p", "gsettings", "get", "org.gnome.shell", "allow-extension-installation"
     )
     if allowed == "false":
         status = PASS
@@ -553,14 +549,14 @@ def audit_kde_ghns(state):
     status = FAIL
     warning = None
     try:
-        with open("/etc/xdg/kdeglobals", "r", encoding="utf-8") as f:
-            for key, value in parse_config(f):
-                if key == "ghns" and value == "false":
-                    status = PASS
-                    break
+        with open("/etc/xdg/kdeglobals", encoding="utf-8") as f:
+            config = parse_config(f)
     except (FileNotFoundError, PermissionError):
         status = WARN
         warning = "/etc/xdg/kdeglobals not found or inaccessible"
+    else:
+        if config.get("ghns") == "false":
+            status = PASS
     if status == FAIL:
         rec = """KDE GHNS is enabled.
             To disable, run:
@@ -573,16 +569,14 @@ def audit_kde_ghns(state):
 @audit
 def audit_hardened_malloc():
     """Ensure hardened_malloc is set to be preloaded in place of the default system malloc."""
+    rec = None
     warnings = []
     try:
-        with open("/etc/ld.so.preload", "r", encoding="utf-8") as f:
+        with open("/etc/ld.so.preload", encoding="utf-8") as f:
             preloaded = f.read().split()
-    except FileNotFoundError:
+    except (FileNotFoundError, PermissionError):
         status = FAIL
-        warnings.append("ld.so.preload not found")
-    except PermissionError:
-        status = FAIL
-        warnings.append("Permission denied to read ld.so.preload")
+        warnings.append("ld.so.preload not found or unreadable")
     else:
         if preloaded == ["libhardened_malloc.so"]:
             status = PASS
@@ -598,9 +592,7 @@ def audit_hardened_malloc():
         else:
             status = FAIL
             warnings.append("hardened_malloc not set")
-    if status == PASS:
-        rec = None
-    else:
+    if status != PASS:
         rec = """/etc/ld.so.preload has been modified.
             To reset it and enable hardened_malloc system-wide, run:
             $ run0 cp /usr/etc/ld.so.preload /etc/ld.so.preload"""
@@ -637,9 +629,7 @@ def audit_bash_env_lockdown():
     )
     unlocked_files = []
     for path in bash_env_paths:
-        if not os.path.exists(path):
-            unlocked_files.append(path)
-        elif not os.path.isfile(path) and not os.path.isdir(path):
+        if not os.path.exists(path) or (not os.path.isfile(path) and not os.path.isdir(path)):
             unlocked_files.append(path)
         else:
             try:
@@ -666,10 +656,10 @@ def audit_bash_env_lockdown():
 @categorize("flatpak")
 def audit_flatpak_remotes():
     """Audit flatpak remotes."""
-    if not command_succeeds(*"command -v flatpak".split()):
+    if not command_succeeds("command", "-v", "flatpak"):
         return
 
-    remotes = command_stdout(*"flatpak remotes --columns=name,url,subset".split()).splitlines()
+    remotes = command_stdout("flatpak", "remotes", "--columns=name,url,subset").splitlines()
     for remote in remotes:
         if not remote:
             continue
@@ -694,13 +684,13 @@ def audit_flatpak_remotes():
 @depends_on("audit_modprobe", "audit_ptrace")
 async def audit_flatpak_permissions(state):
     """Audit flatpak permissions."""
-    if not command_succeeds(*"command -v flatpak".split()):
+    if not command_succeeds("command", "-v", "flatpak"):
         return
 
     flatpaks = []
-    for line in command_stdout(*"flatpak list --app --columns=application,branch".split()).split(
-        "\n"
-    ):
+    for line in command_stdout(
+        "flatpak", "list", "--app", "--columns=application,branch"
+    ).splitlines():
         if not line:
             continue
         name, version = line.split("\t")
@@ -718,10 +708,7 @@ async def audit_flatpak_permissions(state):
         flatpak_permissions_state = check_flatpak_permissions(
             name, perms, state["bluetooth_loaded"], state["ptrace_allowed"]
         )
-        if version == "stable":
-            report_text = f"Auditing {name}"
-        else:
-            report_text = f"Auditing {name} ({version})"
+        report_text = f"Auditing {name}" if version == "stable" else f"Auditing {name} ({version})"
         yield Report(
             report_text,
             flatpak_permissions_state.status,

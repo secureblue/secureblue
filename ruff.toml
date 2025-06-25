@@ -1,1 +1,37 @@
 line-length = 100
+
+[lint]
+select = [
+    "S", # flake8-bandit
+    "B", # flake8-bugbear
+    "A", # flake8-builtins
+    "C4", # flake8-comprehensions
+    "FIX", # flake8-fixme
+    "ICN", # flake8-import-conventions
+    "PIE", # flake8-pie
+    "Q", # flake8-quotes
+    "RSE", # flake8-raise
+    "RET", # flake8-return
+    "SLF", # flake8-self
+    "SIM", # flake8-simplify
+    "TC", # flake8-type-checking
+    "ARG", # flake8-unused-arguments
+    "I", # isort
+    "C90", # mccabe
+    "N", # pep8-naming
+    "E", # pycodestyle error
+    "W", # pycodestyle warning
+    "F", # pyflakes
+    "PL", # pylint
+    "UP", # pyupgrade
+    "FURB", # refurb
+    "RUF", # Ruff-specific rules
+]
+
+ignore = [
+    "S603", # subprocess-without-shell-equals-true
+]
+
+mccabe.max-complexity = 8
+pycodestyle.max-doc-length = 100
+pylint.max-statements = 40

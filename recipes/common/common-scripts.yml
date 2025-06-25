@@ -20,5 +20,4 @@ scripts:
   - enablesecurebluefirstrun.sh
   - createjustcompletions.sh
   - enablekeyverification.sh
-  - hardened_malloc.sh
   - removefedoraflatpakremoteservice.sh

@@ -523,6 +523,29 @@ def audit_selinux():
 
 
 @audit
+def audit_environment_file():
+    """Ensure /etc/environment has not been modified."""
+    env_file = "/etc/environment"
+    status = PASS
+    warning = None
+    rec = None
+    try:
+        if not filecmp.cmp("/usr" + env_file, env_file):
+            status = WARN
+            warning = f"{env_file} has been modified"
+    except FileNotFoundError:
+        status = WARN
+        warning = f"{env_file} has been deleted"
+    except PermissionError:
+        status = WARN
+        warning = f"{env_file} cannot be read"
+    if status != PASS:
+        rec = f"""{env_file} has been modified. To reset it, run:
+            $ run0 cp -p /usr{env_file} {env_file}"""
+    yield Report("Ensuring no environment file overrides", status, warnings=warning, recs=rec)
+
+
+@audit
 @depends_on("audit_signed_image")
 def audit_kde_ghns(state):
     """Ensure KDE GHNS is disabled."""
@@ -546,45 +569,6 @@ def audit_kde_ghns(state):
     else:
         rec = None
     yield Report("Ensuring KDE GHNS is disabled", status, warnings=warning, recs=rec)
-
-
-@audit
-def audit_environment_file():
-    """Ensure /etc/environment has not been modified."""
-    status = PASS
-    warnings = []
-    rec = None
-    env_file = "/etc/environment"
-    usr_env_file = "/usr" + env_file
-    try:
-        with open(env_file, encoding="utf8") as f:
-            env_contents = f.read()
-        with open(usr_env_file, encoding="utf8") as f:
-            usr_env_contents = f.read()
-    except FileNotFoundError:
-        status = FAIL
-        warnings.append(f"{env_file} has been deleted")
-    except PermissionError:
-        status = FAIL
-        warnings.append(f"{env_file} cannot be read")
-    else:
-        if env_contents != usr_env_contents:
-            status = WARN
-            warnings.append(f"{env_file} has been modified")
-            ld_preload_expected = [
-                line for line in usr_env_contents.splitlines() if line.startswith("LD_PRELOAD=")
-            ]
-            ld_preload_actual = [
-                line for line in env_contents.splitlines() if line.startswith("LD_PRELOAD=")
-            ]
-            if ld_preload_expected != ld_preload_actual:
-                status = FAIL
-                warnings.append(f"LD_PRELOAD has been modified in {env_file}")
-
-    if status != PASS:
-        rec = f"""{env_file} has been modified. To reset it, run:
-            $ run0 cp -p '{usr_env_file}' '{env_file}'"""
-    yield Report("Ensuring no environment file overrides", status, warnings=warnings, recs=rec)
 
 
 @audit

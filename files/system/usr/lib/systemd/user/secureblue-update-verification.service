@@ -1,0 +1,9 @@
+[Unit]
+Description=secureblue secure boot update verification 
+Wants=dbus.service
+After=dbus.service
+
+[Service]
+Type=oneshot
+ExecCondition=/usr/libexec/secureblue/securebluecheckoutofdate
+ExecStart=/usr/libexec/secureblue/secureblueoutofdatenotify

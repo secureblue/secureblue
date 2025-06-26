@@ -1,3 +1,5 @@
+#!/usr/bin/env bash
+
 # Copyright 2025 The Secureblue Authors
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -10,9 +12,7 @@
 # distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and limitations under the License.
 
-set positional-arguments := true
+set -euo pipefail
 
-# Audit secureblue
-audit-secureblue *args:
-    #!/bin/sh
-    /usr/bin/python3 /usr/libexec/secureblue/audit_secureblue.py "$@"
+# Unset LD_PRELOAD in all invocations of systemsettings in .desktop files
+sed -Ei 's/^Exec=systemsettings( .*)?$/Exec=env LD_PRELOAD= systemsettings\1/' /usr/share/applications/*.desktop

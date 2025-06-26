@@ -21,7 +21,7 @@ Flatpak permissions checks for secureblue auditing script.
 from dataclasses import dataclass, field
 from typing import Final
 
-from auditor import Status, Recommendation
+from auditor import Recommendation, Status
 
 PASS: Final = Status.PASS
 INFO: Final = Status.INFO
@@ -41,39 +41,40 @@ class Permissions:
     system_bus_own: list[str] = field(default_factory=list)
 
 
+def _parse_config_sections(conf_text: str) -> dict[str | None, dict[str, str]]:
+    """Parse config file into sections containing key-value mappings"""
+    sections = {}
+    current_section = None
+    for raw_line in conf_text.splitlines():
+        line = raw_line.strip()
+        if not line or line.startswith("#"):
+            continue
+        if line.startswith("[") and line.endswith("]"):
+            current_section = line[1:-1]
+            sections[current_section] = {}
+            continue
+        key, value = line.split("=", maxsplit=1)
+        sections[current_section][key] = value
+    return sections
+
+
 def parse_flatpak_permissions(perms_text: str) -> Permissions:
     """Get permissions for an installed flatpak."""
     perms = Permissions()
-    section = None
-    for line in perms_text.splitlines():
-        line = line.strip()
-        if not line or line.startswith("#"):
-            continue
-        if line.startswith("["):
-            section = line.strip("[]")
-            continue
-        key, value = line.split("=", maxsplit=1)
+    sections = _parse_config_sections(perms_text)
+    for section, lines in sections.items():
         match section:
             case "Session Bus Policy":
-                match value:
-                    case "talk":
-                        perms.session_bus_talk.append(key)
-                    case "own":
-                        perms.session_bus_own.append(key)
-                    case _:
-                        raise ValueError(f"Unknown session bus permission '{value}'")
+                perms.session_bus_talk = [key for key, value in lines.items() if value == "talk"]
+                perms.session_bus_own = [key for key, value in lines.items() if value == "own"]
             case "System Bus Policy":
-                match value:
-                    case "talk":
-                        perms.system_bus_talk.append(key)
-                    case "own":
-                        perms.system_bus_own.append(key)
-                    case _:
-                        raise ValueError(f"Unknown system bus permission '{value}'")
+                perms.system_bus_talk = [key for key, value in lines.items() if value == "talk"]
+                perms.system_bus_own = [key for key, value in lines.items() if value == "own"]
             case "Environment":
-                perms.environment[key] = value
+                perms.environment = lines
             case _:
-                perms.permissions[key] = [val for val in value.split(";") if val]
+                for key, value in lines.items():
+                    perms.permissions[key] = [val for val in value.split(";") if val]
     return perms
 
 
@@ -139,12 +140,12 @@ class PermissionCheck:
     def default_description(self) -> str:
         """Default description if other description isn't provided."""
         perm_type = FLATPAK_OVERRIDE_OPTIONS[self.category][0]
-        return f"have {perm_type}={self.permission} permission"
+        return f"{perm_type}={self.permission} permission"
 
     def warning(self, name: str) -> str:
         """Give the warning text for if the check fails."""
         description = self.description or self.default_description()
-        return f"{name} {description}"
+        return f"{name} has {description}"
 
     def recommendation(self, name: str) -> Recommendation:
         """Give the recommendation for if the check fails."""
@@ -153,7 +154,8 @@ class PermissionCheck:
         else:
             sandbox_escape_note = ""
         option = FLATPAK_OVERRIDE_OPTIONS[self.category][1]
-        rec = f"""The following flatpak app(s) {self.description or self.default_description()}:
+        description = self.description or self.default_description()
+        rec = f"""The following flatpak app(s) have {description}:
             {Recommendation.NAMES_PLACEHOLDER}
             {self.note or ""}
             {sandbox_escape_note}
@@ -175,19 +177,19 @@ class DirectoryInfo:
 
 
 FLATPAK_PERMISSION_CHECKS: list[PermissionCheck] = [
-    PermissionCheck("shared", "network", INFO, "have network access"),
-    PermissionCheck("shared", "ipc", INFO, "have inter-process communications access"),
-    PermissionCheck("sockets", "x11", FAIL, "have X11 access"),
-    PermissionCheck("sockets", "pulseaudio", WARN, "have access to the PulseAudio socket"),
+    PermissionCheck("shared", "network", INFO, "network access"),
+    PermissionCheck("shared", "ipc", INFO, "inter-process communications access"),
+    PermissionCheck("sockets", "x11", FAIL, "X11 access"),
+    PermissionCheck("sockets", "pulseaudio", WARN, "access to the PulseAudio socket"),
     PermissionCheck(
         "sockets",
         "session-bus",
         FAIL,
-        "have access to the D-Bus session bus",
+        "access to the D-Bus session bus",
         note="This grants access to audio and microphones.",
     ),
-    PermissionCheck("sockets", "system-bus", FAIL, "have access to the D-Bus system bus"),
-    PermissionCheck("sockets", "ssh-auth", WARN, "have access to the SSH agent"),
+    PermissionCheck("sockets", "system-bus", FAIL, "access to the D-Bus system bus"),
+    PermissionCheck("sockets", "ssh-auth", WARN, "access to the SSH agent"),
     PermissionCheck(
         "devices",
         "all",
@@ -214,8 +216,8 @@ FLATPAK_PERMISSION_CHECKS: list[PermissionCheck] = [
         note="This grants raw USB device access.",
         sandbox_escape=True,
     ),
-    PermissionCheck("features", "bluetooth", WARN, "have bluetooth access"),
-    PermissionCheck("features", "devel", WARN, "have ptrace access"),
+    PermissionCheck("features", "bluetooth", WARN, "bluetooth access"),
+    PermissionCheck("features", "devel", WARN, "ptrace access"),
 ]
 
 ARBITRARY_PERMISSIONS_EXPECTED: list[str] = [

@@ -164,22 +164,6 @@ toolbox-assemble CONTAINER="prompt" ACTION="create" FILE="/etc/toolbox/toolbox.i
     source /usr/lib/ujust/ujust.sh
     ToolboxAssembleList "{{ FILE }}" "{{ ACTION }}" "{{ CONTAINER }}"
 
-# Run a non-flatpak application with standard memory allocator (needs an argument!)
-with-standard-malloc APP:
-    #!/usr/bin/bash
-    if [[ "$(ujust check-unconfined-userns-state)" == 'disabled' ]]; then
-    	cat >&2 <<-'EOF'
-    Bubblewrap requires unconfined-domain user namespaces to work, which are
-    disabled by default for security reasons. For more information, see:
-        https://secureblue.dev/articles/userns
-    To allow this anyway, run:
-        ujust toggle-unconfined-domain-userns-creation
-    EOF
-        exit 1
-    fi
-    app="{{ APP }}"
-    bwrap --dev-bind / / --ro-bind /dev/null /etc/ld.so.preload "$app"
-
 # Add the unfiltered Flathub flatpak repo
 enable-flathub-unfiltered:
     #!/usr/bin/bash

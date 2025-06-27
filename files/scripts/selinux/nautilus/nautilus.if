@@ -14,7 +14,7 @@
 
 ########################################
 ## <summary>
-##	Execute systemsettings in the systemsettings domain.
+##	Execute nautilus in the nautilus domain.
 ## </summary>
 ## <param name="domain">
 ## <summary>

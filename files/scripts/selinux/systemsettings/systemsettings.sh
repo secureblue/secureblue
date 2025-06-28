@@ -12,10 +12,11 @@
 # distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and limitations under the License.
 
-set -oue pipefail
+echo "Building and Loading Policy"
 
-chmod 440 /etc/sudoers.d/timeout
+set -x
 
-# Make ld.so.preload readable only by root, so user processes can override
-# hardened_malloc by resetting LD_PRELOAD.
-chmod 600 /etc/ld.so.preload
+make -f /usr/share/selinux/devel/Makefile systemsettings.pp || exit
+/usr/sbin/semodule -i systemsettings.pp
+
+/sbin/restorecon -F -R -v /usr/bin/systemsettings

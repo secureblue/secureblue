@@ -1,0 +1,173 @@
+# Copyright 2025 The Secureblue Authors
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software distributed under the License is
+# distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and limitations under the License.
+
+name: Build ISOs
+
+permissions: {}
+
+on:
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref || github.run_id }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    name: Build ISOs
+    runs-on: ubuntu-24.04
+    if: github.triggering_actor == 'royaloughtness'
+    strategy:
+      fail-fast: false      
+      matrix:
+        image:
+          - silverblue-main-hardened
+          - silverblue-nvidia-hardened 
+          - silverblue-nvidia-open-hardened 
+          - kinoite-main-hardened 
+          - kinoite-nvidia-hardened 
+          - kinoite-nvidia-open-hardened 
+          - sericea-main-hardened 
+          - sericea-nvidia-hardened 
+          - sericea-nvidia-open-hardened 
+    permissions:
+      contents: read
+      packages: read
+      id-token: write
+
+    steps:
+      - name: Maximize build space
+        uses: jlumbroso/free-disk-space@54081f138730dfa15788a46383842cd2f914a1be # v1.3.1
+
+      - name: Install deps
+        shell: bash
+        id: install_deps
+        run: |
+          sudo apt-get install rclone
+
+      - name: Checkout
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          persist-credentials: false
+
+      - name: Setup Branding Repo
+        id: setup-branding-repo
+        shell: bash
+        env:
+          WORKSPACE: ${{ github.workspace }}
+        run: |
+          curl -Lo "${WORKSPACE}/secureblue.repo" "https://copr.fedorainfracloud.org/coprs/secureblue/branding/repo/fedora-42/secureblue-branding-fedora-42.repo"
+
+      - name: Build ISO
+        uses: jasonn3/build-container-installer@d77e9563739921c2f93de778d4fbad854f52d389 # main
+        id: iso_build
+        env:
+          IMAGE_NAME: ${{ matrix.image }}
+        with:
+          arch: x86_64
+          image_name: ${{ env.IMAGE_NAME}}
+          image_repo: ghcr.io/secureblue
+          image_tag: latest
+          version: 42
+          variant: "Kinoite"
+          additional_templates: "/github/workspace/.github/workflows/config/lorax/remove_root_password_prompt.tmpl"
+          iso_name: ${{ env.IMAGE_NAME }}.iso
+          enrollment_password: "secureblue"
+          secure_boot_key_url: "https://github.com/secureblue/secureblue/raw/refs/heads/live/files/system/etc/pki/akmods/certs/akmods-secureblue.der"
+          repos: "/github/workspace/secureblue.repo /etc/yum.repos.d/fedora.repo /etc/yum.repos.d/fedora-updates.repo"
+
+      - name: Rename ISO and sign CHECKSUM
+        id: rename
+        shell: bash
+        env:
+          IMAGE_NAME: ${{ matrix.image }}
+          ISO_SIGNING_KEY: ${{ secrets.ISO_SIGNING_KEY }}
+        run: |
+          sudo chown $(whoami) "${IMAGE_NAME}.iso" "${IMAGE_NAME}.iso-CHECKSUM"
+
+          TARGET_OUTPUT_DIRECTORY="$(pwd)/output"
+          mkdir "${TARGET_OUTPUT_DIRECTORY}"
+          PREFIX="secureblue"
+          DATE_SUFFIX="$(date +%Y%m%d)"
+          ISO_NAME="${PREFIX}-${IMAGE_NAME}-${DATE_SUFFIX}.iso"
+          CHECKSUM_NAME="${ISO_NAME}-CHECKSUM"
+          mv "${IMAGE_NAME}.iso" "${ISO_NAME}"
+          mv "${IMAGE_NAME}.iso-CHECKSUM" "${CHECKSUM_NAME}"
+          mv "${ISO_NAME}" "$TARGET_OUTPUT_DIRECTORY"
+          mv "${CHECKSUM_NAME}" "$TARGET_OUTPUT_DIRECTORY"
+          cd "$TARGET_OUTPUT_DIRECTORY"
+
+          HASH=$(cat "${CHECKSUM_NAME}" | cut -d ' ' -f1)
+          ISO_SIZE=$(stat -c %s "${ISO_NAME}")
+          ISO_FILE_NAME="${ISO_NAME}"
+          {
+            echo "# $ISO_FILE_NAME: $ISO_SIZE bytes"
+            echo "SHA256 ($ISO_FILE_NAME) = $HASH"
+          } > "${CHECKSUM_NAME}"
+
+          echo "CHECKSUM contents"
+          cat "${CHECKSUM_NAME}"
+          echo
+
+          echo "${ISO_SIGNING_KEY}" | gpg --import
+
+          echo "Signing the ISO"
+          gpg --clearsign -u 26B4463ED8F313BC7E3FBDF9D9223AF0F47B3E41 "${CHECKSUM_NAME}"
+          mv "${CHECKSUM_NAME}.asc" "${CHECKSUM_NAME}"
+
+          echo "Signed CHECKSUM contents"
+          cat "${CHECKSUM_NAME}"
+          echo
+
+          # validate signature
+          curl -O "https://repo.secureblue.dev/secureblue.gpg"
+          gpg --no-default-keyring --keyring ./secureblue-keyring.gpg --import secureblue.gpg
+
+          if ! gpgv --keyring ./secureblue-keyring.gpg "${CHECKSUM_NAME}"; then
+              echo "CHECKSUM signature verification FAILED! Exiting..."
+              exit 1
+          fi
+
+          if ! sha256sum --ignore-missing -c "${CHECKSUM_NAME}"; then
+              echo "CHECKSUM verification FAILED! Exiting..."
+              exit 1
+          fi
+
+          rm ./secureblue-keyring.gpg~
+          rm secureblue.gpg
+
+          echo "output-directory=${TARGET_OUTPUT_DIRECTORY}" >> ${GITHUB_OUTPUT}
+
+      - name: Upload ISO and Checksum to Job Artifacts
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          path: ${{ steps.rename.outputs.output-directory }}
+          name: ${{ matrix.image }}
+          if-no-files-found: error
+          retention-days: 3
+          compression-level: 0
+          overwrite: true
+
+      - name: Upload ISO and checksum to R2 to ISOS Bucket
+        shell: bash
+        env:
+          RCLONE_CONFIG_R2_TYPE: s3
+          RCLONE_CONFIG_R2_PROVIDER: Cloudflare
+          RCLONE_CONFIG_R2_ACCESS_KEY_ID: ${{ secrets.ISOS_ACCESS_KEY_ID }}
+          RCLONE_CONFIG_R2_SECRET_ACCESS_KEY: ${{ secrets.ISOS_SECRET_ACCESS_KEY }}
+          RCLONE_CONFIG_R2_REGION: auto
+          RCLONE_CONFIG_R2_ENDPOINT: ${{ secrets.ISOS_ENDPOINT }}
+          OUTPUT_DIRECTORY: ${{ steps.rename.outputs.output-directory }}
+          SOURCE_DIR: .
+        run: |
+          rclone copy "${OUTPUT_DIRECTORY}" R2:isos 
+      

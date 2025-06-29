@@ -21,9 +21,9 @@ toggle-cups:
       systemctl disable cups
       systemctl stop cups
       systemctl daemon-reload
-      systemctl stop avahi-daemon.socket
+      systemctl disable --now avahi-daemon.socket
       systemctl mask avahi-daemon.socket
-      systemctl stop avahi-daemon.service
+      systemctl disable --now avahi-daemon.service
       systemctl mask avahi-daemon.service
       echo "CUPS & avahi-daemon disabled"
     else
@@ -34,9 +34,9 @@ toggle-cups:
       systemctl enable cups
       systemctl start cups
       systemctl unmask avahi-daemon.service
-      systemctl disable avahi-daemon.service
+      systemctl enable avahi-daemon.service
       systemctl unmask avahi-daemon.socket
-      systemctl disable avahi-daemon.socket
+      systemctl enable avahi-daemon.socket
       systemctl daemon-reload
       echo "CUPS enabled."
       echo "Note: cups-browsed, the printer discovery service, is still disabled for"

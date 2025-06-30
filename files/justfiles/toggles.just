@@ -20,11 +20,12 @@ toggle-cups:
       systemctl mask cups
       systemctl disable cups
       systemctl stop cups
-      systemctl daemon-reload
       systemctl disable --now avahi-daemon.socket
       systemctl mask avahi-daemon.socket
       systemctl disable --now avahi-daemon.service
       systemctl mask avahi-daemon.service
+      systemctl daemon-reload
+      rm -f "/etc/systemd/system/avahi-daemon.socket" "/etc/systemd/system/avahi-daemon.service"
       echo "CUPS & avahi-daemon disabled"
     else
       firewall-cmd --permanent --add-port=631/tcp
@@ -34,11 +35,13 @@ toggle-cups:
       systemctl enable cups
       systemctl start cups
       systemctl unmask avahi-daemon.service
-      systemctl enable avahi-daemon.service
+      systemctl disable avahi-daemon.service
       systemctl unmask avahi-daemon.socket
-      systemctl enable avahi-daemon.socket
+      systemctl disable avahi-daemon.socket
+      sed '/\[Service\]/i #\ Secureblue\ Hardening\nStopWhenUnneeded=true\nRefuseManualStart=true\n#\ End\ of\ Secureblue\ Hardening\n' "/usr/lib/systemd/system/avahi-daemon.service" | tee /etc/systemd/system/avahi-daemon.service
+      sed '/\[Socket\]/i #\ Secureblue\ Hardening\nStopWhenUnneeded=true\nRefuseManualStart=true\n#\ End\ of\ Secureblue\ Hardening\n' "/usr/lib/systemd/system/avahi-daemon.socket" | tee /etc/systemd/system/avahi-daemon.socket
       systemctl daemon-reload
-      echo "CUPS enabled."
+      echo "CUPS enabled; avahi-daemon is unmasked & will be started on demand."
       echo "Note: cups-browsed, the printer discovery service, is still disabled for"
       echo "    security reasons. New network printers will need to be added manually."
       echo "    If you absolutely need network discovery, you can enable the cups-browsed"

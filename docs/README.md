@@ -1,5 +1,5 @@
 <p align="center">
-  <a href="https://github.com/secureblue/secureblue">
+  <a href="https://secureblue.dev">
     <img src="https://github.com/secureblue/secureblue/blob/live/docs/secureblue.png" href="https://github.com/secureblue/secureblue" alt="secureblue logo" width=180 />
   </a>
 </p>

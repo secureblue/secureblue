@@ -41,7 +41,8 @@ toggle-cups:
       sed '/\[Service\]/i #\ Secureblue\ Hardening\nStopWhenUnneeded=true\nRefuseManualStart=true\n#\ End\ of\ Secureblue\ Hardening\n' "/usr/lib/systemd/system/avahi-daemon.service" | tee /etc/systemd/system/avahi-daemon.service
       sed '/\[Socket\]/i #\ Secureblue\ Hardening\nStopWhenUnneeded=true\nRefuseManualStart=true\n#\ End\ of\ Secureblue\ Hardening\n' "/usr/lib/systemd/system/avahi-daemon.socket" | tee /etc/systemd/system/avahi-daemon.socket
       systemctl daemon-reload
-      echo "CUPS enabled; avahi-daemon is unmasked & will be started on demand."
+      echo "CUPS enabled."
+      echo "avahi-daemon is unmasked & will be started as needed on an on-demand basis."
       echo "Note: cups-browsed, the printer discovery service, is still disabled for"
       echo "    security reasons. New network printers will need to be added manually."
       echo "    If you absolutely need network discovery, you can enable the cups-browsed"

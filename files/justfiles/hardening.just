@@ -99,7 +99,7 @@ flatpak-permissions-lockdown:
     confirmation=""
 
     echo "This will configure flatpak to automatically reject most permissions (with the exception of the Wayland socket and the Dri device, since these are commonly used and ensure at the very least most apps will work without crashing)."
-    echo "This will also grant Flatseal and Warehouse access to certain permissions to allow it to operate and make reconfiguring much easier."
+    echo "This will also grant Flatseal and Warehouse access to certain permissions to allow them to operate and make reconfiguring much easier."
     echo "NOTE: This will break just about all Flatpaks by default, it is ON YOU to configure them to work with this configuration."
     echo "NOTE 2: This DOES NOT enable hardened_malloc, use the harden-flatpak ujust command."
     echo ""

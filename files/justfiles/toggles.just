@@ -24,7 +24,6 @@ toggle-cups:
       systemctl mask avahi-daemon.socket
       systemctl disable --now avahi-daemon.service
       systemctl mask avahi-daemon.service
-      rm -f "/etc/systemd/system/avahi-daemon.socket" "/etc/systemd/system/avahi-daemon.service"
       systemctl daemon-reload
       echo "CUPS & avahi-daemon disabled"
     else

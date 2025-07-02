@@ -177,7 +177,8 @@ flatpak-permissions-lockdown:
             echo "	Granting $i..."
             $kCommand --talk-name="$i" io.github.flattool.Warehouse
         done
-        echo ""        echo "Done"
+        echo ""
+        echo "Done"
     fi
 
 # Resets Flatpak's global overrides

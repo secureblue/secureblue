@@ -23,7 +23,7 @@ SUPPORT_URL="https://github.com/secureblue/secureblue/issues"
 BUG_SUPPORT_URL="https://github.com/secureblue/secureblue/issues"
 
 
-sed -i "s|^VARIANT_ID=.*|VARIANT_ID=$IMAGE_NAME|" /usr/lib/os-release
+sed -i "s/^VARIANT_ID=.*/VARIANT_ID=$IMAGE_NAME/" /usr/lib/os-release
 sed -i "s/^PRETTY_NAME=.*/PRETTY_NAME=\"${IMAGE_PRETTY_NAME} (powered by Fedora Atomic)\"/" /usr/lib/os-release
 sed -i "s/^NAME=.*/NAME=\"$IMAGE_PRETTY_NAME\"/" /usr/lib/os-release
 sed -i "s|^HOME_URL=.*|HOME_URL=\"$HOME_URL\"|" /usr/lib/os-release
@@ -37,7 +37,7 @@ sed -i "/^REDHAT_BUGZILLA_PRODUCT=/d; /^REDHAT_BUGZILLA_PRODUCT_VERSION=/d; /^RE
 
 # Added in systemd 249.
 # https://www.freedesktop.org/software/systemd/man/latest/os-release.html#IMAGE_ID=
-echo "IMAGE_ID=\"${IMAGE_NAME}\"" >> /usr/lib/os-release
+sed -i '$a\IMAGE_ID='"\"${IMAGE_NAME}\"" /usr/lib/os-release
 
 # Fix issues caused by ID no longer being fedora
 sed -i "s/^EFIDIR=.*/EFIDIR=\"fedora\"/" /usr/sbin/grub2-switch-to-blscfg

@@ -38,8 +38,6 @@ toggle-cups:
       systemctl disable avahi-daemon.service
       systemctl unmask avahi-daemon.socket
       systemctl disable avahi-daemon.socket
-      sed '/\[Service\]/i #\ Secureblue\ Hardening\nStopWhenUnneeded=true\nRefuseManualStart=true\n#\ End\ of\ Secureblue\ Hardening\n' "/usr/lib/systemd/system/avahi-daemon.service" | tee /etc/systemd/system/avahi-daemon.service
-      sed '/\[Socket\]/i #\ Secureblue\ Hardening\nStopWhenUnneeded=true\nRefuseManualStart=true\n#\ End\ of\ Secureblue\ Hardening\n' "/usr/lib/systemd/system/avahi-daemon.socket" | tee /etc/systemd/system/avahi-daemon.socket
       systemctl daemon-reload
       echo "CUPS enabled."
       echo "avahi-daemon is unmasked & will be started as needed on an on-demand basis."

@@ -29,7 +29,7 @@ jobs:
           persist-credentials: false
 
       - name: Run linkspector
-        uses: umbrelladocs/action-linkspector@e2ccef58c4b9eb89cd71ee23a8629744bba75aa6 # v1.3.5
+        uses: umbrelladocs/action-linkspector@3a951c1f0dca72300c2320d0eb39c2bafe429ab1 # v1.3.6
         with:
           filter_mode: nofilter
           reporter: github-pr-review

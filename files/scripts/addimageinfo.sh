@@ -23,11 +23,7 @@ SUPPORT_URL="https://github.com/secureblue/secureblue/issues"
 BUG_SUPPORT_URL="https://github.com/secureblue/secureblue/issues"
 
 
-if grep -q "VARIANT_ID" /usr/lib/os-release; then
-    sed -i "s/^VARIANT_ID=.*/VARIANT_ID=$IMAGE_NAME/" /usr/lib/os-release
-else
-    echo "VARIANT_ID=$IMAGE_NAME" >> /usr/lib/os-release
-fi
+sed -i "s/^VARIANT_ID=.*/VARIANT_ID=$IMAGE_NAME/" /usr/lib/os-release
 sed -i "s/^PRETTY_NAME=.*/PRETTY_NAME=\"${IMAGE_PRETTY_NAME} (powered by Fedora Atomic)\"/" /usr/lib/os-release
 sed -i "s/^NAME=.*/NAME=\"$IMAGE_PRETTY_NAME\"/" /usr/lib/os-release
 sed -i "s|^HOME_URL=.*|HOME_URL=\"$HOME_URL\"|" /usr/lib/os-release
@@ -38,6 +34,10 @@ sed -i "s|^CPE_NAME=\"cpe:/o:fedoraproject:fedora|CPE_NAME=\"cpe:/o:secureblue:$
 sed -i "s/^DEFAULT_HOSTNAME=.*/DEFAULT_HOSTNAME=\"${IMAGE_PRETTY_NAME,}\"/" /usr/lib/os-release
 sed -i "s/^ID=fedora/ID=\"${IMAGE_LIKE,}\"\nID_LIKE=\"${IMAGE_PRETTY_NAME,}\"/" /usr/lib/os-release
 sed -i "/^REDHAT_BUGZILLA_PRODUCT=/d; /^REDHAT_BUGZILLA_PRODUCT_VERSION=/d; /^REDHAT_SUPPORT_PRODUCT=/d; /^REDHAT_SUPPORT_PRODUCT_VERSION=/d" /usr/lib/os-release
+
+# Added in systemd 249.
+# https://www.freedesktop.org/software/systemd/man/latest/os-release.html#IMAGE_ID=
+sed -i '$a\IMAGE_ID='"\"${IMAGE_NAME}\"" /usr/lib/os-release
 
 # Fix issues caused by ID no longer being fedora
 sed -i "s/^EFIDIR=.*/EFIDIR=\"fedora\"/" /usr/sbin/grub2-switch-to-blscfg

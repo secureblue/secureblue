@@ -83,12 +83,12 @@ def audit_kargs():
         "random.trust_bootloader=off",
         "random.trust_cpu=off",
         "randomize_kstack_offset=on",
+        "rd.shell=0",
+        "rd.emergency=halt",
         "slab_nomerge",
         "spec_store_bypass_disable=on",
         "spectre_v2=on",
         "vsyscall=none",
-        "rd.shell=0",
-        "rd.emergency=halt",
     )
     for karg in kargs_expected:
         if karg not in kargs_current:

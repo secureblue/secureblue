@@ -63,7 +63,10 @@ set-kargs-hardening:
       --append-if-missing=l1d_flush=on \
       --append-if-missing=l1tf=full,force \
       --append-if-missing=kvm-intel.vmentry_l1d_flush=always \
-      --append-if-missing=loglevel=0
+      --append-if-missing=loglevel=0 \
+      --append-if-missing=rd.shell=0 \
+      --append-if-missing=rd.emergency=halt
+
     echo "Hardening kargs applied."
 
 # Remove all hardening boot parameters (requires reboot)

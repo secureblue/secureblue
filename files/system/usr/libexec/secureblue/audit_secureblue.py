@@ -87,6 +87,8 @@ def audit_kargs():
         "spec_store_bypass_disable=on",
         "spectre_v2=on",
         "vsyscall=none",
+        "rd.shell=0",
+        "rd.emergency=halt",
     )
     for karg in kargs_expected:
         if karg not in kargs_current:

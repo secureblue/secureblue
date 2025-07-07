@@ -101,7 +101,9 @@ remove-kargs-hardening:
       --delete-if-present="kvm-intel.vmentry_l1d_flush=always" \
       --delete-if-present="nosmt=force" \
       --delete-if-present="oops=panic" \
-      --delete-if-present="loglevel=0"
+      --delete-if-present="loglevel=0" \
+      --delete-if-present="rd.shell=0" \
+      --delete-if-present="rd.emergency=halt"
     echo "Hardening kargs removed."
 
 # Set nvidia kargs

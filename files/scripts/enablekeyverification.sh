@@ -15,3 +15,4 @@
 set -oue pipefail
 
 systemctl --global enable secureblue-key-enrollment-verification.timer
+systemctl --global enable secureblue-update-verification.timer

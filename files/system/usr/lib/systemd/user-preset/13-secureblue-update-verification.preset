@@ -1,0 +1,2 @@
+enable secureblue-update-verification.service
+enable secureblue-update-verification.timer

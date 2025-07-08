@@ -14,8 +14,6 @@ modules:
   - type: rpm-ostree
     repos:
       - https://repo.secureblue.dev/secureblue.repo
-    install:
-      - trivalent-qt6-ui
     remove:
       - kde-connect
       - kde-connect-libs

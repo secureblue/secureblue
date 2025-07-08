@@ -14,5 +14,5 @@
 
 set -oue pipefail
 
-sed '/\[Service\]/i #\ Secureblue\ Hardening\nStopWhenUnneeded=true\nRefuseManualStart=true\n#\ End\ of\ Secureblue\ Hardening\n' "/usr/lib/systemd/system/avahi-daemon.service" | tee /usr/lib/systemd/system/avahi-daemon.service
-sed '/\[Socket\]/i #\ Secureblue\ Hardening\nStopWhenUnneeded=true\nRefuseManualStart=true\n#\ End\ of\ Secureblue\ Hardening\n' "/usr/lib/systemd/system/avahi-daemon.socket" | tee /usr/lib/systemd/system/avahi-daemon.socket
+sed -i '/Description=Avahi mDNS\/DNS-SD Stack/a StopWhenUnneeded=true' "/usr/lib/systemd/system/avahi-daemon.service"
+sed -i '/Description=Avahi mDNS\/DNS-SD Stack Activation Socket/a StopWhenUnneeded=true' "/usr/lib/systemd/system/avahi-daemon.socket"

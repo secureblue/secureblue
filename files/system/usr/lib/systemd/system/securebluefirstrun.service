@@ -3,12 +3,16 @@ Description=Secureblue Firstrun
 After=brew-setup.service
 Requires=brew-setup.service
 ConditionPathExists=!/home/linuxbrew/secureblue-firstrun.stamp
+StartLimitInterval=400
+StartLimitBurst=10
 
 [Service]
 Type=oneshot
 ExecStart=/usr/libexec/secureblue/securebluefirstrun
 ExecStartPost=/usr/bin/touch /home/linuxbrew/secureblue-firstrun.stamp
 User=1000
+Restart=always
+RestartSec=30
 
 [Install]
 WantedBy=multi-user.target

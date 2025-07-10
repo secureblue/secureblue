@@ -1,0 +1,10 @@
+[Unit]
+Description=secureblue flatpak setup
+Wants=network-online.target
+After=network-online.target
+ConditionPathExists=!%h/.config/secureblue/secureblue-flatpak-setup.stamp
+
+[Service]
+Type=oneshot
+ExecStart=/usr/libexec/secureblue/secureblueflatpaksetup
+ExecStartPost=/bin/bash -c 'mkdir -p "$HOME/.config/secureblue" && touch "$HOME/.config/secureblue/secureblue-flatpak-setup.stamp"'

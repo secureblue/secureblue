@@ -4,3 +4,4 @@ cosign.key
 .directory
 Containerfile
 .DS_Store
+__pycache__

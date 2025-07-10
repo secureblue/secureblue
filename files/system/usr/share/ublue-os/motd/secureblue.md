@@ -5,7 +5,7 @@
 | ------- | ----------- |
 | `ujust --choose`  | List all available commands |
 | `ujust toggle-user-motd` | Toggle this banner on/off |
-| `brew help` | Manage command line packages | 
+| `brew help` | Manage command line packages |
 
 %TIP%
 

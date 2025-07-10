@@ -5,4 +5,4 @@ type=rpm
 enabled=0
 gpgcheck=1
 gpgkey=https://repository.mullvad.net/rpm/mullvad-keyring.asc
-includepkgs=mullvad-vpn
+includepkgs=mullvad-vpn,mullvad-browser,mullvad-browser-alpha

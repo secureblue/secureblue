@@ -1,11 +1,23 @@
+# Copyright 2025 The Secureblue Authors
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software distributed under the License is
+# distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and limitations under the License.
+
 # setup system DNS resolution
 dns-selector:
     #! /bin/run0 /bin/bash
     # constants
     readonly resolved_conf="/etc/systemd/resolved.conf.d/10-securedns.conf"
     readonly policy_file="/etc/trivalent/policies/managed/10-securedns-browser.json"
-    mkdir -p /etc/systemd/resolved.conf.d/
-    mkdir -p /etc/trivalent/policies/managed/
+    mkdir -m 755 -p /etc/systemd/resolved.conf.d/
+    mkdir -m 755 -p /etc/trivalent/policies/managed/
     # variables
     valid_input="0"
     resolver_selection=""
@@ -20,19 +32,22 @@ dns-selector:
     resolver_hostname=""
     resolver_https_address=""
     set_browser_policy=""
+    opportunistic=""
+    clear_state=""
 
     echo "Below will be some options to set the DNS resolver for systemd-resolved."
     echo "All resolvers support DNS-over-TLS (DoT) or DNS-over-QUIC (DoQ), DNS-over-HTTPS (DoH), and DNSSEC."
     echo "Please select which DNS resolver you would like to set:"
-    echo "    0) Network Resolver - security may vary (system default state) (select if using a VPN, this ensures the VPN provided DNS is used to prevent DNS leaks)"
-    echo "    1) Control D - has content filtering, anycast"
-    echo "    2) Mullvad - has content filtering, anycast"
-    echo "    3) Cloudflare - very fast with some data collection, anycast"
-    echo "    4) DNSForge - powerful filtering but can be very slow"
-    echo "    5) Custom Resolver - use a custom resolver (must support DoT/DoQ, ideally also supports DNSSEC, DoH support is also required to set a browser policy should that be desired)"
+    echo "    0) Network Default - do nothing, rely purely on the network for resolution (when using a VPN, this option is best to guarentee usage of the VPN's DNS resolver)"
+    echo "    1) Opportunistic Upgrade - try to upgrade to DoT (encrypted DNS) resolution and/or DNSSEC enforcement (this configuration may break networking)"
+    echo "    2) Control D - has content filtering, anycast"
+    echo "    3) Mullvad - has content filtering, anycast"
+    echo "    4) Cloudflare - very fast with some data collection, anycast"
+    echo "    5) DNSForge - powerful filtering but can be very slow"
+    echo "    6) Custom Resolver - use a custom resolver (must support DoT/DoQ, ideally also supports DNSSEC, DoH support is also required to set a browser policy should that be desired)"
     while [[ "$valid_input" == "0" ]]; do
-        read -rp "Selection [0-5]: " resolver_selection
-        if [[ "$resolver_selection" == [012345]* ]]; then
+        read -rp "Selection [0-6]: " resolver_selection
+        if [[ "$resolver_selection" == [0123456]* ]]; then
             valid_input="1"
         else
             echo "That is not a valid selection."
@@ -43,17 +58,14 @@ dns-selector:
     echo "" # blank space
     case "$resolver_selection" in
         0)
+            clear_state="1"
             echo "Resetting resolved to default state."
-            if [[ -f "$policy_file" ]]; then
-                rm $policy_file
-                echo "Removed browser policy."
-            fi
-            cp /usr$resolved_conf $resolved_conf
-            systemctl restart systemd-resolved
-            echo "Configuration file for resolved reset and service restarted."
-            exit 0
             ;;
         1)
+            clear_state="1"
+            opportunistic="1"
+            ;;
+        2)
             resolver_has_second_ip="y"
             resolver_supports_ipv6="y"
             resolver_dnssec="y"
@@ -117,7 +129,7 @@ dns-selector:
                     ;;
             esac
             ;;
-        2)
+        3)
             resolver_has_second_ip="n"
             resolver_supports_ipv6="y"
             resolver_dnssec="y"
@@ -173,7 +185,7 @@ dns-selector:
             esac
             resolver_https_address="https://$resolver_hostname/dns-query"
             ;;
-        3)
+        4)
             resolver_has_second_ip="y"
             resolver_supports_ipv6="y"
             resolver_dnssec="y"
@@ -217,7 +229,7 @@ dns-selector:
             esac
             resolver_https_address="https://$resolver_hostname/dns-query"
             ;;
-        4)
+        5)
             resolver_has_second_ip="y"
             resolver_supports_ipv6="y"
             resolver_dnssec="y"
@@ -261,16 +273,16 @@ dns-selector:
             esac
             resolver_https_address="https://$resolver_hostname/dns-query"
             ;;
-        5)
+        6)
             echo "Setting custom resolver."
             echo "NOTE: If the resolver does not support DoT/DoQ or DNSSEC, this process will not work."
             echo ""
             echo "Please provide the technical information."
-            read -rp "Please enter the resolver's IP address (e.g. '1.1.1.2'): " resolver_ipv4_address
-            read -rp "Does the resolver provide two distinct IP addresses (e.g. '1.1.1.2' and '1.0.0.2')? [Y/n] " resolver_has_second_ip
+            read -rp "Please enter the resolver's IPv4 address (e.g. '1.1.1.2'): " resolver_ipv4_address
+            read -rp "Does the resolver provide two distinct IPv4 addresses (e.g. '1.1.1.2' and '1.0.0.2')? [Y/n] " resolver_has_second_ip
             resolver_has_second_ip=${resolver_has_second_ip:-y}
             if [[ "$resolver_has_second_ip" == [Yy]* ]]; then
-                read -rp "Please enter the resolver's second IP address: " resolver_ipv4_address_2
+                read -rp "Please enter the resolver's second IPv4 address: " resolver_ipv4_address_2
             fi
             read -rp "Does the resolver support IPv6 (e.g. '2606:4700:4700::1112')? [Y/n] " resolver_supports_ipv6
             resolver_supports_ipv6=${resolver_supports_ipv6:-y}
@@ -286,43 +298,67 @@ dns-selector:
             ;;
     esac
 
-    read -rp "Would you like the resolver to be set in the default browser (Trivalent) via management policy? [y/N] " set_browser_policy
-    if [[ "$set_browser_policy" == [Yy]* && "$resolver_selection" == 5 ]]; then
-        read -rp "Please enter the second resolver's HTTPS address (e.g. 'https://security.cloudflare-dns.com/dns-query'): " resolver_https_address
-    fi
-
-    resolved_conf_dns_string=""
-    resolved_conf_dns_string+="DNS="
-    resolved_conf_dns_string+=" $resolver_ipv4_address"
-    resolved_conf_dns_string+="#$resolver_hostname"
-    if [[ "$resolver_has_second_ip" == [Yy]* ]]; then
-        resolved_conf_dns_string+=" $resolver_ipv4_address_2"
-        resolved_conf_dns_string+="#$resolver_hostname"
-    fi
-    if [[ "$resolver_supports_ipv6" == [Yy]* ]]; then
-        resolved_conf_dns_string+=" $resolver_ipv6_address"
-        resolved_conf_dns_string+="#$resolver_hostname"
-        if [[ "$resolver_has_second_ip" == [Yy]* ]]; then
-            resolved_conf_dns_string+=" $resolver_ipv6_address_2"
-            resolved_conf_dns_string+="#$resolver_hostname"
+    if [[ "$clear_state" == "1" ]]; then
+        if [[ -f "$policy_file" ]]; then
+            rm $policy_file
+            echo "Removed browser policy."
         fi
     fi
 
-    resolved_conf_dnssec_string=""
-    if [[ "$resolver_dnssec" == [Yy]* ]]; then
-        resolved_conf_dnssec_string+="DNSSEC=true"
-    fi
+    if [[ "$opportunistic" == "1" ]]; then
+        cat << EOF > "$resolved_conf"
+    [Resolve]
+    DNSOverTLS=opportunistic
+    DNSSEC=allow-downgrade
+    EOF
+    elif [[ "$clear_state" == "1" ]]; then
+        if [[ -f "$resolved_conf" ]]; then
+            rm $resolved_conf
+        fi
+        echo "Configuration file for resolved removed."
+    else
+        read -rp "Would you like the resolver to be set in the default browser (Trivalent) via management policy? [y/N] " set_browser_policy
+        if [[ "$set_browser_policy" == [Yy]* && "$resolver_selection" == 6 ]]; then
+            read -rp "Please enter the second resolver's HTTPS address (e.g. 'https://security.cloudflare-dns.com/dns-query'): " resolver_https_address
+        fi
 
-    cat << EOF > "$resolved_conf"
+        resolved_conf_dns_string=""
+        resolved_conf_dns_string+="DNS="
+        resolved_conf_dns_string+=" $resolver_ipv4_address"
+        resolved_conf_dns_string+="#$resolver_hostname"
+        if [[ "$resolver_has_second_ip" == [Yy]* ]]; then
+            resolved_conf_dns_string+=" $resolver_ipv4_address_2"
+            resolved_conf_dns_string+="#$resolver_hostname"
+        fi
+        if [[ "$resolver_supports_ipv6" == [Yy]* ]]; then
+            resolved_conf_dns_string+=" $resolver_ipv6_address"
+            resolved_conf_dns_string+="#$resolver_hostname"
+            if [[ "$resolver_has_second_ip" == [Yy]* ]]; then
+                resolved_conf_dns_string+=" $resolver_ipv6_address_2"
+                resolved_conf_dns_string+="#$resolver_hostname"
+            fi
+        fi
+
+        resolved_conf_dnssec_string=""
+        if [[ "$resolver_dnssec" == [Yy]* ]]; then
+            resolved_conf_dnssec_string+="DNSSEC=true"
+        fi
+
+        cat << EOF > "$resolved_conf"
     [Resolve]
     DNSOverTLS=true
     $resolved_conf_dns_string
     $resolved_conf_dnssec_string
     EOF
+    fi
+
+    if [[ -f "$resolved_conf" ]]; then
+        chmod 644 "$resolved_conf"
+    fi
 
     systemctl restart systemd-resolved
 
-    echo "Config file for resolved configured with selected resolver and service restarted."
+    echo "Configation for resolved set and service restarted."
 
     if [[ "$set_browser_policy" != [Yy]* ]]; then
         exit 0
@@ -333,5 +369,6 @@ dns-selector:
         "DnsOverHttpsTemplates": "$resolver_https_address"
     }
     EOF
+    chmod 644 "$policy_file"
 
     echo "Browser policy set with selected resolver."

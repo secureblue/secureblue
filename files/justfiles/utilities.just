@@ -126,11 +126,6 @@ debug-info:
     content="$rpm_ostree_status$sysinfo$flatpaks$audit_results$local_overrides$recent_events$failed_services"
     echo "$content" | fpaste --confirm --private=1
 
-# Rerun Yafti
-rerun-yafti:
-    #!/usr/bin/bash
-    yafti -f /usr/share/ublue-os/firstboot/yafti.yml
-
 alias assemble := distrobox-assemble
 
 # Create distroboxes from a defined manifest
@@ -169,11 +164,6 @@ toolbox-assemble CONTAINER="prompt" ACTION="create" FILE="/etc/toolbox/toolbox.i
     source /usr/lib/ujust/ujust.sh
     ToolboxAssembleList "{{ FILE }}" "{{ ACTION }}" "{{ CONTAINER }}"
 
-# Run a non-flatpak application with standard memory allocator (needs an argument!)
-with-standard-malloc APP:
-    #!/usr/bin/bash
-    bwrap --dev-bind / / --ro-bind /dev/null /etc/ld.so.preload "{{ APP }}"
-
 # Add the unfiltered Flathub flatpak repo
 enable-flathub-unfiltered:
     #!/usr/bin/bash
@@ -183,13 +173,21 @@ enable-flathub-unfiltered:
 check-container-userns-state:
     #!/usr/bin/bash
     set -euo pipefail
-    podman unshare true &> /dev/null && echo 'enabled' || echo 'disabled'
+    if [ "$(whoami)" = 'root' ]; then
+        semodule -l | grep -q 'harden_container_userns' && echo 'disabled' || echo 'enabled'
+    else
+        podman unshare true &> /dev/null && echo 'enabled' || echo 'disabled'
+    fi
 
 # Returns the state of unconfined domain user namespaces. (enabled/disabled)
 check-unconfined-userns-state:
     #!/usr/bin/bash
     set -euo pipefail
-    unshare -U true &> /dev/null && echo 'enabled' || echo 'disabled'
+    if [ "$(whoami)" = 'root' ]; then
+        semodule -l | grep -q 'harden_userns' && echo 'disabled' || echo 'enabled'
+    else
+        unshare -U true &> /dev/null && echo 'enabled' || echo 'disabled'
+    fi
 
 # Install Steam via choice of 2 methods
 install-steam:
@@ -336,6 +334,8 @@ label-external-drives:
 
 # Layers a comprehensive set of packages for libvirt/qemu/virt-manager
 install-libvirt-packages:
+    #!/usr/bin/bash
+    set -euo pipefail
     rpm-ostree install -y libvirt libvirt-nss qemu qemu-char-spice qemu-device-display-virtio-gpu qemu-device-display-virtio-vga qemu-device-usb-redirect qemu-img qemu-system-x86-core qemu-user-binfmt qemu-user-static virt-install virt-manager virt-v2v virt-viewer
     echo "Check out the Red Hat documentation to see which services to enable for your usecase:"
     echo "https://docs.redhat.com/fr/documentation/red_hat_enterprise_linux/9/html/monitoring_and_managing_system_status_and_performance/assembly_optimizing-libvirt-daemons_optimizing-virtual-machine-performance-in-rhel#proc_enabling-modular-libvirt-daemons_assembly_optimizing-libvirt-daemons"
@@ -386,7 +386,7 @@ install-vpn:
                 REPO_NAME="mullvad"
 
                 if util_checkpackage "$PACKAGE_NAME"; then
-                    echo 'Error: The Mullvad VPN is already installed.'
+                    echo 'Error: Mullvad VPN is already installed.'
                     echo 'Aborting...'
                     exit 1
                 fi

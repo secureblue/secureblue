@@ -1,3 +1,15 @@
+# Copyright 2025 The Secureblue Authors
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software distributed under the License is
+# distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and limitations under the License.
+
 # Toggle the cups service on/off
 toggle-cups:
     #! /bin/run0 /bin/bash
@@ -234,7 +246,7 @@ toggle-bash-environment-lockdown skip_approval="false" apply_for_all_users="prom
     current_time="$(date | tr ' ' '_')"
 
     if [[ "$pending_status" == "locked" ]]; then
-        echo "${bold}WARNING${unbold} This will change your ~/.bashrc, ~/.bash_profile, ~/.config/bash-completion, ~/.profile, ~/.bash_logout, ~/.bash_login, ~/.bashrc.d/, and ~/.config/environment.d/"
+        echo "${bold}WARNING${unbold} This will change your ~/.bashrc, ~/.bash_profile, ~/.config/bash_completion, ~/.profile, ~/.bash_logout, ~/.bash_login, ~/.bashrc.d/, and ~/.config/environment.d/"
         echo "This is needed to ensure the mitigation (see LD_PRELOAD attacks) is effective."
         echo "This script will create backups of the old versions in ~/bash_env_files/$current_time."
     else
@@ -280,7 +292,7 @@ toggle-bash-environment-lockdown skip_approval="false" apply_for_all_users="prom
         BASH_ENV_FILES=(
             "$user_home/.bashrc"
             "$user_home/.bash_profile"
-            "$user_home/.config/bash-completion"
+            "$user_home/.config/bash_completion"
             "$user_home/.profile"
             "$user_home/.bash_logout"
             "$user_home/.bash_login"
@@ -427,6 +439,7 @@ toggle-mac-randomization:
     ethernet.cloned-mac-address=stable
     wifi.cloned-mac-address=$randomization_level
     EOL
+        chmod 644 $RAND_MAC_FILE
         echo "MAC randomization enabled."
         systemctl restart NetworkManager
     fi

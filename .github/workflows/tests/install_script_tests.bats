@@ -1,5 +1,17 @@
 #!/usr/bin/env bats
 
+# Copyright 2025 The Secureblue Authors
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software distributed under the License is
+# distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and limitations under the License.
+
 setup() {
     echo '
 #!/bin/bash
@@ -96,32 +108,8 @@ fi
   [[ "$output" == *"sericea-main-hardened"* ]]
 }
 
-@test "Test command for wayblue-wayfire-main-hardened" {
-  run bash -c "echo -e 'no\n4\nno\nno' | bash '$INSTALL_SCRIPT'"
-  [ "$status" -eq 0 ]
-  [[ "$output" == *"wayblue-wayfire-main-hardened"* ]]
-}
-
-@test "Test command for wayblue-sway-main-hardened" {
-  run bash -c "echo -e 'no\n5\nno\nno' | bash '$INSTALL_SCRIPT'"
-  [ "$status" -eq 0 ]
-  [[ "$output" == *"wayblue-sway-main-hardened"* ]]
-}
-
-@test "Test command for wayblue-river-main-hardened" {
-  run bash -c "echo -e 'no\n6\nno\nno' | bash '$INSTALL_SCRIPT'"
-  [ "$status" -eq 0 ]
-  [[ "$output" == *"wayblue-river-main-hardened"* ]]
-}
-
-@test "Test command for wayblue-hyprland-main-hardened" {
-  run bash -c "echo -e 'no\n7\nno\nno' | bash '$INSTALL_SCRIPT'"
-  [ "$status" -eq 0 ]
-  [[ "$output" == *"wayblue-hyprland-main-hardened"* ]]
-}
-
 @test "Test command for cosmic-main-hardened" {
-  run bash -c "echo -e 'no\n8\nno\nno' | bash '$INSTALL_SCRIPT'"
+  run bash -c "echo -e 'no\n4\nno\nno' | bash '$INSTALL_SCRIPT'"
   [ "$status" -eq 0 ]
   [[ "$output" == *"cosmic-main-hardened"* ]]
 }

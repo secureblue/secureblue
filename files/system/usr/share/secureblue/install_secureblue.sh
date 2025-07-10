@@ -1,5 +1,17 @@
 #!/usr/bin/env bash
 
+# Copyright 2025 The Secureblue Authors
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software distributed under the License is
+# distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and limitations under the License.
+
 if ! command -v rpm-ostree &> /dev/null
 then
     echo "This script only runs on Fedora Atomic"
@@ -30,10 +42,6 @@ desktop_image_types=(
     "silverblue"
     "kinoite"
     "sericea"
-    "wayblue-wayfire"
-    "wayblue-sway"
-    "wayblue-river"
-    "wayblue-hyprland"
     "cosmic"
 )
 
@@ -64,8 +72,8 @@ else
     fi
     printf "%s\n" \
         "Select a desktop." \
-        "Silverblue is recommended." \
-        "Wayblue images are currently in beta." \
+        "Silverblue images are recommended." \
+        "Sericea images are recommended for tiling WM users." \
         "Cosmic images are considered experimental."
     PS3=$'Enter your desktop choice: '
     select image_name in "${desktop_image_types[@]}"; do
@@ -92,7 +100,7 @@ image_name+="$additional_params-hardened"
 
 rebase_command="rpm-ostree rebase ostree-unverified-registry:ghcr.io/secureblue/$image_name:latest"
 
-if rpm-ostree status | grep -q '● ostree-image-signed:docker://ghcr.io/secureblue/'; then
+if rpm-ostree status | grep -q '●.*ghcr\.io/secureblue/'; then
     rebase_command="rpm-ostree rebase ostree-image-signed:docker://ghcr.io/secureblue/$image_name:latest"
 else
     echo "Note: Automatic rebasing to the equivalent signed image will occur on first run."
@@ -102,5 +110,5 @@ printf "Command to execute:\n%s\n\n" "$rebase_command"
 
 read -rp "Proceed? (yes/No): " rebase_proceed
 if is_yes "$rebase_proceed"; then
-    $rebase_command
+    eval "$rebase_command"
 fi

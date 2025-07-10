@@ -135,13 +135,13 @@ toggle-gnome-jit-js:
 toggle-gnome-extensions:
     #!/usr/bin/bash
     set -euo pipefail
-    GSETTING="org.gnome.shell allow-extension-installation"
-    if $(command -p gsettings get $GSETTING); then
-      command -p gsettings set $GSETTING false
-      echo "Support for GNOME user extensions is now disabled"
-    else
-      command -p gsettings set $GSETTING true
+    GSETTING="$(command -p gsettings get org.gnome.shell allow-extension-installation)"
+    if [[ "${GSETTING}" == "false" ]]; then
+      command -p gsettings set org.gnome.shell allow-extension-installation true
       echo "Support for GNOME user extensions is now enabled"
+    elif [[ "${GSETTING}" == "true" ]]; then
+      command -p gsettings set org.gnome.shell allow-extension-installation false
+      echo "Support for GNOME user extensions is now disabled"
     fi
 
 # Toggle Xwayland support

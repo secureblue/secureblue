@@ -1,4 +1,17 @@
+# Copyright 2025 The Secureblue Authors
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software distributed under the License is
+# distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and limitations under the License.
+
 name: build-pullrequest
+permissions: {}
 on:
   pull_request:
     branches:
@@ -16,6 +29,9 @@ jobs:
       fail-fast: false 
       matrix:
         recipe:
+          - general/recipe-cosmic-main.yml
+          - general/recipe-sericea-main.yml
+          - general/recipe-kinoite-main.yml
           - general/recipe-silverblue-main.yml
           - general/recipe-silverblue-nvidia.yml
           - general/recipe-silverblue-nvidia-open.yml
@@ -26,12 +42,17 @@ jobs:
     steps:
       - name: Checkout repo
         uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          persist-credentials: false
 
       - name: Gather image data from recipe
+        shell: bash
+        env:
+          RECIPE: ${{ matrix.recipe }}
         run: |
-          echo "IMAGE_NAME=$(grep '^name:' ./recipes/${{ matrix.recipe }} | sed 's/^name: //')" >> $GITHUB_ENV
-          echo "IMAGE_MAJOR_VERSION=$(grep '^image-version:' ./recipes/${{ matrix.recipe }} | sed 's/^image-version: //')" >> $GITHUB_ENV
-          BASE_IMAGE=$(grep '^base-image:' ./recipes/${{ matrix.recipe }} | sed 's/^base-image: //')
+          echo "IMAGE_NAME=$(grep '^name:' ./recipes/${RECIPE} | sed 's/^name: //')" >> $GITHUB_ENV
+          echo "IMAGE_MAJOR_VERSION=$(grep '^image-version:' ./recipes/${RECIPE} | sed 's/^image-version: //')" >> $GITHUB_ENV
+          BASE_IMAGE=$(grep '^base-image:' ./recipes/${RECIPE} | sed 's/^base-image: //')
           echo "BASE_IMAGE_NAME=$(echo $BASE_IMAGE | sed 's/.*\/.*\///')" >> $GITHUB_ENV
 
       - name: Maximize build space
@@ -64,7 +85,7 @@ jobs:
         run: |
           docker create \
             --name blue-build-installer \
-            ghcr.io/blue-build/cli:v0.9.10-installer
+            ghcr.io/blue-build/cli:v0.9.18-installer
           docker cp blue-build-installer:/out/bluebuild /usr/local/bin/bluebuild
           docker rm blue-build-installer
           bluebuild --version

@@ -1,32 +1,86 @@
+# Copyright 2025 The Secureblue Authors
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software distributed under the License is
+# distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and limitations under the License.
+
 # Harden flatpaks by preloading hardened_malloc (highest supported hwcap). When called with a flatpak application ID as an argument, applies the overrides to that application instead of globally.
 harden-flatpak FLATPAK_APPID="":
     #!/usr/bin/bash
+    set -euo pipefail
     flatpak_id="{{ FLATPAK_APPID }}"
-    if [[ "$flatpak_id" =~ "'" ]]; then
-        echo 'WARNING: Single quotes in the argument are forbidden to avoid command execution'
-        exit 1
+
+    # Determine best microarchitecture to use for hardened_malloc
+    best_uarch="$(/usr/lib64/ld-linux-x86-64.so.2 --help | grep -F '(supported, searched)' \
+        | grep -o 'x86-64-v[[:digit:]]*' | sort -nr | head -n1 || echo '')"
+    readonly best_uarch
+    readonly hmalloc_path="/var/run/host/usr/lib64/${best_uarch:+"glibc-hwcaps/$best_uarch/"}libhardened_malloc.so"
+    readonly hmalloc_description="hardened_malloc${best_uarch:+" (µarch $best_uarch)"}"
+
+    if [[ -z "$flatpak_id" ]]; then
+        flatpak override --user --filesystem=host-os:ro
+        flatpak override --user --env=LD_PRELOAD="$hmalloc_path"
+        echo "$hmalloc_description applied to all flatpaks by default."
+        exit
     fi
 
-    hostro_cmd="flatpak override --user --filesystem=host-os:ro"
-    if [[ -n "$flatpak_id" ]]; then
-        hostro_cmd="$hostro_cmd '$flatpak_id'"
-    fi
-    sh -c "$hostro_cmd"
+    readonly override_dir="$HOME/.local/share/flatpak/overrides"
 
-    uarches="$(/usr/lib64/ld-linux-x86-64.so.2 --help | grep '(supported, searched)' | cut -d'v' -f2 || echo '')"
-    bestuarch="${uarches:0:1}"
-    malloc_cmd="flatpak override --user --env=LD_PRELOAD=/var/run/host/usr/lib64"
-    if [ -z "$bestuarch" ] ; then
-        echo "No microarchitecture support detected. Using default x86-64-v1 architecture${flatpak_id:+" for $flatpak_id's malloc"}."
-        malloc_cmd="$malloc_cmd/libhardened_malloc.so"
-    else
-        echo "x86-64-v$bestuarch support detected. Using x86-64-v$bestuarch microarchitecture${flatpak_id:+" for $flatpak_id's malloc"}."
-        malloc_cmd="$malloc_cmd/glibc-hwcaps/x86-64-v$bestuarch/libhardened_malloc.so"
+    has_host_os_access() {
+        grep -Eqx 'filesystems=(.*;)?host-os(:ro)?(;.*)?' "$override_dir/$1"
+    }
+
+    remove_no_host_os() {
+        sed -Ei '/^filesystems=/s/!host-os(;|$)//' "$override_dir/$1"
+    }
+
+    has_ld_preload() {
+        grep -Fqx "LD_PRELOAD=$hmalloc_path" "$override_dir/$1"
+    }
+
+    remove_ld_preload_override() {
+        sed -i '/^LD_PRELOAD=/d' "$override_dir/$1"
+    }
+
+    harden_flatpak_app() {
+        if has_host_os_access 'global'; then
+            remove_no_host_os "$1"
+        else
+            flatpak override --user --filesystem=host-os:ro "$1"
+        fi
+        if has_ld_preload 'global'; then
+            remove_ld_preload_override "$1"
+        else
+            flatpak override --user --env=LD_PRELOAD="$hmalloc_path" "$1"
+        fi
+    }
+
+    installed_app_ids="$(flatpak list --columns=application --app)"
+    if ! echo "$installed_app_ids" | grep -Fqx "$flatpak_id"; then
+        echo "'$flatpak_id' is not the application ID of an installed flatpak."
+        readarray -t matching_ids < <(echo "$installed_app_ids" | grep -Fi "$flatpak_id")
+        if (( ${#matching_ids[@]} == 0 )); then
+            echo "No matching IDs found; exiting."
+            exit 1
+        fi
+        echo "Did you mean one of the following? (enter number to select, any letter to cancel)"
+        select selected_id in "${matching_ids[@]}"; do
+            if [[ -z "$selected_id" ]]; then
+                exit 1
+            fi
+            flatpak_id="$selected_id"
+            break
+        done
     fi
-    if [[ -n "$flatpak_id" ]]; then
-        malloc_cmd="$malloc_cmd '$flatpak_id'"
-    fi
-    sh -c "$malloc_cmd"
+
+    harden_flatpak_app "$flatpak_id"
+    echo "$hmalloc_description applied to flatpak $flatpak_id"
 
 # Harden Flatpaks further by disabling all permissions by default and rejecting known arbitrary DBus names, applies only to the current user
 flatpak-permissions-lockdown:
@@ -41,10 +95,11 @@ flatpak-permissions-lockdown:
     kKnownSessionBusNames=("org.xfce.ScreenSaver" "org.mate.ScreenSaver" "org.cinnamon.ScreenSaver" "org.gnome.ScreenSaver" "org.kde.kwalletd6" "org.gnome.Mutter.IdleMonitor.*" "org.gnome.ControlCenter" "org.gnome.Settings" "org.gnome.SettingsDaemon.MediaKeys" "org.gnome.SessionManager" "org.gnome.Shell.Screenshot" "org.kde.kiod5" "org.kde.kwin.Screenshot" "org.kde.JobViewServer" "org.gtk.vfs.*" "org.freedesktop.secrets" "org.kde.kconfig.notify" "org.kde.kpasswdserver" "org.kde.*" "org.kde.StatusNotifierWatcher" "org.kde.kded6" "org.kde.kpasswdserver6" "org.kde.kiod6" "com.canonical.Unity" "org.freedesktop.Notifications" "org.freedesktop.FileManager1" "org.freedesktop.impl.portal.PermissionStore" "org.freedesktop.Flatpak" "com.canonical.AppMenu.Registrar" "org.kde.KGlobalSettings" "org.kde.kded5" "com.canonical.Unity.LauncherEntry" "org.kde.kwalletd5" "org.gnome.SettingsDaemon" "org.a11y.Bus" "com.canonical.indicator.application" "org.freedesktop.ScreenSaver" "ca.desrt.dconf" "org.freedesktop.PowerManagement" "org.gnome.Software" "org.freedesktop.Tracker3.Writeback" "io.missioncenter.MissionCenter.Gatherer")
     kKnownSystemBusNames=("org.bluez" "org.freedesktop.home1" "org.freedesktop.hostname1" "org.freedesktop.import1" "org.freedesktop.locale1" "org.freedesktop.LogControl1" "org.freedesktop.machine1" "org.freedesktop.network1" "org.freedesktop.oom1" "org.freedesktop.portable1" "org.freedesktop.resolve1" "org.freedesktop.sysupdate1" "org.freedesktop.timesync1" "org.freedesktop.timedate1" "org.freedesktop.systemd1" "org.freedesktop.Avahi" "org.freedesktop.Avahi.*" "org.freedesktop.login1" "org.freedesktop.NetworkManager" "org.freedesktop.UPower" "org.freedesktop.UDisks2" "org.freedesktop.fwupd")
     kFlatsealNameAccess=("org.gnome.Software" "org.freedesktop.impl.portal.PermissionStore")
+    kWarehouseNameAccess=("org.freedesktop.Flatpak")
     confirmation=""
 
     echo "This will configure flatpak to automatically reject most permissions (with the exception of the Wayland socket and the Dri device, since these are commonly used and ensure at the very least most apps will work without crashing)."
-    echo "This will also grant Flatseal access to certain permissions to allow it to operate and make reconfiguring much easier."
+    echo "This will also grant Flatseal and Warehouse access to certain permissions to allow them to operate and make reconfiguring much easier."
     echo "NOTE: This will break just about all Flatpaks by default, it is ON YOU to configure them to work with this configuration."
     echo "NOTE 2: This DOES NOT enable hardened_malloc, use the harden-flatpak ujust command."
     echo ""
@@ -115,6 +170,12 @@ flatpak-permissions-lockdown:
         for i in "${kFlatsealNameAccess[@]}"; do
             echo "	Granting $i..."
             $kCommand --talk-name="$i" com.github.tchx84.Flatseal
+        done
+        echo ""
+        echo "-- Granting Warehouse Access to Bus Names --"
+        for i in "${kWarehouseNameAccess[@]}"; do
+            echo "	Granting $i..."
+            $kCommand --talk-name="$i" io.github.flattool.Warehouse
         done
         echo ""
         echo "Done"

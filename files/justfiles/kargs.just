@@ -1,6 +1,19 @@
+# Copyright 2025 The Secureblue Authors
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software distributed under the License is
+# distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and limitations under the License.
+
 # Add additional boot parameters for hardening (requires reboot)
 set-kargs-hardening:
     #!/usr/bin/bash
+    # https://docs.kernel.org/admin-guide/kernel-parameters.html
     read -rp "Do you need support for 32-bit processes/syscalls? (This is mostly used by legacy software, with some exceptions, such as Steam) [y/N]: " YES
     if [[ "$YES" == [Yy]* ]]; then
         echo "Keeping 32-bit support."
@@ -20,7 +33,8 @@ set-kargs-hardening:
     UNSTABLE_YES="--append-if-missing=efi=disable_early_pci_dma \
         --append-if-missing=gather_data_sampling=force \
         --append-if-missing=amd_iommu=force_isolation \
-        --append-if-missing=debugfs=off"
+        --append-if-missing=debugfs=off \
+        --append-if-missing=oops=panic"
         echo "Setting unstable hardening kargs."
     else
         echo "Not setting unstable hardening kargs."
@@ -48,7 +62,11 @@ set-kargs-hardening:
       --append-if-missing=spec_store_bypass_disable=on \
       --append-if-missing=l1d_flush=on \
       --append-if-missing=l1tf=full,force \
-      --append-if-missing=kvm-intel.vmentry_l1d_flush=always
+      --append-if-missing=kvm-intel.vmentry_l1d_flush=always \
+      --append-if-missing=loglevel=0 \
+      --append-if-missing=rd.shell=0 \
+      --append-if-missing=rd.emergency=halt
+
     echo "Hardening kargs applied."
 
 # Remove all hardening boot parameters (requires reboot)
@@ -81,7 +99,11 @@ remove-kargs-hardening:
       --delete-if-present="ia32_emulation=0" \
       --delete-if-present="l1tf=full,force" \
       --delete-if-present="kvm-intel.vmentry_l1d_flush=always" \
-      --delete-if-present="nosmt=force"
+      --delete-if-present="nosmt=force" \
+      --delete-if-present="oops=panic" \
+      --delete-if-present="loglevel=0" \
+      --delete-if-present="rd.shell=0" \
+      --delete-if-present="rd.emergency=halt"
     echo "Hardening kargs removed."
 
 # Set nvidia kargs
@@ -92,3 +114,12 @@ set-kargs-nvidia:
       --append-if-missing=modprobe.blacklist=nouveau \
       --append-if-missing=nvidia-drm.modeset=1 \
       --append-if-missing=nvidia-drm.fbdev=1
+
+# Remove nvidia kargs
+remove-kargs-nvidia:
+    #!/usr/bin/bash
+    rpm-ostree kargs \
+      --delete-if-present=rd.driver.blacklist=nouveau \
+      --delete-if-present=modprobe.blacklist=nouveau \
+      --delete-if-present=nvidia-drm.modeset=1 \
+      --delete-if-present=nvidia-drm.fbdev=1

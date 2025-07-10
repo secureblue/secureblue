@@ -1,2 +1,1 @@
-enable secureblue-key-enrollment-verification.service
 enable secureblue-key-enrollment-verification.timer

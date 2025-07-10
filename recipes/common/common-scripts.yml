@@ -21,4 +21,3 @@ scripts:
   - createjustcompletions.sh
   - enablekeyverification.sh
   - removefedoraflatpakremoteservice.sh
-  - setautostopavahidaemon.sh

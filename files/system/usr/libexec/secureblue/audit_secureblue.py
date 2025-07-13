@@ -83,6 +83,8 @@ def audit_kargs():
         "random.trust_bootloader=off",
         "random.trust_cpu=off",
         "randomize_kstack_offset=on",
+        "rd.emergency=halt",
+        "rd.shell=0",
         "slab_nomerge",
         "spec_store_bypass_disable=on",
         "spectre_v2=on",

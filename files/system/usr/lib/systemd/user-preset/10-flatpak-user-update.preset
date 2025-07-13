@@ -1,1 +1,1 @@
-enable flatpak-user-update.service
+enable flatpak-user-update.timer

@@ -1,1 +1,1 @@
-enable flatpak-system-update.service
+enable flatpak-system-update.timer

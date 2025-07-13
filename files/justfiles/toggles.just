@@ -34,9 +34,7 @@ toggle-cups:
       systemctl enable cups
       systemctl start cups
       systemctl unmask avahi-daemon.service
-      systemctl disable avahi-daemon.service
       systemctl unmask avahi-daemon.socket
-      systemctl disable avahi-daemon.socket
       systemctl daemon-reload
       echo "CUPS enabled."
       echo "avahi-daemon is unmasked & will be started as needed on an on-demand basis."

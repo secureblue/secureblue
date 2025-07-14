@@ -42,10 +42,8 @@ jobs:
 
           for executable_path in "${executable_paths[@]}"; do
             for file in $executable_path; do
-              if [ -f "$file" ]; then
-                if [ ! -x "$file" ]; then
-                  files_missing_exec+=("$file")
-                fi
+              if [ -f "$file" ] && [ ! -x "$file" ]; then
+                files_missing_exec+=("$file")
               fi
             done
           done

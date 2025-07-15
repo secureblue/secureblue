@@ -21,10 +21,8 @@ toggle-cups:
       systemctl mask cups.socket
       systemctl disable --now cups.service
       systemctl mask cups.service
-      systemctl stop avahi-daemon.socket
-      systemctl mask avahi-daemon.socket
-      systemctl stop avahi-daemon.service
-      systemctl mask avahi-daemon.service
+      systemctl mask --now avahi-daemon.socket
+      systemctl mask --now avahi-daemon.service
       systemctl daemon-reload
       echo "CUPS & avahi-daemon disabled"
     else

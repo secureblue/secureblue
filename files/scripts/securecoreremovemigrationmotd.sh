@@ -12,6 +12,6 @@
 # distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and limitations under the License.
 
-set -euo pipefail
+set -oue pipefail
 
-notify-send -a 'secureblue' -i 'dialog-warning' 'Your system is out of date' 'Run <i>rpm-ostree upgrade</i> to resolve this issue.' -u critical
+rm /etc/systemd/system/multi-user.target.wants/coreos-oci-migration-motd.service

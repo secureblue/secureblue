@@ -17,9 +17,10 @@ toggle-cups:
       firewall-cmd --permanent --remove-port=631/tcp
       firewall-cmd --permanent --remove-port=631/udp
       firewall-cmd --reload
-      systemctl mask cups
-      systemctl disable cups
-      systemctl stop cups
+      systemctl disable --now cups.socket
+      systemctl mask cups.socket
+      systemctl disable --now cups.service
+      systemctl mask cups.service
       systemctl stop avahi-daemon.socket
       systemctl mask avahi-daemon.socket
       systemctl stop avahi-daemon.service
@@ -30,9 +31,10 @@ toggle-cups:
       firewall-cmd --permanent --add-port=631/tcp
       firewall-cmd --permanent --add-port=631/udp
       firewall-cmd --reload
-      systemctl unmask cups
-      systemctl enable cups
-      systemctl start cups
+      systemctl unmask cups.socket
+      systemctl unmask cups.service
+      systemctl enable --now cups.socket
+      systemctl enable --now cups.service
       systemctl unmask avahi-daemon.service
       systemctl unmask avahi-daemon.socket
       systemctl daemon-reload

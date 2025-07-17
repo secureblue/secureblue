@@ -285,7 +285,7 @@ def audit_container_userns():
 @audit
 def audit_usbguard():
     """Ensure usbguard is active."""
-    if command_succeeds("systemctl", "is-active", "--quiet", "usbguard"):
+    if command_succeeds("systemctl", "is-enabled", "--quiet", "usbguard"):
         status = PASS
         rec = None
         if command_succeeds("systemctl", "is-failed", "--quiet", "usbguard"):
@@ -296,7 +296,7 @@ def audit_usbguard():
                 There might be an upstream issue that prevents this service from running as intended."""
     else:
         status = FAIL
-        rec = """USBGuard is not active. To set up USBGuard, run:
+        rec = """USBGuard is not enabled. To set up USBGuard, run:
             $ ujust setup-usbguard
             Caution: if you have already set up USBGuard, this will overwrite the
             existing policy."""
@@ -306,7 +306,7 @@ def audit_usbguard():
 @audit
 def audit_chronyd():
     """Ensure chronyd is active."""
-    if command_succeeds("systemctl", "is-active", "--quiet", "chronyd"):
+    if command_succeeds("systemctl", "is-enabled", "--quiet", "chronyd"):
         status = PASS
         rec = None
         if command_succeeds("systemctl", "is-failed", "--quiet", "chronyd"):
@@ -317,7 +317,7 @@ def audit_chronyd():
                 There might be an upstream issue that prevents this service from running as intended."""
     else:
         status = FAIL
-        rec = """chronyd is inactive.
+        rec = """chronyd is not enabled.
             To start and enable it, run:
             $ systemctl enable --now chronyd"""
     yield Report("Ensuring chronyd is active", status, recs=rec)
@@ -415,7 +415,7 @@ def audit_podman_auto_update():
     if command_succeeds("systemctl", "is-enabled", "--quiet", "podman-auto-update.timer"):
         status = PASS
         rec = None
-        if command_succeeds("systemctl", "is-failed", "--quiet", "podman-auto-update.timer"):
+        if command_succeeds("systemctl", "--user", "is-failed", "--quiet", "podman-auto-update.timer"):
             status = status.downgrade_to(WARN)
             rec = """podman-auto-update.timer is enabled but has failed to run.
                 There might be an upstream issue that prevents this service from running as intended."""
@@ -435,6 +435,10 @@ def audit_podman_global_auto_update():
     ):
         status = PASS
         rec = None
+            if command_succeeds("systemctl", "is-failed", "--quiet", "podman-auto-update.timer"):
+            status = status.downgrade_to(WARN)
+            rec = """podman-auto-update.timer is enabled globally but has failed to run.
+                There might be an upstream issue that prevents this service from running as intended."""
     else:
         status = FAIL
         rec = """podman-auto-update.timer is not enabled globally.
@@ -453,6 +457,10 @@ def audit_flatpak_auto_update():
     ):
         status = PASS
         rec = None
+        if command_succeeds("systemctl", "--user", "is-failed", "--quiet", "flatpak-user-update.timer"):
+            status = status.downgrade_to(WARN)
+            rec = """flatpak-user-update.timer is enabled globally but has failed to run.
+                There might be an upstream issue that prevents this service from running as intended."""
     else:
         status = FAIL
         rec = """flatpak-user-update.timer is not enabled globally.

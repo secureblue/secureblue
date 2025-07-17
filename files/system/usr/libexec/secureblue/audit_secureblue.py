@@ -435,7 +435,7 @@ def audit_podman_global_auto_update():
     ):
         status = PASS
         rec = None
-            if command_succeeds("systemctl", "is-failed", "--quiet", "podman-auto-update.timer"):
+        if command_succeeds("systemctl", "is-failed", "--quiet", "podman-auto-update.timer"):
             status = status.downgrade_to(WARN)
             rec = """podman-auto-update.timer is enabled globally but has failed to run.
                 There might be an upstream issue that prevents this service from running as intended."""

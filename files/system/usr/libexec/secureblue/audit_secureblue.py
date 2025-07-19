@@ -287,20 +287,22 @@ def audit_usbguard():
     """Ensure usbguard is active."""
     if command_succeeds("systemctl", "is-enabled", "--quiet", "usbguard"):
         status = PASS
+        warning = None
         rec = None
         if command_succeeds("systemctl", "is-failed", "--quiet", "usbguard"):
             status = status.downgrade_to(WARN)
+            warning = "USBGuard is enabled but has failed to run"
             rec = """USBGuard is enabled but has failed to run.
-                To restart USBGuard, run:
-                $ systemctl restart usbguard.service
-                There might be an upstream issue that prevents this service from running as intended."""
+                The service might be misconfigured. To revert changes, run:
+                $ systemctl revert usbguard.service"""
     else:
         status = FAIL
+        warning = "USBGuard is not enabled"
         rec = """USBGuard is not enabled. To set up USBGuard, run:
             $ ujust setup-usbguard
             Caution: if you have already set up USBGuard, this will overwrite the
             existing policy."""
-    yield Report("Ensuring usbguard is active", status, recs=rec)
+    yield Report("Ensuring usbguard is active", status, warnings=warning, recs=rec)
 
 
 @audit
@@ -308,19 +310,21 @@ def audit_chronyd():
     """Ensure chronyd is active."""
     if command_succeeds("systemctl", "is-enabled", "--quiet", "chronyd"):
         status = PASS
+        warning = None
         rec = None
         if command_succeeds("systemctl", "is-failed", "--quiet", "chronyd"):
             status = status.downgrade_to(WARN)
+            warning = "chronyd is enabled but has failed to run"
             rec = """chronyd is enabled but has failed to run.
-                To restart chronyd, run:
-                $ systemctl restart chronyd.service
-                There might be an upstream issue that prevents this service from running as intended."""
+                The service might be misconfigured. To revert changes, run:
+                $ systemctl revert chronyd.service"""
     else:
         status = FAIL
+        warning = "chronyd is not enabled"
         rec = """chronyd is not enabled.
             To start and enable it, run:
             $ systemctl enable --now chronyd"""
-    yield Report("Ensuring chronyd is active", status, recs=rec)
+    yield Report("Ensuring chronyd is active", status, warnings=warning, recs=rec)
 
 
 @audit
@@ -396,17 +400,21 @@ def audit_rpm_ostree_timer():
     """Ensure rpm-ostree automatic updates are enabled."""
     if command_succeeds("systemctl", "is-enabled", "--quiet", "rpm-ostreed-automatic.timer"):
         status = PASS
+        warning = None
         rec = None
         if command_succeeds("systemctl", "is-failed", "--quiet", "rpm-ostreed-automatic.timer"):
             status = status.downgrade_to(WARN)
+            warning = "rpm-ostreed-automatic.timer is enabled but has failed to run"
             rec = """rpm-ostreed-automatic.timer is enabled but has failed to run.
-                There might be an upstream issue that prevents this service from running as intended."""
+                The service might be misconfigured. To revert changes, run:
+                $ systemctl revert rpm-ostreed-automatic.timer"""
     else:
         status = FAIL
+        warning = "rpm-ostreed-automatic.timer is disabled"
         rec = """rpm-ostreed-automatic.timer is disabled.
                 To enable, run:
                 $ systemctl enable --now rpm-ostreed-automatic.timer"""
-    yield Report("Ensuring rpm-ostreed-automatic.timer is enabled", status, recs=rec)
+    yield Report("Ensuring rpm-ostreed-automatic.timer is enabled", status, warnings=warning, recs=rec)
 
 
 @audit
@@ -414,17 +422,21 @@ def audit_podman_auto_update():
     """Ensure podman automatic updates are enabled."""
     if command_succeeds("systemctl", "is-enabled", "--quiet", "podman-auto-update.timer"):
         status = PASS
+        warning = None
         rec = None
         if command_succeeds("systemctl", "--user", "is-failed", "--quiet", "podman-auto-update.timer"):
             status = status.downgrade_to(WARN)
+            warning = "podman-auto-update.timer is enabled but has failed to run"
             rec = """podman-auto-update.timer is enabled but has failed to run.
-                There might be an upstream issue that prevents this service from running as intended."""
+                The service might be misconfigured. To revert changes, run:
+                $ systemctl revert podman-auto-update.timer"""
     else:
         status = FAIL
+        warning = "podman-auto-update.timer is disabled"
         rec = """podman-auto-update.timer is disabled.
                 To enable, run:
                 $ systemctl enable --now podman-auto-update.timer"""
-    yield Report("Ensuring podman-auto-update.timer is enabled", status, recs=rec)
+    yield Report("Ensuring podman-auto-update.timer is enabled", status, warnings=warning, recs=rec)
 
 
 @audit
@@ -434,17 +446,21 @@ def audit_podman_global_auto_update():
         "systemctl", "--global", "is-enabled", "--quiet", "podman-auto-update.timer"
     ):
         status = PASS
+        warning = None
         rec = None
         if command_succeeds("systemctl", "is-failed", "--quiet", "podman-auto-update.timer"):
             status = status.downgrade_to(WARN)
+            warning = "podman-auto-update.timer is enabled globally but has failed to run"
             rec = """podman-auto-update.timer is enabled globally but has failed to run.
-                There might be an upstream issue that prevents this service from running as intended."""
+                The service might be misconfigured. To revert changes, run:
+                $ systemctl revert --global podman-auto-update.timer"""
     else:
         status = FAIL
+        warning = "podman-auto-update.timer is not enabled globally"
         rec = """podman-auto-update.timer is not enabled globally.
                 To enable, run:
                 $ systemctl enable --global podman-auto-update.timer"""
-    yield Report("Ensuring podman-auto-update.timer is enabled globally", status, recs=rec)
+    yield Report("Ensuring podman-auto-update.timer is enabled globally", status, warnings=warning, recs=rec)
 
 
 @audit
@@ -456,31 +472,39 @@ def audit_flatpak_auto_update():
         "systemctl", "--global", "is-enabled", "--quiet", "flatpak-user-update.timer"
     ):
         status = PASS
+        warning = None
         rec = None
         if command_succeeds("systemctl", "--user", "is-failed", "--quiet", "flatpak-user-update.timer"):
             status = status.downgrade_to(WARN)
+            warning = "flatpak-user-update.timer is enabled globally but has failed to run."
             rec = """flatpak-user-update.timer is enabled globally but has failed to run.
-                There might be an upstream issue that prevents this service from running as intended."""
+                The service might be misconfigured. To revert changes, run:
+                $ systemctl revert --global flatpak-user-update.timer"""
     else:
         status = FAIL
+        warning = "flatpak-user-update.timer is not enabled globally"
         rec = """flatpak-user-update.timer is not enabled globally.
                 To enable, run:
                 $ systemctl enable --global flatpak-user-update.timer"""
-    yield Report("Ensuring flatpak-user-update.timer is enabled globally", status, recs=rec)
+    yield Report("Ensuring flatpak-user-update.timer is enabled globally", status, warnings=warning, recs=rec)
 
     if command_succeeds("systemctl", "is-enabled", "--quiet", "flatpak-system-update.timer"):
         status = PASS
+        warning = None
         rec = None
         if command_succeeds("systemctl", "is-failed", "--quiet", "flatpak-system-update.timer"):
             status = status.downgrade_to(WARN)
+            warning = "flatpak-system-update.timer is enabled but has failed to run."
             rec = """flatpak-system-update.timer is enabled but has failed to run.
-                There might be an upstream issue that prevents this service from running as intended."""
+                The service might be misconfigured. To revert changes, run:
+                $ systemctl revert flatpak-system-update.timer"""
     else:
         status = FAIL
-        rec = """flatpak-system-update.timer is not enabled globally.
+        warning = "flatpak-system-update.timer is not enabled"
+        rec = """flatpak-system-update.timer is not enabled.
                 To enable, run:
                 $ systemctl enable --now flatpak-system-update.timer"""
-    yield Report("Ensuring flatpak-system-update.timer is enabled", status, recs=rec)
+    yield Report("Ensuring flatpak-system-update.timer is enabled", status, warnings=warning, recs=rec)
 
 
 @audit

@@ -292,9 +292,6 @@ def audit_usbguard():
         if command_succeeds("systemctl", "is-failed", "--quiet", "usbguard"):
             status = status.downgrade_to(WARN)
             warning = "USBGuard is enabled but has failed to run"
-            rec = """USBGuard is enabled but has failed to run.
-                The service might be misconfigured. To revert changes, run:
-                $ systemctl revert usbguard.service"""
     else:
         status = FAIL
         warning = "USBGuard is not enabled"
@@ -315,9 +312,6 @@ def audit_chronyd():
         if command_succeeds("systemctl", "is-failed", "--quiet", "chronyd"):
             status = status.downgrade_to(WARN)
             warning = "chronyd is enabled but has failed to run"
-            rec = """chronyd is enabled but has failed to run.
-                The service might be misconfigured. To revert changes, run:
-                $ systemctl revert chronyd.service"""
     else:
         status = FAIL
         warning = "chronyd is not enabled"
@@ -405,9 +399,6 @@ def audit_rpm_ostree_timer():
         if command_succeeds("systemctl", "is-failed", "--quiet", "rpm-ostreed-automatic.timer"):
             status = status.downgrade_to(WARN)
             warning = "rpm-ostreed-automatic.timer is enabled but has failed to run"
-            rec = """rpm-ostreed-automatic.timer is enabled but has failed to run.
-                The service might be misconfigured. To revert changes, run:
-                $ systemctl revert rpm-ostreed-automatic.timer"""
     else:
         status = FAIL
         warning = "rpm-ostreed-automatic.timer is disabled"
@@ -427,9 +418,6 @@ def audit_podman_auto_update():
         if command_succeeds("systemctl", "--user", "is-failed", "--quiet", "podman-auto-update.timer"):
             status = status.downgrade_to(WARN)
             warning = "podman-auto-update.timer is enabled but has failed to run"
-            rec = """podman-auto-update.timer is enabled but has failed to run.
-                The service might be misconfigured. To revert changes, run:
-                $ systemctl revert podman-auto-update.timer"""
     else:
         status = FAIL
         warning = "podman-auto-update.timer is disabled"
@@ -451,9 +439,6 @@ def audit_podman_global_auto_update():
         if command_succeeds("systemctl", "is-failed", "--quiet", "podman-auto-update.timer"):
             status = status.downgrade_to(WARN)
             warning = "podman-auto-update.timer is enabled globally but has failed to run"
-            rec = """podman-auto-update.timer is enabled globally but has failed to run.
-                The service might be misconfigured. To revert changes, run:
-                $ systemctl revert --global podman-auto-update.timer"""
     else:
         status = FAIL
         warning = "podman-auto-update.timer is not enabled globally"
@@ -477,9 +462,6 @@ def audit_flatpak_auto_update():
         if command_succeeds("systemctl", "--user", "is-failed", "--quiet", "flatpak-user-update.timer"):
             status = status.downgrade_to(WARN)
             warning = "flatpak-user-update.timer is enabled globally but has failed to run."
-            rec = """flatpak-user-update.timer is enabled globally but has failed to run.
-                The service might be misconfigured. To revert changes, run:
-                $ systemctl revert --global flatpak-user-update.timer"""
     else:
         status = FAIL
         warning = "flatpak-user-update.timer is not enabled globally"
@@ -495,9 +477,6 @@ def audit_flatpak_auto_update():
         if command_succeeds("systemctl", "is-failed", "--quiet", "flatpak-system-update.timer"):
             status = status.downgrade_to(WARN)
             warning = "flatpak-system-update.timer is enabled but has failed to run."
-            rec = """flatpak-system-update.timer is enabled but has failed to run.
-                The service might be misconfigured. To revert changes, run:
-                $ systemctl revert flatpak-system-update.timer"""
     else:
         status = FAIL
         warning = "flatpak-system-update.timer is not enabled"

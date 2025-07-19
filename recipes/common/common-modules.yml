@@ -23,6 +23,7 @@ modules:
       scripts:
         - manuallyinstalljust.sh
         - hardenlogindefs.sh
+        - hardened_malloc-pam.sh
     - type: files
       files:
         - source: system/usr

@@ -121,7 +121,9 @@ def audit_kargs():
         rec = """To set hardened kernel arguments, run:
             $ ujust set-kargs-hardening"""
 
-    yield Report("Checking for hardened kernel arguments", status, warnings=warnings, recs=rec)
+    yield Report(
+        "Checking for hardened kernel arguments", status, warnings=warnings, recs=rec
+    )
 
 
 @audit
@@ -232,7 +234,9 @@ def audit_ptrace(state):
 def audit_authselect():
     """Ensure no authselect overrides have been made."""
     status = PASS
-    cmp = filecmp.dircmp("/usr/etc/authselect", "/etc/authselect", shallow=False, ignore=[])
+    cmp = filecmp.dircmp(
+        "/usr/etc/authselect", "/etc/authselect", shallow=False, ignore=[]
+    )
     if cmp.left_only or cmp.right_only or cmp.diff_files or cmp.funny_files:
         status = FAIL
     yield Report("Ensuring no authselect overrides", status)
@@ -265,7 +269,9 @@ def audit_unconfined_userns():
         recs = """Unconfined domain user namespace creation is permitted.
                 To disallow it, run:
                 $ ujust toggle-unconfined-domain-userns-creation"""
-    yield Report("Ensuring unconfined user namespace creation disallowed", status, recs=recs)
+    yield Report(
+        "Ensuring unconfined user namespace creation disallowed", status, recs=recs
+    )
 
 
 @audit
@@ -279,7 +285,9 @@ def audit_container_userns():
         recs = """Container domain user namespace creation is permitted.
                 To disallow it, run:
                 $ ujust toggle-container-domain-userns-creation"""
-    yield Report("Ensuring container user namespace creation disallowed", status, recs=recs)
+    yield Report(
+        "Ensuring container user namespace creation disallowed", status, recs=recs
+    )
 
 
 @audit
@@ -348,7 +356,9 @@ def audit_dns():
             else:
                 status = FAIL
         if status in (WARN, FAIL):
-            caveat = " (opportunistic DNS-over-TLS only)" if dot == "opportunistic" else ""
+            caveat = (
+                " (opportunistic DNS-over-TLS only)" if dot == "opportunistic" else ""
+            )
             rec = f"""System DNS resolution is not secure{caveat}.
                     To select a secure resolver, run:
                     $ ujust dns-selector
@@ -358,7 +368,9 @@ def audit_dns():
         rec = """systemd-resolved is inactive.
                 To start and enable it, run:
                 $ systemctl enable --now systemd-resolved"""
-    yield Report("Ensuring system DNS resolution is secure", status, warnings=warning, recs=rec)
+    yield Report(
+        "Ensuring system DNS resolution is secure", status, warnings=warning, recs=rec
+    )
 
 
 @audit
@@ -386,17 +398,23 @@ def audit_mac_randomization():
                 $ ujust toggle-mac-randomization"""
     else:
         rec = None
-    yield Report("Ensuring MAC randomization is enabled", status, warnings=warning, recs=rec)
+    yield Report(
+        "Ensuring MAC randomization is enabled", status, warnings=warning, recs=rec
+    )
 
 
 @audit
 def audit_rpm_ostree_timer():
     """Ensure rpm-ostree automatic updates are enabled."""
-    if command_succeeds("systemctl", "is-enabled", "--quiet", "rpm-ostreed-automatic.timer"):
+    if command_succeeds(
+        "systemctl", "is-enabled", "--quiet", "rpm-ostreed-automatic.timer"
+    ):
         status = PASS
         warning = None
         rec = None
-        if command_succeeds("systemctl", "is-failed", "--quiet", "rpm-ostreed-automatic.timer"):
+        if command_succeeds(
+            "systemctl", "is-failed", "--quiet", "rpm-ostreed-automatic.timer"
+        ):
             status = status.downgrade_to(WARN)
             warning = "rpm-ostreed-automatic.timer is enabled but has failed to run"
     else:
@@ -405,17 +423,26 @@ def audit_rpm_ostree_timer():
         rec = """rpm-ostreed-automatic.timer is disabled.
                 To enable, run:
                 $ systemctl enable --now rpm-ostreed-automatic.timer"""
-    yield Report("Ensuring rpm-ostreed-automatic.timer is enabled", status, warnings=warning, recs=rec)
+    yield Report(
+        "Ensuring rpm-ostreed-automatic.timer is enabled",
+        status,
+        warnings=warning,
+        recs=rec,
+    )
 
 
 @audit
 def audit_podman_auto_update():
     """Ensure podman automatic updates are enabled."""
-    if command_succeeds("systemctl", "is-enabled", "--quiet", "podman-auto-update.timer"):
+    if command_succeeds(
+        "systemctl", "is-enabled", "--quiet", "podman-auto-update.timer"
+    ):
         status = PASS
         warning = None
         rec = None
-        if command_succeeds("systemctl", "--user", "is-failed", "--quiet", "podman-auto-update.timer"):
+        if command_succeeds(
+            "systemctl", "--user", "is-failed", "--quiet", "podman-auto-update.timer"
+        ):
             status = status.downgrade_to(WARN)
             warning = "podman-auto-update.timer is enabled but has failed to run"
     else:
@@ -424,7 +451,12 @@ def audit_podman_auto_update():
         rec = """podman-auto-update.timer is disabled.
                 To enable, run:
                 $ systemctl enable --now podman-auto-update.timer"""
-    yield Report("Ensuring podman-auto-update.timer is enabled", status, warnings=warning, recs=rec)
+    yield Report(
+        "Ensuring podman-auto-update.timer is enabled",
+        status,
+        warnings=warning,
+        recs=rec,
+    )
 
 
 @audit
@@ -436,16 +468,25 @@ def audit_podman_global_auto_update():
         status = PASS
         warning = None
         rec = None
-        if command_succeeds("systemctl", "is-failed", "--quiet", "podman-auto-update.timer"):
+        if command_succeeds(
+            "systemctl", "is-failed", "--quiet", "podman-auto-update.timer"
+        ):
             status = status.downgrade_to(WARN)
-            warning = "podman-auto-update.timer is enabled globally but has failed to run"
+            warning = (
+                "podman-auto-update.timer is enabled globally but has failed to run"
+            )
     else:
         status = FAIL
         warning = "podman-auto-update.timer is not enabled globally"
         rec = """podman-auto-update.timer is not enabled globally.
                 To enable, run:
                 $ systemctl enable --global podman-auto-update.timer"""
-    yield Report("Ensuring podman-auto-update.timer is enabled globally", status, warnings=warning, recs=rec)
+    yield Report(
+        "Ensuring podman-auto-update.timer is enabled globally",
+        status,
+        warnings=warning,
+        recs=rec,
+    )
 
 
 @audit
@@ -459,22 +500,35 @@ def audit_flatpak_auto_update():
         status = PASS
         warning = None
         rec = None
-        if command_succeeds("systemctl", "--user", "is-failed", "--quiet", "flatpak-user-update.timer"):
+        if command_succeeds(
+            "systemctl", "--user", "is-failed", "--quiet", "flatpak-user-update.timer"
+        ):
             status = status.downgrade_to(WARN)
-            warning = "flatpak-user-update.timer is enabled globally but has failed to run."
+            warning = (
+                "flatpak-user-update.timer is enabled globally but has failed to run."
+            )
     else:
         status = FAIL
         warning = "flatpak-user-update.timer is not enabled globally"
         rec = """flatpak-user-update.timer is not enabled globally.
                 To enable, run:
                 $ systemctl enable --global flatpak-user-update.timer"""
-    yield Report("Ensuring flatpak-user-update.timer is enabled globally", status, warnings=warning, recs=rec)
+    yield Report(
+        "Ensuring flatpak-user-update.timer is enabled globally",
+        status,
+        warnings=warning,
+        recs=rec,
+    )
 
-    if command_succeeds("systemctl", "is-enabled", "--quiet", "flatpak-system-update.timer"):
+    if command_succeeds(
+        "systemctl", "is-enabled", "--quiet", "flatpak-system-update.timer"
+    ):
         status = PASS
         warning = None
         rec = None
-        if command_succeeds("systemctl", "is-failed", "--quiet", "flatpak-system-update.timer"):
+        if command_succeeds(
+            "systemctl", "is-failed", "--quiet", "flatpak-system-update.timer"
+        ):
             status = status.downgrade_to(WARN)
             warning = "flatpak-system-update.timer is enabled but has failed to run."
     else:
@@ -483,7 +537,12 @@ def audit_flatpak_auto_update():
         rec = """flatpak-system-update.timer is not enabled.
                 To enable, run:
                 $ systemctl enable --now flatpak-system-update.timer"""
-    yield Report("Ensuring flatpak-system-update.timer is enabled", status, warnings=warning, recs=rec)
+    yield Report(
+        "Ensuring flatpak-system-update.timer is enabled",
+        status,
+        warnings=warning,
+        recs=rec,
+    )
 
 
 @audit
@@ -533,7 +592,12 @@ def audit_gnome_extensions(state):
     if state["image"] != Image.SILVERBLUE:
         return
     allowed = command_stdout(
-        "command", "-p", "gsettings", "get", "org.gnome.shell", "allow-extension-installation"
+        "command",
+        "-p",
+        "gsettings",
+        "get",
+        "org.gnome.shell",
+        "allow-extension-installation",
     )
     if allowed == "false":
         status = PASS
@@ -579,7 +643,9 @@ def audit_environment_file():
     if status != PASS:
         rec = f"""{env_file} has been modified. To reset it, run:
             $ run0 cp -p /usr{env_file} {env_file}"""
-    yield Report("Ensuring no environment file overrides", status, warnings=warning, recs=rec)
+    yield Report(
+        "Ensuring no environment file overrides", status, warnings=warning, recs=rec
+    )
 
 
 @audit
@@ -625,7 +691,9 @@ def audit_ld_preload():
         expected_mode = 0o600
         if mode != expected_mode:
             status = WARN
-            warnings.append(f"{ld_so_preload} has mode {mode:o} (expected {expected_mode:o})")
+            warnings.append(
+                f"{ld_so_preload} has mode {mode:o} (expected {expected_mode:o})"
+            )
         if stat_result.st_uid != 0:
             status = FAIL
             warnings.append(f"{ld_so_preload} is owned by a non-root user!")
@@ -634,7 +702,10 @@ def audit_ld_preload():
             To reset it and enable hardened_malloc for system processes, run:
             $ run0 cp -p /usr{ld_so_preload} {ld_so_preload}"""
     yield Report(
-        "Ensuring ld.so.preload has expected permissions", status, warnings=warnings, recs=rec
+        "Ensuring ld.so.preload has expected permissions",
+        status,
+        warnings=warnings,
+        recs=rec,
     )
 
 
@@ -665,7 +736,10 @@ def audit_hardened_malloc():
             Check that LD_PRELOAD=libhardened_malloc.so has not been overridden in
             /etc/profile.d or related configuration files."""
     yield Report(
-        "Ensuring hardened_malloc is set to be preloaded", status, warnings=warning, recs=rec
+        "Ensuring hardened_malloc is set to be preloaded",
+        status,
+        warnings=warning,
+        recs=rec,
     )
 
 
@@ -697,7 +771,9 @@ def audit_bash_env_lockdown():
     )
     unlocked_files = []
     for path in bash_env_paths:
-        if not os.path.exists(path) or (not os.path.isfile(path) and not os.path.isdir(path)):
+        if not os.path.exists(path) or (
+            not os.path.isfile(path) and not os.path.isdir(path)
+        ):
             unlocked_files.append(path)
         else:
             try:
@@ -717,7 +793,9 @@ def audit_bash_env_lockdown():
     else:
         status = PASS
         rec = None
-    yield Report("Ensuring current user's bash environment is locked down", status, recs=rec)
+    yield Report(
+        "Ensuring current user's bash environment is locked down", status, recs=rec
+    )
 
 
 @audit
@@ -727,7 +805,9 @@ def audit_flatpak_remotes():
     if not command_succeeds("command", "-v", "flatpak"):
         return
 
-    remotes = command_stdout("flatpak", "remotes", "--columns=name,url,subset").splitlines()
+    remotes = command_stdout(
+        "flatpak", "remotes", "--columns=name,url,subset"
+    ).splitlines()
     for remote in remotes:
         if not remote:
             continue
@@ -776,7 +856,11 @@ async def audit_flatpak_permissions(state):
         flatpak_permissions_state = check_flatpak_permissions(
             name, perms, state["bluetooth_loaded"], state["ptrace_allowed"]
         )
-        report_text = f"Auditing {name}" if version == "stable" else f"Auditing {name} ({version})"
+        report_text = (
+            f"Auditing {name}"
+            if version == "stable"
+            else f"Auditing {name} ({version})"
+        )
         yield Report(
             report_text,
             flatpak_permissions_state.status,
@@ -809,8 +893,12 @@ async def main() -> int:
         epilog=get_legend(),
     )
     categories = ",".join(sorted(global_audit.categories))
-    parser.add_argument("-s", "--skip", default="", help=f"skip categories ({categories})")
-    parser.add_argument("-j", "--json", action="store_true", help="display output as JSON")
+    parser.add_argument(
+        "-s", "--skip", default="", help=f"skip categories ({categories})"
+    )
+    parser.add_argument(
+        "-j", "--json", action="store_true", help="display output as JSON"
+    )
     args = parser.parse_args()
     skip = args.skip.split(",") if args.skip else []
     if any(cat not in global_audit.categories for cat in skip):

@@ -521,7 +521,7 @@ def audit_selinux():
         status = FAIL
         rec = """SELinux is not in enforcing mode.
 	    To set to enforing mode, run:
-	    $ run0 sed -i -e "s/\nSELINUX=permissive\n\|\nSELINUX=disabled/SELINUX=enforcing\n/" /etc/selinux/config
+	    $ run0 sed -i -e 's/^SELINUX=.*/SELINUX=enforcing/' /etc/selinux/config
 	    $ fixfiles -F onboot"""
     elif current_selinux_enforcing == None:
         status = FAIL

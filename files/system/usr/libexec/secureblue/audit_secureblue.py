@@ -285,30 +285,40 @@ def audit_container_userns():
 @audit
 def audit_usbguard():
     """Ensure usbguard is active."""
-    if command_succeeds("systemctl", "is-active", "--quiet", "usbguard"):
+    if command_succeeds("systemctl", "is-enabled", "--quiet", "usbguard"):
         status = PASS
+        warning = None
         rec = None
+        if command_succeeds("systemctl", "is-failed", "--quiet", "usbguard"):
+            status = status.downgrade_to(WARN)
+            warning = "USBGuard is enabled but has failed to run"
     else:
         status = FAIL
-        rec = """USBGuard is not active. To set up USBGuard, run:
+        warning = "USBGuard is not enabled"
+        rec = """USBGuard is not enabled. To set up USBGuard, run:
             $ ujust setup-usbguard
             Caution: if you have already set up USBGuard, this will overwrite the
             existing policy."""
-    yield Report("Ensuring usbguard is active", status, recs=rec)
+    yield Report("Ensuring usbguard is active", status, warnings=warning, recs=rec)
 
 
 @audit
 def audit_chronyd():
     """Ensure chronyd is active."""
-    if command_succeeds("systemctl", "is-active", "--quiet", "chronyd"):
+    if command_succeeds("systemctl", "is-enabled", "--quiet", "chronyd"):
         status = PASS
+        warning = None
         rec = None
+        if command_succeeds("systemctl", "is-failed", "--quiet", "chronyd"):
+            status = status.downgrade_to(WARN)
+            warning = "chronyd is enabled but has failed to run"
     else:
         status = FAIL
-        rec = """chronyd is inactive.
+        warning = "chronyd is not enabled"
+        rec = """chronyd is not enabled.
             To start and enable it, run:
             $ systemctl enable --now chronyd"""
-    yield Report("Ensuring chronyd is active", status, recs=rec)
+    yield Report("Ensuring chronyd is active", status, warnings=warning, recs=rec)
 
 
 @audit
@@ -384,13 +394,23 @@ def audit_rpm_ostree_timer():
     """Ensure rpm-ostree automatic updates are enabled."""
     if command_succeeds("systemctl", "is-enabled", "--quiet", "rpm-ostreed-automatic.timer"):
         status = PASS
+        warning = None
         rec = None
+        if command_succeeds("systemctl", "is-failed", "--quiet", "rpm-ostreed-automatic.timer"):
+            status = status.downgrade_to(WARN)
+            warning = "rpm-ostreed-automatic.timer is enabled but has failed to run"
     else:
         status = FAIL
+        warning = "rpm-ostreed-automatic.timer is disabled"
         rec = """rpm-ostreed-automatic.timer is disabled.
                 To enable, run:
                 $ systemctl enable --now rpm-ostreed-automatic.timer"""
-    yield Report("Ensuring rpm-ostreed-automatic.timer is enabled", status, recs=rec)
+    yield Report(
+        "Ensuring rpm-ostreed-automatic.timer is enabled",
+        status,
+        warnings=warning,
+        recs=rec,
+    )
 
 
 @audit
@@ -398,13 +418,25 @@ def audit_podman_auto_update():
     """Ensure podman automatic updates are enabled."""
     if command_succeeds("systemctl", "is-enabled", "--quiet", "podman-auto-update.timer"):
         status = PASS
+        warning = None
         rec = None
+        if command_succeeds(
+            "systemctl", "--user", "is-failed", "--quiet", "podman-auto-update.timer"
+        ):
+            status = status.downgrade_to(WARN)
+            warning = "podman-auto-update.timer is enabled but has failed to run"
     else:
         status = FAIL
+        warning = "podman-auto-update.timer is disabled"
         rec = """podman-auto-update.timer is disabled.
                 To enable, run:
                 $ systemctl enable --now podman-auto-update.timer"""
-    yield Report("Ensuring podman-auto-update.timer is enabled", status, recs=rec)
+    yield Report(
+        "Ensuring podman-auto-update.timer is enabled",
+        status,
+        warnings=warning,
+        recs=rec,
+    )
 
 
 @audit
@@ -414,13 +446,23 @@ def audit_podman_global_auto_update():
         "systemctl", "--global", "is-enabled", "--quiet", "podman-auto-update.timer"
     ):
         status = PASS
+        warning = None
         rec = None
+        if command_succeeds("systemctl", "is-failed", "--quiet", "podman-auto-update.timer"):
+            status = status.downgrade_to(WARN)
+            warning = "podman-auto-update.timer is enabled globally but has failed to run"
     else:
         status = FAIL
+        warning = "podman-auto-update.timer is not enabled globally"
         rec = """podman-auto-update.timer is not enabled globally.
                 To enable, run:
                 $ systemctl enable --global podman-auto-update.timer"""
-    yield Report("Ensuring podman-auto-update.timer is enabled globally", status, recs=rec)
+    yield Report(
+        "Ensuring podman-auto-update.timer is enabled globally",
+        status,
+        warnings=warning,
+        recs=rec,
+    )
 
 
 @audit
@@ -432,23 +474,45 @@ def audit_flatpak_auto_update():
         "systemctl", "--global", "is-enabled", "--quiet", "flatpak-user-update.timer"
     ):
         status = PASS
+        warning = None
         rec = None
+        if command_succeeds(
+            "systemctl", "--user", "is-failed", "--quiet", "flatpak-user-update.timer"
+        ):
+            status = status.downgrade_to(WARN)
+            warning = "flatpak-user-update.timer is enabled globally but has failed to run."
     else:
         status = FAIL
+        warning = "flatpak-user-update.timer is not enabled globally"
         rec = """flatpak-user-update.timer is not enabled globally.
                 To enable, run:
                 $ systemctl enable --global flatpak-user-update.timer"""
-    yield Report("Ensuring flatpak-user-update.timer is enabled globally", status, recs=rec)
+    yield Report(
+        "Ensuring flatpak-user-update.timer is enabled globally",
+        status,
+        warnings=warning,
+        recs=rec,
+    )
 
     if command_succeeds("systemctl", "is-enabled", "--quiet", "flatpak-system-update.timer"):
         status = PASS
+        warning = None
         rec = None
+        if command_succeeds("systemctl", "is-failed", "--quiet", "flatpak-system-update.timer"):
+            status = status.downgrade_to(WARN)
+            warning = "flatpak-system-update.timer is enabled but has failed to run."
     else:
         status = FAIL
-        rec = """flatpak-system-update.timer is not enabled globally.
+        warning = "flatpak-system-update.timer is not enabled"
+        rec = """flatpak-system-update.timer is not enabled.
                 To enable, run:
                 $ systemctl enable --now flatpak-system-update.timer"""
-    yield Report("Ensuring flatpak-system-update.timer is enabled", status, recs=rec)
+    yield Report(
+        "Ensuring flatpak-system-update.timer is enabled",
+        status,
+        warnings=warning,
+        recs=rec,
+    )
 
 
 @audit
@@ -498,7 +562,12 @@ def audit_gnome_extensions(state):
     if state["image"] != Image.SILVERBLUE:
         return
     allowed = command_stdout(
-        "command", "-p", "gsettings", "get", "org.gnome.shell", "allow-extension-installation"
+        "command",
+        "-p",
+        "gsettings",
+        "get",
+        "org.gnome.shell",
+        "allow-extension-installation",
     )
     if allowed == "false":
         status = PASS
@@ -599,7 +668,10 @@ def audit_ld_preload():
             To reset it and enable hardened_malloc for system processes, run:
             $ run0 cp -p /usr{ld_so_preload} {ld_so_preload}"""
     yield Report(
-        "Ensuring ld.so.preload has expected permissions", status, warnings=warnings, recs=rec
+        "Ensuring ld.so.preload has expected permissions",
+        status,
+        warnings=warnings,
+        recs=rec,
     )
 
 
@@ -630,7 +702,10 @@ def audit_hardened_malloc():
             Check that LD_PRELOAD=libhardened_malloc.so has not been overridden in
             /etc/profile.d or related configuration files."""
     yield Report(
-        "Ensuring hardened_malloc is set to be preloaded", status, warnings=warning, recs=rec
+        "Ensuring hardened_malloc is set to be preloaded",
+        status,
+        warnings=warning,
+        recs=rec,
     )
 
 

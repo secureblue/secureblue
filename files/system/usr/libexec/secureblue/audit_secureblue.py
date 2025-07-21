@@ -27,6 +27,7 @@ import os
 import os.path
 import signal
 import stat
+import re
 
 # All subprocess calls we make have trusted inputs and do not use shell=True.
 import subprocess  # nosec
@@ -513,15 +514,24 @@ def audit_gnome_extensions(state):
 @audit
 def audit_selinux():
     """Ensure SELinux is in enforcing mode."""
-    if command_stdout("getenforce") == "Enforcing":
+    sestatus = command_stdout("sestatus")
+    current_selinux_enforcing = re.search("Current mode.*enforcing", sestatus)
+    config_selinux_enforcing = re.search("Mode from config file.*enforcing", sestatus)
+    if config_selinux_enforcing == None:
+        status = FAIL
+        rec = """SELinux is not in enforcing mode.
+	    To set to enforing mode, run:
+	    $ run0 sed -i -e "s/\nSELINUX=permissive\n\|\nSELINUX=disabled/SELINUX=enforcing\n/" /etc/selinux/config
+	    $ fixfiles -F onboot"""
+    elif current_selinux_enforcing == None:
+        status = FAIL
+        rec = """SELinux is not in enforcing mode.
+            To set to enforcing mode, run:
+            $ run0 setenforce 1"""
+    else:
         status = PASS
         rec = None
-    else:
-        status = FAIL
-        rec = """SELinux is in Permissive mode.
-            To set to Enforcing mode, run:
-            $ run0 setenforce 1"""
-    yield Report("Ensuring SELinux is in Enforcing mode", status, recs=rec)
+    yield Report("Ensuring SELinux is in enforcing mode", status, recs=rec)
 
 
 @audit

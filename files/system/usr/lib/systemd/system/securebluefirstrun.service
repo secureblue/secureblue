@@ -9,6 +9,9 @@ Type=oneshot
 ExecStart=/usr/libexec/secureblue/securebluefirstrun
 ExecStartPost=/usr/bin/touch /home/linuxbrew/secureblue-firstrun.stamp
 User=1000
+RestartSec=1s
+RestartMaxDelaySec=30s
+RestartSteps=5
 
 [Install]
 WantedBy=multi-user.target

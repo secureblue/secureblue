@@ -8,6 +8,10 @@ ConditionPathExists=!/var/lib/secureblue-cleanup.stamp
 Type=oneshot
 ExecStart=/usr/libexec/secureblue/securebluecleanup
 ExecStartPost=/usr/bin/touch /var/lib/secureblue-cleanup.stamp
+RestartSec=30s
+Restart=on-failure
+RestartMaxDelaySec=1800s
+RestartSteps=10
 
 [Install]
 WantedBy=multi-user.target

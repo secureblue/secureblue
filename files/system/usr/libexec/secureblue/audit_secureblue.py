@@ -24,7 +24,6 @@ import filecmp
 import glob
 import json
 import os
-import os.path
 import signal
 import stat
 
@@ -32,6 +31,7 @@ import stat
 import subprocess  # nosec
 import sys
 import traceback
+from pathlib import Path
 from typing import Final
 
 from audit_flatpak import check_flatpak_permissions, parse_flatpak_permissions
@@ -248,7 +248,7 @@ def audit_container_policy():
         status = FAIL
         warnings.append(f"{policy_file} has been modified")
     local_override = "~/.config/containers/policy.json"
-    if os.path.isfile(os.path.expanduser(local_override)):
+    if Path(local_override).expanduser().is_file():
         status = FAIL
         warnings.append(f"{local_override} exists")
     yield Report("Ensuring no container policy overrides", status, warnings=warnings)
@@ -481,7 +481,7 @@ def audit_xwayland(state):
             path = "/etc/sway/config.d/99-noxwayland.conf"
         case _:
             return
-    if os.path.isfile(path):
+    if Path(path).is_file():
         status = PASS
         rec = None
     else:
@@ -645,44 +645,74 @@ def audit_secureboot():
 
 
 @audit
-def audit_bash_env_lockdown():
+def audit_bash_env_lockdown(state):
     """Ensure the current user's bash environment is locked down."""
-    bash_env_paths = map(
-        os.path.expanduser,
-        [
-            "~/.bashrc",
-            "~/.bash_profile",
-            "~/.config/bash_completion",
-            "~/.profile",
-            "~/.bash_logout",
-            "~/.bash_login",
-            "~/.bashrc.d/",
-            "~/.config/environment.d/",
-        ],
-    )
+    status = PASS
+    rec = None
+    home = Path.home()
+    bash_env_paths = [
+        home / ".bashrc",
+        home / ".bash_profile",
+        home / ".config/bash_completion",
+        home / ".profile",
+        home / ".bash_logout",
+        home / ".bash_login",
+        home / ".bashrc.d/",
+        home / ".config/environment.d/",
+    ]
     unlocked_files = []
     for path in bash_env_paths:
-        if not os.path.exists(path) or (not os.path.isfile(path) and not os.path.isdir(path)):
+        if not path.exists() or (not path.is_file() and not path.is_dir()):
             unlocked_files.append(path)
         else:
             try:
-                immutable = "i" in command_stdout("lsattr", "-d", path).split()[0]
+                immutable = "i" in command_stdout("lsattr", "-d", str(path)).split()[0]
             except subprocess.CalledProcessError:
                 immutable = False
             if not immutable:
                 unlocked_files.append(path)
     if unlocked_files:
         status = FAIL
-        unlocked_files_string = "\n".join(unlocked_files)
+        unlocked_files_string = "\n".join(str(path) for path in unlocked_files)
         rec = f"""Bash environment is not locked down.
                 The following files do not appear to be immutable or do not exist:
                 {unlocked_files_string}
                 To fix, run:
                 $ ujust toggle-bash-environment-lockdown"""
-    else:
-        status = PASS
-        rec = None
+    state["bash_env_lockdown"] = status == PASS
     yield Report("Ensuring current user's bash environment is locked down", status, recs=rec)
+
+
+@audit
+@depends_on("audit_bash_env_lockdown")
+def audit_home_dir_perms(state):
+    """Audit home directory permissions"""
+    if not state["bash_env_lockdown"]:
+        return
+    status = PASS
+    rec = None
+    home = Path.home()
+    uid = os.getuid()
+
+    def perms_correct(directory: Path, uid: int) -> bool:
+        dir_stat = directory.stat()
+        root_owned = dir_stat.st_uid == 0
+        user_group = dir_stat.st_gid == uid
+        mode_1770 = stat.filemode(dir_stat.st_mode) == "drwxrwx--T"
+        return root_owned and user_group and mode_1770
+
+    home_perms_correct = perms_correct(home, uid)
+    config_perms_correct = perms_correct(home / ".config", uid)
+    if not home_perms_correct or not config_perms_correct:
+        status = FAIL
+        rec = f"""
+            Certain permissions must be set to avoid a gap in the bash environment lockdown.
+            {"" if home_perms_correct else "Home directory permissions are not set properly."}
+            {"" if config_perms_correct else "~/.config permissions are not set properly."}
+            To fix, run the following twice (to toggle the lockdown off and on again):
+            $ ujust toggle-bash-environment-lockdown
+        """
+    yield Report("Checking home directory permissions", status, recs=rec)
 
 
 @audit

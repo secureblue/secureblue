@@ -220,6 +220,8 @@ toggle-xwayland ACTION="prompt":
       fi
     fi
 
+alias toggle-home-dir-lockdown := toggle-bash-environment-lockdown
+
 # Toggle bash environment lockdown (mitigates LD_PRELOAD attacks). Use skip_approval to bypass initial prompt, and apply_for_all_users to bypass secondary prompt.
 toggle-bash-environment-lockdown skip_approval="false" apply_for_all_users="prompt":
     #!/bin/run0 /bin/bash
@@ -296,6 +298,13 @@ toggle-bash-environment-lockdown skip_approval="false" apply_for_all_users="prom
         user_home="$(getent passwd "$user" | awk -F':' '{ print $6}')"
         [ -d "$user_home" ] || { echo "Variable \$user_home for $user is somehow empty (check your getent passwd entries)"; echo "safely exiting."; exit 1; }
 
+        STICKY_DIRS=(
+            "$user_home"
+            "$user_home/.cache"
+            "$user_home/.config"
+            "$user_home/.local"
+        )
+
         BASH_ENV_FILES=(
             "$user_home/.bashrc"
             "$user_home/.bash_profile"
@@ -316,6 +325,22 @@ toggle-bash-environment-lockdown skip_approval="false" apply_for_all_users="prom
         #        add immutability
 
         if [[ "$pending_status" == "locked" ]]; then
+            # Make home directory and certain subdirectories owned by root but with the user
+            # granted read-write-execute permissions. Set the sticky bit to prevent the user
+            # from moving or deleting files or subdirectories they don't own.
+            for directory in "${STICKY_DIRS[@]}"; do
+                mkdir -p "$directory"
+                # Ensure group is set before giving group write permissions.
+                chgrp "$user" "$directory"
+                chmod 01770 "$directory"
+                # If directory has an ACL (which could override default group permissions),
+                # set ACL granting user rwx access.
+                if [ -n "$(getfacl --skip-base "$directory")" ]; then
+                    setfacl -m "user:${user}:rwx" "$directory"
+                fi
+                chown "root:${user}" "$directory"
+            done
+
             backup_dest="$user_home/bash_env_files/$current_time/"
             mkdir -p "$backup_dest"
 
@@ -350,6 +375,13 @@ toggle-bash-environment-lockdown skip_approval="false" apply_for_all_users="prom
             chmod -R 700 "$user_home/bash_env_files"
             chown -R "$user:" "$user_home/bash_env_files"
         else
+            for directory in "${LOCKDOWN_DIRS[@]}"; do
+                if [ -e "$directory" ]; then
+                    chown "${user}:${user}" "$directory"
+                    chmod 00700 "$directory"
+                fi
+            done
+
             for file in "${BASH_ENV_FILES[@]}"; do
                 if [ ! -f "$file" ] && [ ! -d "$file" ] && [ -e "$file" ]; then
                     echo "Special file detected on absolute filepath ($file) from BASH_ENV_FILES. It will not be modified."

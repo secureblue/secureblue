@@ -20,11 +20,14 @@ cp /usr/etc/authselect/fingerprint-auth /etc/authselect/fingerprint-auth
 cp /usr/etc/authselect/dconf-db /etc/authselect/dconf-db
 cp /usr/etc/authselect/authselect.conf /etc/authselect/authselect.conf
 
-flatpak remote-delete --system --force fedora || true
-flatpak remote-delete --user --force fedora || true
-flatpak remote-delete --system --force flathub || true
-flatpak remote-delete --user --force flathub || true
-flatpak remove --system --noninteractive --all
+if command -v flatpak &> /dev/null
+then
+    flatpak remote-delete --system --force fedora || true
+    flatpak remote-delete --user --force fedora || true
+    flatpak remote-delete --system --force flathub || true
+    flatpak remote-delete --user --force flathub || true
+    flatpak remove --system --noninteractive --all || true
+fi
 
 # Ensure we are on signed
 RPM_OSTREE_STATUS=$(rpm-ostree status --json --booted)

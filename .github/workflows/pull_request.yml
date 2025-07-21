@@ -85,7 +85,7 @@ jobs:
         run: |
           docker create \
             --name blue-build-installer \
-            ghcr.io/blue-build/cli:v0.9.19-installer
+            ghcr.io/blue-build/cli:v0.9.20-installer
           docker cp blue-build-installer:/out/bluebuild /usr/local/bin/bluebuild
           docker rm blue-build-installer
           bluebuild --version

@@ -212,3 +212,9 @@ def validate_sysctl(sysctl: str, actual: str, expected: str) -> bool:
         # https://www.kernel.org/doc/html/latest/admin-guide/sysrq.html
         return actual in (expected, "0", "4")
     return actual == expected
+
+
+def selinux_context(path: str) -> list[str]:
+    """Get SELinux security context of a file."""
+    raw_context = os.getxattr(path, "security.selinux")
+    return raw_context.decode("utf8").rstrip("\x00").split(":")

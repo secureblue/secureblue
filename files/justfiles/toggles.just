@@ -291,6 +291,10 @@ toggle-bash-environment-lockdown skip_approval="false" apply_for_all_users="prom
         exit
     fi
 
+    if [[ "$pending_status" != "locked" ]]; then
+        setsebool -P homedir_lockdown_enabled off
+    fi
+
     for user in "${user_list[@]}"; do
         echo "Applying for user: $user"
         user_home="$(getent passwd "$user" | awk -F':' '{ print $6}')"
@@ -316,6 +320,8 @@ toggle-bash-environment-lockdown skip_approval="false" apply_for_all_users="prom
         #        add immutability
 
         if [[ "$pending_status" == "locked" ]]; then
+            chcon -t config_locked_home_t "$user_home/.config"
+
             backup_dest="$user_home/bash_env_files/$current_time/"
             mkdir -p "$backup_dest"
 
@@ -350,6 +356,8 @@ toggle-bash-environment-lockdown skip_approval="false" apply_for_all_users="prom
             chmod -R 700 "$user_home/bash_env_files"
             chown -R "$user:" "$user_home/bash_env_files"
         else
+            restorecon "$user_home/.config"
+
             for file in "${BASH_ENV_FILES[@]}"; do
                 if [ ! -f "$file" ] && [ ! -d "$file" ] && [ -e "$file" ]; then
                     echo "Special file detected on absolute filepath ($file) from BASH_ENV_FILES. It will not be modified."
@@ -361,6 +369,10 @@ toggle-bash-environment-lockdown skip_approval="false" apply_for_all_users="prom
             done
         fi
     done
+
+    if [[ "$pending_status" == "locked" ]]; then
+        setsebool -P homedir_lockdown_enabled on
+    fi
 
     echo "${user_list[@]}" "$pending_status."
     echo "${bold}NOTE${unbold}: until a reboot, any process with an open file descriptor will continue to have the access they had before this script was run."

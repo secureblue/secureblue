@@ -32,6 +32,7 @@ cd ./selinux/systemsettings
 bash systemsettings.sh
 cd ../..
 
+semodule -i ./selinux/homedir_lockdown/homedir_lockdown.cil
 semodule -i ./selinux/user_namespace/grant_userns.cil
 semodule -i ./selinux/user_namespace/harden_userns.cil
 semodule -i ./selinux/user_namespace/harden_container_userns.cil

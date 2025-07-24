@@ -24,7 +24,7 @@ fi
 KERNEL_VERSION="$(rpm -q "kernel" --queryformat '%{VERSION}-%{RELEASE}.%{ARCH}')"
 
 PUBLIC_KEY_CRT_PATH="./certs/public_key.crt"
-PRIVATE_KEY_PATH="./certs/private_key.priv"
+PRIVATE_KEY_PATH="/tmp/certs/private_key.priv"
 SIGNING_KEY="./certs/signing_key.pem"
 cat "$PRIVATE_KEY_PATH" <(echo) "$PUBLIC_KEY_CRT_PATH" >> "$SIGNING_KEY"
 

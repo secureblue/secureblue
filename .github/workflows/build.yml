@@ -81,11 +81,6 @@ jobs:
           registry: 'quay.io/fedora-ostree-desktops'
           pubkey: 'https://gitlab.com/fedora/ostree/ci-test/-/raw/main/quay.io-fedora-ostree-desktops.pub'
 
-      - name: Retrieve Signing Key
-        shell: bash
-        run: |
-          echo "${KERNEL_PRIVKEY}" > ./files/scripts/certs/private_key.priv
-
       - name: Build secureblue
         uses: blue-build/github-action@968216e45d3f5f23de24f7804259e1384cf5f358 # v1.8.3
         env:

@@ -21,7 +21,7 @@ modules:
           - "${KERNEL_PRIVKEY}"
         output:
           type: file
-          destination: ./certs/private_key.priv
+          destination: ./files/certs/certs/private_key.priv
   - type: script
     scripts:
       - installnvidiapackages.sh

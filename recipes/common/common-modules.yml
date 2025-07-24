@@ -40,6 +40,6 @@ modules:
             - "${KERNEL_PRIVKEY}"
           output:
             type: file
-            destination: ./files/certs/certs/private_key.priv
+            destination: ./files/scripts/certs/private_key.priv
     - type: secureblue-signing
       source: local

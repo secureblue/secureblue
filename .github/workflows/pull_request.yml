@@ -73,9 +73,10 @@ jobs:
           echo "recipe_path=${RECIPE_PATH}" >> ${GITHUB_OUTPUT}
       
       - name: Retrieve Test Signing Key
+        id: retrieve_test_key
         shell: bash
         run: |
-          cp ./.github/workflows/private_key.priv.test ./files/scripts/certs/private_key.priv
+          export "KERNEL_PRIVKEY=$(< ./.github/workflows/private_key.priv.test)" >> ${GITHUB_OUTPUT}
           cp ./.github/workflows/public_key.der.test ./files/system/etc/pki/akmods/certs/akmods-secureblue.der
 
       - name: Install BlueBuild
@@ -94,6 +95,7 @@ jobs:
         shell: bash
         working-directory: ${{ inputs.working_directory }}
         env:
+          KERNEL_PRIVKEY: ${{ steps.retrieve_test_key.outputs.KERNEL_PRIVKEY }}
           RECIPE_PATH: ${{ steps.build_vars.outputs.recipe_path }}
           RUST_LOG_STYLE: always
           CLICOLOR_FORCE: '1'

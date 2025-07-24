@@ -14,3 +14,11 @@ modules:
   - type: script
     scripts:
       - installzfskmod.sh
+    secrets:
+      - type: exec
+        command: echo
+        args:
+          - "${KERNEL_PRIVKEY}"
+        output:
+          type: file
+          destination: ./certs/private_key.priv

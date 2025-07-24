@@ -21,3 +21,4 @@ scripts:
   - createjustcompletions.sh
   - enablekeyverification.sh
   - removefedoraflatpakremoteservice.sh
+  - enablecommonautoupdate.sh

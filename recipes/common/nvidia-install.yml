@@ -13,7 +13,17 @@
 modules:
   - type: script
     scripts:
-      - installnvidiakmod.sh
+      - installnvidiakmod.sh    
+    secrets:
+      - type: exec
+        command: echo
+        args:
+          - "${KERNEL_PRIVKEY}"
+        output:
+          type: file
+          destination: ./certs/private_key.priv
+  - type: script
+    scripts:
       - installnvidiapackages.sh
       - removeunusedrepos.sh
       - setearlyloading.sh

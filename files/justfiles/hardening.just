@@ -201,7 +201,7 @@ setup-usbguard:
         groupadd usbguard
         usermod -aG usbguard "$SUDO_USER"
         usbguard generate-policy > /etc/usbguard/rules.conf
-        sed -i "/IPCAllowedGroups=wheel/s/\$/ usbguard/" /etc/usbguard/usbguard-daemon.conf
+        sed -i "/^IPCAllowedGroups=wheel/s/\$/ usbguard/" /etc/usbguard/usbguard-daemon.conf
         restorecon -vR /var/log/usbguard
         systemctl enable --now usbguard.service
         usbguard add-user "$SUDO_USER"

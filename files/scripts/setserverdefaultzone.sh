@@ -14,4 +14,4 @@
 
 set -oue pipefail
 
-sed -i 's@DefaultZone=public@DefaultZone=FedoraServer@g' /etc/firewalld/firewalld.conf
+sed -i 's/^DefaultZone=public/DefaultZone=FedoraServer/' /etc/firewalld/firewalld.conf

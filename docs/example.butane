@@ -28,7 +28,7 @@ storage:
             if [ $? != 0 ]; then
               echo "Error: Secureblue installer failed."
             else
-              sed -i "/\/opt\/run_install_secureblue.sh/d" /var/home/core/.bash_profile
+              sed -i '/\/opt\/run_install_secureblue.sh/d' /var/home/core/.bash_profile
               sudo rm -f /opt/*install_secureblue.sh
               echo "Automatically rebooting in 5 seconds..."
               sleep 5

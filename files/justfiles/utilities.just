@@ -356,7 +356,6 @@ install-vpn:
     # ref: https://www.ivpn.net/knowledgebase/linux/fedora-silverblue/
     # ref: https://mullvad.net/de/download/vpn/linux
     # ref: https://protonvpn.com/support/en/official-linux-vpn-fedora
-    REPO_REGEX="/^enabled[ =]/ s/0/1/g"
     function install_vpn() {
         local INSTRUCTIONS
         local PACKAGE_NAME
@@ -415,7 +414,7 @@ install-vpn:
                 ;;
         esac
 
-        if ! run0 sh -c "sed -i '$REPO_REGEX' /etc/yum.repos.d/$REPO_NAME.repo && rpm-ostree install --assumeyes $PACKAGE_NAME"; then
+        if ! run0 sh -c 'sed -Ei "s/^enabled ?=.*/enabled=1/" "/etc/yum.repos.d/$1.repo" && rpm-ostree install --assumeyes "$2"' sh "$REPO_NAME" "$PACKAGE_NAME"; then
             echo "Error: The installation didn't complete successfully, aborting..."
             exit 1
         fi

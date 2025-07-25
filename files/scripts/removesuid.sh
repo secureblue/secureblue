@@ -86,6 +86,5 @@ set_caps_if_present() {
 }
 
 set_caps_if_present "cap_dac_read_search,cap_audit_write=ep" "/usr/bin/chage"
-set_caps_if_present "cap_dac_read_search=ep" "/usr/libexec/openssh/ssh-keysign"
 set_caps_if_present "cap_sys_admin=ep" "/usr/bin/fusermount3"
 set_caps_if_present "cap_dac_read_search,cap_audit_write=ep" "/usr/sbin/unix_chkpwd"

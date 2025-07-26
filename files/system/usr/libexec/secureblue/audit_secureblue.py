@@ -25,9 +25,9 @@ import glob
 import json
 import os
 import os.path
+import re
 import signal
 import stat
-import re
 
 # All subprocess calls we make have trusted inputs and do not use shell=True.
 import subprocess  # nosec
@@ -584,14 +584,18 @@ def audit_gnome_extensions(state):
 def audit_selinux():
     """Ensure SELinux is in enforcing mode."""
     sestatus = command_stdout("sestatus")
-    current_selinux_enforcing = re.search(r"^Current mode:[ \t]*enforcing$", sestatus, flags=re.M)
-    config_selinux_enforcing = re.search(r"^Mode from config file:[ \t]*enforcing$", sestatus, flags=re.M)
+    current_selinux_enforcing = re.search(
+        r"^Current mode:[ \t]*enforcing$", sestatus, flags=re.MULTILINE
+    )
+    config_selinux_enforcing = re.search(
+        r"^Mode from config file:[ \t]*enforcing$", sestatus, flags=re.MULTILINE
+    )
     if config_selinux_enforcing is None:
         status = FAIL
         rec = """SELinux is not configured to run in enforcing mode.
-	    To set SELinux to enforing mode, run the following command and reboot.
-	    $ run0 sed -i -e 's/^SELINUX=.*/SELINUX=enforcing/' /etc/selinux/config
-	    $ fixfiles -F onboot"""
+            To set SELinux to enforing mode, run the following command and reboot.
+            $ run0 sed -i -e 's/^SELINUX=.*/SELINUX=enforcing/' /etc/selinux/config
+            $ fixfiles -F onboot"""
     elif current_selinux_enforcing is None:
         status = FAIL
         rec = """SELinux is not currently in enforcing mode.

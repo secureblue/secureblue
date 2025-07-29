@@ -34,11 +34,9 @@ modules:
       scripts:
         - signkernel.sh
       secrets:
-        - type: exec
-          command: echo
-          args:
-            - "${KERNEL_PRIVKEY}"
-          output:
+        - type: env
+          name: KERNEL_PRIVKEY
+          mount:
             type: file
             destination: /tmp/certs/private_key.priv
     - type: secureblue-signing

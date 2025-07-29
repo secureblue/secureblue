@@ -86,7 +86,7 @@ jobs:
         env:
           KERNEL_PRIVKEY: ${{ secrets.KERNEL_PRIVKEY }}
         with:          
-          cli_version: v0.9.20
+          cli_version: v0.9.21
           recipe: ${{ matrix.recipe }}
           cosign_private_key: ${{ secrets.SIGNING_SECRET }}
           registry_token: ${{ github.token }}

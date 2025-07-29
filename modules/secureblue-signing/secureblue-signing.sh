@@ -75,7 +75,7 @@ cp POLICY.tmp /usr/etc/containers/policy.json
 cp POLICY.tmp /etc/containers/policy.json
 rm POLICY.tmp
 
-sed -i "s ghcr.io/IMAGENAME $IMAGE_REGISTRY g" "$MODULE_DIRECTORY/secureblue-signing/registry-config.yaml"
+sed -i --sandbox "s|ghcr.io/IMAGENAME|$IMAGE_REGISTRY|g" "$MODULE_DIRECTORY/secureblue-signing/registry-config.yaml"
 cp "$MODULE_DIRECTORY/secureblue-signing/registry-config.yaml" "$CONTAINER_DIR/registries.d/$IMAGE_REGISTRY_TITLE.yaml"
 cp "$MODULE_DIRECTORY/secureblue-signing/registry-config.yaml" "$ETC_CONTAINER_DIR/registries.d/$IMAGE_REGISTRY_TITLE.yaml"
 rm "$MODULE_DIRECTORY/secureblue-signing/registry-config.yaml"

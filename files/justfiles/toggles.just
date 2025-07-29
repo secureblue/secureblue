@@ -61,19 +61,19 @@ toggle-bluetooth-modules:
 # Toggle GHNS (KDE Get New Stuff)
 toggle-ghns:
     #! /bin/run0 /bin/bash
-    KDE_GLOBALS_FILE="/etc/xdg/kdeglobals"
-    if test -e $KDE_GLOBALS_FILE; then
-      if grep -q "ghns=false" "$KDE_GLOBALS_FILE"; then
-        sed -i "s/ghns=false/ghns=true/" "$KDE_GLOBALS_FILE"
-        echo "GHNS enabled."
-      elif grep -q "ghns=true" "$KDE_GLOBALS_FILE"; then
-        sed -i "s/ghns=true/ghns=false/" "$KDE_GLOBALS_FILE"
-        echo "GHNS disabled."
+    KDE_GLOBALS_FILE='/etc/xdg/kdeglobals'
+    if test -e "$KDE_GLOBALS_FILE"; then
+      if grep -q '^ghns=false' "$KDE_GLOBALS_FILE"; then
+        sed -i 's/^ghns=false.*/ghns=true/' "$KDE_GLOBALS_FILE"
+        echo 'GHNS enabled.'
+      elif grep -q '^ghns=true' "$KDE_GLOBALS_FILE"; then
+        sed -i 's/^ghns=true.*/ghns=false/' "$KDE_GLOBALS_FILE"
+        echo 'GHNS disabled.'
       else
-        echo "The kdeglobals file is missing the ghns toggle."
+        echo 'The kdeglobals file is missing the ghns toggle.'
       fi
     else
-      echo "No kdeglobals file found. Are you on kinoite?"
+      echo 'No kdeglobals file found. Are you on kinoite?'
     fi
 
 # enable a kernel module that is disabled by modprobe.d (requires restart)
@@ -127,11 +127,11 @@ alias toggle-ptrace-scope := toggle-anticheat-support
 toggle-anticheat-support:
     #! /bin/run0 /bin/bash
     SYSCTL_HARDENING_FILE="/etc/sysctl.d/60-hardening.conf"
-    if grep -q "kernel.yama.ptrace_scope = 3" "$SYSCTL_HARDENING_FILE"; then
-        sed -i "s/kernel.yama.ptrace_scope = 3/kernel.yama.ptrace_scope = 1/" "$SYSCTL_HARDENING_FILE"
+    if grep -q '^kernel.yama.ptrace_scope = 3' "$SYSCTL_HARDENING_FILE"; then
+        sed -i 's/^kernel.yama.ptrace_scope =.*/kernel.yama.ptrace_scope = 1/' "$SYSCTL_HARDENING_FILE"
         echo "Anticheat support enabled. ptrace_scope set to 1."
-    elif grep -q "kernel.yama.ptrace_scope = 1" "$SYSCTL_HARDENING_FILE"; then
-        sed -i "s/kernel.yama.ptrace_scope = 1/kernel.yama.ptrace_scope = 3/" "$SYSCTL_HARDENING_FILE"
+    elif grep -q 'kernel.yama.ptrace_scope = 1' "$SYSCTL_HARDENING_FILE"; then
+        sed -i 's/^kernel.yama.ptrace_scope =.*/kernel.yama.ptrace_scope = 3/' "$SYSCTL_HARDENING_FILE"
         echo "Anticheat support disabled. ptrace_scope set back to 3."
     else
         echo "The sysctl hardening file is missing the ptrace_scope setting."

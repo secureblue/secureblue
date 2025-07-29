@@ -35,7 +35,16 @@ import traceback
 from typing import Final
 
 from audit_flatpak import check_flatpak_permissions, parse_flatpak_permissions
-from auditor import Report, Status, audit, bold, categorize, depends_on, global_audit
+from auditor import (
+    Report,
+    Status,
+    audit,
+    bold,
+    categorize,
+    depends_on,
+    gettext_marker,
+    global_audit,
+)
 from utils import (
     Image,
     command_stdout,
@@ -48,6 +57,8 @@ from utils import (
     validate_sysctl,
     warn_if_root,
 )
+
+_: Final = gettext_marker()
 
 PASS: Final = Status.PASS
 INFO: Final = Status.INFO
@@ -93,17 +104,17 @@ def audit_kargs():
     for karg in kargs_expected:
         if karg not in kargs_current:
             status = status.downgrade_to(FAIL)
-            warnings.append(f"Missing kernel argument: {karg}")
+            warnings.append(_("Missing kernel argument: {0}").format(karg))
 
     karg_32bit = "ia32_emulation=0"
     if karg_32bit not in kargs_current:
         status = status.downgrade_to(WARN)
-        warnings.append(f"Missing kernel argument: {karg_32bit} (32-bit support)")
+        warnings.append(_("Missing kernel argument: {0} (32-bit support)").format(karg_32bit))
 
     karg_nosmt = "nosmt=force"
     if karg_nosmt not in kargs_current:
         status = status.downgrade_to(WARN)
-        warnings.append(f"Missing kernel argument: {karg_nosmt} (force-disable SMT)")
+        warnings.append(_("Missing kernel argument: {0} (force-disable SMT)").format(karg_nosmt))
 
     kargs_expected_unstable = (
         "amd_iommu=force_isolation",
@@ -115,13 +126,12 @@ def audit_kargs():
     for karg in kargs_expected_unstable:
         if karg not in kargs_current:
             status = status.downgrade_to(WARN)
-            warnings.append(f"Missing kernel argument (unstable): {karg}")
+            warnings.append(_("Missing kernel argument (unstable): {0}").format(karg))
 
     if status != PASS:
-        rec = """To set hardened kernel arguments, run:
-            $ ujust set-kargs-hardening"""
+        rec = _("To set hardened kernel arguments, run:") + "\n$ ujust set-kargs-hardening"
 
-    yield Report("Checking for hardened kernel arguments", status, warnings=warnings, recs=rec)
+    yield Report(_("Checking for hardened kernel arguments"), status, warnings=warnings, recs=rec)
 
 
 @audit
@@ -137,7 +147,7 @@ def audit_sysctl():
         etc_conf = f.readlines()
     if conf != etc_conf:
         status = WARN
-        sysctl_errors.append(f"{sysctl_file} has been modified")
+        sysctl_errors.append(_("The file {0} has been modified.").format(sysctl_file))
     for sysctl, expected in sysctl_expected.items():
         sysctl_path = f"/proc/sys/{sysctl.replace('.', '/')}"
         for path in glob.iglob(sysctl_path):
@@ -148,9 +158,11 @@ def audit_sysctl():
                 continue
             if not validate_sysctl(sysctl, actual, expected):
                 status = FAIL
-                sysctl_errors.append(f"{sysctl} should be {expected}, found {actual}")
+                sysctl_errors.append(
+                    _("{0} should be {1}, but is actually {2}.").format(sysctl, expected, actual)
+                )
                 break
-    yield Report("Ensuring no sysctl overrides", status, warnings=sysctl_errors)
+    yield Report(_("Ensuring no sysctl overrides"), status, warnings=sysctl_errors)
 
 
 @audit
@@ -164,16 +176,17 @@ def audit_signed_image(state):
         recs = None
     else:
         status = FAIL
-        recs = """The current image is not signed.
-            To rebase to a signed image, download and run or re-run install_secureblue.sh
-            from the secureblue GitHub repository."""
-    yield Report("Ensuring a signed image is in use", status, recs=recs)
+        recs = _("""The current image is not signed.
+            To rebase to a signed image, download and run or re-run {0}
+            from the secureblue GitHub repository.""").format("install_secureblue.sh")
+    yield Report(_("Ensuring a signed image is in use"), status, recs=recs)
 
 
 @audit
 def audit_modprobe(state):
     """Check that the kernel module blacklist has not been overridden."""
-    with open("/usr/etc/modprobe.d/blacklist.conf", encoding="utf-8") as f:
+    blacklist_file = "/etc/modprobe.d/blacklist.conf"
+    with open(f"/usr{blacklist_file}", encoding="utf-8") as f:
         conf = f.readlines()
     blacklisted_modules = []
     for line in conf:
@@ -189,15 +202,17 @@ def audit_modprobe(state):
     unwanted_modules.sort()
     status = PASS
     warnings = []
-    with open("/etc/modprobe.d/blacklist.conf", encoding="utf-8") as f:
+    with open(blacklist_file, encoding="utf-8") as f:
         if f.readlines() != conf:
             status = WARN
-            warnings.append("/etc/modprobe.d/blacklist.conf has been modified")
+            warnings.append(_("The file {0} has been modified.").format(blacklist_file))
     for mod in unwanted_modules:
         status = FAIL
-        warnings.append(f"{mod} is in blacklist.conf but it is loaded")
+        warnings.append(
+            _("The module {0} is in {1}, but it is loaded.").format(mod, blacklist_file)
+        )
     state["bluetooth_loaded"] = "bluetooth" in unwanted_modules
-    yield Report("Ensuring no modprobe overrides", status, warnings=warnings)
+    yield Report(_("Ensuring no modprobe overrides"), status, warnings=warnings)
 
 
 @audit
@@ -211,21 +226,29 @@ def audit_ptrace(state):
             rec = None
         case 0:
             status = FAIL
-            rec = f"""ptrace is allowed and {bold("unrestricted")} (ptrace_scope = 0)!
-                For more info on what this means, see:
-                https://www.kernel.org/doc/html/latest/admin-guide/LSM/Yama.html
-                To forbid ptrace, run:
-                $ ujust toggle-ptrace-scope
-                To allow restricted ptrace, run the above command twice."""
+            rec_lines = (
+                _("ptrace is allowed and **unrestricted** ({0})!").format("ptrace_scope = 0"),
+                _("For more info on what this means, see:"),
+                "https://www.kernel.org/doc/html/latest/admin-guide/LSM/Yama.html",
+                _("To forbid ptrace, run:"),
+                "$ ujust toggle-ptrace-scope",
+                _("To allow restricted ptrace, run the above command twice."),
+            )
+            rec = "\n".join(rec_lines)
         case _:
             status = WARN
-            rec = f"""ptrace is allowed, but restricted (ptrace_scope = {ptrace_scope}).
-                For more info on what this means, see:
-                https://www.kernel.org/doc/html/latest/admin-guide/LSM/Yama.html
-                To forbid ptrace, run:
-                $ ujust toggle-ptrace-scope"""
+            rec_lines = (
+                _("ptrace is allowed, but restricted ({0}).").format(
+                    f"ptrace_scope = {ptrace_scope}"
+                ),
+                _("For more info on what this means, see:"),
+                "https://www.kernel.org/doc/html/latest/admin-guide/LSM/Yama.html",
+                _("To forbid ptrace, run:"),
+                "$ ujust toggle-ptrace-scope",
+            )
+            rec = "\n".join(rec_lines)
     state["ptrace_allowed"] = status != PASS
-    yield Report("Ensuring ptrace is forbidden", status, recs=rec)
+    yield Report(_("Ensuring ptrace is forbidden"), status, recs=rec)
 
 
 @audit
@@ -235,7 +258,7 @@ def audit_authselect():
     cmp = filecmp.dircmp("/usr/etc/authselect", "/etc/authselect", shallow=False, ignore=[])
     if cmp.left_only or cmp.right_only or cmp.diff_files or cmp.funny_files:
         status = FAIL
-    yield Report("Ensuring no authselect overrides", status)
+    yield Report(_("Ensuring no authselect overrides"), status)
 
 
 @audit
@@ -246,12 +269,12 @@ def audit_container_policy():
     policy_file = "/etc/containers/policy.json"
     if not filecmp.cmp(f"/usr{policy_file}", policy_file):
         status = FAIL
-        warnings.append(f"{policy_file} has been modified")
+        warnings.append(_("The file {0} has been modified.").format(policy_file))
     local_override = "~/.config/containers/policy.json"
     if os.path.isfile(os.path.expanduser(local_override)):
         status = FAIL
-        warnings.append(f"{local_override} exists")
-    yield Report("Ensuring no container policy overrides", status, warnings=warnings)
+        warnings.append(_("{0} exists.").format(local_override))
+    yield Report(_("Ensuring no container policy overrides"), status, warnings=warnings)
 
 
 @audit
@@ -262,10 +285,13 @@ def audit_unconfined_userns():
         recs = None
     else:
         status = FAIL
-        recs = """Unconfined domain user namespace creation is permitted.
-                To disallow it, run:
-                $ ujust toggle-unconfined-domain-userns-creation"""
-    yield Report("Ensuring unconfined user namespace creation disallowed", status, recs=recs)
+        rec_lines = (
+            _("Unconfined domain user namespace creation is permitted."),
+            _("To disallow it, run:"),
+            "$ ujust toggle-unconfined-domain-userns-creation",
+        )
+        recs = "\n".join(rec_lines)
+    yield Report(_("Ensuring unconfined user namespace creation disallowed"), status, recs=recs)
 
 
 @audit
@@ -276,10 +302,13 @@ def audit_container_userns():
         recs = None
     else:
         status = WARN
-        recs = """Container domain user namespace creation is permitted.
-                To disallow it, run:
-                $ ujust toggle-container-domain-userns-creation"""
-    yield Report("Ensuring container user namespace creation disallowed", status, recs=recs)
+        rec_lines = (
+            _("Container domain user namespace creation is permitted."),
+            _("To disallow it, run:"),
+            "$ ujust toggle-container-domain-userns-creation",
+        )
+        recs = "\n".join(rec_lines)
+    yield Report(_("Ensuring container user namespace creation disallowed"), status, recs=recs)
 
 
 @audit
@@ -291,15 +320,20 @@ def audit_usbguard():
         rec = None
         if command_succeeds("systemctl", "is-failed", "--quiet", "usbguard"):
             status = status.downgrade_to(WARN)
-            warning = "USBGuard is enabled but has failed to run"
+            warning = _("USBGuard is enabled but has failed to run.")
     else:
         status = FAIL
-        warning = "USBGuard is not enabled"
-        rec = """USBGuard is not enabled. To set up USBGuard, run:
-            $ ujust setup-usbguard
-            Caution: if you have already set up USBGuard, this will overwrite the
-            existing policy."""
-    yield Report("Ensuring usbguard is active", status, warnings=warning, recs=rec)
+        warning = _("USBGuard is not enabled.")
+        rec_lines = (
+            warning,
+            _("To set up USBGuard, run:"),
+            "$ ujust setup-usbguard",
+            _(
+                "Caution: if you have already set up USBGuard, this will overwrite the existing policy."
+            ),
+        )
+        rec = "\n".join(rec_lines)
+    yield Report(_("Ensuring USBGuard is active"), status, warnings=warning, recs=rec)
 
 
 @audit
@@ -311,14 +345,13 @@ def audit_chronyd():
         rec = None
         if command_succeeds("systemctl", "is-failed", "--quiet", "chronyd"):
             status = status.downgrade_to(WARN)
-            warning = "chronyd is enabled but has failed to run"
+            warning = _("{0} is enabled but has failed to run.").format("chronyd")
     else:
         status = FAIL
-        warning = "chronyd is not enabled"
-        rec = """chronyd is not enabled.
-            To start and enable it, run:
-            $ systemctl enable --now chronyd"""
-    yield Report("Ensuring chronyd is active", status, warnings=warning, recs=rec)
+        warning = _("{0} is not enabled.").format("chronyd")
+        rec_lines = (warning, _("To start and enable it, run:"), "$ systemctl enable --now chronyd")
+        rec = "\n".join(rec_lines)
+    yield Report(_("Ensuring chronyd is active"), status, warnings=warning, recs=rec)
 
 
 @audit
@@ -330,6 +363,7 @@ def audit_dns():
         dnssec = None
         dot = None
         conf_path = "/etc/systemd/resolved.conf.d/10-securedns.conf"
+        fail_msg = _("System DNS resolution is not secure.")
         try:
             with open(conf_path, encoding="utf-8") as f:
                 config = parse_config(f)
@@ -339,26 +373,34 @@ def audit_dns():
             status = FAIL
         except PermissionError:
             status = UNKNOWN
-            warning = f"Unable to read file {conf_path}"
+            warning = _("Unable to read file {0}.").format(conf_path)
         else:
             if dnssec == "true" and dot == "true":
                 status = PASS
             elif dot == "opportunistic":
                 status = WARN
+                fail_msg = _(
+                    "System DNS resolution is not secure (opportunistic DNS-over-TLS only)."
+                )
             else:
                 status = FAIL
         if status in (WARN, FAIL):
-            caveat = " (opportunistic DNS-over-TLS only)" if dot == "opportunistic" else ""
-            rec = f"""System DNS resolution is not secure{caveat}.
-                    To select a secure resolver, run:
-                    $ ujust dns-selector
-                    If you are using a VPN, you may want to disregard this recommendation."""
+            rec_lines = (
+                fail_msg,
+                _("To select a secure resolver, run:"),
+                "$ ujust dns-selector",
+                _("If you are using a VPN, you may want to disregard this recommendation."),
+            )
+            rec = "\n".join(rec_lines)
     else:
         status = FAIL
-        rec = """systemd-resolved is inactive.
-                To start and enable it, run:
-                $ systemctl enable --now systemd-resolved"""
-    yield Report("Ensuring system DNS resolution is secure", status, warnings=warning, recs=rec)
+        rec_lines = (
+            _("{0} is inactive.").format("systemd-resolved"),
+            _("To start and enable it, run:"),
+            "$ systemctl enable --now systemd-resolved",
+        )
+        rec = "\n".join(rec_lines)
+    yield Report(_("Ensuring system DNS resolution is secure"), status, warnings=warning, recs=rec)
 
 
 @audit
@@ -374,19 +416,22 @@ def audit_mac_randomization():
         pass
     except PermissionError:
         status = UNKNOWN
-        warning = f"Unable to read file {conf_path}"
+        warning = _("Unable to read file {0}.").format(conf_path)
     else:
         ethernet = config.get("ethernet.cloned-mac-address") in ("random", "stable")
         wifi = config.get("wifi.cloned-mac-address") in ("random", "stable")
         if ethernet and wifi:
             status = PASS
     if status == FAIL:
-        rec = """MAC randomization is not enabled.
-                To enable it, run:
-                $ ujust toggle-mac-randomization"""
+        rec_lines = (
+            _("MAC randomization is not enabled."),
+            _("To enable it, run:"),
+            "$ ujust toggle-mac-randomization",
+        )
+        rec = "\n".join(rec_lines)
     else:
         rec = None
-    yield Report("Ensuring MAC randomization is enabled", status, warnings=warning, recs=rec)
+    yield Report(_("Ensuring MAC randomization is enabled"), status, warnings=warning, recs=rec)
 
 
 @audit
@@ -398,15 +443,20 @@ def audit_rpm_ostree_timer():
         rec = None
         if command_succeeds("systemctl", "is-failed", "--quiet", "rpm-ostreed-automatic.timer"):
             status = status.downgrade_to(WARN)
-            warning = "rpm-ostreed-automatic.timer is enabled but has failed to run"
+            warning = _("{0} is enabled but has failed to run.").format(
+                "rpm-ostreed-automatic.timer"
+            )
     else:
         status = FAIL
-        warning = "rpm-ostreed-automatic.timer is disabled"
-        rec = """rpm-ostreed-automatic.timer is disabled.
-                To enable, run:
-                $ systemctl enable --now rpm-ostreed-automatic.timer"""
+        warning = _("{0} is disabled.").format("rpm-ostreed-automatic.timer")
+        rec_lines = (
+            warning,
+            _("To enable it, run:"),
+            "$ systemctl enable --now rpm-ostreed-automatic.timer",
+        )
+        rec = "\n".join(rec_lines)
     yield Report(
-        "Ensuring rpm-ostreed-automatic.timer is enabled",
+        _("Ensuring {0} is enabled").format("rpm-ostreed-automatic.timer"),
         status,
         warnings=warning,
         recs=rec,
@@ -424,15 +474,18 @@ def audit_podman_auto_update():
             "systemctl", "--user", "is-failed", "--quiet", "podman-auto-update.timer"
         ):
             status = status.downgrade_to(WARN)
-            warning = "podman-auto-update.timer is enabled but has failed to run"
+            warning = _("{0} is enabled but has failed to run.").format("podman-auto-update.timer")
     else:
         status = FAIL
-        warning = "podman-auto-update.timer is disabled"
-        rec = """podman-auto-update.timer is disabled.
-                To enable, run:
-                $ systemctl enable --now podman-auto-update.timer"""
+        warning = _("{0} is disabled.").format("podman-auto-update.timer")
+        rec_lines = (
+            warning,
+            _("To enable it, run:"),
+            "$ systemctl enable --now podman-auto-update.timer",
+        )
+        rec = "\n".join(rec_lines)
     yield Report(
-        "Ensuring podman-auto-update.timer is enabled",
+        _("Ensuring {0} is enabled").format("podman-auto-update.timer"),
         status,
         warnings=warning,
         recs=rec,
@@ -450,15 +503,20 @@ def audit_podman_global_auto_update():
         rec = None
         if command_succeeds("systemctl", "is-failed", "--quiet", "podman-auto-update.timer"):
             status = status.downgrade_to(WARN)
-            warning = "podman-auto-update.timer is enabled globally but has failed to run"
+            warning = _("{0} is enabled globally but has failed to run.").format(
+                "podman-auto-update.timer"
+            )
     else:
         status = FAIL
-        warning = "podman-auto-update.timer is not enabled globally"
-        rec = """podman-auto-update.timer is not enabled globally.
-                To enable, run:
-                $ systemctl enable --global podman-auto-update.timer"""
+        warning = _("{0} is not enabled globally.").format("podman-auto-update.timer")
+        rec_lines = (
+            warning,
+            _("To enable it, run:"),
+            "$ systemctl enable --global podman-auto-update.timer",
+        )
+        rec = "\n".join(rec_lines)
     yield Report(
-        "Ensuring podman-auto-update.timer is enabled globally",
+        _("Ensuring {0} is enabled globally").format("podman-auto-update.timer"),
         status,
         warnings=warning,
         recs=rec,
@@ -480,15 +538,20 @@ def audit_flatpak_auto_update():
             "systemctl", "--user", "is-failed", "--quiet", "flatpak-user-update.timer"
         ):
             status = status.downgrade_to(WARN)
-            warning = "flatpak-user-update.timer is enabled globally but has failed to run."
+            warning = _("{0} is enabled globally but has failed to run.").format(
+                "flatpak-user-update.timer"
+            )
     else:
         status = FAIL
-        warning = "flatpak-user-update.timer is not enabled globally"
-        rec = """flatpak-user-update.timer is not enabled globally.
-                To enable, run:
-                $ systemctl enable --global flatpak-user-update.timer"""
+        warning = _("{0} is not enabled globally.").format("flatpak-user-update.timer")
+        rec_lines = (
+            warning,
+            _("To enable it, run:"),
+            "$ systemctl enable --global flatpak-user-update.timer",
+        )
+        rec = "\n".join(rec_lines)
     yield Report(
-        "Ensuring flatpak-user-update.timer is enabled globally",
+        _("Ensuring {0} is enabled globally").format("flatpak-user-update.timer"),
         status,
         warnings=warning,
         recs=rec,
@@ -500,15 +563,20 @@ def audit_flatpak_auto_update():
         rec = None
         if command_succeeds("systemctl", "is-failed", "--quiet", "flatpak-system-update.timer"):
             status = status.downgrade_to(WARN)
-            warning = "flatpak-system-update.timer is enabled but has failed to run."
+            warning = _("{0} is enabled but has failed to run.").format(
+                "flatpak-system-update.timer"
+            )
     else:
         status = FAIL
-        warning = "flatpak-system-update.timer is not enabled"
-        rec = """flatpak-system-update.timer is not enabled.
-                To enable, run:
-                $ systemctl enable --now flatpak-system-update.timer"""
+        warning = _("{0} is not enabled.").format("flatpak-system-update.timer")
+        rec_lines = (
+            warning,
+            _("To enable it, run:"),
+            "$ systemctl enable --now flatpak-system-update.timer",
+        )
+        rec = "\n".join(rec_lines)
     yield Report(
-        "Ensuring flatpak-system-update.timer is enabled",
+        _("Ensuring {0} is enabled").format("flatpak-system-update.timer"),
         status,
         warnings=warning,
         recs=rec,
@@ -519,14 +587,17 @@ def audit_flatpak_auto_update():
 def audit_wheel():
     """Ensure the current user is not in the wheel group."""
     if "wheel" in command_stdout("groups").split():
-        rec = f"""Current user is in the wheel group.
-            To set up a separate wheel account, follow the instructions here:
-            {bold("https://secureblue.dev/install#wheel")}"""
+        rec_lines = (
+            _("The current user is in the wheel group."),
+            _("To set up a separate wheel account, follow the instructions here:"),
+            bold("https://secureblue.dev/install#wheel"),
+        )
+        rec = "\n".join(rec_lines)
         status = FAIL
     else:
         rec = None
         status = PASS
-    yield Report("Ensuring user is not a member of wheel", status, recs=rec)
+    yield Report(_("Ensuring user is not a member of the wheel group"), status, recs=rec)
 
 
 @audit
@@ -535,13 +606,13 @@ def audit_xwayland(state):
     """Check whether xwayland is disabled."""
     match state["image"]:
         case Image.SILVERBLUE:
-            de = "GNOME"
+            de = _("GNOME")
             path = "/etc/systemd/user/org.gnome.Shell@wayland.service.d/override.conf"
         case Image.KINOITE:
-            de = "KDE Plasma"
+            de = _("KDE Plasma")
             path = "/etc/systemd/user/plasma-kwin_wayland.service.d/override.conf"
         case Image.SERICEA:
-            de = "Sway"
+            de = _("Sway")
             path = "/etc/sway/config.d/99-noxwayland.conf"
         case _:
             return
@@ -550,9 +621,13 @@ def audit_xwayland(state):
         rec = None
     else:
         status = FAIL
-        rec = f"""Xwayland is enabled for {de}. To disable, run:
-            $ ujust toggle-xwayland"""
-    yield Report(f"Ensuring xwayland is disabled for {de}", status, recs=rec)
+        rec_lines = (
+            _("Xwayland is enabled for {0}.").format(de),
+            _("To disable it, run:"),
+            "$ ujust toggle-xwayland",
+        )
+        rec = "\n".join(rec_lines)
+    yield Report(_("Ensuring {0} is disabled for {1}").format("Xwayland", de), status, recs=rec)
 
 
 @audit
@@ -574,9 +649,13 @@ def audit_gnome_extensions(state):
         rec = None
     else:
         status = FAIL
-        rec = """GNOME user extensions are enabled. To disable, run:
-            $ ujust toggle-gnome-extensions"""
-    yield Report("Ensuring GNOME user extensions are disabled", status, recs=rec)
+        rec_lines = (
+            _("GNOME user extensions are enabled."),
+            _("To disable this, run:"),
+            "$ ujust toggle-gnome-extensions",
+        )
+        rec = "\n".join(rec_lines)
+    yield Report(_("Ensuring GNOME user extensions are disabled"), status, recs=rec)
 
 
 @audit
@@ -587,10 +666,13 @@ def audit_selinux():
         rec = None
     else:
         status = FAIL
-        rec = """SELinux is in Permissive mode.
-            To set to Enforcing mode, run:
-            $ run0 setenforce 1"""
-    yield Report("Ensuring SELinux is in Enforcing mode", status, recs=rec)
+        rec_lines = (
+            _("SELinux is in Permissive mode."),
+            _("To set it to Enforcing mode, run:"),
+            "$ run0 setenforce 1",
+        )
+        rec = "\n".join(rec_lines)
+    yield Report(_("Ensuring SELinux is in Enforcing mode"), status, recs=rec)
 
 
 @audit
@@ -603,17 +685,21 @@ def audit_environment_file():
     try:
         if not filecmp.cmp("/usr" + env_file, env_file):
             status = WARN
-            warning = f"{env_file} has been modified"
+            warning = _("The file {0} has been modified.").format(env_file)
     except FileNotFoundError:
         status = WARN
-        warning = f"{env_file} has been deleted"
+        warning = _("The file {0} has been deleted.").format(env_file)
     except PermissionError:
         status = WARN
-        warning = f"{env_file} cannot be read"
+        warning = _("The file {0} cannot be read.").format(env_file)
     if status != PASS:
-        rec = f"""{env_file} has been modified. To reset it, run:
-            $ run0 cp -p /usr{env_file} {env_file}"""
-    yield Report("Ensuring no environment file overrides", status, warnings=warning, recs=rec)
+        rec_lines = (
+            _("The file {0} has been modified."),
+            _("To reset it, run:"),
+            f"$ run0 cp -p /usr{env_file} {env_file}",
+        )
+        rec = "\n".join(rec_lines)
+    yield Report(_("Ensuring no environment file overrides"), status, warnings=warning, recs=rec)
 
 
 @audit
@@ -629,17 +715,20 @@ def audit_kde_ghns(state):
             config = parse_config(f)
     except (FileNotFoundError, PermissionError):
         status = WARN
-        warning = "/etc/xdg/kdeglobals not found or inaccessible"
+        warning = _("The file {0} was not found or inaccessible.").format("/etc/xdg/kdeglobals")
     else:
         if config.get("ghns") == "false":
             status = PASS
     if status == FAIL:
-        rec = """KDE GHNS is enabled.
-            To disable, run:
-            $ ujust toggle-ghns"""
+        rec_lines = (
+            _("KDE GNHS is enabled."),
+            _("To disable it, run:"),
+            "$ ujust toggle-ghns",
+        )
+        rec = "\n".join(rec_lines)
     else:
         rec = None
-    yield Report("Ensuring KDE GHNS is disabled", status, warnings=warning, recs=rec)
+    yield Report(_("Ensuring KDE GHNS is disabled"), status, warnings=warning, recs=rec)
 
 
 @audit
@@ -653,22 +742,27 @@ def audit_ld_preload():
         stat_result = os.stat(ld_so_preload)
     except FileNotFoundError:
         status = FAIL
-        warnings.append(f"{ld_so_preload} not found")
+        warnings.append(_("The file {0} was not found.").format(ld_so_preload))
     else:
         mode = stat.S_IMODE(stat_result.st_mode)
         expected_mode = 0o600
         if mode != expected_mode:
             status = WARN
-            warnings.append(f"{ld_so_preload} has mode {mode:o} (expected {expected_mode:o})")
+            warnings.append(
+                _("{0} has mode {1:o} (expected {2:o})").format(ld_so_preload, mode, expected_mode)
+            )
         if stat_result.st_uid != 0:
             status = FAIL
-            warnings.append(f"{ld_so_preload} is owned by a non-root user!")
+            warnings.append(_("{0} is owned by a non-root user!").format(ld_so_preload))
     if status != PASS:
-        rec = f"""{ld_so_preload} has been modified or deleted.
-            To reset it and enable hardened_malloc for system processes, run:
-            $ run0 cp -p /usr{ld_so_preload} {ld_so_preload}"""
+        rec_lines = (
+            _("The file {0} has been modified or deleted.").format(ld_so_preload),
+            _("To reset it and enable hardened_malloc for system processes, run:"),
+            f"$ run0 cp -p /usr{ld_so_preload} {ld_so_preload}",
+        )
+        rec = "\n".join(rec_lines)
     yield Report(
-        "Ensuring ld.so.preload has expected permissions",
+        _("Ensuring {0} has expected permissions").format("ld.so.preload"),
         status,
         warnings=warnings,
         recs=rec,
@@ -686,23 +780,27 @@ def audit_hardened_malloc():
         warning = None
     elif "libhardened_malloc.so" in preloads:
         status = WARN
-        warning = "hardened_malloc set, but LD_PRELOAD has been modified"
+        warning = _("{0} is set, but {1} has been modified.").format(
+            "hardened_malloc", "LD_PRELOAD"
+        )
     elif "libhardened_malloc-light.so" in preloads:
         status = WARN
-        warning = "'light' variant of hardened_malloc set"
+        warning = _("The '{0}' variant of {1} has been set.").format("light", "hardened_malloc")
     elif "libhardened_malloc-pkey.so" in preloads:
         status = WARN
-        warning = "'pkey' variant of hardened_malloc set"
+        warning = _("The '{0}' variant of {1} has been set.").format("pkey", "hardened_malloc")
     else:
         status = FAIL
-        warning = "libhardened_malloc not set in LD_PRELOAD"
+        warning = _("{0} has not been set.").format("LD_PRELOAD=libhardened_malloc.so")
 
     if status != PASS:
-        rec = """The LD_PRELOAD environment variable has been modified or is unset.
-            Check that LD_PRELOAD=libhardened_malloc.so has not been overridden in
-            /etc/profile.d or related configuration files."""
+        rec = _("""The environment variable {0} has been modified or is unset.
+                Check that {1} has not been overridden in
+                {2} or related configuration files.""").format(
+            "LD_PRELOAD", "LD_PRELOAD=libhardened_malloc.so", "/etc/profile.d"
+        )
     yield Report(
-        "Ensuring hardened_malloc is set to be preloaded",
+        _("Ensuring hardened_malloc is set to be preloaded"),
         status,
         warnings=warning,
         recs=rec,
@@ -712,11 +810,9 @@ def audit_hardened_malloc():
 @audit
 def audit_secureboot():
     """Ensure secureboot is enabled."""
-    if command_stdout("mokutil", "--sb-state", check=False) == "SecureBoot enabled":
-        status = PASS
-    else:
-        status = FAIL
-    yield Report("Ensuring secure boot is enabled", status)
+    sb_enabled = command_stdout("mokutil", "--sb-state", check=False) == "SecureBoot enabled"
+    status = PASS if sb_enabled else FAIL
+    yield Report(_("Ensuring secure boot is enabled"), status)
 
 
 @audit
@@ -748,16 +844,18 @@ def audit_bash_env_lockdown():
                 unlocked_files.append(path)
     if unlocked_files:
         status = FAIL
-        unlocked_files_string = "\n".join(unlocked_files)
-        rec = f"""Bash environment is not locked down.
-                The following files do not appear to be immutable or do not exist:
-                {unlocked_files_string}
-                To fix, run:
-                $ ujust toggle-bash-environment-lockdown"""
+        rec_lines = (
+            _("Bash environment is not locked down."),
+            _("The following files do not appear to be immutable or do not exist:"),
+            *unlocked_files,
+            _("To fix this, run:"),
+            "$ ujust toggle-bash-environment-lockdown",
+        )
+        rec = "\n".join(rec_lines)
     else:
         status = PASS
         rec = None
-    yield Report("Ensuring current user's bash environment is locked down", status, recs=rec)
+    yield Report(_("Ensuring current user's bash environment is locked down"), status, recs=rec)
 
 
 @audit
@@ -778,13 +876,13 @@ def audit_flatpak_remotes():
             "https://dl.flathub.org/beta-repo/",
         ]:
             status = FAIL
-            warnings.append(f"{name} is configured with an unknown url")
+            warnings.append(_("{0} is configured with an unknown URL.").format(name))
         elif subset != "verified":
             status = FAIL
-            warnings.append(f"{name} is not a verified repo")
+            warnings.append(_("{0} is not a verified flatpak repository.").format(name))
         else:
             status = PASS
-        yield Report(f"Auditing flatpak remote {name}", status, warnings=warnings)
+        yield Report(_("Auditing flatpak remote {0}").format(name), status, warnings=warnings)
 
 
 @audit
@@ -816,7 +914,8 @@ async def audit_flatpak_permissions(state):
         flatpak_permissions_state = check_flatpak_permissions(
             name, perms, state["bluetooth_loaded"], state["ptrace_allowed"]
         )
-        report_text = f"Auditing {name}" if version == "stable" else f"Auditing {name} ({version})"
+        display_name = name if version == "stable" else f"{name} ({version})"
+        report_text = _("Auditing {0}").format(display_name)
         yield Report(
             report_text,
             flatpak_permissions_state.status,
@@ -832,7 +931,7 @@ async def audit_flatpak_permissions(state):
 
 def handle_sigint(_sig, _frame):
     """Gracefully handle interrupt signal."""
-    print_err("\n[Audit process interrupted. Exiting.]")
+    print_err("\n" + _("[Audit process interrupted. Exiting.]"))
     # Suppress output from exceptions in unfinished tasks
     sys.stderr = None
     sys.exit(1)
@@ -845,16 +944,16 @@ async def main() -> int:
     parser = argparse.ArgumentParser(
         prog="ujust audit-secureblue",
         formatter_class=argparse.RawDescriptionHelpFormatter,
-        description="Audit secureblue configuration for security",
+        description=_("Audit secureblue configuration for security"),
         epilog=get_legend(),
     )
     categories = ",".join(sorted(global_audit.categories))
-    parser.add_argument("-s", "--skip", default="", help=f"skip categories ({categories})")
-    parser.add_argument("-j", "--json", action="store_true", help="display output as JSON")
+    parser.add_argument("-s", "--skip", default="", help=_("skip categories") + f" ({categories})")
+    parser.add_argument("-j", "--json", action="store_true", help=_("display output as JSON"))
     args = parser.parse_args()
     skip = args.skip.split(",") if args.skip else []
     if any(cat not in global_audit.categories for cat in skip):
-        print(f"Valid arguments to --skip are: {categories}", file=sys.stderr)
+        print(_("Valid arguments to {0} are: {1}").format("--skip", categories), file=sys.stderr)
         sys.exit(1)
     error_occurred = False
     if args.json:
@@ -862,15 +961,15 @@ async def main() -> int:
             print(report_json)
         return 0
     async for check, err in global_audit.run(exclude=skip, width=get_width()):
-        print_err(f"\n*** Error in check '{check.name}' ***")
+        print_err("\n" + _("*** Error in check '{0}' ***").format(check.name))
         traceback.print_exception(err)
-        print_err("\n*** Continuing... ***")
+        print_err("\n" + _("*** Continuing... ***"))
         error_occurred = True
     if "flatpak" not in skip:
-        print(f"Use option '{bold('--skip flatpak')}' to skip flatpak recommendations.")
+        print(_("Use option '{0}' to skip flatpak recommendations.").format(bold("--skip flatpak")))
     warn_if_root()
     if error_occurred:
-        print_err("\n*** WARNING: Unexpected error occurred. ***")
+        print_err("\n" + _("*** WARNING: Unexpected error occurred. ***"))
         return 1
     return 0
 

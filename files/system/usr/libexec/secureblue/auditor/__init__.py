@@ -20,10 +20,19 @@ Framework for system auditing.
 
 import dataclasses
 import enum
+import gettext
 import inspect
 import json
 from collections.abc import AsyncGenerator, Callable, Generator, Sequence
 from typing import Any, ClassVar, Final, Self
+
+
+def gettext_marker() -> Callable[[str], str]:
+    """Get the _ function used by gettext to mark translatable strings."""
+    return gettext.translation("audit_secureblue", "/usr/share/locale", fallback=True).gettext
+
+
+_: Final = gettext_marker()
 
 
 class AuditError(Exception):
@@ -39,6 +48,20 @@ class Status(enum.Enum):
     FAIL = 3
     UNKNOWN = 4
 
+    def local_name(self) -> str:
+        """Get localized name."""
+        match self:
+            case Status.PASS:
+                return _("PASS")
+            case Status.INFO:
+                return _("INFO")
+            case Status.WARN:
+                return _("WARN")
+            case Status.FAIL:
+                return _("FAIL")
+            case Status.UNKNOWN:
+                return _("UNKNOWN")
+
     def to_str_in_color(self) -> str:
         """Colored text representation of the status."""
         match self:
@@ -52,7 +75,11 @@ class Status(enum.Enum):
                 color_code = 31  # red
             case Status.UNKNOWN:
                 color_code = 37  # white
-        return f"\x1b[{color_code}m{self.name}\x1b[39m"
+        return f"\x1b[{color_code}m{self.local_name()}\x1b[39m"
+
+    def width(self) -> int:
+        """Printable width of status."""
+        return len(self.local_name())
 
     def downgrade_to(self, other: Self) -> Self:
         """Returns the more severe of the two statuses."""
@@ -116,7 +143,7 @@ class Report:
         """Represent the report as a string formatted to the given width."""
         status_tag = f" [ {self.status.to_str_in_color()} ]"
         gray_start = "\x1b[38;5;241m"
-        desc_width = width - len(self.status.name) - 5 + len(gray_start)
+        desc_width = width - self.status.width() - 5 + len(gray_start)
         reset_color = "\x1b[39m"
         desc_with_sep = f"{self.description} {gray_start}".ljust(desc_width, "…") + reset_color
         report_str = desc_with_sep + status_tag
@@ -191,7 +218,7 @@ def _format_recommendation_text(rec_text: str, mergeable_names: list[str] | None
 
 
 def _print_recs(recs: list[Recommendation], width: int = 80):
-    print_heading("Recommendations", width=width)
+    print_heading(_("Recommendations"), width=width)
     merged_recs_data: dict[str, list[str]] = {
         rec.text: [] for rec in recs if rec.mergeable_name is not None
     }
@@ -232,15 +259,15 @@ class Audit:
         self, *, exclude: list[str] | None = None, width: int = 80
     ) -> AsyncGenerator[tuple[Check, Exception]]:
         """Runs each stored check, prints their reports, then prints their recommendations."""
+        print_heading(_("Audit"), width=width)
         if exclude is None:
             exclude = []
-        print_heading("Audit", width=width)
-        if exclude:
-            category_word = "category" if len(exclude) == 1 else "categories"
-            print(f"Skipping checks in the following {category_word}: {', '.join(exclude)}")
-        for check in self.checks:
-            if check.category in exclude:
-                continue
+        elif len(exclude) == 1:
+            print(_("Skipping checks in the following category:"), ", ".join(exclude))
+        elif len(exclude) > 1:
+            print(_("Skipping checks in the following categories:"), ", ".join(exclude))
+        checks = [check for check in self.checks if check.category not in exclude]
+        for check in checks:
             try:
                 async for report in check.run(self.state):
                     print(report.to_str(width=width))

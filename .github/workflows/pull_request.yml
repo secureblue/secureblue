@@ -71,14 +71,6 @@ jobs:
             RECIPE_PATH="./recipes/${RECIPE}"
           fi
           echo "recipe_path=${RECIPE_PATH}" >> ${GITHUB_OUTPUT}
-      
-      - name: Retrieve Test Signing Key
-        id: retrieve_test_key
-        shell: bash
-        run: |
-          KERNEL_PRIVKEY=$(< ./.github/workflows/private_key.priv.test)
-          echo "KERNEL_PRIVKEY=$KERNEL_PRIVKEY" >> "${GITHUB_OUTPUT}"
-          cp ./.github/workflows/public_key.der.test ./files/system/etc/pki/akmods/certs/akmods-secureblue.der
 
       - name: Install BlueBuild
         shell: bash
@@ -94,16 +86,20 @@ jobs:
         shell: bash
         working-directory: ${{ inputs.working_directory }}
         env:
-          KERNEL_PRIVKEY: ${{ steps.retrieve_test_key.outputs.KERNEL_PRIVKEY }}
           RECIPE_PATH: ${{ steps.build_vars.outputs.recipe_path }}
           RUST_LOG_STYLE: always
           CLICOLOR_FORCE: '1'
           GH_PR_EVENT_NUMBER: ${{ github.event.number }}
         run: |
+          cp ./.github/workflows/public_key.der.test ./files/system/etc/pki/akmods/certs/akmods-secureblue.der
+          KERNEL_PRIVKEY=$(< ./.github/workflows/private_key.priv.test)
+          export "${KERNEL_PRIVKEY{}"
+
           if [ -z "${KERNEL_PRIVKEY}" ]; then
             echo "Missing KERNEL_PRIVKEY"
             exit 1
           fi
+
           BUILD_OPTS="--build-driver podman --squash"
           bluebuild build -v ${BUILD_OPTS} ${RECIPE_PATH}
           

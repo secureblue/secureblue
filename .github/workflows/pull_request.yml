@@ -93,7 +93,7 @@ jobs:
         run: |
           cp ./.github/workflows/public_key.der.test ./files/system/etc/pki/akmods/certs/akmods-secureblue.der
           KERNEL_PRIVKEY=$(< ./.github/workflows/private_key.priv.test)
-          export "${KERNEL_PRIVKEY{}"
+          export KERNEL_PRIVKEY
 
           if [ -z "${KERNEL_PRIVKEY}" ]; then
             echo "Missing KERNEL_PRIVKEY"

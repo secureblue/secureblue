@@ -81,8 +81,6 @@ jobs:
 
       - name: Install BlueBuild
         shell: bash
-        env:
-          CLI_VERSION_TAG: ${{ steps.build_vars.outputs.cli_version }}
         run: |
           docker create \
             --name blue-build-installer \
@@ -101,7 +99,7 @@ jobs:
           CLICOLOR_FORCE: '1'
           GH_PR_EVENT_NUMBER: ${{ github.event.number }}
         run: |
-          if [ -z "$KERNEL_PRIVKEY" ]; then
+          if [ -z "${KERNEL_PRIVKEY}" ]; then
             echo "Missing KERNEL_PRIVKEY"
             exit 1
           fi

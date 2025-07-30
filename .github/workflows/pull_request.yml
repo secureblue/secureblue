@@ -95,11 +95,6 @@ jobs:
           KERNEL_PRIVKEY=$(< ./.github/workflows/private_key.priv.test)
           export KERNEL_PRIVKEY
 
-          if [ -z "${KERNEL_PRIVKEY}" ]; then
-            echo "Missing KERNEL_PRIVKEY"
-            exit 1
-          fi
-
           BUILD_OPTS="--build-driver podman --squash"
           bluebuild build -v ${BUILD_OPTS} ${RECIPE_PATH}
           

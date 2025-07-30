@@ -76,7 +76,8 @@ jobs:
         id: retrieve_test_key
         shell: bash
         run: |
-          export "KERNEL_PRIVKEY=$(< ./.github/workflows/private_key.priv.test)" >> ${GITHUB_OUTPUT}
+          KERNEL_PRIVKEY=$(< ./.github/workflows/private_key.priv.test)
+          echo "KERNEL_PRIVKEY=$(< ./.github/workflows/private_key.priv.test)" >> "${GITHUB_OUTPUT}"
           cp ./.github/workflows/public_key.der.test ./files/system/etc/pki/akmods/certs/akmods-secureblue.der
 
       - name: Install BlueBuild

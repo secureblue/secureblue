@@ -79,7 +79,7 @@ SYSTEMD_SANDBOX_PROPERTIES: Final[list[str]] = [
 
 def toggle(option: int): #0 enables bluetooth, 1 disables
     if option == 0:
-        command: list = ["run0", *SYSTEMD_SANDBOX_PROPERTIES, f"rm -f {BLUE_MOD_FILE}"] 
+        command: list = ["run0", *SYSTEMD_SANDBOX_PROPERTIES, "rm", "-f", BLUE_MOD_FILE] 
         try: 
             subprocess.run(command, shell=True, check=True)
         except subprocess.CalledProcessError as e:

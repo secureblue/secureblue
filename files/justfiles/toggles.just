@@ -44,20 +44,6 @@ toggle-cups:
       echo "    service at your own risk. Secureblue strongly recommends against this."
     fi
 
-# Toggle bluetooth kernel modules on/off (requires reboot)
-toggle-bluetooth-modules:
-    #! /bin/run0 /bin/bash
-    BLUE_MOD_FILE="/etc/modprobe.d/99-bluetooth.conf"
-    if test -e $BLUE_MOD_FILE; then
-      rm -f $BLUE_MOD_FILE
-      echo "Bluetooth kernel modules disabled. Reboot to take effect."
-    else
-      sh -c 'echo "install bluetooth /sbin/modprobe --ignore-install bluetooth" >> "$1"' _ "$BLUE_MOD_FILE"
-      sh -c 'echo "install btusb /sbin/modprobe --ignore-install btusb" >> "$1"' _ "$BLUE_MOD_FILE"
-      chmod 644 $BLUE_MOD_FILE
-      echo "Bluetooth kernel modules enabled. Reboot to take effect."
-    fi
-
 # Toggle GHNS (KDE Get New Stuff)
 toggle-ghns:
     #! /bin/run0 /bin/bash

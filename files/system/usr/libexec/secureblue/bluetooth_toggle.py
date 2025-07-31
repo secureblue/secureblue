@@ -79,9 +79,9 @@ SYSTEMD_SANDBOX_PROPERTIES: Final[list[str]] = [
 
 def toggle(option: int): #0 enables bluetooth, 1 disables
     if option == 0:
-        command: list = ["run0", *SYSTEMD_SANDBOX_PROPERTIES, "rm", "-f", BLUE_MOD_FILE] 
+        command: list = ["run0", *SYSTEMD_SANDBOX_PROPERTIES, f"rm -f {BLUE_MOD_FILE}"] 
         try: 
-            subprocess.run(command, shell=True, check=True)
+            subprocess.run(command, text=True, check=True)
         except subprocess.CalledProcessError as e:
             print(f"run0 rm -f {BLUE_MOD_FILE} failed with return code {e.returncode}")
             return e.returncode
@@ -97,7 +97,7 @@ def toggle(option: int): #0 enables bluetooth, 1 disables
         """
         command: list = ["run0", *SYSTEMD_SANDBOX_PROPERTIES, script] 
         try:
-            subprocess.run(command, shell=True, check=True)
+            subprocess.run(command, text=True, check=True)
         except subprocess.CalledProcessError as e:
             print(f"run0 {script} failed with return code {e.returncode}")
             return e.returncode

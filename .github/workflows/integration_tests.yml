@@ -44,8 +44,9 @@ jobs:
       - name: Run integration tests
         uses: secureblue/bootc-virtual-machine-action@main
         with:          
-          registry: ghcr.io/secureblue
+          registry: ghcr.io/royaloughtness
           image: silverblue-main-hardened
+          branch: br-livesigned-42
           tests: |
             ./.github/workflows/integration_tests/succeeding_test.sh
             ./.github/workflows/integration_tests/failing_test.sh

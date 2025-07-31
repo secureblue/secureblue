@@ -22,9 +22,8 @@ import sys
 import os
 from typing import Final
 
-BLUE_MOD_PATH: Final[str] = "/etc/modprobe.d/99-bluetooth.conf"
-BLUE_MOD_TEXT: Final[str] = """
-install bluetooth /sbin/modprobe --ignore-install bluetooth
+BLUE_MOD_FILE: Final[str] = "/etc/modprobe.d/99-bluetooth.conf"
+BLUE_MOD_TEXT: Final[str] = """install bluetooth /sbin/modprobe --ignore-install bluetooth
 install btusb /sbin/modprobe --ignore-install btusb
 """
 
@@ -35,13 +34,13 @@ def main():
     
     mode: int = int(sys.argv[1])
     if mode == 0:
-        os.remove(BLUE_MOD_PATH)
+        os.remove(BLUE_MOD_FILE)
         print("Bluetooth has been enabled. Reboot for effect.")
         return 0
     if mode == 1:
-        with open(BLUE_MOD_PATH, "w") as fd:
+        with open(BLUE_MOD_FILE, "w") as fd:
             fd.write(BLUE_MOD_TEXT)
-        os.chmod(BLUE_MOD_PATH, 0o644)
+        os.chmod(BLUE_MOD_FILE, 0o644)
         print("Bluetooth has been disabled. Reboot for effect.")
         return 0
     else:

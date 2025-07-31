@@ -13,14 +13,17 @@
 ; limitations under the License.
 
 (typeattribute userns_privileged_file_type)
-(typeattributeset userns_privileged_file_type (colord_t container_runtime_exec_t container_runtime_t devicekit_power_t docker_exec_t docker_t flatpak_exec_t flatpak_t kubelet_exec_t kubelet_t nautilus_exec_t nautilus_t systemsettings_exec_t systemsettings_t trivalent_exec_t trivalent_script_exec_t trivalent_script_t trivalent_t))
+(typeattributeset userns_privileged_file_type (colord_exec_t container_runtime_exec_t devicekit_power_exec_t docker_exec_t flatpak_exec_t kubelet_exec_t nautilus_exec_t systemsettings_exec_t trivalent_exec_t trivalent_script_exec_t))
 
-(typeattribute userns_restricted_domain)
-(typeattributeset userns_restricted_domain (userdomain unconfined_service_t))
+(typeattribute userns_relabel_allowed)
+(typeattributeset userns_relabel_allowed (init_t install_t kernel_t))
 
-(deny userns_restricted_domain userns_privileged_file_type (blk_file (relabelto)))
-(deny userns_restricted_domain userns_privileged_file_type (chr_file (relabelto)))
-(deny userns_restricted_domain userns_privileged_file_type (dir (relabelto)))
-(deny userns_restricted_domain userns_privileged_file_type (fifo_file (relabelto)))
-(deny userns_restricted_domain userns_privileged_file_type (file (relabelto)))
-(deny userns_restricted_domain userns_privileged_file_type (lnk_file (relabelto)))
+(typeattribute userns_relabel_restricted)
+(typeattributeset userns_relabel_restricted (and (domain) (not (userns_relabel_allowed))))
+
+(deny userns_relabel_restricted userns_privileged_file_type (blk_file (relabelfrom relabelto)))
+(deny userns_relabel_restricted userns_privileged_file_type (chr_file (relabelfrom relabelto)))
+(deny userns_relabel_restricted userns_privileged_file_type (dir (relabelfrom relabelto)))
+(deny userns_relabel_restricted userns_privileged_file_type (fifo_file (relabelfrom relabelto)))
+(deny userns_relabel_restricted userns_privileged_file_type (file (relabelfrom relabelto)))
+(deny userns_relabel_restricted userns_privileged_file_type (lnk_file (relabelfrom relabelto)))

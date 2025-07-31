@@ -30,7 +30,8 @@ import subprocess
 from pathlib import Path
 import sys
 
-BLUE_MOD_PATH: Final[str] = "/etc/modprobe.d/99-bluetooth.conf"
+BLUE_MOD_PATH: Final[str] = "/etc/modprobe.d/"
+BLUE_MOD_FILE: Final[str] = "/etc/modprobe.d/99-bluetooth.conf"
 BLUE_INNER_SCRIPT: Final[str] = "/usr/libexec/secureblue/bluetooth_toggle-inner.py"
 
 # Copyright (C) 2025 Daniel Hast
@@ -79,7 +80,7 @@ SYSTEMD_SANDBOX_PROPERTIES: Final[list[str]] = [
 ]
 
 def run_inner(option: int): #0 enables bluetooth, 1 disables
-    command: list = ["run0", *SYSTEMD_SANDBOX_PROPERTIES, "python3", BLUE_INNER_SCRIPT, option] 
+    command: list = ["run0", *SYSTEMD_SANDBOX_PROPERTIES, "python3", BLUE_INNER_SCRIPT, str(option)] 
     try: 
         subprocess.run(command, text=True, check=True)
     except subprocess.CalledProcessError as e:
@@ -88,7 +89,7 @@ def run_inner(option: int): #0 enables bluetooth, 1 disables
     return 0
 
 def main():
-    exists: bool = Path(BLUE_MOD_PATH).exists() 
+    exists: bool = Path(BLUE_MOD_FILE).exists() 
     if len(sys.argv) == 1: #Toggle mode
         if exists == True: #If file disabling bluetooth kernel modules exists:
             return run_inner(0)

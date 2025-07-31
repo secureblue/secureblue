@@ -30,7 +30,8 @@ import subprocess
 from pathlib import Path
 import sys
 
-BLUE_MOD_FILE: Final[str] = "/etc/modprobe.d/99-bluetooth.conf"
+BLUE_MOD_PATH: Final[str] = "/etc/modprobe.d/99-bluetooth.conf"
+BLUE_INNER_SCRIPT: Final[str] = "/usr/libexec/secureblue/bluetooth_toggle-inner.py"
 
 # Copyright (C) 2025 Daniel Hast
 # Systemd sandboxing of run0 invocation adapted from run0edit, originally licensed under MIT OR Apache-2.0.
@@ -66,7 +67,7 @@ SYSTEMD_SANDBOX_PROPERTIES: Final[list[str]] = [
     "--property=ProtectKernelTunables=yes",
     "--property=ProtectProc=noaccess",
     "--property=ReadOnlyPaths=/",
-    f"--property=ReadWritePaths={BLUE_MOD_FILE}",
+    f"--property=ReadWritePaths={BLUE_MOD_PATH}",
     "--property=RestrictAddressFamilies=AF_UNIX",
     "--property=RestrictNamespaces=yes",
     "--property=RestrictRealtime=yes",
@@ -77,43 +78,22 @@ SYSTEMD_SANDBOX_PROPERTIES: Final[list[str]] = [
     "--property=SystemCallErrorNumber=EPERM",
 ]
 
-def toggle(option: int): #0 enables bluetooth, 1 disables
-    if option == 0:
-        command: list = ["run0", *SYSTEMD_SANDBOX_PROPERTIES, f"rm -f {BLUE_MOD_FILE}"] 
-        try: 
-            subprocess.run(command, text=True, check=True)
-        except subprocess.CalledProcessError as e:
-            print(f"run0 rm -f {BLUE_MOD_FILE} failed with return code {e.returncode}")
-            return e.returncode
-        print("Bluetooth disabled. Reboot for effect.")
-        return 0
-    if option == 1:
-        #Using bash like this is unfortunate but this way avoids multiple run0 invocations 
-        #and/or a inner python script being called elevated, and we still get limited run0.
-        script = f"""
-        echo "install bluetooth /sbin/modprobe --ignore-install bluetooth" >> "{BLUE_MOD_FILE}"
-        echo "install btusb /sbin/modprobe --ignore-install btusb" >> "{BLUE_MOD_FILE}"
-        chmod 644
-        """
-        command: list = ["run0", *SYSTEMD_SANDBOX_PROPERTIES, script] 
-        try:
-            subprocess.run(command, text=True, check=True)
-        except subprocess.CalledProcessError as e:
-            print(f"run0 {script} failed with return code {e.returncode}")
-            return e.returncode
-        print("Bluetooth enabled. Reboot for effect.")
-        return 0
-    else:
-        print("Invalid toggle call")
-        return 1
+def run_inner(option: int): #0 enables bluetooth, 1 disables
+    command: list = ["run0", *SYSTEMD_SANDBOX_PROPERTIES, "python3", BLUE_INNER_SCRIPT, option] 
+    try: 
+        subprocess.run(command, text=True, check=True)
+    except subprocess.CalledProcessError as e:
+        print(f"The innerscript failed with return code {e.returncode}")
+        return e.returncode
+    return 0
 
 def main():
-    exists: bool = Path(BLUE_MOD_FILE).exists() 
+    exists: bool = Path(BLUE_MOD_PATH).exists() 
     if len(sys.argv) == 1: #Toggle mode
         if exists == True: #If file disabling bluetooth kernel modules exists:
-            return toggle(0)
+            return run_inner(0)
         else:
-            return toggle(1)
+            return run_inner(1)
 
     mode = sys.argv[1]
     if mode == "on":
@@ -121,13 +101,13 @@ def main():
             print("Bluetooth already enabled.")
             return 0
         else:
-            return toggle(0)
+            return run_inner(0)
     if mode == "off":
         if exists == True:
             print("Bluetooth already disabled.")
             return 0
         else:
-            return toggle(1)
+            return run_inner(1)
     else:
         print("Invalid option selected.")
         return 1

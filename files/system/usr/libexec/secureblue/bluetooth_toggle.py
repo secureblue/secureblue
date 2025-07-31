@@ -49,35 +49,35 @@ SYSTEM_CALL_DENY: Final[list[str]] = [
 ]
 
 SYSTEMD_SANDBOX_PROPERTIES: Final[list[str]] = [
-    "CapabilityBoundingSet=CAP_DAC_OVERRIDE CAP_FOWNER CAP_LINUX_IMMUTABLE",
-    "DevicePolicy=closed",
-    "LockPersonality=yes",
-    "MemoryDenyWriteExecute=yes",
-    "NoNewPrivileges=yes",
-    "PrivateDevices=yes",
-    "PrivateIPC=yes",
-    "PrivateNetwork=yes",
-    "ProcSubset=pid",
-    "ProtectClock=yes",
-    "ProtectControlGroups=yes",
-    "ProtectHostname=yes",
-    "ProtectKernelLogs=yes",
-    "ProtectKernelModules=yes",
-    "ProtectKernelTunables=yes",
-    "ProtectProc=noaccess",
-    "ReadOnlyPaths=/",
-    f"ReadWritePaths={BLUE_MOD_FILE}",
-    "RestrictAddressFamilies=AF_UNIX",
-    "RestrictNamespaces=yes",
-    "RestrictRealtime=yes",
-    "RestrictSUIDSGID=yes",
-    "SystemCallArchitectures=native",
-    "SystemCallFilter=@system-service",
-    f"SystemCallFilter=~{' '.join(SYSTEM_CALL_DENY)}",
-    "SystemCallErrorNumber=EPERM",
+    "--property=CapabilityBoundingSet=CAP_DAC_OVERRIDE CAP_FOWNER CAP_LINUX_IMMUTABLE",
+    "--property=DevicePolicy=closed",
+    "--property=LockPersonality=yes",
+    "--property=MemoryDenyWriteExecute=yes",
+    "--property=NoNewPrivileges=yes",
+    "--property=PrivateDevices=yes",
+    "--property=PrivateIPC=yes",
+    "--property=PrivateNetwork=yes",
+    "--property=ProcSubset=pid",
+    "--property=ProtectClock=yes",
+    "--property=ProtectControlGroups=yes",
+    "--property=ProtectHostname=yes",
+    "--property=ProtectKernelLogs=yes",
+    "--property=ProtectKernelModules=yes",
+    "--property=ProtectKernelTunables=yes",
+    "--property=ProtectProc=noaccess",
+    "--property=ReadOnlyPaths=/",
+    f"--property=ReadWritePaths={BLUE_MOD_FILE}",
+    "--property=RestrictAddressFamilies=AF_UNIX",
+    "--property=RestrictNamespaces=yes",
+    "--property=RestrictRealtime=yes",
+    "--property=RestrictSUIDSGID=yes",
+    "--property=SystemCallArchitectures=native",
+    "--property=SystemCallFilter=@system-service",
+    f"--property=SystemCallFilter=~{' '.join(SYSTEM_CALL_DENY)}",
+    "--property=SystemCallErrorNumber=EPERM",
 ]
 
-def toggle(option: int): #0 disables bluetooth, 1 enables
+def toggle(option: int): #0 enables bluetooth, 1 disables
     if option == 0:
         command: list = ["run0", *SYSTEMD_SANDBOX_PROPERTIES, f"rm -f {BLUE_MOD_FILE}"] 
         try: 
@@ -111,9 +111,9 @@ def main():
     exists: bool = Path(BLUE_MOD_FILE).exists() 
     if len(sys.argv) == 1: #Toggle mode
         if exists == True: #If file disabling bluetooth kernel modules exists:
-            return toggle(1)
-        else:
             return toggle(0)
+        else:
+            return toggle(1)
 
     mode = sys.argv[1]
     if mode == "on":
@@ -121,13 +121,13 @@ def main():
             print("Bluetooth already enabled.")
             return 0
         else:
-            return toggle(1)
+            return toggle(0)
     if mode == "off":
         if exists == True:
             print("Bluetooth already disabled.")
             return 0
         else:
-            return toggle(0)
+            return toggle(1)
     else:
         print("Invalid option selected.")
         return 1

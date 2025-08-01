@@ -48,5 +48,5 @@ jobs:
           image: silverblue-main-hardened
           token: ${{ secrets.GITHUB_TOKEN }}
           tests: |
-            ./.github/workflows/integration_tests/succeeding_test.sh
-            ./.github/workflows/integration_tests/failing_test.sh
+            ./.github/workflows/integration_tests/check_cleanup.sh
+            ./.github/workflows/integration_tests/check_firstrun.sh

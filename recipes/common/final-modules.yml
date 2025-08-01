@@ -16,5 +16,5 @@ modules:
         - removeunusedrepos.sh
         - removesuid.sh
         - regenerateinitramfs.sh
-        - shredkeys.sh
+        - addimageinfo.sh
         - checksinglekernel.sh

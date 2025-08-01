@@ -71,21 +71,13 @@ jobs:
             RECIPE_PATH="./recipes/${RECIPE}"
           fi
           echo "recipe_path=${RECIPE_PATH}" >> ${GITHUB_OUTPUT}
-      
-      - name: Retrieve Test Signing Key
-        shell: bash
-        run: |
-          cp ./.github/workflows/private_key.priv.test ./files/scripts/certs/private_key.priv
-          cp ./.github/workflows/public_key.der.test ./files/system/etc/pki/akmods/certs/akmods-secureblue.der
 
       - name: Install BlueBuild
         shell: bash
-        env:
-          CLI_VERSION_TAG: ${{ steps.build_vars.outputs.cli_version }}
         run: |
           docker create \
             --name blue-build-installer \
-            ghcr.io/blue-build/cli:v0.9.20-installer
+            ghcr.io/blue-build/cli:v0.9.21-installer
           docker cp blue-build-installer:/out/bluebuild /usr/local/bin/bluebuild
           docker rm blue-build-installer
           bluebuild --version
@@ -99,6 +91,10 @@ jobs:
           CLICOLOR_FORCE: '1'
           GH_PR_EVENT_NUMBER: ${{ github.event.number }}
         run: |
+          cp ./.github/workflows/public_key.der.test ./files/system/etc/pki/akmods/certs/akmods-secureblue.der
+          KERNEL_PRIVKEY=$(< ./.github/workflows/private_key.priv.test)
+          export KERNEL_PRIVKEY
+
           BUILD_OPTS="--build-driver podman --squash"
           bluebuild build -v ${BUILD_OPTS} ${RECIPE_PATH}
           

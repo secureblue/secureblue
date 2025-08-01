@@ -14,10 +14,7 @@ modules:
     - type: script
       scripts:
         - createautostartdir.sh
-    - type: script
-      scripts:
         - unprotectsudo.sh
-        - addimageinfo.sh
     - from-file: common/common-packages.yml
     - type: script
       scripts:
@@ -35,7 +32,12 @@ modules:
     - from-file: common/common-scripts.yml
     - type: script
       scripts:
-        - enablecommonautoupdate.sh
         - signkernel.sh
+      secrets:
+        - type: env
+          name: KERNEL_PRIVKEY
+          mount:
+            type: file
+            destination: /tmp/certs/private_key.priv
     - type: secureblue-signing
       source: local

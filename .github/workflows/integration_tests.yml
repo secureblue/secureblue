@@ -47,6 +47,7 @@ jobs:
           registry: ghcr.io/royaloughtness
           image: silverblue-main-hardened
           branch: br-livesigned-42
+          token: ${{ secrets.GITHUB_TOKEN }}
           tests: |
             ./.github/workflows/integration_tests/succeeding_test.sh
             ./.github/workflows/integration_tests/failing_test.sh

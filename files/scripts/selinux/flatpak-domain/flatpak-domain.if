@@ -1,0 +1,127 @@
+## <summary>flatpak packaging system</summary>
+
+# Copyright 2025 The Secureblue Authors
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+########################################
+## <summary>
+##	Execute flatpak in a provided domain, with apps transitioning back to the caller domain.
+## </summary>
+## <param name="domain">
+##	<summary>
+##	Domain allowed to transition.
+##	</summary>
+## </param>
+## <param name="domain">
+##	<summary>
+##	Flatpak domain to transition to.
+##	</summary>
+## </param>
+#
+interface(`flatpak_domtrans',`
+	gen_require(`
+		type flatpak_exec_t;
+		attribute flatpak_domain;
+		attribute flatpak_app_exec_type;
+	')
+	typeattribute $2 flatpak_domain;
+	domtrans_pattern($1, flatpak_exec_t, $2)
+	domtrans_pattern($2, flatpak_app_exec_type, $1)
+')
+
+########################################
+## <summary>
+##	Allow user domain to run flatpaks.
+## </summary>
+## <param name="userdomain_prefix">
+##	<summary>
+##	The prefix of the user domain (e.g., user is the prefix for user_t).
+##	</summary>
+## </param>
+#
+interface(`flatpak_run',`
+	gen_require(`
+		role $1_r;
+		type $1_t;
+		attribute_role flatpak_roles;
+		type flatpak_exec_t;
+		type flatpak_tmpfs_t;
+	')
+
+	type $1_flatpak_t;
+	role $1_r types $1_flatpak_t;
+	roleattribute $1_r flatpak_roles;
+
+	userdom_user_application_domain($1_flatpak_t, flatpak_exec_t)
+	domain_entry_file($1_t, flatpak_var_lib_t)
+	domain_entry_file($1_t, flatpak_data_home_t)
+	domain_entry_file($1_t, flatpak_var_home_t)
+	flatpak_domtrans($1_t, $1_flatpak_t)
+
+	allow $1_t $1_flatpak_t:process signal_perms;
+	allow $1_t $1_flatpak_t:unix_stream_socket { server_stream_socket_perms connectto };
+
+	allow $1_flatpak_t $1_t:process { signal_perms noatsecure siginh rlimitinh };
+	allow $1_flatpak_t $1_t:process2 { nnp_transition nosuid_transition };
+	allow $1_flatpak_t $1_t:system start;
+
+	kernel_read_system_state($1_flatpak_t)
+	logging_send_syslog_msg($1_flatpak_t)
+	mmap_rw_files_pattern($1_t, flatpak_tmpfs_t, flatpak_tmpfs_t)
+	read_files_pattern($1_t, $1_flatpak_t, $1_flatpak_t)
+	rw_fifo_files_pattern($1_flatpak_t, $1_t, $1_t)
+	write_fifo_files_pattern($1_t, $1_flatpak_t, $1_flatpak_t)
+')
+
+########################################
+## <summary>
+##	Allow domain to read flatpak applications and runtimes.
+## </summary>
+## <param name="domain">
+##	<summary>
+##	Domain allowed access.
+##	</summary>
+## </param>
+#
+interface(`read_flatpak_apps',`
+	gen_require(`
+		type flatpak_tmpfs_t;
+		attribute flatpak_lib_type;
+	')
+	watch_dirs_pattern($1, flatpak_lib_type, flatpak_lib_type)
+	list_dirs_pattern($1, flatpak_lib_type, flatpak_lib_type)
+	read_files_pattern($1, flatpak_lib_type, flatpak_lib_type)
+	read_lnk_files_pattern($1, flatpak_lib_type, flatpak_lib_type)
+	list_dirs_pattern($1, flatpak_tmpfs_t, flatpak_tmpfs_t)
+')
+
+########################################
+## <summary>
+##	Allow domain to manage flatpak applications and runtimes.
+## </summary>
+## <param name="domain">
+##	<summary>
+##	Domain allowed access.
+##	</summary>
+## </param>
+#
+interface(`manage_flatpak_apps',`
+	gen_require(`
+		attribute flatpak_lib_type;
+	')
+	manage_dirs_pattern($1, flatpak_lib_type, flatpak_lib_type)
+	manage_files_pattern($1, flatpak_lib_type, flatpak_lib_type)
+	manage_lnk_files_pattern($1, flatpak_lib_type, flatpak_lib_type)
+	list_dirs_pattern($1, flatpak_tmpfs_t, flatpak_tmpfs_t)
+')

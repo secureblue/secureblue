@@ -1,0 +1,260 @@
+policy_module(flatpak-domain, 0.1.0)
+
+# Copyright 2025 The Secureblue Authors
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+########################################
+#
+# Declarations
+#
+
+attribute_role flatpak_roles;
+roleattribute object_r flatpak_roles;
+
+# Application domain for flatpak itself
+attribute flatpak_domain;
+type flatpak_exec_t;
+application_type(flatpak_exec_t)
+
+allow flatpak_domain self:user_namespace create;
+allow flatpak_domain self:socket_class_set create_socket_perms;
+allow flatpak_domain self:cap_userns { dac_override net_admin setgid setpcap setuid sys_admin sys_chroot sys_ptrace sys_resource };
+allow flatpak_domain self:process { ptrace setcap setsched };
+allow flatpak_domain self:netlink_route_socket nlmsg_write;
+allow flatpak_domain self:unix_stream_socket connectto;
+
+can_exec(flatpak_domain, flatpak_exec_t)
+
+dbus_system_bus_client(flatpak_domain)
+dbus_session_bus_client(flatpak_domain)
+dbus_connect_session_bus(flatpak_domain)
+dbus_write_session_tmp_sock_files(flatpak_domain)
+
+dev_read_sysfs(flatpak_domain)
+dev_rw_dma_dev(flatpak_domain)
+dev_getattr_fs(flatpak_domain)
+
+files_list_home(flatpak_domain)
+files_read_usr_files(flatpak_domain)
+files_read_etc_files(flatpak_domain)
+files_read_etc_runtime_files(flatpak_domain)
+files_watch_etc_dirs(flatpak_domain)
+files_getattr_all_dirs(flatpak_domain)
+files_watch_root_dirs(flatpak_domain)
+files_read_var_lib_files(flatpak_domain)
+files_rw_generic_tmp_dir(flatpak_domain)
+files_manage_generic_tmp_files(flatpak_domain)
+files_manage_generic_tmp_dirs(flatpak_domain)
+files_rw_generic_tmp_sockets(flatpak_domain)
+files_rw_tmp_file_leaks(flatpak_domain)
+files_map_generic_tmp_files(flatpak_domain)
+files_mounton_non_security(flatpak_domain)
+
+fs_rw_inherited_tmpfs_files(flatpak_domain)
+fs_getattr_all_fs(flatpak_domain)
+fs_mount_all_fs(flatpak_domain)
+fs_unmount_all_fs(flatpak_domain)
+fs_remount_all_fs(flatpak_domain)
+
+kernel_rw_all_sysctls(flatpak_domain)
+
+systemd_dbus_chat_logind(flatpak_domain)
+systemd_homed_stream_connect(flatpak_domain)
+systemd_resolved_read_pid(flatpak_domain)
+systemd_resolved_watch_pid_dirs(flatpak_domain)
+systemd_userdbd_stream_connect(flatpak_domain)
+systemd_write_inhibit_pipes(flatpak_domain)
+
+userdom_manage_user_tmp_sockets(flatpak_domain)
+userdom_manage_user_tmp_files(flatpak_domain)
+userdom_manage_user_tmp_dirs(flatpak_domain)
+userdom_manage_user_tmp_symlinks(flatpak_domain)
+userdom_map_tmp_files(flatpak_domain)
+userdom_manage_tmpfs_files(flatpak_domain)
+userdom_read_inherited_user_tmp_files(flatpak_domain)
+userdom_manage_home_certs(flatpak_domain)
+userdom_use_user_terminals(flatpak_domain)
+userdom_list_user_home_dirs(flatpak_domain)
+userdom_dbus_send_all_users(flatpak_domain)
+userdom_connectto_stream(flatpak_domain)
+userdom_rw_stream(flatpak_domain)
+
+accountsd_dbus_chat(flatpak_domain)
+auth_read_passwd(flatpak_domain)
+corecmd_exec_bin(flatpak_domain)
+corecmd_watch_bin_dirs(flatpak_domain)
+fs_read_nsfs_files(flatpak_domain)
+gnome_manage_home_config(flatpak_domain)
+gnome_write_generic_cache_files(flatpak_domain)
+gpg_exec(flatpak_domain)
+miscfiles_read_all_certs(flatpak_domain)
+miscfiles_watch_localization_dirs(flatpak_domain)
+networkmanager_dbus_chat(flatpak_domain)
+policykit_dbus_chat(flatpak_domain)
+sysnet_dns_name_resolve(flatpak_domain)
+
+# Flatpak app and runtime executables and library files
+attribute flatpak_app_exec_type;
+attribute flatpak_lib_type;
+
+type flatpak_var_lib_t, flatpak_app_exec_type, flatpak_lib_type;
+files_type(flatpak_var_lib_t)
+files_var_lib_filetrans(flatpak_domain, flatpak_var_lib_t, { file dir })
+
+type flatpak_data_home_t, flatpak_app_exec_type, flatpak_lib_type;
+userdom_user_home_content(flatpak_data_home_t)
+gnome_data_filetrans(flatpak_domain, flatpak_data_home_t, { file dir })
+
+manage_dirs_pattern(flatpak_domain, flatpak_lib_type, flatpak_lib_type)
+manage_files_pattern(flatpak_domain, flatpak_lib_type, flatpak_lib_type)
+mmap_rw_files_pattern(flatpak_domain, flatpak_lib_type, flatpak_lib_type)
+manage_lnk_files_pattern(flatpak_domain, flatpak_lib_type, flatpak_lib_type)
+
+# Flatpak tmpfs files
+type flatpak_tmpfs_t;
+files_tmpfs_file(flatpak_tmpfs_t)
+files_tmp_filetrans(flatpak_domain, flatpak_tmpfs_t, { dir fifo_file file lnk_file sock_file })
+fs_tmpfs_filetrans(flatpak_domain, flatpak_tmpfs_t, { dir fifo_file file lnk_file sock_file })
+
+manage_dirs_pattern(flatpak_domain, flatpak_tmpfs_t, flatpak_tmpfs_t)
+manage_files_pattern(flatpak_domain, flatpak_tmpfs_t, flatpak_tmpfs_t)
+mmap_rw_files_pattern(flatpak_domain, flatpak_tmpfs_t, flatpak_tmpfs_t)
+manage_lnk_files_pattern(flatpak_domain, flatpak_tmpfs_t, flatpak_tmpfs_t)
+
+manage_dirs_pattern(userdomain, flatpak_tmpfs_t, flatpak_tmpfs_t)
+manage_files_pattern(userdomain, flatpak_tmpfs_t, flatpak_tmpfs_t)
+mmap_rw_files_pattern(userdomain, flatpak_tmpfs_t, flatpak_tmpfs_t)
+manage_lnk_files_pattern(userdomain, flatpak_tmpfs_t, flatpak_tmpfs_t)
+
+# Flatpak cache files
+type flatpak_cache_home_t;
+userdom_user_home_content(flatpak_cache_home_t)
+gnome_cache_filetrans(flatpak_domain, flatpak_cache_home_t, { dir fifo_file file lnk_file sock_file })
+
+manage_dirs_pattern(flatpak_domain, flatpak_cache_home_t, flatpak_cache_home_t)
+manage_files_pattern(flatpak_domain, flatpak_cache_home_t, flatpak_cache_home_t)
+manage_lnk_files_pattern(flatpak_domain, flatpak_cache_home_t, flatpak_cache_home_t)
+
+# Flatpak app runtime/cache files
+type flatpak_var_home_t, flatpak_app_exec_type;
+userdom_user_home_content(flatpak_var_home_t)
+
+manage_dirs_pattern(flatpak_domain, flatpak_var_home_t, flatpak_var_home_t)
+manage_files_pattern(flatpak_domain, flatpak_var_home_t, flatpak_var_home_t)
+manage_lnk_files_pattern(flatpak_domain, flatpak_var_home_t, flatpak_var_home_t)
+
+optional_policy(`
+	gen_require(`
+		role unconfined_r;
+		type unconfined_t;
+	')
+	flatpak_run(unconfined)
+	manage_flatpak_apps(unconfined_t)
+')
+
+optional_policy(`
+	gen_require(`
+		role staff_r;
+		type staff_t;
+	')
+	flatpak_run(staff)
+	manage_flatpak_apps(staff_t)
+')
+
+optional_policy(`
+	gen_require(`
+		role sysadm_r;
+		type sysadm_t;
+	')
+	flatpak_run(sysadm)
+	manage_flatpak_apps(sysadm_t)
+')
+
+optional_policy(`
+	gen_require(`
+		role user_r;
+		type user_t;
+	')
+	flatpak_run(user)
+	read_flatpak_apps(user_t)
+')
+
+optional_policy(`
+	gen_require(`
+		type init_t;
+	')
+	exec_files_pattern(init_t, flatpak_exec_t, flatpak_exec_t)
+	manage_flatpak_apps(init_t)
+')
+
+optional_policy(`
+	rtkit_scheduled(flatpak_domain)
+')
+
+optional_policy(`
+	gen_require(`
+		type http_cache_port_t;
+	')
+	allow flatpak_domain http_cache_port_t:tcp_socket name_connect;
+')
+
+optional_policy(`
+	gen_require(`
+		type http_port_t;
+	')
+	allow flatpak_domain http_port_t:tcp_socket name_connect;
+')
+
+optional_policy(`
+	gen_require(`
+		type pki_ca_port_t;
+	')
+	allow flatpak_domain pki_ca_port_t:tcp_socket name_connect;
+')
+
+optional_policy(`
+	gen_require(`
+		type pcscd_var_run_t;
+	')
+	allow flatpak_domain pcscd_var_run_t:sock_file getattr;
+')
+
+optional_policy(`
+	gen_require(`
+		type ssh_agent_tmp_t;
+	')
+	allow flatpak_domain ssh_agent_tmp_t:sock_file getattr;
+')
+
+optional_policy(`
+	gen_require(`
+		attribute session_bus_type;
+	')
+
+	list_dirs_pattern(session_bus_type, flatpak_lib_type, flatpak_lib_type)
+	read_files_pattern(session_bus_type, flatpak_lib_type, flatpak_lib_type)
+	read_lnk_files_pattern(session_bus_type, flatpak_lib_type, flatpak_lib_type)
+	watch_dirs_pattern(session_bus_type, flatpak_lib_type, flatpak_lib_type)
+
+	list_dirs_pattern(session_bus_type, flatpak_var_home_t, flatpak_var_home_t)
+	rw_files_pattern(session_bus_type, flatpak_var_home_t, flatpak_var_home_t)
+')
+
+optional_policy(`
+	gen_require(`
+		type xdm_var_lib_t;
+	')
+	list_dirs_pattern(flatpak_domain, xdm_var_lib_t, xdm_var_lib_t)
+	xserver_read_xdm_lib_files(flatpak_domain)
+')

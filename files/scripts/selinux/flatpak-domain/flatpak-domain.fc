@@ -26,5 +26,5 @@ HOME_DIR/\.local/share/flatpak(/.*)?		gen_context(system_u:object_r:flatpak_data
 /root/\.local/share/flatpak(/.*)?		gen_context(system_u:object_r:flatpak_data_home_t,s0)
 HOME_DIR/\.cache/flatpak(/.*)?			gen_context(system_u:object_r:flatpak_cache_home_t,s0)
 /root/\.cache/flatpak(/.*)?			gen_context(system_u:object_r:flatpak_cache_home_t,s0)
-HOME_DIR/\.var/app(/.*)?			gen_context(system_u:object_r:flatpak_var_home_t,s0)
-/root/\.var/app(/.*)?				gen_context(system_u:object_r:flatpak_var_home_t,s0)
+HOME_DIR/\.var(/.*)?				gen_context(system_u:object_r:flatpak_var_home_t,s0)
+/root/\.var(/.*)?				gen_context(system_u:object_r:flatpak_var_home_t,s0)

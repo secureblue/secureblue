@@ -22,3 +22,4 @@ scripts:
   - enablekeyverification.sh
   - removefedoraflatpakremoteservice.sh
   - enablecommonautoupdate.sh
+  - localization.sh

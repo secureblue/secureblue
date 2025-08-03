@@ -109,15 +109,19 @@ networkmanager_dbus_chat(flatpak_domain)
 policykit_dbus_chat(flatpak_domain)
 sysnet_dns_name_resolve(flatpak_domain)
 
-# Flatpak app and runtime executables and library files
-attribute flatpak_app_exec_type;
+# Flatpak app/runtime library and executable files
 attribute flatpak_lib_type;
+# Attribute for all flatpak app and runtime executables:
+attribute flatpak_app_exec_type;
+# Attribute for flatpak app and runtime executables without app-specific confinement:
+attribute flatpak_generic_app_exec_type;
+# (These are distinct attributes to facilitate app-specific confinement.)
 
-type flatpak_var_lib_t, flatpak_app_exec_type, flatpak_lib_type;
+type flatpak_var_lib_t, flatpak_lib_type, flatpak_app_exec_type, flatpak_generic_app_exec_type;
 files_type(flatpak_var_lib_t)
 files_var_lib_filetrans(flatpak_domain, flatpak_var_lib_t, { file dir })
 
-type flatpak_data_home_t, flatpak_app_exec_type, flatpak_lib_type;
+type flatpak_data_home_t, flatpak_lib_type, flatpak_app_exec_type, flatpak_generic_app_exec_type;
 userdom_user_home_content(flatpak_data_home_t)
 gnome_data_filetrans(flatpak_domain, flatpak_data_home_t, { file dir })
 
@@ -152,7 +156,7 @@ manage_files_pattern(flatpak_domain, flatpak_cache_home_t, flatpak_cache_home_t)
 manage_lnk_files_pattern(flatpak_domain, flatpak_cache_home_t, flatpak_cache_home_t)
 
 # Flatpak app runtime/cache files
-type flatpak_var_home_t, flatpak_app_exec_type;
+type flatpak_var_home_t, flatpak_app_exec_type, flatpak_generic_app_exec_type;
 userdom_user_home_content(flatpak_var_home_t)
 userdom_user_home_dir_filetrans(flatpak_domain, flatpak_var_home_t, dir, ".var")
 

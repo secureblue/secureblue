@@ -16,7 +16,7 @@
 
 ########################################
 ## <summary>
-##	Execute flatpak in a provided domain, with apps transitioning back to the caller domain.
+##	Execute flatpak in a provided domain.
 ## </summary>
 ## <param name="domain">
 ##	<summary>
@@ -33,11 +33,35 @@ interface(`flatpak_domtrans',`
 	gen_require(`
 		type flatpak_exec_t;
 		attribute flatpak_domain;
-		attribute flatpak_app_exec_type;
 	')
 	typeattribute $2 flatpak_domain;
 	domtrans_pattern($1, flatpak_exec_t, $2)
-	domtrans_pattern($2, flatpak_app_exec_type, $1)
+')
+
+########################################
+## <summary>
+##	Execute flatpak in a provided domain, with generic flatpak apps
+##	transitioning back to the caller domain.
+## </summary>
+## <param name="domain">
+##	<summary>
+##	Domain allowed to transition.
+##	</summary>
+## </param>
+## <param name="domain">
+##	<summary>
+##	Flatpak domain to transition to.
+##	</summary>
+## </param>
+#
+interface(`flatpak_generic_domtrans',`
+	gen_require(`
+		attribute flatpak_generic_app_exec_type;
+	')
+	flatpak_domtrans($1, $2)
+	# Only apply this to generic flatpak app exec types to make it possible to
+	# apply app-specific confinement with a transition to a different domain.
+	domtrans_pattern($2, flatpak_generic_app_exec_type, $1)
 ')
 
 ########################################
@@ -67,7 +91,7 @@ interface(`flatpak_run',`
 	domain_entry_file($1_t, flatpak_var_lib_t)
 	domain_entry_file($1_t, flatpak_data_home_t)
 	domain_entry_file($1_t, flatpak_var_home_t)
-	flatpak_domtrans($1_t, $1_flatpak_t)
+	flatpak_generic_domtrans($1_t, $1_flatpak_t)
 
 	allow $1_t $1_flatpak_t:process signal_perms;
 	allow $1_t $1_flatpak_t:unix_stream_socket { server_stream_socket_perms connectto };
@@ -124,4 +148,75 @@ interface(`manage_flatpak_apps',`
 	manage_files_pattern($1, flatpak_lib_type, flatpak_lib_type)
 	manage_lnk_files_pattern($1, flatpak_lib_type, flatpak_lib_type)
 	list_dirs_pattern($1, flatpak_tmpfs_t, flatpak_tmpfs_t)
+')
+
+########################################
+## <summary>
+##	Create objects in a flatpak system app directory with an automatic type
+##	transition to a specified private type.
+## </summary>
+## <param name="domain">
+##	<summary>
+##	Domain allowed access.
+##	</summary>
+## </param>
+## <param name="private_type">
+##	<summary>
+##	The type of the object to create.
+##	</summary>
+## </param>
+## <param name="object_class">
+##	<summary>
+##	The class of the object to be created.
+##	</summary>
+## </param>
+## <param name="name" optional="true">
+##	<summary>
+##	The name of the object being created.
+##	</summary>
+## </param>
+#
+interface(`flatpak_var_lib_filetrans',`
+	gen_require(`
+		type flatpak_var_lib_t;
+	')
+
+	allow $1 flatpak_var_lib_t:dir search_dir_perms;
+	filetrans_pattern($1, flatpak_var_lib_t, $2, $3, $4)
+')
+
+########################################
+## <summary>
+##	Create objects in a flatpak user app directory with an automatic type
+##	transition to a specified private type.
+## </summary>
+## <param name="domain">
+##	<summary>
+##	Domain allowed access.
+##	</summary>
+## </param>
+## <param name="private_type">
+##	<summary>
+##	The type of the object to create.
+##	</summary>
+## </param>
+## <param name="object_class">
+##	<summary>
+##	The class of the object to be created.
+##	</summary>
+## </param>
+## <param name="name" optional="true">
+##	<summary>
+##	The name of the object being created.
+##	</summary>
+## </param>
+#
+interface(`flatpak_data_home_filetrans',`
+	gen_require(`
+		type flatpak_data_home_t;
+	')
+
+	userdom_search_user_home_dirs($1)
+	allow $1 flatpak_data_home_t:dir search_dir_perms;
+	filetrans_pattern($1, flatpak_data_home_t, $2, $3, $4)
 ')

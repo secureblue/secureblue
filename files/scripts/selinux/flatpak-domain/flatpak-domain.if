@@ -40,6 +40,28 @@ interface(`flatpak_domtrans',`
 
 ########################################
 ## <summary>
+##	Execute generic flatpak apps and runtimes in a provided domain.
+## </summary>
+## <param name="domain">
+##	<summary>
+##	Domain allowed to transition.
+##	</summary>
+## </param>
+## <param name="domain">
+##	<summary>
+##	Domain to transition to.
+##	</summary>
+## </param>
+#
+interface(`flatpak_generic_app_domtrans',`
+	gen_require(`
+		attribute flatpak_generic_app_exec_type;
+	')
+	domtrans_pattern($1, flatpak_generic_app_exec_type, $2)
+')
+
+########################################
+## <summary>
 ##	Execute flatpak in a provided domain, with generic flatpak apps
 ##	transitioning back to the caller domain.
 ## </summary>
@@ -61,7 +83,67 @@ interface(`flatpak_generic_domtrans',`
 	flatpak_domtrans($1, $2)
 	# Only apply this to generic flatpak app exec types to make it possible to
 	# apply app-specific confinement with a transition to a different domain.
-	domtrans_pattern($2, flatpak_generic_app_exec_type, $1)
+	flatpak_generic_app_domtrans($2, $1)
+')
+
+########################################
+## <summary>
+##	Allow domain to run flatpaks.
+## </summary>
+## <param name="domain_prefix">
+##	<summary>
+##	The prefix of the domain (e.g., user is the prefix for user_t).
+##	</summary>
+## </param>
+## <param name="role">
+##	<summary>
+##	Role (or role attribute) allowed access.
+##	</summary>
+## </param>
+## <param name="domain">
+##	<summary>
+##	Domain to transition to.
+##	</summary>
+## </param>
+#
+interface(`flatpak_run',`
+	gen_require(`
+		type $1_t;
+		type flatpak_exec_t;
+		type flatpak_tmpfs_t;
+		type flatpak_var_lib_t;
+		type flatpak_data_home_t;
+		type flatpak_var_home_t;
+	')
+
+	type $1_flatpak_t;
+	role $2 types { $1_flatpak_t $3 };
+
+	userdom_user_application_domain($1_flatpak_t, flatpak_exec_t)
+	domain_entry_file($3, flatpak_var_lib_t)
+	domain_entry_file($3, flatpak_data_home_t)
+	domain_entry_file($3, flatpak_var_home_t)
+	flatpak_domtrans($1_t, $1_flatpak_t)
+	flatpak_generic_app_domtrans($1_flatpak_t, $3)
+
+	allow $1_t $1_flatpak_t:process signal_perms;
+
+	allow $3 $1_flatpak_t:process signal_perms;
+	allow $3 $1_flatpak_t:unix_stream_socket { server_stream_socket_perms connectto };
+
+	allow $1_flatpak_t $3:process { signal_perms noatsecure siginh rlimitinh };
+	allow $1_flatpak_t $3:process2 { nnp_transition nosuid_transition };
+
+	kernel_read_system_state($1_flatpak_t)
+	logging_send_syslog_msg($1_flatpak_t)
+
+	read_files_pattern($1_t, $1_flatpak_t, $1_flatpak_t)
+	rw_fifo_files_pattern($1_flatpak_t, $1_t, $1_t)
+	rw_fifo_files_pattern($3, $1_t, $1_t)
+
+	mmap_rw_files_pattern($3, flatpak_tmpfs_t, flatpak_tmpfs_t)
+	read_files_pattern($3, $1_flatpak_t, $1_flatpak_t)
+	write_fifo_files_pattern($3, $1_flatpak_t, $1_flatpak_t)
 ')
 
 ########################################
@@ -74,38 +156,14 @@ interface(`flatpak_generic_domtrans',`
 ##	</summary>
 ## </param>
 #
-interface(`flatpak_run',`
+interface(`userdomain_flatpak_run',`
 	gen_require(`
 		role $1_r;
-		type $1_t;
 		attribute_role flatpak_roles;
-		type flatpak_exec_t;
-		type flatpak_tmpfs_t;
 	')
 
-	type $1_flatpak_t;
-	role $1_r types $1_flatpak_t;
+	flatpak_run($1, $1_r, $1_t)
 	roleattribute $1_r flatpak_roles;
-
-	userdom_user_application_domain($1_flatpak_t, flatpak_exec_t)
-	domain_entry_file($1_t, flatpak_var_lib_t)
-	domain_entry_file($1_t, flatpak_data_home_t)
-	domain_entry_file($1_t, flatpak_var_home_t)
-	flatpak_generic_domtrans($1_t, $1_flatpak_t)
-
-	allow $1_t $1_flatpak_t:process signal_perms;
-	allow $1_t $1_flatpak_t:unix_stream_socket { server_stream_socket_perms connectto };
-
-	allow $1_flatpak_t $1_t:process { signal_perms noatsecure siginh rlimitinh };
-	allow $1_flatpak_t $1_t:process2 { nnp_transition nosuid_transition };
-	allow $1_flatpak_t $1_t:system start;
-
-	kernel_read_system_state($1_flatpak_t)
-	logging_send_syslog_msg($1_flatpak_t)
-	mmap_rw_files_pattern($1_t, flatpak_tmpfs_t, flatpak_tmpfs_t)
-	read_files_pattern($1_t, $1_flatpak_t, $1_flatpak_t)
-	rw_fifo_files_pattern($1_flatpak_t, $1_t, $1_t)
-	write_fifo_files_pattern($1_t, $1_flatpak_t, $1_flatpak_t)
 ')
 
 ########################################
@@ -127,7 +185,10 @@ interface(`read_flatpak_apps',`
 	list_dirs_pattern($1, flatpak_lib_type, flatpak_lib_type)
 	read_files_pattern($1, flatpak_lib_type, flatpak_lib_type)
 	read_lnk_files_pattern($1, flatpak_lib_type, flatpak_lib_type)
+
 	list_dirs_pattern($1, flatpak_tmpfs_t, flatpak_tmpfs_t)
+	read_files_pattern($1, flatpak_tmpfs_t, flatpak_tmpfs_t)
+	read_lnk_files_pattern($1, flatpak_tmpfs_t, flatpak_tmpfs_t)
 ')
 
 ########################################
@@ -148,6 +209,23 @@ interface(`manage_flatpak_apps',`
 	manage_files_pattern($1, flatpak_lib_type, flatpak_lib_type)
 	manage_lnk_files_pattern($1, flatpak_lib_type, flatpak_lib_type)
 	list_dirs_pattern($1, flatpak_tmpfs_t, flatpak_tmpfs_t)
+')
+
+########################################
+## <summary>
+##	Allow domain to execute flatpak app and runtime files without a domain transition.
+## </summary>
+## <param name="domain">
+##	<summary>
+##	Domain allowed access.
+##	</summary>
+## </param>
+#
+interface(`exec_flatpak_apps',`
+	gen_require(`
+		attribute flatpak_app_exec_type;
+	')
+	exec_files_pattern($1, flatpak_app_exec_type, flatpak_app_exec_type)
 ')
 
 ########################################

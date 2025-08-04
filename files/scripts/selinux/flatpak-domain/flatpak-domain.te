@@ -32,7 +32,11 @@ allow flatpak_domain self:socket_class_set create_socket_perms;
 allow flatpak_domain self:cap_userns { dac_override net_admin setgid setpcap setuid sys_admin sys_chroot sys_ptrace sys_resource };
 allow flatpak_domain self:process { ptrace setcap setsched };
 allow flatpak_domain self:netlink_route_socket nlmsg_write;
-allow flatpak_domain self:unix_stream_socket connectto;
+
+allow flatpak_domain flatpak_domain:unix_stream_socket connectto;
+allow flatpak_domain flatpak_domain:dbus send_msg;
+
+allow flatpak_domain userdomain:system start;
 
 can_exec(flatpak_domain, flatpak_exec_t)
 
@@ -70,6 +74,7 @@ fs_remount_all_fs(flatpak_domain)
 fs_read_nsfs_files(flatpak_domain)
 
 gnome_manage_home_config(flatpak_domain)
+gnome_read_generic_data_home_files(flatpak_domain)
 gnome_watch_generic_data_home_dirs(flatpak_domain)
 gnome_watch_home_config_dirs(flatpak_domain)
 gnome_write_generic_cache_files(flatpak_domain)
@@ -78,6 +83,7 @@ kernel_rw_all_sysctls(flatpak_domain)
 
 systemd_dbus_chat_logind(flatpak_domain)
 systemd_homed_stream_connect(flatpak_domain)
+systemd_machined_stream_connect(flatpak_domain)
 systemd_resolved_read_pid(flatpak_domain)
 systemd_resolved_watch_pid_dirs(flatpak_domain)
 systemd_userdbd_stream_connect(flatpak_domain)
@@ -169,7 +175,7 @@ optional_policy(`
 		role unconfined_r;
 		type unconfined_t;
 	')
-	flatpak_run(unconfined)
+	userdomain_flatpak_run(unconfined)
 	manage_flatpak_apps(unconfined_t)
 ')
 
@@ -178,7 +184,7 @@ optional_policy(`
 		role staff_r;
 		type staff_t;
 	')
-	flatpak_run(staff)
+	userdomain_flatpak_run(staff)
 	manage_flatpak_apps(staff_t)
 ')
 
@@ -187,7 +193,7 @@ optional_policy(`
 		role sysadm_r;
 		type sysadm_t;
 	')
-	flatpak_run(sysadm)
+	userdomain_flatpak_run(sysadm)
 	manage_flatpak_apps(sysadm_t)
 ')
 
@@ -196,7 +202,7 @@ optional_policy(`
 		role user_r;
 		type user_t;
 	')
-	flatpak_run(user)
+	userdomain_flatpak_run(user)
 	read_flatpak_apps(user_t)
 ')
 
@@ -267,4 +273,25 @@ optional_policy(`
 	')
 	list_dirs_pattern(flatpak_domain, xdm_var_lib_t, xdm_var_lib_t)
 	xserver_read_xdm_lib_files(flatpak_domain)
+')
+
+# allow trivalent to interface with flatpaks (necessary for keepassxc extension, for example)
+optional_policy(`
+	gen_require(`
+		role user_r;
+		type user_t;
+		type trivalent_t;
+		type trivalent_script_t;
+		attribute_role trivalent_roles;
+	')
+
+	read_flatpak_apps(trivalent_t)
+	exec_flatpak_apps(trivalent_t)
+
+	# Run flatpak apps launched by Trivalent in user_t
+	flatpak_run(trivalent, trivalent_roles, user_t)
+
+	allow trivalent_t trivalent_flatpak_t:process2 { nnp_transition nosuid_transition };
+	write_fifo_files_pattern(trivalent_flatpak_t, trivalent_script_t, trivalent_script_t)
+	write_fifo_files_pattern(userdomain, trivalent_script_t, trivalent_script_t)
 ')

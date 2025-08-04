@@ -51,7 +51,7 @@ SYSTEM_CALL_DENY: Final[list[str]] = [
 ]
 
 SYSTEMD_SANDBOX_PROPERTIES: Final[list[str]] = [
-    "--property=CapabilityBoundingSet=CAP_DAC_OVERRIDE CAP_FOWNER CAP_LINUX_IMMUTABLE",
+    "--property=CapabilityBoundingSet=CAP_DAC_OVERRIDE",
     "--property=DevicePolicy=closed",
     "--property=LockPersonality=yes",
     "--property=MemoryDenyWriteExecute=yes",
@@ -79,8 +79,8 @@ SYSTEMD_SANDBOX_PROPERTIES: Final[list[str]] = [
     "--property=SystemCallErrorNumber=EPERM",
 ]
 
-def run_inner(option: int): #0 enables bluetooth, 1 disables
-    command: list = ["run0", *SYSTEMD_SANDBOX_PROPERTIES, "python3", BLUE_INNER_SCRIPT, str(option)] 
+def run_inner(enable: bool) -> int:
+    command: list = ["/usr/bin/run0", *SYSTEMD_SANDBOX_PROPERTIES, "/usr/bin/python3", BLUE_INNER_SCRIPT, str(int(enable))] 
     try: 
         subprocess.run(command, text=True, check=True)
     except subprocess.CalledProcessError as e:
@@ -89,29 +89,30 @@ def run_inner(option: int): #0 enables bluetooth, 1 disables
     return 0
 
 def main():
-    exists: bool = Path(BLUE_MOD_FILE).exists() 
+    disabled: bool = Path(BLUE_MOD_FILE).exists() #If this file exists, we assume the Bluetooth kernel modules are already disabled.
     if len(sys.argv) == 1: #Toggle mode
-        if exists == True: #If file disabling bluetooth kernel modules exists:
-            return run_inner(0)
+        if disabled == True: 
+            return run_inner(True)
         else:
-            return run_inner(1)
+            return run_inner(False)
 
     mode = sys.argv[1]
-    if mode == "on":
-        if exists == False:
-            print("Bluetooth already enabled.")
-            return 0
-        else:
-            return run_inner(0)
-    if mode == "off":
-        if exists == True:
-            print("Bluetooth already disabled.")
-            return 0
-        else:
-            return run_inner(1)
-    else:
-        print("Invalid option selected.")
-        return 1
+    match mode:
+        case "on":
+            if disabled == False:
+                print("Bluetooth already enabled.")
+                return 0
+            else:
+                return run_inner(True)
+        case "off":
+            if disabled == True:
+                print("Bluetooth already disabled.")
+                return 0
+            else:
+                return run_inner(False)
+        case _:
+            print("Invalid option selected.")
+            return 1
 
 if __name__ == "__main__":
     sys.exit(main())

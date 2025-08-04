@@ -15,7 +15,7 @@
 # limitations under the License.
 
 """
-Handles the priviledges operations to actually change bluetooth kernel modules are loaded.
+Handles the privileged operations needed to actually change if Bluetooth kernel modules are loaded.
 """
 
 import sys
@@ -27,25 +27,26 @@ BLUE_MOD_TEXT: Final[str] = """install bluetooth /sbin/modprobe --ignore-install
 install btusb /sbin/modprobe --ignore-install btusb
 """
 
-def main():
-    if len(sys.argv) == 1:
-        print("An error has occured in calling the inner script.")
+def main() -> int:
+    if len(sys.argv) != 2:
+        print("Error in calling the inner script: wrong number of arguments.")
         return 1
     
-    mode: int = int(sys.argv[1])
-    if mode == 0:
-        os.remove(BLUE_MOD_FILE)
-        print("Bluetooth has been enabled. Reboot for effect.")
-        return 0
-    if mode == 1:
-        with open(BLUE_MOD_FILE, "w") as fd:
-            fd.write(BLUE_MOD_TEXT)
-        os.chmod(BLUE_MOD_FILE, 0o644)
-        print("Bluetooth has been disabled. Reboot for effect.")
-        return 0
-    else:
-        print("Invalid inner script argument(s).")
-        return 1
+    mode = int(sys.argv[1])
+    match mode:
+        case 0:
+            with open(BLUE_MOD_FILE, "w", encoding="utf8") as fd:
+                fd.write(BLUE_MOD_TEXT)
+            os.chmod(BLUE_MOD_FILE, 0o644)
+            print("Bluetooth has been disabled. Reboot for effect.")
+            return 0
+        case 1:
+            os.remove(BLUE_MOD_FILE)
+            print("Bluetooth has been enabled. Reboot for effect.")
+            return 0
+        case _:
+            print("Invalid inner script argument.")
+            return 1
 
 
 if __name__ == "__main__":

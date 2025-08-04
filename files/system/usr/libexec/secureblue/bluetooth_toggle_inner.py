@@ -18,8 +18,8 @@
 Handles the privileged operations needed to actually change if Bluetooth kernel modules are loaded.
 """
 
-import sys
 import os
+import sys
 from typing import Final
 
 BLUE_MOD_FILE: Final[str] = "/etc/modprobe.d/99-bluetooth.conf"

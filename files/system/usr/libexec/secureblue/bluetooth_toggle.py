@@ -33,18 +33,18 @@ python3 bluetooth_toggle.py status
     Reports if Bluetooth is set on or off.
 """
 
-from typing import Final
 import subprocess
-from pathlib import Path
 import sys
+from pathlib import Path
+from typing import Final
 
 BLUE_MOD_PATH: Final[str] = "/etc/modprobe.d/"
 BLUE_MOD_FILE: Final[str] = "/etc/modprobe.d/99-bluetooth.conf"
 BLUE_INNER_SCRIPT: Final[str] = "/usr/libexec/secureblue/bluetooth_toggle_inner.py"
 
 # Copyright (C) 2025 Daniel Hast
-# Systemd sandboxing of run0 invocation adapted from run0edit, originally licensed under MIT OR Apache-2.0.
-# Used here under the terms of the Apache License 2.0.
+# Systemd sandboxing of run0 invocation adapted from run0edit, originally licensed 
+# under MIT OR Apache-2.0. Used here under the terms of the Apache License 2.0.
 
 SYSTEM_CALL_DENY: Final[list[str]] = [
     "@aio",
@@ -106,7 +106,7 @@ def run_inner(enable: bool) -> int:
 
 def is_module_loaded(module_name: str) -> bool:
     try:
-        with open("/proc/modules", "r") as fd:
+        with open("/proc/modules") as fd:
             return any(line.startswith(module_name + " ") for line in fd)
     except OSError:
         return False
@@ -114,11 +114,11 @@ def is_module_loaded(module_name: str) -> bool:
 
 def status(disabled: bool):
     status: str = ""
-    if is_module_loaded("bluetooth") == False and is_module_loaded("btusb") == False:
+    if not is_module_loaded("bluetooth") and not is_module_loaded("btusb"):
         status += "Bluetooth is disabled currently"
     else:
         status += "Bluetooth is enabled currently"
-    if disabled == True:
+    if disabled:
         status += ", and after a reboot, Bluetooth will be disabled."
     else:
         status += ", and after a reboot. Bluetooth will be enabled."
@@ -130,25 +130,22 @@ def main():
         BLUE_MOD_FILE
     ).exists()  # If this file exists, we assume the Bluetooth kernel modules are already disabled.
     if len(sys.argv) == 1:  # Toggle mode
-        if disabled == True:
+        if disabled:
             return run_inner(True)
-        else:
-            return run_inner(False)
+        return run_inner(False)
 
     mode = sys.argv[1]
     match mode:
         case "on":
-            if disabled == False:
+            if not disabled:
                 status(disabled)
                 return 0
-            else:
-                return run_inner(True)
+            return run_inner(True)
         case "off":
-            if disabled == True:
+            if disabled:
                 status(disabled)
                 return 0
-            else:
-                return run_inner(False)
+            return run_inner(False)
         case "status":
             status(disabled)
             return 0

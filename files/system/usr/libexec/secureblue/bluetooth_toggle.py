@@ -101,7 +101,7 @@ def run_inner(enable: bool) -> int:
         str(int(enable)),
     ]
     try:
-        subprocess.run(command, text=True, check=True) # nosec
+        subprocess.run(command, text=True, check=True)  # nosec
     except subprocess.CalledProcessError as e:
         print(f"The inner script failed with return code {e.returncode}.")
         return e.returncode
@@ -129,7 +129,7 @@ def status(disabled: bool):
     print(message)
 
 
-def main(): #noqa: C901
+def main():  # noqa: C901
     disabled: bool = Path(
         BLUE_MOD_FILE
     ).exists()  # If this file exists, we assume the Bluetooth kernel modules are already disabled.
@@ -158,6 +158,7 @@ def main(): #noqa: C901
             print("Invalid option selected. Try --help.")
             return 1
     return 0
+
 
 if __name__ == "__main__":
     sys.exit(main())

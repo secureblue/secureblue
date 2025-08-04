@@ -14,36 +14,40 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-"""
-Toggles if bluetooth is enabled by creating or deleting a modprobe file at
-"/etc/modprobe.d/99-bluetooth.conf" to disable or enable the kernel modules
-needed for Bluetooth. Note this file only takes affect upon reboot.
-
-usage:
-python3 bluetooth_toggle.py
-    Toggles Bluetooth.
-
-python3 bluetooth_toggle.py on
-    Turns Bluetooth on, does nothing if already on.
-
-python3 bluetooth_toggle.py off
-    Turns Bluetooth off, does nothing if already off.
-
-python3 bluetooth_toggle.py status
-    Reports if Bluetooth is set on or off.
-"""
-
-import subprocess # codacy-disable
+import subprocess  # nosec
 import sys
 from pathlib import Path
 from typing import Final
 
 BLUE_MOD_PATH: Final[str] = "/etc/modprobe.d/"
+BLUE_HELP: Final[str] = """
+This python script toggles if bluetooth is enabled by creating or deleting a modprobe file at
+"/etc/modprobe.d/99-bluetooth.conf" to disable or enable the kernel modules
+needed for Bluetooth. Note this change only takes affect upon reboot.
+
+usage:
+ujust toggle-bluetooth-modules
+    Toggles Bluetooth.
+
+ujust toggle-bluetooth-modules on
+    Turns Bluetooth on, does nothing if already on.
+
+ujust toggle-bluetooth-modules off
+    Turns Bluetooth off, does nothing if already off.
+
+ujust toggle-bluetooth-modules status
+    Reports if Bluetooth is set on or off.
+
+ujust toggle-bluetooth-modules --help
+    Prints this message.
+"""
+# Note: If you are running this python script standalone use 'python3 bluetooth_toggle.py <option>'
+
 BLUE_MOD_FILE: Final[str] = "/etc/modprobe.d/99-bluetooth.conf"
 BLUE_INNER_SCRIPT: Final[str] = "/usr/libexec/secureblue/bluetooth_toggle_inner.py"
 
 # Copyright (C) 2025 Daniel Hast
-# Systemd sandboxing of run0 invocation adapted from run0edit, originally licensed 
+# Systemd sandboxing of run0 invocation adapted from run0edit, originally licensed
 # under MIT OR Apache-2.0. Used here under the terms of the Apache License 2.0.
 
 SYSTEM_CALL_DENY: Final[list[str]] = [
@@ -89,7 +93,7 @@ SYSTEMD_SANDBOX_PROPERTIES: Final[list[str]] = [
 
 
 def run_inner(enable: bool) -> int:
-    command: list = [ # codacy-disable
+    command: list = [
         "/usr/bin/run0",
         *SYSTEMD_SANDBOX_PROPERTIES,
         "/usr/bin/python3",
@@ -97,7 +101,7 @@ def run_inner(enable: bool) -> int:
         str(int(enable)),
     ]
     try:
-        subprocess.run(command, text=True, check=True)
+        subprocess.run(command, text=True, check=True) # nosec
     except subprocess.CalledProcessError as e:
         print(f"The inner script failed with return code {e.returncode}.")
         return e.returncode
@@ -125,7 +129,7 @@ def status(disabled: bool):
     print(message)
 
 
-def main(): # codacy-disable
+def main(): #noqa: C901
     disabled: bool = Path(
         BLUE_MOD_FILE
     ).exists()  # If this file exists, we assume the Bluetooth kernel modules are already disabled.
@@ -139,20 +143,21 @@ def main(): # codacy-disable
         case "on":
             if not disabled:
                 status(disabled)
-                return 0
-            return run_inner(True)
+            else:
+                return run_inner(True)
         case "off":
             if disabled:
                 status(disabled)
-                return 0
-            return run_inner(False)
+            else:
+                return run_inner(False)
         case "status":
             status(disabled)
-            return 0
+        case "--help":
+            print(BLUE_HELP)
         case _:
-            print("Invalid option selected.")
+            print("Invalid option selected. Try --help.")
             return 1
-
+    return 0
 
 if __name__ == "__main__":
     sys.exit(main())

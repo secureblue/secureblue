@@ -19,7 +19,6 @@ import sys
 from pathlib import Path
 from typing import Final
 
-BLUE_MOD_PATH: Final[str] = "/etc/modprobe.d/"
 BLUE_HELP: Final[str] = """
 This python script toggles if bluetooth is enabled by creating or deleting a modprobe file at
 "/etc/modprobe.d/99-bluetooth.conf" to disable or enable the kernel modules
@@ -43,6 +42,7 @@ ujust toggle-bluetooth-modules --help
 """
 # Note: If you are running this python script standalone use 'python3 bluetooth_toggle.py <option>'
 
+BLUE_MOD_PATH: Final[str] = "/etc/modprobe.d/"
 BLUE_MOD_FILE: Final[str] = "/etc/modprobe.d/99-bluetooth.conf"
 BLUE_INNER_SCRIPT: Final[str] = "/usr/libexec/secureblue/bluetooth_toggle_inner.py"
 

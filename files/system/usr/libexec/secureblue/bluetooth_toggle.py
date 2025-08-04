@@ -14,11 +14,11 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-'''
-Toggles if bluetooth is enabled by creating or deleting a modprobe file at 
+"""
+Toggles if bluetooth is enabled by creating or deleting a modprobe file at
 "/etc/modprobe.d/99-bluetooth.conf" to disable or enable the kernel modules
 needed for Bluetooth. Note this file only takes affect upon reboot.
- 
+
 usage:
 python3 bluetooth_toggle.py
     Toggles Bluetooth.
@@ -31,7 +31,7 @@ python3 bluetooth_toggle.py off
 
 python3 bluetooth_toggle.py status
     Reports if Bluetooth is set on or off.
-'''
+"""
 
 from typing import Final
 import subprocess
@@ -87,26 +87,50 @@ SYSTEMD_SANDBOX_PROPERTIES: Final[list[str]] = [
     "--property=SystemCallErrorNumber=EPERM",
 ]
 
+
 def run_inner(enable: bool) -> int:
-    command: list = ["/usr/bin/run0", *SYSTEMD_SANDBOX_PROPERTIES, "/usr/bin/python3", BLUE_INNER_SCRIPT, str(int(enable))] 
-    try: 
+    command: list = [
+        "/usr/bin/run0",
+        *SYSTEMD_SANDBOX_PROPERTIES,
+        "/usr/bin/python3",
+        BLUE_INNER_SCRIPT,
+        str(int(enable)),
+    ]
+    try:
         subprocess.run(command, text=True, check=True)
     except subprocess.CalledProcessError as e:
         print(f"The inner script failed with return code {e.returncode}.")
         return e.returncode
     return 0
 
+
 def is_module_loaded(module_name: str) -> bool:
     try:
-        with open("/proc/modules", "r") as f:
-            return any(line.startswith(module_name + " ") for line in f)
+        with open("/proc/modules", "r") as fd:
+            return any(line.startswith(module_name + " ") for line in fd)
     except OSError:
         return False
 
+
+def status(disabled: bool):
+    status: str = ""
+    if is_module_loaded("bluetooth") == False and is_module_loaded("btusb") == False:
+        status += "Bluetooth is disabled currently"
+    else:
+        status += "Bluetooth is enabled currently"
+    if disabled == True:
+        status += ", and after a reboot, Bluetooth will be disabled."
+    else:
+        status += ", and after a reboot. Bluetooth will be enabled."
+    print(status)
+
+
 def main():
-    disabled: bool = Path(BLUE_MOD_FILE).exists() #If this file exists, we assume the Bluetooth kernel modules are already disabled.
-    if len(sys.argv) == 1: #Toggle mode
-        if disabled == True: 
+    disabled: bool = Path(
+        BLUE_MOD_FILE
+    ).exists()  # If this file exists, we assume the Bluetooth kernel modules are already disabled.
+    if len(sys.argv) == 1:  # Toggle mode
+        if disabled == True:
             return run_inner(True)
         else:
             return run_inner(False)
@@ -115,31 +139,23 @@ def main():
     match mode:
         case "on":
             if disabled == False:
-                print("Bluetooth already enabled.")
+                status(disabled)
                 return 0
             else:
                 return run_inner(True)
         case "off":
             if disabled == True:
-                print("Bluetooth already disabled.")
+                status(disabled)
                 return 0
             else:
                 return run_inner(False)
         case "status":
-            status: str = ""
-            if is_module_loaded("bluetooth") == False and is_module_loaded("btusb") == False:
-                status += "Bluetooth is disabled currently"
-            else:
-                status += "Bluetooth is enabled currently"
-            if disabled == True:
-                status += ", and after a reboot, Bluetooth will be disabled."
-            else:
-                status += ", and after a reboot. Bluetooth will be enabled."
-            print(status)
+            status(disabled)
             return 0
         case _:
             print("Invalid option selected.")
             return 1
+
 
 if __name__ == "__main__":
     sys.exit(main())

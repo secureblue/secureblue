@@ -27,11 +27,12 @@ BLUE_MOD_TEXT: Final[str] = """install bluetooth /sbin/modprobe --ignore-install
 install btusb /sbin/modprobe --ignore-install btusb
 """
 
+
 def main() -> int:
     if len(sys.argv) != 2:
         print("Error in calling the inner script: wrong number of arguments.")
         return 1
-    
+
     mode = int(sys.argv[1])
     match mode:
         case 0:

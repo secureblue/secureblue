@@ -31,13 +31,16 @@ from collections.abc import Iterable
 from typing import Final
 
 import rpm
-from auditor import AuditError, Status
+from auditor import AuditError, Status, gettext_marker
 
 PASS: Final = Status.PASS
 INFO: Final = Status.INFO
 WARN: Final = Status.WARN
 FAIL: Final = Status.FAIL
 UNKNOWN: Final = Status.UNKNOWN
+
+
+_: Final = gettext_marker()
 
 
 def print_err(text: str):
@@ -48,8 +51,8 @@ def print_err(text: str):
 def warn_if_root():
     """If run as root, warn that this is not recommended."""
     if not os.getuid():
-        print_err("\n*** WARNING: Running audit script as root is not recommended. ***")
-        print_err("*** Some results may be misleading or incomplete. ***\n")
+        print_err("\n" + _("*** WARNING: Running audit script as root is not recommended. ***"))
+        print_err(_("*** Some results may be misleading or incomplete. ***") + "\n")
 
 
 def get_width() -> int:
@@ -77,34 +80,37 @@ def _format_legend_entry(status: Status, description: str, width: int = 80) -> s
 
 def get_legend(width: int = 80) -> str:
     """Get legend to be printed with --help option."""
-    legend = "The following status indicators accompany checks run by the audit script:\n\n"
+    legend = _("The following status indicators accompany checks run by the audit script:")
+    legend += "\n\n"
     status_descriptions: dict[Status, str] = {
-        FAIL: "check failed - the configuration may be less secure.",
-        WARN: "partial failure, or less significant issue detected.",
-        PASS: "check passed - no problems detected.",
-        UNKNOWN: "unable to perform check (usually due to a file permission issue).",
+        FAIL: _("check failed - the configuration may be less secure."),
+        WARN: _("partial failure, or less significant issue detected."),
+        PASS: _("check passed - no problems detected."),
+        UNKNOWN: _("unable to perform check (usually due to a file permission issue)."),
     }
     for status, desc in status_descriptions.items():
         legend += _format_legend_entry(status, desc, width)
-    legend += "\nFor flatpak checks, the status indicators have more specific meanings:\n\n"
+    legend += "\n"
+    legend += _("For flatpak checks, the status indicators have more specific meanings:")
+    legend += "\n\n"
     flatpak_status_descriptions: dict[Status, str] = {
-        FAIL: """app has permissions that can be used as sandbox escapes, allow it to modify
+        FAIL: _("""app has permissions that can be used as sandbox escapes, allow it to modify
             its own permissions, or otherwise grant very broad access to the system (e.g. access
-            to certain directories, direct D-Bus access, X11).""",
-        WARN: """app has permissions that have some sandbox escape potential or otherwise
-            weaken security (e.g. PulseAudio, Bluetooth, not using hardened_malloc).""",
-        INFO: """no potential sandbox escapes detected but some permissions could increase
-            attack surface or have privacy implications (e.g. network access).""",
-        PASS: "no app permissions flagged (however, not all permissions are audited).",
+            to certain directories, direct D-Bus access, X11)."""),
+        WARN: _("""app has permissions that have some sandbox escape potential or otherwise
+            weaken security (e.g. PulseAudio, Bluetooth, not using hardened_malloc)."""),
+        INFO: _("""no potential sandbox escapes detected but some permissions could increase
+            attack surface or have privacy implications (e.g. network access)."""),
+        PASS: _("no app permissions flagged (however, not all permissions are audited)."),
     }
     for status, desc in flatpak_status_descriptions.items():
         legend += _format_legend_entry(status, desc, width)
     legend += "\n" + textwrap.fill(
         textwrap.dedent(
-            """\
+            _("""\
             Note that some flatpak apps require broad permissions to function. Permissions being
             flagged by the audit script do not necessarily mean that action should be taken.
-            """
+            """)
         ),
         width=width,
     )

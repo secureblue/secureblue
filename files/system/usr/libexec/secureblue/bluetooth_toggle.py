@@ -15,14 +15,22 @@
 # limitations under the License.
 
 '''
-Toggles if bluetooth is enabled by creating or deleting "/etc/modprobe.d/99-bluetooth.conf".
+Toggles if bluetooth is enabled by creating or deleting a modprobe file at 
+"/etc/modprobe.d/99-bluetooth.conf" to disable or enable the kernel modules
+needed for Bluetooth. Note this file only takes affect upon reboot.
+ 
+usage:
+python3 bluetooth_toggle.py
+    Toggles Bluetooth.
 
-arguments:
 python3 bluetooth_toggle.py on
-    Turns bluetooth on if off, does nothing if already on.
+    Turns Bluetooth on, does nothing if already on.
 
 python3 bluetooth_toggle.py off
-    Turns bluetooth off if on, does nothing if already off.
+    Turns Bluetooth off, does nothing if already off.
+
+python3 bluetooth_toggle.py status
+    Reports if Bluetooth is set on or off.
 '''
 
 from typing import Final
@@ -32,7 +40,7 @@ import sys
 
 BLUE_MOD_PATH: Final[str] = "/etc/modprobe.d/"
 BLUE_MOD_FILE: Final[str] = "/etc/modprobe.d/99-bluetooth.conf"
-BLUE_INNER_SCRIPT: Final[str] = "/usr/libexec/secureblue/bluetooth_toggle-inner.py"
+BLUE_INNER_SCRIPT: Final[str] = "/usr/libexec/secureblue/bluetooth_toggle_inner.py"
 
 # Copyright (C) 2025 Daniel Hast
 # Systemd sandboxing of run0 invocation adapted from run0edit, originally licensed under MIT OR Apache-2.0.
@@ -84,9 +92,16 @@ def run_inner(enable: bool) -> int:
     try: 
         subprocess.run(command, text=True, check=True)
     except subprocess.CalledProcessError as e:
-        print(f"The innerscript failed with return code {e.returncode}")
+        print(f"The inner script failed with return code {e.returncode}.")
         return e.returncode
     return 0
+
+def is_module_loaded(module_name: str) -> bool:
+    try:
+        with open("/proc/modules", "r") as f:
+            return any(line.startswith(module_name + " ") for line in f)
+    except OSError:
+        return False
 
 def main():
     disabled: bool = Path(BLUE_MOD_FILE).exists() #If this file exists, we assume the Bluetooth kernel modules are already disabled.
@@ -110,6 +125,18 @@ def main():
                 return 0
             else:
                 return run_inner(False)
+        case "status":
+            status: str = ""
+            if is_module_loaded("bluetooth") == False and is_module_loaded("btusb") == False:
+                status += "Bluetooth is disabled currently"
+            else:
+                status += "Bluetooth is enabled currently"
+            if disabled == True:
+                status += ", and after a reboot, Bluetooth will be disabled."
+            else:
+                status += ", and after a reboot. Bluetooth will be enabled."
+            print(status)
+            return 0
         case _:
             print("Invalid option selected.")
             return 1

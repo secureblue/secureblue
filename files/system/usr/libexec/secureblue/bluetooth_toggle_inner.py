@@ -29,7 +29,7 @@ install btusb /sbin/modprobe --ignore-install btusb
 
 
 def main() -> int:
-    if len(sys.argv) != 2:
+    if len(sys.argv) != 2: # noqa: PLR2004
         print("Error in calling the inner script: wrong number of arguments.")
         return 1
 

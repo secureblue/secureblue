@@ -33,7 +33,7 @@ python3 bluetooth_toggle.py status
     Reports if Bluetooth is set on or off.
 """
 
-import subprocess
+import subprocess # codacy-disable
 import sys
 from pathlib import Path
 from typing import Final
@@ -89,7 +89,7 @@ SYSTEMD_SANDBOX_PROPERTIES: Final[list[str]] = [
 
 
 def run_inner(enable: bool) -> int:
-    command: list = [
+    command: list = [ # codacy-disable
         "/usr/bin/run0",
         *SYSTEMD_SANDBOX_PROPERTIES,
         "/usr/bin/python3",
@@ -106,26 +106,26 @@ def run_inner(enable: bool) -> int:
 
 def is_module_loaded(module_name: str) -> bool:
     try:
-        with open("/proc/modules") as fd:
+        with open("/proc/modules", encoding="utf8") as fd:
             return any(line.startswith(module_name + " ") for line in fd)
     except OSError:
         return False
 
 
 def status(disabled: bool):
-    status: str = ""
+    message: str = ""
     if not is_module_loaded("bluetooth") and not is_module_loaded("btusb"):
-        status += "Bluetooth is disabled currently"
+        message += "Bluetooth is disabled currently"
     else:
-        status += "Bluetooth is enabled currently"
+        message += "Bluetooth is enabled currently"
     if disabled:
-        status += ", and after a reboot, Bluetooth will be disabled."
+        message += ", and after a reboot, Bluetooth will be disabled."
     else:
-        status += ", and after a reboot. Bluetooth will be enabled."
-    print(status)
+        message += ", and after a reboot. Bluetooth will be enabled."
+    print(message)
 
 
-def main():
+def main(): # codacy-disable
     disabled: bool = Path(
         BLUE_MOD_FILE
     ).exists()  # If this file exists, we assume the Bluetooth kernel modules are already disabled.

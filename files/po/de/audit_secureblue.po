@@ -364,7 +364,7 @@ msgstr "Die Datei {0} wurde nicht gefunden"
 #: audit_secureblue.py:752
 #, python-brace-format
 msgid "{0} has mode {1:o} (expected {2:o})"
-msgstr "{0} hat Modus {1:o} ({2:o} erwartet)"
+msgstr "{0} hat den Modus {1:o} ({2:o} erwartet)"
 
 #: audit_secureblue.py:756
 #, python-brace-format
@@ -735,7 +735,7 @@ msgstr ""
 
 #: utils/__init__.py:86
 msgid "check failed - the configuration may be less secure."
-msgstr "Test fehlgeschlagen - die Konfiguration kann weniger sicher sein."
+msgstr "Überprüfung fehlgeschlagen - die Konfiguration kann weniger sicher sein."
 
 #: utils/__init__.py:87
 msgid "partial failure, or less significant issue detected."
@@ -751,7 +751,7 @@ msgstr "Konnte Überprüfung nicht durchführen (typischerweise aufgrund eines B
 
 #: utils/__init__.py:94
 msgid "For flatpak checks, the status indicators have more specific meanings:"
-msgstr "Für Flatpak-Überprüfungen haben die Statusindikatoren eine genauere Bedeutung:"
+msgstr "Für Flatpak-Überprüfungen haben die Statusindikatoren eine spezifische Bedeutung:"
 
 #: utils/__init__.py:97
 msgid ""

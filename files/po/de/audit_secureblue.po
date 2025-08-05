@@ -52,7 +52,7 @@ msgstr "Um gehärtete Kernel-Parameter anzuwenden, führe aus:"
 
 #: audit_secureblue.py:134
 msgid "Checking for hardened kernel arguments"
-msgstr "Teste auf gehärtete Kernel-Parameter"
+msgstr "Kernel-Parameter gehärtet"
 
 #: audit_secureblue.py:150 audit_secureblue.py:208 audit_secureblue.py:272
 #: audit_secureblue.py:688 audit_secureblue.py:697
@@ -76,7 +76,7 @@ msgid ""
 "            To rebase to a signed image, download and run or re-run {0}\n"
 "            from the secureblue GitHub repository."
 msgstr ""
-"Das verwendete Image ist unsigniert.\n"
+"Das verwendete Image ist nicht signiert.\n"
 "            Für ein Rebase auf ein signiertes Image, downloade und starte (gegebenenfalls erneut) {0}\n"
 "            aus dem secureblue GitHub Repository."
 
@@ -96,7 +96,7 @@ msgstr "modprobe nicht überschrieben"
 #: audit_secureblue.py:230
 #, python-brace-format
 msgid "ptrace is allowed and **unrestricted** ({0})!"
-msgstr "ptrace ist erlaubt und kann **uneingeschränkt** agieren ({0})!"
+msgstr "ptrace ist erlaubt und **nicht eingeschränkt** ({0})!"
 
 #: audit_secureblue.py:231 audit_secureblue.py:244
 msgid "For more info on what this means, see:"
@@ -138,7 +138,7 @@ msgstr "Die uneingeschränkte Erstellung von Benutzer-Namespaces ist erlaubt."
 
 #: audit_secureblue.py:290 audit_secureblue.py:307
 msgid "To disallow it, run:"
-msgstr "Ausführen zum Verbieten:"
+msgstr "Um dies zu verbieten, führe aus:"
 
 #: audit_secureblue.py:294
 msgid "Ensuring unconfined user namespace creation disallowed"
@@ -154,11 +154,11 @@ msgstr "Erstellung von Benutzer-Namespaces für Container verboten"
 
 #: audit_secureblue.py:323
 msgid "USBGuard is enabled but has failed to run."
-msgstr "USBGuard ist aktiviert, aber die Ausführung schlug fehl"
+msgstr "USBGuard ist aktiviert, aber die Ausführung schlug fehl."
 
 #: audit_secureblue.py:326
 msgid "USBGuard is not enabled."
-msgstr "USBGuard ist nicht aktiviert"
+msgstr "USBGuard ist nicht aktiviert."
 
 #: audit_secureblue.py:329
 msgid "To set up USBGuard, run:"
@@ -174,7 +174,7 @@ msgstr ""
 
 #: audit_secureblue.py:336
 msgid "Ensuring USBGuard is active"
-msgstr "USBGuard ist aktiviert"
+msgstr "USBGuard aktiv"
 
 #: audit_secureblue.py:348 audit_secureblue.py:446 audit_secureblue.py:477
 #: audit_secureblue.py:566
@@ -193,11 +193,11 @@ msgstr "Um es zu starten und aktivieren, führe aus:"
 
 #: audit_secureblue.py:354
 msgid "Ensuring chronyd is active"
-msgstr "chronyd ist aktiviert"
+msgstr "chronyd aktiv"
 
 #: audit_secureblue.py:366
 msgid "System DNS resolution is not secure."
-msgstr "Die systemweite DNS-Auflösung ist unsicher."
+msgstr "Die systemweite DNS-Auflösung ist nicht sicher."
 
 #: audit_secureblue.py:376 audit_secureblue.py:419
 #, python-brace-format
@@ -206,7 +206,7 @@ msgstr "Datei {0} kann nicht gelesen werden."
 
 #: audit_secureblue.py:383
 msgid "System DNS resolution is not secure (opportunistic DNS-over-TLS only)."
-msgstr "Die systemweite DNS-Auflösung ist unsicher (nur opportunistisches DNS-over-TLS)."
+msgstr "Die systemweite DNS-Auflösung ist nicht sicher (nur opportunistisches DNS-over-TLS)."
 
 #: audit_secureblue.py:390
 msgid "To select a secure resolver, run:"
@@ -227,26 +227,26 @@ msgstr "Systemweite DNS-Auflösung sicher"
 
 #: audit_secureblue.py:427
 msgid "MAC randomization is not enabled."
-msgstr "MAC-Randomisierung ist nicht aktiv."
+msgstr "MAC-Randomisierung ist nicht aktiviert."
 
 #: audit_secureblue.py:428 audit_secureblue.py:454 audit_secureblue.py:483
 #: audit_secureblue.py:514 audit_secureblue.py:549 audit_secureblue.py:574
 msgid "To enable it, run:"
-msgstr "Zum aktivieren, führe aus:"
+msgstr "Um sie zu aktivieren, führe aus:"
 
 #: audit_secureblue.py:434
 msgid "Ensuring MAC randomization is enabled"
-msgstr "MAC-Randomisierung ist aktiv"
+msgstr "MAC-Randomisierung aktiv"
 
 #: audit_secureblue.py:451 audit_secureblue.py:480
 #, python-brace-format
 msgid "{0} is disabled."
-msgstr "{0} ist nicht aktiv."
+msgstr "{0} ist deaktiviert."
 
 #: audit_secureblue.py:459 audit_secureblue.py:488 audit_secureblue.py:579
 #, python-brace-format
 msgid "Ensuring {0} is enabled"
-msgstr "{0} ist aktiv"
+msgstr "{0} aktiviert"
 
 #: audit_secureblue.py:506 audit_secureblue.py:541
 #, python-brace-format
@@ -265,7 +265,7 @@ msgstr "{0} global aktiviert"
 
 #: audit_secureblue.py:591
 msgid "The current user is in the wheel group."
-msgstr "Aktueller Benutzer in wheel Gruppe"
+msgstr "Der aktueller Benutzer ist in der wheel Gruppe."
 
 #: audit_secureblue.py:592
 msgid "To set up a separate wheel account, follow the instructions here:"
@@ -273,7 +273,7 @@ msgstr "Um ein seperates wheel-Konto zu erstellen, befolge die hier verlinkten S
 
 #: audit_secureblue.py:600
 msgid "Ensuring user is not a member of the wheel group"
-msgstr "Benutzer ist nicht in der wheel Gruppe"
+msgstr "Benutzer kein Mitglied der wheel Gruppe"
 
 #: audit_secureblue.py:609
 msgid "GNOME"
@@ -290,7 +290,7 @@ msgstr "Sway"
 #: audit_secureblue.py:625
 #, python-brace-format
 msgid "Xwayland is enabled for {0}."
-msgstr "Xwayland ist aktiv für {0}."
+msgstr "Xwayland ist aktiviert für {0}."
 
 #: audit_secureblue.py:626 audit_secureblue.py:725
 msgid "To disable it, run:"
@@ -299,7 +299,7 @@ msgstr "Um es zu deaktivieren, führe aus:"
 #: audit_secureblue.py:630
 #, python-brace-format
 msgid "Ensuring {0} is disabled for {1}"
-msgstr "{0} ist deaktiviert für {1}"
+msgstr "{0} deaktiviert für {1}"
 
 #: audit_secureblue.py:653
 msgid "GNOME user extensions are enabled."
@@ -307,7 +307,7 @@ msgstr "GNOME Nutzer-Erweiterungen sind aktiv."
 
 #: audit_secureblue.py:654
 msgid "To disable this, run:"
-msgstr "Um es zu deaktivieren, führe aus:"
+msgstr "Um diese zu deaktivieren, führe aus:"
 
 #: audit_secureblue.py:658
 msgid "Ensuring GNOME user extensions are disabled"
@@ -319,7 +319,7 @@ msgstr "SELinux ist im Permissive Modus."
 
 #: audit_secureblue.py:671
 msgid "To set it to Enforcing mode, run:"
-msgstr "Um es auf den Enforcing Modus zu setzen, führe aus:"
+msgstr "Um SELinux auf den Enforcing Modus zu setzen, führe aus:"
 
 #: audit_secureblue.py:675
 msgid "Ensuring SELinux is in Enforcing mode"
@@ -378,7 +378,7 @@ msgstr "Die Datei {0} wurde geändert oder gelöscht."
 
 #: audit_secureblue.py:760
 msgid "To reset it and enable hardened_malloc for system processes, run:"
-msgstr "Um es zurückzusetzen und hardened_malloc für Systemprozesse zu aktivieren, führe aus:"
+msgstr "Um dies zurückzusetzen und hardened_malloc für Systemprozesse zu aktivieren, führe aus:"
 
 #: audit_secureblue.py:765
 #, python-brace-format
@@ -408,7 +408,7 @@ msgid ""
 "                {2} or related configuration files."
 msgstr ""
 "Die Umgebungsvariable {0} wurde geändert oder gelöscht.\n"
-"                Prüfe, dass {1} nicht in {2} oder weiteren\n"
+"                Prüfe, dass {1} nicht in {2} oder relevanten\n"
 "                Konfigurationsdateien überschrieben wurde."
 
 #: audit_secureblue.py:803
@@ -417,7 +417,7 @@ msgstr "hardened_malloc geladen"
 
 #: audit_secureblue.py:815
 msgid "Ensuring secure boot is enabled"
-msgstr "Secure Boot ist aktiv"
+msgstr "Secure Boot aktiv"
 
 #: audit_secureblue.py:848
 msgid "Bash environment is not locked down."
@@ -425,7 +425,7 @@ msgstr "Die Bash-Umgebung ist nicht abgesichert."
 
 #: audit_secureblue.py:849
 msgid "The following files do not appear to be immutable or do not exist:"
-msgstr "Die folgenden Dateien scheinen nicht schreibgeschützt oder existent zu sein:"
+msgstr "Die folgenden Dateien scheinen nicht schreibgeschützt zu sein oder existieren nicht:"
 
 #: audit_secureblue.py:851
 msgid "To fix this, run:"
@@ -457,7 +457,7 @@ msgstr "Prüfe {0}"
 
 #: audit_secureblue.py:934
 msgid "[Audit process interrupted. Exiting.]"
-msgstr "[Prüfprozess wurde unterbrochen. Beende.]"
+msgstr "[Prüfprozess wurde unterbrochen. Abbruch.]"
 
 #: audit_secureblue.py:947
 msgid "Audit secureblue configuration for security"
@@ -488,7 +488,7 @@ msgstr "*** Fortfahren... ***"
 #: audit_secureblue.py:969
 #, python-brace-format
 msgid "Use option '{0}' to skip flatpak recommendations."
-msgstr "Verwende Option '{0}', um Empfehlungen für Flatpak zu überspringen."
+msgstr "Verwende die Option '{0}', um Empfehlungen für Flatpaks zu überspringen."
 
 #: audit_secureblue.py:972
 msgid "*** WARNING: Unexpected error occurred. ***"
@@ -524,11 +524,11 @@ msgstr "Bericht"
 
 #: auditor/__init__.py:266
 msgid "Skipping checks in the following category:"
-msgstr "Überspringe Tests in folgender Kategorie:"
+msgstr "Tests in folgender Kategorie werden übersprunge:"
 
 #: auditor/__init__.py:268
 msgid "Skipping checks in the following categories:"
-msgstr "Überspringe Tests in folgenden Kategorien:"
+msgstr "Tests in folgenden Kategorien werden übersprungen:"
 
 #: audit_flatpak/__init__.py:145
 msgid "permission"
@@ -541,24 +541,24 @@ msgstr "{0} hat {1}"
 
 #: audit_flatpak/__init__.py:155
 msgid "This may also be used as a sandbox escape vector."
-msgstr "Dies kann als potenzieller Angriffsvektor für einen Sandbox Escape verwendet werden."
+msgstr "Dies kann auch als Angriffsvektor für einen Sandbox Escape verwendet werden."
 
 #: audit_flatpak/__init__.py:161
 #, python-brace-format
 msgid "The following flatpak app(s) have {0}:"
-msgstr "Folgende Flatpak Anwendung(en) haben {0}:"
+msgstr "Folgende Flatpak-Anwendungen haben {0}:"
 
 #: audit_flatpak/__init__.py:165 audit_flatpak/__init__.py:313
 #: audit_flatpak/__init__.py:376 audit_flatpak/__init__.py:415
 msgid "To remove this permission from an app, use Flatseal or run:"
-msgstr "Um diese Berechtigung von der Anwendung zu entfernen, verwende Flatseal oder führe aus:"
+msgstr "Um diese Berechtigung von einer Anwendung zu entfernen, verwende Flatseal oder führe aus:"
 
 #: audit_flatpak/__init__.py:167 audit_flatpak/__init__.py:296
 #: audit_flatpak/__init__.py:315 audit_flatpak/__init__.py:378
 #: audit_flatpak/__init__.py:398 audit_flatpak/__init__.py:417
 #, python-brace-format
 msgid "(replacing \"{0}\" with the flatpak app ID)"
-msgstr "(ersetze \"{0}\" mit der ID der Flatpak Anwendung)"
+msgstr "(ersetze \"{0}\" mit der ID der Flatpak-Anwendung)"
 
 #: audit_flatpak/__init__.py:184
 msgid "network access"
@@ -570,7 +570,7 @@ msgstr "Zugriff auf Interprozesskommunikation"
 
 #: audit_flatpak/__init__.py:186
 msgid "X11 access"
-msgstr "X11 Zugriff"
+msgstr "Zugriff auf X11"
 
 #: audit_flatpak/__init__.py:187
 msgid "access to the PulseAudio socket"
@@ -582,7 +582,7 @@ msgstr "Zugriff auf den D-Bus Session Bus"
 
 #: audit_flatpak/__init__.py:193
 msgid "This grants access to audio and microphones."
-msgstr "Dies gewährt Zugriff auf Lautsprecher und Mikrofone."
+msgstr "Dies gewährt Zugriff auf Audio und Mikrofone."
 
 #: audit_flatpak/__init__.py:195
 msgid "access to the D-Bus system bus"
@@ -599,7 +599,7 @@ msgstr "Dies gewährt Zugriff auf Eingabegeräte, GPUs, direkten USB-Zugriff und
 #: audit_flatpak/__init__.py:203
 #, python-brace-format
 msgid "If GPU access is required, allow {0} instead."
-msgstr "Falls GPU Zugriff benötigt wird, erlaube {0} stattdessen."
+msgstr "Falls GPU-Zugriff benötigt wird, erlaube {0} stattdessen."
 
 #: audit_flatpak/__init__.py:205
 msgid "This grants access to input devices."
@@ -619,11 +619,11 @@ msgstr "Dies gewährt direkten Zugriff auf USB-Geräte."
 
 #: audit_flatpak/__init__.py:223
 msgid "bluetooth access"
-msgstr "Bluetooth Zugriff"
+msgstr "Zugriff auf Bluetooth"
 
 #: audit_flatpak/__init__.py:224
 msgid "ptrace access"
-msgstr "ptrace Zugriff"
+msgstr "Zugriff auf ptrace"
 
 #: audit_flatpak/__init__.py:263
 #, python-brace-format
@@ -637,17 +637,17 @@ msgstr "Dies ist jedoch für die Funktionalität erforderlich."
 #: audit_flatpak/__init__.py:280
 #, python-brace-format
 msgid "{0} is not requesting {1}"
-msgstr "{0} erfragt nicht {1}"
+msgstr "{0} fragt nicht {1} an"
 
 #: audit_flatpak/__init__.py:284 audit_flatpak/__init__.py:288
 #, python-brace-format
 msgid "{0} is requesting {1}"
-msgstr "{0} erfragt {1}"
+msgstr "{0} fragt {1} an"
 
 #: audit_flatpak/__init__.py:292
 #, python-brace-format
 msgid "The following flatpak app(s) are not requesting {0}:"
-msgstr "Folgende Flatpak Anwendung(en) fragen nicht {0} an:"
+msgstr "Folgende Flatpak-Anwendungen fragen {0} nicht an:"
 
 #: audit_flatpak/__init__.py:294
 msgid "To enable it for an app, run:"
@@ -656,7 +656,7 @@ msgstr "Um es für eine Anwendung zu aktivieren, führe aus:"
 #: audit_flatpak/__init__.py:308
 #, python-brace-format
 msgid "The following flatpak app(s) can talk to {0} on the session bus:"
-msgstr "Folgende Flatpak Anwendung(en) können mit {0} auf dem Session Bus kommunizieren:"
+msgstr "Folgende Flatpak-Anwendungen können mit {0} auf dem Session Bus kommunizieren:"
 
 #: audit_flatpak/__init__.py:312 audit_flatpak/__init__.py:414
 msgid "This grants the ability to acquire arbitrary permissions."
@@ -680,7 +680,7 @@ msgstr "Cachedateien anderer Anwendungen"
 
 #: audit_flatpak/__init__.py:357
 msgid "other applications' data files"
-msgstr "Datendateien anderer Anwendungen"
+msgstr "Speicherdateien anderer Anwendungen"
 
 #: audit_flatpak/__init__.py:368
 #, python-brace-format
@@ -690,7 +690,7 @@ msgstr "{0} hat {1} Berechtigung"
 #: audit_flatpak/__init__.py:371
 #, python-brace-format
 msgid "The following flatpak app(s) have {0} permission:"
-msgstr "Folgende Flatpak Anwendungen haben {0} Berechtigung:"
+msgstr "Folgende Flatpak-Anwendungen haben {0} Berechtigung:"
 
 #: audit_flatpak/__init__.py:375
 #, python-brace-format
@@ -705,7 +705,7 @@ msgstr "{0} fehlt die {1} Berechtigung"
 #: audit_flatpak/__init__.py:393
 #, python-brace-format
 msgid "The following flatpak app(s) are missing {0} permission:"
-msgstr "Folgenden Flatpak Anwendungen fehlt {0} Berechtigung:"
+msgstr "Folgenden Flatpak-Anwendungen fehlt die {0} Berechtigung:"
 
 #: audit_flatpak/__init__.py:395
 msgid "This is required to load hardened_malloc."
@@ -717,7 +717,7 @@ msgstr "Um diese Berechtigung einer App zu gewähren, verwende Flatseal oder fü
 
 #: audit_flatpak/__init__.py:412
 msgid "The following flatpak app(s) can modify flatpak overrides:"
-msgstr "Folgende Flatpak Anwendung(en) können Flatpak Überschreibungen verändern:"
+msgstr "Folgende Flatpak-Anwendungen können Flatpak-Überschreibungen vornehmen:"
 
 #: utils/__init__.py:54
 msgid "*** WARNING: Running audit script as root is not recommended. ***"
@@ -731,15 +731,15 @@ msgstr "*** Manche Ergebnisse können irreführend oder unvollständig sein. ***
 msgid ""
 "The following status indicators accompany checks run by the audit script:"
 msgstr ""
-"Folgende Statusanzeigen unterstützen die vom Audit-Skript ausgeführten Tests:"
+"Folgende Statusindikatoren begleiten die vom Audit-Skript ausgeführten Tests:"
 
 #: utils/__init__.py:86
 msgid "check failed - the configuration may be less secure."
-msgstr "Überprüfung fehlgeschlagen - die Konfiguration kann unsicherer sein."
+msgstr "Test fehlgeschlagen - die Konfiguration kann weniger sicher sein."
 
 #: utils/__init__.py:87
 msgid "partial failure, or less significant issue detected."
-msgstr "Partieller Fehler oder unsignifikanter Fehler erkannt."
+msgstr "Partieller Fehler oder weniger signifikantes Problem erkannt."
 
 #: utils/__init__.py:88
 msgid "check passed - no problems detected."
@@ -751,7 +751,7 @@ msgstr "Konnte Überprüfung nicht durchführen (typischerweise aufgrund eines B
 
 #: utils/__init__.py:94
 msgid "For flatpak checks, the status indicators have more specific meanings:"
-msgstr "Für Flatpak Überprüfungen haben die Statusanzeigen eine genauere Bedeutung:"
+msgstr "Für Flatpak-Überprüfungen haben die Statusindikatoren eine genauere Bedeutung:"
 
 #: utils/__init__.py:97
 msgid ""
@@ -760,9 +760,9 @@ msgid ""
 "system (e.g. access\n"
 "            to certain directories, direct D-Bus access, X11)."
 msgstr ""
-"Anwendung hat Berechtigungen, die als Sandbox Escape genutzt werden können, was ihr erlaubt,\n"
-"            seine eigenen Berechtigungen zu ändern oder sehr weiten Zugriff auf das System erlaubt\n"
-"            (z.B. Zugriff auf bestimmte Verzeichnisse, direkten D-Bus-Zugriff, X11)."
+"Anwendung hat Berechtigungen, die als Sandbox Escape genutzt werden können, was ihr\n"
+"            eine Änderung der eigenen Berechtigungen oder ansonsten sehr weiten Zugriff\n"
+"            auf das System erlaubt (z.B. Zugriff auf spezielle Verzeichnisse, direkten D-Bus-Zugriff, X11)."
 
 #: utils/__init__.py:100
 msgid ""
@@ -781,7 +781,7 @@ msgid ""
 "access)."
 msgstr ""
 "keine potenzielle Sandbox Escapes erkannt, aber manche Berechtigungen könnten die\n"
-"            Angriffsfläche erhöhen oder Auswirkungen auf Datenschutz haben (z.B. Netzwerkzugriff.)"
+"            Angriffsfläche erhöhen oder Auswirkungen auf den Datenschutz haben (z.B. Netzwerkzugriff).d"
 
 #: utils/__init__.py:104
 msgid "no app permissions flagged (however, not all permissions are audited)."
@@ -795,7 +795,7 @@ msgid ""
 "should be taken.\n"
 "            "
 msgstr ""
-"            Bedenke, dass manche Flatpak-Anwendungen weiten Zugriff benötigen, um zu funktionieren."
+"            Bedenke, dass manche Flatpak-Anwendungen viele Berechtigungen benötigen, um zu funktionieren."
 "            Vom Audit-Skript markierte Berechtigungen bedeuten nicht notwendigerweise,\n"
 "            dass eine Änderung vorgenommen werden sollte.\n"
 "            "

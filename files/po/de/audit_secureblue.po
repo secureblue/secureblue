@@ -770,7 +770,7 @@ msgid ""
 "            weaken security (e.g. PulseAudio, Bluetooth, not using "
 "hardened_malloc)."
 msgstr ""
-"Die Anwendung hat Berechtigungen, welche ein geringes Risiko für Sandbox Escapes darstellen\n"
+"Die Anwendung hat Berechtigungen, welche ein gewisses Risiko für Sandbox Escapes darstellen\n"
 "             oder anderweitig die Sicherheit reduzieren (z.B. PulseAudio, Bluetooth, keine Verwendung von "
 "hardened_malloc)."
 

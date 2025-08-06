@@ -265,7 +265,7 @@ msgstr "Prüfe auf {0} (systemweit)"
 
 #: audit_secureblue.py:591
 msgid "The current user is in the wheel group."
-msgstr "Der aktueller Benutzer ist in der wheel Gruppe."
+msgstr "Der aktuelle Benutzer ist in der wheel Gruppe."
 
 #: audit_secureblue.py:592
 msgid "To set up a separate wheel account, follow the instructions here:"
@@ -359,7 +359,7 @@ msgstr "Prüfe auf KDE GHNS"
 #: audit_secureblue.py:745
 #, python-brace-format
 msgid "The file {0} was not found."
-msgstr "Die Datei {0} wurde nicht gefunden"
+msgstr "Die Datei {0} wurde nicht gefunden."
 
 #: audit_secureblue.py:752
 #, python-brace-format
@@ -433,7 +433,7 @@ msgstr "Um dies zu beheben, führe aus:"
 
 #: audit_secureblue.py:858
 msgid "Ensuring current user's bash environment is locked down"
-msgstr "Bash-Umgebung des aktuellen Benutzers abgesichert"
+msgstr "Prüfe auf abgesicherte Bash-Umgebung"
 
 #: audit_secureblue.py:879
 #, python-brace-format

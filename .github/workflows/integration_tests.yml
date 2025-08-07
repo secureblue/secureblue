@@ -14,8 +14,8 @@ name: integration-tests
 permissions: {}
 on:
   schedule:
-    - cron: "00 7 * * *" # run at 7:00 UTC every day 
-      
+    - cron: "00 7 * * *" # run at 7:00 UTC every day
+
   workflow_dispatch:
 jobs:
   integration-tests:
@@ -27,7 +27,7 @@ jobs:
       packages: write
       id-token: write
     strategy:
-      fail-fast: false 
+      fail-fast: false
 
     steps:
       - name: Checkout repo
@@ -37,10 +37,11 @@ jobs:
 
       - name: Run integration tests
         uses: secureblue/bootc-virtual-machine-action@05aa93d5e9d1e128c8d0772fd534fed5c73f9271 # v0.0.3
-        with:          
+        with:
           registry: ghcr.io/secureblue
           image: silverblue-main-hardened
           token: ${{ secrets.GITHUB_TOKEN }}
           tests: |
+            ./.github/workflows/integration_tests/check_audit_results.sh
             ./.github/workflows/integration_tests/check_cleanup.sh
             ./.github/workflows/integration_tests/check_firstrun.sh

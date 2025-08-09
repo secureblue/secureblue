@@ -16,6 +16,7 @@ permissions: {}
 
 on:
   pull_request:
+  pull_request_review:
 
 jobs:
   pr-approvals:
@@ -26,11 +27,12 @@ jobs:
     env:
       approvers:
     steps:
-      - uses: secureblue/approvals-action@ce28f64903343583dd92c84bffedba124d3a6c95 # v0.1.0
+      - uses: secureblue/approvals-action@ff4f0eb3769e707182a9ecdab849e90b5db32de3 # v0.2.1
         id: approvers
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           min-required: 2
+          skip-dependabot: true
           approvers: |
             EsseLowNitro
             fiftydinar

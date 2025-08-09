@@ -26,11 +26,12 @@ jobs:
     env:
       approvers:
     steps:
-      - uses: secureblue/approvals-action@ce28f64903343583dd92c84bffedba124d3a6c95 # v0.1.0
+      - uses: secureblue/approvals-action@cf33051e1d3a2137da849e42cfd8a7d3609d3b30 # v0.2.5
         id: approvers
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           min-required: 2
+          skip-dependabot: true
           approvers: |
             EsseLowNitro
             fiftydinar

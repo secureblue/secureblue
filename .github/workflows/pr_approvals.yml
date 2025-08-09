@@ -16,7 +16,6 @@ permissions: {}
 
 on:
   pull_request:
-  pull_request_review:
 
 jobs:
   pr-approvals:

@@ -16,9 +16,10 @@
 
 set -euo pipefail
 
+test_dir='./.github/workflows/integration_tests'
 audit_results=$(ujust audit-secureblue --json | jq -c '{name, description, status, warnings}')
 
-if diff expected-audit-silverblue-main-hardened.txt <(echo "$audit_results"); then
+if diff "${test_dir}/expected-audit-silverblue-main-hardened.txt" <(echo "${audit_results}"); then
     echo "Audit script output is as expected."
 else
     echo "Audit script output differs from expected output."

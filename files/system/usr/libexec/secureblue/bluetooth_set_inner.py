@@ -45,7 +45,7 @@ ujust set-bluetooth-modules --help
 
 BLUE_MOD_PATH: Final[str] = "/etc/modprobe.d/"
 BLUE_MOD_FILE: Final[str] = "/etc/modprobe.d/99-bluetooth.conf"
-BLUE_INNER_SCRIPT: Final[str] = "/usr/libexec/secureblue/bluetooth_toggle_inner.py"
+BLUE_INNER_SCRIPT: Final[str] = "/usr/libexec/secureblue/bluetooth_set_inner.py"
 
 # Copyright (C) 2025 Daniel Hast
 # Systemd sandboxing of run0 invocation adapted from run0edit, originally licensed

@@ -22,7 +22,7 @@ with-standard-malloc *args:
     #!/bin/sh
     LD_PRELOAD='' exec "$@"
 
-# Toggle bluetooth kernel modules on/off (requires reboot)
-toggle-bluetooth-modules *args:
+# Sets bluetooth kernel modules on/off (requires reboot)
+set-bluetooth-modules *args:
     #!/bin/sh
     exec /usr/bin/python3 /usr/libexec/secureblue/bluetooth_toggle.py "$@"

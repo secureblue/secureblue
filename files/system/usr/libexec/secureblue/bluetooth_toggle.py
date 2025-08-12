@@ -29,19 +29,16 @@ This python script toggles if bluetooth is enabled by creating or deleting a mod
 needed for Bluetooth. Note this change only takes affect upon reboot.
 
 usage:
-ujust toggle-bluetooth-modules
-    Toggles Bluetooth.
-
-ujust toggle-bluetooth-modules on
+ujust set-bluetooth-modules on
     Turns Bluetooth on, does nothing if already on.
 
-ujust toggle-bluetooth-modules off
+ujust set-bluetooth-modules off
     Turns Bluetooth off, does nothing if already off.
 
-ujust toggle-bluetooth-modules status
+ujust set-bluetooth-modules status
     Reports if Bluetooth is set on or off.
 
-ujust toggle-bluetooth-modules --help
+ujust set-bluetooth-modules --help
     Prints this message.
 """
 # Note: If you are running this python script standalone use 'python3 bluetooth_toggle.py <option>'
@@ -141,10 +138,9 @@ def main():  # noqa: C901
     disabled: bool = Path(
         BLUE_MOD_FILE
     ).exists()  # If this file exists, we assume the Bluetooth kernel modules are already disabled.
-    if len(sys.argv) == 1:  # Toggle mode
-        if disabled:
-            return run_inner(True)
-        return run_inner(False)
+    if len(sys.argv) == 1:
+        print("Needs an option, see usage with --help.")
+        return 1
 
     mode = sys.argv[1]
     match mode:

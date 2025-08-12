@@ -29,7 +29,7 @@ install btusb /sbin/modprobe --ignore-install btusb
 
 
 def main() -> int:
-    """Checks arguements given to it by bluetooth_toggle.py, and adds or deletes the relevant modprobe file."""
+    """Checks arguements, and adds or deletes the relevant modprobe file."""
     if len(sys.argv) != 2:  # noqa: PLR2004
         print("Error in calling the inner script: wrong number of arguments.")
         return 1

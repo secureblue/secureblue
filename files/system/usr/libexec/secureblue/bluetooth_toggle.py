@@ -1,8 +1,8 @@
-'''
+"""
 bluetooth_toggle.py
 
 This module toggles bluetooth via modprobe rules.
-'''
+"""
 
 # Copyright 2025 The Secureblue Authors
 #

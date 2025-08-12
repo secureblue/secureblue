@@ -29,6 +29,7 @@ install:
   - hdparm
   - wireguard-tools
   - gettext
+  - rsync
 
   # signing deps
   - sbsigntools

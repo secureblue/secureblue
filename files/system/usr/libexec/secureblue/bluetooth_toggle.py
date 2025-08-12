@@ -1,4 +1,8 @@
-#!/usr/bin/python3
+'''
+bluetooth_toggle.py
+
+This module toggles bluetooth via modprobe rules.
+'''
 
 # Copyright 2025 The Secureblue Authors
 #
@@ -93,6 +97,7 @@ SYSTEMD_SANDBOX_PROPERTIES: Final[list[str]] = [
 
 
 def run_inner(enable: bool) -> int:
+    """Runs the inner script and passes what it should to do."""
     command: list = [
         "/usr/bin/run0",
         *SYSTEMD_SANDBOX_PROPERTIES,
@@ -109,6 +114,7 @@ def run_inner(enable: bool) -> int:
 
 
 def is_module_loaded(module_name: str) -> bool:
+    """Checks if a given kernel module is currently loaded by checking for it in /proc/modules"""
     try:
         with open("/proc/modules", encoding="utf8") as fd:
             return any(line.startswith(module_name + " ") for line in fd)
@@ -117,6 +123,7 @@ def is_module_loaded(module_name: str) -> bool:
 
 
 def status(disabled: bool):
+    """Gives status of Bluetooth availability, both currently and what it will be after a reboot."""
     message: str = ""
     if not is_module_loaded("bluetooth") and not is_module_loaded("btusb"):
         message += "Bluetooth is disabled currently"
@@ -130,6 +137,7 @@ def status(disabled: bool):
 
 
 def main():  # noqa: C901
+    """Parses user input, checks current bluetooth status, and calls necessary helper functions."""
     disabled: bool = Path(
         BLUE_MOD_FILE
     ).exists()  # If this file exists, we assume the Bluetooth kernel modules are already disabled.

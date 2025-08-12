@@ -1,4 +1,8 @@
-#!/usr/bin/python3
+"""
+bluetooth_toggle_inner.py
+
+Handles the privileged operations needed to actually change if Bluetooth kernel modules are loaded.
+"""
 
 # Copyright 2025 The Secureblue Authors
 #
@@ -14,10 +18,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-"""
-Handles the privileged operations needed to actually change if Bluetooth kernel modules are loaded.
-"""
-
 import os
 import sys
 from typing import Final
@@ -29,6 +29,7 @@ install btusb /sbin/modprobe --ignore-install btusb
 
 
 def main() -> int:
+    """Checks arguements given to it by bluetooth_toggle.py, and adds or deletes the relevant modprobe file."""
     if len(sys.argv) != 2:  # noqa: PLR2004
         print("Error in calling the inner script: wrong number of arguments.")
         return 1

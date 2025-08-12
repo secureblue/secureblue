@@ -11,49 +11,38 @@
 # See the License for the specific language governing permissions and limitations under the License.
 
 name: build-pullrequest
+
 permissions: {}
+
 on:
-  pull_request:
-    branches:
-      - live
-      - staging
-    paths-ignore:
-      - "**.md"
+  workflow_call:
+    inputs:
+      recipe:
+        required: true
+        type: string
+
 jobs:
   bluebuild:
     name: PR build
     runs-on: ubuntu-24.04
     permissions:
       contents: read
-    strategy:
-      fail-fast: false 
-      matrix:
-        recipe:
-          - general/recipe-cosmic-main.yml
-          - general/recipe-sericea-main.yml
-          - general/recipe-kinoite-main.yml
-          - general/recipe-silverblue-main.yml
-          - general/recipe-silverblue-nvidia.yml
-          - general/recipe-silverblue-nvidia-open.yml
-          - securecore/recipe-securecore-zfs-main.yml
-          - securecore/recipe-securecore-zfs-nvidia.yml
-          - securecore/recipe-securecore-zfs-nvidia-open.yml
 
     steps:
       - name: Checkout repo
-        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
         with:
           persist-credentials: false
 
       - name: Gather image data from recipe
         shell: bash
         env:
-          RECIPE: ${{ matrix.recipe }}
+          RECIPE: ${{ inputs.recipe }}
         run: |
-          echo "IMAGE_NAME=$(grep '^name:' ./recipes/${RECIPE} | sed 's/^name: //')" >> $GITHUB_ENV
-          echo "IMAGE_MAJOR_VERSION=$(grep '^image-version:' ./recipes/${RECIPE} | sed 's/^image-version: //')" >> $GITHUB_ENV
-          BASE_IMAGE=$(grep '^base-image:' ./recipes/${RECIPE} | sed 's/^base-image: //')
-          echo "BASE_IMAGE_NAME=$(echo $BASE_IMAGE | sed 's/.*\/.*\///')" >> $GITHUB_ENV
+          echo "IMAGE_NAME=$(grep '^name:' "./recipes/${RECIPE}" | sed 's/^name: //')" >> "$GITHUB_ENV"
+          echo "IMAGE_MAJOR_VERSION=$(grep '^image-version:' "./recipes/${RECIPE}" | sed 's/^image-version: //')" >> "$GITHUB_ENV"
+          BASE_IMAGE=$(grep '^base-image:' "./recipes/${RECIPE}" | sed 's/^base-image: //')
+          echo "BASE_IMAGE_NAME=$(echo "$BASE_IMAGE" | sed 's/.*\/.*\///')" >> "$GITHUB_ENV"
 
       - name: Maximize build space
         uses: jlumbroso/free-disk-space@54081f138730dfa15788a46383842cd2f914a1be # v1.3.1
@@ -62,7 +51,7 @@ jobs:
         id: build_vars
         shell: bash
         env:
-          RECIPE: ${{ matrix.recipe }}
+          RECIPE: ${{ inputs.recipe }}
         run: |
           RECIPE_PATH=""
           if [ -f "./config/${RECIPE}" ]; then
@@ -70,7 +59,7 @@ jobs:
           else
             RECIPE_PATH="./recipes/${RECIPE}"
           fi
-          echo "recipe_path=${RECIPE_PATH}" >> ${GITHUB_OUTPUT}
+          echo "recipe_path=${RECIPE_PATH}" >> "${GITHUB_OUTPUT}"
 
       - name: Install BlueBuild
         shell: bash
@@ -84,7 +73,6 @@ jobs:
 
       - name: Build Image
         shell: bash
-        working-directory: ${{ inputs.working_directory }}
         env:
           RECIPE_PATH: ${{ steps.build_vars.outputs.recipe_path }}
           RUST_LOG_STYLE: always
@@ -96,5 +84,4 @@ jobs:
           export KERNEL_PRIVKEY
 
           BUILD_OPTS="--build-driver podman --squash"
-          bluebuild build -v ${BUILD_OPTS} ${RECIPE_PATH}
-          
+          bluebuild build -v ${BUILD_OPTS} "${RECIPE_PATH}"

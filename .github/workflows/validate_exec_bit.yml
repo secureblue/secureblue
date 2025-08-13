@@ -36,6 +36,7 @@ jobs:
             "files/system/usr/libexec/secureblue/*"
             "files/system/usr/bin/*"
             "files/system/kinoite/usr/libexec/secureblue/*"
+            "files/system/desktop/usr/libexec/secureblue/*"
           )
 
           files_missing_exec=()

@@ -16,7 +16,7 @@
 
 set -euo pipefail
 
-audit_results=$(ujust audit-secureblue --json | jq -c '{name, description, status, warnings}')
+audit_results=$(ujust audit-secureblue --json --skip flatpak | jq -c '{name, description, status, warnings}')
 
 if diff 'expected-audit-silverblue-main-hardened.txt' <(echo "${audit_results}"); then
     echo 'Audit script output is as expected.'

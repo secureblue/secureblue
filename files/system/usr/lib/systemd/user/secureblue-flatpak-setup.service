@@ -8,3 +8,7 @@ ConditionPathExists=!%h/.config/secureblue/secureblue-flatpak-setup.stamp
 Type=oneshot
 ExecStart=/usr/libexec/secureblue/secureblueflatpaksetup
 ExecStartPost=/bin/bash -c 'mkdir -p "$HOME/.config/secureblue" && touch "$HOME/.config/secureblue/secureblue-flatpak-setup.stamp"'
+Restart=on-failure
+RestartSec=30s
+RestartMaxDelaySec=1800s
+RestartSteps=10

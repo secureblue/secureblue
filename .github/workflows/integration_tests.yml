@@ -45,5 +45,6 @@ jobs:
             ./.github/workflows/integration_tests/check_audit_results.sh
             ./.github/workflows/integration_tests/check_cleanup.sh
             ./.github/workflows/integration_tests/check_firstrun.sh
+            ./.github/workflows/integration_tests/check_flatpak_setup.sh
           data-files: |
             ./.github/workflows/integration_tests/expected-audit-silverblue-main-hardened.txt

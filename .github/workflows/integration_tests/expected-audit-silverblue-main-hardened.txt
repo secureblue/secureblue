@@ -25,4 +25,3 @@
 {"name":"audit_hardened_malloc","description":"Ensuring hardened_malloc is set to be preloaded","status":"pass","warnings":[]}
 {"name":"audit_secureboot","description":"Ensuring secure boot is enabled","status":"fail","warnings":[]}
 {"name":"audit_bash_env_lockdown","description":"Ensuring current user's bash environment is locked down","status":"fail","warnings":[]}
-{"name":"audit_flatpak_remotes","description":"Auditing flatpak remote flathub-verified","status":"pass","warnings":[]}

@@ -133,7 +133,7 @@ def status(disabled: bool):
     print(message)
 
 
-def main():  # noqa: C901
+def main():
     """Parses user input, checks current bluetooth status, and calls necessary helper functions."""
     disabled: bool = Path(
         BLUE_MOD_FILE

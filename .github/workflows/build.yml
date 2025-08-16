@@ -23,6 +23,9 @@ on:
       - "**.md"
       
   workflow_dispatch: # allow manually triggering builds
+
+# Cancels running workflows if a new workflow run for
+# the same workflow is started
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref || github.run_id }}
   cancel-in-progress: true

@@ -590,7 +590,7 @@ def audit_wheel():
         rec_lines = (
             _("The current user is in the wheel group."),
             _("To set up a separate wheel account, follow the instructions here:"),
-            bold("https://secureblue.dev/install#wheel"),
+            bold("https://secureblue.dev/post-install#wheel"),
         )
         rec = "\n".join(rec_lines)
         status = FAIL

@@ -24,6 +24,11 @@ if [ ! -d "$backup_key_path" ]; then
   backup_key_path="/var/home"
 fi
 
+if [ ! "$(grep -c ^ "/etc/crypttab")" -eq 1 ]; then
+  echo "Multi-drive setups not supported."
+  exit 1
+fi
+
 echo "WARNING LUKS drive encryption must have been enabled at install time for this script to run" 
 echo "ENSURE you save the backup key this script creates at $backup_key_path/luks_backup_key.txt ON ANOTHER COMPUTER"
 echo ""

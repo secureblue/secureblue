@@ -965,7 +965,7 @@ async def main() -> int:
         traceback.print_exception(err)
         print_err("\n" + _("*** Continuing... ***"))
         error_occurred = True
-    if "flatpak" not in skip:
+    if "flatpak" not in skip and command_succeeds("command", "-v", "flatpak"):
         print(_("Use option '{0}' to skip flatpak recommendations.").format(bold("--skip flatpak")))
     warn_if_root()
     if error_occurred:

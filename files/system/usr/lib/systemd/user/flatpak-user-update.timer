@@ -4,7 +4,7 @@ Documentation=man:flatpak(1)
 
 [Timer]
 RandomizedDelaySec=10m
-OnBootSec=2m
+OnStartupSec=2m
 OnCalendar=*-*-* 4:00:00
 Persistent=true
 

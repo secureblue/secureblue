@@ -43,6 +43,10 @@ modules:
       scripts:
         - removedkmshelper.sh
     - type: files
-      files:  
+      files:
         - source: system/silverblue
           destination: /
+    - type: justfiles
+      validate: true
+      include:
+        - silverblue.just

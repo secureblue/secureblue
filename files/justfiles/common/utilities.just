@@ -164,11 +164,6 @@ toolbox-assemble CONTAINER="prompt" ACTION="create" FILE="/etc/toolbox/toolbox.i
     source /usr/lib/ujust/ujust.sh
     ToolboxAssembleList "{{ FILE }}" "{{ ACTION }}" "{{ CONTAINER }}"
 
-# Add the unfiltered Flathub flatpak repo
-enable-flathub-unfiltered:
-    #!/usr/bin/bash
-    flatpak remote-add --if-not-exists --user flathub https://flathub.org/repo/flathub.flatpakrepo
-
 # Returns the state of container domain user namespaces. (enabled/disabled)
 check-container-userns-state:
     #!/usr/bin/bash
@@ -187,79 +182,6 @@ check-unconfined-userns-state:
         semodule -l | grep -q 'harden_userns' && echo 'disabled' || echo 'enabled'
     else
         unshare -U true &> /dev/null && echo 'enabled' || echo 'disabled'
-    fi
-
-# Install Steam via choice of 2 methods
-install-steam:
-    #!/usr/bin/bash
-    if [ -z "$(pgrep Xwayland)" ] && [ -z "$(pgrep Xorg)" ] ; then
-        echo "Steam requires X or Xwayland, which your variant of secureblue has disabled by default."
-        echo "Please run 'ujust toggle-xwayland' to re-enable it."
-        toggle_xwayland_now=""
-        read -rp "Would you like to run 'ujust toggle-xwayland' now? [Y/n] " toggle_xwayland_now
-        toggle_xwayland_now=${toggle_xwayland_now:-y}
-        if [[ "$toggle_xwayland_now" == [Yy]* ]]; then
-            echo "Running 'ujust toggle-xwayland'"
-            ujust toggle-xwayland
-            reboot_now=""
-            read -rp "Would you like to reboot now? [y/N] " reboot_now
-            if [[ "$reboot_now" == [Yy]* ]]; then
-                echo "Rebooting"
-                systemctl reboot
-            fi
-        fi
-    fi
-    valid_input="0"
-    method_selection=""
-    echo "Please select a method to install steam:"
-    echo "    1) Flatpak - will install the steam flatpak from flathub-unverified"
-    echo "    2) Distrobox - will set up steam via the bazzite-arch distrobox image"
-    while [[ "$valid_input" == "0" ]]; do
-        read -rp "Selection [1-2]: " method_selection
-        if [[ "$method_selection" == [12]* ]]; then
-            valid_input="1"
-        else
-            echo "That is not a valid selection."
-        fi
-    done
-
-    echo "" # blank space
-    case "$method_selection" in
-        1)
-            echo "Flatpak method selected."
-            echo "Enabling the unfiltered Flathub repo."
-            ujust enable-flathub-unfiltered
-            echo "Installing Steam flatpak."
-            flatpak install -y flathub com.valvesoftware.Steam
-            echo "Disabling hardened_malloc for Steam."
-            flatpak override --user --unset-env=LD_PRELOAD --nofilesystem=host-os com.valvesoftware.Steam
-            ;;
-        2)
-            echo "Distrobox method selected."
-            if [[ "$(ujust check-container-userns-state)" == "disabled" ]]; then
-                echo "Distrobox requires container domain user namespaces to work, which are disabled by default for security reasons."
-                echo "You need to run 'ujust toggle-container-domain-userns-creation' to allow this."
-                container_userns_now=""
-                read -rp "Would you like to run 'ujust toggle-container-domain-userns-creation' now? [Y/n] " container_userns_now
-                container_userns_now=${container_userns_now:-y}
-                if [[ "$container_userns_now" == [Yy]* ]]; then
-                    echo "Running 'ujust toggle-container-domain-userns-creation'"
-                    ujust toggle-container-domain-userns-creation
-                fi
-            fi
-            echo "Creating bazzite-arch distrobox."
-            distrobox-create --unshare-netns --nvidia --image ghcr.io/ublue-os/bazzite-arch --name bazzite-arch -Y
-            echo "Exporting Steam from bazzite-arch distrobox."
-            distrobox-enter -n bazzite-arch -- distrobox-export --app steam
-            ;;
-    esac
-
-    echo "Steam requires support for 32-bit processes/syscalls."
-    if rpm-ostree kargs | grep -q 'ia32_emulation=0'; then
-        echo "This script will now remove the 'ia32_emulation=0' kernel argument."
-        rpm-ostree kargs --delete-if-present="ia32_emulation=0"
-    else
-        echo "Do not set the 'ia32_emulation=0' kernel argument."
     fi
 
 # Install the official docker packages
@@ -520,3 +442,24 @@ install-vpn:
     echo 'Starting installation...'
     install_vpn "$vpn_choice"
     echo 'Please reboot your device to fully apply the changes.'
+
+# Setup USBGuard
+setup-usbguard:
+    #!/usr/bin/bash
+    echo "Notice: This will generate a policy based on your existing connected USB devices."
+    # shellcheck disable=SC2016
+    run0 sh -c '
+        mkdir -p /var/log/usbguard
+        mkdir -p /etc/usbguard
+        chmod 755 /etc/usbguard
+        groupadd usbguard
+        usermod -aG usbguard "$SUDO_USER"
+        usbguard generate-policy > /etc/usbguard/rules.conf
+        sed -i "/^IPCAllowedGroups=wheel/s/\$/ usbguard/" /etc/usbguard/usbguard-daemon.conf
+        restorecon -vR /var/log/usbguard
+        systemctl enable --now usbguard.service
+        usbguard add-user "$SUDO_USER"
+    '
+    if ! rpm-ostree status | grep '●' | grep -q 'securecore'; then
+        systemctl enable --user --now usbguard-notifier.service
+    fi

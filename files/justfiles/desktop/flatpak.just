@@ -6,9 +6,16 @@
 #
 #     http://www.apache.org/licenses/LICENSE-2.0
 #
-# Unless required by applicable law or agreed to in writing, software distributed under the License is
-# distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-# See the License for the specific language governing permissions and limitations under the License.
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+# Add the unfiltered Flathub flatpak repo
+enable-flathub-unfiltered:
+    #!/usr/bin/bash
+    flatpak remote-add --if-not-exists --user flathub https://flathub.org/repo/flathub.flatpakrepo
 
 # Harden flatpaks by preloading hardened_malloc (highest supported hwcap). When called with a flatpak application ID as an argument, applies the overrides to that application instead of globally.
 harden-flatpak FLATPAK_APPID="":
@@ -188,24 +195,3 @@ flatpak-reset-global-overrides:
     echo "This will undo the flatpak-harden command, the flatpak-permissions-lockdown command, as well as any other global overrides (individual app overrides will not be affected)."
     echo "It will not delete the file, but simply move it from $GLOBAL_OVERRIDES to $GLOBAL_OVERRIDES.save"
     mv "$GLOBAL_OVERRIDES" "$GLOBAL_OVERRIDES.save"
-
-# Setup USBGuard
-setup-usbguard:
-    #!/usr/bin/bash
-    echo "Notice: This will generate a policy based on your existing connected USB devices."
-    # shellcheck disable=SC2016
-    run0 sh -c '
-        mkdir -p /var/log/usbguard
-        mkdir -p /etc/usbguard
-        chmod 755 /etc/usbguard
-        groupadd usbguard
-        usermod -aG usbguard "$SUDO_USER"
-        usbguard generate-policy > /etc/usbguard/rules.conf
-        sed -i "/^IPCAllowedGroups=wheel/s/\$/ usbguard/" /etc/usbguard/usbguard-daemon.conf
-        restorecon -vR /var/log/usbguard
-        systemctl enable --now usbguard.service
-        usbguard add-user "$SUDO_USER"
-    '
-    if ! rpm-ostree status | grep '●' | grep -q 'securecore'; then
-        systemctl enable --user --now usbguard-notifier.service
-    fi

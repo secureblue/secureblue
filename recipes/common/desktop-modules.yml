@@ -17,6 +17,10 @@ modules:
         - https://copr.fedorainfracloud.org/coprs/secureblue/trivalent/repo/fedora-%OS_VERSION%/secureblue-trivalent-fedora-%OS_VERSION%.repo
       install:
         - trivalent-subresource-filter
+    - type: justfiles
+      validate: true
+      include:
+        - desktop
     - from-file: common/desktop-scripts.yml
     - type: fonts
       fonts:
@@ -29,5 +33,5 @@ modules:
       scripts:
         - enableflatpakautoupdate.sh
         - fixupstreamicdloaderbug.sh
-    - type: brew 
+    - type: brew
       brew-analytics: false

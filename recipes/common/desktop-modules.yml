@@ -33,9 +33,5 @@ modules:
           - JetBrainsMono
           - NerdFontsSymbolsOnly
           - Ubuntu
-    - type: script
-      scripts:
-        - enableflatpakautoupdate.sh
-        - fixupstreamicdloaderbug.sh
     - type: brew
       brew-analytics: false

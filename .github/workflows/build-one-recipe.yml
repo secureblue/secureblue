@@ -13,56 +13,20 @@
 name: build-secureblue
 permissions: {}
 on:
-  schedule:
-    - cron: "00 6 * * *" # build at 6:00 UTC every day 
-    
-  push:
-    branches-ignore: # don't rebuild for dependabot
-      - 'dependabot/**'
-    paths-ignore: # don't rebuild if only documentation has changed
-      - "**.md"
-      
-  workflow_dispatch: # allow manually triggering builds
+  workflow_call:
+    inputs:
+      recipe:
+        required: true
+        type: string
 
-# Cancels running workflows if a new workflow run for
-# the same workflow is started
-concurrency:
-  group: ${{ github.workflow }}-${{ github.ref || github.run_id }}
-  cancel-in-progress: true
 jobs:
   bluebuild:
     name: Build secureblue
-    if: github.triggering_actor == 'royaloughtness' || ${{ github.event_name == 'schedule' }} || ${{ github.event_name == 'push' }} 
     runs-on: ubuntu-24.04
     permissions:
       contents: read
       packages: write
       id-token: write
-    strategy:
-      fail-fast: false # stop GH from cancelling all matrix builds if one fails
-      matrix:
-        recipe:
-          # general
-          - general/recipe-silverblue-main.yml
-          - general/recipe-silverblue-nvidia.yml
-          - general/recipe-silverblue-nvidia-open.yml
-          - general/recipe-kinoite-main.yml
-          - general/recipe-kinoite-nvidia.yml
-          - general/recipe-kinoite-nvidia-open.yml
-          - general/recipe-sericea-main.yml
-          - general/recipe-sericea-nvidia.yml
-          - general/recipe-sericea-nvidia-open.yml
-          - general/recipe-cosmic-main.yml
-          - general/recipe-cosmic-nvidia.yml
-          - general/recipe-cosmic-nvidia-open.yml
-          # server
-          - securecore/recipe-securecore-main.yml
-          - securecore/recipe-securecore-nvidia.yml
-          - securecore/recipe-securecore-nvidia-open.yml
-          - securecore/recipe-securecore-zfs-main.yml
-          - securecore/recipe-securecore-zfs-nvidia.yml
-          - securecore/recipe-securecore-zfs-nvidia-open.yml
-
     steps:
       - name: Checkout repo
         uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
@@ -72,7 +36,7 @@ jobs:
       - name: Gather image data from recipe
         shell: bash
         env:
-          RECIPE: ${{ matrix.recipe }}
+          RECIPE: ${{ inputs.recipe }}
         run: |
           echo "IMAGE_NAME=$(grep '^name:' ./recipes/${RECIPE} | sed 's/^name: //')" >> $GITHUB_ENV
           echo "IMAGE_MAJOR_VERSION=$(grep '^image-version:' ./recipes/${RECIPE}| sed 's/^image-version: //')" >> $GITHUB_ENV

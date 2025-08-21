@@ -33,7 +33,7 @@ echo "Setting kernel.conf to $KERNEL_MODULE_TYPE"
 sed -i --sandbox "s/^MODULE_VARIANT=.*/MODULE_VARIANT=$KERNEL_MODULE_TYPE/" /etc/nvidia/kernel.conf
 
 echo "Installing kmod..."
-akmods --force --kernels "${KERNEL_VERSION}" --kmod "nvidia"
+LD_PRELOAD="" akmods --force --kernels "${KERNEL_VERSION}" --kmod "nvidia"
 
 # Depends on word splitting
 # shellcheck disable=SC2086

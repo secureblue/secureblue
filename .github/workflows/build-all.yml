@@ -31,7 +31,7 @@ concurrency:
   cancel-in-progress: true
 jobs:
   phase1-main:
-    name: Build secureblue main images
+    name: Build main images
     if: github.triggering_actor == 'royaloughtness' || ${{ github.event_name == 'schedule' }} || ${{ github.event_name == 'push' }} 
     permissions:
       contents: read
@@ -53,7 +53,7 @@ jobs:
       recipe: ${{ matrix.recipe }}
 
   phase2-nvidia:
-    name: Build secureblue nvidia images
+    name: Build nvidia images
     if: github.triggering_actor == 'royaloughtness' || ${{ github.event_name == 'schedule' }} || ${{ github.event_name == 'push' }} 
     needs: phase1-main
     permissions:
@@ -81,7 +81,7 @@ jobs:
       recipe: ${{ matrix.recipe }}
 
   phase3-zfs:
-    name: Build secureblue nvidia images
+    name: Build zfs images
     if: github.triggering_actor == 'royaloughtness' || ${{ github.event_name == 'schedule' }} || ${{ github.event_name == 'push' }}
     needs: phase2-nvidia
     permissions:

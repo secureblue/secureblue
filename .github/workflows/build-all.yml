@@ -51,6 +51,7 @@ jobs:
     uses: ./.github/workflows/build-one-recipe.yml
     with:
       recipe: ${{ matrix.recipe }}
+    secrets: inherit
 
   phase2-nvidia:
     name: Build nvidia images
@@ -79,6 +80,7 @@ jobs:
     uses: ./.github/workflows/build-one-recipe.yml
     with:
       recipe: ${{ matrix.recipe }}
+    secrets: inherit
 
   phase3-zfs:
     name: Build zfs images
@@ -99,3 +101,4 @@ jobs:
     uses: ./.github/workflows/build-one-recipe.yml
     with:
       recipe: ${{ matrix.recipe }}
+    secrets: inherit

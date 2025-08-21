@@ -57,7 +57,7 @@ jobs:
         with:
           containers: ${{ env.BASE_IMAGE_NAME }}:${{ env.IMAGE_MAJOR_VERSION }}
           registry: 'ghcr.io/secureblue'
-          pubkey: 'cosign.pub'
+          pubkey: 'https://raw.githubusercontent.com/secureblue/secureblue/refs/heads/live/cosign.pub'
 
       - name: Build secureblue
         uses: blue-build/github-action@968216e45d3f5f23de24f7804259e1384cf5f358 # v1.8.3

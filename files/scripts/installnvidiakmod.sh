@@ -27,7 +27,6 @@ sed -i '/^enabled=1/a\priority=90' /etc/yum.repos.d/negativo17-fedora-nvidia.rep
 
 dnf install -y "kernel-devel-matched-$(rpm -q 'kernel' --queryformat '%{VERSION}')"
 dnf install -y "akmod-nvidia*.fc${RELEASE}"
-cat /var/cache/akmods/nvidia/*.log
 
 sed -i --sandbox "s/^MODULE_VARIANT=.*/MODULE_VARIANT=$KERNEL_MODULE_TYPE/" /etc/nvidia/kernel.conf
 akmods --force --kernels "${KERNEL_VERSION}" --kmod "nvidia"

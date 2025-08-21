@@ -26,8 +26,6 @@ setup() {
     for filepath in /usr/share/bluebuild/justfiles/*.just; do
         sudo sh -c "echo \"import '$filepath'\" >> /usr/share/ublue-os/just/60-custom.just"
     done
-
-    sudo ln -s /bin/pkexec /bin/run0
 }
 
 @test "Ensure ujust is configured correctly for tests" {

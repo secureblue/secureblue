@@ -17,9 +17,7 @@ scripts:
   - httpsmirrors.sh
   - createmissingdirectories.sh
   - disablegeoclue.sh
-  - enablesecurebluefirstrun.sh
   - createjustcompletions.sh
-  - enablekeyverification.sh
   - removefedoraflatpakremoteservice.sh
   - enablecommonautoupdate.sh
   - localization.sh

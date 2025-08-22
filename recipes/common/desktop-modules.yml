@@ -11,6 +11,10 @@
 # See the License for the specific language governing permissions and limitations under the License.
 
 modules:
+    - type: files
+      files:
+        - source: system/desktop
+          destination: /
     - from-file: common/desktop-packages.yml
     - type: rpm-ostree
       repos:
@@ -29,9 +33,5 @@ modules:
           - JetBrainsMono
           - NerdFontsSymbolsOnly
           - Ubuntu
-    - type: script
-      scripts:
-        - enableflatpakautoupdate.sh
-        - fixupstreamicdloaderbug.sh
     - type: brew
       brew-analytics: false

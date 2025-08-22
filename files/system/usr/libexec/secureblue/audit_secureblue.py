@@ -923,6 +923,27 @@ async def audit_flatpak_permissions(state):
             recs=flatpak_permissions_state.recs,
         )
 
+@audit
+def audit_webcam_module():
+    """Ensure Webcam module is disabled."""
+    webcam_mod_file = "/etc/modprobe.d/99-disable-webcam.conf"
+    try:
+        with open(webcam_mod_file, encoding="utf-8") as f:
+            conf = f.readlines()
+            status = INFO
+            if len(conf) == 1 and conf[0] == "install uvcvideo /bin/false":
+                status = PASS
+    except FileNotFoundError:
+        status = INFO
+
+    if status == INFO
+        rec_lines = (
+            _("Webcam module is enabled."),
+            _("To disable it, run:"),
+            "$ ujust disable-webcam",
+        )
+        rec = "\n".join(rec_lines)
+    yield Report(_("Ensure Webcam module is disabled"), status, recs=rec)
 
 ###############################################################################
 # Checks to be run go above this line.

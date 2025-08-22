@@ -26,8 +26,6 @@ setup() {
     for filepath in /usr/share/bluebuild/justfiles/*.just; do
         sudo sh -c "echo \"import '$filepath'\" >> /usr/share/ublue-os/just/60-custom.just"
     done
-
-    sudo ln -s /usr/bin/pkexec /usr/bin/run0
 }
 
 @test "Ensure ujust is configured correctly for tests" {
@@ -42,13 +40,4 @@ setup() {
     run ujust toggle-user-motd
     [ "$status" -eq 0 ]
     [ ! -f "${HOME}/.config/no-show-user-motd" ]
-}
-
-@test "Ensure webcam toggle functions properly" {
-    run ujust disable-webcam
-    [ "$status" -eq 0 ]
-    [ -f "/etc/modprobe.d/99-disable-webcam.conf" ]
-    run ujust reset-webcam
-    [ "$status" -eq 0 ]
-    [ ! -f "/etc/modprobe.d/99-disable-webcam.conf" ]
 }

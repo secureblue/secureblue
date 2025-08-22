@@ -85,20 +85,21 @@ override-reset-module mod_name:
 
 # disable the webcam kernel module
 disable-webcam:
-    #! /bin/run0 /bin/bash
+    #!/usr/bin/bash
     WEBCAM_MOD_FILE="/etc/modprobe.d/99-disable-webcam.conf"
     if [ -e "$WEBCAM_MOD_FILE" ]; then
-      echo "$WEBCAM_MOD_FILE module is already disabled."
+      echo "Webcam module is already disabled."
     else
-      sh -c 'echo "install uvcvideo /bin/false" >> "$1"' _ "$WEBCAM_MOD_FILE"
-      chmod 644 "$WEBCAM_MOD_FILE"
+      run0 echo "install uvcvideo /bin/false" > "$WEBCAM_MOD_FILE"
       echo "Override created to disable the webcam module. Reboot to take effect."
     fi
 
 # reset the webcam kernel module
 reset-webcam:
     #!/usr/bin/bash
-    ujust override-reset-module disable-webcam
+    WEBCAM_MOD_FILE="/etc/modprobe.d/99-disable-webcam.conf"
+    run0 rm "$WEBCAM_MOD_FILE"
+    echo "Webcam module reset."
 
 # Toggle debug mode (requires restart)
 toggle-debug-mode:

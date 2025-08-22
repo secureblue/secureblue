@@ -90,7 +90,7 @@ disable-webcam:
     if [ -e "$WEBCAM_MOD_FILE" ]; then
       echo "Webcam module is already disabled."
     else
-      echo "install uvcvideo /bin/false" | run0 tee "$WEBCAM_MOD_FILE" 
+      echo "install uvcvideo /bin/false" | /usr/bin/run0 tee "$WEBCAM_MOD_FILE" 
       echo "Override created to disable the webcam module. Reboot to take effect."
     fi
 

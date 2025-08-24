@@ -32,7 +32,7 @@ concurrency:
 jobs:
   silverblue-main:
     name: Build silverblue main
-    if: github.triggering_actor == 'royaloughtness' || ${{ github.event_name == 'schedule' }} || ${{ github.event_name == 'push' }} 
+    if: github.triggering_actor == 'royaloughtness' || github.event_name == 'schedule' || github.event_name == 'push'
     permissions:
       contents: read
       packages: write
@@ -45,11 +45,13 @@ jobs:
     uses: ./.github/workflows/build-one-recipe.yml
     with:
       recipe: ${{ matrix.recipe }}
-    secrets: inherit
+    secrets:
+      SIGNING_SECRET: ${{ secrets.SIGNING_SECRET }}
+      KERNEL_PRIVKEY: ${{ secrets.KERNEL_PRIVKEY }}
 
   kinoite-main:
     name: Build kinoite main
-    if: github.triggering_actor == 'royaloughtness' || ${{ github.event_name == 'schedule' }} || ${{ github.event_name == 'push' }} 
+    if: github.triggering_actor == 'royaloughtness' || github.event_name == 'schedule' || github.event_name == 'push'
     permissions:
       contents: read
       packages: write
@@ -62,11 +64,13 @@ jobs:
     uses: ./.github/workflows/build-one-recipe.yml
     with:
       recipe: ${{ matrix.recipe }}
-    secrets: inherit
+    secrets:
+      SIGNING_SECRET: ${{ secrets.SIGNING_SECRET }}
+      KERNEL_PRIVKEY: ${{ secrets.KERNEL_PRIVKEY }}
 
   sericea-main:
     name: Build sericea main
-    if: github.triggering_actor == 'royaloughtness' || ${{ github.event_name == 'schedule' }} || ${{ github.event_name == 'push' }} 
+    if: github.triggering_actor == 'royaloughtness' || github.event_name == 'schedule' || github.event_name == 'push'
     permissions:
       contents: read
       packages: write
@@ -79,11 +83,13 @@ jobs:
     uses: ./.github/workflows/build-one-recipe.yml
     with:
       recipe: ${{ matrix.recipe }}
-    secrets: inherit
+    secrets:
+      SIGNING_SECRET: ${{ secrets.SIGNING_SECRET }}
+      KERNEL_PRIVKEY: ${{ secrets.KERNEL_PRIVKEY }}
 
   cosmic-main:
     name: Build cosmic main
-    if: github.triggering_actor == 'royaloughtness' || ${{ github.event_name == 'schedule' }} || ${{ github.event_name == 'push' }} 
+    if: github.triggering_actor == 'royaloughtness' || github.event_name == 'schedule' || github.event_name == 'push'
     permissions:
       contents: read
       packages: write
@@ -96,11 +102,13 @@ jobs:
     uses: ./.github/workflows/build-one-recipe.yml
     with:
       recipe: ${{ matrix.recipe }}
-    secrets: inherit
+    secrets:
+      SIGNING_SECRET: ${{ secrets.SIGNING_SECRET }}
+      KERNEL_PRIVKEY: ${{ secrets.KERNEL_PRIVKEY }}
 
   securecore-main:
     name: Build securecore main
-    if: github.triggering_actor == 'royaloughtness' || ${{ github.event_name == 'schedule' }} || ${{ github.event_name == 'push' }} 
+    if: github.triggering_actor == 'royaloughtness' || github.event_name == 'schedule' || github.event_name == 'push'
     permissions:
       contents: read
       packages: write
@@ -113,11 +121,13 @@ jobs:
     uses: ./.github/workflows/build-one-recipe.yml
     with:
       recipe: ${{ matrix.recipe }}
-    secrets: inherit
+    secrets:
+      SIGNING_SECRET: ${{ secrets.SIGNING_SECRET }}
+      KERNEL_PRIVKEY: ${{ secrets.KERNEL_PRIVKEY }}
 
   silverblue-nvidia:
     name: Build silverblue nvidia images
-    if: github.triggering_actor == 'royaloughtness' || ${{ github.event_name == 'schedule' }} || ${{ github.event_name == 'push' }} 
+    if: github.triggering_actor == 'royaloughtness' || github.event_name == 'schedule' || github.event_name == 'push'
     needs: silverblue-main
     permissions:
       contents: read
@@ -132,11 +142,13 @@ jobs:
     uses: ./.github/workflows/build-one-recipe.yml
     with:
       recipe: ${{ matrix.recipe }}
-    secrets: inherit
+    secrets:
+      SIGNING_SECRET: ${{ secrets.SIGNING_SECRET }}
+      KERNEL_PRIVKEY: ${{ secrets.KERNEL_PRIVKEY }}
 
   kinoite-nvidia:
     name: Build kinoite nvidia images
-    if: github.triggering_actor == 'royaloughtness' || ${{ github.event_name == 'schedule' }} || ${{ github.event_name == 'push' }} 
+    if: github.triggering_actor == 'royaloughtness' || github.event_name == 'schedule' || github.event_name == 'push'
     needs: kinoite-main
     permissions:
       contents: read
@@ -151,11 +163,13 @@ jobs:
     uses: ./.github/workflows/build-one-recipe.yml
     with:
       recipe: ${{ matrix.recipe }}
-    secrets: inherit
+    secrets:
+      SIGNING_SECRET: ${{ secrets.SIGNING_SECRET }}
+      KERNEL_PRIVKEY: ${{ secrets.KERNEL_PRIVKEY }}
 
   sericea-nvidia:
     name: Build sericea nvidia images
-    if: github.triggering_actor == 'royaloughtness' || ${{ github.event_name == 'schedule' }} || ${{ github.event_name == 'push' }} 
+    if: github.triggering_actor == 'royaloughtness' || github.event_name == 'schedule' || github.event_name == 'push'
     needs: sericea-main
     permissions:
       contents: read
@@ -170,11 +184,13 @@ jobs:
     uses: ./.github/workflows/build-one-recipe.yml
     with:
       recipe: ${{ matrix.recipe }}
-    secrets: inherit
+    secrets:
+      SIGNING_SECRET: ${{ secrets.SIGNING_SECRET }}
+      KERNEL_PRIVKEY: ${{ secrets.KERNEL_PRIVKEY }}
 
   cosmic-nvidia:
     name: Build cosmic nvidia images
-    if: github.triggering_actor == 'royaloughtness' || ${{ github.event_name == 'schedule' }} || ${{ github.event_name == 'push' }} 
+    if: github.triggering_actor == 'royaloughtness' || github.event_name == 'schedule' || github.event_name == 'push'
     needs: cosmic-main
     permissions:
       contents: read
@@ -189,11 +205,13 @@ jobs:
     uses: ./.github/workflows/build-one-recipe.yml
     with:
       recipe: ${{ matrix.recipe }}
-    secrets: inherit
+    secrets:
+      SIGNING_SECRET: ${{ secrets.SIGNING_SECRET }}
+      KERNEL_PRIVKEY: ${{ secrets.KERNEL_PRIVKEY }}
 
   securecore-nvidia:
     name: Build securecore nvidia images
-    if: github.triggering_actor == 'royaloughtness' || ${{ github.event_name == 'schedule' }} || ${{ github.event_name == 'push' }} 
+    if: github.triggering_actor == 'royaloughtness' || github.event_name == 'schedule' ||github.event_name == 'push'
     needs: securecore-main
     permissions:
       contents: read
@@ -208,7 +226,9 @@ jobs:
     uses: ./.github/workflows/build-one-recipe.yml
     with:
       recipe: ${{ matrix.recipe }}
-    secrets: inherit
+    secrets:
+      SIGNING_SECRET: ${{ secrets.SIGNING_SECRET }}
+      KERNEL_PRIVKEY: ${{ secrets.KERNEL_PRIVKEY }}
 
   zfs:
     name: Build zfs images
@@ -228,4 +248,6 @@ jobs:
     uses: ./.github/workflows/build-one-recipe.yml
     with:
       recipe: ${{ matrix.recipe }}
-    secrets: inherit
+    secrets:
+      SIGNING_SECRET: ${{ secrets.SIGNING_SECRET }}
+      KERNEL_PRIVKEY: ${{ secrets.KERNEL_PRIVKEY }}

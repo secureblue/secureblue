@@ -15,6 +15,9 @@
 
 set -oue pipefail
 
+mkdir -p /var/tmp
+chmod 1777 /var/tmp
+
 KERNEL_VERSION="$(rpm -q "kernel" --queryformat '%{VERSION}-%{RELEASE}.%{ARCH}')"
 RELEASE="$(rpm -E '%fedora.%_arch')"
 KERNEL_MODULE_TYPE="kernel"

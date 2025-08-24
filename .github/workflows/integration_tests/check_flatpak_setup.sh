@@ -26,10 +26,6 @@ test-fail() {
     exit 1
 }
 
-if ! systemctl --user is-enabled --quiet "${timer_name}"; then
-    test-fail "${timer_name} is not enabled."
-fi
-
 check-flatpak-remotes() {
     if [ "$(flatpak remotes --columns=name)" != 'flathub-verified' ]; then
         test-fail "flathub-verified flatpak remote not present or not the only remote."
@@ -43,6 +39,13 @@ check-installed-flatpaks() {
         test-fail "installed flatpaks were not as expected (Flatseal only)."
     fi
 }
+
+# Wait a few seconds to give the service time to start
+sleep 5
+
+if ! systemctl --user is-enabled --quiet "${timer_name}"; then
+    test-fail "${timer_name} is not enabled."
+fi
 
 state=$(systemctl --user show "${service_name}" --property=ActiveState | sed 's/^ActiveState=//')
 

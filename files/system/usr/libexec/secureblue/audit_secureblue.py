@@ -951,6 +951,7 @@ async def audit_flatpak_permissions(state):
             recs=flatpak_permissions_state.recs,
         )
 
+
 ###############################################################################
 # Checks to be run go above this line.
 ###############################################################################

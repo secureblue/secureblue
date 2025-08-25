@@ -26,7 +26,7 @@ on:
 jobs:
   build:
     name: Trivy
-    if: github.triggering_actor == 'royaloughtness' || ${{ github.event_name == 'schedule' }} || ${{ github.event_name == 'push' }} 
+    if: github.triggering_actor == 'royaloughtness' || github.event_name == 'schedule' || github.event_name == 'push'
     runs-on: ubuntu-24.04
     permissions:
       security-events: write

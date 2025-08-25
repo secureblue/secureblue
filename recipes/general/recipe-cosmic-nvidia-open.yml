@@ -14,15 +14,10 @@ name: cosmic-nvidia-open-hardened
 
 description: "Cosmic with nvidia-open, hardened"
 
-base-image: quay.io/fedora-ostree-desktops/cosmic-atomic
+base-image: ghcr.io/secureblue/cosmic-main-hardened
 
-image-version: 42
+image-version: latest
 
 modules:
-  - from-file: common/common-modules.yml
-  - from-file: common/cosmic-modules.yml
-  - from-file: common/desktop-modules.yml
-  - from-file: common/nvidia-install.yml 
-  - from-file: common/proprietary-modules.yml
-  - from-file: common/selinux-modules.yml
+  - from-file: common/nvidia-install.yml
   - from-file: common/final-modules.yml

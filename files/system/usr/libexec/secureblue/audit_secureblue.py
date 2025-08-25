@@ -863,27 +863,26 @@ def audit_webcam_module():
     """Ensure Webcam module is disabled."""
     webcam_mod_file = "/etc/modprobe.d/99-disable-webcam.conf"
     status = UNKNOWN
+    rec = None
     warning = None
     try:
         with open(webcam_mod_file, encoding="utf-8") as f:
             conf = f.readlines()
-            if len(conf) == 1 and conf[0].strip() == "install uvcvideo /bin/false":
+            if f.read().strip() == "install uvcvideo /bin/false":
                 status = PASS
     except FileNotFoundError:
         status = INFO
-    except PermissionError:
-        warning = _("Unable to read file {0}.").format(webcam_mod_file)
-
-    rec = None
-    if status == INFO:
         rec_lines = (
             _("Webcam module is enabled."),
             _("To disable it, run:"),
             "$ ujust disable-webcam",
         )
         rec = "\n".join(rec_lines)
+        warning = _("Webcam module is enabled.")
+    except PermissionError:
+        warning = _("Unable to read file {0}.").format(webcam_mod_file)
 
-    yield Report(_("Ensure Webcam module is disabled"), status, warnings=warning, recs=rec)
+    yield Report(_("Checking whether webcam module is disabled"), status, warnings=warning, recs=rec)
 
 
 @audit

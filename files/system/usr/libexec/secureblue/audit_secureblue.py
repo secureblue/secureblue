@@ -946,6 +946,9 @@ def audit_webcam_module():
             "$ ujust disable-webcam",
         )
         rec = "\n".join(rec_lines)
+    else
+        rec = None
+        status = UNKNOWN
     yield Report(_("Ensure Webcam module is disabled"), status, recs=rec)
 
 ###############################################################################

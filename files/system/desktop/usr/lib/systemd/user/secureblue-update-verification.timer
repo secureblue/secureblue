@@ -1,0 +1,10 @@
+[Unit]
+Description=secureblue update verification timer
+
+[Timer]
+RandomizedDelaySec=1m
+OnStartupSec=2m
+OnUnitActiveSec=1d
+
+[Install]
+WantedBy=timers.target

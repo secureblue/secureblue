@@ -14,3 +14,9 @@ modules:
   - type: script
     scripts:
       - installzfskmod.sh
+    secrets:
+      - type: env
+        name: KERNEL_PRIVKEY
+        mount:
+          type: file
+          destination: /tmp/certs/private_key.priv

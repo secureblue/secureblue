@@ -34,3 +34,5 @@ modules:
         - setservermotd.sh
         - removebrewjust.sh
         - removesuid.sh
+        - securecoreremovebrewmotd.sh
+        - securecoreremovemigrationmotd.sh

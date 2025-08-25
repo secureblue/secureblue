@@ -1,13 +1,34 @@
+# Copyright 2025 The Secureblue Authors
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software distributed under the License is
+# distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and limitations under the License.
+
 name: build-secureblue
+permissions: {}
 on:
   schedule:
     - cron: "00 6 * * *" # build at 6:00 UTC every day 
     
   push:
+    branches-ignore: # don't rebuild for dependabot
+      - 'dependabot/**'
     paths-ignore: # don't rebuild if only documentation has changed
       - "**.md"
       
   workflow_dispatch: # allow manually triggering builds
+
+# Cancels running workflows if a new workflow run for
+# the same workflow is started
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref || github.run_id }}
+  cancel-in-progress: true
 jobs:
   bluebuild:
     name: Build secureblue
@@ -44,13 +65,18 @@ jobs:
 
     steps:
       - name: Checkout repo
-        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
+        with:
+          persist-credentials: false
 
       - name: Gather image data from recipe
+        shell: bash
+        env:
+          RECIPE: ${{ matrix.recipe }}
         run: |
-          echo "IMAGE_NAME=$(grep '^name:' ./recipes/${{ matrix.recipe }} | sed 's/^name: //')" >> $GITHUB_ENV
-          echo "IMAGE_MAJOR_VERSION=$(grep '^image-version:' ./recipes/${{ matrix.recipe }} | sed 's/^image-version: //')" >> $GITHUB_ENV
-          BASE_IMAGE=$(grep '^base-image:' ./recipes/${{ matrix.recipe }} | sed 's/^base-image: //')
+          echo "IMAGE_NAME=$(grep '^name:' ./recipes/${RECIPE} | sed 's/^name: //')" >> $GITHUB_ENV
+          echo "IMAGE_MAJOR_VERSION=$(grep '^image-version:' ./recipes/${RECIPE}| sed 's/^image-version: //')" >> $GITHUB_ENV
+          BASE_IMAGE=$(grep '^base-image:' ./recipes/${RECIPE} | sed 's/^base-image: //')
           echo "BASE_IMAGE_NAME=$(echo $BASE_IMAGE | sed 's/.*\/.*\///')" >> $GITHUB_ENV
 
       - name: Verify base image
@@ -61,15 +87,12 @@ jobs:
           registry: 'quay.io/fedora-ostree-desktops'
           pubkey: 'https://gitlab.com/fedora/ostree/ci-test/-/raw/main/quay.io-fedora-ostree-desktops.pub'
 
-      - name: Retrieve Signing Key
-        shell: bash
-        run: |
-          echo "${{ secrets.KERNEL_PRIVKEY }}" > ./files/scripts/certs/private_key.priv
-
       - name: Build secureblue
-        uses: blue-build/github-action@4d8b4df657ec923574611eec6fd7e959416c47f0 # v1.8.1
+        uses: blue-build/github-action@968216e45d3f5f23de24f7804259e1384cf5f358 # v1.8.3
+        env:
+          KERNEL_PRIVKEY: ${{ secrets.KERNEL_PRIVKEY }}
         with:          
-          cli_version: v0.9.16
+          cli_version: v0.9.21
           recipe: ${{ matrix.recipe }}
           cosign_private_key: ${{ secrets.SIGNING_SECRET }}
           registry_token: ${{ github.token }}
@@ -77,3 +100,4 @@ jobs:
           maximize_build_space: true
           squash: true
           skip_checkout: true
+          use_cache: false

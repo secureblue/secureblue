@@ -49,6 +49,6 @@ elif [ "$DIFFERENCE" -ge "$WEEK" ]; then
 else
     TIP='**For secureblue release notifications,** [subscribe:](https://secureblue.dev/faq#releases)'
 fi
-sed -e "s/%IMAGE_REF_NAME%/$IMAGE_REF_NAME/g" -e "s|%TIP%|$TIP|g" /usr/share/ublue-os/motd/secureblue.md | tr '~' '\n' | { command -v glow >/dev/null 2>&1 && glow -s auto -w 78 - || cat; }
+sed --sandbox -e "s/%IMAGE_REF_NAME%/$IMAGE_REF_NAME/g" -e "s|%TIP%|$TIP|g" /usr/share/ublue-os/motd/secureblue.md | tr '~' '\n' | { command -v glow >/dev/null 2>&1 && glow -s auto -w 78 - || cat; }
 
 

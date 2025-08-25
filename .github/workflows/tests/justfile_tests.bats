@@ -22,7 +22,7 @@ setup() {
     sudo cp -f files/system/usr/bin/ujust /usr/bin/ujust
     sudo cp -f files/system/usr/share/ublue-os/just/60-custom.just /usr/share/ublue-os/just/
     sudo cp -f files/system/usr/share/ublue-os/justfile /usr/share/ublue-os/
-    sudo cp -f files/justfiles/*.just /usr/share/bluebuild/justfiles/
+    sudo find files/justfiles -type f -name '*.just' -execdir cp -f '{}' /usr/share/bluebuild/justfiles/ ';'
     for filepath in /usr/share/bluebuild/justfiles/*.just; do
         sudo sh -c "echo \"import '$filepath'\" >> /usr/share/ublue-os/just/60-custom.just"
     done

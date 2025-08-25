@@ -110,5 +110,5 @@ printf "Command to execute:\n%s\n\n" "$rebase_command"
 
 read -rp "Proceed? (yes/No): " rebase_proceed
 if is_yes "$rebase_proceed"; then
-    $rebase_command
+    eval "$rebase_command"
 fi

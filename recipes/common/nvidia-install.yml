@@ -13,7 +13,15 @@
 modules:
   - type: script
     scripts:
-      - installnvidiakmod.sh
+      - installnvidiakmod.sh    
+    secrets:
+      - type: env
+        name: KERNEL_PRIVKEY
+        mount:
+          type: file
+          destination: /tmp/certs/private_key.priv
+  - type: script
+    scripts:
       - installnvidiapackages.sh
       - removeunusedrepos.sh
       - setearlyloading.sh

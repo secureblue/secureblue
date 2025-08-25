@@ -867,7 +867,6 @@ def audit_webcam_module():
     warning = None
     try:
         with open(webcam_mod_file, encoding="utf-8") as f:
-            conf = f.readlines()
             if f.read().strip() == "install uvcvideo /bin/false":
                 status = PASS
     except FileNotFoundError:

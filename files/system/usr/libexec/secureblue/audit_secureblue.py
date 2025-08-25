@@ -935,6 +935,9 @@ def audit_webcam_module():
                 status = PASS
     except FileNotFoundError:
         status = INFO
+    except PermissionError:
+        status = UNKNOWN
+        warning = _("Unable to read file {0}.").format(webcam_mod_file)
 
     if status == INFO:
         rec_lines = (

@@ -22,12 +22,9 @@ modules:
       - ffmpegthumbnailer
       - pipewire-libs-extra
       - libfdk-aac
-      - gstreamer1-plugins-ugly  
-      - gstreamer1-plugins-bad
+      - gstreamer1-plugins-ugly
       remove:
       - gstreamer1-plugins-ugly-free
-      - gstreamer1-plugins-bad-free
-      - gstreamer1-plugins-bad-free-libs
       - fdk-aac-free
       - ffmpeg-free
       - libavcodec-free  

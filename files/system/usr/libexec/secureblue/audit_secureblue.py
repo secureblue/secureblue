@@ -885,6 +885,7 @@ def audit_webcam_module():
         _("Checking whether webcam module is disabled"), status, warnings=warning, recs=rec
     )
 
+
 @audit
 @categorize("flatpak")
 def audit_flatpak_remotes():

@@ -14,17 +14,12 @@ name: sericea-nvidia-open-hardened
 
 description: "Sericea with nvidia-open, hardened"
 
-base-image: quay.io/fedora-ostree-desktops/sway-atomic
+base-image: ghcr.io/secureblue/sericea-main-hardened
 
-image-version: 42
+image-version: latest
 
 modules:
-  - from-file: common/common-modules.yml
-  - from-file: common/sericea-modules.yml
-  - from-file: common/desktop-modules.yml
   - from-file: common/nvidia-install.yml 
-  - from-file: common/proprietary-modules.yml
-  - from-file: common/selinux-modules.yml
   - from-file: common/final-modules.yml
   - type: script
     scripts:

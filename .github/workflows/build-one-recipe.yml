@@ -18,6 +18,11 @@ on:
       recipe:
         required: true
         type: string
+    secrets:
+      SIGNING_SECRET:
+        required: true
+      KERNEL_PRIVKEY:
+        required: true
 
 jobs:
   bluebuild:
@@ -64,7 +69,7 @@ jobs:
         env:
           KERNEL_PRIVKEY: ${{ secrets.KERNEL_PRIVKEY }}
         with:          
-          cli_version: v0.9.21
+          cli_version: v0.9.22
           recipe: ${{ inputs.recipe }}
           cosign_private_key: ${{ secrets.SIGNING_SECRET }}
           registry_token: ${{ github.token }}

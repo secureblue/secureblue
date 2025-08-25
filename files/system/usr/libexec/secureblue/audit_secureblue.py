@@ -936,7 +936,7 @@ def audit_webcam_module():
     except FileNotFoundError:
         status = INFO
 
-    if status == INFO
+    if status == INFO:
         rec_lines = (
             _("Webcam module is enabled."),
             _("To disable it, run:"),

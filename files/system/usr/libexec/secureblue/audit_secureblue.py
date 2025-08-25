@@ -881,8 +881,9 @@ def audit_webcam_module():
     except PermissionError:
         warning = _("Unable to read file {0}.").format(webcam_mod_file)
 
-    yield Report(_("Checking whether webcam module is disabled"), status, warnings=warning, recs=rec)
-
+    yield Report(
+        _("Checking whether webcam module is disabled"), status, warnings=warning, recs=rec
+    )
 
 @audit
 @categorize("flatpak")

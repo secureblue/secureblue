@@ -215,6 +215,7 @@ def validate_sysctl(sysctl: str, actual: str, expected: str) -> bool:
         return actual in (expected, "0", "4")
     return actual == expected
 
+
 """
 To use this customize this framework you can set these arguements as shown
 below in a list called run0 in the decorator call.
@@ -275,10 +276,11 @@ Below is the complete set of defaults:
     "--property=SystemCallErrorNumber=EPERM",
 """
 
+
 def run0_args(run0: list[str]) -> list[str]:
-    if (run0[0] == None):
+    if run0[0] == None:
         run0[0] = "/dev/null"
-    if (run0[1] == None):
+    if run0[1] == None:
         run0[1] = "CAP_DAC_READ_SEARCH"
 
     # Copyright (C) 2025 Daniel Hast
@@ -322,51 +324,57 @@ def run0_args(run0: list[str]) -> list[str]:
         "--property=SystemCallFilter=@system-service",
         f"--property=SystemCallFilter=~{' '.join(SYSTEM_CALL_DENY)}",
         "--property=SystemCallErrorNumber=EPERM",
-        ]
-    
+    ]
+
     for property in run0[2:]:
         if "ReadWritePaths" in run0 or "CapabilityBoundingSet" in run0:
-            print("Invalid run0 config, run0 of index 2 (arg3) and later cannot be ReadWritePaths or CapabilityBoundingSet")
+            print(
+                "Invalid run0 config, run0 of index 2 (arg3) and later cannot be ReadWritePaths or CapabilityBoundingSet"
+            )
             return 1
         if property in SYSTEMD_SANDBOX_PROPERTIES:
             if property in SYSTEM_CALL_DENY:
-                property = property.split(' ')
+                property = property.split(" ")
                 for call in property:
                     if call in SYSTEM_CALL_DENY:
                         index = SYSTEM_CALL_DENY.index(call)
                         SYSTEM_CALL_DENY.pop(index)
                 index = SYSTEMD_SANDBOX_PROPERTIES.index("SystemCallFilter=~")
-                SYSTEMD_SANDBOX_PROPERTIES[index] = f"--property=SystemCallFilter=~{' '.join(SYSTEM_CALL_DENY)}"
+                SYSTEMD_SANDBOX_PROPERTIES[index] = (
+                    f"--property=SystemCallFilter=~{' '.join(SYSTEM_CALL_DENY)}"
+                )
             else:
                 index = SYSTEMD_SANDBOX_PROPERTIES.index(property)
                 new_property = SYSTEMD_SANDBOX_PROPERTIES[index]
-                new_property = new_property.split('=')
-                property = property.split('=')
+                new_property = new_property.split("=")
+                property = property.split("=")
                 new_property[2] = property[2]
-                new_property = '='.join(new_property)
+                new_property = "=".join(new_property)
                 SYSTEMD_SANDBOX_PROPERTIES[index] = new_property
         else:
             property = "--property=" + property
             SYSTEMD_SANDBOX_PROPERTIES.append(property)
     return SYSTEMD_SANDBOX_PROPERTIES
 
-        
 
 def sandbox(run0_input: list[str]):
     """Execute the given function with a sandboxed run0."""
+
     def sand(func: function):
         def wrapper():
             run0 = run0_args(run0_input)
             command = [
-            "/usr/bin/run0",
-            *run0,
-            "/usr/bin/python3",
-            "-",
+                "/usr/bin/run0",
+                *run0,
+                "/usr/bin/python3",
+                "-",
             ]
-            #todo fix passing original function call, and return
+            # todo fix passing original function call, and return
             source = inspect.getsource(func)
             lines = source.splitlines()
-            body = textwrap.dedent("\n".join(lines[2:len(lines)-1]))
+            body = textwrap.dedent("\n".join(lines[2 : len(lines) - 1]))
             return subprocess.run(command, input=str(body), text=True, check=True)
+
         return wrapper
+
     return sand

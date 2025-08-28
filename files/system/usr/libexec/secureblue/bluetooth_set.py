@@ -48,7 +48,8 @@ BLUE_MOD_PATH: Final[str] = "/etc/modprobe.d/"
 BLUE_MOD_FILE: Final[str] = "/etc/modprobe.d/99-bluetooth.conf"
 BLUE_MOD_TEXT: Final[str] = """install bluetooth /sbin/modprobe --ignore-install bluetooth
 install btusb /sbin/modprobe --ignore-install btusb"""
-RUN0_CONFIG: Final[list[str]] = [BLUE_MOD_FILE, "CAP_DAC_OVERRIDE"] 
+RUN0_CONFIG: Final[list[str]] = [BLUE_MOD_FILE, "CAP_DAC_OVERRIDE"]
+
 
 def is_module_loaded(module_name: str) -> bool:
     """Checks if a given kernel module is currently loaded by checking for it in /proc/modules"""
@@ -72,6 +73,7 @@ def status(disabled: bool):
         message += ", and after a reboot. Bluetooth will be enabled."
     print(message)
 
+
 @sandbox(RUN0_CONFIG)
 def inner(mode: bool):
     """Checks arguements, and adds or deletes the relevant modprobe file."""
@@ -90,6 +92,7 @@ def inner(mode: bool):
         case _:
             print("Invalid inner script argument.")
             return 1
+
 
 def main():
     """Parses user input, checks current bluetooth status, and calls necessary helper functions."""

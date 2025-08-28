@@ -20,6 +20,7 @@ This module toggles bluetooth via modprobe rules.
 
 import subprocess  # nosec
 import sys
+import os
 from pathlib import Path
 from typing import Final
 
@@ -45,70 +46,9 @@ ujust set-bluetooth-modules --help
 
 BLUE_MOD_PATH: Final[str] = "/etc/modprobe.d/"
 BLUE_MOD_FILE: Final[str] = "/etc/modprobe.d/99-bluetooth.conf"
-BLUE_INNER_SCRIPT: Final[str] = "/usr/libexec/secureblue/bluetooth_set_inner.py"
-
-# Copyright (C) 2025 Daniel Hast
-# Systemd sandboxing of run0 invocation adapted from run0edit, originally licensed
-# under MIT OR Apache-2.0. Used here under the terms of the Apache License 2.0.
-
-SYSTEM_CALL_DENY: Final[list[str]] = [
-    "@aio",
-    "@chown",
-    "@keyring",
-    "@memlock",
-    "@mount",
-    "@privileged",
-    "@resources",
-    "@setuid",
-    "memfd_create",
-]
-
-SYSTEMD_SANDBOX_PROPERTIES: Final[list[str]] = [
-    "--property=CapabilityBoundingSet=CAP_DAC_OVERRIDE",
-    "--property=DevicePolicy=closed",
-    "--property=LockPersonality=yes",
-    "--property=MemoryDenyWriteExecute=yes",
-    "--property=NoNewPrivileges=yes",
-    "--property=PrivateDevices=yes",
-    "--property=PrivateIPC=yes",
-    "--property=PrivateNetwork=yes",
-    "--property=ProcSubset=pid",
-    "--property=ProtectClock=yes",
-    "--property=ProtectControlGroups=yes",
-    "--property=ProtectHostname=yes",
-    "--property=ProtectKernelLogs=yes",
-    "--property=ProtectKernelModules=yes",
-    "--property=ProtectKernelTunables=yes",
-    "--property=ProtectProc=noaccess",
-    "--property=ReadOnlyPaths=/",
-    f"--property=ReadWritePaths={BLUE_MOD_PATH}",
-    "--property=RestrictAddressFamilies=AF_UNIX",
-    "--property=RestrictNamespaces=yes",
-    "--property=RestrictRealtime=yes",
-    "--property=RestrictSUIDSGID=yes",
-    "--property=SystemCallArchitectures=native",
-    "--property=SystemCallFilter=@system-service",
-    f"--property=SystemCallFilter=~{' '.join(SYSTEM_CALL_DENY)}",
-    "--property=SystemCallErrorNumber=EPERM",
-]
-
-
-def run_inner(enable: bool) -> int:
-    """Runs the inner script and passes what it should to do."""
-    command: list = [
-        "/usr/bin/run0",
-        *SYSTEMD_SANDBOX_PROPERTIES,
-        "/usr/bin/python3",
-        BLUE_INNER_SCRIPT,
-        str(int(enable)),
-    ]
-    try:
-        subprocess.run(command, text=True, check=True)  # nosec
-    except subprocess.CalledProcessError as e:
-        print(f"The inner script failed with return code {e.returncode}.")
-        return e.returncode
-    return 0
-
+BLUE_MOD_TEXT: Final[str] = """install bluetooth /sbin/modprobe --ignore-install bluetooth
+install btusb /sbin/modprobe --ignore-install btusb"""
+RUN0_CONFIG: Final[list[str]] = [BLUE_MOD_FILE, "CAP_DAC_OVERRIDE"] 
 
 def is_module_loaded(module_name: str) -> bool:
     """Checks if a given kernel module is currently loaded by checking for it in /proc/modules"""
@@ -132,6 +72,24 @@ def status(disabled: bool):
         message += ", and after a reboot. Bluetooth will be enabled."
     print(message)
 
+@sandbox(RUN0_CONFIG)
+def inner(mode: bool):
+    """Checks arguements, and adds or deletes the relevant modprobe file."""
+
+    match mode:
+        case 0:
+            with open(BLUE_MOD_FILE, "w", encoding="utf8") as fd:
+                fd.write(BLUE_MOD_TEXT)
+            os.chmod(BLUE_MOD_FILE, 0o644)
+            print("Bluetooth has been disabled. Reboot for effect.")
+            return 0
+        case 1:
+            os.remove(BLUE_MOD_FILE)
+            print("Bluetooth has been enabled. Reboot for effect.")
+            return 0
+        case _:
+            print("Invalid inner script argument.")
+            return 1
 
 def main():
     """Parses user input, checks current bluetooth status, and calls necessary helper functions."""
@@ -148,12 +106,12 @@ def main():
             if not disabled:
                 status(disabled)
             else:
-                return run_inner(True)
+                return inner(True)
         case "off":
             if disabled:
                 status(disabled)
             else:
-                return run_inner(False)
+                return inner(False)
         case "status":
             status(disabled)
         case "--help":

@@ -1,3 +1,5 @@
+#!/usr/bin/env bash
+
 # Copyright 2025 The Secureblue Authors
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -10,24 +12,6 @@
 # distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and limitations under the License.
 
-modules:
-  - type: script
-    scripts:
-      - installnvidiakmod.sh
-    secrets:
-      - type: env
-        name: KERNEL_PRIVKEY
-        mount:
-          type: file
-          destination: /tmp/certs/private_key.priv
-  - type: script
-    scripts:
-      - installnvidiapackages.sh
-      - removeunusedrepos.sh
-      - setearlyloading.sh
-      - setdrmvariables.sh
-      - setgtknvidiaenvironment.sh
-  - type: files
-    files:
-      - source: system/nvidia
-        destination: /
+set -oue pipefail
+
+echo 'GSK_RENDERER=ngl' > /usr/lib/environment.d/30-nvidia-gtk-renderer.conf

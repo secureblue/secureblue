@@ -44,37 +44,6 @@ toggle-cups:
       echo "    service at your own risk. Secureblue strongly recommends against this."
     fi
 
-# Toggle GHNS (KDE Get New Stuff)
-toggle-ghns:
-    #! /bin/run0 /bin/bash
-    KDE_GLOBALS_FILE='/etc/xdg/kdeglobals'
-    if test -e "$KDE_GLOBALS_FILE"; then
-      if grep -q '^ghns=false' "$KDE_GLOBALS_FILE"; then
-        sed -i 's/^ghns=false.*/ghns=true/' "$KDE_GLOBALS_FILE"
-        echo 'GHNS enabled.'
-      elif grep -q '^ghns=true' "$KDE_GLOBALS_FILE"; then
-        sed -i 's/^ghns=true.*/ghns=false/' "$KDE_GLOBALS_FILE"
-        echo 'GHNS disabled.'
-      else
-        echo 'The kdeglobals file is missing the ghns toggle.'
-      fi
-    else
-      echo 'No kdeglobals file found. Are you on kinoite?'
-
-# Toggle bluetooth kernel modules on/off (requires reboot)
-toggle-bluetooth-modules:
-    #! /bin/run0 /bin/bash
-    BLUE_MOD_FILE="/etc/modprobe.d/99-bluetooth.conf"
-    if test -e $BLUE_MOD_FILE; then
-      rm -f $BLUE_MOD_FILE
-      echo "Bluetooth kernel modules disabled. Reboot to take effect."
-    else
-      sh -c 'echo "install bluetooth /sbin/modprobe --ignore-install bluetooth" >> "$1"' _ "$BLUE_MOD_FILE"
-      sh -c 'echo "install btusb /sbin/modprobe --ignore-install btusb" >> "$1"' _ "$BLUE_MOD_FILE"
-      chmod 644 $BLUE_MOD_FILE
-      echo "Bluetooth kernel modules enabled. Reboot to take effect."
-    fi
-
 # enable a kernel module that is disabled by modprobe.d (requires restart)
 override-enable-module mod_name:
     #! /bin/run0 /bin/bash

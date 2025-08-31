@@ -23,6 +23,7 @@ import sys
 import os
 from pathlib import Path
 from typing import Final
+from utils import sandbox
 
 BLUE_HELP: Final[str] = """
 This python script toggles if bluetooth is enabled by creating or deleting a modprobe file at

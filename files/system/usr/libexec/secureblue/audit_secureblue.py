@@ -859,6 +859,34 @@ def audit_bash_env_lockdown():
 
 
 @audit
+def audit_webcam_module():
+    """Ensure Webcam module is disabled."""
+    webcam_mod_file = "/etc/modprobe.d/99-disable-webcam.conf"
+    status = UNKNOWN
+    rec = None
+    warning = None
+    try:
+        with open(webcam_mod_file, encoding="utf-8") as f:
+            if f.read().strip() == "install uvcvideo /bin/false":
+                status = PASS
+    except FileNotFoundError:
+        status = INFO
+        rec_lines = (
+            _("Webcam module is enabled."),
+            _("To disable it, run:"),
+            "$ ujust disable-webcam",
+        )
+        rec = "\n".join(rec_lines)
+        warning = _("Webcam module is enabled.")
+    except PermissionError:
+        warning = _("Unable to read file {0}.").format(webcam_mod_file)
+
+    yield Report(
+        _("Checking whether webcam module is disabled"), status, warnings=warning, recs=rec
+    )
+
+
+@audit
 @categorize("flatpak")
 def audit_flatpak_remotes():
     """Audit flatpak remotes."""

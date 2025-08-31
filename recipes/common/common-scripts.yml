@@ -21,3 +21,4 @@ scripts:
   - removefedoraflatpakremoteservice.sh
   - enablecommonautoupdate.sh
   - localization.sh
+  - addimageinfo.sh

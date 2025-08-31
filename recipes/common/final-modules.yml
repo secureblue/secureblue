@@ -14,7 +14,6 @@ modules:
     - type: script
       scripts:
         - removeunusedrepos.sh
-        - removesuid.sh
         - regenerateinitramfs.sh
-        - addimageinfo.sh
         - checksinglekernel.sh
+        - removesuid.sh

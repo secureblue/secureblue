@@ -6,7 +6,7 @@
 
 <h1 align="center">secureblue</h1>
 
-[![secureblue](https://github.com/secureblue/secureblue/actions/workflows/build.yml/badge.svg)](https://github.com/secureblue/secureblue/actions/workflows/build.yml)
+[![secureblue](https://github.com/secureblue/secureblue/actions/workflows/build-all.yml/badge.svg)](https://github.com/secureblue/secureblue/actions/workflows/build-all.yml)
 [![integration-tests](https://github.com/secureblue/secureblue/actions/workflows/integration_tests.yml/badge.svg)](https://github.com/secureblue/secureblue/actions/workflows/integration_tests.yml)
 [![trivy](https://github.com/secureblue/secureblue/actions/workflows/trivy.yml/badge.svg)](https://github.com/secureblue/secureblue/actions/workflows/trivy.yml)
 [![Discord](https://img.shields.io/discord/1202086019298500629?style=flat&logo=discord&logoColor=white&label=Discord&labelColor=%235F6AE9&color=%2333CB56)](https://discord.com/invite/qMTv5cKfbF)

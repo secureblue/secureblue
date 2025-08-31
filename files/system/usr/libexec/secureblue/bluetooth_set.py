@@ -18,7 +18,6 @@ This module toggles bluetooth via modprobe rules.
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import subprocess  # nosec
 import sys
 import os
 from pathlib import Path

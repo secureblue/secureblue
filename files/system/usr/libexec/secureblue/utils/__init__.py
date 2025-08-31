@@ -28,7 +28,7 @@ import subprocess  # nosec
 import sys
 import textwrap
 from collections.abc import Iterable
-from typing import Final
+from typing import Final, Callable, List
 
 import rpm
 from auditor import AuditError, Status, gettext_marker
@@ -309,12 +309,6 @@ def run0_args(run0: list[str]) -> list[str]:
     ]
 
     for property in run0[2:]:
-        if "ReadWritePaths" in run0 or "CapabilityBoundingSet" in run0:
-            print(
-                "Invalid run0 config, run0 of index 2 (arg3) and later cannot be ReadWritePaths or CapabilityBoundingSet"
-            )
-            SYSTEMD_SANDBOX_PROPERTIES = [""]
-            return SYSTEMD_SANDBOX_PROPERTIES
         if property in SYSTEMD_SANDBOX_PROPERTIES:
             if property in SYSTEM_CALL_DENY:
                 property = property.split(" ")
@@ -340,22 +334,14 @@ def run0_args(run0: list[str]) -> list[str]:
     return SYSTEMD_SANDBOX_PROPERTIES
 
 
-def run0_env(func: function, *args, **kwargs) -> str:
-    env: list = [func.__name__]
-    env += [inspect.getfile(func)]
-    env += args
-    env += kwargs
-    env_str = base64.b64encode(pickle.dumps(env)).decode(
-        "ascii"
-    )  # convert list to pickle bytes dump to base64 to ascii for env var safety
-    env_str = "--setenv=python_config=" + env_str
-    return env_str
+def run0_env(func, *args, **kwargs) -> str:
+    env_data = [func.__name__, inspect.getfile(func), args, kwargs]
+    env_str = base64.b64encode(pickle.dumps(env_data)).decode("ascii")
+    return  f"--setenv=python_config={env_str}"
 
-
-def sandbox(run0_input: list[str]):
+def sandbox(run0_input: List[str]):
     """Execute the given function with a sandboxed run0."""
-
-    def sand(func: function):
+    def decorator(func: Callable):
         def wrapper(*args, **kwargs):
             """
             This function passes information to the elevated runner via an env var given to run0 called "python_config"
@@ -366,7 +352,7 @@ def sandbox(run0_input: list[str]):
             **kwargs]
             """
             run0 = run0_args(run0_input)
-            run0 += run0_env(func, *args, **kwargs)
+            run0.append(run0_env(func, *args, **kwargs))
             if run0 == [""]:
                 return 1
             command = [
@@ -375,7 +361,7 @@ def sandbox(run0_input: list[str]):
                 "/usr/bin/python3",
                 "/usr/libexec/secureblue/utils/sandbox_inner.py",
             ]
-            result = subprocess.run(command, text=True, capture_output=True, check=True)
+            result = subprocess.run(command, text=True, capture_output=True)
             if result.returncode != 0:
                 print(result.stderr)
                 return
@@ -384,7 +370,8 @@ def sandbox(run0_input: list[str]):
                 pickle_input_dump = base64.b64decode(b64_str)
                 func_return = pickle.loads(pickle_input_dump)
                 return func_return
+            return None
 
         return wrapper
 
-    return sand
+    return decorator

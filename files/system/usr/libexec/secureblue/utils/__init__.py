@@ -251,23 +251,18 @@ Example(s):
 def delete(recursive: bool, ) -> int:
 
 @sandbox(run0[None, None])
-def whoami(user: str) -> int:
+def whoami(user: str):
 
 Invalid Example(s):
 @sandbox
 def tick(tac: tuple):
-
-@sandbox(run0[None, None])
-def prune(vertex: tuple) -> tuple: 
-
 """
-
 
 def run0_args(run0: list[str]) -> list[str]:
     """Creates the args for run0."""
-    if run0[0] == None:
+    if run0[0] is None:
         run0[0] = "/dev/null"
-    if run0[1] == None:
+    if run0[1] is None:
         run0[1] = "CAP_DAC_READ_SEARCH"
 
     # Copyright (C) 2025 Daniel Hast

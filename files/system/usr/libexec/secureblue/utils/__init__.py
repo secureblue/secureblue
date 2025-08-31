@@ -30,10 +30,13 @@ import textwrap
 from collections.abc import Iterable
 from typing import Final
 
-import inspect
-
 import rpm
 from auditor import AuditError, Status
+
+# Imports for sandbox framework
+import inspect
+import pickle
+import base64
 
 PASS: Final = Status.PASS
 INFO: Final = Status.INFO
@@ -220,7 +223,8 @@ def validate_sysctl(sysctl: str, actual: str, expected: str) -> bool:
 To use this customize this framework you can set these arguements as shown
 below in a list called run0 in the decorator call.
 
-NOTE: Function using this framework MUST NOT RETURN
+NOTE: Any information passed to the called function could potentially be read
+by other processes.
 
 Definitions:
 Arg1: Sets ReadWritePaths, which can be None
@@ -238,46 +242,23 @@ Arg3+:Any arguements after this will be added with "--property=" appended.
 
 Example(s):
 @sandbox(run0=[path, "CAP_DAC_OVERRIDE", IOSchedulingPriority=0])
-def delete(recursive: bool, ):
+def delete(recursive: bool, ) -> int:
 
 @sandbox(run0[None, None])
-def whoami(user: str)
+def whoami(user: str) -> int:
 
 Invalid Example(s):
 @sandbox
 def tick(tac: tuple):
 
-Below is the complete set of defaults:
-    "--property=CapabilityBoundingSet=CAP_DAC_READ_SEARCH",
-    "--property=DevicePolicy=closed",
-    "--property=LockPersonality=yes",
-    "--property=MemoryDenyWriteExecute=yes",
-    "--property=NoNewPrivileges=yes",
-    "--property=PrivateDevices=yes",
-    "--property=PrivateIPC=yes",
-    "--property=PrivateNetwork=yes",
-    "--property=ProcSubset=pid",
-    "--property=ProtectClock=yes",
-    "--property=ProtectControlGroups=yes",
-    "--property=ProtectHostname=yes",
-    "--property=ProtectKernelLogs=yes",
-    "--property=ProtectKernelModules=yes",
-    "--property=ProtectKernelTunables=yes",
-    "--property=ProtectProc=noaccess",
-    "--property=ReadOnlyPaths=/",
-    "--property=ReadWritePaths=/dev/null",
-    "--property=RestrictAddressFamilies=AF_UNIX",
-    "--property=RestrictNamespaces=yes",
-    "--property=RestrictRealtime=yes",
-    "--property=RestrictSUIDSGID=yes",
-    "--property=SystemCallArchitectures=native",
-    "--property=SystemCallFilter=@system-service",
-    "--property=SystemCallFilter=~{@aio @chown @keyring @memlock @mount @privileged @resources @setuid memfd_create}" #Note this disables these sets of syscall
-    "--property=SystemCallErrorNumber=EPERM",
+@sandbox(run0[None, None])
+def prune(vertex: tuple) -> tuple: 
+
 """
 
 
 def run0_args(run0: list[str]) -> list[str]:
+    """Creates the args for run0."""
     if run0[0] == None:
         run0[0] = "/dev/null"
     if run0[1] == None:
@@ -331,7 +312,8 @@ def run0_args(run0: list[str]) -> list[str]:
             print(
                 "Invalid run0 config, run0 of index 2 (arg3) and later cannot be ReadWritePaths or CapabilityBoundingSet"
             )
-            return 1
+            SYSTEMD_SANDBOX_PROPERTIES = [""]
+            return SYSTEMD_SANDBOX_PROPERTIES
         if property in SYSTEMD_SANDBOX_PROPERTIES:
             if property in SYSTEM_CALL_DENY:
                 property = property.split(" ")
@@ -357,23 +339,50 @@ def run0_args(run0: list[str]) -> list[str]:
     return SYSTEMD_SANDBOX_PROPERTIES
 
 
+def run0_env(func: function, *args, **kwargs) -> str:
+    env: list = [func.__name__]
+    env += [inspect.getfile(func)]
+    env += args
+    env += kwargs
+    env_str = base64.b64encode(pickle.dumps(env)).decode(
+        "ascii"
+    )  # convert list to pickle bytes dump to base64 to ascii for env var safety
+    env_str = "--setenv=python_config=" + env_str
+    return env_str
+
+
 def sandbox(run0_input: list[str]):
     """Execute the given function with a sandboxed run0."""
 
     def sand(func: function):
-        def wrapper():
+        def wrapper(*args, **kwargs):
+            """
+            This function passes information to the elevated runner via an env var given to run0 called "python_config"
+            python_config uses the following list converted in base64 ascii via pickle:
+            [function_name,
+            function_file_path,
+            *args,
+            **kwargs]
+            """
             run0 = run0_args(run0_input)
+            run0 += run0_env(func, *args, **kwargs)
+            if run0 == [""]:
+                return 1
             command = [
                 "/usr/bin/run0",
                 *run0,
                 "/usr/bin/python3",
-                "-",
+                "/usr/libexec/secureblue/utils/sandbox_inner.py",
             ]
-            # todo fix passing original function call, and return
-            source = inspect.getsource(func)
-            lines = source.splitlines()
-            body = textwrap.dedent("\n".join(lines[2 : len(lines) - 1]))
-            return subprocess.run(command, input=str(body), text=True, check=True)
+            result = subprocess.run(command, text=True, capture_output=True, check=True)
+            if result.returncode != 0:
+                print(result.stderr)
+                return
+            b64_str = result.stdout
+            if b64_str is not None:
+                pickle_input_dump = base64.b64decode(b64_str)
+                func_return = pickle.loads(pickle_input_dump)
+                return func_return
 
         return wrapper
 

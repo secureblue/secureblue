@@ -3,9 +3,8 @@ Description=secureblue update verification timer
 
 [Timer]
 RandomizedDelaySec=1m
-OnBootSec=2m
+OnStartupSec=2m
 OnUnitActiveSec=1d
-Persistent=true
 
 [Install]
 WantedBy=timers.target

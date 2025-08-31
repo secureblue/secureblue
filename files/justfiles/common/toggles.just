@@ -60,6 +60,19 @@ toggle-ghns:
       fi
     else
       echo 'No kdeglobals file found. Are you on kinoite?'
+
+# Toggle bluetooth kernel modules on/off (requires reboot)
+toggle-bluetooth-modules:
+    #! /bin/run0 /bin/bash
+    BLUE_MOD_FILE="/etc/modprobe.d/99-bluetooth.conf"
+    if test -e $BLUE_MOD_FILE; then
+      rm -f $BLUE_MOD_FILE
+      echo "Bluetooth kernel modules disabled. Reboot to take effect."
+    else
+      sh -c 'echo "install bluetooth /sbin/modprobe --ignore-install bluetooth" >> "$1"' _ "$BLUE_MOD_FILE"
+      sh -c 'echo "install btusb /sbin/modprobe --ignore-install btusb" >> "$1"' _ "$BLUE_MOD_FILE"
+      chmod 644 $BLUE_MOD_FILE
+      echo "Bluetooth kernel modules enabled. Reboot to take effect."
     fi
 
 # enable a kernel module that is disabled by modprobe.d (requires restart)
@@ -86,6 +99,25 @@ override-reset-module mod_name:
     else
       echo "No override found for $MOD_NAME module."
     fi
+
+# disable the webcam kernel module
+disable-webcam:
+    #! /bin/run0 /bin/bash
+    WEBCAM_MOD_FILE="/etc/modprobe.d/99-disable-webcam.conf"
+    if [ -e "$WEBCAM_MOD_FILE" ]; then
+      echo "Webcam module is already disabled."
+    else
+      echo "install uvcvideo /bin/false" > "$WEBCAM_MOD_FILE" 
+      chmod 644 "$WEBCAM_MOD_FILE"
+      echo "Override created to disable the webcam module. Reboot to take effect."
+    fi
+
+# reset the webcam kernel module
+reset-webcam:
+    #! /bin/run0 /bin/bash
+    WEBCAM_MOD_FILE="/etc/modprobe.d/99-disable-webcam.conf"
+    rm -f "$WEBCAM_MOD_FILE"
+    echo "Webcam module reset."
 
 # Toggle debug mode (requires restart)
 toggle-debug-mode:
@@ -121,89 +153,6 @@ toggle-anticheat-support:
         echo "Anticheat support disabled. ptrace_scope set back to 3."
     else
         echo "The sysctl hardening file is missing the ptrace_scope setting."
-    fi
-
-# Toggle Gnome JIT JavaScript for GJS and WebkitGTK (requires session restart)
-toggle-gnome-jit-js:
-    #! /bin/run0 /bin/bash
-    ENV_FILE="/etc/profile.d/gnome-disable-jit.sh"
-    if test -e $ENV_FILE; then
-        rm -f $ENV_FILE
-        echo "JIT JavaScript for Gnome and WebkitGTK has been enabled."
-    else
-        cp /usr$ENV_FILE $ENV_FILE
-        chmod 644 $ENV_FILE
-        echo "JIT JavaScript for Gnome and WebkitGTK has been disabled."
-    fi
-
-# Toggle support for using GNOME user extensions
-toggle-gnome-extensions:
-    #!/usr/bin/bash
-    GSETTING="$(gsettings get org.gnome.shell allow-extension-installation)"
-    if [[ "${GSETTING}" == "false" ]]; then
-      gsettings set org.gnome.shell allow-extension-installation true
-      echo "Support for GNOME user extensions have been enabled"
-    else
-      gsettings reset org.gnome.shell allow-extension-installation
-      echo "Support for GNOME user extensions have been disabled"
-    fi
-
-# Toggle Xwayland support
-toggle-xwayland ACTION="prompt":
-    #! /bin/run0 /bin/bash
-    source /usr/lib/ujust/ujust.sh
-    OPTION="{{ ACTION }}"
-    if [ "$OPTION" = "prompt" ]; then
-      IMAGE="$(rpm-ostree status | grep '●')"
-      if echo "$IMAGE" | grep -q 'silverblue'; then
-          OPTION=gnome
-      elif echo "$IMAGE" | grep -q 'kinoite'; then
-          OPTION=plasma
-      elif echo "$IMAGE" | grep -qE 'sericea|sway'; then
-          OPTION=sway
-      else
-        echo "${bold}Toggling Xwayland (requires logout)${unbold}"
-        echo 'For which DE/WM do you want to toggle Xwayland?'
-        OPTION=$(ugum choose "GNOME" "KDE Plasma" "Sway")
-      fi
-    elif [ "$OPTION" = "help" ]; then
-      echo "Usage: ujust toggle-xwayland <option>"
-      echo "  <option>: Specify the quick option - 'gnome', 'plasma', or 'sway'"
-      echo "  Use 'gnome' to Toggle Xwayland for GNOME."
-      echo "  Use 'plasma' to Toggle Xwayland for KDE Plasma."
-      echo "  Use 'sway' to Toggle Xwayland for Sway."
-      exit 0
-    fi
-    if [ "${OPTION,,}" = "gnome" ]; then
-      GNOME_XWAYLAND_FILE='/etc/systemd/user/org.gnome.Shell@wayland.service.d/override.conf'
-      if [ -e "$GNOME_XWAYLAND_FILE" ]; then
-        rm -f "$GNOME_XWAYLAND_FILE"
-        echo 'Xwayland for GNOME has been enabled.'
-      else
-        cp "/usr$GNOME_XWAYLAND_FILE" "$GNOME_XWAYLAND_FILE"
-        chmod 644 "$GNOME_XWAYLAND_FILE"
-        echo 'Xwayland for GNOME has been disabled.'
-      fi
-    elif [ "$OPTION" = "KDE Plasma" ] || [ "${OPTION,,}" = "plasma" ]; then
-      PLASMA_XWAYLAND_FILE='/etc/systemd/user/plasma-kwin_wayland.service.d/override.conf'
-      if [ -e "$PLASMA_XWAYLAND_FILE" ]; then
-        rm -f "$PLASMA_XWAYLAND_FILE"
-        echo 'Xwayland for KDE Plasma has been enabled.'
-      else
-        cp "/usr$PLASMA_XWAYLAND_FILE" "$PLASMA_XWAYLAND_FILE"
-        chmod 644 "$PLASMA_XWAYLAND_FILE"
-        echo 'Xwayland for KDE Plasma has been disabled.'
-      fi
-    elif [ "${OPTION,,}" = "sway" ]; then
-      SWAY_XWAYLAND_FILE='/etc/sway/config.d/99-noxwayland.conf'
-      if [ -e "$SWAY_XWAYLAND_FILE" ]; then
-        rm -f "$SWAY_XWAYLAND_FILE"
-        echo 'Xwayland for Sway has been enabled.'
-      else
-        cp "/usr$SWAY_XWAYLAND_FILE" "$SWAY_XWAYLAND_FILE"
-        chmod 644 "$SWAY_XWAYLAND_FILE"
-        echo "Xwayland for Sway has been disabled."
-      fi
     fi
 
 # Toggle bash environment lockdown (mitigates LD_PRELOAD attacks). Use skip_approval to bypass initial prompt, and apply_for_all_users to bypass secondary prompt.

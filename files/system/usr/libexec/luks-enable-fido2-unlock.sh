@@ -17,8 +17,20 @@ set -eou pipefail
 
 [ "$UID" -eq 0 ] || { echo "This script must be run as root."; exit 1;}
 
+backup_key_path="$(getent passwd "$SUDO_USER" | cut -d: -f6)"
+
+if [ ! -d "$backup_key_path" ]; then
+  # We assume the below path exists and is writeable for root.
+  backup_key_path="/var/home"
+fi
+
+if [ ! "$(grep -c ^ "/etc/crypttab")" -eq 1 ]; then
+  echo "Multi-drive setups not supported."
+  exit 1
+fi
+
 echo "WARNING LUKS drive encryption must have been enabled at install time for this script to run" 
-echo "ENSURE you save the backup key this script creates at /var/home/$SUDO_USER/luks_backup_key.txt ON ANOTHER COMPUTER"
+echo "ENSURE you save the backup key this script creates at $backup_key_path/luks_backup_key.txt ON ANOTHER COMPUTER"
 echo ""
 echo "This script uses systemd-cryptenroll to enable FIDO2 unlock. You can review systemd-cryptenroll's manpage for more information." \
 "If you previously used TPM luks unlocking, ensure you run 'ujust remove-luks-tpm-unlock' AFTER running this script." \
@@ -106,8 +118,9 @@ if [ "$(echo "$CRYPT_DISK_INFO" | grep -c "systemd-fido2")" -eq "1" ]; then
 fi
 
 echo "Creating backup key"
-systemd-cryptenroll --recovery-key "$CRYPT_DISK" > "/var/home/$SUDO_USER/luks_backup_key.txt"
-chmod 644 "/var/home/$SUDO_USER/luks_backup_key.txt"
+systemd-cryptenroll --recovery-key "$CRYPT_DISK" > "$backup_key_path/luks_backup_key.txt"
+chmod 640 "$backup_key_path/luks_backup_key.txt"
+chown "$SUDO_USER":"$SUDO_USER" "$backup_key_path/luks_backup_key.txt"
 
 if lsinitrd 2>&1 | grep -q fido2 > /dev/null; then
   ## add fido2 to initramfs
@@ -125,7 +138,7 @@ fi
 echo "Congratulations!"
 echo "Your system is now configured to use FIDO2 unlocking via the hardware key you used earlier. If you previously used TPM luks unlocking, ensure you run 'ujust remove-luks-tpm-unlock'. Otherwise, the system will continue to accept the comparatively insecure tpm credentials."
 echo ""
-echo "REMINDER: Store on another computer, on an encrypted drive, the script created backup key (which is at /var/home/$SUDO_USER/luks_backup_key.txt)"
+echo "REMINDER: Store on another computer, on an encrypted drive, the script created backup key (which is at $backup_key_path/luks_backup_key.txt)"
 
 # References
 # https://0pointer.net/blog/unlocking-luks2-volumes-with-tpm2-fido2-pkcs11-security-hardware-on-systemd-248.html

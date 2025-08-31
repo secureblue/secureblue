@@ -2,9 +2,7 @@
 Description=secureblue flatpak setup
 
 [Timer]
-RandomizedDelaySec=1s
-OnBootSec=2s
-Persistent=true
+OnStartupSec=5s
 
 [Install]
 WantedBy=timers.target

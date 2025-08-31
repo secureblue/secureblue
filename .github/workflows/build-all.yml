@@ -1,0 +1,253 @@
+# Copyright 2025 The Secureblue Authors
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software distributed under the License is
+# distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and limitations under the License.
+
+name: build-secureblue
+permissions: {}
+on:
+  schedule:
+    - cron: "00 6 * * *" # build at 6:00 UTC every day 
+    
+  push:
+    branches-ignore: # don't rebuild for dependabot
+      - 'dependabot/**'
+    paths-ignore: # don't rebuild if only documentation has changed
+      - "**.md"
+      
+  workflow_dispatch: # allow manually triggering builds
+
+# Cancels running workflows if a new workflow run for
+# the same workflow is started
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref || github.run_id }}
+  cancel-in-progress: true
+jobs:
+  silverblue-main:
+    name: Build silverblue main
+    if: github.triggering_actor == 'royaloughtness' || github.event_name == 'schedule' || github.event_name == 'push'
+    permissions:
+      contents: read
+      packages: write
+      id-token: write
+    strategy:
+      fail-fast: false 
+      matrix:
+        recipe:
+          - general/recipe-silverblue-main.yml
+    uses: ./.github/workflows/build-one-recipe.yml
+    with:
+      recipe: ${{ matrix.recipe }}
+    secrets:
+      SIGNING_SECRET: ${{ secrets.SIGNING_SECRET }}
+      KERNEL_PRIVKEY: ${{ secrets.KERNEL_PRIVKEY }}
+
+  kinoite-main:
+    name: Build kinoite main
+    if: github.triggering_actor == 'royaloughtness' || github.event_name == 'schedule' || github.event_name == 'push'
+    permissions:
+      contents: read
+      packages: write
+      id-token: write
+    strategy:
+      fail-fast: false 
+      matrix:
+        recipe:
+          - general/recipe-kinoite-main.yml
+    uses: ./.github/workflows/build-one-recipe.yml
+    with:
+      recipe: ${{ matrix.recipe }}
+    secrets:
+      SIGNING_SECRET: ${{ secrets.SIGNING_SECRET }}
+      KERNEL_PRIVKEY: ${{ secrets.KERNEL_PRIVKEY }}
+
+  sericea-main:
+    name: Build sericea main
+    if: github.triggering_actor == 'royaloughtness' || github.event_name == 'schedule' || github.event_name == 'push'
+    permissions:
+      contents: read
+      packages: write
+      id-token: write
+    strategy:
+      fail-fast: false 
+      matrix:
+        recipe:
+          - general/recipe-sericea-main.yml
+    uses: ./.github/workflows/build-one-recipe.yml
+    with:
+      recipe: ${{ matrix.recipe }}
+    secrets:
+      SIGNING_SECRET: ${{ secrets.SIGNING_SECRET }}
+      KERNEL_PRIVKEY: ${{ secrets.KERNEL_PRIVKEY }}
+
+  cosmic-main:
+    name: Build cosmic main
+    if: github.triggering_actor == 'royaloughtness' || github.event_name == 'schedule' || github.event_name == 'push'
+    permissions:
+      contents: read
+      packages: write
+      id-token: write
+    strategy:
+      fail-fast: false 
+      matrix:
+        recipe:
+          - general/recipe-cosmic-main.yml
+    uses: ./.github/workflows/build-one-recipe.yml
+    with:
+      recipe: ${{ matrix.recipe }}
+    secrets:
+      SIGNING_SECRET: ${{ secrets.SIGNING_SECRET }}
+      KERNEL_PRIVKEY: ${{ secrets.KERNEL_PRIVKEY }}
+
+  securecore-main:
+    name: Build securecore main
+    if: github.triggering_actor == 'royaloughtness' || github.event_name == 'schedule' || github.event_name == 'push'
+    permissions:
+      contents: read
+      packages: write
+      id-token: write
+    strategy:
+      fail-fast: false 
+      matrix:
+        recipe:
+          - securecore/recipe-securecore-main.yml
+    uses: ./.github/workflows/build-one-recipe.yml
+    with:
+      recipe: ${{ matrix.recipe }}
+    secrets:
+      SIGNING_SECRET: ${{ secrets.SIGNING_SECRET }}
+      KERNEL_PRIVKEY: ${{ secrets.KERNEL_PRIVKEY }}
+
+  silverblue-nvidia:
+    name: Build silverblue nvidia images
+    if: github.triggering_actor == 'royaloughtness' || github.event_name == 'schedule' || github.event_name == 'push'
+    needs: silverblue-main
+    permissions:
+      contents: read
+      packages: write
+      id-token: write
+    strategy:
+      fail-fast: false 
+      matrix:
+        recipe:
+          - general/recipe-silverblue-nvidia.yml
+          - general/recipe-silverblue-nvidia-open.yml
+    uses: ./.github/workflows/build-one-recipe.yml
+    with:
+      recipe: ${{ matrix.recipe }}
+    secrets:
+      SIGNING_SECRET: ${{ secrets.SIGNING_SECRET }}
+      KERNEL_PRIVKEY: ${{ secrets.KERNEL_PRIVKEY }}
+
+  kinoite-nvidia:
+    name: Build kinoite nvidia images
+    if: github.triggering_actor == 'royaloughtness' || github.event_name == 'schedule' || github.event_name == 'push'
+    needs: kinoite-main
+    permissions:
+      contents: read
+      packages: write
+      id-token: write
+    strategy:
+      fail-fast: false 
+      matrix:
+        recipe:
+          - general/recipe-kinoite-nvidia.yml
+          - general/recipe-kinoite-nvidia-open.yml
+    uses: ./.github/workflows/build-one-recipe.yml
+    with:
+      recipe: ${{ matrix.recipe }}
+    secrets:
+      SIGNING_SECRET: ${{ secrets.SIGNING_SECRET }}
+      KERNEL_PRIVKEY: ${{ secrets.KERNEL_PRIVKEY }}
+
+  sericea-nvidia:
+    name: Build sericea nvidia images
+    if: github.triggering_actor == 'royaloughtness' || github.event_name == 'schedule' || github.event_name == 'push'
+    needs: sericea-main
+    permissions:
+      contents: read
+      packages: write
+      id-token: write
+    strategy:
+      fail-fast: false 
+      matrix:
+        recipe:
+          - general/recipe-sericea-nvidia.yml
+          - general/recipe-sericea-nvidia-open.yml
+    uses: ./.github/workflows/build-one-recipe.yml
+    with:
+      recipe: ${{ matrix.recipe }}
+    secrets:
+      SIGNING_SECRET: ${{ secrets.SIGNING_SECRET }}
+      KERNEL_PRIVKEY: ${{ secrets.KERNEL_PRIVKEY }}
+
+  cosmic-nvidia:
+    name: Build cosmic nvidia images
+    if: github.triggering_actor == 'royaloughtness' || github.event_name == 'schedule' || github.event_name == 'push'
+    needs: cosmic-main
+    permissions:
+      contents: read
+      packages: write
+      id-token: write
+    strategy:
+      fail-fast: false 
+      matrix:
+        recipe:
+          - general/recipe-cosmic-nvidia.yml
+          - general/recipe-cosmic-nvidia-open.yml
+    uses: ./.github/workflows/build-one-recipe.yml
+    with:
+      recipe: ${{ matrix.recipe }}
+    secrets:
+      SIGNING_SECRET: ${{ secrets.SIGNING_SECRET }}
+      KERNEL_PRIVKEY: ${{ secrets.KERNEL_PRIVKEY }}
+
+  securecore-nvidia:
+    name: Build securecore nvidia images
+    if: github.triggering_actor == 'royaloughtness' || github.event_name == 'schedule' || github.event_name == 'push'
+    needs: securecore-main
+    permissions:
+      contents: read
+      packages: write
+      id-token: write
+    strategy:
+      fail-fast: false 
+      matrix:
+        recipe:
+          - securecore/recipe-securecore-nvidia.yml
+          - securecore/recipe-securecore-nvidia-open.yml
+    uses: ./.github/workflows/build-one-recipe.yml
+    with:
+      recipe: ${{ matrix.recipe }}
+    secrets:
+      SIGNING_SECRET: ${{ secrets.SIGNING_SECRET }}
+      KERNEL_PRIVKEY: ${{ secrets.KERNEL_PRIVKEY }}
+
+  zfs:
+    name: Build zfs images
+    if: github.triggering_actor == 'royaloughtness' || github.event_name == 'schedule' || github.event_name == 'push'
+    needs: [securecore-main, securecore-nvidia]
+    permissions:
+      contents: read
+      packages: write
+      id-token: write
+    strategy:
+      fail-fast: false 
+      matrix:
+        recipe:
+          - securecore/recipe-securecore-zfs-main.yml
+          - securecore/recipe-securecore-zfs-nvidia.yml
+          - securecore/recipe-securecore-zfs-nvidia-open.yml
+    uses: ./.github/workflows/build-one-recipe.yml
+    with:
+      recipe: ${{ matrix.recipe }}
+    secrets:
+      SIGNING_SECRET: ${{ secrets.SIGNING_SECRET }}
+      KERNEL_PRIVKEY: ${{ secrets.KERNEL_PRIVKEY }}

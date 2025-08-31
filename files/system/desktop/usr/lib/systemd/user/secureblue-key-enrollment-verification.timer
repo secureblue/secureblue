@@ -3,8 +3,7 @@ Description=secureblue secureboot key enrollment verification timer
 
 [Timer]
 RandomizedDelaySec=1m
-OnBootSec=2m
-Persistent=true
+OnStartupSec=2m
 
 [Install]
 WantedBy=timers.target

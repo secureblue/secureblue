@@ -41,10 +41,11 @@ def main():
         return 1
     pickle_input_dump = base64.b64decode(b64_str)
     func_list = pickle.loads(pickle_input_dump)
-    import_from_path("python_file", func_list[1])
-    func_return = python_file.func_list[0](
-        *func_list[2], **func_list[3]
-    )  # actually runs desired function
+    module = import_from_path("python_file", func_list[1])
+    args = func_list[2] if len(func_list) > 2 else []
+    kwargs = func_list[3] if len(func_list) > 3 else {}
+    func_call = getattr(module, func_list[0])
+    func_return = func_call(*args, **kwargs) #actually runs function
     return_str = base64.b64encode(pickle.dumps(func_return)).decode(
         "ascii"
     )  # convert whatever is returned to pickle bytes dump to base64 to ascii for env var safety

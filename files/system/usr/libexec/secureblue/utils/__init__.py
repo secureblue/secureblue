@@ -28,7 +28,7 @@ import subprocess  # nosec
 import sys
 import textwrap
 from collections.abc import Iterable
-from typing import Final, Callable, List
+from typing import Final
 
 import rpm
 from auditor import AuditError, Status, gettext_marker
@@ -339,9 +339,9 @@ def run0_env(func, *args, **kwargs) -> str:
     env_str = base64.b64encode(pickle.dumps(env_data)).decode("ascii")
     return  f"--setenv=python_config={env_str}"
 
-def sandbox(run0_input: List[str]):
+def sandbox(run0_input: list[str]):
     """Execute the given function with a sandboxed run0."""
-    def decorator(func: Callable):
+    def decorator(func):
         def wrapper(*args, **kwargs):
             """
             This function passes information to the elevated runner via an env var given to run0 called "python_config"

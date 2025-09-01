@@ -48,7 +48,7 @@ BLUE_MOD_PATH: Final[str] = "/etc/modprobe.d/"
 BLUE_MOD_FILE: Final[str] = "/etc/modprobe.d/99-bluetooth.conf"
 BLUE_MOD_TEXT: Final[str] = """install bluetooth /sbin/modprobe --ignore-install bluetooth
 install btusb /sbin/modprobe --ignore-install btusb"""
-RUN0_CONFIG: Final[list[str]] = [BLUE_MOD_FILE, "CAP_DAC_OVERRIDE"]
+RUN0_CONFIG: Final[list[str]] = ["/etc/modprobe.d/99-bluetooth.conf /usr/libexec/secureblue/utils", "CAP_DAC_OVERRIDE"]
 
 
 def is_module_loaded(module_name: str) -> bool:

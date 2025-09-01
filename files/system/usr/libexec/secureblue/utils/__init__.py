@@ -308,29 +308,10 @@ def run0_args(run0: list[str]) -> list[str]:
         "--property=SystemCallErrorNumber=EPERM",
     ]
 
-    for property in run0[2:]:
-        if property in SYSTEMD_SANDBOX_PROPERTIES:
-            if property in SYSTEM_CALL_DENY:
-                property = property.split(" ")
-                for call in property:
-                    if call in SYSTEM_CALL_DENY:
-                        index = SYSTEM_CALL_DENY.index(call)
-                        SYSTEM_CALL_DENY.pop(index)
-                index = SYSTEMD_SANDBOX_PROPERTIES.index("SystemCallFilter=~")
-                SYSTEMD_SANDBOX_PROPERTIES[index] = (
-                    f"--property=SystemCallFilter=~{' '.join(SYSTEM_CALL_DENY)}"
-                )
-            else:
-                index = SYSTEMD_SANDBOX_PROPERTIES.index(property)
-                new_property = SYSTEMD_SANDBOX_PROPERTIES[index]
-                new_property = new_property.split("=")
-                property = property.split("=")
-                new_property[2] = property[2]
-                new_property = "=".join(new_property)
-                SYSTEMD_SANDBOX_PROPERTIES[index] = new_property
-        else:
-            property = "--property=" + property
-            SYSTEMD_SANDBOX_PROPERTIES.append(property)
+    for property in run0[2:]: #When repeating properties, the latest apply so no need to do anything fancy
+        local_property = "--property=" + local_property
+        SYSTEMD_SANDBOX_PROPERTIES.append(local_property)
+
     return SYSTEMD_SANDBOX_PROPERTIES
 
 

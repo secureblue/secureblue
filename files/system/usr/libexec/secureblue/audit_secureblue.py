@@ -357,50 +357,54 @@ def audit_chronyd():
 @audit
 def audit_dns():
     """Ensure system DNS resolution is active and secure."""
-    rec = None
-    warning = None
-    if command_succeeds("systemctl", "is-active", "--quiet", "systemd-resolved"):
-        dnssec = None
-        dot = None
-        conf_path = "/etc/systemd/resolved.conf.d/10-securedns.conf"
-        fail_msg = _("System DNS resolution is not secure.")
-        try:
-            with open(conf_path, encoding="utf-8") as f:
-                config = parse_config(f)
-                dnssec = config.get("DNSSEC")
-                dot = config.get("DNSOverTLS")
-        except FileNotFoundError:
-            status = FAIL
-        except PermissionError:
-            status = UNKNOWN
-            warning = _("Unable to read file {0}.").format(conf_path)
-        else:
-            if dnssec == "true" and dot == "true":
-                status = PASS
-            elif dot == "opportunistic":
-                status = WARN
-                fail_msg = _(
-                    "System DNS resolution is not secure (opportunistic DNS-over-TLS only)."
-                )
-            else:
-                status = FAIL
-        if status in (WARN, FAIL):
-            rec_lines = (
-                fail_msg,
-                _("To select a secure resolver, run:"),
-                "$ ujust dns-selector",
-                _("If you are using a VPN, you may want to disregard this recommendation."),
-            )
-            rec = "\n".join(rec_lines)
-    else:
-        status = FAIL
-        rec_lines = (
-            _("{0} is inactive.").format("systemd-resolved"),
-            _("To start and enable it, run:"),
-            "$ systemctl enable --now systemd-resolved",
-        )
-        rec = "\n".join(rec_lines)
-    yield Report(_("Ensuring system DNS resolution is secure"), status, warnings=warning, recs=rec)
+
+    status_out = command_stdout(
+        "/usr/bin/python3", "/usr/libexec/secureblue/dns_selector.py", "status", check=False
+    )
+
+    flags = {}
+    for line in status_out.splitlines():
+        if ":" not in line:
+            continue
+        key, value = line.split(":", 1)
+        flags[key.strip()] = value.strip() == "enabled"
+    global_dns = flags.get("Global DNS", False)
+    dnssec = flags.get("DNSSEC", False)
+    trivalent_doh = flags.get("Trivalent DoH", False)
+
+    recs = []
+    warnings = []
+    status = PASS
+
+    # INFO
+    if not trivalent_doh:
+        status = INFO
+        warnings.append(_("Trivalent DNS over HTTPS is disabled."))
+        recs.append(_("Consider enabling Trivalent DNS over HTTPS in dns-selector."))
+
+    # WARN
+    if not global_dns or not dnssec:
+        status = WARN
+        recs += [
+            _("System DNS resolution may not be secure."),
+            _("To configure this, run:"),
+            "$ ujust dns-selector",
+        ]
+    if not global_dns:
+        status = WARN
+        warnings.append(_("Global DNS servers are not configured."))
+    if not dnssec:
+        status = WARN
+        warnings.append(_("Local DNSSEC validation is disabled."))
+        recs += [
+            _("You should enable local DNSSEC validation, by running:"),
+            "$ ujust dns-selector dnssec on",
+        ]
+
+    rec_string = None if recs == [] else "\n".join(recs)
+    yield Report(
+        _("Ensuring system DNS resolution is secure"), status, warnings=warnings, recs=rec_string
+    )
 
 
 @audit

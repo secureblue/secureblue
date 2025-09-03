@@ -1,5 +1,6 @@
 [Unit]
 Description=secureblue secureboot key enrollment verification timer
+ConditionUser=!@system
 
 [Timer]
 RandomizedDelaySec=1m

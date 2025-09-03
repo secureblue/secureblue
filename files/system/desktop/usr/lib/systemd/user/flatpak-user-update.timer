@@ -1,6 +1,7 @@
 [Unit]
 Description=Flatpak Automatic Update Trigger
 Documentation=man:flatpak(1)
+ConditionUser=!@system
 
 [Timer]
 RandomizedDelaySec=10m

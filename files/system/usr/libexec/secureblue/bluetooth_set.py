@@ -22,23 +22,36 @@ import sys
 import os
 from pathlib import Path
 from typing import Final
-from utils import sandbox
+
+if __name__ == "__main__":
+    from utils import sandbox
+else:
+
+    def sandbox(run0):
+        def decorator(func):
+            def wrapper(*args, **kwargs):
+                return func(*args, **kwargs)
+
+            return wrapper
+
+        return decorator
+
 
 BLUE_HELP: Final[str] = """
 This python script toggles if bluetooth is enabled by creating or deleting a modprobe file at
 "/etc/modprobe.d/99-bluetooth.conf" to disable or enable the kernel modules
 needed for Bluetooth. Note this change only takes affect upon reboot.
-
+ 
 usage:
 ujust set-bluetooth-modules on
     Turns Bluetooth on, does nothing if already on.
-
+ 
 ujust set-bluetooth-modules off
     Turns Bluetooth off, does nothing if already off.
-
+ 
 ujust set-bluetooth-modules status
     Reports if Bluetooth is set on or off.
-
+ 
 ujust set-bluetooth-modules --help
     Prints this message.
 """
@@ -48,7 +61,7 @@ BLUE_MOD_PATH: Final[str] = "/etc/modprobe.d/"
 BLUE_MOD_FILE: Final[str] = "/etc/modprobe.d/99-bluetooth.conf"
 BLUE_MOD_TEXT: Final[str] = """install bluetooth /sbin/modprobe --ignore-install bluetooth
 install btusb /sbin/modprobe --ignore-install btusb"""
-RUN0_CONFIG: Final[list[str]] = ["/etc/modprobe.d/99-bluetooth.conf /usr/libexec/secureblue/utils", "CAP_DAC_OVERRIDE"]
+RUN0_CONFIG: Final[list[str]] = ["/etc/modprobe.d/99-bluetooth.conf", "CAP_DAC_OVERRIDE"]
 
 
 def is_module_loaded(module_name: str) -> bool:

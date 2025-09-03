@@ -1,7 +1,8 @@
 [Unit]
-Description=Image deprecation notification service 
+Description=Image deprecation notification service
 Wants=dbus.service
 After=dbus.service
+ConditionUser=!@system
 
 [Service]
 Type=oneshot

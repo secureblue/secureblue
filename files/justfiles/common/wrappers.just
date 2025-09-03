@@ -25,4 +25,4 @@ with-standard-malloc *args:
 # Sets bluetooth kernel modules on/off (requires reboot)
 set-bluetooth-modules *args:
     #!/bin/sh
-    exec /usr/bin/python3 /usr/libexec/secureblue/bluetooth_toggle.py "$@"
+    exec /usr/bin/python3 /usr/libexec/secureblue/bluetooth_set.py "$@"

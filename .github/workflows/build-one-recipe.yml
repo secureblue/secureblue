@@ -65,7 +65,7 @@ jobs:
           pubkey: 'https://raw.githubusercontent.com/secureblue/secureblue/refs/heads/live/cosign.pub'
 
       - name: Build secureblue
-        uses: blue-build/github-action@968216e45d3f5f23de24f7804259e1384cf5f358 # v1.8.3
+        uses: blue-build/github-action@5a97103ace2f497d15a68d47818eacfe5ff7aefc # v1.9.0
         env:
           KERNEL_PRIVKEY: ${{ secrets.KERNEL_PRIVKEY }}
         with:          

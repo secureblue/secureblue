@@ -1,7 +1,8 @@
 [Unit]
-Description=secureblue secure boot update verification 
+Description=secureblue secure boot update verification
 Wants=dbus.service
 After=dbus.service
+ConditionUser=!@system
 
 [Service]
 Type=oneshot

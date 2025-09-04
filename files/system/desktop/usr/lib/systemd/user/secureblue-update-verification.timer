@@ -1,5 +1,6 @@
 [Unit]
 Description=secureblue update verification timer
+ConditionUser=!@system
 
 [Timer]
 RandomizedDelaySec=1m

@@ -26,7 +26,6 @@ modules:
       - removeunusedrepos.sh
       - setearlyloading.sh
       - setdrmvariables.sh
-      - setgtknvidiaenvironment.sh
   - type: files
     files:
       - source: system/nvidia

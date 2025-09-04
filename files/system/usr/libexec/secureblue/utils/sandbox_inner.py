@@ -18,14 +18,15 @@ This script executes the called function with elevated permissions.
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import sys
-import os
-import pickle  # nosec
 import base64
 import importlib.util
+import os
+import pickle  # nosec
+import sys
 
 
-# From https://docs.python.org/3/library/importlib.html#importing-a-source-file-directly which is under a Zero Clause BSD License
+# From https://docs.python.org/3/library/importlib.html#importing-a-source-file-directly
+# which is under a Zero Clause BSD License
 def import_from_path(module_name, file_path):
     """Imports the file into python global context."""
     spec = importlib.util.spec_from_file_location(module_name, file_path)
@@ -37,15 +38,15 @@ def import_from_path(module_name, file_path):
 
 def main():
     """Handles sandboxed function args, return, and calling."""
-    b64_str = os.environ.get("python_config")
+    b64_str = os.environ.get("PYTHON_CONFIG")
     if b64_str is None:
         print("Environment variable 'python_config' not set", file=sys.stderr)
         return 1
     pickle_input_dump = base64.b64decode(b64_str)
-    func_list = pickle.loads(pickle_input_dump)
+    func_list = pickle.loads(pickle_input_dump)  # noqa: S301
     module = import_from_path("python_file", func_list[1])
-    args = func_list[2] if len(func_list) > 2 else []
-    kwargs = func_list[3] if len(func_list) > 3 else {}
+    args = func_list[2] if len(func_list) > 2 else []  # noqa: PLR2004
+    kwargs = func_list[3] if len(func_list) > 3 else {}  # noqa: PLR2004
     func_call = getattr(module, func_list[0])
     func_return = func_call(*args, **kwargs)  # actually runs function
     return_obj = base64.b64encode(pickle.dumps(func_return)).decode("ascii")

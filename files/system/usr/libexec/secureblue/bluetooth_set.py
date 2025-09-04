@@ -18,8 +18,8 @@ This module toggles bluetooth via modprobe rules.
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import sys
 import os
+import sys
 from pathlib import Path
 from typing import Final
 
@@ -27,7 +27,7 @@ if __name__ == "__main__":
     from utils import sandbox
 else:
 
-    def sandbox(run0):
+    def sandbox(run0):  # noqa: ARG001
         def decorator(func):
             def wrapper(*args, **kwargs):
                 return func(*args, **kwargs)
@@ -41,17 +41,17 @@ BLUE_HELP: Final[str] = """
 This python script toggles if bluetooth is enabled by creating or deleting a modprobe file at
 "/etc/modprobe.d/99-bluetooth.conf" to disable or enable the kernel modules
 needed for Bluetooth. Note this change only takes affect upon reboot.
- 
+
 usage:
 ujust set-bluetooth-modules on
     Turns Bluetooth on, does nothing if already on.
- 
+
 ujust set-bluetooth-modules off
     Turns Bluetooth off, does nothing if already off.
- 
+
 ujust set-bluetooth-modules status
     Reports if Bluetooth is set on or off.
- 
+
 ujust set-bluetooth-modules --help
     Prints this message.
 """

@@ -19,8 +19,13 @@ Utils for system auditing.
 """
 
 import asyncio
+import base64
 import enum
+
+# Imports for sandbox framework
+import inspect
 import os
+import pickle  # nosec
 import re
 
 # All subprocess calls we make have trusted inputs and do not use shell=True.
@@ -32,11 +37,6 @@ from typing import Final
 
 import rpm
 from auditor import AuditError, Status, gettext_marker
-
-# Imports for sandbox framework
-import inspect
-import pickle  # nosec
-import base64
 
 PASS: Final = Status.PASS
 INFO: Final = Status.INFO
@@ -228,11 +228,11 @@ def validate_sysctl(sysctl: str, actual: str, expected: str) -> bool:
 """
 To use and customize this framework you can set the arguements as shown
 below in a list passed in the decorator call.
- 
+
 Usability Notes:
 --Any information passed to the called function could potentially be read
 by other processes.
---Your sandboxed must only print to stdout OR return something. This is a 
+--Your sandboxed must only print to stdout OR return something. This is a
 limitation of subprocess and it's capture_output. You also cannot print a
 valid base64 ascii string to stderr in your sandboxed python code.
 --To import/use this framework use the follow import statement:
@@ -245,28 +245,28 @@ else: #This prevents recursive imports
                 return func(*args, **kwargs)
             return wrapper
         return decorator
- 
+
 Definitions:
 Arg1: Sets ReadWritePaths, which can be None
     Documentation: https://www.freedesktop.org/software/systemd/man/latest/systemd.exec.html#ReadWritePaths=
-Arg2: Sets CapabilityBoundingSet, which can be None for the default of: 
+Arg2: Sets CapabilityBoundingSet, which can be None for the default of:
     CAP_DAC_READ_SEARCH has been chosen as the relatively harmless default (bypass read and execute
     permissions.)
     Documentation: https://www.freedesktop.org/software/systemd/man/latest/systemd-system.conf.html#CapabilityBoundingSet=.
 Arg3+:Any arguements after this will be added with "--property=" appended.
     See https://www.freedesktop.org/software/systemd/man/latest/systemd.directives.html for options.
-    Notes:  run0 will not accept all of these directives. (No it doesn't appear to be documented which ones
-            it does accept.)
-            These arguements should not be ReadWritePaths or CapabilityBoundingSet, but it should work.
-            If properties are repeated, the latest one will be applied
- 
+    Notes:  run0 will not accept all of these directives. (No it doesn't appear to be documented
+            which ones it does accept.)
+            These arguements should not be ReadWritePaths or CapabilityBoundingSet, but it
+            should work. If properties are repeated, the latest one will be applied
+
 Example(s):
 @sandbox(run0=[path, "CAP_DAC_OVERRIDE", IOSchedulingPriority=0])
 def delete(recursive: bool, ) -> int:
- 
+
 @sandbox(run0[None, None])
 def whoami(user: str):
- 
+
 Invalid Example(s):
 @sandbox
 def tick(tac: tuple):
@@ -283,7 +283,7 @@ def run0_args(run0: list[str]) -> list[str]:
     # Copyright (C) 2025 Daniel Hast
     # Systemd sandboxing of run0 invocation adapted from run0edit, originally licensed
     # under MIT OR Apache-2.0. Used here under the terms of the Apache License 2.0.
-    SYSTEM_CALL_DENY: list[str] = [
+    system_call_deny: list[str] = [
         "@aio",
         "@chown",
         "@keyring",
@@ -294,7 +294,7 @@ def run0_args(run0: list[str]) -> list[str]:
         "@setuid",
         "memfd_create",
     ]
-    SYSTEMD_SANDBOX_PROPERTIES: list[str] = [
+    systemd_sandbox_properties: list[str] = [
         f"--property=CapabilityBoundingSet={run0[1]}",
         "--property=DevicePolicy=closed",
         "--property=LockPersonality=yes",
@@ -319,25 +319,25 @@ def run0_args(run0: list[str]) -> list[str]:
         "--property=RestrictSUIDSGID=yes",
         "--property=SystemCallArchitectures=native",
         "--property=SystemCallFilter=@system-service",
-        f"--property=SystemCallFilter=~{' '.join(SYSTEM_CALL_DENY)}",
+        f"--property=SystemCallFilter=~{' '.join(system_call_deny)}",
         "--property=SystemCallErrorNumber=EPERM",
     ]
 
-    for property in run0[
+    for sandbox_property in run0[
         2:
     ]:  # When repeating properties, the latest apply so no need to do anything fancy
         local_property: str = ""
-        local_property = "--property=" + property
-        SYSTEMD_SANDBOX_PROPERTIES.append(local_property)
+        local_property = "--property=" + sandbox_property
+        systemd_sandbox_properties.append(local_property)
 
-    return SYSTEMD_SANDBOX_PROPERTIES
+    return systemd_sandbox_properties
 
 
 def run0_env(func, *args, **kwargs) -> str:
     """Converts the objects passed to the sandboxed function to base64 ascii."""
     env_data = [func.__name__, inspect.getfile(func), args, kwargs]
     env_str = base64.b64encode(pickle.dumps(env_data)).decode("ascii")
-    return f"--setenv=python_config={env_str}"
+    return f"--setenv=PYTHON_CONFIG={env_str}"
 
 
 def sandbox(run0_input: list[str]):
@@ -346,8 +346,9 @@ def sandbox(run0_input: list[str]):
     def decorator(func):
         def wrapper(*args, **kwargs):
             """
-            This function passes information to the elevated runner via an env var given to run0 called "python_config"
-            python_config uses the following list converted in base64 ascii via pickle:
+            This function passes information to the elevated runner via an
+            env var given to run0 called "PYTHON_CONFIG". PYTHON_CONFIG uses
+            the following list converted in base64 ascii via pickle:
             [function_name,
             function_file_path,
             *args,
@@ -364,20 +365,19 @@ def sandbox(run0_input: list[str]):
                 "-B",  # prevents use of bytecode (pycache) to ease run0 sandboxing configuration
                 "/usr/libexec/secureblue/utils/sandbox_inner.py",
             ]
-            result = subprocess.run(command, text=True, capture_output=True)  # nosec
+            result = subprocess.run(command, check=False, text=True, capture_output=True)  # nosec
             if result.returncode != 0:
                 print("return code:" + str(result.returncode))
                 print("stdout:" + result.stdout)
                 print("stderr:" + result.stderr)
                 print("subprocess command:" + str(command))
-                return
+                return None
             print(result.stdout, end="")  # print any text the subprocess tried to print
             b64_str = result.stderr
             try:
                 pickle_input_dump = base64.b64decode(b64_str.encode("ascii"))
-                func_return = pickle.loads(pickle_input_dump)
-                return func_return
-            except binascii.Error:
+                return pickle.loads(pickle_input_dump)  # noqa: S301
+            except binascii.Error:  # noqa: F821
                 print(result.stderr, file=sys.stderr)
             return 0
 

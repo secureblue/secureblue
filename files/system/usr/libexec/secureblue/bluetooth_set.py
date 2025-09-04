@@ -28,6 +28,7 @@ if __name__ == "__main__":
 else:
 
     def sandbox(run0):  # noqa: ARG001
+        """This is an empty decorator used to prevent recursive imports."""
         def decorator(func):
             def wrapper(*args, **kwargs):
                 return func(*args, **kwargs)

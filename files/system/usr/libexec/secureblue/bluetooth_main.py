@@ -22,21 +22,8 @@ import os
 import sys
 from pathlib import Path
 from typing import Final
-
-if __name__ == "__main__":
-    from utils import sandbox
-else:
-
-    def sandbox(run0):  # noqa: ARG001
-        """This is an empty decorator used to prevent recursive imports."""
-        def decorator(func):
-            def wrapper(*args, **kwargs):
-                return func(*args, **kwargs)
-
-            return wrapper
-
-        return decorator
-
+import sandbox
+from sandbox import Inner
 
 BLUE_HELP: Final[str] = """
 This python script toggles if bluetooth is enabled by creating or deleting a modprobe file at
@@ -57,12 +44,7 @@ ujust set-bluetooth-modules --help
     Prints this message.
 """
 # Note: If you are running this python script standalone use 'python3 bluetooth_toggle.py <option>'
-
-BLUE_MOD_PATH: Final[str] = "/etc/modprobe.d/"
 BLUE_MOD_FILE: Final[str] = "/etc/modprobe.d/99-bluetooth.conf"
-BLUE_MOD_TEXT: Final[str] = """install bluetooth /sbin/modprobe --ignore-install bluetooth
-install btusb /sbin/modprobe --ignore-install btusb"""
-RUN0_CONFIG: Final[list[str]] = ["/etc/modprobe.d/99-bluetooth.conf", "CAP_DAC_OVERRIDE"]
 
 
 def is_module_loaded(module_name: str) -> bool:
@@ -88,32 +70,12 @@ def status(disabled: bool):
     print(message)
 
 
-@sandbox(RUN0_CONFIG)
-def inner(mode: bool):
-    """Checks arguements, and adds or deletes the relevant modprobe file."""
-
-    match mode:
-        case 0:
-            with open(BLUE_MOD_FILE, "w", encoding="utf8") as fd:
-                fd.write(BLUE_MOD_TEXT)
-            os.chmod(BLUE_MOD_FILE, 0o644)
-            print("Bluetooth has been disabled. Reboot for effect.")
-            return 0
-        case 1:
-            os.remove(BLUE_MOD_FILE)
-            print("Bluetooth has been enabled. Reboot for effect.")
-            return 0
-        case _:
-            print("Invalid inner script argument.")
-            return 1
-
-
 def main():
     """Parses user input, checks current bluetooth status, and calls necessary helper functions."""
     disabled: bool = Path(
         BLUE_MOD_FILE
     ).exists()  # If this file exists, we assume the Bluetooth kernel modules are already disabled.
-    if len(sys.argv) == 1:
+    if len(sys.argv) != 2:
         print("Needs an option, see usage with --help.")
         return 1
 
@@ -123,12 +85,12 @@ def main():
             if not disabled:
                 status(disabled)
             else:
-                return inner(True)
+                return sandbox.run(Inner.BLUETOOTH, "CAP_DAC_OVERRIDE", "on")
         case "off":
             if disabled:
                 status(disabled)
             else:
-                return inner(False)
+                return sandbox.run(Inner.BLUETOOTH, "CAP_DAC_OVERRIDE", "off")
         case "status":
             status(disabled)
         case "--help":

@@ -23,7 +23,7 @@ import sys
 from pathlib import Path
 from typing import Final
 import sandbox
-from sandbox import Inner
+from sandbox import SandboxedFunction
 
 BLUE_HELP: Final[str] = """
 This python script toggles if bluetooth is enabled by creating or deleting a modprobe file at
@@ -44,8 +44,12 @@ ujust set-bluetooth-modules --help
     Prints this message.
 """
 # Note: If you are running this python script standalone use 'python3 bluetooth_toggle.py <option>'
-BLUE_MOD_FILE: Final[str] = "/etc/modprobe.d/99-bluetooth.conf"
+BLUE_MOD_DIR: Final[str] = "/etc/modprobe.d"
+BLUE_MOD_FILE: Final[str] = f"{BLUE_MOD_DIR}/99-bluetooth.conf"
 
+class Bluetooth(SandboxedFunction):
+    def __init__(self):
+        super().__init__("CAP_DAC_OVERRIDE", [BLUE_MOD_DIR]) 
 
 def is_module_loaded(module_name: str) -> bool:
     """Checks if a given kernel module is currently loaded by checking for it in /proc/modules"""
@@ -56,23 +60,18 @@ def is_module_loaded(module_name: str) -> bool:
         return False
 
 
-def status(disabled: bool):
+def status(disabled_by_file: bool):
     """Gives status of Bluetooth availability, both currently and what it will be after a reboot."""
-    message: str = ""
-    if not is_module_loaded("bluetooth") and not is_module_loaded("btusb"):
-        message += "Bluetooth is disabled currently"
-    else:
-        message += "Bluetooth is enabled currently"
-    if disabled:
-        message += ", and after a reboot, Bluetooth will be disabled."
-    else:
-        message += ", and after a reboot. Bluetooth will be enabled."
-    print(message)
+    bluetooth_currently_disabled: bool = not is_module_loaded("bluetooth") and not is_module_loaded("btusb")
+    file_state_matches_system_string: str = "still " if disabled_by_file == bluetooth_currently_disabled else ""
+    current_status_string: str = "disabled" if bluetooth_currently_disabled else "enabled"
+    file_status_string: str = "disabled" if disabled_by_file else "enabled"
 
+    print(f"Bluetooth is currently {current_status_string}, and after a reboot will {file_state_matches_system_string}be {file_status_string}")
 
 def main():
     """Parses user input, checks current bluetooth status, and calls necessary helper functions."""
-    disabled: bool = Path(
+    disabled_by_file: bool = Path(
         BLUE_MOD_FILE
     ).exists()  # If this file exists, we assume the Bluetooth kernel modules are already disabled.
     if len(sys.argv) != 2:
@@ -80,19 +79,18 @@ def main():
         return 1
 
     mode = sys.argv[1]
+
+    bluetooth_function = Bluetooth()
     match mode:
-        case "on":
-            if not disabled:
-                status(disabled)
+        case "on" | "off":
+            target_state_disabled: bool = True if mode == "off" else False 
+            state_already_set = target_state_disabled == disabled_by_file
+            if (state_already_set):
+                status(disabled_by_file)
             else:
-                return sandbox.run(Inner.BLUETOOTH, "CAP_DAC_OVERRIDE", "on")
-        case "off":
-            if disabled:
-                status(disabled)
-            else:
-                return sandbox.run(Inner.BLUETOOTH, "CAP_DAC_OVERRIDE", "off")
+                return sandbox.run(bluetooth_function, mode)
         case "status":
-            status(disabled)
+            status(disabled_by_file)
         case "--help":
             print(BLUE_HELP)
         case _:

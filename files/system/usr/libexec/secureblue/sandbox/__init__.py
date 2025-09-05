@@ -79,5 +79,3 @@ def run(sandboxed_function: SandboxedFunction, *args):
         return None
     print(result.stdout, end="")
     return 0
-
-

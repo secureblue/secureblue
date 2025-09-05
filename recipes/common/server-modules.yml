@@ -31,7 +31,6 @@ modules:
       scripts:
         - excludepcsc.sh
         - setserverdefaultzone.sh
-        - setservermotd.sh
         - removebrewjust.sh
         - removesuid.sh
         - securecoreremovebrewmotd.sh

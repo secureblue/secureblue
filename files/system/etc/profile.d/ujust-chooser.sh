@@ -1,6 +1,6 @@
 #!/usr/bin/sh
 
-if ! command -v fzf &> /dev/null
+if command -v fzf &> /dev/null
 then
     export JUST_CHOOSER="fzf"
 else

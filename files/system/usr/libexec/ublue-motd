@@ -49,6 +49,24 @@ elif [ "$DIFFERENCE" -ge "$WEEK" ]; then
 else
     TIP='**For secureblue release notifications,** [subscribe:](https://secureblue.dev/faq#releases)'
 fi
-sed --sandbox -e "s/%IMAGE_REF_NAME%/$IMAGE_REF_NAME/g" -e "s|%TIP%|$TIP|g" /usr/share/ublue-os/motd/secureblue.md | tr '~' '\n' | { command -v glow >/dev/null 2>&1 && glow -s auto -w 78 - || cat; }
 
+RESET='\e[0m'
+BOLD='\e[1m'
+SLIGHT_RED='\e[48;2;48;48;48m\e[38;2;245;86;71m'
+LINK='\e[38;2;23;118;122m'
+HEADER='\e[1;38;5;228m\e[48;5;63m'
 
+echo
+echo -e "  ${HEADER} Welcome to secureblue! ${RESET}\n"
+echo -e "  Your image is: ${SLIGHT_RED} ${IMAGE_REF_NAME} ${RESET}\n"
+echo "   >. Command                    │ Description                                "
+echo "  ───────────────────────────────┼────────────────────────────────────────────"
+echo -e "   ${SLIGHT_RED} ujust --choose ${RESET}              │ List all available commands"
+echo -e "   ${SLIGHT_RED} ujust toggle-user-motd ${RESET}      │ Toggle this banner on/off"
+echo -e "   ${SLIGHT_RED} brew help ${RESET}                   │ Manage command line packages"
+echo
+echo -e "  • ${BOLD}Release notifications:${RESET} ${LINK}https://secureblue.dev/faq#release${RESET}"
+echo -e "  • ${BOLD}Report an issue:${RESET} ${LINK}https://github.com/secureblue/secureblue/issues${RESET}"
+echo -e "  • ${BOLD}FAQ:${RESET} ${LINK}https://secureblue.dev/faq${RESET}"
+echo -e "  • ${BOLD}Donate:${RESET} ${LINK}https://secureblue.dev/donate${RESET}"
+echo -e "  • ${BOLD}Discord:${RESET} ${LINK}https://discord.gg/qMTv5cKfbF${RESET}"

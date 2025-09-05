@@ -14,5 +14,4 @@
 
 set -oue pipefail
 
-systemctl enable securebluefirstrun.service
 systemctl enable securebluecleanup.service

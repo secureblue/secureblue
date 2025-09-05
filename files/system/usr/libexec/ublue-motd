@@ -36,11 +36,12 @@ for imageType in "${imageTypes[@]}"; do
     fi
 done
 
-reset='\e[0m'
-bold='\e[1m'
-slight_red='\e[48;2;48;48;48m\e[38;2;245;86;71m'
-link='\e[38;2;23;118;122m'
-header='\e[1;38;5;228m\e[48;5;63m'
+
+reset=$'\e[0m'
+bold=$'\e[1m'
+slight_red=$'\e[48;2;48;48;48m\e[38;2;245;86;71m'
+link=$'\e[38;2;23;118;122m'
+header=$'\e[1;38;5;228m\e[48;5;63m'
 
 if $isDeprecated; then
     TIP="${bold}You are on a deprecated image, rebase: ${reset}${link}https://github.com/secureblue/secureblue/blob/live/files/system/usr/libexec/deprecated-images.json.md${reset}"
@@ -54,21 +55,28 @@ elif [ "$DIFFERENCE" -ge "$WEEK" ]; then
     TIP="${bold}Your current image is over 1 week old, run ${reset}${slight_red} rpm-ostree upgrade ${reset}${reset}"
 fi
 
-echo
-echo -e "  ${header} Welcome to secureblue! ${reset}\n"
-echo -e "  Your image is: ${slight_red} ${IMAGE_REF_NAME} ${reset}\n"
-echo "   >. Command                    │ Description                                "
-echo "  ───────────────────────────────┼────────────────────────────────────────────"
-echo -e "   ${slight_red} ujust --choose ${reset}              │ List all available commands"
-echo -e "   ${slight_red} ujust toggle-user-motd ${reset}      │ Toggle this banner on/off"
-echo -e "   ${slight_red} brew help ${reset}                   │ Manage command line packages"
+cat << EOF
+
+  ${header} Welcome to secureblue! ${reset}
+
+  Your image is: ${slight_red} ${IMAGE_REF_NAME} ${reset}
+
+   >. Command                    │ Description                                
+  ───────────────────────────────┼────────────────────────────────────────────
+   ${slight_red} ujust --choose ${reset}              │ List all available commands
+   ${slight_red} ujust toggle-user-motd ${reset}      │ Toggle this banner on/off
+   ${slight_red} brew help ${reset}                   │ Manage command line packages
+EOF
 if [ -n "$TIP" ]; then
     echo
     echo -e "  ${TIP}"
 fi
-echo
-echo -e "  • ${bold}Release notifications:${reset} ${link}https://secureblue.dev/faq#release${reset}"
-echo -e "  • ${bold}Report an issue:${reset} ${link}https://github.com/secureblue/secureblue/issues${reset}"
-echo -e "  • ${bold}FAQ:${reset} ${link}https://secureblue.dev/faq${reset}"
-echo -e "  • ${bold}Donate:${reset} ${link}https://secureblue.dev/donate${reset}"
-echo -e "  • ${bold}Discord:${reset} ${link}https://discord.gg/qMTv5cKfbF${reset}"
+cat << EOF
+
+  • ${bold}Release notifications:${reset} ${link}https://secureblue.dev/faq#release${reset}
+  • ${bold}Report an issue:${reset} ${link}https://github.com/secureblue/secureblue/issues${reset}
+  • ${bold}FAQ:${reset} ${link}https://secureblue.dev/faq${reset}
+  • ${bold}Donate:${reset} ${link}https://secureblue.dev/donate${reset}
+  • ${bold}Discord:${reset} ${link}https://discord.gg/qMTv5cKfbF${reset}
+
+EOF

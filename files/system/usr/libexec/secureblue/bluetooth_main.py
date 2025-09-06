@@ -1,9 +1,3 @@
-"""
-bluetooth_toggle.py
-
-This module toggles bluetooth via modprobe rules.
-"""
-
 # Copyright 2025 The Secureblue Authors
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -43,16 +37,15 @@ ujust set-bluetooth-modules status
 ujust set-bluetooth-modules --help
     Prints this message.
 """
-# Note: If you are running this python script standalone use 'python3 bluetooth_toggle.py <option>'
+
 BLUE_MOD_DIR: Final[str] = "/etc/modprobe.d"
 BLUE_MOD_FILE: Final[str] = f"{BLUE_MOD_DIR}/99-bluetooth.conf"
 
 class Bluetooth(SandboxedFunction):
     def __init__(self):
-        super().__init__("CAP_DAC_OVERRIDE", [BLUE_MOD_DIR]) 
+        super().__init__("CAP_DAC_OVERRIDE", [BLUE_MOD_DIR], None) 
 
 def is_module_loaded(module_name: str) -> bool:
-    """Checks if a given kernel module is currently loaded by checking for it in /proc/modules"""
     try:
         with open("/proc/modules", encoding="utf8") as fd:
             return any(line.startswith(module_name + " ") for line in fd)
@@ -61,7 +54,6 @@ def is_module_loaded(module_name: str) -> bool:
 
 
 def status(disabled_by_file: bool):
-    """Gives status of Bluetooth availability, both currently and what it will be after a reboot."""
     bluetooth_currently_disabled: bool = not is_module_loaded("bluetooth") and not is_module_loaded("btusb")
     file_state_matches_system_string: str = "still " if disabled_by_file == bluetooth_currently_disabled else ""
     current_status_string: str = "disabled" if bluetooth_currently_disabled else "enabled"
@@ -70,10 +62,10 @@ def status(disabled_by_file: bool):
     print(f"Bluetooth is currently {current_status_string}, and after a reboot will {file_state_matches_system_string}be {file_status_string}")
 
 def main():
-    """Parses user input, checks current bluetooth status, and calls necessary helper functions."""
     disabled_by_file: bool = Path(
         BLUE_MOD_FILE
-    ).exists()  # If this file exists, we assume the Bluetooth kernel modules are already disabled.
+    ).exists()
+
     if len(sys.argv) != 2:
         print("Needs an option, see usage with --help.")
         return 1

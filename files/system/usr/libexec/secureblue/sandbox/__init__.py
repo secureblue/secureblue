@@ -1,3 +1,17 @@
+# Copyright 2025 The Secureblue Authors
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
 import subprocess
 from typing import Final
 from .sandboxed_function import SandboxedFunction
@@ -8,8 +22,9 @@ def create_run0_args(sandboxed_function: SandboxedFunction) -> list[str]:
     """Creates the args for run0."""
     capabilities = sandboxed_function.capabilities()
     read_write_paths = sandboxed_function.read_write_paths()
+    additional_sandbox_properties = sandboxed_function.additional_sandbox_properties()
     if capabilities is None:
-        capabilities = "/dev/null"
+        return None
 
     # Copyright (C) 2025 Daniel Hast
     # Systemd sandboxing of run0 invocation adapted from run0edit, originally licensed
@@ -55,6 +70,9 @@ def create_run0_args(sandboxed_function: SandboxedFunction) -> list[str]:
 
     if read_write_paths is not None:
         systemd_sandbox_properties.append(f"--property=ReadWritePaths={' '.join(read_write_paths)}")
+
+    if additional_sandbox_properties is not None:
+        systemd_sandbox_properties += additional_sandbox_properties
 
     return systemd_sandbox_properties
 

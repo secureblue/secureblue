@@ -53,16 +53,16 @@ def is_module_loaded(module_name: str) -> bool:
         return False
 
 
-def status(disabled_by_file: bool):
-    bluetooth_currently_disabled: bool = not is_module_loaded("bluetooth") and not is_module_loaded("btusb")
-    file_state_matches_system_string: str = "still " if disabled_by_file == bluetooth_currently_disabled else ""
-    current_status_string: str = "disabled" if bluetooth_currently_disabled else "enabled"
-    file_status_string: str = "disabled" if disabled_by_file else "enabled"
+def status(enabled_by_file: bool):
+    bluetooth_currently_enabled: bool = is_module_loaded("bluetooth") or is_module_loaded("btusb")
+    file_state_matches_system_string: str = "still " if enabled_by_file == bluetooth_currently_enabled else ""
+    current_status_string: str = "enabled" if bluetooth_currently_enabled else "disabled"
+    file_status_string: str = "enabled" if enabled_by_file else "disabled"
 
     print(f"Bluetooth is currently {current_status_string}, and after a reboot will {file_state_matches_system_string}be {file_status_string}")
 
 def main():
-    disabled_by_file: bool = Path(
+    enabled_by_file: bool = Path(
         BLUE_MOD_FILE
     ).exists()
 
@@ -75,14 +75,14 @@ def main():
     bluetooth_function = Bluetooth()
     match mode:
         case "on" | "off":
-            target_state_disabled: bool = True if mode == "off" else False 
-            state_already_set = target_state_disabled == disabled_by_file
+            target_state_enabled: bool = True if mode == "on" else False 
+            state_already_set = target_state_enabled == enabled_by_file
             if (state_already_set):
-                status(disabled_by_file)
+                status(enabled_by_file)
             else:
                 return sandbox.run(bluetooth_function, mode)
         case "status":
-            status(disabled_by_file)
+            status(enabled_by_file)
         case "--help":
             print(BLUE_HELP)
         case _:

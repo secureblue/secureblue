@@ -26,15 +26,15 @@ def main():
 
     mode = sys.argv[1]
     match mode:
-        case "off":
+        case "on":
             with open(BLUE_MOD_FILE, "w", encoding="utf8") as fd:
                 fd.write(BLUE_MOD_TEXT)
             os.chmod(BLUE_MOD_FILE, 0o644)
-            print("Bluetooth has been disabled. Reboot for effect.")
-            return 0
-        case "on":
-            os.remove(BLUE_MOD_FILE)
             print("Bluetooth has been enabled. Reboot for effect.")
+            return 0
+        case "off":
+            os.remove(BLUE_MOD_FILE)
+            print("Bluetooth has been disabled. Reboot for effect.")
             return 0
         case _:
             print("Invalid inner script argument.")

@@ -45,10 +45,13 @@ ujust set-bluetooth-modules --help
 BLUE_MOD_DIR: Final[str] = "/etc/modprobe.d"
 BLUE_MOD_FILE: Final[str] = f"{BLUE_MOD_DIR}/99-bluetooth.conf"
 
+
 class Bluetooth(SandboxedFunction):
     """A SandboxedFunction for the bluetooth toggle"""
+
     def __init__(self):
         super().__init__("CAP_DAC_OVERRIDE", [BLUE_MOD_DIR], None)
+
 
 def is_module_loaded(module_name: str) -> bool:
     """Check whether the passed module name is currently loaded"""
@@ -68,14 +71,15 @@ def print_status(enabled_by_file: bool):
     cur_status: str = "enabled" if bluetooth_currently_enabled else "disabled"
     file_status: str = "enabled" if enabled_by_file else "disabled"
 
-    print(f"Bluetooth is currently {cur_status}, and after a reboot will {file_matches_sys}be {file_status}")
+    print(
+        f"Bluetooth is currently {cur_status}, and after a reboot will {file_matches_sys}be {file_status}"
+    )
+
 
 def main():
     """Handle the arguments and execute the bluetooth toggle"""
 
-    enabled_by_file: bool = Path(
-        BLUE_MOD_FILE
-    ).exists()
+    enabled_by_file: bool = Path(BLUE_MOD_FILE).exists()
 
     required_args_count = 2
     if len(sys.argv) != required_args_count:
@@ -89,7 +93,7 @@ def main():
         case "on" | "off":
             target_state_enabled = mode == "on"
             state_already_set = target_state_enabled == enabled_by_file
-            if (state_already_set):
+            if state_already_set:
                 print_status(enabled_by_file)
             else:
                 return sandbox.run(bluetooth_function, mode)

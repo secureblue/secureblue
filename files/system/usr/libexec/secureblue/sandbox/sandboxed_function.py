@@ -16,10 +16,13 @@
 A class that wraps a function to be run in a sandbox
 """
 
+
 class SandboxedFunction:
     """A class that wraps a function to be run in a sandbox"""
 
-    def __init__(self, caps: list[str] | None, rw_paths: list[str] | None, sbox_props: list[str] | None):
+    def __init__(
+        self, caps: list[str] | None, rw_paths: list[str] | None, sbox_props: list[str] | None
+    ):
         """Initialize the sandboxed function with required caps, rw_paths, and additional props"""
         self.caps = caps
         self.rw_paths = rw_paths
@@ -27,7 +30,7 @@ class SandboxedFunction:
 
     def inner_file_name(self) -> str:
         """Return the target file name"""
-        return (f"{self.__class__.__name__.lower()}.py")
+        return f"{self.__class__.__name__.lower()}.py"
 
     def capabilities(self) -> list[str] | None:
         """Return the function's required caps"""

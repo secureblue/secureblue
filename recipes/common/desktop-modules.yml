@@ -26,12 +26,5 @@ modules:
       include:
         - desktop
     - from-file: common/desktop-scripts.yml
-    - type: fonts
-      fonts:
-        nerd-fonts:
-          - FiraCode
-          - JetBrainsMono
-          - NerdFontsSymbolsOnly
-          - Ubuntu
     - type: brew
       brew-analytics: false

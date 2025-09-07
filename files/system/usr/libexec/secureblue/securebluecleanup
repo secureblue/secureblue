@@ -20,6 +20,10 @@ cp /usr/etc/authselect/fingerprint-auth /etc/authselect/fingerprint-auth
 cp /usr/etc/authselect/dconf-db /etc/authselect/dconf-db
 cp /usr/etc/authselect/authselect.conf /etc/authselect/authselect.conf
 
+# Remove firewalld zone override from Anaconda
+cp /usr/etc/firewalld/zones/FedoraWorkstation.xml /etc/firewalld/zones/FedoraWorkstation.xml || true
+cp /usr/etc/firewalld/zones/FedoraServer.xml /etc/firewalld/zones/FedoraServer.xml || true
+
 if command -v flatpak &> /dev/null
 then
     flatpak remote-delete --system --force fedora || true

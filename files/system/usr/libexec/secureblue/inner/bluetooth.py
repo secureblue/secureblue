@@ -12,6 +12,10 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+"""
+The sandboxed bluetooth toggle function
+"""
+
 import os
 import sys
 from typing import Final
@@ -21,7 +25,9 @@ BLUE_MOD_TEXT: Final[str] = """install bluetooth /sbin/modprobe --ignore-install
 install btusb /sbin/modprobe --ignore-install btusb"""
 
 def main():
-    if len(sys.argv) != 2:
+    """Set or remove the bluetooth module override"""
+    required_args_count = 2
+    if len(sys.argv) != required_args_count:
         return 1
 
     mode = sys.argv[1]

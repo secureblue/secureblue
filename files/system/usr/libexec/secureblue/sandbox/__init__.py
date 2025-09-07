@@ -12,14 +12,20 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+"""
+Framework for running rootful functions in a systemd sandbox
+"""
+
 import subprocess
 from typing import Final
+
 from .sandboxed_function import SandboxedFunction
 
 INNER_DIR: Final[str] = "/usr/libexec/secureblue/inner"
 
 def create_run0_args(sandboxed_function: SandboxedFunction) -> list[str]:
-    """Creates the args for run0."""
+    """Creates the args to be passed to run0."""
+
     capabilities = sandboxed_function.capabilities()
     read_write_paths = sandboxed_function.read_write_paths()
     additional_sandbox_properties = sandboxed_function.additional_sandbox_properties()
@@ -77,6 +83,8 @@ def create_run0_args(sandboxed_function: SandboxedFunction) -> list[str]:
     return systemd_sandbox_properties
 
 def run(sandboxed_function: SandboxedFunction, *args):
+    """Execute a sandboxed function."""
+
     run0_args = create_run0_args(sandboxed_function)
     if run0_args is None or run0_args == [""]:
         return 1

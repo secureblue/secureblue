@@ -12,10 +12,14 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import os
+"""
+The bluetooth toggle implementation for ujust
+"""
+
 import sys
 from pathlib import Path
 from typing import Final
+
 import sandbox
 from sandbox import SandboxedFunction
 
@@ -42,10 +46,13 @@ BLUE_MOD_DIR: Final[str] = "/etc/modprobe.d"
 BLUE_MOD_FILE: Final[str] = f"{BLUE_MOD_DIR}/99-bluetooth.conf"
 
 class Bluetooth(SandboxedFunction):
+    """A SandboxedFunction for the bluetooth toggle"""
     def __init__(self):
-        super().__init__("CAP_DAC_OVERRIDE", [BLUE_MOD_DIR], None) 
+        super().__init__("CAP_DAC_OVERRIDE", [BLUE_MOD_DIR], None)
 
 def is_module_loaded(module_name: str) -> bool:
+    """Check whether the passed module name is currently loaded"""
+
     try:
         with open("/proc/modules", encoding="utf8") as fd:
             return any(line.startswith(module_name + " ") for line in fd)
@@ -53,20 +60,25 @@ def is_module_loaded(module_name: str) -> bool:
         return False
 
 
-def status(enabled_by_file: bool):
-    bluetooth_currently_enabled: bool = is_module_loaded("bluetooth") or is_module_loaded("btusb")
-    file_state_matches_system_string: str = "still " if enabled_by_file == bluetooth_currently_enabled else ""
-    current_status_string: str = "enabled" if bluetooth_currently_enabled else "disabled"
-    file_status_string: str = "enabled" if enabled_by_file else "disabled"
+def print_status(enabled_by_file: bool):
+    """Print the current file and runtime status"""
 
-    print(f"Bluetooth is currently {current_status_string}, and after a reboot will {file_state_matches_system_string}be {file_status_string}")
+    bluetooth_currently_enabled: bool = is_module_loaded("bluetooth") or is_module_loaded("btusb")
+    file_matches_sys: str = "still " if enabled_by_file == bluetooth_currently_enabled else ""
+    cur_status: str = "enabled" if bluetooth_currently_enabled else "disabled"
+    file_status: str = "enabled" if enabled_by_file else "disabled"
+
+    print(f"Bluetooth is currently {cur_status}, and after a reboot will {file_matches_sys}be {file_status}")
 
 def main():
+    """Handle the arguments and execute the bluetooth toggle"""
+
     enabled_by_file: bool = Path(
         BLUE_MOD_FILE
     ).exists()
 
-    if len(sys.argv) != 2:
+    required_args_count = 2
+    if len(sys.argv) != required_args_count:
         print("Needs an option, see usage with --help.")
         return 1
 
@@ -75,14 +87,14 @@ def main():
     bluetooth_function = Bluetooth()
     match mode:
         case "on" | "off":
-            target_state_enabled: bool = True if mode == "on" else False 
+            target_state_enabled = mode == "on"
             state_already_set = target_state_enabled == enabled_by_file
             if (state_already_set):
-                status(enabled_by_file)
+                print_status(enabled_by_file)
             else:
                 return sandbox.run(bluetooth_function, mode)
         case "status":
-            status(enabled_by_file)
+            print_status(enabled_by_file)
         case "--help":
             print(BLUE_HELP)
         case _:

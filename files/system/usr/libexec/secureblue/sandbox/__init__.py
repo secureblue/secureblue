@@ -23,6 +23,7 @@ from .sandboxed_function import SandboxedFunction
 
 INNER_DIR: Final[str] = "/usr/libexec/secureblue/inner"
 
+
 def create_run0_args(sandboxed_function: SandboxedFunction) -> list[str]:
     """Creates the args to be passed to run0."""
 
@@ -82,6 +83,7 @@ def create_run0_args(sandboxed_function: SandboxedFunction) -> list[str]:
 
     return systemd_sandbox_properties
 
+
 def run(sandboxed_function: SandboxedFunction, *args):
     """Execute a sandboxed function."""
 
@@ -94,7 +96,7 @@ def run(sandboxed_function: SandboxedFunction, *args):
         "/usr/bin/python3",
         "-B",  # prevents use of bytecode (pycache) to ease run0 sandboxing configuration
         f"{INNER_DIR}/{sandboxed_function.inner_file_name()}",
-        *args
+        *args,
     ]
     result = subprocess.run(command, check=False, text=True, capture_output=True)  # nosec
     if result.returncode != 0:

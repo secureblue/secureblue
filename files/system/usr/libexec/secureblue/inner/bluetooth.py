@@ -24,6 +24,7 @@ BLUE_MOD_FILE: Final[str] = "/etc/modprobe.d/99-bluetooth.conf"
 BLUE_MOD_TEXT: Final[str] = """install bluetooth /sbin/modprobe --ignore-install bluetooth
 install btusb /sbin/modprobe --ignore-install btusb"""
 
+
 def main():
     """Set or remove the bluetooth module override"""
     required_args_count = 2
@@ -45,6 +46,7 @@ def main():
         case _:
             print("Invalid inner script argument.")
             return 1
+
 
 if __name__ == "__main__":
     sys.exit(main())

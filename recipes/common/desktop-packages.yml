@@ -28,15 +28,12 @@ install:
   - vim
   - wl-clipboard
   - alsa-firmware
-  
+
   # yubikey enablement
   - pam-u2f
   - pam_yubico
   - pamu2fcfg
   - yubikey-manager
-
-  # ensure universal font coverage
-  - google-noto-fonts-all
 remove:
   - fedora-logos
   - firefox
@@ -44,7 +41,3 @@ remove:
   - fuse
   - passim
   - fedora-chromium-config
-
-
-
-

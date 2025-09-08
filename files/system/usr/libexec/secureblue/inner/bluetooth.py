@@ -22,7 +22,8 @@ from typing import Final
 
 BLUE_MOD_FILE: Final[str] = "/etc/modprobe.d/99-bluetooth.conf"
 BLUE_MOD_TEXT: Final[str] = """install bluetooth /sbin/modprobe --ignore-install bluetooth
-install btusb /sbin/modprobe --ignore-install btusb"""
+install btusb /sbin/modprobe --ignore-install btusb
+"""
 
 
 def main():

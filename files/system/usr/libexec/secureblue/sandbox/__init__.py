@@ -21,7 +21,7 @@ from typing import Final
 
 from .sandboxed_function import SandboxedFunction
 
-INNER_DIR: Final[str] = "/home/user/secureblue-dev/files/system/usr/libexec/secureblue/inner"
+INNER_DIR: Final[str] = "/usr/libexec/secureblue/inner"
 
 
 def create_run0_args(sandboxed_function: SandboxedFunction) -> list[str]:

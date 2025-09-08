@@ -21,15 +21,15 @@ from typing import Final
 
 from .sandboxed_function import SandboxedFunction
 
-INNER_DIR: Final[str] = "/usr/libexec/secureblue/inner"
+INNER_DIR: Final[str] = "/home/user/secureblue-dev/files/system/usr/libexec/secureblue/inner"
 
 
 def create_run0_args(sandboxed_function: SandboxedFunction) -> list[str]:
     """Creates the args to be passed to run0."""
 
-    capabilities = sandboxed_function.capabilities()
-    read_write_paths = sandboxed_function.read_write_paths()
-    additional_sandbox_properties = sandboxed_function.additional_sandbox_properties()
+    capabilities = sandboxed_function.capabilities
+    read_write_paths = sandboxed_function.read_write_paths
+    additional_sandbox_properties = sandboxed_function.additional_sandbox_properties
     if capabilities is None:
         return None
 
@@ -95,15 +95,8 @@ def run(sandboxed_function: SandboxedFunction, *args):
         *run0_args,
         "/usr/bin/python3",
         "-B",  # prevents use of bytecode (pycache) to ease run0 sandboxing configuration
-        f"{INNER_DIR}/{sandboxed_function.inner_file_name()}",
+        f"{INNER_DIR}/{sandboxed_function.file_name}",
         *args,
     ]
-    result = subprocess.run(command, check=False, text=True, capture_output=True)  # nosec
-    if result.returncode != 0:
-        print("return code:" + str(result.returncode))
-        print("stdout:" + result.stdout)
-        print("stderr:" + result.stderr)
-        print("subprocess command:" + str(command))
-        return None
-    print(result.stdout, end="")
-    return 0
+    result = subprocess.run(command, check=False)  # nosec
+    return result.returncode

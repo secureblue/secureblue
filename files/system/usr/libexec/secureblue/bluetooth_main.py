@@ -46,13 +46,6 @@ BLUE_MOD_DIR: Final[str] = "/etc/modprobe.d"
 BLUE_MOD_FILE: Final[str] = f"{BLUE_MOD_DIR}/99-bluetooth.conf"
 
 
-class Bluetooth(SandboxedFunction):
-    """A SandboxedFunction for the bluetooth toggle"""
-
-    def __init__(self):
-        super().__init__("CAP_DAC_OVERRIDE", [BLUE_MOD_DIR], None)
-
-
 def is_module_loaded(module_name: str) -> bool:
     """Check whether the passed module name is currently loaded"""
 
@@ -88,7 +81,7 @@ def main():
 
     mode = sys.argv[1]
 
-    bluetooth_function = Bluetooth()
+    bluetooth_function = SandboxedFunction("bluetooth.py", "CAP_DAC_OVERRIDE", [BLUE_MOD_DIR], None)
     match mode:
         case "on" | "off":
             target_state_enabled = mode == "on"

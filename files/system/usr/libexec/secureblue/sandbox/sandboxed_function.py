@@ -12,11 +12,11 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import dataclasses
-
 """
 A class that wraps a function to be run in a sandbox
 """
+
+import dataclasses
 
 
 @dataclasses.dataclass

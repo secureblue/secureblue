@@ -17,9 +17,12 @@ import dataclasses
 """
 A class that wraps a function to be run in a sandbox
 """
+
+
 @dataclasses.dataclass
 class SandboxedFunction:
     """A class that wraps a function to be run in a sandbox"""
+
     file_name: str
     capabilities: list[str] = dataclasses.field(default_factory=list)
     read_write_paths: list[str] = dataclasses.field(default_factory=list)

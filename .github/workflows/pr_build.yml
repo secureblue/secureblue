@@ -29,6 +29,24 @@ jobs:
       contents: read
 
     steps:
+      - name: Optimize build times
+        shell: bash
+        run: |
+          echo 'set man-db/auto-update false' | sudo debconf-communicate
+          sudo dpkg-reconfigure man-db
+          sudo rm -f /var/lib/man-db/auto-update
+          sudo sed -i 's/^update_initramfs=.*/update_initramfs=no/' /etc/initramfs-tools/update-initramfs.conf
+
+      - name: Free disk space
+        uses: jlumbroso/free-disk-space@54081f138730dfa15788a46383842cd2f914a1be # v1.3.1
+        with:
+          android: false
+          dotnet: true
+          haskell: true
+          large-packages: false
+          docker-images: true
+          swap-storage: true
+
       - name: Checkout repo
         uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
         with:
@@ -43,9 +61,6 @@ jobs:
           echo "IMAGE_MAJOR_VERSION=$(grep '^image-version:' "./recipes/${RECIPE}" | sed 's/^image-version: //')" >> "$GITHUB_ENV"
           BASE_IMAGE=$(grep '^base-image:' "./recipes/${RECIPE}" | sed 's/^base-image: //')
           echo "BASE_IMAGE_NAME=$(echo "$BASE_IMAGE" | sed 's/.*\/.*\///')" >> "$GITHUB_ENV"
-
-      - name: Maximize build space
-        uses: jlumbroso/free-disk-space@54081f138730dfa15788a46383842cd2f914a1be # v1.3.1
 
       - name: Determine Vars
         id: build_vars

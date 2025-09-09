@@ -14,14 +14,14 @@ name: build-secureblue
 permissions: {}
 on:
   schedule:
-    - cron: "00 6 * * *" # build at 6:00 UTC every day 
-    
+    - cron: "00 6 * * *" # build at 6:00 UTC every day
+
   push:
     branches-ignore: # don't rebuild for dependabot
       - 'dependabot/**'
     paths-ignore: # don't rebuild if only documentation has changed
       - "**.md"
-      
+
   workflow_dispatch: # allow manually triggering builds
 
 # Cancels running workflows if a new workflow run for
@@ -37,14 +37,9 @@ jobs:
       contents: read
       packages: write
       id-token: write
-    strategy:
-      fail-fast: false 
-      matrix:
-        recipe:
-          - general/recipe-silverblue-main.yml
     uses: ./.github/workflows/build-one-recipe.yml
     with:
-      recipe: ${{ matrix.recipe }}
+      recipe: general/recipe-silverblue-main.yml
     secrets:
       SIGNING_SECRET: ${{ secrets.SIGNING_SECRET }}
       KERNEL_PRIVKEY: ${{ secrets.KERNEL_PRIVKEY }}
@@ -56,14 +51,9 @@ jobs:
       contents: read
       packages: write
       id-token: write
-    strategy:
-      fail-fast: false 
-      matrix:
-        recipe:
-          - general/recipe-kinoite-main.yml
     uses: ./.github/workflows/build-one-recipe.yml
     with:
-      recipe: ${{ matrix.recipe }}
+      recipe: general/recipe-kinoite-main.yml
     secrets:
       SIGNING_SECRET: ${{ secrets.SIGNING_SECRET }}
       KERNEL_PRIVKEY: ${{ secrets.KERNEL_PRIVKEY }}
@@ -75,14 +65,9 @@ jobs:
       contents: read
       packages: write
       id-token: write
-    strategy:
-      fail-fast: false 
-      matrix:
-        recipe:
-          - general/recipe-sericea-main.yml
     uses: ./.github/workflows/build-one-recipe.yml
     with:
-      recipe: ${{ matrix.recipe }}
+      recipe: general/recipe-sericea-main.yml
     secrets:
       SIGNING_SECRET: ${{ secrets.SIGNING_SECRET }}
       KERNEL_PRIVKEY: ${{ secrets.KERNEL_PRIVKEY }}
@@ -94,14 +79,9 @@ jobs:
       contents: read
       packages: write
       id-token: write
-    strategy:
-      fail-fast: false 
-      matrix:
-        recipe:
-          - general/recipe-cosmic-main.yml
     uses: ./.github/workflows/build-one-recipe.yml
     with:
-      recipe: ${{ matrix.recipe }}
+      recipe: general/recipe-cosmic-main.yml
     secrets:
       SIGNING_SECRET: ${{ secrets.SIGNING_SECRET }}
       KERNEL_PRIVKEY: ${{ secrets.KERNEL_PRIVKEY }}
@@ -113,14 +93,9 @@ jobs:
       contents: read
       packages: write
       id-token: write
-    strategy:
-      fail-fast: false 
-      matrix:
-        recipe:
-          - securecore/recipe-securecore-main.yml
     uses: ./.github/workflows/build-one-recipe.yml
     with:
-      recipe: ${{ matrix.recipe }}
+      recipe: securecore/recipe-securecore-main.yml
     secrets:
       SIGNING_SECRET: ${{ secrets.SIGNING_SECRET }}
       KERNEL_PRIVKEY: ${{ secrets.KERNEL_PRIVKEY }}
@@ -134,7 +109,7 @@ jobs:
       packages: write
       id-token: write
     strategy:
-      fail-fast: false 
+      fail-fast: false
       matrix:
         recipe:
           - general/recipe-silverblue-nvidia.yml
@@ -155,7 +130,7 @@ jobs:
       packages: write
       id-token: write
     strategy:
-      fail-fast: false 
+      fail-fast: false
       matrix:
         recipe:
           - general/recipe-kinoite-nvidia.yml
@@ -176,7 +151,7 @@ jobs:
       packages: write
       id-token: write
     strategy:
-      fail-fast: false 
+      fail-fast: false
       matrix:
         recipe:
           - general/recipe-sericea-nvidia.yml
@@ -197,7 +172,7 @@ jobs:
       packages: write
       id-token: write
     strategy:
-      fail-fast: false 
+      fail-fast: false
       matrix:
         recipe:
           - general/recipe-cosmic-nvidia.yml
@@ -218,7 +193,7 @@ jobs:
       packages: write
       id-token: write
     strategy:
-      fail-fast: false 
+      fail-fast: false
       matrix:
         recipe:
           - securecore/recipe-securecore-nvidia.yml
@@ -239,7 +214,7 @@ jobs:
       packages: write
       id-token: write
     strategy:
-      fail-fast: false 
+      fail-fast: false
       matrix:
         recipe:
           - securecore/recipe-securecore-zfs-main.yml

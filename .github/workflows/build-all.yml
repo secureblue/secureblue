@@ -171,7 +171,7 @@ jobs:
       KERNEL_PRIVKEY: ${{ secrets.KERNEL_PRIVKEY }}
 
   securecore-main:
-    name: Build securecore main
+    name: Build securecore main images
     if: github.triggering_actor == 'royaloughtness' || github.event_name == 'schedule' || github.event_name == 'push'
     permissions:
       contents: read
@@ -206,7 +206,7 @@ jobs:
       KERNEL_PRIVKEY: ${{ secrets.KERNEL_PRIVKEY }}
 
   securecore-zfs-main:
-    name: Build zfs images
+    name: Build securecore zfs main images
     if: github.triggering_actor == 'royaloughtness' || github.event_name == 'schedule' || github.event_name == 'push'
     needs: securecore-main
     permissions:
@@ -221,7 +221,7 @@ jobs:
       KERNEL_PRIVKEY: ${{ secrets.KERNEL_PRIVKEY }}
 
   securecore-zfs-nvidia:
-    name: Build zfs images
+    name: Build zfs nvidia images
     if: github.triggering_actor == 'royaloughtness' || github.event_name == 'schedule' || github.event_name == 'push'
     needs: securecore-zfs-main
     permissions:

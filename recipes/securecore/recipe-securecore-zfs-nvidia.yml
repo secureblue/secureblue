@@ -14,12 +14,12 @@ name: securecore-zfs-nvidia-hardened
 
 description: "CoreOS with nvidia and zfs, hardened"
 
-base-image: ghcr.io/secureblue/securecore-nvidia-hardened
+base-image: ghcr.io/secureblue/securecore-zfs-main-hardened
 
 image-version: latest
 
 nushell-version: none
 
 modules:
-  - from-file: common/zfs-modules.yml
+  - from-file: common/nvidia-install.yml
   - from-file: common/final-modules.yml

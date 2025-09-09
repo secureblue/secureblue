@@ -170,7 +170,6 @@ jobs:
       SIGNING_SECRET: ${{ secrets.SIGNING_SECRET }}
       KERNEL_PRIVKEY: ${{ secrets.KERNEL_PRIVKEY }}
 
-
   securecore-main:
     name: Build securecore main
     if: github.triggering_actor == 'royaloughtness' || github.event_name == 'schedule' || github.event_name == 'push'

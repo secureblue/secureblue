@@ -177,8 +177,6 @@ jobs:
       contents: read
       packages: write
       id-token: write
-    strategy:
-      fail-fast: false
     uses: ./.github/workflows/build-one-recipe.yml
     with:
       recipe: securecore/recipe-securecore-main.yml
@@ -215,8 +213,6 @@ jobs:
       contents: read
       packages: write
       id-token: write
-    strategy:
-      fail-fast: false
     uses: ./.github/workflows/build-one-recipe.yml
     with:
       recipe: securecore/recipe-securecore-zfs-main.yml

@@ -41,8 +41,8 @@ class SandboxedFunction:
                 )
 
 
-def create_run0_args(sandboxed_function: SandboxedFunction) -> list[str]:
-    """Creates the args to be passed to run0."""
+def create_run0_options(sandboxed_function: SandboxedFunction) -> list[str]:
+    """Creates the options to be passed to run0."""
 
     capabilities = sandboxed_function.capabilities
     read_write_paths = sandboxed_function.read_write_paths
@@ -99,10 +99,15 @@ def create_run0_args(sandboxed_function: SandboxedFunction) -> list[str]:
 def run(sandboxed_function: SandboxedFunction, *args: str) -> int:
     """Execute a sandboxed function."""
 
-    run0_args = create_run0_args(sandboxed_function)
+    run0_options = create_run0_options(sandboxed_function)
+    if not run0_options:
+        raise ValueError("Must not have empty list of options to pass to run0.")
+    if not all(arg.startswith("--") and len(arg) > 2 for arg in run0_options):
+        raise ValueError("Invalid sandboxing options: options must start with --")
     command = [
         "/usr/bin/run0",
-        *run0_args,
+        *run0_options,
+        "--",
         "/usr/bin/python3",
         "-B",  # prevents use of bytecode (pycache) to ease run0 sandboxing configuration
         f"{INNER_DIR}/{sandboxed_function.file_name}",

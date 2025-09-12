@@ -102,7 +102,7 @@ def run(sandboxed_function: SandboxedFunction, *args: str) -> int:
     run0_options = create_run0_options(sandboxed_function)
     if not run0_options:
         raise ValueError("Must not have empty list of options to pass to run0.")
-    if not all(arg.startswith("--") and len(arg) > len("--") for arg in run0_options):
+    if not all(arg.startswith("--") and arg != "--" for arg in run0_options):
         raise ValueError("Invalid sandboxing options: options must start with --")
     command = [
         "/usr/bin/run0",

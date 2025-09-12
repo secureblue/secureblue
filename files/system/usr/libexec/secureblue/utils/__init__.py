@@ -43,12 +43,12 @@ UNKNOWN: Final = Status.UNKNOWN
 _: Final = gettext_marker()
 
 
-def print_err(text: str):
+def print_err(text: str) -> None:
     """Print text to stderr in bold and red."""
     print(f"\x1b[1m\x1b[31m{text}\x1b[0m", file=sys.stderr)
 
 
-def warn_if_root():
+def warn_if_root() -> None:
     """If run as root, warn that this is not recommended."""
     if not os.getuid():
         print_err("\n" + _("*** WARNING: Running audit script as root is not recommended. ***"))
@@ -187,7 +187,7 @@ class Image(enum.Enum):
     COREOS = enum.auto()
 
     @classmethod
-    def from_image_ref(cls, image_ref: str):
+    def from_image_ref(cls, image_ref: str) -> "Image | None":
         """Convert an image reference to the corresponding Image enum instance."""
         if "silverblue" in image_ref:
             return cls.SILVERBLUE

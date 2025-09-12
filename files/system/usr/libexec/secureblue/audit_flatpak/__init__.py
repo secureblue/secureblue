@@ -259,7 +259,7 @@ def check_flatpak_permissions(
     return flatpak_permissions_state
 
 
-def _handle_arbitrary_permissions(state: FlatpakPermissionsState):
+def _handle_arbitrary_permissions(state: FlatpakPermissionsState) -> None:
     if state.arbitrary_permissions:
         warning = _("{0} can acquire arbitrary permissions.").format(state.name)
         if state.name in ARBITRARY_PERMISSIONS_EXPECTED:
@@ -270,7 +270,7 @@ def _handle_arbitrary_permissions(state: FlatpakPermissionsState):
         state.warnings.append(warning)
 
 
-def _check_ld_preload(state: FlatpakPermissionsState, perms: Permissions):
+def _check_ld_preload(state: FlatpakPermissionsState, perms: Permissions) -> None:
     ld_preload = perms.environment.get("LD_PRELOAD")
     if ld_preload is None:
         ld_preload_files = []
@@ -299,7 +299,7 @@ def _check_ld_preload(state: FlatpakPermissionsState, perms: Permissions):
     state.recs.append(Recommendation("\n".join(rec_lines), mergeable_name=state.name))
 
 
-def _handle_flatpak_buses(state: FlatpakPermissionsState, perms: Permissions):
+def _handle_flatpak_buses(state: FlatpakPermissionsState, perms: Permissions) -> None:
     dangerous_buses = ("org.freedesktop.Flatpak", "org.freedesktop.impl.portal.PermissionStore")
     present_bus_names = [bus for bus in dangerous_buses if bus in perms.session_bus_talk]
     for bus_name in present_bus_names:
@@ -340,7 +340,7 @@ def _check_predefined_flatpak_permissions(
     existing_permissions: Permissions,
     bluetooth_loaded: bool,
     ptrace_allowed: bool,
-):
+) -> None:
     for check in FLATPAK_PERMISSION_CHECKS:
         if _predefined_check_applies(check, existing_permissions, bluetooth_loaded, ptrace_allowed):
             state.status = state.status.downgrade_to(check.status)
@@ -349,7 +349,7 @@ def _check_predefined_flatpak_permissions(
             state.arbitrary_permissions |= check.arbitrary_permissions
 
 
-def _check_dangerous_dirs(state: FlatpakPermissionsState, filesystems_rw: dict[str, bool]):
+def _check_dangerous_dirs(state: FlatpakPermissionsState, filesystems_rw: dict[str, bool]) -> None:
     dangerous_dirs: list[DirectoryInfo] = [
         DirectoryInfo("host", _("all system files"), FAIL),
         DirectoryInfo("home", _("all user files"), FAIL),
@@ -386,7 +386,7 @@ def _check_hardened_malloc_access(
     filesystems: list[str] | None,
     filesystems_rw: dict[str, bool],
     filesystems_ro: dict[str, bool],
-):
+) -> None:
     if filesystems is None or ("host-os" not in filesystems_ro and "host-os" not in filesystems_rw):
         state.status = state.status.downgrade_to(WARN)
         state.warnings.append(_("{0} is missing {1} permission").format(state.name, "host-os:ro"))
@@ -401,7 +401,9 @@ def _check_hardened_malloc_access(
         state.recs.append(Recommendation("\n".join(rec_lines), mergeable_name=state.name))
 
 
-def _check_overrides_access(state: FlatpakPermissionsState, filesystems_rw: dict[str, bool]):
+def _check_overrides_access(
+    state: FlatpakPermissionsState, filesystems_rw: dict[str, bool]
+) -> None:
     override_path = "xdg-data/flatpak/overrides"
     if override_path in filesystems_rw:
         state.arbitrary_permissions = True
@@ -420,7 +422,7 @@ def _check_overrides_access(state: FlatpakPermissionsState, filesystems_rw: dict
             state.recs.append(Recommendation("\n".join(rec_lines), mergeable_name=state.name))
 
 
-def _check_fs_permissions(state: FlatpakPermissionsState, perms: Permissions):
+def _check_fs_permissions(state: FlatpakPermissionsState, perms: Permissions) -> None:
     filesystems = perms.permissions.get("filesystems")
     filesystems_ro = {}
     filesystems_rw = {}

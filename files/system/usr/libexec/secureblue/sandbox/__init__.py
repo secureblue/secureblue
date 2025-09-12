@@ -88,7 +88,7 @@ def create_run0_args(sandboxed_function: SandboxedFunction) -> list[str]:
     return systemd_sandbox_properties
 
 
-def run(sandboxed_function: SandboxedFunction, *args) -> int:
+def run(sandboxed_function: SandboxedFunction, *args: str) -> int:
     """Execute a sandboxed function."""
 
     run0_args = create_run0_args(sandboxed_function)

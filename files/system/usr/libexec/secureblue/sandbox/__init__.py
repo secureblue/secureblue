@@ -16,12 +16,21 @@
 Framework for running rootful functions in a systemd sandbox
 """
 
+import dataclasses
 import subprocess
 from typing import Final
 
-from .sandboxed_function import SandboxedFunction
-
 INNER_DIR: Final[str] = "/usr/libexec/secureblue/inner"
+
+
+@dataclasses.dataclass
+class SandboxedFunction:
+    """A class that wraps a function to be run in a sandbox"""
+
+    file_name: str
+    capabilities: list[str] = dataclasses.field(default_factory=list)
+    read_write_paths: list[str] = dataclasses.field(default_factory=list)
+    additional_sandbox_properties: list[str] = dataclasses.field(default_factory=list)
 
 
 def create_run0_args(sandboxed_function: SandboxedFunction) -> list[str]:
@@ -30,8 +39,6 @@ def create_run0_args(sandboxed_function: SandboxedFunction) -> list[str]:
     capabilities = sandboxed_function.capabilities
     read_write_paths = sandboxed_function.read_write_paths
     additional_sandbox_properties = sandboxed_function.additional_sandbox_properties
-    if capabilities is None:
-        return None
 
     # Copyright (C) 2025 Daniel Hast
     # Systemd sandboxing of run0 invocation adapted from run0edit, originally licensed
@@ -48,7 +55,7 @@ def create_run0_args(sandboxed_function: SandboxedFunction) -> list[str]:
         "memfd_create",
     ]
     systemd_sandbox_properties: list[str] = [
-        f"--property=CapabilityBoundingSet={capabilities}",
+        f"--property=CapabilityBoundingSet={' '.join(capabilities)}",
         "--property=DevicePolicy=closed",
         "--property=LockPersonality=yes",
         "--property=MemoryDenyWriteExecute=yes",
@@ -75,21 +82,16 @@ def create_run0_args(sandboxed_function: SandboxedFunction) -> list[str]:
         "--property=SystemCallErrorNumber=EPERM",
     ]
 
-    if read_write_paths is not None:
-        systemd_sandbox_properties.append(f"--property=ReadWritePaths={' '.join(read_write_paths)}")
-
-    if additional_sandbox_properties is not None:
-        systemd_sandbox_properties += additional_sandbox_properties
+    systemd_sandbox_properties.append(f"--property=ReadWritePaths={' '.join(read_write_paths)}")
+    systemd_sandbox_properties += additional_sandbox_properties
 
     return systemd_sandbox_properties
 
 
-def run(sandboxed_function: SandboxedFunction, *args):
+def run(sandboxed_function: SandboxedFunction, *args) -> int:
     """Execute a sandboxed function."""
 
     run0_args = create_run0_args(sandboxed_function)
-    if run0_args is None or run0_args == [""]:
-        return 1
     command = [
         "/usr/bin/run0",
         *run0_args,

@@ -1,3 +1,5 @@
+#!/usr/bin/python3
+
 # Copyright 2025 The Secureblue Authors
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -26,7 +28,7 @@ install btusb /sbin/modprobe --ignore-install btusb
 """
 
 
-def main():
+def main() -> int:
     """Set or remove the bluetooth module override"""
     required_args_count = 2
     if len(sys.argv) != required_args_count:

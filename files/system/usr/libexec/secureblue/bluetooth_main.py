@@ -1,3 +1,5 @@
+#!/usr/bin/python3
+
 # Copyright 2025 The Secureblue Authors
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -56,23 +58,23 @@ def is_module_loaded(module_name: str) -> bool:
         return False
 
 
-def print_status(enabled_by_file: bool):
+def print_status(enabled_by_file: bool) -> None:
     """Print the current file and runtime status"""
 
-    bluetooth_currently_enabled: bool = is_module_loaded("bluetooth") or is_module_loaded("btusb")
-    file_matches_sys: str = "still " if enabled_by_file == bluetooth_currently_enabled else ""
-    cur_status: str = "enabled" if bluetooth_currently_enabled else "disabled"
-    file_status: str = "enabled" if enabled_by_file else "disabled"
+    bluetooth_currently_enabled = is_module_loaded("bluetooth") or is_module_loaded("btusb")
+    file_matches_sys = "still " if enabled_by_file == bluetooth_currently_enabled else ""
+    cur_status = "enabled" if bluetooth_currently_enabled else "disabled"
+    file_status = "enabled" if enabled_by_file else "disabled"
 
     print(
         f"Bluetooth is currently {cur_status}, and after a reboot will {file_matches_sys}be {file_status}"
     )
 
 
-def main():
+def main() -> int:
     """Handle the arguments and execute the bluetooth toggle"""
 
-    enabled_by_file: bool = Path(BLUE_MOD_FILE).exists()
+    enabled_by_file = Path(BLUE_MOD_FILE).exists()
 
     required_args_count = 2
     if len(sys.argv) != required_args_count:
@@ -81,7 +83,7 @@ def main():
 
     mode = sys.argv[1]
 
-    bluetooth_function = SandboxedFunction("bluetooth.py", "CAP_DAC_OVERRIDE", [BLUE_MOD_DIR], None)
+    bluetooth_function = SandboxedFunction("bluetooth.py", read_write_paths=[BLUE_MOD_DIR])
     match mode:
         case "on" | "off":
             target_state_enabled = mode == "on"

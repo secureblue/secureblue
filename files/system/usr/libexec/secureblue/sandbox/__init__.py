@@ -28,9 +28,17 @@ class SandboxedFunction:
     """A class that wraps a function to be run in a sandbox"""
 
     file_name: str
-    capabilities: list[str] = dataclasses.field(default_factory=list)
-    read_write_paths: list[str] = dataclasses.field(default_factory=list)
-    additional_sandbox_properties: list[str] = dataclasses.field(default_factory=list)
+    capabilities: list[str] = dataclasses.field(default_factory=list, kw_only=True)
+    read_write_paths: list[str] = dataclasses.field(default_factory=list, kw_only=True)
+    additional_sandbox_properties: list[str] = dataclasses.field(default_factory=list, kw_only=True)
+
+    def __post_init__(self):
+        """Ensures list fields have expected types."""
+        for prop in (self.capabilities, self.read_write_paths, self.additional_sandbox_properties):
+            if not isinstance(prop, list):
+                raise ValueError(
+                    f"Bad argument to SandboxedFunction: expected list, got `{type(prop)}`."
+                )
 
 
 def create_run0_args(sandboxed_function: SandboxedFunction) -> list[str]:

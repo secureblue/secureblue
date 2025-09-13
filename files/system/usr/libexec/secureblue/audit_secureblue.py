@@ -590,7 +590,7 @@ def audit_wheel():
         rec_lines = (
             _("The current user is in the wheel group."),
             _("To set up a separate wheel account, follow the instructions here:"),
-            bold("https://secureblue.dev/install#wheel"),
+            bold("https://secureblue.dev/post-install#wheel"),
         )
         rec = "\n".join(rec_lines)
         status = FAIL
@@ -859,6 +859,34 @@ def audit_bash_env_lockdown():
 
 
 @audit
+def audit_webcam_module():
+    """Ensure Webcam module is disabled."""
+    webcam_mod_file = "/etc/modprobe.d/99-disable-webcam.conf"
+    status = UNKNOWN
+    rec = None
+    warning = None
+    try:
+        with open(webcam_mod_file, encoding="utf-8") as f:
+            if f.read().strip() == "install uvcvideo /bin/false":
+                status = PASS
+    except FileNotFoundError:
+        status = INFO
+        rec_lines = (
+            _("Webcam module is enabled."),
+            _("To disable it, run:"),
+            "$ ujust disable-webcam",
+        )
+        rec = "\n".join(rec_lines)
+        warning = _("Webcam module is enabled.")
+    except PermissionError:
+        warning = _("Unable to read file {0}.").format(webcam_mod_file)
+
+    yield Report(
+        _("Checking whether webcam module is disabled"), status, warnings=warning, recs=rec
+    )
+
+
+@audit
 @categorize("flatpak")
 def audit_flatpak_remotes():
     """Audit flatpak remotes."""
@@ -965,7 +993,7 @@ async def main() -> int:
         traceback.print_exception(err)
         print_err("\n" + _("*** Continuing... ***"))
         error_occurred = True
-    if "flatpak" not in skip:
+    if "flatpak" not in skip and command_succeeds("command", "-v", "flatpak"):
         print(_("Use option '{0}' to skip flatpak recommendations.").format(bold("--skip flatpak")))
     warn_if_root()
     if error_occurred:

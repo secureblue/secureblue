@@ -31,6 +31,10 @@ modules:
     files:
       - source: system/kinoite
         destination: /
+  - type: justfiles
+    validate: true
+    include:
+      - kinoite.just
   - type: script
     scripts:
       - enabledisablekdesplash.sh

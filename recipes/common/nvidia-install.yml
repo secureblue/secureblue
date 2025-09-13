@@ -13,7 +13,7 @@
 modules:
   - type: script
     scripts:
-      - installnvidiakmod.sh    
+      - installnvidiakmod.sh
     secrets:
       - type: env
         name: KERNEL_PRIVKEY

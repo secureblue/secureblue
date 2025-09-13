@@ -193,7 +193,7 @@ def bold(text: str) -> str:
     return f"\x1b[1m{text}\x1b[22m"
 
 
-def print_heading(text: str, width: int = 80):
+def print_heading(text: str, width: int = 80) -> None:
     """Formats the text as a heading and prints to the terminal."""
     print(f"\n\x1b[1;38;5;228m\x1b[48;5;63m{text}\x1b[0m")
     print("=" * width)
@@ -217,7 +217,7 @@ def _format_recommendation_text(rec_text: str, mergeable_names: list[str] | None
     return "\n  ".join(rec_lines_formatted) + "\n"
 
 
-def _print_recs(recs: list[Recommendation], width: int = 80):
+def _print_recs(recs: list[Recommendation], width: int = 80) -> None:
     print_heading(_("Recommendations"), width=width)
     merged_recs_data: dict[str, list[str]] = {
         rec.text: [] for rec in recs if rec.mergeable_name is not None
@@ -245,7 +245,7 @@ class Audit:
         """Get a list of the names of all checks."""
         return [check.name for check in self.checks]
 
-    def add_check(self, check: Check):
+    def add_check(self, check: Check) -> None:
         """Add the check to the queue to be run."""
         names = self.names()
         for dep in check.dependencies:
@@ -316,7 +316,7 @@ def make_check(
 
     if inspect.isgeneratorfunction(f):
 
-        async def f_async(*args, **kwargs):
+        async def f_async(*args: Any, **kwargs: Any) -> AsyncGenerator:
             for item in f(*args, **kwargs):
                 yield item
 
@@ -337,7 +337,7 @@ def audit(
 def depends_on(*dependencies: str) -> Callable[..., Check]:
     """Add a dependency to a check."""
 
-    def add_dependencies(f) -> Check:
+    def add_dependencies(f: Check | Callable) -> Check:
         check = make_check(f)
         check.dependencies += list(dependencies)
         return check
@@ -348,7 +348,7 @@ def depends_on(*dependencies: str) -> Callable[..., Check]:
 def categorize(cat: str) -> Callable[..., Check]:
     """Mark a check as belonging to a given category."""
 
-    def add_category(f) -> Check:
+    def add_category(f: Check | Callable) -> Check:
         check = make_check(f)
         check.category = cat
         return check

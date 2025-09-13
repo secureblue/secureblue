@@ -26,10 +26,6 @@ test-fail() {
     exit 1
 }
 
-if ! systemctl --user is-enabled --quiet "${timer_name}"; then
-    test-fail "${timer_name} is not enabled."
-fi
-
 check-flatpak-remotes() {
     if [ "$(flatpak remotes --columns=name)" != 'flathub-verified' ]; then
         test-fail "flathub-verified flatpak remote not present or not the only remote."
@@ -44,6 +40,13 @@ check-installed-flatpaks() {
     fi
 }
 
+if ! systemctl --user is-enabled --quiet "${timer_name}"; then
+    test-fail "${timer_name} is not enabled."
+fi
+
+# Wait a few seconds to give the service time to start
+sleep 5
+
 state=$(systemctl --user show "${service_name}" --property=ActiveState | sed 's/^ActiveState=//')
 
 if [ -e "$HOME/.config/secureblue/secureblue-flatpak-setup.stamp" ]; then
@@ -52,7 +55,8 @@ if [ -e "$HOME/.config/secureblue/secureblue-flatpak-setup.stamp" ]; then
     check-installed-flatpaks
 elif [ "${state}" = 'activating' ] || [ "${state}" = 'active' ]; then
     echo "${service_name} is currently running."
-    # flathub-verified should be added right at the start of the service, so we test for it.
+    # flathub-verified remote should be added first, so wait a few more seconds then test for it.
+    sleep 5
     check-flatpak-remotes
 elif [ "${state}" = 'failed' ]; then
     test-fail "${service_name} is in a failed state."

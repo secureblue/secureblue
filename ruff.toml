@@ -2,6 +2,7 @@ line-length = 100
 
 [lint]
 select = [
+    "ANN", # flake8-annotations
     "S", # flake8-bandit
     "B", # flake8-bugbear
     "A", # flake8-builtins
@@ -29,6 +30,8 @@ select = [
 ]
 
 ignore = [
+    "ANN204", # missing-return-type-special-method
+    "ANN401", # any-type
     "S603", # subprocess-without-shell-equals-true
 ]
 
@@ -36,3 +39,7 @@ mccabe.max-complexity = 8
 pycodestyle.max-line-length = 110
 pycodestyle.max-doc-length = 100
 pylint.max-statements = 40
+
+[lint.per-file-ignores]
+# Don't require audit checks' function signatures to have type hints
+"files/system/usr/libexec/secureblue/audit_secureblue.py" = ["ANN"]

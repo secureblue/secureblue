@@ -1,0 +1,10 @@
+[Unit]
+Description=secureblue secureboot key enrollment verification timer
+ConditionUser=!@system
+
+[Timer]
+RandomizedDelaySec=1m
+OnStartupSec=2m
+
+[Install]
+WantedBy=timers.target

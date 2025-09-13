@@ -28,7 +28,7 @@ install:
   - vim
   - wl-clipboard
   - alsa-firmware
-  
+
   # yubikey enablement
   - pam-u2f
   - pam_yubico
@@ -44,7 +44,3 @@ remove:
   - fuse
   - passim
   - fedora-chromium-config
-
-
-
-

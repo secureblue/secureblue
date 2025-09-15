@@ -32,3 +32,12 @@ optional_policy(`
 	systemsettings_run(unconfined_t, unconfined_r)
 	systemsettings_run(trivalent_t, unconfined_r)
 ')
+
+optional_policy(`
+	gen_require(`
+		type accountsd_t;
+		type tmp_t;
+	')
+
+	allow accountsd_t tmp_t:file open;
+')

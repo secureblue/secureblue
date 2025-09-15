@@ -21,10 +21,13 @@ import json
 import subprocess  # nosec
 import sys
 from pathlib import Path
+from typing import Final
 
-DNSCONFD_CONF_FILE = Path("/etc/dnsconfd.conf")
-NM_GLOBALDNS_CONF_FILE = Path("/etc/NetworkManager/conf.d/global-dns.conf")
-TRIVALENT_POLICY_FILE = Path("/etc/trivalent/policies/managed/10-securedns-browser.json")
+DNSCONFD_CONF_FILE: Final[Path] = Path("/etc/dnsconfd.conf")
+NM_GLOBALDNS_CONF_FILE: Final[Path] = Path("/etc/NetworkManager/conf.d/global-dns.conf")
+TRIVALENT_POLICY_FILE: Final[Path] = Path(
+    "/etc/trivalent/policies/managed/10-securedns-browser.json"
+)
 
 
 def restart_stack() -> int:
@@ -32,9 +35,9 @@ def restart_stack() -> int:
     try:
         # We're calling system binaries with fixed arguments and no shell.
         # nosemgrep: dangerous-subprocess-use-audit
-        subprocess.run(["/usr/bin/systemctl", "restart", "dnsconfd.service"], check=True)
+        subprocess.run(["/usr/bin/systemctl", "restart", "dnsconfd.service"], check=True)  # nosec
         # nosemgrep: dangerous-subprocess-use-audit
-        subprocess.run(["/usr/bin/systemctl", "restart", "NetworkManager.service"], check=True)
+        subprocess.run(["/usr/bin/systemctl", "restart", "NetworkManager.service"], check=True)  # nosec
     except subprocess.CalledProcessError:
         return 1
     return 0
@@ -131,11 +134,11 @@ def main() -> int:
         return restart_stack()
 
     if sys.argv[1] == "set-global" and len(sys.argv) in (args_set_global_min, args_set_global_max):
-        should_validate_dnssec: str = sys.argv[3]
+        should_validate_dnssec = sys.argv[3]
         if should_validate_dnssec not in bool_strings:
             return 1
-        nm_servers: str = sys.argv[2]
-        https_endpoint: str = sys.argv[4] if len(sys.argv) == args_set_global_max else ""
+        nm_servers = sys.argv[2]
+        https_endpoint = sys.argv[4] if len(sys.argv) == args_set_global_max else ""
 
         set_global_nm_servers(nm_servers)
         set_dnssec_enabled(should_validate_dnssec == "true")

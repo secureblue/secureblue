@@ -24,12 +24,13 @@ import configparser
 import os
 import pwd
 from pathlib import Path
+from typing import Final
 
-RESOLVED_SECUREDNS_PATH = Path("/etc/systemd/resolved.conf.d/10-securedns.conf")
-RESOLVED_VESTIGIAL_PATH = Path("/etc/systemd/resolved.conf.d/10-disable-llmnr.conf")
-NM_GLOBALDNS_PATH = Path("/etc/NetworkManager/conf.d/global-dns.conf")
-DNSCONFD_PATH = Path("/etc/dnsconfd.conf")
-RESOLVCONF_PATH = Path("/etc/resolv.conf")
+RESOLVED_SECUREDNS_PATH: Final[Path] = Path("/etc/systemd/resolved.conf.d/10-securedns.conf")
+RESOLVED_VESTIGIAL_PATH: Final[Path] = Path("/etc/systemd/resolved.conf.d/10-disable-llmnr.conf")
+NM_GLOBALDNS_PATH: Final[Path] = Path("/etc/NetworkManager/conf.d/global-dns.conf")
+DNSCONFD_PATH: Final[Path] = Path("/etc/dnsconfd.conf")
+RESOLVCONF_PATH: Final[Path] = Path("/etc/resolv.conf")
 
 
 def read_from_resolved() -> tuple[list[str], bool]:
@@ -44,8 +45,8 @@ def read_from_resolved() -> tuple[list[str], bool]:
 
     resolve = parser["Resolve"]
 
-    dot_value = (resolve.get("DNSOverTLS") or "").lower().strip()
-    dnssec_value = (resolve.get("DNSSEC") or "").lower().strip()
+    dot_value = (resolve.get("DNSOverTLS") or "").casefold().strip()
+    dnssec_value = (resolve.get("DNSSEC") or "").casefold().strip()
     is_tls_enabled = dot_value in ("true", "yes")
     is_dnssec_enabled = dnssec_value in ("true", "yes")
 
@@ -116,6 +117,7 @@ def main() -> None:
         RESOLVCONF_PATH.touch()
         RESOLVCONF_PATH.chmod(0o644)
         dnsconfd_uid = pwd.getpwnam("dnsconfd").pw_uid
+        # Default behavior is to leave root as group.
         os.chown(RESOLVCONF_PATH, uid=dnsconfd_uid, gid=0)
         print(f"{RESOLVCONF_PATH.as_posix()} is now a real file owned by dnsconfd:root.")
 

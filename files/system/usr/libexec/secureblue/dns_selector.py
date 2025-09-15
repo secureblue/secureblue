@@ -20,17 +20,21 @@ import configparser
 import ipaddress
 import json
 import sys
+import textwrap
 from argparse import ArgumentParser
 from pathlib import Path
+from typing import Final
 from urllib.parse import urlparse
 
 import sandbox
 from sandbox import SandboxedFunction
 
-DNSCONFD_CONF_FILE = Path("/etc/dnsconfd.conf")
-NM_GLOBALDNS_CONF_FILE = Path("/etc/NetworkManager/conf.d/global-dns.conf")
-TRIVALENT_POLICY_FILE = Path("/etc/trivalent/policies/managed/10-securedns-browser.json")
-SERVERS_JSON_FILE = Path("/usr/share/secureblue/secure-dns-providers.json")
+DNSCONFD_CONF_FILE: Final[Path] = Path("/etc/dnsconfd.conf")
+NM_GLOBALDNS_CONF_FILE: Final[Path] = Path("/etc/NetworkManager/conf.d/global-dns.conf")
+TRIVALENT_POLICY_FILE: Final[Path] = Path(
+    "/etc/trivalent/policies/managed/10-securedns-browser.json"
+)
+SERVERS_JSON_FILE: Final[Path] = Path("/usr/share/secureblue/secure-dns-providers.json")
 
 dns_function = SandboxedFunction("dns.py", read_write_paths=["/etc"])
 
@@ -52,7 +56,7 @@ def ask_yes_no(prompt: str) -> bool:
     """Returns the user's preference between 'yes'/'y' (True) and 'no'/'n' (False)."""
 
     while True:
-        ans = interruptible_ask(prompt + " [y/n] ").lower()
+        ans = interruptible_ask(prompt + " [y/n] ").casefold()
         if ans in ("y", "yes", "n", "no"):
             return ans in ("y", "yes")
         print("Please enter y (yes) or n (no).")
@@ -62,11 +66,15 @@ def ask_should_use_doh() -> bool:
     """Returns the user's preference for Trivalent DoH enforcement (yes = true, no = false)."""
 
     print(
-        "Would you like to enable DNS over HTTPS (DoH) in the Trivalent browser?\n"
-        "This tool already configures encrypted DNS over TLS, but DoH looks like "
-        "HTTPS traffic to outsiders, which could have privacy benefits.\n"
-        "1. Enable DoH for Trivalent (masks DNS queries);\n"
-        "2. Use the same encrypted DNS as the rest of the system in Trivalent."
+        textwrap.dedent(
+            """
+            Would you like to enable DNS over HTTPS (DoH) in the Trivalent browser?
+            This tool already configures encrypted DNS over TLS, but DoH looks like HTTPS
+            traffic to outsiders, which could have privacy benefits.
+            1. Enable DoH for Trivalent (masks DNS queries);
+            2. Use the same encrypted DNS as the rest of the system in Trivalent.
+            """
+        ).strip()
     )
     option = ask_option(2)
     return option == 1
@@ -76,14 +84,18 @@ def ask_should_validate_dnssec() -> bool:
     """Returns the user's preference for local DNSSEC validation (yes = true, no = false)."""
 
     print(
-        "Would you like to enable DNSSEC validation?\n"
-        "1. Yes [most secure]: use the Internet's 'root zone' trust anchors to check all "
-        "DNS responses. The servers suggested by this tool will work, but some default "
-        "or custom servers give 'bogus' results that cause resolution to fail.\n"
-        "2. No [less secure, more compatible]: trust your chosen DNS server to validate "
-        "for you. If you use a default or insecure DNS server, you will not be protected "
-        "from forged responses. This is needed for some public WiFi networks to redirect "
-        "you to their captive portal."
+        textwrap.dedent(
+            """
+            Would you like to enable DNSSEC validation?
+            1. Yes (most secure): Use the Internet's 'root zone' trust anchors to check all
+               DNS responses. The servers suggested by this tool will work, but some default
+               or custom servers give 'bogus' results that cause resolution to fail.
+            2. No (less secure, more compatible): Trust your chosen DNS server to validate
+               for you. If you use a default or insecure DNS server, you will not be
+               protected from forged responses. This is needed for some public WiFi networks
+               to redirect you to their captive portal.
+            """
+        ).strip()
     )
     option = ask_option(2)
     return option == 1
@@ -132,41 +144,48 @@ def run_interactive() -> int:
     """
     Prompt to (1) reset, (2) set global DNS, DNSSEC and Trivalent DoT, or (3) set DNSSEC only.
     """
-    reset = 1
-    enforce = 2
-    dnssec = 3
 
     print(
-        "Would you like to:\n"
-        f"{reset}. Reset global DNS to automatic mode (likely insecure);\n"
-        f"{enforce}. Enforce secure DNS servers for all connections (can cause VPN DNS leaks "
-        "or break local services, but allows for DoH in stealth/censorship scenarios);\n"
-        f"{dnssec}. Toggle local DNSSEC validation"
+        textwrap.dedent(
+            """
+            Would you like to:
+            1. Reset global DNS to automatic mode (likely insecure);
+            2. Enforce secure DNS servers for all connections (can cause VPN DNS leaks
+               or break local services, but allows for DoH in stealth/censorship scenarios);
+            3. Toggle local DNSSEC validation.
+            """
+        ).strip()
     )
-    mode = ask_option(dnssec)
+    mode = ask_option(3)
 
-    if mode == reset:
-        return sandbox.run(dns_function, "reset")
+    match mode:
+        case 1:
+            # Reset.
+            return sandbox.run(dns_function, "reset")
 
-    if mode == enforce:
-        nm_servers, https_endpoint = ask_nm_servers()
-        should_validate_dnssec = "true" if ask_should_validate_dnssec() else "false"
-        if not ask_should_use_doh():
-            https_endpoint = ""
-        return sandbox.run(
-            dns_function, "set-global", nm_servers, should_validate_dnssec, https_endpoint
-        )
+        case 2:
+            # Enforce globally.
+            nm_servers, https_endpoint = ask_nm_servers()
+            should_validate_dnssec = "true" if ask_should_validate_dnssec() else "false"
+            if not ask_should_use_doh():
+                https_endpoint = ""
+            return sandbox.run(
+                dns_function, "set-global", nm_servers, should_validate_dnssec, https_endpoint
+            )
 
-    if mode == dnssec:
-        should_validate_dnssec = "true" if ask_should_validate_dnssec() else "false"
-        return sandbox.run(dns_function, "set-dnssec", should_validate_dnssec)
+        case 3:
+            # Toggle DNSSEC.
+            should_validate_dnssec = "true" if ask_should_validate_dnssec() else "false"
+            return sandbox.run(dns_function, "set-dnssec", should_validate_dnssec)
 
-    return 1
+        case _:
+            return 1
 
 
 def print_dnssec_status() -> None:
     """Print DNSSEC status to STDOUT, i.e. 'DNSSEC: <enabled|disabled>'."""
     try:
+        dnssec_enabled = False
         with DNSCONFD_CONF_FILE.open("r", encoding="utf-8") as f:
             for raw_line in f:
                 line = raw_line.strip()
@@ -174,12 +193,13 @@ def print_dnssec_status() -> None:
                     continue
                 if line.startswith("dnssec_enabled:"):
                     [_, value] = line.split(":", 1)
-                    if value.strip().lower() in ("yes", "true"):
-                        print("DNSSEC: enabled")
-                    return
+                    dnssec_enabled = value.strip().casefold() in ("yes", "true")
+                    # Don't break as there may be a contradictory line later.
+        print("DNSSEC: enabled" if dnssec_enabled else "DNSSEC: disabled")
     except FileNotFoundError:
-        pass
-    print("DNSSEC: disabled")
+        print("DNSSEC: disabled")
+    except (OSError, UnicodeDecodeError):
+        print("DNSSEC: unable to open and parse configuration")
 
 
 def print_nm_globaldns_status() -> None:
@@ -223,19 +243,18 @@ def print_trivalent_doh_status() -> None:
     try:
         with TRIVALENT_POLICY_FILE.open("r", encoding="utf-8") as f:
             policy = json.load(f)
+            doh_mode = policy.get("DnsOverHttpsMode")
+            doh_endpoint = policy.get("DnsOverHttpsTemplates")
+            doh_status = "enabled" if doh_mode == "secure" and doh_endpoint else "disabled"
+            print(f"Trivalent DoH: {doh_status}")
+            if doh_endpoint:
+                print(f"Trivalent DoH endpoint: {doh_endpoint}")
     except FileNotFoundError:
         print("Trivalent DoH: disabled")
-        return
     except json.JSONDecodeError:
         print("Trivalent DoH: configuration invalid")
-        return
-
-    doh_mode = policy.get("DnsOverHttpsMode")
-    doh_endpoint = policy.get("DnsOverHttpsTemplates")
-    doh_status = "enabled" if doh_mode == "secure" and doh_endpoint else "disabled"
-    print(f"Trivalent DoH: {doh_status}")
-    if doh_endpoint:
-        print(f"Trivalent DoH endpoint: {doh_endpoint}")
+    except (OSError, UnicodeDecodeError):
+        print("Trivalent DoH: unable to open and parse configuration")
 
 
 def interruptible_ask(prompt: str) -> str:
@@ -352,31 +371,33 @@ def main() -> int:
     dnssec_p.add_argument("state", choices=["on", "off"])
     args = p.parse_args()
 
-    if args.cmd is None:
-        exit_code = run_interactive()
-        if exit_code == 0:
+    match args.cmd:
+        case None:
+            exit_code = run_interactive()
+            if exit_code == 0:
+                print_all_status()
+            return exit_code
+
+        case "status":
             print_all_status()
-        return exit_code
+            return 0
 
-    if args.cmd == "status":
-        print_all_status()
-        return 0
+        case "dnssec":
+            dnssec = "true" if sys.argv[2] == "on" else "false"
+            exit_code = sandbox.run(dns_function, "set-dnssec", dnssec)
+            if exit_code == 0:
+                print_all_status()
+            return exit_code
 
-    if args.cmd == "dnssec":
-        dnssec = "true" if sys.argv[2] == "on" else "false"
-        exit_code = sandbox.run(dns_function, "set-dnssec", dnssec)
-        if exit_code == 0:
-            print_all_status()
-        return exit_code
+        case "reset":
+            exit_code = sandbox.run(dns_function, "reset")
+            if exit_code == 0:
+                print_all_status()
+            return exit_code
 
-    if args.cmd == "reset":
-        exit_code = sandbox.run(dns_function, "reset")
-        if exit_code == 0:
-            print_all_status()
-        return exit_code
-
-    print("Invalid option selected. Try --help.", file=sys.stderr)
-    return 1
+        case _:
+            print("Invalid option selected. Try --help.", file=sys.stderr)
+            return 1
 
 
 if __name__ == "__main__":

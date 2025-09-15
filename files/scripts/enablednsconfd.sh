@@ -24,7 +24,4 @@ systemctl enable dnsconfd.service
 #   NetworkManager to use com.redhat.dnsconfd instead of
 #   org.freedesktop.resolve1, and
 # - setting the permissions of /etc/resolv.conf manually here.
-rm -f /etc/resolv.conf
-touch /etc/resolv.conf
-chmod 0644 /etc/resolv.conf
 chown dnsconfd:root /etc/resolv.conf

@@ -379,31 +379,53 @@ def audit_dns():
     # INFO
     if not trivalent_doh:
         status = INFO
-        warnings.append(_("Trivalent DNS over HTTPS is disabled."))
-        recs.append(_("Consider enabling Trivalent DNS over HTTPS in dns-selector."))
+        warnings.append(_("DNS over HTTPS in Trivalent is disabled."))
+        recs.append(
+            "\n".join(
+                [
+                    _("Consider using DNS over HTTPS in Trivalent to hide queries."),
+                    _("However, if you use a VPN, this may cause DNS leaks."),
+                    _("To enable it, run:"),
+                    "$ ujust dns-selector",
+                ]
+            )
+        )
 
     # WARN
-    if not global_dns or not dnssec:
-        status = WARN
-        recs += [
-            _("System DNS resolution may not be secure."),
-            _("To configure this, run:"),
-            "$ ujust dns-selector",
-        ]
     if not global_dns:
         status = WARN
-        warnings.append(_("Global DNS servers are not configured."))
-    if not dnssec:
-        status = WARN
-        warnings.append(_("Local DNSSEC validation is disabled."))
-        recs += [
-            _("You should enable local DNSSEC validation, by running:"),
-            "$ ujust dns-selector dnssec on",
-        ]
+        warnings.append(_("Secure global DNS is not configured."))
+        recs.append(
+            "\n".join(
+                [
+                    _("Consider using secure global DNS."),
+                    _("However, if you use a VPN, this may cause DNS leaks."),
+                    _("To enable it, run:"),
+                    "$ ujust dns-selector",
+                ]
+            )
+        )
 
-    rec_string = None if recs == [] else "\n".join(recs)
+    # FAIL
+    if not dnssec:
+        status = FAIL
+        warnings.append(_("Local DNSSEC validation is disabled."))
+        recs.append(
+            "\n".join(
+                [
+                    _("You should enable local DNSSEC validation to prevent DNS hijacking."),
+                    _("To enable it, run:"),
+                    "$ ujust dns-selector dnssec on",
+                ]
+            )
+        )
+
+    # Since we evaluate INFO -> WARN -> FAIL, put the most important ones first
+    warnings.reverse()
+    recs.reverse()
+
     yield Report(
-        _("Ensuring system DNS resolution is secure"), status, warnings=warnings, recs=rec_string
+        _("Ensuring system DNS resolution is secure"), status, warnings=warnings, recs=recs
     )
 
 

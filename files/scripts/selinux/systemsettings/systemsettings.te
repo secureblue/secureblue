@@ -33,11 +33,12 @@ optional_policy(`
 	systemsettings_run(trivalent_t, unconfined_r)
 ')
 
+# Required for accountsd to access systemsettings's tmp file.
+# Otherwise, changing a user profile photo will fail.
 optional_policy(`
 	gen_require(`
 		type accountsd_t;
-		type tmp_t;
 	')
 
-	allow accountsd_t tmp_t:file open;
+	files_read_generic_tmp_files(accountsd_t)
 ')

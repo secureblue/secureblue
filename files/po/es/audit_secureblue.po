@@ -402,7 +402,7 @@ msgstr "El archivo {0} ha sido modificado o eliminado."
 
 #: files/system/usr/libexec/secureblue/audit_secureblue.py:760
 msgid "To reset it and enable hardened_malloc for system processes, run:"
-msgstr "Para reiniciarlo y habilitar hardened_malloc para procesos del sistema, ejecute:"
+msgstr "Para restablecer y habilitar hardened_malloc para procesos del sistema, ejecute:"
 
 #: files/system/usr/libexec/secureblue/audit_secureblue.py:765
 #, python-brace-format

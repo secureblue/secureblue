@@ -17,20 +17,13 @@ jobs:
     name: Scorecard analysis
     runs-on: ubuntu-latest
     permissions:
-      # Needed to upload the results to code-scanning dashboard.
-      security-events: write
-      # Needed to publish results and get a badge (see publish_results below).
-      id-token: write
-      # To read repo contents
-      contents: read
-      # To read actions contents
-      actions: read
-      # To allow GraphQL ListCommits to work
-      issues: read
-      # to list pull request commits
-      pull-requests: read
-      # To detect SAST tools
-      checks: read
+      security-events: write # Needed to upload the results to code-scanning dashboard.
+      id-token: write # Needed to publish results and get a badge (see publish_results below).
+      contents: read # To read repo contents
+      actions: read # To read actions contents
+      issues: read # To allow GraphQL ListCommits to work
+      pull-requests: read # to list pull request commits
+      checks: read # To detect SAST tools
 
     steps:
       - name: Harden the runner (Audit all outbound calls)

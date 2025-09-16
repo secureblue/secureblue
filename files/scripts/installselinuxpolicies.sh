@@ -16,25 +16,22 @@ set -oue pipefail
 
 rpm-ostree install selinux-policy-devel
 
-cd ./selinux/trivalent
-bash trivalent.sh
-cd ../..
+policy_modules=(trivalent flatpakfull nautilus systemsettings)
 
-cd ./selinux/flatpakfull
-bash flatpakfull.sh
-cd ../..
+cil_policy_modules=(
+    './selinux/user_namespace/grant_userns.cil'
+    './selinux/user_namespace/harden_userns.cil'
+    './selinux/user_namespace/harden_container_userns.cil'
+    './selinux/flatpakfull/grant_systemd_flatpak_exec.cil'
+    './selinux/user_namespace/userns_deny_unconfined_relabels.cil'
+)
 
-cd ./selinux/nautilus
-bash nautilus.sh
-cd ../..
+for module in "${policy_modules[@]}"; do
+    cd "./selinux/${module}"
+    make -f /usr/share/selinux/devel/Makefile "${module}.pp"
+    cd ../..
+done
 
-cd ./selinux/systemsettings
-bash systemsettings.sh
-cd ../..
+semodule -v -i ./selinux/*/*.pp "${cil_policy_modules[@]}"
 
-semodule -i ./selinux/user_namespace/grant_userns.cil
-semodule -i ./selinux/user_namespace/harden_userns.cil
-semodule -i ./selinux/user_namespace/harden_container_userns.cil
-semodule -i ./selinux/flatpakfull/grant_systemd_flatpak_exec.cil
-
-semodule -i ./selinux/user_namespace/userns_deny_unconfined_relabels.cil
+restorecon -FRv /usr

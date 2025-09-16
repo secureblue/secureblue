@@ -17,7 +17,7 @@ msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2025-08-25 19:47-0400\n"
-"PO-Revision-Date: 2025-09-14 03:40-0400\n"
+"PO-Revision-Date: 2025-09-14 04:41-0400\n"
 "Last-Translator: Cup-png <232283931+Cup-png@users.noreply.github.com>\n"
 "Language-Team: none\n"
 "Language: es\n"
@@ -70,7 +70,7 @@ msgstr "{0} debería ser {1}, pero en realidad es {2}"
 
 #: files/system/usr/libexec/secureblue/audit_secureblue.py:165
 msgid "Ensuring no sysctl overrides"
-msgstr "Asegurando de que no haya sobreescritura de sysctl"
+msgstr "Asegurando de que no hayan sobreescrituras de sysctl"
 
 #: files/system/usr/libexec/secureblue/audit_secureblue.py:179
 #, python-brace-format
@@ -94,7 +94,7 @@ msgstr "El módulo {0} está en {1}, pero ya está cargado."
 
 #: files/system/usr/libexec/secureblue/audit_secureblue.py:215
 msgid "Ensuring no modprobe overrides"
-msgstr "Asegurando de que no haya sobreescritura de modprobe"
+msgstr "Asegurando de que no hayan sobreescrituras de modprobe"
 
 #: files/system/usr/libexec/secureblue/audit_secureblue.py:230
 #, python-brace-format
@@ -126,7 +126,7 @@ msgstr "Asegurando de que ptrace está prohibido"
 
 #: files/system/usr/libexec/secureblue/audit_secureblue.py:261
 msgid "Ensuring no authselect overrides"
-msgstr "Asegurando de que no haya sobreescritura de authselect"
+msgstr "Asegurando de que no hayan sobreescrituras de authselect"
 
 #: files/system/usr/libexec/secureblue/audit_secureblue.py:276
 #, python-brace-format
@@ -135,7 +135,7 @@ msgstr "{0} existe."
 
 #: files/system/usr/libexec/secureblue/audit_secureblue.py:277
 msgid "Ensuring no container policy overrides"
-msgstr "Asegurando de que no haya sobreescritura de políticas de contenedores"
+msgstr "Asegurando de que no hayan sobreescrituras de políticas de contenedores"
 
 #: files/system/usr/libexec/secureblue/audit_secureblue.py:289
 msgid "Unconfined domain user namespace creation is permitted."
@@ -239,7 +239,7 @@ msgstr "Asegurando de que la resolución de conexión DNS sea segura"
 
 #: files/system/usr/libexec/secureblue/audit_secureblue.py:427
 msgid "MAC randomization is not enabled."
-msgstr "La aleatorización de MAC no está habilitado."
+msgstr "La aleatorización de MAC no está habilitada."
 
 #: files/system/usr/libexec/secureblue/audit_secureblue.py:428
 #: files/system/usr/libexec/secureblue/audit_secureblue.py:454
@@ -252,7 +252,7 @@ msgstr "Para habilitarlo, ejecute:"
 
 #: files/system/usr/libexec/secureblue/audit_secureblue.py:434
 msgid "Ensuring MAC randomization is enabled"
-msgstr "Asegurando de que la aleatorización de MAC está habilitado"
+msgstr "Asegurando de que la aleatorización de MAC está habilitada"
 
 #: files/system/usr/libexec/secureblue/audit_secureblue.py:451
 #: files/system/usr/libexec/secureblue/audit_secureblue.py:480
@@ -365,7 +365,7 @@ msgstr "Para restablecerlo, ejecute:"
 
 #: files/system/usr/libexec/secureblue/audit_secureblue.py:702
 msgid "Ensuring no environment file overrides"
-msgstr "Asegurando de que no haya sobreescritura de variables de entorno de archivos"
+msgstr "Asegurando de que no hayan sobreescrituras de variables de entorno de archivos"
 
 #: files/system/usr/libexec/secureblue/audit_secureblue.py:718
 #, python-brace-format

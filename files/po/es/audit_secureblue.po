@@ -361,7 +361,7 @@ msgstr "El archivo {0} no puede ser leído."
 
 #: files/system/usr/libexec/secureblue/audit_secureblue.py:698
 msgid "To reset it, run:"
-msgstr "Para reiniciarlo, ejecute:"
+msgstr "Para restablecerlo, ejecute:"
 
 #: files/system/usr/libexec/secureblue/audit_secureblue.py:702
 msgid "Ensuring no environment file overrides"

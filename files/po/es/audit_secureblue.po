@@ -370,7 +370,7 @@ msgstr "Asegurando de que no haya sobreescritura de variables de entorno de arch
 #: files/system/usr/libexec/secureblue/audit_secureblue.py:718
 #, python-brace-format
 msgid "The file {0} was not found or inaccessible."
-msgstr "El archivo {0} no fue hallado o es inaccesible."
+msgstr "No se encontró el archivo {0} o es inaccesible."
 
 #: files/system/usr/libexec/secureblue/audit_secureblue.py:724
 msgid "KDE GNHS is enabled."

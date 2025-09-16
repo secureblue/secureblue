@@ -10,7 +10,7 @@ on:
   push:
     branches: ["live"]
 
-permissions: read-all
+permissions: {}
 
 jobs:
   analysis:
@@ -21,10 +21,13 @@ jobs:
       security-events: write
       # Needed to publish results and get a badge (see publish_results below).
       id-token: write
+      # To read repo contents
       contents: read
+      # To read actions contents
       actions: read
       # To allow GraphQL ListCommits to work
       issues: read
+      # to list pull request commits
       pull-requests: read
       # To detect SAST tools
       checks: read

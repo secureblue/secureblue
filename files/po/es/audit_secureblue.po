@@ -168,7 +168,7 @@ msgstr "USBGuard no está habilitado."
 
 #: files/system/usr/libexec/secureblue/audit_secureblue.py:329
 msgid "To set up USBGuard, run:"
-msgstr "Para activar USBGuard, ejecute:"
+msgstr "Para configurar USBGuard, ejecute:"
 
 #: files/system/usr/libexec/secureblue/audit_secureblue.py:332
 msgid ""

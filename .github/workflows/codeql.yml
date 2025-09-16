@@ -15,14 +15,9 @@ jobs:
     name: Analyze
     runs-on: ubuntu-24.04
     permissions:
-      # to audit the action contents
-      actions: read
-
-      # to audit the repo contents
-      contents: read
-
-      # to publish findings
-      security-events: write
+      actions: read # to audit the action contents
+      contents: read # to audit the repo contents
+      security-events: write # to publish findings
 
     strategy:
       fail-fast: false

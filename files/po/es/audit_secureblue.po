@@ -17,7 +17,7 @@ msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2025-08-25 19:47-0400\n"
-"PO-Revision-Date: 2025-09-14 02:59-0400\n"
+"PO-Revision-Date: 2025-09-14 03:40-0400\n"
 "Last-Translator: Cup-png <232283931+Cup-png@users.noreply.github.com>\n"
 "Language-Team: none\n"
 "Language: es\n"
@@ -139,7 +139,7 @@ msgstr "Asegurando de que no haya sobreescritura de políticas de contenedores"
 
 #: files/system/usr/libexec/secureblue/audit_secureblue.py:289
 msgid "Unconfined domain user namespace creation is permitted."
-msgstr "Creación del dominio de espacios de nombres de usuarios no confinado está permitido."
+msgstr "Creación del dominio de espacios de nombres de usuarios no confinados está permitido."
 
 #: files/system/usr/libexec/secureblue/audit_secureblue.py:290
 #: files/system/usr/libexec/secureblue/audit_secureblue.py:307
@@ -148,7 +148,7 @@ msgstr "Para prohibirlo, ejecute:"
 
 #: files/system/usr/libexec/secureblue/audit_secureblue.py:294
 msgid "Ensuring unconfined user namespace creation disallowed"
-msgstr "Asegurando de que la creación de espacios de nombres de usuarios no confinado está prohibido"
+msgstr "Asegurando de que la creación de espacios de nombres de usuarios no confinados está prohibido"
 
 #: files/system/usr/libexec/secureblue/audit_secureblue.py:306
 msgid "Container domain user namespace creation is permitted."

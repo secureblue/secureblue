@@ -343,7 +343,7 @@ msgstr "SELinux está en Modo Permisivo."
 
 #: files/system/usr/libexec/secureblue/audit_secureblue.py:671
 msgid "To set it to Enforcing mode, run:"
-msgstr "Para ponerlo en Modo Reforzado, ejecute:"
+msgstr "Para configurarlo en Modo Reforzado, ejecute:"
 
 #: files/system/usr/libexec/secureblue/audit_secureblue.py:675
 msgid "Ensuring SELinux is in Enforcing mode"

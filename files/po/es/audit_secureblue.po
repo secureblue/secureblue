@@ -801,7 +801,7 @@ msgid ""
 "            to certain directories, direct D-Bus access, X11)."
 msgstr ""
 "la aplicación tiene permisos que pueden ser usados para escapar del entorno aislado, permitirle\n"
-"            que modifique sus propios permisos, o otorgarle acceso muy amplio al sistema "
+"            que modifique sus propios permisos, u otorgarle acceso muy amplio al sistema "
 "(ej. acceso\n"
 "            a ciertos directorios, acceso directo a D-Bus, X11)."
 

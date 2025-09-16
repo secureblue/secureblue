@@ -453,7 +453,7 @@ msgstr "Los archivos siguientes no parecen ser inmutables o no existen:"
 
 #: files/system/usr/libexec/secureblue/audit_secureblue.py:851
 msgid "To fix this, run:"
-msgstr "Para arreglar esto, ejecute:"
+msgstr "Para solucionar esto, ejecute:"
 
 #: files/system/usr/libexec/secureblue/audit_secureblue.py:858
 msgid "Ensuring current user's bash environment is locked down"

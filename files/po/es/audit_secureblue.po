@@ -827,7 +827,7 @@ msgstr ""
 
 #: files/system/usr/libexec/secureblue/utils/__init__.py:104
 msgid "no app permissions flagged (however, not all permissions are audited)."
-msgstr "ningún permiso de aplicación fue señalado (siendo dicho, no todos los permisos son verificados)."
+msgstr "ningún permiso de aplicación fue señalado (sin embargo, no todos los permisos son verificados)."
 
 #: files/system/usr/libexec/secureblue/utils/__init__.py:110
 msgid ""

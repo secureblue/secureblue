@@ -402,7 +402,7 @@ msgstr "El archivo {0} ha sido modificado o eliminado."
 
 #: files/system/usr/libexec/secureblue/audit_secureblue.py:760
 msgid "To reset it and enable hardened_malloc for system processes, run:"
-msgstr "Para reiniciarlo y habilitar el malloc endurecido para procesos del sistema, ejecute:"
+msgstr "Para reiniciarlo y habilitar hardened_malloc para procesos del sistema, ejecute:"
 
 #: files/system/usr/libexec/secureblue/audit_secureblue.py:765
 #, python-brace-format
@@ -437,7 +437,7 @@ msgstr ""
 "                {2} o en archivos de configuración relacionados."
 #: files/system/usr/libexec/secureblue/audit_secureblue.py:803
 msgid "Ensuring hardened_malloc is set to be preloaded"
-msgstr "Asegurando de que el malloc endurecido está listo para ser precargado"
+msgstr "Asegurando de que hardened_malloc está listo para ser precargado"
 
 #: files/system/usr/libexec/secureblue/audit_secureblue.py:815
 msgid "Ensuring secure boot is enabled"
@@ -749,7 +749,7 @@ msgstr "Los siguientes flatpaks tienen permiso {0} faltante:"
 
 #: files/system/usr/libexec/secureblue/audit_flatpak/__init__.py:395
 msgid "This is required to load hardened_malloc."
-msgstr "Esto se requiere para cargar el malloc endurecido."
+msgstr "Esto se requiere para cargar hardened_malloc."
 
 #: files/system/usr/libexec/secureblue/audit_flatpak/__init__.py:396
 msgid "To add this permission to an app, use Flatseal or run:"
@@ -813,7 +813,7 @@ msgid ""
 msgstr ""
 "la aplicación tiene permisos que tienen potencial para ser usados para escapar del entorno aislado o\n"
 "            que puedan reducir la seguridad (ej. PulseAudio, Bluetooth, no usar "
-"malloc endurecido)."
+"hardened_malloc)."
 
 #: files/system/usr/libexec/secureblue/utils/__init__.py:102
 msgid ""

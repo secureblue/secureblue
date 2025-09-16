@@ -10,7 +10,6 @@ on:
   push:
     branches: ["live"]
 
-# Declare default permissions as read only.
 permissions: read-all
 
 jobs:

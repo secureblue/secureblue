@@ -152,7 +152,7 @@ msgstr "Asegurando de que la creación de espacios de nombres de usuarios no con
 
 #: files/system/usr/libexec/secureblue/audit_secureblue.py:306
 msgid "Container domain user namespace creation is permitted."
-msgstr "Creación del dominio de espacios de nombres de usuarios para el uso de contenedores está permitido."
+msgstr "Creación del dominio de espacios de nombres de usuarios para el uso de contenedores está permitida."
 
 #: files/system/usr/libexec/secureblue/audit_secureblue.py:311
 msgid "Ensuring container user namespace creation disallowed"

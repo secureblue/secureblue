@@ -35,6 +35,7 @@ jobs:
     if: github.triggering_actor == 'royaloughtness' || github.event_name == 'schedule' || github.event_name == 'push'
     permissions:
       contents: read
+      actions: read
       packages: write
       id-token: write
     uses: ./.github/workflows/build-one-recipe.yml
@@ -49,6 +50,7 @@ jobs:
     if: github.triggering_actor == 'royaloughtness' || github.event_name == 'schedule' || github.event_name == 'push'
     permissions:
       contents: read
+      actions: read
       packages: write
       id-token: write
     uses: ./.github/workflows/build-one-recipe.yml
@@ -63,6 +65,7 @@ jobs:
     if: github.triggering_actor == 'royaloughtness' || github.event_name == 'schedule' || github.event_name == 'push'
     permissions:
       contents: read
+      actions: read
       packages: write
       id-token: write
     uses: ./.github/workflows/build-one-recipe.yml
@@ -77,6 +80,7 @@ jobs:
     if: github.triggering_actor == 'royaloughtness' || github.event_name == 'schedule' || github.event_name == 'push'
     permissions:
       contents: read
+      actions: read
       packages: write
       id-token: write
     uses: ./.github/workflows/build-one-recipe.yml
@@ -92,6 +96,7 @@ jobs:
     needs: silverblue-main
     permissions:
       contents: read
+      actions: read
       packages: write
       id-token: write
     strategy:
@@ -113,6 +118,7 @@ jobs:
     needs: kinoite-main
     permissions:
       contents: read
+      actions: read
       packages: write
       id-token: write
     strategy:
@@ -134,6 +140,7 @@ jobs:
     needs: sericea-main
     permissions:
       contents: read
+      actions: read
       packages: write
       id-token: write
     strategy:
@@ -155,6 +162,7 @@ jobs:
     needs: cosmic-main
     permissions:
       contents: read
+      actions: read
       packages: write
       id-token: write
     strategy:
@@ -175,6 +183,7 @@ jobs:
     if: github.triggering_actor == 'royaloughtness' || github.event_name == 'schedule' || github.event_name == 'push'
     permissions:
       contents: read
+      actions: read
       packages: write
       id-token: write
     uses: ./.github/workflows/build-one-recipe.yml
@@ -190,6 +199,7 @@ jobs:
     needs: securecore-main
     permissions:
       contents: read
+      actions: read
       packages: write
       id-token: write
     strategy:
@@ -211,6 +221,7 @@ jobs:
     needs: securecore-main
     permissions:
       contents: read
+      actions: read
       packages: write
       id-token: write
     uses: ./.github/workflows/build-one-recipe.yml
@@ -226,6 +237,7 @@ jobs:
     needs: securecore-zfs-main
     permissions:
       contents: read
+      actions: read
       packages: write
       id-token: write
     strategy:

@@ -365,7 +365,7 @@ msgstr "Para restablecerlo, ejecute:"
 
 #: files/system/usr/libexec/secureblue/audit_secureblue.py:702
 msgid "Ensuring no environment file overrides"
-msgstr "Asegurando de que no hayan sobreescrituras de variables de entorno de archivos"
+msgstr "Asegurando que no hayan sobreescrituras de variables de entorno de archivos"
 
 #: files/system/usr/libexec/secureblue/audit_secureblue.py:718
 #, python-brace-format

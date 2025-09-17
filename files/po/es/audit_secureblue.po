@@ -148,7 +148,7 @@ msgstr "Para prohibirlo, ejecute:"
 
 #: files/system/usr/libexec/secureblue/audit_secureblue.py:294
 msgid "Ensuring unconfined user namespace creation disallowed"
-msgstr "Asegurando de que la creación de espacios de nombres de usuarios no confinados está prohibido"
+msgstr "Asegurando de que la creación de espacios de nombres de usuarios no confinados está prohibida"
 
 #: files/system/usr/libexec/secureblue/audit_secureblue.py:306
 msgid "Container domain user namespace creation is permitted."

@@ -85,7 +85,7 @@ msgstr ""
 
 #: files/system/usr/libexec/secureblue/audit_secureblue.py:182
 msgid "Ensuring a signed image is in use"
-msgstr "Asegurando de que una imagen firmada está en uso"
+msgstr "Asegurando que una imagen firmada está en uso"
 
 #: files/system/usr/libexec/secureblue/audit_secureblue.py:212
 #, python-brace-format

@@ -104,7 +104,7 @@ msgstr "ptrace está permitido y **no está restringido** ({0})!"
 #: files/system/usr/libexec/secureblue/audit_secureblue.py:231
 #: files/system/usr/libexec/secureblue/audit_secureblue.py:244
 msgid "For more info on what this means, see:"
-msgstr "Para más información sobre lo que significa, vea:"
+msgstr "Para más información sobre lo que esto significa, vea:"
 
 #: files/system/usr/libexec/secureblue/audit_secureblue.py:233
 #: files/system/usr/libexec/secureblue/audit_secureblue.py:246

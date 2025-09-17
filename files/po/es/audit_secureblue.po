@@ -457,7 +457,7 @@ msgstr "Para solucionar esto, ejecute:"
 
 #: files/system/usr/libexec/secureblue/audit_secureblue.py:858
 msgid "Ensuring current user's bash environment is locked down"
-msgstr "Asegurando de que las variables de entorno de Bash del usuario están confinadas"
+msgstr "Asegurando que las variables de entorno de Bash del usuario están confinadas"
 
 #: files/system/usr/libexec/secureblue/audit_secureblue.py:875
 #: files/system/usr/libexec/secureblue/audit_secureblue.py:880

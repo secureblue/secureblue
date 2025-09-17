@@ -418,7 +418,7 @@ msgstr "{0} está configurado, pero {1} ha sido modificado."
 #: files/system/usr/libexec/secureblue/audit_secureblue.py:791
 #, python-brace-format
 msgid "The '{0}' variant of {1} has been set."
-msgstr "El variante '{0}' de {1} se ha colocado."
+msgstr "La variante '{0}' de {1} ha sido establecida."
 
 #: files/system/usr/libexec/secureblue/audit_secureblue.py:794
 #, python-brace-format

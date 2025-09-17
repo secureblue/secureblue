@@ -265,7 +265,7 @@ msgstr "{0} está deshabilitado."
 #: files/system/usr/libexec/secureblue/audit_secureblue.py:579
 #, python-brace-format
 msgid "Ensuring {0} is enabled"
-msgstr "Asegurando de que {0} está habilitado"
+msgstr "Asegurando que {0} está habilitado"
 
 #: files/system/usr/libexec/secureblue/audit_secureblue.py:506
 #: files/system/usr/libexec/secureblue/audit_secureblue.py:541

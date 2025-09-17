@@ -28,6 +28,7 @@ install:
   - vim
   - wl-clipboard
   - alsa-firmware
+  - fzf
 
   # yubikey enablement
   - pam-u2f

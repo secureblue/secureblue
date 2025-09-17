@@ -753,7 +753,7 @@ msgstr "Esto se requiere para cargar hardened_malloc."
 
 #: files/system/usr/libexec/secureblue/audit_flatpak/__init__.py:396
 msgid "To add this permission to an app, use Flatseal or run:"
-msgstr "Para añadir este permiso a un flatpak, use Flatseal o ejecute:"
+msgstr "Para añadir este permiso a una aplicación, use Flatseal o ejecute:"
 
 #: files/system/usr/libexec/secureblue/audit_flatpak/__init__.py:412
 msgid "The following flatpak app(s) can modify flatpak overrides:"

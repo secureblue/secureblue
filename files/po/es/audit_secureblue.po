@@ -586,7 +586,7 @@ msgstr "Los siguientes flatpaks tienen {0}:"
 #: files/system/usr/libexec/secureblue/audit_flatpak/__init__.py:376
 #: files/system/usr/libexec/secureblue/audit_flatpak/__init__.py:415
 msgid "To remove this permission from an app, use Flatseal or run:"
-msgstr "Para removerles este permiso, use Flatseal o ejecute:"
+msgstr "Para eliminar este permiso de una aplicación, use Flatseal o ejecute:"
 
 #: files/system/usr/libexec/secureblue/audit_flatpak/__init__.py:167
 #: files/system/usr/libexec/secureblue/audit_flatpak/__init__.py:296

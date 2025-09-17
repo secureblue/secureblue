@@ -821,7 +821,7 @@ msgid ""
 "            attack surface or have privacy implications (e.g. network "
 "access)."
 msgstr ""
-"no se detectaron vectores de escape del entorno aislado pero algunos permisos podrían incrementar\n"
+"no se detectaron posibles vectores de escape del sandbox pero algunos permisos podrían incrementar\n"
 "            la superficie de ataque o tener implicaciones de privacidad (ej. acceso"
 "a la red)."
 

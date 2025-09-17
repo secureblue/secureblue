@@ -28,6 +28,9 @@ jobs:
   bluebuild:
     name: Build secureblue
     runs-on: ubuntu-24.04
+    outputs:
+      IMAGE_DIGEST: ${{ steps.bluebuild.outputs.IMAGE_DIGEST }}
+      FULL_IMAGE_REF: ${{ steps.bluebuild.outputs.FULL_IMAGE_REF }}
     permissions:
       contents: read
       packages: write
@@ -66,6 +69,7 @@ jobs:
         env:
           RECIPE: ${{ inputs.recipe }}
         run: |
+          echo "REGISTRY=ghcr.io/secureblue" >> "${GITHUB_ENV}"
           echo "IMAGE_NAME=$(grep '^name:' "./recipes/${RECIPE}" | sed 's/^name: //')" >> "${GITHUB_ENV}"
           echo "IMAGE_MAJOR_VERSION=$(grep '^image-version:' "./recipes/${RECIPE}" | sed 's/^image-version: //')" >> "${GITHUB_ENV}"
           BASE_IMAGE=$(grep '^base-image:' "./recipes/${RECIPE}" | sed 's/^base-image: //')
@@ -112,3 +116,29 @@ jobs:
           skip_checkout: true
           use_cache: false
           retry_push_count: 3
+
+      - name: Install regctl
+        uses: regclient/actions/regctl-installer@495560f7c3b510b71ff9f22d6c667c2c429b8e45 # main
+
+      - name: Parse architecture specific digest from image manifest
+        id: image_manifest_metadata
+        run: |
+          FULL_IMAGE_REF=${{ env.REGISTRY }}/${{ env.BASE_IMAGE_NAME }}:${{ env.IMAGE_MAJOR_VERSION }}
+          IMAGE_DIGEST="$(regctl image digest "${IMAGE}")"
+          echo "FULL_IMAGE_REF=${FULL_IMAGE_REF}" >> $GITHUB_OUTPUT
+          echo "IMAGE_DIGEST=${IMAGE_DIGEST}" >> $GITHUB_OUTPUT
+
+  provenance:
+    needs: [bluebuild]
+    permissions:
+      actions: read # for detecting the Github Actions environment.
+      id-token: write # for creating OIDC tokens for signing.
+      packages: write # for uploading attestations.
+    if: startsWith(github.ref, 'refs/tags/')
+    uses: slsa-framework/slsa-github-generator/.github/workflows/generator_container_slsa3.yml@v2.1.0
+    with:
+      image: ${{ needs.bluebuild.outputs.FULL_IMAGE_REF }}
+      digest: ${{ needs.bluebuild.outputs.IMAGE_DIGEST }}
+      registry-username: ${{ github.actor }}
+    secrets:
+      registry-password: ${{ secrets.GITHUB_TOKEN }}

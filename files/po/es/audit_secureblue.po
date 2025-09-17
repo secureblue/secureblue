@@ -437,7 +437,7 @@ msgstr ""
 "                {2} o en archivos de configuración relacionados."
 #: files/system/usr/libexec/secureblue/audit_secureblue.py:803
 msgid "Ensuring hardened_malloc is set to be preloaded"
-msgstr "Asegurando de que hardened_malloc está listo para ser precargado"
+msgstr "Asegurando que hardened_malloc está listo para ser precargado"
 
 #: files/system/usr/libexec/secureblue/audit_secureblue.py:815
 msgid "Ensuring secure boot is enabled"

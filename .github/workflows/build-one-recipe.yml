@@ -120,10 +120,10 @@ jobs:
       - name: Install regctl
         uses: regclient/actions/regctl-installer@495560f7c3b510b71ff9f22d6c667c2c429b8e45 # main
 
-      - name: Parse architecture specific digest from image manifest
+      - name: Parse image manifest
         id: image_manifest_metadata
         run: |
-          FULL_IMAGE_REF=${{ env.REGISTRY }}/${{ env.BASE_IMAGE_NAME }}:${{ env.IMAGE_MAJOR_VERSION }}
+          FULL_IMAGE_REF=${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ env.IMAGE_MAJOR_VERSION }}
           IMAGE_DIGEST="$(regctl image digest "${IMAGE}")"
           echo "FULL_IMAGE_REF=${FULL_IMAGE_REF}" >> $GITHUB_OUTPUT
           echo "IMAGE_DIGEST=${IMAGE_DIGEST}" >> $GITHUB_OUTPUT

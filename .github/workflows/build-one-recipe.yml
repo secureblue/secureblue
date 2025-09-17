@@ -79,22 +79,22 @@ jobs:
       - name: Verify base image
         shell: bash
         run: |
-          if [[ "$IMAGE_NAME" != *securecore* ]]; then
-            UPSTREAM_CONTAINER="${BASE_IMAGE_NAME}:${IMAGE_MAJOR_VERSION}"
-            if [[ "$IMAGE_NAME" != *nvidia* ]]; then
-              UPSTREAM_REGISTRY='quay.io/fedora-ostree-desktops'
-              UPSTREAM_PUBKEY='https://gitlab.com/fedora/ostree/ci-test/-/raw/main/quay.io-fedora-ostree-desktops.pub'
-            else
-              UPSTREAM_REGISTRY='ghcr.io/secureblue'
-              UPSTREAM_PUBKEY='https://raw.githubusercontent.com/secureblue/secureblue/refs/heads/live/cosign.pub'
-            fi
-            if ! cosign verify --key "${UPSTREAM_PUBKEY}" "${UPSTREAM_REGISTRY}/${UPSTREAM_CONTAINER}" | jq; then
-              echo "NOTICE: Verification failed. Please ensure your public key is correct."
-              exit 1
-            fi
-          else
+          if [[ "$IMAGE_NAME" == *securecore* ]]; then
             echo "Upstream isn't signed. Skipping."
             exit 0
+          fi
+          
+          UPSTREAM_CONTAINER="${BASE_IMAGE_NAME}:${IMAGE_MAJOR_VERSION}"
+          if [[ "$IMAGE_NAME" != *nvidia* ]]; then
+            UPSTREAM_REGISTRY='quay.io/fedora-ostree-desktops'
+            UPSTREAM_PUBKEY='https://gitlab.com/fedora/ostree/ci-test/-/raw/main/quay.io-fedora-ostree-desktops.pub'
+          else
+            UPSTREAM_REGISTRY='ghcr.io/secureblue'
+            UPSTREAM_PUBKEY='https://raw.githubusercontent.com/secureblue/secureblue/refs/heads/live/cosign.pub'
+          fi
+          if ! cosign verify --key "${UPSTREAM_PUBKEY}" "${UPSTREAM_REGISTRY}/${UPSTREAM_CONTAINER}" | jq; then
+            echo "NOTICE: Verification failed. Please ensure your public key is correct."
+            exit 1
           fi
 
       - name: Build secureblue

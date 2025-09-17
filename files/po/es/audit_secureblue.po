@@ -637,7 +637,7 @@ msgstr "Esto otorga acceso a periféricos, GPUs, USB raw, y virtualización."
 #: files/system/usr/libexec/secureblue/audit_flatpak/__init__.py:203
 #, python-brace-format
 msgid "If GPU access is required, allow {0} instead."
-msgstr "Si acceso al GPU es requerido, permita {0} en su lugar."
+msgstr "Si se requiere acceso a la GPU, permita {0} en su lugar."
 
 #: files/system/usr/libexec/secureblue/audit_flatpak/__init__.py:205
 msgid "This grants access to input devices."

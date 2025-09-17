@@ -811,7 +811,7 @@ msgid ""
 "            weaken security (e.g. PulseAudio, Bluetooth, not using "
 "hardened_malloc)."
 msgstr ""
-"la aplicación tiene permisos con potencial para ser usados para escapar del entorno aislado o\n"
+"la aplicación tiene permisos con potencial para ser usados para escapar del sandbox o\n"
 "            que puedan reducir la seguridad (ej. PulseAudio, Bluetooth, no usar "
 "hardened_malloc)."
 

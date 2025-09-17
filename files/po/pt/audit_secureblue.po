@@ -70,7 +70,7 @@ msgstr "{0} deveria ser {1}, mas na verdade é {2}."
 
 #: files/system/usr/libexec/secureblue/audit_secureblue.py:165
 msgid "Ensuring no sysctl overrides"
-msgstr ""
+msgstr "Garantindo que não hajam alterações aos valores do sysctl"
 
 #: files/system/usr/libexec/secureblue/audit_secureblue.py:179
 #, python-brace-format
@@ -79,69 +79,72 @@ msgid ""
 "            To rebase to a signed image, download and run or re-run {0}\n"
 "            from the secureblue GitHub repository."
 msgstr ""
+"A imagem atual não está assinada.\n"
+"            Para rebasear-se para uma imagem assinada, baixe e execute ou execute {0} novamente\n"
+"            do repositório do secureblue no GitHub."
 
 #: files/system/usr/libexec/secureblue/audit_secureblue.py:182
 msgid "Ensuring a signed image is in use"
-msgstr ""
+msgstr "Garantindo que uma imagem assinada está em uso"
 
 #: files/system/usr/libexec/secureblue/audit_secureblue.py:212
 #, python-brace-format
 msgid "The module {0} is in {1}, but it is loaded."
-msgstr ""
+msgstr "O módulo {0} está em {1}, mas está carregado."
 
 #: files/system/usr/libexec/secureblue/audit_secureblue.py:215
 msgid "Ensuring no modprobe overrides"
-msgstr ""
+msgstr "Garantindo que não hajam alterações aos valores de modprobe"
 
 #: files/system/usr/libexec/secureblue/audit_secureblue.py:230
 #, python-brace-format
 msgid "ptrace is allowed and **unrestricted** ({0})!"
-msgstr ""
+msgstr "ptrace está permitido de maneira **irrestrita** ({0})!"
 
 #: files/system/usr/libexec/secureblue/audit_secureblue.py:231
 #: files/system/usr/libexec/secureblue/audit_secureblue.py:244
 msgid "For more info on what this means, see:"
-msgstr ""
+msgstr "Para mais informações sobre isso, acesse:"
 
 #: files/system/usr/libexec/secureblue/audit_secureblue.py:233
 #: files/system/usr/libexec/secureblue/audit_secureblue.py:246
 msgid "To forbid ptrace, run:"
-msgstr ""
+msgstr "Para proibir o ptrace, rode:"
 
 #: files/system/usr/libexec/secureblue/audit_secureblue.py:235
 msgid "To allow restricted ptrace, run the above command twice."
-msgstr ""
+msgstr "Para restringir o escopo do ptrace, rode duas vezes o comando acima."
 
 #: files/system/usr/libexec/secureblue/audit_secureblue.py:241
 #, python-brace-format
 msgid "ptrace is allowed, but restricted ({0})."
-msgstr ""
+msgstr "ptrace está permitido, mas de maneira restrita ({0})."
 
 #: files/system/usr/libexec/secureblue/audit_secureblue.py:251
 msgid "Ensuring ptrace is forbidden"
-msgstr ""
+msgstr "Garantindo que o ptrace está proibido."
 
 #: files/system/usr/libexec/secureblue/audit_secureblue.py:261
 msgid "Ensuring no authselect overrides"
-msgstr ""
+msgstr "Garantindo que não hajam alterações à authselect"
 
 #: files/system/usr/libexec/secureblue/audit_secureblue.py:276
 #, python-brace-format
 msgid "{0} exists."
-msgstr ""
+msgstr "{0} existe."
 
 #: files/system/usr/libexec/secureblue/audit_secureblue.py:277
 msgid "Ensuring no container policy overrides"
-msgstr ""
+msgstr "Garantindo que não hajam alterações nas políticas de container"
 
 #: files/system/usr/libexec/secureblue/audit_secureblue.py:289
 msgid "Unconfined domain user namespace creation is permitted."
-msgstr ""
+msgstr "A criação de nomes de espaço de usuário está permitida para programas de domínios não-confinados."
 
 #: files/system/usr/libexec/secureblue/audit_secureblue.py:290
 #: files/system/usr/libexec/secureblue/audit_secureblue.py:307
 msgid "To disallow it, run:"
-msgstr ""
+msgstr "Para desativar isso, rode:"
 
 #: files/system/usr/libexec/secureblue/audit_secureblue.py:294
 msgid "Ensuring unconfined user namespace creation disallowed"
@@ -149,7 +152,7 @@ msgstr ""
 
 #: files/system/usr/libexec/secureblue/audit_secureblue.py:306
 msgid "Container domain user namespace creation is permitted."
-msgstr ""
+msgstr "A criação de namespaces de usuário está permitida para o domínio SELinux de containers."
 
 #: files/system/usr/libexec/secureblue/audit_secureblue.py:311
 msgid "Ensuring container user namespace creation disallowed"
@@ -157,25 +160,26 @@ msgstr ""
 
 #: files/system/usr/libexec/secureblue/audit_secureblue.py:323
 msgid "USBGuard is enabled but has failed to run."
-msgstr ""
+msgstr "USBGuard está habilitado mas falhou à executar."
 
 #: files/system/usr/libexec/secureblue/audit_secureblue.py:326
 msgid "USBGuard is not enabled."
-msgstr ""
+msgstr "USBGuard está desabilitado."
 
 #: files/system/usr/libexec/secureblue/audit_secureblue.py:329
 msgid "To set up USBGuard, run:"
-msgstr ""
+msgstr "Para configurar USBGuard, rode:"
 
 #: files/system/usr/libexec/secureblue/audit_secureblue.py:332
 msgid ""
 "Caution: if you have already set up USBGuard, this will overwrite the "
 "existing policy."
-msgstr ""
+msgstr "Cuidado: se você já configurou o USBGuard, isso irá sobrescrever"
+"a configuração existente."
 
 #: files/system/usr/libexec/secureblue/audit_secureblue.py:336
 msgid "Ensuring USBGuard is active"
-msgstr ""
+msgstr "Garantindo que USBGuard esteja ativo"
 
 #: files/system/usr/libexec/secureblue/audit_secureblue.py:348
 #: files/system/usr/libexec/secureblue/audit_secureblue.py:446
@@ -183,58 +187,59 @@ msgstr ""
 #: files/system/usr/libexec/secureblue/audit_secureblue.py:566
 #, python-brace-format
 msgid "{0} is enabled but has failed to run."
-msgstr ""
+msgstr "{0} está habilitado mas falhou à executar."
 
 #: files/system/usr/libexec/secureblue/audit_secureblue.py:351
 #: files/system/usr/libexec/secureblue/audit_secureblue.py:571
 #, python-brace-format
 msgid "{0} is not enabled."
-msgstr ""
+msgstr "{0} não está habilitado."
 
 #: files/system/usr/libexec/secureblue/audit_secureblue.py:352
 #: files/system/usr/libexec/secureblue/audit_secureblue.py:399
 msgid "To start and enable it, run:"
-msgstr ""
+msgstr "Para iniciá-lo e habilitá-lo, rode:"
 
 #: files/system/usr/libexec/secureblue/audit_secureblue.py:354
 msgid "Ensuring chronyd is active"
-msgstr ""
+msgstr "Garantindo que chronyd esteja ativo"
 
 #: files/system/usr/libexec/secureblue/audit_secureblue.py:366
 msgid "System DNS resolution is not secure."
-msgstr ""
+msgstr "A resolução de DNS do sistema não é segura."
 
 #: files/system/usr/libexec/secureblue/audit_secureblue.py:376
 #: files/system/usr/libexec/secureblue/audit_secureblue.py:419
 #: files/system/usr/libexec/secureblue/audit_secureblue.py:882
 #, python-brace-format
 msgid "Unable to read file {0}."
-msgstr ""
+msgstr "Não foi possível ler o arquivo {0}."
 
 #: files/system/usr/libexec/secureblue/audit_secureblue.py:383
 msgid "System DNS resolution is not secure (opportunistic DNS-over-TLS only)."
-msgstr ""
+msgstr "A resolução de DNS do sistema não é segura (DNS sobre TLS ocorre"
+"apenas de maneira oportunística)."
 
 #: files/system/usr/libexec/secureblue/audit_secureblue.py:390
 msgid "To select a secure resolver, run:"
-msgstr ""
+msgstr "Para escolher um servidor de DNS seguro, rode:"
 
 #: files/system/usr/libexec/secureblue/audit_secureblue.py:392
 msgid "If you are using a VPN, you may want to disregard this recommendation."
-msgstr ""
+msgstr "Se estiver usando um VPN, queira desconsiderar esta recomendação."
 
 #: files/system/usr/libexec/secureblue/audit_secureblue.py:398
 #, python-brace-format
 msgid "{0} is inactive."
-msgstr ""
+msgstr "{0} está inativo."
 
 #: files/system/usr/libexec/secureblue/audit_secureblue.py:403
 msgid "Ensuring system DNS resolution is secure"
-msgstr ""
+msgstr "Garantindo que a resolução de DNS do sistema é segura."
 
 #: files/system/usr/libexec/secureblue/audit_secureblue.py:427
 msgid "MAC randomization is not enabled."
-msgstr ""
+msgstr "Aleatorização de endereço MAC não está habilitada."
 
 #: files/system/usr/libexec/secureblue/audit_secureblue.py:428
 #: files/system/usr/libexec/secureblue/audit_secureblue.py:454
@@ -243,7 +248,7 @@ msgstr ""
 #: files/system/usr/libexec/secureblue/audit_secureblue.py:549
 #: files/system/usr/libexec/secureblue/audit_secureblue.py:574
 msgid "To enable it, run:"
-msgstr ""
+msgstr "Para abilitá-la, rode:"
 
 #: files/system/usr/libexec/secureblue/audit_secureblue.py:434
 msgid "Ensuring MAC randomization is enabled"

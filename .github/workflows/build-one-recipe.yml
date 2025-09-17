@@ -124,7 +124,7 @@ jobs:
         id: image_manifest_metadata
         run: |
           FULL_IMAGE_REF=${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest
-          IMAGE_DIGEST="$(regctl image digest "${IMAGE}")"
+          IMAGE_DIGEST="$(regctl image digest "${FULL_IMAGE_REF}")"
           echo "FULL_IMAGE_REF=${FULL_IMAGE_REF}" >> $GITHUB_OUTPUT
           echo "IMAGE_DIGEST=${IMAGE_DIGEST}" >> $GITHUB_OUTPUT
 

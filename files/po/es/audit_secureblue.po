@@ -252,7 +252,7 @@ msgstr "Para habilitarlo, ejecute:"
 
 #: files/system/usr/libexec/secureblue/audit_secureblue.py:434
 msgid "Ensuring MAC randomization is enabled"
-msgstr "Asegurando de que la aleatorización de MAC está habilitada"
+msgstr "Asegurando que la aleatorización de MAC está habilitada"
 
 #: files/system/usr/libexec/secureblue/audit_secureblue.py:451
 #: files/system/usr/libexec/secureblue/audit_secureblue.py:480

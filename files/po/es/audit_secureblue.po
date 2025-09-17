@@ -620,7 +620,7 @@ msgstr "acceso al bus de sesión D-Bus"
 
 #: files/system/usr/libexec/secureblue/audit_flatpak/__init__.py:193
 msgid "This grants access to audio and microphones."
-msgstr "Esto otorga acceso al audio y microphono."
+msgstr "Esto otorga acceso al audio y micrófonos."
 
 #: files/system/usr/libexec/secureblue/audit_flatpak/__init__.py:195
 msgid "access to the D-Bus system bus"

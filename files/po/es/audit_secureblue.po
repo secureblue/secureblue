@@ -203,7 +203,7 @@ msgstr "Para iniciar y habilitarlo, ejecute:"
 
 #: files/system/usr/libexec/secureblue/audit_secureblue.py:354
 msgid "Ensuring chronyd is active"
-msgstr "Asegurando de que chronyd está activo"
+msgstr "Asegurando que chronyd está activo"
 
 #: files/system/usr/libexec/secureblue/audit_secureblue.py:366
 msgid "System DNS resolution is not secure."

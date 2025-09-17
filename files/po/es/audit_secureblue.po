@@ -670,7 +670,7 @@ msgstr "{0} puede adquirir permisos arbitrarios."
 
 #: files/system/usr/libexec/secureblue/audit_flatpak/__init__.py:266
 msgid "However, this is required for its functionality."
-msgstr "Pero esto es requerido para su funcionalidad."
+msgstr "Sin embargo, esto es necesario para su funcionamiento."
 
 #: files/system/usr/libexec/secureblue/audit_flatpak/__init__.py:280
 #, python-brace-format

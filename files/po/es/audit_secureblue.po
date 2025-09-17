@@ -135,7 +135,7 @@ msgstr "{0} existe."
 
 #: files/system/usr/libexec/secureblue/audit_secureblue.py:277
 msgid "Ensuring no container policy overrides"
-msgstr "Asegurando de que no hayan sobreescrituras de políticas de contenedores"
+msgstr "Asegurando que no hayan sobreescrituras de políticas de contenedores"
 
 #: files/system/usr/libexec/secureblue/audit_secureblue.py:289
 msgid "Unconfined domain user namespace creation is permitted."

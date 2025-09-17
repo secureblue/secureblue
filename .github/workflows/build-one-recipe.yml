@@ -29,8 +29,8 @@ jobs:
     name: Build secureblue
     runs-on: ubuntu-24.04
     outputs:
-      IMAGE_DIGEST: ${{ steps.bluebuild.outputs.IMAGE_DIGEST }}
-      FULL_IMAGE_REF: ${{ steps.bluebuild.outputs.FULL_IMAGE_REF }}
+      IMAGE_DIGEST: ${{ steps.image_manifest_metadata.outputs.IMAGE_DIGEST }}
+      FULL_IMAGE_REF: ${{ steps.image_manifest_metadata.outputs.FULL_IMAGE_REF }}
     permissions:
       contents: read
       packages: write

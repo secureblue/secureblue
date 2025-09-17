@@ -432,7 +432,7 @@ msgid ""
 "                Check that {1} has not been overridden in\n"
 "                {2} or related configuration files."
 msgstr ""
-"La variable de entorno {0} ha sido modificada o no está colocada.\n"
+"La variable de entorno {0} ha sido modificada o no está establecida.\n"
 "                Verifique que el método {1} no haya sido sobreescrito en\n"
 "                {2} o en archivos de configuración relacionados."
 #: files/system/usr/libexec/secureblue/audit_secureblue.py:803

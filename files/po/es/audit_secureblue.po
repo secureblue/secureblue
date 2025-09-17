@@ -335,7 +335,7 @@ msgstr "Para deshabilitar esto, ejecute:"
 
 #: files/system/usr/libexec/secureblue/audit_secureblue.py:658
 msgid "Ensuring GNOME user extensions are disabled"
-msgstr "Asegurando de que las extensiones de usuarios de GNOME están deshabilitadas"
+msgstr "Asegurando que las extensiones de usuarios de GNOME están deshabilitadas"
 
 #: files/system/usr/libexec/secureblue/audit_secureblue.py:670
 msgid "SELinux is in Permissive mode."

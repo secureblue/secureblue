@@ -71,21 +71,31 @@ jobs:
           BASE_IMAGE=$(grep '^base-image:' "./recipes/${RECIPE}" | sed 's/^base-image: //')
           echo "BASE_IMAGE_NAME=$(echo "${BASE_IMAGE}" | sed 's/.*\/.*\///')" >> "${GITHUB_ENV}"
 
-      - name: Verify base image
-        if: ${{ ! contains(env.IMAGE_NAME, 'securecore') && ! contains(env.IMAGE_NAME, 'nvidia')}}
-        uses: EyeCantCU/cosign-action/verify@58722a084c82190b57863002d494c91eabbe9e79 # v0.3.0
+      - name: Install cosign
+        uses: sigstore/cosign-installer@d7543c93d881b35a8faa02e8e3605f69b7a1ce62 # v3.10.0
         with:
-          containers: ${{ env.BASE_IMAGE_NAME }}:${{ env.IMAGE_MAJOR_VERSION }}
-          registry: 'quay.io/fedora-ostree-desktops'
-          pubkey: 'https://gitlab.com/fedora/ostree/ci-test/-/raw/main/quay.io-fedora-ostree-desktops.pub'
+          cosign-release: 'v2.6.0'
 
       - name: Verify base image
-        if: ${{ ! contains(env.IMAGE_NAME, 'securecore') && contains(env.IMAGE_NAME, 'nvidia')}}
-        uses: EyeCantCU/cosign-action/verify@58722a084c82190b57863002d494c91eabbe9e79 # v0.3.0
-        with:
-          containers: ${{ env.BASE_IMAGE_NAME }}:${{ env.IMAGE_MAJOR_VERSION }}
-          registry: 'ghcr.io/secureblue'
-          pubkey: 'https://raw.githubusercontent.com/secureblue/secureblue/refs/heads/live/cosign.pub'
+        shell: bash
+        run: |
+          if [[ "$IMAGE_NAME" == *securecore* ]]; then
+            echo "Upstream isn't signed. Skipping."
+            exit 0
+          fi
+          
+          UPSTREAM_CONTAINER="${BASE_IMAGE_NAME}:${IMAGE_MAJOR_VERSION}"
+          if [[ "$IMAGE_NAME" != *nvidia* ]]; then
+            UPSTREAM_REGISTRY='quay.io/fedora-ostree-desktops'
+            UPSTREAM_PUBKEY='https://gitlab.com/fedora/ostree/ci-test/-/raw/main/quay.io-fedora-ostree-desktops.pub'
+          else
+            UPSTREAM_REGISTRY='ghcr.io/secureblue'
+            UPSTREAM_PUBKEY='https://raw.githubusercontent.com/secureblue/secureblue/refs/heads/live/cosign.pub'
+          fi
+          if ! cosign verify --key "${UPSTREAM_PUBKEY}" "${UPSTREAM_REGISTRY}/${UPSTREAM_CONTAINER}" | jq; then
+            echo "NOTICE: Verification failed. Please ensure your public key is correct."
+            exit 1
+          fi
 
       - name: Build secureblue
         uses: blue-build/github-action@785ecb253aee6ead01454ed5bd070c2921010602 # v1.9.1

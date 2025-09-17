@@ -441,7 +441,7 @@ msgstr "Asegurando de que hardened_malloc está listo para ser precargado"
 
 #: files/system/usr/libexec/secureblue/audit_secureblue.py:815
 msgid "Ensuring secure boot is enabled"
-msgstr "Asegurando de que el arranque seguro está habilitado"
+msgstr "Asegurando que el arranque seguro está habilitado"
 
 #: files/system/usr/libexec/secureblue/audit_secureblue.py:848
 msgid "Bash environment is not locked down."

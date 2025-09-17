@@ -156,7 +156,7 @@ msgstr "Creación del dominio de espacios de nombres de usuarios para el uso de 
 
 #: files/system/usr/libexec/secureblue/audit_secureblue.py:311
 msgid "Ensuring container user namespace creation disallowed"
-msgstr "Asegurando de que la creación del dominio de espacios de nombres de usuarios para el uso de contenedores está prohibido"
+msgstr "Asegurando que la creación del dominio de espacios de nombres de usuarios para el uso de contenedores está prohibida"
 
 #: files/system/usr/libexec/secureblue/audit_secureblue.py:323
 msgid "USBGuard is enabled but has failed to run."

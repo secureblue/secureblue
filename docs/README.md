@@ -10,6 +10,7 @@
 [![integration-tests](https://github.com/secureblue/secureblue/actions/workflows/integration_tests.yml/badge.svg)](https://github.com/secureblue/secureblue/actions/workflows/integration_tests.yml)
 [![trivy](https://github.com/secureblue/secureblue/actions/workflows/trivy.yml/badge.svg)](https://github.com/secureblue/secureblue/actions/workflows/trivy.yml)
 [![OpenSSF Best Practices](https://www.bestpractices.dev/projects/11183/badge)](https://www.bestpractices.dev/projects/11183)
+[![OpenSSF Scorecard](https://api.scorecard.dev/projects/github.com/secureblue/secureblue/badge)](https://scorecard.dev/viewer/?uri=github.com/secureblue/secureblue)
 [![Discord](https://img.shields.io/discord/1202086019298500629?style=flat&logo=discord&logoColor=white&label=Discord&labelColor=%235F6AE9&color=%2333CB56)](https://discord.com/invite/qMTv5cKfbF)
 [![Donate](https://img.shields.io/badge/Donate-blue.svg)](https://secureblue.dev/donate)
 

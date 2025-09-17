@@ -347,7 +347,7 @@ msgstr "Para configurarlo en Modo Reforzado, ejecute:"
 
 #: files/system/usr/libexec/secureblue/audit_secureblue.py:675
 msgid "Ensuring SELinux is in Enforcing mode"
-msgstr "Asegurando de que SELinux está en Modo Reforzado"
+msgstr "Asegurando que SELinux está en Modo Reforzado"
 
 #: files/system/usr/libexec/secureblue/audit_secureblue.py:691
 #, python-brace-format

@@ -407,7 +407,7 @@ msgstr "Para restablecer y habilitar hardened_malloc para procesos del sistema, 
 #: files/system/usr/libexec/secureblue/audit_secureblue.py:765
 #, python-brace-format
 msgid "Ensuring {0} has expected permissions"
-msgstr "Asegurando de que {0} tenga los permisos esperados"
+msgstr "Asegurando que {0} tenga los permisos esperados"
 
 #: files/system/usr/libexec/secureblue/audit_secureblue.py:783
 #, python-brace-format

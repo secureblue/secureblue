@@ -323,7 +323,7 @@ msgstr "Para deshabilitarlo, ejecute:"
 #: files/system/usr/libexec/secureblue/audit_secureblue.py:630
 #, python-brace-format
 msgid "Ensuring {0} is disabled for {1}"
-msgstr "Asegurando de que {0} está deshabilitado para {1}"
+msgstr "Asegurando que {0} está deshabilitado para {1}"
 
 #: files/system/usr/libexec/secureblue/audit_secureblue.py:653
 msgid "GNOME user extensions are enabled."

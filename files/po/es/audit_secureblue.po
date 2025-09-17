@@ -94,7 +94,7 @@ msgstr "El módulo {0} está en {1}, pero ya está cargado."
 
 #: files/system/usr/libexec/secureblue/audit_secureblue.py:215
 msgid "Ensuring no modprobe overrides"
-msgstr "Asegurando de que no hayan sobreescrituras de modprobe"
+msgstr "Asegurando que no hayan sobreescrituras de modprobe"
 
 #: files/system/usr/libexec/secureblue/audit_secureblue.py:230
 #, python-brace-format

@@ -295,7 +295,7 @@ msgstr "Para crear una cuenta wheel separada, siga las instrucciones aquí:"
 
 #: files/system/usr/libexec/secureblue/audit_secureblue.py:600
 msgid "Ensuring user is not a member of the wheel group"
-msgstr "Asegurando de que el usuario no sea miembro del grupo wheel"
+msgstr "Asegurando que el usuario no sea miembro del grupo wheel"
 
 #: files/system/usr/libexec/secureblue/audit_secureblue.py:609
 msgid "GNOME"

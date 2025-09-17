@@ -445,7 +445,7 @@ msgstr "Asegurando de que el arranque seguro está habilitado"
 
 #: files/system/usr/libexec/secureblue/audit_secureblue.py:848
 msgid "Bash environment is not locked down."
-msgstr "Las variables de entorno de Bash no está confinadas."
+msgstr "Las variables de entorno de Bash no están confinadas."
 
 #: files/system/usr/libexec/secureblue/audit_secureblue.py:849
 msgid "The following files do not appear to be immutable or do not exist:"

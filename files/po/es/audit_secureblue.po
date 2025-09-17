@@ -574,7 +574,7 @@ msgstr "{0} tiene {1}"
 
 #: files/system/usr/libexec/secureblue/audit_flatpak/__init__.py:155
 msgid "This may also be used as a sandbox escape vector."
-msgstr "Este puede ser usado como vector de escape del entorno aislado."
+msgstr "Este puede ser usado como vector de escape del sandbox."
 
 #: files/system/usr/libexec/secureblue/audit_flatpak/__init__.py:161
 #, python-brace-format

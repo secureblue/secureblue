@@ -70,7 +70,7 @@ msgstr "{0} debería ser {1}, pero en realidad es {2}"
 
 #: files/system/usr/libexec/secureblue/audit_secureblue.py:165
 msgid "Ensuring no sysctl overrides"
-msgstr "Asegurando de que no hayan sobreescrituras de sysctl"
+msgstr "Asegurando que no hayan sobreescrituras de sysctl"
 
 #: files/system/usr/libexec/secureblue/audit_secureblue.py:179
 #, python-brace-format

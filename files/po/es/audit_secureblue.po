@@ -34,7 +34,7 @@ msgstr "Argumento del kernel faltante: {0}"
 #: files/system/usr/libexec/secureblue/audit_secureblue.py:112
 #, python-brace-format
 msgid "Missing kernel argument: {0} (32-bit support)"
-msgstr "Argumento del kernel faltante: {0} (soporte 32-bit)"
+msgstr "Argumento del kernel faltante: {0} (soporte de 32 bits)"
 
 #: files/system/usr/libexec/secureblue/audit_secureblue.py:117
 #, python-brace-format

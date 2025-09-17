@@ -116,10 +116,10 @@ toggle-anticheat-support:
     SYSCTL_HARDENING_FILE="/etc/sysctl.d/60-hardening.conf"
     if grep -q '^kernel.yama.ptrace_scope = 3' "$SYSCTL_HARDENING_FILE"; then
         sed -i 's/^kernel.yama.ptrace_scope =.*/kernel.yama.ptrace_scope = 1/' "$SYSCTL_HARDENING_FILE"
-        echo "Anticheat support enabled. ptrace_scope set to 1."
+        echo "Anticheat support enabled. ptrace_scope set to 1. Reboot to take effect."
     elif grep -q 'kernel.yama.ptrace_scope = 1' "$SYSCTL_HARDENING_FILE"; then
         sed -i 's/^kernel.yama.ptrace_scope =.*/kernel.yama.ptrace_scope = 3/' "$SYSCTL_HARDENING_FILE"
-        echo "Anticheat support disabled. ptrace_scope set back to 3."
+        echo "Anticheat support disabled. ptrace_scope set back to 3. Reboot to take effect."
     else
         echo "The sysctl hardening file is missing the ptrace_scope setting."
     fi

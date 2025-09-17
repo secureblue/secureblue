@@ -122,7 +122,7 @@ msgstr "ptrace está permitido, pero de forma restringida ({0})."
 
 #: files/system/usr/libexec/secureblue/audit_secureblue.py:251
 msgid "Ensuring ptrace is forbidden"
-msgstr "Asegurando de que ptrace está prohibido"
+msgstr "Asegurando que ptrace está prohibido"
 
 #: files/system/usr/libexec/secureblue/audit_secureblue.py:261
 msgid "Ensuring no authselect overrides"

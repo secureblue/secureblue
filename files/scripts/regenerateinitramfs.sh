@@ -15,5 +15,22 @@
 set -oue pipefail
 
 QUALIFIED_KERNEL="$(rpm -qa | grep -P 'kernel-(\d+\.\d+\.\d+)' | sed 's/kernel-//')"
-/usr/bin/dracut --no-hostonly --kver "$QUALIFIED_KERNEL" --reproducible -v --add ostree -f "/lib/modules/$QUALIFIED_KERNEL/initramfs.img"
-chmod 0600 "/lib/modules/$QUALIFIED_KERNEL/initramfs.img"
+
+temp_conf_dir="$(mktemp -d)"
+cat >"${temp_conf_dir}/loglevels.conf" <<'EOF'
+stdloglvl=4
+sysloglvl=0
+kmsgloglvl=0
+fileloglvl=0
+EOF
+
+/usr/bin/dracut \
+    --kver "${QUALIFIED_KERNEL}" \
+    --force \
+    --add 'ostree' \
+    --add-confdir "${temp_conf_dir}" \
+    --no-hostonly \
+    --reproducible \
+    "/lib/modules/${QUALIFIED_KERNEL}/initramfs.img"
+
+chmod 0600 "/lib/modules/${QUALIFIED_KERNEL}/initramfs.img"

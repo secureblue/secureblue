@@ -423,7 +423,7 @@ msgstr "La variante '{0}' de {1} ha sido establecida."
 #: files/system/usr/libexec/secureblue/audit_secureblue.py:794
 #, python-brace-format
 msgid "{0} has not been set."
-msgstr "{0} no se ha colocado."
+msgstr "{0} no se ha establecido."
 
 #: files/system/usr/libexec/secureblue/audit_secureblue.py:797
 #, python-brace-format

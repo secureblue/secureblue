@@ -283,7 +283,7 @@ msgstr "{0} no está habilitado globalmente."
 #: files/system/usr/libexec/secureblue/audit_secureblue.py:554
 #, python-brace-format
 msgid "Ensuring {0} is enabled globally"
-msgstr "Asegurando de que {0} está habilitado globalmente"
+msgstr "Asegurando que {0} está habilitado globalmente"
 
 #: files/system/usr/libexec/secureblue/audit_secureblue.py:591
 msgid "The current user is in the wheel group."

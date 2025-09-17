@@ -235,7 +235,7 @@ msgstr "{0} está inactivo."
 
 #: files/system/usr/libexec/secureblue/audit_secureblue.py:403
 msgid "Ensuring system DNS resolution is secure"
-msgstr "Asegurando de que la resolución de conexión DNS sea segura"
+msgstr "Asegurando que la resolución de conexión DNS sea segura"
 
 #: files/system/usr/libexec/secureblue/audit_secureblue.py:427
 msgid "MAC randomization is not enabled."

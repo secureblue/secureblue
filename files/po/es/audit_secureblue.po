@@ -449,7 +449,7 @@ msgstr "Las variables de entorno de Bash no está confinadas."
 
 #: files/system/usr/libexec/secureblue/audit_secureblue.py:849
 msgid "The following files do not appear to be immutable or do not exist:"
-msgstr "Los archivos siguientes no parecen ser inmutables o no existen:"
+msgstr "Los siguientes archivos no parecen ser inmutables o no existen:"
 
 #: files/system/usr/libexec/secureblue/audit_secureblue.py:851
 msgid "To fix this, run:"

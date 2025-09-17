@@ -757,7 +757,7 @@ msgstr "Para añadir este permiso a un flatpak, use Flatseal o ejecute:"
 
 #: files/system/usr/libexec/secureblue/audit_flatpak/__init__.py:412
 msgid "The following flatpak app(s) can modify flatpak overrides:"
-msgstr "Los siguientes flatpaks pueden modificar la sobreescritura de métodos de flatpaks:"
+msgstr "Los siguientes flatpaks pueden modificar los permisos de otros flatpaks:"
 
 #: files/system/usr/libexec/secureblue/utils/__init__.py:54
 msgid "*** WARNING: Running audit script as root is not recommended. ***"

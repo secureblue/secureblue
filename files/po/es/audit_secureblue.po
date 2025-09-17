@@ -180,7 +180,7 @@ msgstr ""
 
 #: files/system/usr/libexec/secureblue/audit_secureblue.py:336
 msgid "Ensuring USBGuard is active"
-msgstr "Asegurando de que USBGuard está activo"
+msgstr "Asegurando que USBGuard está activo"
 
 #: files/system/usr/libexec/secureblue/audit_secureblue.py:348
 #: files/system/usr/libexec/secureblue/audit_secureblue.py:446

@@ -378,7 +378,7 @@ msgstr "KDE GNHS está habilitado."
 
 #: files/system/usr/libexec/secureblue/audit_secureblue.py:731
 msgid "Ensuring KDE GHNS is disabled"
-msgstr "Asegurando de que KDE GHNS está deshabilitado"
+msgstr "Asegurando que KDE GHNS está deshabilitado"
 
 #: files/system/usr/libexec/secureblue/audit_secureblue.py:745
 #, python-brace-format

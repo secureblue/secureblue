@@ -34,15 +34,6 @@ logs-last-boot:
     #! /bin/run0 /bin/bash
     journalctl -b -1
 
-# Regenerate GRUB config, useful in dual-boot scenarios where a second operating system isn't listed
-regenerate-grub:
-    #! /bin/run0 /bin/bash
-    if [ -d /sys/firmware/efi ]; then
-      grub2-mkconfig -o /etc/grub2-efi.cfg
-    else
-      grub2-mkconfig -o /etc/grub2.cfg
-    fi
-
 # Enroll secureblue's signing key for secure boot - Enter password "secureblue" if prompted
 enroll-secureblue-secure-boot-key:
     #! /bin/run0 /bin/bash

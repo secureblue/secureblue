@@ -126,7 +126,7 @@ msgstr "Asegurando que ptrace está prohibido"
 
 #: files/system/usr/libexec/secureblue/audit_secureblue.py:261
 msgid "Ensuring no authselect overrides"
-msgstr "Asegurando de que no hayan sobreescrituras de authselect"
+msgstr "Asegurando que no hayan sobreescrituras de authselect"
 
 #: files/system/usr/libexec/secureblue/audit_secureblue.py:276
 #, python-brace-format

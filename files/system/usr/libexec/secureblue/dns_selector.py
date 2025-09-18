@@ -318,30 +318,40 @@ def ask_custom_nm_servers() -> tuple[str, str]:
     """
 
     ipv4_primary = ask_valid_ipv4("Enter the resolver's IPv4 address (e.g. 1.1.1.1): ")
+    ipv4_secondary = ""
     has_secondary = ask_yes_no("Does the resolver provide a second IPv4 address?")
-    ipv4_secondary = ask_valid_ipv4("Enter the secondary IPv4 address: ") if has_secondary else ""
+    if has_secondary:
+        ipv4_secondary = ask_valid_ipv4("Enter the secondary IPv4 address: ")
 
-    supports_ipv6 = ask_yes_no("Does the resolver support IPv6 (e.g. 2620:fe::fe)?")
     ipv6_primary = ipv6_secondary = ""
-    if supports_ipv6:
+    has_ipv6 = ask_yes_no("Does the resolver support IPv6 (e.g. 2620:fe::fe)?")
+    if has_ipv6:
         ipv6_primary = ask_valid_ipv6("Enter the resolver's IPv6 address: ")
-        ipv6_secondary = (
-            ask_valid_ipv6("Enter the resolver's second IPv6 address: ") if has_secondary else ""
-        )
+        if has_secondary:
+            ipv6_secondary = ask_valid_ipv6("Enter the resolver's second IPv6 address: ")
 
-    hostname = interruptible_ask(
-        "Enter the resolver's TLS hostname/SNI (e.g. cloudflare-dns.com): "
+    hostname = ""
+    has_hostname = ask_yes_no(
+        "Does the resolver provide a TLS hostname/SNI to verify its authenticity?\n"
+        "(e.g. cloudflare-dns.com)"
     )
-    https_endpoint = ask_valid_https(
-        "Enter the resolver's DoH URL (e.g. https://cloudflare-dns.com/dns-query)"
-        "or press Enter to skip: "
+    if has_hostname:
+        hostname = interruptible_ask("Enter the resolver's TLS hostname/SNI: ")
+
+    https_endpoint = ""
+    has_https_endpoint = ask_yes_no(
+        "Does the resolver provide a DNS over HTTPS URL?\n"
+        "(e.g. https://cloudflare-dns.com/dns-query)"
     )
+    if has_https_endpoint:
+        https_endpoint = ask_valid_https("Enter the resolver's DoH URL:")
 
     tokens = []
     for ip in (ipv4_primary, ipv4_secondary, ipv6_primary, ipv6_secondary):
         if ip:
             tokens.append(f"dns+tls://{ip}#{hostname}" if hostname else f"dns+tls://{ip}")
     nm_servers = ",".join(tokens)
+    print()
     return nm_servers, https_endpoint
 
 

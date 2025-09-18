@@ -22,6 +22,8 @@ modules:
         - manuallyinstalljust.sh
         - hardenlogindefs.sh
         - hardened_malloc-pam.sh
+        - disableresolved.sh
+        - enablednsconfd.sh
     - type: files
       files:
         - source: system/usr

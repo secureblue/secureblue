@@ -9,7 +9,7 @@
 {"name":"audit_container_userns","description":"Ensuring container user namespace creation disallowed","status":"pass","warnings":[]}
 {"name":"audit_usbguard","description":"Ensuring USBGuard is active","status":"fail","warnings":["USBGuard is not enabled."]}
 {"name":"audit_chronyd","description":"Ensuring chronyd is active","status":"pass","warnings":[]}
-{"name":"audit_dns","description":"Ensuring system DNS resolution is secure","status":"fail","warnings":[]}
+{"name":"audit_dns","description":"Ensuring system DNS resolution is secure","status":"fail","warnings":["Local DNSSEC validation is disabled.","Secure global DNS is not configured.","DNS over HTTPS in Trivalent is disabled."]}
 {"name":"audit_mac_randomization","description":"Ensuring MAC randomization is enabled","status":"fail","warnings":[]}
 {"name":"audit_rpm_ostree_timer","description":"Ensuring rpm-ostreed-automatic.timer is enabled","status":"pass","warnings":[]}
 {"name":"audit_podman_auto_update","description":"Ensuring podman-auto-update.timer is enabled","status":"pass","warnings":[]}

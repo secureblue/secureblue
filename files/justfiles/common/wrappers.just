@@ -26,3 +26,8 @@ with-standard-malloc *args:
 set-bluetooth-modules *args:
     #!/bin/sh
     exec /usr/bin/python3 /usr/libexec/secureblue/bluetooth_main.py "$@"
+
+# Interactively select secure DNS servers
+dns-selector *args:
+    #!/bin/sh
+    exec /usr/bin/python3 /usr/libexec/secureblue/dns_selector.py "$@"

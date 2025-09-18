@@ -153,10 +153,11 @@ def run_interactive() -> int:
             2. Enforce secure DNS servers for all connections (can cause VPN DNS leaks
                or break local services, but allows for DoH in stealth/censorship scenarios);
             3. Toggle local DNSSEC validation.
+            4. Print current DNS status.
             """
         ).strip()
     )
-    mode = ask_option(3)
+    mode = ask_option(4)
 
     match mode:
         case 1:
@@ -177,6 +178,11 @@ def run_interactive() -> int:
             # Toggle DNSSEC.
             should_validate_dnssec = "true" if ask_should_validate_dnssec() else "false"
             return sandbox.run(dns_function, "set-dnssec", should_validate_dnssec)
+
+        case 4:
+            # Print status.
+            # Successful exits of run_interactive() lead to a print_all_status() in main().
+            return 0
 
         case _:
             return 1
@@ -352,7 +358,7 @@ def main() -> int:
     Sets DNS configuration.
 
     ujust dns-selector -- Interactive.
-    ujust dns-selector <reset>
+    ujust dns-selector reset
     ujust dns-selector dnssec <on|off>
     ujust dns-selector status
     """

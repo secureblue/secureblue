@@ -168,7 +168,7 @@ def run_interactive() -> int:
             # Enforce globally.
             nm_servers, https_endpoint = ask_nm_servers()
             should_validate_dnssec = "true" if ask_should_validate_dnssec() else "false"
-            if not ask_should_use_doh():
+            if https_endpoint and not ask_should_use_doh():
                 https_endpoint = ""
             return sandbox.run(
                 dns_function, "set-global", nm_servers, should_validate_dnssec, https_endpoint

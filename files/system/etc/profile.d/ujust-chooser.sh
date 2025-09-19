@@ -2,7 +2,7 @@
 
 if command -v fzf &> /dev/null
 then
-    export JUST_CHOOSER="fzf"
+    unset JUST_CHOOSER
 else
     export JUST_CHOOSER=/usr/bin/echo
 fi

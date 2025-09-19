@@ -11,26 +11,27 @@
 # See the License for the specific language governing permissions and limitations under the License.
 
 modules:
-    - type: rpm-ostree
-      install:
-        - setools-console
-        - usbguard
-        - firewalld
-        - policycoreutils-python-utils
-      remove:
-        - sudo
-        
-    - type: files
-      files:
-        - source: system/server
-          destination: /
-    - type: script
-      scripts:
-        - addtailscalerepo.sh
-    - type: script
-      scripts:
-        - excludepcsc.sh
-        - setserverdefaultzone.sh
-        - removebrewjust.sh
-        - removesuid.sh
-        - securecoreremovemigrationmotd.sh
+  - type: rpm-ostree
+    install:
+      - setools-console
+      - usbguard
+      - firewalld
+      - policycoreutils-python-utils
+    remove:
+      - sudo
+
+  - type: files
+    files:
+      - source: system/server
+        destination: /
+
+  - type: script
+    scripts:
+      - addtailscalerepo.sh
+
+  - type: script
+    scripts:
+      - excludepcsc.sh
+      - setserverdefaultzone.sh
+      - removebrewjust.sh
+      - removesuid.sh

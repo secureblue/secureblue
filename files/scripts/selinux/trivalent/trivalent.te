@@ -146,6 +146,8 @@ files_rw_generic_tmp_sockets(trivalent_t)
 files_rw_tmp_file_leaks(trivalent_t)
 files_map_generic_tmp_files(trivalent_t)
 
+# memory pressure
+kernel_read_psi(trivalent_t)
 kernel_read_system_state(trivalent_t)
 kernel_read_kernel_sysctls(trivalent_t)
 kernel_read_fs_sysctls(trivalent_t)
@@ -255,6 +257,10 @@ networkmanager_dbus_chat(trivalent_t)
 storage_getattr_fixed_disk_dev(trivalent_t)
 
 optional_policy(`
+	bluetooth_dbus_chat(trivalent_t)
+')
+
+optional_policy(`
 	gen_require(`
 		type unconfined_t;
 		role unconfined_r;
@@ -264,7 +270,6 @@ optional_policy(`
 	trivalent_script_run(unconfined_t, unconfined_r)
 	trivalent_filetrans_home_content(unconfined_t)
 ')
-
 
 allow trivalent_script_t trivalent_t:dir { getattr search };
 allow trivalent_script_t trivalent_t:file { open read };

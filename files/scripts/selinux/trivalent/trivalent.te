@@ -146,6 +146,8 @@ files_rw_generic_tmp_sockets(trivalent_t)
 files_rw_tmp_file_leaks(trivalent_t)
 files_map_generic_tmp_files(trivalent_t)
 
+# memory pressure
+kernel_read_psi(trivalent_t)
 kernel_read_system_state(trivalent_t)
 kernel_read_kernel_sysctls(trivalent_t)
 kernel_read_fs_sysctls(trivalent_t)

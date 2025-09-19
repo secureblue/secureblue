@@ -118,7 +118,7 @@ jobs:
           retry_push_count: 3
 
       - name: Install regctl
-        uses: regclient/actions/regctl-installer@495560f7c3b510b71ff9f22d6c667c2c429b8e45 # main
+        uses: regclient/actions/regctl-installer@495560f7c3b510b71ff9f22d6c667c2c429b8e45 # main # zizmor: ignore[stale-action-refs] regctl does not publish tags
 
       - name: Parse image manifest
         id: image_manifest_metadata

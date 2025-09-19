@@ -153,10 +153,11 @@ def run_interactive() -> int:
             2. Enforce secure DNS servers for all connections (can cause VPN DNS leaks
                or break local services, but allows for DoH in stealth/censorship scenarios);
             3. Toggle local DNSSEC validation.
+            4. Print current DNS status.
             """
         ).strip()
     )
-    mode = ask_option(3)
+    mode = ask_option(4)
 
     match mode:
         case 1:
@@ -177,6 +178,11 @@ def run_interactive() -> int:
             # Toggle DNSSEC.
             should_validate_dnssec = "true" if ask_should_validate_dnssec() else "false"
             return sandbox.run(dns_function, "set-dnssec", should_validate_dnssec)
+
+        case 4:
+            # Print status.
+            # Successful exits of run_interactive() lead to a print_all_status() in main().
+            return 0
 
         case _:
             return 1
@@ -312,30 +318,40 @@ def ask_custom_nm_servers() -> tuple[str, str]:
     """
 
     ipv4_primary = ask_valid_ipv4("Enter the resolver's IPv4 address (e.g. 1.1.1.1): ")
+    ipv4_secondary = ""
     has_secondary = ask_yes_no("Does the resolver provide a second IPv4 address?")
-    ipv4_secondary = ask_valid_ipv4("Enter the secondary IPv4 address: ") if has_secondary else ""
+    if has_secondary:
+        ipv4_secondary = ask_valid_ipv4("Enter the secondary IPv4 address: ")
 
-    supports_ipv6 = ask_yes_no("Does the resolver support IPv6 (e.g. 2620:fe::fe)?")
     ipv6_primary = ipv6_secondary = ""
-    if supports_ipv6:
+    has_ipv6 = ask_yes_no("Does the resolver support IPv6 (e.g. 2620:fe::fe)?")
+    if has_ipv6:
         ipv6_primary = ask_valid_ipv6("Enter the resolver's IPv6 address: ")
-        ipv6_secondary = (
-            ask_valid_ipv6("Enter the resolver's second IPv6 address: ") if has_secondary else ""
-        )
+        if has_secondary:
+            ipv6_secondary = ask_valid_ipv6("Enter the resolver's second IPv6 address: ")
 
-    hostname = interruptible_ask(
-        "Enter the resolver's TLS hostname/SNI (e.g. cloudflare-dns.com): "
+    hostname = ""
+    has_hostname = ask_yes_no(
+        "Does the resolver provide a TLS hostname/SNI to verify its authenticity?\n"
+        "(e.g. cloudflare-dns.com)"
     )
-    https_endpoint = ask_valid_https(
-        "Enter the resolver's DoH URL (e.g. https://cloudflare-dns.com/dns-query)"
-        "or press Enter to skip: "
+    if has_hostname:
+        hostname = interruptible_ask("Enter the resolver's TLS hostname/SNI: ")
+
+    https_endpoint = ""
+    has_https_endpoint = ask_yes_no(
+        "Does the resolver provide a DNS over HTTPS URL?\n"
+        "(e.g. https://cloudflare-dns.com/dns-query)"
     )
+    if has_https_endpoint:
+        https_endpoint = ask_valid_https("Enter the resolver's DoH URL:")
 
     tokens = []
     for ip in (ipv4_primary, ipv4_secondary, ipv6_primary, ipv6_secondary):
         if ip:
             tokens.append(f"dns+tls://{ip}#{hostname}" if hostname else f"dns+tls://{ip}")
     nm_servers = ",".join(tokens)
+    print()
     return nm_servers, https_endpoint
 
 
@@ -352,7 +368,7 @@ def main() -> int:
     Sets DNS configuration.
 
     ujust dns-selector -- Interactive.
-    ujust dns-selector <reset>
+    ujust dns-selector reset
     ujust dns-selector dnssec <on|off>
     ujust dns-selector status
     """

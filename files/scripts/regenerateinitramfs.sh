@@ -16,8 +16,8 @@ set -oue pipefail
 
 QUALIFIED_KERNEL="$(rpm -qa | grep -P 'kernel-(\d+\.\d+\.\d+)' | sed 's/kernel-//')"
 
-temp_conf_dir="$(mktemp -d)"
-cat >"${temp_conf_dir}/loglevels.conf" <<'EOF'
+temp_conf_file="$(mktemp '/etc/dracut.conf.d/zzz-loglevels-XXXXXXXXXX.conf')"
+cat >"${temp_conf_file}" <<'EOF'
 stdloglvl=4
 sysloglvl=0
 kmsgloglvl=0
@@ -28,9 +28,10 @@ EOF
     --kver "${QUALIFIED_KERNEL}" \
     --force \
     --add 'ostree' \
-    --add-confdir "${temp_conf_dir}" \
     --no-hostonly \
     --reproducible \
     "/lib/modules/${QUALIFIED_KERNEL}/initramfs.img"
+
+rm -- "${temp_conf_file}"
 
 chmod 0600 "/lib/modules/${QUALIFIED_KERNEL}/initramfs.img"

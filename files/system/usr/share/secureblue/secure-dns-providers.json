@@ -173,48 +173,6 @@
 					"https": "https://family.cloudflare-dns.com/dns-query"
 				}
 			]
-		},
-		{
-			"providerName": "DNSForge",
-			"providerDescription": "powerful filtering but can be very slow",
-			"servers": [
-				{
-					"serverDescription": "Standard: Blocks Ads & Trackers & Malware",
-					"ipv4": [
-						"dns+tls://176.9.93.198#dnsforge.de",
-						"dns+tls://176.9.1.117#dnsforge.de"
-					],
-					"ipv6": [
-						"dns+tls://[2a01:4f8:151:34aa::198]#dnsforge.de",
-						"dns+tls://[2a01:4f8:141:316d::117]#dnsforge.de"
-					],
-					"https": "https://dnsforge.de/dns-query"
-				},
-				{
-					"serverDescription": "Clean: Blocks Adult Content + Ads & Trackers & Malware",
-					"ipv4": [
-						"dns+tls://49.12.223.2#clean.dnsforge.de",
-						"dns+tls://49.12.43.208#clean.dnsforge.de"
-					],
-					"ipv6": [
-						"dns+tls://[2a01:4f8:c17:4fbc::2]#clean.dnsforge.de",
-						"dns+tls://[2a01:4f8:c012:ed89::208]#clean.dnsforge.de"
-					],
-					"https": "https://clean.dnsforge.de/dns-query"
-				},
-				{
-					"serverDescription": "Hard: Blocks Adult Content + Strictly Blocks Ads & Trackers & Malware",
-					"ipv4": [
-						"dns+tls://49.12.222.213#hard.dnsforge.de",
-						"dns+tls://88.198.122.154#hard.dnsforge.de"
-					],
-					"ipv6": [
-						"dns+tls://[2a01:4f8:c17:2c61::213]#hard.dnsforge.de",
-						"dns+tls://[2a01:4f8:c013:5ec0::154]#hard.dnsforge.de"
-					],
-					"https": "https://hard.dnsforge.de/dns-query"
-				}
-			]
 		}
 	]
 }

@@ -299,16 +299,50 @@ def _check_ld_preload(state: FlatpakPermissionsState, perms: Permissions) -> Non
     state.recs.append(Recommendation("\n".join(rec_lines), mergeable_name=state.name))
 
 
+def _bus_grants_arbitrary_permissions(name: str, is_session: bool) -> bool:
+    """Test if bus name grants arbitrary permissions."""
+    # Ported from Flathub website source code:
+    # https://github.com/flathub-infra/website/blob/c9b16cd964c0a6166f157bb05fb91375b61e01cd/frontend/src/safety.ts#L406-L431
+    # Used under the terms of the Apache-2.0 license.
+    bus_prefixes = ("org.freedesktop.Flatpak.", "org.freedesktop.DBus.")
+    bus_names = (
+        "org.freedesktop.*",
+        "org.gnome.*",
+        "org.kde.*",
+        "org.freedesktop.DBus",
+        "org.freedesktop.systemd1",
+        "org.freedesktop.login1",
+        "org.kde.KWin",
+        "org.kde.plasmashell",
+    )
+    session_bus_names = ("org.freedesktop.Flatpak", "org.freedesktop.impl.portal.PermissionStore")
+    return (
+        any(name.startswith(prefix) for prefix in bus_prefixes)
+        or name in bus_names
+        or (is_session and name in session_bus_names)
+    )
+
+
 def _handle_flatpak_buses(state: FlatpakPermissionsState, perms: Permissions) -> None:
-    dangerous_buses = ("org.freedesktop.Flatpak", "org.freedesktop.impl.portal.PermissionStore")
-    present_bus_names = [bus for bus in dangerous_buses if bus in perms.session_bus_talk]
-    for bus_name in present_bus_names:
+    present_dangerous_buses = [
+        (bus_name, True)
+        for bus_name in perms.session_bus_talk
+        if _bus_grants_arbitrary_permissions(bus_name, is_session=True)
+    ]
+    present_dangerous_buses += [
+        (bus_name, False)
+        for bus_name in perms.system_bus_talk
+        if _bus_grants_arbitrary_permissions(bus_name, is_session=False)
+    ]
+    for bus_name, is_session in present_dangerous_buses:
         state.arbitrary_permissions = True
         if state.name not in ARBITRARY_PERMISSIONS_EXPECTED:
+            if is_session:
+                first_line = _("The following flatpak app(s) can talk to {0} on the session bus:")
+            else:
+                first_line = _("The following flatpak app(s) can talk to {0} on the system bus:")
             rec_lines = (
-                _("The following flatpak app(s) can talk to {0} on the session bus:").format(
-                    bus_name
-                ),
+                first_line.format(bus_name),
                 Recommendation.NAMES_PLACEHOLDER,
                 _("This grants the ability to acquire arbitrary permissions."),
                 _("To remove this permission from an app, use Flatseal or run:"),

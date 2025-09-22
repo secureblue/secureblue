@@ -1,0 +1,36 @@
+# Copyright 2025 The Secureblue Authors
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+# Restore /var/lib/unbound/root.key from its immutable default in
+# /usr/etc/unbound/dnssec-root.key if it goes missing.
+
+[Unit]
+Description=Secureblue Unbound Root Key Installation Service
+ConditionPathExists=!/var/lib/unbound/root.key
+After=local-fs.target
+Before=unbound.service unbound-anchor.service
+RequiresMountsFor=/var/lib
+RequiresMountsFor=/usr/etc
+
+[Service]
+Type=oneshot
+ExecStartPre=/usr/bin/mkdir -p /var/lib/unbound
+ExecStart=/usr/bin/cp /usr/etc/unbound/dnssec-root.key /var/lib/unbound/root.key
+ExecStartPost=/usr/bin/chown -R unbound:unbound /var/lib/unbound
+ExecStartPost=/usr/bin/chmod 0644 /var/lib/unbound/root.key
+ExecStartPost=/usr/bin/restorecon -R /var/lib/unbound
+
+[Install]
+WantedBy=unbound.service
+WantedBy=unbound-anchor.service

@@ -37,6 +37,8 @@ jobs:
             "files/system/usr/bin/*"
             "files/system/kinoite/usr/libexec/secureblue/*"
             "files/system/desktop/usr/libexec/secureblue/*"
+            "files/system/usr/lib/NetworkManager/dispatcher.d/*"
+            "files/system/etc/NetworkManager/dispatcher.d/*"
           )
 
           files_missing_exec=()

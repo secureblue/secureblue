@@ -21,4 +21,4 @@ scripts:
   - enablecommonautoupdate.sh
   - localization.sh
   - addimageinfo.sh
-  - enableunboundmigration.sh
+  - enableunboundservices.sh

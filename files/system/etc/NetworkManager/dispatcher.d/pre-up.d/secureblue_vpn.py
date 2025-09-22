@@ -167,36 +167,6 @@ class NMConnection:
         return cls(sys.argv[1], nm_id, nm_uuid, nm_type)
 
 
-def cleanup_connections_file() -> None:
-    """Removes orphaned and duplicate connection UUIDs from CONNECTIONS_FILE."""
-
-    if not CONNECTIONS_FILE.exists():
-        return
-    lines = CONNECTIONS_FILE.read_text(encoding="utf-8").splitlines()
-
-    # Get all connection UUIDs from NetworkManager (terse, no colors).
-    # nosemgrep: dangerous-subprocess-use-audit
-    nm_proc = subprocess.run(  # nosec
-        ["/usr/bin/nmcli", "-t", "-f", "UUID", "-c", "no", "connection", "show"],
-        check=False,
-        text=True,
-        capture_output=True,
-    )
-    if nm_proc.returncode:
-        print("Failed to get existing NetworkManager connections.", file=sys.stderr)
-        print(nm_proc.stderr, file=sys.stderr)
-        sys.exit(nm_proc.returncode)
-    nm_uuids = nm_proc.stdout.splitlines()
-
-    seen_uuids = []
-    with CONNECTIONS_FILE.open("w", encoding="utf-8") as f:
-        for line in lines:
-            uuid = line.split("#", 1)[0].strip()
-            if uuid and uuid in nm_uuids and uuid not in seen_uuids:
-                f.write(line + "\n")
-                seen_uuids.append(uuid)
-
-
 def defaults_from_file() -> dict[str, str]:
     """Produces a key-value dictionary of the settings in DEFAULTS_FILE."""
 
@@ -242,8 +212,6 @@ def main() -> None:
         return
 
     connection.apply_settings(defaults_from_file())
-
-    cleanup_connections_file()
 
 
 if __name__ == "__main__":

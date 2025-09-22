@@ -1,3 +1,5 @@
+#!/usr/bin/env bash
+
 # Copyright 2025 The Secureblue Authors
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -10,29 +12,19 @@
 # distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and limitations under the License.
 
-modules:
-  - type: dnf
-    repos:
-      files:
-        - https://pkgs.tailscale.com/stable/fedora/tailscale.repo
-    install:
-      install-weak-deps: false
-      packages:
-        - setools-console
-        - usbguard
-        - firewalld
-        - policycoreutils-python-utils
+echo '
+[copr:copr.fedorainfracloud.org:secureblue:trivalent]
+name=Copr repo for trivalent owned by secureblue
+baseurl=https://download.copr.fedorainfracloud.org/results/secureblue/trivalent/fedora-$releasever-x86_64/
+type=rpm-md
+skip_if_unavailable=True
+gpgcheck=1
+gpgkey=https://download.copr.fedorainfracloud.org/results/secureblue/trivalent/pubkey.gpg
+repo_gpgcheck=0
+enabled=1
+enabled_metadata=1
+' > /etc/yum.repos.d/secureblue-trivalent-fedora-42.repo
 
-  - type: files
-    files:
-      - source: system/server
-        destination: /
+rpm-ostree install trivalent-subresource-filter
 
-  - type: script
-    scripts:
-      - addtailscalerepo.sh
-      - excludepcsc.sh
-      - setserverdefaultzone.sh
-      - removebrewjust.sh
-      - removesuid.sh
-      - disable-coreos-migration-motd.sh
+rm -f /etc/yum.repos.d/secureblue-trivalent-fedora-42.repo

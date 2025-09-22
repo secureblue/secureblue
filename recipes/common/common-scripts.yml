@@ -12,6 +12,11 @@
 
 type: script
 scripts:
+  - manuallyinstalljust.sh
+  - hardenlogindefs.sh
+  - hardened_malloc-pam.sh
+  - disableresolved.sh
+  - enablednsconfd.sh
   - authselect.sh
   - setfilepermissions.sh
   - createmissingdirectories.sh

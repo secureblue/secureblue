@@ -21,6 +21,10 @@ image-version: latest
 cosign-version: none
 nushell-version: none
 
+platforms:
+  - linux/amd64
+  - linux/arm64
+
 modules:
   - from-file: common/zfs-modules.yml
   - from-file: common/final-modules.yml

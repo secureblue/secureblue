@@ -160,9 +160,6 @@ class NMConnection:
             print(nm_proc.stderr, file=sys.stderr)
             sys.exit(nm_proc.returncode)
         nm_type = nm_proc.stdout.strip()
-        if nm_type not in VPN_TYPES:
-            print(f"Dispatcher not running for type {nm_type}.", file=sys.stderr)
-            sys.exit(0)
 
         return cls(sys.argv[1], nm_id, nm_uuid, nm_type)
 
@@ -206,9 +203,15 @@ def defaults_from_file() -> dict[str, str]:
 
 def main() -> None:
     """Apply the defaults from DEFAULTS_FILE to the connection given to this dispatcher."""
-
     connection = NMConnection.from_environment()
+    if connection.nm_type not in VPN_TYPES:
+        print(f"Dispatcher not running for type {connection.nm_type}.", file=sys.stderr)
+        return
     if connection.is_already_processed():
+        print(
+            f'Connection "{connection.nm_id}" has already had defaults applied. No action.',
+            file=sys.stderr,
+        )
         return
 
     connection.apply_settings(defaults_from_file())

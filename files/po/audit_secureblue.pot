@@ -17,7 +17,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-09-15 22:27+0100\n"
+"POT-Creation-Date: 2025-09-22 11:23-0400\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -584,18 +584,18 @@ msgid "The following flatpak app(s) have {0}:"
 msgstr ""
 
 #: files/system/usr/libexec/secureblue/audit_flatpak/__init__.py:165
-#: files/system/usr/libexec/secureblue/audit_flatpak/__init__.py:314
-#: files/system/usr/libexec/secureblue/audit_flatpak/__init__.py:377
-#: files/system/usr/libexec/secureblue/audit_flatpak/__init__.py:418
+#: files/system/usr/libexec/secureblue/audit_flatpak/__init__.py:348
+#: files/system/usr/libexec/secureblue/audit_flatpak/__init__.py:411
+#: files/system/usr/libexec/secureblue/audit_flatpak/__init__.py:452
 msgid "To remove this permission from an app, use Flatseal or run:"
 msgstr ""
 
 #: files/system/usr/libexec/secureblue/audit_flatpak/__init__.py:167
 #: files/system/usr/libexec/secureblue/audit_flatpak/__init__.py:297
-#: files/system/usr/libexec/secureblue/audit_flatpak/__init__.py:316
-#: files/system/usr/libexec/secureblue/audit_flatpak/__init__.py:379
-#: files/system/usr/libexec/secureblue/audit_flatpak/__init__.py:399
-#: files/system/usr/libexec/secureblue/audit_flatpak/__init__.py:420
+#: files/system/usr/libexec/secureblue/audit_flatpak/__init__.py:350
+#: files/system/usr/libexec/secureblue/audit_flatpak/__init__.py:413
+#: files/system/usr/libexec/secureblue/audit_flatpak/__init__.py:433
+#: files/system/usr/libexec/secureblue/audit_flatpak/__init__.py:454
 #, python-brace-format
 msgid "(replacing \"{0}\" with the flatpak app ID)"
 msgstr ""
@@ -694,70 +694,75 @@ msgstr ""
 msgid "To enable it for an app, run:"
 msgstr ""
 
-#: files/system/usr/libexec/secureblue/audit_flatpak/__init__.py:309
+#: files/system/usr/libexec/secureblue/audit_flatpak/__init__.py:341
 #, python-brace-format
 msgid "The following flatpak app(s) can talk to {0} on the session bus:"
 msgstr ""
 
-#: files/system/usr/libexec/secureblue/audit_flatpak/__init__.py:313
-#: files/system/usr/libexec/secureblue/audit_flatpak/__init__.py:417
+#: files/system/usr/libexec/secureblue/audit_flatpak/__init__.py:343
+#, python-brace-format
+msgid "The following flatpak app(s) can talk to {0} on the system bus:"
+msgstr ""
+
+#: files/system/usr/libexec/secureblue/audit_flatpak/__init__.py:347
+#: files/system/usr/libexec/secureblue/audit_flatpak/__init__.py:451
 msgid "This grants the ability to acquire arbitrary permissions."
 msgstr ""
 
-#: files/system/usr/libexec/secureblue/audit_flatpak/__init__.py:354
+#: files/system/usr/libexec/secureblue/audit_flatpak/__init__.py:388
 msgid "all system files"
 msgstr ""
 
-#: files/system/usr/libexec/secureblue/audit_flatpak/__init__.py:355
+#: files/system/usr/libexec/secureblue/audit_flatpak/__init__.py:389
 msgid "all user files"
 msgstr ""
 
-#: files/system/usr/libexec/secureblue/audit_flatpak/__init__.py:356
+#: files/system/usr/libexec/secureblue/audit_flatpak/__init__.py:390
 msgid "other applications' configuration files"
 msgstr ""
 
-#: files/system/usr/libexec/secureblue/audit_flatpak/__init__.py:357
+#: files/system/usr/libexec/secureblue/audit_flatpak/__init__.py:391
 msgid "other applications' cache files"
 msgstr ""
 
-#: files/system/usr/libexec/secureblue/audit_flatpak/__init__.py:358
+#: files/system/usr/libexec/secureblue/audit_flatpak/__init__.py:392
 msgid "other applications' data files"
 msgstr ""
 
-#: files/system/usr/libexec/secureblue/audit_flatpak/__init__.py:369
+#: files/system/usr/libexec/secureblue/audit_flatpak/__init__.py:403
 #, python-brace-format
 msgid "{0} has {1} permission"
 msgstr ""
 
-#: files/system/usr/libexec/secureblue/audit_flatpak/__init__.py:372
+#: files/system/usr/libexec/secureblue/audit_flatpak/__init__.py:406
 #, python-brace-format
 msgid "The following flatpak app(s) have {0} permission:"
 msgstr ""
 
-#: files/system/usr/libexec/secureblue/audit_flatpak/__init__.py:376
+#: files/system/usr/libexec/secureblue/audit_flatpak/__init__.py:410
 #, python-brace-format
 msgid "This grants access to {0}."
 msgstr ""
 
-#: files/system/usr/libexec/secureblue/audit_flatpak/__init__.py:392
+#: files/system/usr/libexec/secureblue/audit_flatpak/__init__.py:426
 #, python-brace-format
 msgid "{0} is missing {1} permission"
 msgstr ""
 
-#: files/system/usr/libexec/secureblue/audit_flatpak/__init__.py:394
+#: files/system/usr/libexec/secureblue/audit_flatpak/__init__.py:428
 #, python-brace-format
 msgid "The following flatpak app(s) are missing {0} permission:"
 msgstr ""
 
-#: files/system/usr/libexec/secureblue/audit_flatpak/__init__.py:396
+#: files/system/usr/libexec/secureblue/audit_flatpak/__init__.py:430
 msgid "This is required to load hardened_malloc."
 msgstr ""
 
-#: files/system/usr/libexec/secureblue/audit_flatpak/__init__.py:397
+#: files/system/usr/libexec/secureblue/audit_flatpak/__init__.py:431
 msgid "To add this permission to an app, use Flatseal or run:"
 msgstr ""
 
-#: files/system/usr/libexec/secureblue/audit_flatpak/__init__.py:415
+#: files/system/usr/libexec/secureblue/audit_flatpak/__init__.py:449
 msgid "The following flatpak app(s) can modify flatpak overrides:"
 msgstr ""
 

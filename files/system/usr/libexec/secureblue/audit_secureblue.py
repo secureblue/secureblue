@@ -841,7 +841,7 @@ def audit_secureboot():
         status = PASS
     elif sb_state == "This system doesn't support Secure Boot":
         status = INFO
-        warnings.append(_("Hardware does not support secure boot."))
+        warnings.append(_("Your hardware does not support secure boot."))
         recs.append(
             "\n".join(
                 [

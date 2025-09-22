@@ -39,16 +39,23 @@ set-kargs-hardening:
     else
         echo "Not setting unstable hardening kargs."
     fi
+    # Check for secure boot support, required for some drivers. (e.g. WiFi on some macbooks, plus there would be no way to verify these anyways.)
+    SB_STATE=$(mokutil --sb-state 2>/dev/null)
+    if [[ "$SB_STATE" == "This system doesn't support Secure Boot" ]]; then
+        echo "Secure Boot not supported. Skipping module signature enforcement."
+        SECUREBOOT_KARGS="--append-if-missing=module.sig_enforce=0"
+    else
+        SECUREBOOT_KARGS="--append-if-missing=module.sig_enforce=1"
+    fi
     echo "Applying boot parameters..."
     rpm-ostree kargs \
-      ${UNSTABLE_YES:+$UNSTABLE_YES} ${IAEMU_NO:+$IAEMU_NO} ${NOSMT_YES:+$NOSMT_YES} \
+      ${UNSTABLE_YES:+$UNSTABLE_YES} ${IAEMU_NO:+$IAEMU_NO} ${NOSMT_YES:+$NOSMT_YES} ${SECUREBOOT_KARGS:+$SECUREBOOT_KARGS} \
       --append-if-missing=init_on_alloc=1 \
       --append-if-missing=init_on_free=1 \
       --append-if-missing=slab_nomerge \
       --append-if-missing=page_alloc.shuffle=1 \
       --append-if-missing=randomize_kstack_offset=on \
       --append-if-missing=vsyscall=none \
-      --append-if-missing=lockdown=confidentiality \
       --append-if-missing=random.trust_cpu=off \
       --append-if-missing=random.trust_bootloader=off \
       --append-if-missing=iommu=force \
@@ -56,7 +63,7 @@ set-kargs-hardening:
       --append-if-missing=iommu.passthrough=0 \
       --append-if-missing=iommu.strict=1 \
       --append-if-missing=pti=on \
-      --append-if-missing=module.sig_enforce=1 \
+      --append-if-missing=lockdown=confidentiality \
       --append-if-missing=mitigations=auto,nosmt \
       --append-if-missing=spectre_v2=on \
       --append-if-missing=spec_store_bypass_disable=on \

@@ -836,8 +836,22 @@ def audit_hardened_malloc():
 @audit
 def audit_secureboot():
     """Ensure secureboot is enabled."""
-    sb_enabled = command_stdout("mokutil", "--sb-state", check=False) == "SecureBoot enabled"
-    status = PASS if sb_enabled else FAIL
+    sb_state = command_stdout("mokutil", "--sb-state", check=False) == "SecureBoot enabled"
+    if sb_state == "SecureBoot enabled":
+        status = PASS
+    elif sb_state == "This system doesn't support Secure Boot":
+        status = INFO
+        warnings.append(_("Hardware does not support secure boot."))
+        recs.append(
+            "\n".join(
+                [
+                    _("Your hardware does not support secure boot."),
+                    _("The system will be unable to verify that kernel modules are signed or verify the boot process."),
+                ]
+            )
+        )
+    else:
+        status = FAIL
     yield Report(_("Ensuring secure boot is enabled"), status)
 
 

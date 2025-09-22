@@ -82,7 +82,7 @@ class NMConnection:
             print(f'Set "{key}" = "{value}" on connection "{self.nm_uuid}".')
 
         self._mark_processed()
-        self._reapply()
+        self._reapply_to_interfaces()
 
     def _mark_processed(self) -> None:
         """Marks the connection as processed by adding its UUID to CONNECTIONS_FILE."""
@@ -97,7 +97,7 @@ class NMConnection:
             else:
                 f.write(f"{self.nm_uuid}\n")
 
-    def _reapply(self) -> None:
+    def _reapply_to_interfaces(self) -> None:
         """Reapply this connection's settings to its interface."""
 
         # nosemgrep: dangerous-subprocess-use-audit

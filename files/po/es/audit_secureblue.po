@@ -16,7 +16,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-08-25 19:47-0400\n"
+"POT-Creation-Date: 2025-09-22 11:23-0400\n"
 "PO-Revision-Date: 2025-09-22 23:20-0400\n"
 "Last-Translator: Cup-png <232283931+Cup-png@users.noreply.github.com>\n"
 "Language-Team: none\n"
@@ -57,8 +57,8 @@ msgstr "Verificando argumentos del kernel endurecido faltantes"
 #: files/system/usr/libexec/secureblue/audit_secureblue.py:150
 #: files/system/usr/libexec/secureblue/audit_secureblue.py:208
 #: files/system/usr/libexec/secureblue/audit_secureblue.py:272
-#: files/system/usr/libexec/secureblue/audit_secureblue.py:688
-#: files/system/usr/libexec/secureblue/audit_secureblue.py:697
+#: files/system/usr/libexec/secureblue/audit_secureblue.py:714
+#: files/system/usr/libexec/secureblue/audit_secureblue.py:723
 #, python-brace-format
 msgid "The file {0} has been modified."
 msgstr "El archivo {0} ha sido modificado."
@@ -183,15 +183,15 @@ msgid "Ensuring USBGuard is active"
 msgstr "Asegurando que USBGuard está activo"
 
 #: files/system/usr/libexec/secureblue/audit_secureblue.py:348
-#: files/system/usr/libexec/secureblue/audit_secureblue.py:446
-#: files/system/usr/libexec/secureblue/audit_secureblue.py:477
-#: files/system/usr/libexec/secureblue/audit_secureblue.py:566
+#: files/system/usr/libexec/secureblue/audit_secureblue.py:472
+#: files/system/usr/libexec/secureblue/audit_secureblue.py:503
+#: files/system/usr/libexec/secureblue/audit_secureblue.py:592
 #, python-brace-format
 msgid "{0} is enabled but has failed to run."
 msgstr "{0} está habilitado pero ha fallado la ejecución."
 
 #: files/system/usr/libexec/secureblue/audit_secureblue.py:351
-#: files/system/usr/libexec/secureblue/audit_secureblue.py:571
+#: files/system/usr/libexec/secureblue/audit_secureblue.py:597
 #, python-brace-format
 msgid "{0} is not enabled."
 msgstr "{0} no está habilitado."

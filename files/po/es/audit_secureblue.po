@@ -710,7 +710,7 @@ msgstr "Los siguientes flatpaks pueden comunicarse con {0} en el bus de sesión:
 
 #: files/system/usr/libexec/secureblue/audit_flatpak/__init__.py:343
 #, python-brace-format
-msgid "The following flatpak app(s) can talk to {0} on the session bus:"
+msgid "The following flatpak app(s) can talk to {0} on the system bus:"
 msgstr "Los siguientes flatpaks pueden comunicarse con {0} en el bus de sesión:"
 
 #: files/system/usr/libexec/secureblue/audit_flatpak/__init__.py:347

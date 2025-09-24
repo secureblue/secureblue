@@ -226,8 +226,10 @@ class DNSResolver(Enum):
                     line = raw_line.strip()
                     if line.startswith("nameserver"):
                         _, addr, *_ = line.split()
-                        if addr == "127.0.0.1": return cls.UNBOUND
-                        if addr == "127.0.0.53": return cls.RESOLVED
+                        if addr == "127.0.0.1":
+                            return cls.UNBOUND
+                        if addr == "127.0.0.53":
+                            return cls.RESOLVED
             return cls.UNKNOWN
 
         except (OSError, UnicodeDecodeError):
@@ -310,8 +312,7 @@ def run_interactive() -> int:
             should_validate_dnssec = "true" if ask_should_validate_dnssec() else "false"
             https_endpoint = (
                 servers.https_endpoint
-                if servers.https_endpoint is not None
-                and ask_should_use_doh()
+                if servers.https_endpoint is not None and ask_should_use_doh()
                 else None
             )
             exit_code = sandbox.run(

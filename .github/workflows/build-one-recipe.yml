@@ -69,7 +69,7 @@ jobs:
         env:
           RECIPE: ${{ inputs.recipe }}
         run: |
-          echo "REGISTRY=ghcr.io/royaloughtness" >> "${GITHUB_ENV}"
+          echo "REGISTRY=ghcr.io/secureblue" >> "${GITHUB_ENV}"
           echo "IMAGE_NAME=$(grep '^name:' "./recipes/${RECIPE}" | sed 's/^name: //')" >> "${GITHUB_ENV}"
           echo "IMAGE_MAJOR_VERSION=$(grep '^image-version:' "./recipes/${RECIPE}" | sed 's/^image-version: //')" >> "${GITHUB_ENV}"
           BASE_IMAGE=$(grep '^base-image:' "./recipes/${RECIPE}" | sed 's/^base-image: //')

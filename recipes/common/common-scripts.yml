@@ -14,7 +14,6 @@ type: script
 scripts:
   - authselect.sh
   - setfilepermissions.sh
-  - httpsmirrors.sh
   - createmissingdirectories.sh
   - disablegeoclue.sh
   - createjustcompletions.sh
@@ -22,3 +21,4 @@ scripts:
   - enablecommonautoupdate.sh
   - localization.sh
   - addimageinfo.sh
+  - enableunboundservices.sh

@@ -17,6 +17,7 @@ repos:
 install:
   - hardened_malloc
   - run0edit
+  - dnsconfd-unbound
 
   # missing upstream
   - openssl

@@ -14,6 +14,7 @@ modules:
     - type: script
       scripts:
         - createautostartdir.sh
+        - httpsmirrors.sh
         - unprotectsudo.sh
     - from-file: common/common-packages.yml
     - type: script
@@ -21,6 +22,8 @@ modules:
         - manuallyinstalljust.sh
         - hardenlogindefs.sh
         - hardened_malloc-pam.sh
+        - disableresolved.sh
+        - enablednsconfd.sh
     - type: files
       files:
         - source: system/usr

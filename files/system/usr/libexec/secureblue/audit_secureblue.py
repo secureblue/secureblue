@@ -838,6 +838,7 @@ def audit_secureboot():
     """Ensure secureboot is enabled."""
     import subprocess
     warnings = []
+    recs = []
 
     result = subprocess.run(
         ["mokutil", "--sb-state"],
@@ -865,7 +866,7 @@ def audit_secureboot():
     else:
         status = FAIL
 
-    yield Report(_("Ensuring secure boot is enabled"), status)
+    yield Report(_("Ensuring secure boot is enabled"), status, warnings=warnings, recs=recs)
 
 
 @audit

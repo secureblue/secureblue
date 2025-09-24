@@ -720,7 +720,7 @@ def audit_environment_file():
         warning = _("The file {0} cannot be read.").format(env_file)
     if status != PASS:
         rec_lines = (
-            _("The file {0} has been modified."),
+            _("The file {0} has been modified.").format(env_file),
             _("To reset it, run:"),
             f"$ run0 cp -p /usr{env_file} {env_file}",
         )

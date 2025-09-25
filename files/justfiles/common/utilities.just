@@ -19,18 +19,10 @@ shell := `grep :$(id -u): /etc/passwd | cut -d: -f7`
 bios:
     #!/usr/bin/bash
     if [ -d /sys/firmware/efi ]; then
-      systemctl reboot --when=+30s --firmware-setup
-      case "$(notify-send --urgency=critical \
-        --app-name="Secureblue System Notification" \
-        --action="Reboot Now" \
-        --action="Cancel" \
-        "The system will reboot in 30 seconds" \
-        "Ensure that you have no unsaved data")" in
-          "0")
-            systemctl reboot --firmware-setup ;;
-          "1")
-            systemctl reboot --when=cancel ;;
-      esac
+      read -rp 'The system will now reboot into UEFI firmware settings. Proceed? (y/N) ' proceed
+      if [[ "$proceed" == [Yy]* ]]; then
+        systemctl reboot --firmware-setup
+      fi
     else
       echo "Rebooting to legacy BIOS from OS is not supported."
     fi

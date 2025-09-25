@@ -313,7 +313,7 @@ def run_interactive() -> int:
             https_endpoint = (
                 servers.https_endpoint
                 if servers.https_endpoint is not None and ask_should_use_doh()
-                else None
+                else ""
             )
             exit_code = sandbox.run(
                 dns_function,

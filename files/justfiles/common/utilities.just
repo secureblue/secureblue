@@ -19,7 +19,7 @@ shell := `grep :$(id -u): /etc/passwd | cut -d: -f7`
 bios:
     #!/usr/bin/bash
     if [ -d /sys/firmware/efi ]; then
-      read -rp 'The system will now reboot into UEFI firmware settings. Proceed? (y/N) ' proceed
+      read -rp 'The system will reboot into UEFI firmware settings. Proceed? (y/N) ' proceed
       if [[ "$proceed" == [Yy]* ]]; then
         systemctl reboot --firmware-setup
       fi

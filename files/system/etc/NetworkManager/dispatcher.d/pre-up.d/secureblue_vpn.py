@@ -199,7 +199,7 @@ def defaults_from_file() -> dict[str, str]:
 
 
 def using_unsupported_resolver() -> bool:
-    """Returns True iff dnsconfd.service is disabled."""
+    """Returns True if the dnsconfd (Unbound control) service is disabled."""
 
     # nosemgrep: dangerous-subprocess-use-audit
     systemctl = subprocess.run(  # nosec
@@ -207,7 +207,7 @@ def using_unsupported_resolver() -> bool:
         check=False,
         capture_output=True,
     )
-    return systemctl.returncode
+    return systemctl.returncode != 0
 
 
 def main() -> None:

@@ -111,14 +111,34 @@ class DNSResolver(Enum):
         """Gets the systemd service associated with this resolver."""
         return SystemdService(self.value)
 
-    @staticmethod
-    def get_current() -> "DNSResolver":
-        """Gets the resolver whose systemd service is enabled."""
-        return (
-            DNSResolver.UNBOUND
-            if DNSResolver.UNBOUND.service.is_enabled()
-            else DNSResolver.RESOLVED
-        )
+    @classmethod
+    def get_current(cls) -> "DNSResolver":
+        """
+        Gets the resolver whose systemd service is enabled.
+
+        Warns and returns `DNSResolver.UNBOUND` if an unsupported configuration is detected.
+        """
+
+        unbound_enabled = cls.UNBOUND.service.is_enabled()
+        resolved_enabled = cls.RESOLVED.service.is_enabled()
+
+        if unbound_enabled and resolved_enabled:
+            print(
+                "Warning: multiple DNS resolvers are enabled.\n"
+                "Continuing anyway. You may need to restart your device after this change.",
+                file=sys.stderr,
+            )
+            return cls.UNBOUND
+
+        if not unbound_enabled and not resolved_enabled:
+            print(
+                "Warning: dnsconfd.service and systemd-resolved.service are disabled.\n"
+                "Continuing anyway. You may need to restart your device after this change.",
+                file=sys.stderr,
+            )
+            return cls.UNBOUND
+
+        return cls.UNBOUND if unbound_enabled else cls.RESOLVED
 
 
 def set_resolver(resolver: DNSResolver) -> None:
@@ -272,7 +292,7 @@ def main() -> None:
         return
 
     # Stop everything.
-    print("Configuring DNS. Your connection will be reset. This may take a few moments.")
+    print("Configuring DNS. Your connection will be reset. Please wait.")
     nm = SystemdService("NetworkManager.service")
     nm.stop()
     DNSResolver.get_current().service.stop()

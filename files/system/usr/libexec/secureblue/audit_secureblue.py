@@ -836,35 +836,30 @@ def audit_hardened_malloc():
 @audit
 def audit_secureboot():
     """Ensure secureboot is enabled."""
-    import subprocess
-    recs = []
+    warning = None
+    rec = None
 
     result = subprocess.run(
-        ["mokutil", "--sb-state"],
+        ["/usr/bin/mokutil", "--sb-state"],
         stdout=subprocess.PIPE,
         stderr=subprocess.PIPE,
         text=True,
-    )
+        check=False,
+    ) # nosec
 
     if result.returncode == 0 and result.stdout.strip() == "SecureBoot enabled":
         status = PASS
     elif "doesn't support Secure Boot" in result.stderr or "EFI variables are not supported" in result.stderr:
         status = INFO
-        warnings = _("Your hardware does not support secure boot.")
-        recs.append(
-            "\n".join(
-                [
-                    warning,
-                    _(
-                        "The system will be unable to verify that kernel modules are signed or verify the boot process."
-                    ),
-                ]
-            )
+        warning = _("Your hardware does not support secure boot.")
+        rec = (
+            warning + "\n" +
+            "The system will be unable to verify that kernel modules are signed or verify the boot process."
         )
     else:
         status = FAIL
 
-    yield Report(_("Ensuring secure boot is enabled"), status, warnings=warning, recs=recs)
+    yield Report(_("Ensuring secure boot is enabled"), status, warnings=warning, recs=rec)
 
 
 @audit

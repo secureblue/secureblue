@@ -837,7 +837,6 @@ def audit_hardened_malloc():
 def audit_secureboot():
     """Ensure secureboot is enabled."""
     import subprocess
-    warnings = []
     recs = []
 
     result = subprocess.run(
@@ -846,17 +845,17 @@ def audit_secureboot():
         stderr=subprocess.PIPE,
         text=True,
     )
-    sb_state = (result.stdout + result.stderr).strip()
+    # sb_state = (result.stdout + result.stderr).strip()
 
-    if sb_state == "SecureBoot enabled":
+    if result.returncode == 0 and result.stdout.strip() == "SecureBoot enabled":
         status = PASS
-    elif "doesn't support Secure Boot" in sb_state:
+    elif "doesn't support Secure Boot" in result.stderr or "EFI variables are not supported" in result.stderr:
         status = INFO
-        warnings.append(_("Your hardware does not support secure boot."))
+        warnings = _("Your hardware does not support secure boot.")
         recs.append(
             "\n".join(
                 [
-                    _("Your hardware does not support secure boot."),
+                    warning,
                     _(
                         "The system will be unable to verify that kernel modules are signed or verify the boot process."
                     ),
@@ -866,7 +865,7 @@ def audit_secureboot():
     else:
         status = FAIL
 
-    yield Report(_("Ensuring secure boot is enabled"), status, warnings=warnings, recs=recs)
+    yield Report(_("Ensuring secure boot is enabled"), status, warnings=warning, recs=recs)
 
 
 @audit

@@ -40,8 +40,9 @@ set-kargs-hardening:
         echo "Not setting unstable hardening kargs."
     fi
     # Check for secure boot support, required for some drivers. (e.g. WiFi on some macbooks, plus there would be no way to verify these anyways.)
-    SB_STATE=$(mokutil --sb-state 2>/dev/null)
-    if [[ "$SB_STATE" == "This system doesn't support Secure Boot" ]]; then
+    SB_OUTPUT=$(mokutil --sb-state 2>&1)
+    if [[ "$SB_OUTPUT" == "This system doesn't support Secure Boot" ]] || \
+    [[ "$SB_OUTPUT" == *"EFI variables are not supported"* ]]; then
         echo "Secure Boot not supported. Skipping module signature enforcement."
         SECUREBOOT_KARGS="--append-if-missing=module.sig_enforce=0"
     else

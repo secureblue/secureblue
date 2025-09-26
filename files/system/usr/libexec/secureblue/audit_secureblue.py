@@ -845,7 +845,6 @@ def audit_secureboot():
         stderr=subprocess.PIPE,
         text=True,
     )
-    # sb_state = (result.stdout + result.stderr).strip()
 
     if result.returncode == 0 and result.stdout.strip() == "SecureBoot enabled":
         status = PASS

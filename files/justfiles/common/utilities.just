@@ -271,14 +271,14 @@ install-vpn:
     # ref: https://protonvpn.com/support/en/official-linux-vpn-fedora
     function install_vpn() {
         local INSTRUCTIONS
-        local PACKAGE_NAME
+        local PACKAGE_NAMES
         local REPO_NAME
         case "$1" in
             "ivpn")
-                PACKAGE_NAME="ivpn"
-                REPO_NAME="$PACKAGE_NAME"
+                PACKAGE_NAMES="ivpn"
+                REPO_NAME="$PACKAGE_NAMES"
 
-                if util_checkpackage "$PACKAGE_NAME" || util_checkpackage "$PACKAGE_NAME-ui"; then
+                if util_checkpackage "$PACKAGE_NAMES" || util_checkpackage "$PACKAGE_NAMES-ui"; then
                     echo 'Error: IVPN is already installed.'
                     echo 'Aborting...'
                     exit 1
@@ -288,16 +288,16 @@ install-vpn:
                 local proceed2
                 read -rp 'Do you want the IVPN GUI to be installed? [Y/n] ' proceed2
                 if ! [[ "$proceed2" == [nN]* ]]; then
-                    PACKAGE_NAME="$PACKAGE_NAME $PACKAGE_NAME-ui"
+                    PACKAGE_NAMES="$PACKAGE_NAMES $PACKAGE_NAMES-ui"
                 fi
                 INSTRUCTIONS='Successfully installed IVPN. Please execute the command "systemctl enable --now ivpn-service" after rebooting.'
                 ;;
 
             "mullvad")
-                PACKAGE_NAME="mullvad-vpn"
+                PACKAGE_NAMES="mullvad-vpn"
                 REPO_NAME="mullvad"
 
-                if util_checkpackage "$PACKAGE_NAME"; then
+                if util_checkpackage "$PACKAGE_NAMES"; then
                     echo 'Error: Mullvad VPN is already installed.'
                     echo 'Aborting...'
                     exit 1
@@ -308,10 +308,10 @@ install-vpn:
                 ;;
 
             "proton")
-                PACKAGE_NAME="proton-vpn-gnome-desktop"
+                PACKAGE_NAMES="proton-vpn-gnome-desktop"
                 REPO_NAME="protonvpn-stable"
 
-                if util_checkpackage "$PACKAGE_NAME"; then
+                if util_checkpackage "$PACKAGE_NAMES"; then
                     echo 'Error: Proton VPN is already installed.'
                     echo 'Aborting...'
                     exit 1
@@ -327,7 +327,9 @@ install-vpn:
                 ;;
         esac
 
-        if ! run0 sh -c 'sed -Ei "s/^enabled ?=.*/enabled=1/" "/etc/yum.repos.d/$1.repo" && rpm-ostree install --assumeyes "$2"' sh "$REPO_NAME" "$PACKAGE_NAME"; then
+        # The lack of quotes around $2 is intentional.
+        # shellcheck disable=SC2086
+        if ! run0 sh -c 'sed -Ei "s/^enabled[[:space:]]*=.*/enabled=1/" "/etc/yum.repos.d/$1.repo" && rpm-ostree install -y $2' sh "$REPO_NAME" "$PACKAGE_NAMES"; then
             echo "Error: The installation didn't complete successfully, aborting..."
             exit 1
         fi

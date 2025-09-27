@@ -51,7 +51,6 @@ jobs:
         shell: bash
         run: |
           go install github.com/slsa-framework/slsa-verifier/v2/cli/slsa-verifier@v2.7.1
-          go install github.com/google/go-containerregistry/cmd/crane@v0.20.6
 
       - name: Verify provenance
         shell: bash

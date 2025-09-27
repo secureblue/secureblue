@@ -58,5 +58,5 @@ jobs:
         env:
           IMAGE: ${{ matrix.image }}
         run: |
-          DIGEST="crane digest ghcr.io/secureblue/${IMAGE}:latest"
+          DIGEST=$(crane digest "ghcr.io/secureblue/${IMAGE}:latest")
           slsa-verifier verify-image --source-uri github.com/secureblue/secureblue ghcr.io/secureblue/${IMAGE}:latest@"${DIGEST}"

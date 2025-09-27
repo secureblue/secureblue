@@ -841,8 +841,7 @@ def audit_secureboot():
 
     result = subprocess.run(
         ["/usr/bin/mokutil", "--sb-state"],
-        stdout=subprocess.PIPE,
-        stderr=subprocess.PIPE,
+        capture_output=True,
         text=True,
         check=False,
     ) # nosec
@@ -854,7 +853,7 @@ def audit_secureboot():
         warning = _("Your hardware does not support secure boot.")
         rec = (
             warning + "\n" +
-            _("The system will be unable to verify that kernel modules are signed or verify the boot process.")
+            _("The system will be unable to verify that kernel modules are signed or the boot process.")
         )
     else:
         status = FAIL

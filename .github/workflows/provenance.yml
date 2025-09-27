@@ -19,7 +19,7 @@ on:
   workflow_dispatch:
 jobs:
   verify-provenance:
-    name: Run integration tests
+    name: Verify provenance
     if: github.triggering_actor == 'royaloughtness' || ${{ github.event_name == 'schedule' }}
     runs-on: ubuntu-24.04
     permissions:
@@ -51,7 +51,7 @@ jobs:
         shell: bash
         run: |
           go install github.com/slsa-framework/slsa-verifier/v2/cli/slsa-verifier@v2.7.1
-          go get github.com/tsuru/crane
+          go install github.com/tsuru/crane
 
       - name: Verify provenance
         shell: bash

@@ -844,16 +844,22 @@ def audit_secureboot():
         capture_output=True,
         text=True,
         check=False,
-    ) # nosec
+    )  # nosec
 
     if result.returncode == 0 and result.stdout.strip() == "SecureBoot enabled":
         status = PASS
-    elif "doesn't support Secure Boot" in result.stderr or "EFI variables are not supported" in result.stderr:
+    elif (
+        "doesn't support Secure Boot" in result.stderr
+        or "EFI variables are not supported" in result.stderr
+    ):
         status = INFO
         warning = _("Your hardware does not support secure boot.")
         rec = (
-            warning + "\n" +
-            _("The system will be unable to verify that kernel modules are signed or the boot process.")
+            warning
+            + "\n"
+            + _(
+                "The system will be unable to verify that kernel modules are signed or the boot process."
+            )
         )
     else:
         status = FAIL

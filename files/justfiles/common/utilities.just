@@ -462,13 +462,17 @@ setup-usbguard:
 
 # Create the admin user and remove wheel from the normal user
 create-admin:
-    #!/bin/bash
-    export EXISTING_USER=${USER}
-    run0 sh -c "
-        adduser admin
-        usermod -aG wheel admin
-        echo "Set a new password for the admin user."
-        passwd admin
-        gpasswd -d $EXISTING_USER wheel
-        echo "New admin user has been created, reboot to apply changes."
-    "
+    #!/usr/bin/run0 /usr/bin/bash
+    set -euo pipefail
+    if [ "$SUDO_USER" = "admin" ]; then
+        echo "Error: You already have a user account named admin."
+        echo "This is normal if you have already run this script."
+        echo "If you named your user account admin during installation, you will not be able to use this script."
+        exit 1
+    fi
+    adduser admin
+    usermod -aG wheel admin
+    echo "Please set a new password for the admin user."
+    passwd admin
+    gpasswd -d "${SUDO_USER}" wheel
+    echo "New admin user has been created, reboot to apply changes."

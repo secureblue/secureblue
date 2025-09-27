@@ -27,7 +27,6 @@ from pathlib import Path
 from typing import Final
 
 RESOLVED_SECUREDNS_PATH: Final[Path] = Path("/etc/systemd/resolved.conf.d/10-securedns.conf")
-RESOLVED_VESTIGIAL_PATH: Final[Path] = Path("/etc/systemd/resolved.conf.d/10-disable-llmnr.conf")
 NM_GLOBALDNS_PATH: Final[Path] = Path("/etc/NetworkManager/conf.d/global-dns.conf")
 DNSCONFD_PATH: Final[Path] = Path("/etc/dnsconfd.conf")
 RESOLVCONF_PATH: Final[Path] = Path("/etc/resolv.conf")
@@ -130,10 +129,6 @@ def main() -> None:
     (nm_servers, is_dnssec_enabled) = read_from_resolved()
     write_to_nm(nm_servers, is_dnssec_enabled)
     RESOLVED_SECUREDNS_PATH.unlink()
-
-    # The only other resolved config shipped by secureblue is
-    # 10-disable-llmnr.conf. Clean it up here to complete migration.
-    RESOLVED_VESTIGIAL_PATH.unlink(missing_ok=True)
 
     print("Finished migrating secureblue DNS to NetworkManager.")
 

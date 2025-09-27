@@ -68,18 +68,17 @@ class NMConnection:
                 ["/usr/bin/nmcli", "connection", "modify", "uuid", self.nm_uuid, key, value],
                 check=False,
                 text=True,
-                capture_output=True,
+                stdout=subprocess.PIPE,
             )
             if nm_proc.returncode:
                 print(
-                    f'Failed to set "{key}" = "{value}" on connection "{self.nm_uuid}".',
+                    f'Failed to set "{key}" = "{value}" on connection "{self.nm_id}".',
                     file=sys.stderr,
                 )
-                print(nm_proc.stderr, file=sys.stderr)
                 # Don't quit just because a single setting fails.
                 # Sometimes we have to try applying ipv6.dns to an ipv6=disabled
                 # VPN, which throws an error.
-            print(f'Set "{key}" = "{value}" on connection "{self.nm_uuid}".')
+            print(f'Set "{key}" = "{value}" on connection "{self.nm_id}".')
 
         self._mark_processed()
         self._reapply_to_interfaces()
@@ -105,13 +104,12 @@ class NMConnection:
             ["/usr/bin/nmcli", "device", "reapply", self.nm_interface],
             check=False,
             text=True,
-            capture_output=True,
+            stdout=subprocess.PIPE,
         )
         if nm_proc.returncode:
             print(
                 f"Failed to reapply connection to interface {self.nm_interface}.", file=sys.stderr
             )
-            print(nm_proc.stderr, file=sys.stderr)
             sys.exit(nm_proc.returncode)
         print(f"Reapplied settings to interface {self.nm_interface}.")
 
@@ -122,7 +120,7 @@ class NMConnection:
         if len(sys.argv) != REQUIRED_ARGV_COUNT:
             print(
                 f"Invalid number of arguments: expected {REQUIRED_ARGV_COUNT}, ",
-                "got {len(sys.argv)}.",
+                f"got {len(sys.argv)}.",
                 file=sys.stderr,
             )
             sys.exit(1)
@@ -153,11 +151,10 @@ class NMConnection:
             ["/usr/bin/nmcli", "-g", "connection.type", "connection", "show", "uuid", nm_uuid],
             check=False,
             text=True,
-            capture_output=True,
+            stdout=subprocess.PIPE,
         )
         if nm_proc.returncode:
             print(f"Unable to get type for connection {nm_id}.", file=sys.stderr)
-            print(nm_proc.stderr, file=sys.stderr)
             sys.exit(nm_proc.returncode)
         nm_type = nm_proc.stdout.strip()
 
@@ -201,8 +198,25 @@ def defaults_from_file() -> dict[str, str]:
     return dict(parser.items(CONFIG_SECTION))
 
 
+def using_unsupported_resolver() -> bool:
+    """Returns True if the dnsconfd (Unbound control) service is disabled."""
+
+    # nosemgrep: dangerous-subprocess-use-audit
+    systemctl = subprocess.run(  # nosec
+        ["/usr/bin/systemctl", "is-enabled", "--quiet", "dnsconfd.service"],
+        check=False,
+        capture_output=True,
+    )
+    return systemctl.returncode != 0
+
+
 def main() -> None:
     """Apply the defaults from DEFAULTS_FILE to the connection given to this dispatcher."""
+
+    if using_unsupported_resolver():
+        print("This dispatcher only runs when Unbound is enabled.")
+        return
+
     connection = NMConnection.from_environment()
     if connection.nm_type not in VPN_TYPES:
         print(f"Dispatcher not running for type {connection.nm_type}.", file=sys.stderr)

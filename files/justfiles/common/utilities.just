@@ -459,3 +459,16 @@ setup-usbguard:
     if ! rpm-ostree status | grep '●' | grep -q 'securecore'; then
         systemctl enable --user --now usbguard-notifier.service
     fi
+
+# Create the admin user and remove wheel from the normal user
+create-admin:
+    #!/bin/bash
+    export EXISTING_USER=${USER}
+    run0 sh -c "
+        adduser admin
+        usermod -aG wheel admin
+        echo "Set a new password for the admin user."
+        passwd admin
+        gpasswd -d $EXISTING_USER wheel
+        echo "New admin user has been created, reboot to apply changes."
+    "

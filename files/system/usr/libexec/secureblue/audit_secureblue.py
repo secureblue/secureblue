@@ -854,7 +854,7 @@ def audit_secureboot():
         warning = _("Your hardware does not support secure boot.")
         rec = (
             warning + "\n" +
-            "The system will be unable to verify that kernel modules are signed or verify the boot process."
+            _("The system will be unable to verify that kernel modules are signed or verify the boot process.")
         )
     else:
         status = FAIL

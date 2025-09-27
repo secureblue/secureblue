@@ -470,9 +470,8 @@ create-admin:
         echo "If you named your user account admin during installation, you will not be able to use this script."
         exit 1
     fi
-    adduser admin
-    usermod -aG wheel admin
+    useradd -G wheel admin
     echo "Please set a new password for the admin user."
     passwd admin
     gpasswd -d "${SUDO_USER}" wheel
-    echo "New admin user has been created, reboot to apply changes."
+    echo "New admin user has been created, please reboot to apply changes."

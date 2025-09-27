@@ -464,7 +464,7 @@ setup-usbguard:
 create-admin:
     #!/usr/bin/run0 /usr/bin/bash
     set -euo pipefail
-    if [ "$SUDO_USER" = "admin" ]; then
+    if id "admin" &>/dev/null; then
         echo "Error: You already have a user account named admin."
         echo "This is normal if you have already run this script."
         echo "If you named your user account admin during installation, you will not be able to use this script."

@@ -80,13 +80,13 @@ def ask_should_use_doh() -> bool:
             Would you like to enable DNS over HTTPS (DoH) in the Trivalent browser?
             {BOLD}1. Enable:{RESET}  Send Trivalent's DNS queries to your chosen HTTPS endpoint.
             {BOLD}2. Disable:{RESET} Use the same encrypted DNS as the rest of the system.
-            {BOLD}3. Exit:{RESET} Exit the script without making any changes.
-            """
+                {BOLD}3. Exit:{RESET} Exit the script without making any changes.
+                """
         ).strip()
     )
-    if option == 3:
-        sys.exit(0)
     option = ask_option(3)
+    if option == 3: # noqa PLR2004
+        sys.exit(0)
     return option == 1
 
 
@@ -105,9 +105,9 @@ def ask_should_validate_dnssec() -> bool:
             """
         ).strip()
     )
-    if option == 3:
-        sys.exit(0)
     option = ask_option(3)
+    if option == 3: # noqa PLR2004
+        sys.exit(0)
     return option == 1
 
 
@@ -264,12 +264,12 @@ def ask_resolver() -> DNSResolver:
         ).strip()
     )
     option = ask_option(3)
-    if option == 3:
+    if option == 3: # noqa PLR2004
         sys.exit(0)
     return DNSResolver.UNBOUND if option == 1 else DNSResolver.RESOLVED
 
 
-def run_interactive() -> int:
+def run_interactive() -> int: # noqa C901
     """Interactive menu with the same functions as `ujust dns-selector --help`."""
     print(f"{BOLD}Current status:{RESET}")
     print_all_status()

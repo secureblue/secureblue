@@ -80,13 +80,10 @@ def ask_should_use_doh() -> bool:
             Would you like to enable DNS over HTTPS (DoH) in the Trivalent browser?
             {BOLD}1. Enable:{RESET}  Send Trivalent's DNS queries to your chosen HTTPS endpoint.
             {BOLD}2. Disable:{RESET} Use the same encrypted DNS as the rest of the system.
-                {BOLD}3. Exit:{RESET} Exit the script without making any changes.
-                """
+            """
         ).strip()
     )
-    option = ask_option(3)
-    if option == 3: # noqa PLR2004
-        sys.exit(0)
+    option = ask_option(2)
     return option == 1
 
 
@@ -101,13 +98,10 @@ def ask_should_validate_dnssec() -> bool:
                Uses the Internet's "root trust anchors" for zero-trust lookups.
             {BOLD}2. Disable:{RESET} Trust your chosen nameserver to validate DNSSEC for you.
                Our suggested servers validate DNSSEC, but custom providers may not.
-            {BOLD}3. Exit:{RESET} Exit the script without making any changes.
             """
         ).strip()
     )
-    option = ask_option(3)
-    if option == 3: # noqa PLR2004
-        sys.exit(0)
+    option = ask_option(2)
     return option == 1
 
 
@@ -179,9 +173,9 @@ def ask_custom_servers(https_only: bool) -> DNSServers:
 
 def ask_servers(https_only: bool = False) -> DNSServers:
     """
-    Ask user to choose a DNS server, either from SERVERS_JSON_FILE, custom, or exit.
+    Ask user to choose a DNS server, either from SERVERS_JSON_FILE or custom.
 
-    Args:
+    Args
         https_only (bool): Whether to only prompt for a HTTPS endpoint if needed.
     """
 
@@ -190,22 +184,16 @@ def ask_servers(https_only: bool = False) -> DNSServers:
 
     print("Select a DNS provider:")
     custom_option = len(providers) + 1
-    exit_option = len(providers) + 2  # new exit option
     for i, p in enumerate(providers, start=1):
         print(f"{BOLD}{i}. {p.get('providerName')}:{RESET} {p.get('providerDescription')}")
     print(f"{BOLD}{custom_option}.{RESET} Choose custom DNS resolvers")
-    print(f"{BOLD}{exit_option}.{RESET} Exit without making any changes")
 
-    provider_selection = ask_option(exit_option)
-    if provider_selection == exit_option:
-        sys.exit(0)
-
+    provider_selection = ask_option(len(providers) + 1)
     if provider_selection == custom_option:
         return ask_custom_servers(https_only)
-
     provider = providers[provider_selection - 1]
-    servers = provider["servers"]
 
+    servers = provider["servers"]
     if len(servers) > 1:
         print(f"Select server profile for {provider.get('providerName')}:")
         for i, s in enumerate(servers, start=1):
@@ -259,17 +247,14 @@ def ask_resolver() -> DNSResolver:
                Typically more reliable and supports local DNSSEC validation.
             {BOLD}2. resolved:{RESET} Use the Fedora default, systemd-resolved.
                Better compatibility with some VPNs.
-            {BOLD}3. Exit:{RESET} Exit the script without making any changes.
             """
         ).strip()
     )
-    option = ask_option(3)
-    if option == 3: # noqa PLR2004
-        sys.exit(0)
+    option = ask_option(2)
     return DNSResolver.UNBOUND if option == 1 else DNSResolver.RESOLVED
 
 
-def run_interactive() -> int: # noqa C901
+def run_interactive() -> int:
     """Interactive menu with the same functions as `ujust dns-selector --help`."""
     print(f"{BOLD}Current status:{RESET}")
     print_all_status()
@@ -279,17 +264,16 @@ def run_interactive() -> int: # noqa C901
         textwrap.dedent(
             f"""
             What DNS settings would you like to modify?
+            Press Ctrl+C to exit the script at any stage.
             {BOLD}1. Reset to defaults.{RESET}
                Uses the Unbound resolver with DNSSEC disabled.
             {BOLD}2. Configure DNS over HTTPS in Trivalent.{RESET}
                Masks your DNS queries as regular HTTPS requests when web browsing.
-            {BOLD}3. Exit.{RESET}
-               Exit without making any changes.
             """
         ).strip()
     )
     if DNSResolver.detect() == DNSResolver.RESOLVED:
-        mode = ask_option(3)
+        mode = ask_option(2)
     else:
         print(
             textwrap.dedent(
@@ -301,12 +285,10 @@ def run_interactive() -> int: # noqa C901
                 {BOLD}5. Change the resolver.{RESET}
                    Switch from Unbound (usually more reliable, supports DNSSEC) to
                    systemd-resolved for better compatibility with some VPNs.
-                {BOLD}6. Exit.{RESET}
-                   Exit without making any changes.
                 """
             ).strip()
         )
-        mode = ask_option(6)
+        mode = ask_option(5)
 
     exit_code = 1
     match mode:
@@ -319,9 +301,6 @@ def run_interactive() -> int: # noqa C901
             use_doh = ask_should_use_doh()
             server = ask_servers(https_only=True).https_endpoint if use_doh else ""
             exit_code = sandbox.run(dns_function, "set-trivalent-doh", server)
-
-        case 3 if DNSResolver.detect() == DNSResolver.RESOLVED:
-            sys.exit(0)
 
         case 3:
             # Configure DNSSEC.
@@ -348,9 +327,6 @@ def run_interactive() -> int: # noqa C901
         case 5:
             # Switch to systemd-resolved.
             exit_code = sandbox.run(dns_function, "set-resolver", "resolved")
-
-        case 6:
-            sys.exit(0)
 
     print(f"\n{BOLD}Finished configuring DNS.{RESET}")
     return exit_code

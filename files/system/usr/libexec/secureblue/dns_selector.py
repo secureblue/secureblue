@@ -50,16 +50,16 @@ dns_function = SandboxedFunction(
 
 
 def ask_option(options_count: int) -> int:
-    """Returns the user's chosen number between 1 and options_count."""
+    """Returns the user's chosen number between 0 and options_count."""
 
     while True:
-        raw_option = interruptible_ask(f"Choose an option [1-{options_count}]: ")
+        raw_option = interruptible_ask(f"Choose an option [0-{options_count}]: ")
         if raw_option.isdigit():
             option = int(raw_option)
             if 1 <= option <= options_count:
                 print()
                 return option
-        print(f"Please enter a number between 1 and {options_count}.")
+        print(f"Please enter a number between 0 and {options_count}.")
 
 
 def ask_yes_no(prompt: str) -> bool:
@@ -264,6 +264,8 @@ def run_interactive() -> int:
         textwrap.dedent(
             f"""
             What DNS settings would you like to modify?
+            {BOLD}0. Exit.{RESET}
+               Exit without applying any changes.
             {BOLD}1. Reset to defaults.{RESET}
                Uses the Unbound resolver with DNSSEC disabled.
             {BOLD}2. Configure DNS over HTTPS in Trivalent.{RESET}
@@ -291,6 +293,10 @@ def run_interactive() -> int:
 
     exit_code = 1
     match mode:
+        case 0:
+            # Exit
+            exit_code = 1
+
         case 1:
             # Reset to defaults.
             exit_code = sandbox.run(dns_function, "reset")
@@ -557,7 +563,8 @@ def main() -> int:
             print("Invalid option selected. Try --help.", file=sys.stderr)
             return 1
 
-    print_all_status()
+    if exit_code != 1:
+        print_all_status()
     return exit_code
 
 

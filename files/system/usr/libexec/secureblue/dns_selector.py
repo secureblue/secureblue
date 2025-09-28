@@ -16,31 +16,41 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import argparse
 import configparser
 import ipaddress
 import json
 import sys
 import textwrap
-from argparse import ArgumentParser
+from dataclasses import dataclass
+from enum import Enum, auto
 from pathlib import Path
-from typing import Final
+from typing import Final, Optional
 from urllib.parse import urlparse
 
 import sandbox
 from sandbox import SandboxedFunction
 
-DNSCONFD_CONF_FILE: Final[Path] = Path("/etc/dnsconfd.conf")
-NM_GLOBALDNS_CONF_FILE: Final[Path] = Path("/etc/NetworkManager/conf.d/global-dns.conf")
-TRIVALENT_POLICY_FILE: Final[Path] = Path(
+RESET: Final[str] = "\033[0m"
+BOLD: Final[str] = "\033[1m"
+DNSCONFD_CONF_PATH: Final[Path] = Path("/etc/dnsconfd.conf")
+NM_GLOBALDNS_CONF_PATH: Final[Path] = Path("/etc/NetworkManager/conf.d/global-dns.conf")
+RESOLVCONF_PATH: Final[Path] = Path("/etc/resolv.conf")
+TRIVALENT_POLICY_PATH: Final[Path] = Path(
     "/etc/trivalent/policies/managed/10-securedns-browser.json"
 )
-SERVERS_JSON_FILE: Final[Path] = Path("/usr/share/secureblue/secure-dns-providers.json")
+SERVERS_JSON_PATH: Final[Path] = Path("/usr/share/secureblue/secure-dns-providers.json")
 
-dns_function = SandboxedFunction("dns.py", read_write_paths=["/etc"])
+dns_function = SandboxedFunction(
+    "dns.py",
+    read_write_paths=["/etc"],
+    capabilities=["CAP_SYS_ADMIN", "CAP_DAC_OVERRIDE", "CAP_CHOWN", "CAP_FOWNER"],
+    additional_sandbox_properties=["--property=SystemCallFilter=@chown", "--background="],
+)
 
 
 def ask_option(options_count: int) -> int:
-    """Returns the user's chosen number between 1 and options_count: int from STDIN."""
+    """Returns the user's chosen number between 1 and options_count."""
 
     while True:
         raw_option = interruptible_ask(f"Choose an option [1-{options_count}]: ")
@@ -53,7 +63,7 @@ def ask_option(options_count: int) -> int:
 
 
 def ask_yes_no(prompt: str) -> bool:
-    """Returns the user's preference between 'yes'/'y' (True) and 'no'/'n' (False)."""
+    """Returns the user's preference between yes/y (True) and no/n (False)."""
 
     while True:
         ans = interruptible_ask(prompt + " [y/n] ").casefold()
@@ -63,16 +73,13 @@ def ask_yes_no(prompt: str) -> bool:
 
 
 def ask_should_use_doh() -> bool:
-    """Returns the user's preference for Trivalent DoH enforcement (yes = true, no = false)."""
-
+    """Returns the user's preference for Trivalent DoH enforcement (yes = True, no = False)."""
     print(
         textwrap.dedent(
-            """
+            f"""
             Would you like to enable DNS over HTTPS (DoH) in the Trivalent browser?
-            This tool already configures encrypted DNS over TLS, but DoH looks like HTTPS
-            traffic to outsiders, which could have privacy benefits.
-            1. Enable DoH for Trivalent (masks DNS queries);
-            2. Use the same encrypted DNS as the rest of the system in Trivalent.
+            {BOLD}1. Enable:{RESET}  Send Trivalent's DNS queries to your chosen HTTPS endpoint.
+            {BOLD}2. Disable:{RESET} Use the same encrypted DNS as the rest of the system.
             """
         ).strip()
     )
@@ -81,19 +88,16 @@ def ask_should_use_doh() -> bool:
 
 
 def ask_should_validate_dnssec() -> bool:
-    """Returns the user's preference for local DNSSEC validation (yes = true, no = false)."""
+    """Returns the user's preference for local DNSSEC validation (yes = True, no = False)."""
 
     print(
         textwrap.dedent(
-            """
-            Would you like to enable DNSSEC validation?
-            1. Yes (most secure): Use the Internet's 'root zone' trust anchors to check all
-               DNS responses. The servers suggested by this tool will work, but some default
-               or custom servers give 'bogus' results that cause resolution to fail.
-            2. No (less secure, more compatible): Trust your chosen DNS server to validate
-               for you. If you use a default or insecure DNS server, you will not be
-               protected from forged responses. This is needed for some public WiFi networks
-               to redirect you to their captive portal.
+            f"""
+            Would you like to enable local DNSSEC validation?
+            {BOLD}1. Enable:{RESET}  Validate your chosen server's responses for all signed domains.
+               Uses the Internet's "root trust anchors" for zero-trust lookups.
+            {BOLD}2. Disable:{RESET} Trust your chosen nameserver to validate DNSSEC for you.
+               Our suggested servers validate DNSSEC, but custom providers may not.
             """
         ).strip()
     )
@@ -101,28 +105,92 @@ def ask_should_validate_dnssec() -> bool:
     return option == 1
 
 
-def ask_nm_servers() -> tuple[str, str]:
-    """
-    Get user to choose DNS servers from SERVERS_JSON_FILE as a numbered option from STDIN.
+@dataclass(frozen=True)
+class DNSServers:
+    """A DNS server to be set as a global upstream by NetworkManager."""
 
-    Returns tuple[
-        nm_servers: str, -- a comma-delimited list of DNS servers in NetworkManager format.
-        https_endpoint: str -- a validated HTTPS URL for use as a DoH endpoint.
-    ]
+    servers_csv: Optional[str]
+    https_endpoint: Optional[str]
+
+
+def _ask_custom_ips() -> str:
+    """
+    Returns a comma-separated list of IPs and protocols representing the user's custom servers.
+
+    Example output:
+        `dns+tls://1.1.1.1#domain.com,dns+tls://[::1]#domain.com,dns+udp://2.2.2.2`
     """
 
-    data = json.loads(SERVERS_JSON_FILE.read_text(encoding="utf-8"))
+    ipv4_primary = ask_valid_ipv4("Enter the resolver's IPv4 address (e.g. 1.1.1.1): ")
+    ipv4_secondary = ""
+    has_secondary = ask_yes_no("Does the resolver provide a second IPv4 address?")
+    if has_secondary:
+        ipv4_secondary = ask_valid_ipv4("Enter the secondary IPv4 address: ")
+
+    ipv6_primary = ipv6_secondary = ""
+    has_ipv6 = ask_yes_no("Does the resolver support IPv6 (e.g. 2620:fe::fe)?")
+    if has_ipv6:
+        ipv6_primary = ask_valid_ipv6("Enter the resolver's IPv6 address: ")
+        if has_secondary:
+            ipv6_secondary = ask_valid_ipv6("Enter the resolver's second IPv6 address: ")
+
+    hostname = None
+    has_dot = ask_yes_no(
+        "Does the resolver provide a TLS hostname/SNI to verify its authenticity?\n"
+        "(e.g. cloudflare-dns.com)"
+    )
+    if has_dot:
+        hostname = interruptible_ask("Enter the resolver's TLS hostname/SNI: ")
+
+    tokens = []
+    for ip in (ipv4_primary, ipv4_secondary, ipv6_primary, ipv6_secondary):
+        if ip:
+            tokens.append(f"dns+tls://{ip}#{hostname}" if hostname else f"dns+tls://{ip}")
+    return ",".join(tokens)
+
+
+def ask_custom_servers(https_only: bool) -> DNSServers:
+    """
+    Ask for valid primary (+/- secondary) IPv4 (+/- IPv6) global DNS servers.
+
+    Args
+        https_only (bool): Whether to ask only for a DoH URL. In this case,
+        DNSServers is returned with servers_csv = None.
+    """
+
+    servers_csv = None if https_only else _ask_custom_ips()
+
+    https_endpoint = None
+    has_https_endpoint = https_only or ask_yes_no(
+        "Does the resolver provide a DNS over HTTPS URL?\n"
+        "(e.g. https://cloudflare-dns.com/dns-query)"
+    )
+    if has_https_endpoint:
+        https_endpoint = ask_valid_https("Enter the resolver's DoH URL: ")
+
+    return DNSServers(servers_csv, https_endpoint)
+
+
+def ask_servers(https_only: bool = False) -> DNSServers:
+    """
+    Ask user to choose a DNS server, either from SERVERS_JSON_FILE or custom.
+
+    Args
+        https_only (bool): Whether to only prompt for a HTTPS endpoint if needed.
+    """
+
+    data = json.loads(SERVERS_JSON_PATH.read_text(encoding="utf-8"))
     providers = data["providers"]
 
     print("Select a DNS provider:")
     custom_option = len(providers) + 1
     for i, p in enumerate(providers, start=1):
-        print(f"{i}. {p.get('providerName')}: {p.get('providerDescription')}")
-    print(f"{custom_option}. Choose custom DNS resolvers")
+        print(f"{BOLD}{i}. {p.get('providerName')}:{RESET} {p.get('providerDescription')}")
+    print(f"{BOLD}{custom_option}.{RESET} Choose custom DNS resolvers")
 
     provider_selection = ask_option(len(providers) + 1)
     if provider_selection == custom_option:
-        return ask_custom_nm_servers()
+        return ask_custom_servers(https_only)
     provider = providers[provider_selection - 1]
 
     servers = provider["servers"]
@@ -135,64 +203,164 @@ def ask_nm_servers() -> tuple[str, str]:
         server_selection = 1
 
     server = servers[server_selection - 1]
-    nm_servers = ",".join([*server.get("ipv4", []), *server.get("ipv6", [])])
+    servers_csv = ",".join([*server.get("ipv4", []), *server.get("ipv6", [])])
     https_endpoint = server.get("https")
-    return (nm_servers, https_endpoint)
+    return DNSServers(servers_csv, https_endpoint)
 
 
-def run_interactive() -> int:
-    """
-    Prompt to (1) reset, (2) set global DNS, DNSSEC and Trivalent DoT, or (3) set DNSSEC only.
-    """
+class DNSResolver(Enum):
+    """A DNS resolver."""
 
+    UNBOUND = auto()
+    RESOLVED = auto()
+    UNKNOWN = auto()
+
+    @classmethod
+    def detect(cls) -> "DNSResolver":
+        """Returns the current resolver based on the contents of /etc/resolv.conf."""
+        # Unlike in dns.py, the exact services running are unimportant, as we
+        # need to be VPN aware and measure the effective configuration.
+        try:
+            with open(RESOLVCONF_PATH, encoding="utf-8") as f:
+                for raw_line in f:
+                    line = raw_line.strip()
+                    if line.startswith("nameserver"):
+                        _, addr, *_ = line.split()
+                        if addr == "127.0.0.1":
+                            return cls.UNBOUND
+                        if addr == "127.0.0.53":
+                            return cls.RESOLVED
+            return cls.UNKNOWN
+
+        except (OSError, UnicodeDecodeError):
+            print("Unable to open and parse /etc/resolv.conf.", file=sys.stderr)
+            return cls.UNKNOWN
+
+
+def ask_resolver() -> DNSResolver:
+    """Asks for the user's choice of resolver."""
     print(
         textwrap.dedent(
-            """
-            Would you like to:
-            1. Reset global DNS to automatic mode (likely insecure);
-            2. Enforce secure DNS servers for all connections (can cause VPN DNS leaks
-               or break local services, but allows for DoH in stealth/censorship scenarios);
-            3. Toggle local DNSSEC validation.
-            4. Print current DNS status.
+            f"""
+            Which DNS resolver would you like to use?
+            {BOLD}1. Unbound:{RESET}  Cache and prefetch DNS records for performance.
+               Typically more reliable and supports local DNSSEC validation.
+            {BOLD}2. resolved:{RESET} Use the Fedora default, systemd-resolved.
+               Better compatibility with some VPNs.
             """
         ).strip()
     )
-    mode = ask_option(4)
+    option = ask_option(2)
+    return DNSResolver.UNBOUND if option == 1 else DNSResolver.RESOLVED
 
+
+def run_interactive() -> int:
+    """Interactive menu with the same functions as `ujust dns-selector --help`."""
+    print(f"{BOLD}Current status:{RESET}")
+    print_all_status()
+    print()
+
+    print(
+        textwrap.dedent(
+            f"""
+            What DNS settings would you like to modify?
+            {BOLD}1. Reset to defaults.{RESET}
+               Uses the Unbound resolver with DNSSEC disabled.
+            {BOLD}2. Configure DNS over HTTPS in Trivalent.{RESET}
+               Masks your DNS queries as regular HTTPS requests when web browsing.
+            """
+        ).strip()
+    )
+    if DNSResolver.detect() == DNSResolver.RESOLVED:
+        mode = ask_option(2)
+    else:
+        print(
+            textwrap.dedent(
+                f"""
+                {BOLD}3. Configure DNSSEC.{RESET}
+                   Toggle local validation, to allow/block spoofed responses.
+                {BOLD}4. Configure global DNS.{RESET}
+                   Enforce secure DNS for all connections, including VPNs.
+                {BOLD}5. Change the resolver.{RESET}
+                   Switch from Unbound (usually more reliable, supports DNSSEC) to
+                   systemd-resolved for better compatibility with some VPNs.
+                """
+            ).strip()
+        )
+        mode = ask_option(5)
+
+    exit_code = 1
     match mode:
         case 1:
-            # Reset.
-            return sandbox.run(dns_function, "reset")
+            # Reset to defaults.
+            exit_code = sandbox.run(dns_function, "reset")
 
         case 2:
-            # Enforce globally.
-            nm_servers, https_endpoint = ask_nm_servers()
-            should_validate_dnssec = "true" if ask_should_validate_dnssec() else "false"
-            if https_endpoint and not ask_should_use_doh():
-                https_endpoint = ""
-            return sandbox.run(
-                dns_function, "set-global", nm_servers, should_validate_dnssec, https_endpoint
-            )
+            # Trivalent DoH.
+            use_doh = ask_should_use_doh()
+            server = ask_servers(https_only=True).https_endpoint if use_doh else ""
+            exit_code = sandbox.run(dns_function, "set-trivalent-doh", server)
 
         case 3:
-            # Toggle DNSSEC.
+            # Configure DNSSEC.
             should_validate_dnssec = "true" if ask_should_validate_dnssec() else "false"
-            return sandbox.run(dns_function, "set-dnssec", should_validate_dnssec)
+            exit_code = sandbox.run(dns_function, "set-dnssec", should_validate_dnssec)
 
         case 4:
-            # Print status.
-            # Successful exits of run_interactive() lead to a print_all_status() in main().
-            return 0
+            # Configure global DNS. Unbound only.
+            servers = ask_servers()
+            should_validate_dnssec = "true" if ask_should_validate_dnssec() else "false"
+            https_endpoint = (
+                servers.https_endpoint
+                if servers.https_endpoint is not None and ask_should_use_doh()
+                else ""
+            )
+            exit_code = sandbox.run(
+                dns_function,
+                "set-global",
+                servers.servers_csv,
+                should_validate_dnssec,
+                https_endpoint,
+            )
 
+        case 5:
+            # Switch to systemd-resolved.
+            exit_code = sandbox.run(dns_function, "set-resolver", "resolved")
+
+    print(f"\n{BOLD}Finished configuring DNS.{RESET}")
+    return exit_code
+
+
+def print_current_resolver() -> None:
+    """
+    Prints current DNS resolver.
+
+    Example:
+        DNS Resolver: Unbound|systemd-resolved|unknown/vpn
+    """
+    match DNSResolver.detect():
+        case DNSResolver.UNBOUND:
+            print("DNS Resolver: Unbound")
+        case DNSResolver.RESOLVED:
+            print("DNS Resolver: systemd-resolved")
         case _:
-            return 1
+            print("DNS Resolver: unknown/vpn")
 
 
 def print_dnssec_status() -> None:
-    """Print DNSSEC status to STDOUT, i.e. 'DNSSEC: <enabled|disabled>'."""
+    """
+    Print DNSSEC status.
+
+    Example:
+        DNSSEC: enabled|disabled
+    """
+    if DNSResolver.detect() != DNSResolver.UNBOUND:
+        print("DNSSEC: unavailable")
+        return
+
     try:
         dnssec_enabled = False
-        with DNSCONFD_CONF_FILE.open("r", encoding="utf-8") as f:
+        with DNSCONFD_CONF_PATH.open("r", encoding="utf-8") as f:
             for raw_line in f:
                 line = raw_line.strip()
                 if not line or line.startswith("#"):
@@ -205,22 +373,27 @@ def print_dnssec_status() -> None:
     except FileNotFoundError:
         print("DNSSEC: disabled")
     except (OSError, UnicodeDecodeError):
-        print("DNSSEC: unable to open and parse configuration")
+        print("DNSSEC: unable to open and parse configuration", file=sys.stderr)
 
 
 def print_nm_globaldns_status() -> None:
     """
     Print global DNS enablement status and indented server list to STDOUT.
 
-    For example:
-    Global DNS: <enabled|disabled>
-    Global DNS servers:
-        dns+tls://1.2.3.4#host
-        dns+tls://[::1]#host
+    Example:
+        Global DNS: enabled|disabled
+
+        Global DNS servers:
+            dns+tls://1.2.3.4#host
+            dns+tls://[::1]#host
     """
+    if DNSResolver.detect() != DNSResolver.UNBOUND:
+        print("Global DNS: unavailable")
+        return
+
     nm_parser = configparser.ConfigParser(strict=False, delimiters=("=",))
     nm_parser.optionxform = str
-    nm_parser.read(NM_GLOBALDNS_CONF_FILE.as_posix())
+    nm_parser.read(NM_GLOBALDNS_CONF_PATH.as_posix())
 
     if not nm_parser.has_section("global-dns"):
         print("Global DNS: disabled")
@@ -240,14 +413,14 @@ def print_nm_globaldns_status() -> None:
 
 def print_trivalent_doh_status() -> None:
     """
-    Print Trivalent DNS over HTTPS enablement status and endpoint to STDOUT.
+    Print Trivalent DNS over HTTPS enablement status and endpoint.
 
-    For example:
-    Trivalent DoH: <enabled|disabled>
-    Trivalent DoH endpoint: https://host/endpoint
+    Example:
+        Trivalent DoH: enabled|disabled
+        Trivalent DoH endpoint: https://host/endpoint
     """
     try:
-        with TRIVALENT_POLICY_FILE.open("r", encoding="utf-8") as f:
+        with TRIVALENT_POLICY_PATH.open("r", encoding="utf-8") as f:
             policy = json.load(f)
             doh_mode = policy.get("DnsOverHttpsMode")
             doh_endpoint = policy.get("DnsOverHttpsTemplates")
@@ -258,13 +431,13 @@ def print_trivalent_doh_status() -> None:
     except FileNotFoundError:
         print("Trivalent DoH: disabled")
     except json.JSONDecodeError:
-        print("Trivalent DoH: configuration invalid")
+        print("Trivalent DoH: configuration invalid", file=sys.stderr)
     except (OSError, UnicodeDecodeError):
-        print("Trivalent DoH: unable to open and parse configuration")
+        print("Trivalent DoH: unable to open and parse configuration", file=sys.stderr)
 
 
 def interruptible_ask(prompt: str) -> str:
-    """Get a string input from STDIN, strip whitespace, and exit gracefully on SIGINT."""
+    """Ask for a string input, strip whitespace, and exit gracefully if interrupted."""
     try:
         return input(prompt).strip()
     except (KeyboardInterrupt, EOFError):
@@ -273,7 +446,7 @@ def interruptible_ask(prompt: str) -> str:
 
 
 def ask_valid_ipv4(prompt: str) -> str:
-    """Returns a valid IPv4 address as a string."""
+    """Returns a valid IPv4 address."""
     while True:
         ip = interruptible_ask(prompt)
         try:
@@ -284,7 +457,7 @@ def ask_valid_ipv4(prompt: str) -> str:
 
 
 def ask_valid_ipv6(prompt: str) -> str:
-    """Returns a valid IPv6 address enclosed in square brackets as a string."""
+    """Returns a valid IPv6 address enclosed in square brackets."""
     while True:
         ip = interruptible_ask(prompt).strip(" []")
         try:
@@ -294,12 +467,12 @@ def ask_valid_ipv6(prompt: str) -> str:
             print("Invalid IPv6 address, try again.")
 
 
-def ask_valid_https(prompt: str) -> str:
+def ask_valid_https(prompt: str) -> Optional[str]:
     """Returns a valid HTTPS URL."""
     while True:
         raw_url = interruptible_ask(prompt)
         if not raw_url:  # Allow empty.
-            return ""
+            return None
         url = urlparse(raw_url)
         if url.scheme == "https" and url.netloc:
             print()
@@ -307,113 +480,85 @@ def ask_valid_https(prompt: str) -> str:
         print("Invalid HTTPS endpoint, try again.")
 
 
-def ask_custom_nm_servers() -> tuple[str, str]:
-    """
-    Get valid primary (+/- secondary) IPv4 (+/- IPv6) global DNS servers from STDIN.
-
-    Returns tuple[
-        nm_servers: str, -- a comma-delimited list of DNS servers in NetworkManager format.
-        https_endpoint: str -- a validated HTTPS URL for use as a DoH endpoint.
-    ]
-    """
-
-    ipv4_primary = ask_valid_ipv4("Enter the resolver's IPv4 address (e.g. 1.1.1.1): ")
-    ipv4_secondary = ""
-    has_secondary = ask_yes_no("Does the resolver provide a second IPv4 address?")
-    if has_secondary:
-        ipv4_secondary = ask_valid_ipv4("Enter the secondary IPv4 address: ")
-
-    ipv6_primary = ipv6_secondary = ""
-    has_ipv6 = ask_yes_no("Does the resolver support IPv6 (e.g. 2620:fe::fe)?")
-    if has_ipv6:
-        ipv6_primary = ask_valid_ipv6("Enter the resolver's IPv6 address: ")
-        if has_secondary:
-            ipv6_secondary = ask_valid_ipv6("Enter the resolver's second IPv6 address: ")
-
-    hostname = ""
-    has_hostname = ask_yes_no(
-        "Does the resolver provide a TLS hostname/SNI to verify its authenticity?\n"
-        "(e.g. cloudflare-dns.com)"
-    )
-    if has_hostname:
-        hostname = interruptible_ask("Enter the resolver's TLS hostname/SNI: ")
-
-    https_endpoint = ""
-    has_https_endpoint = ask_yes_no(
-        "Does the resolver provide a DNS over HTTPS URL?\n"
-        "(e.g. https://cloudflare-dns.com/dns-query)"
-    )
-    if has_https_endpoint:
-        https_endpoint = ask_valid_https("Enter the resolver's DoH URL:")
-
-    tokens = []
-    for ip in (ipv4_primary, ipv4_secondary, ipv6_primary, ipv6_secondary):
-        if ip:
-            tokens.append(f"dns+tls://{ip}#{hostname}" if hostname else f"dns+tls://{ip}")
-    nm_servers = ",".join(tokens)
-    print()
-    return nm_servers, https_endpoint
-
-
 def print_all_status() -> None:
-    """Prints report on global DNS status, servers, DNSSEC and Trivalent DoH status to STDOUT."""
+    """Prints the entire DNS state tracked by `ujust dns-selector` for audit."""
 
-    print_nm_globaldns_status()
+    print_current_resolver()
     print_dnssec_status()
+    print_nm_globaldns_status()
     print_trivalent_doh_status()
+
+
+def parse_args() -> argparse.Namespace:
+    """Parse command-line input to `ujust dns-selector`. Doesn't expose Global DNS."""
+
+    p = argparse.ArgumentParser(
+        prog="ujust dns-selector", description="Sets global DoT servers, DNSSEC and Trivalent DoH."
+    )
+
+    cmd_p = p.add_subparsers(dest="cmd", required=False)
+    cmd_p.add_parser("reset", help="Resets all settings to default/automatic.")
+    cmd_p.add_parser("status", help="Reads status from config files.")
+
+    dnssec_p = cmd_p.add_parser("dnssec", help="Sets local DNSSEC validation.")
+    dnssec_p.add_argument("enable_dnssec", choices=["on", "off"])
+
+    unbound_p = cmd_p.add_parser("resolver", help="Sets which DNS resolver is used.")
+    unbound_p.add_argument("backend", choices=["unbound", "resolved"])
+
+    args = p.parse_args()
+    if args.cmd == "resolver":
+        if args.backend == "unbound":
+            args.backend = DNSResolver.UNBOUND
+        else:
+            args.backend = DNSResolver.RESOLVED
+    if args.cmd == "dnssec":
+        args.enable_dnssec = args.enable_dnssec == "on"
+
+    return args
 
 
 def main() -> int:
     """
     Sets DNS configuration.
 
-    ujust dns-selector -- Interactive.
-    ujust dns-selector reset
-    ujust dns-selector dnssec <on|off>
-    ujust dns-selector status
+    Examples:
+        $ ujust dns-selector
+        $ ujust dns-selector reset
+        $ ujust dns-selector dnssec <on|off>
+        $ ujust dns-selector resolver <unbound|resolved>
+        $ ujust dns-selector status
     """
+    args = parse_args()
 
-    p = ArgumentParser(
-        prog="ujust dns-selector", description="Sets global DoT servers, DNSSEC and Trivalent DoH."
-    )
-    cmd_p = p.add_subparsers(dest="cmd", required=False)
-    cmd_p.add_parser("reset", help="Resets all settings to default/automatic.")
-    cmd_p.add_parser(
-        "status",
-        help="Reads status from config files. Lists active servers and "
-        "shows global DNS, DNSSEC and Trivalent DoH enablement.",
-    )
-    dnssec_p = cmd_p.add_parser("dnssec", help="Sets local DNSSEC validation.")
-    dnssec_p.add_argument("state", choices=["on", "off"])
-    args = p.parse_args()
-
+    exit_code = 0
     match args.cmd:
         case None:
             exit_code = run_interactive()
-            if exit_code == 0:
-                print_all_status()
-            return exit_code
 
         case "status":
-            print_all_status()
-            return 0
+            pass
 
         case "dnssec":
-            dnssec = "true" if sys.argv[2] == "on" else "false"
+            if DNSResolver.detect() != DNSResolver.UNBOUND:
+                print("DNSSEC unavailable with current resolver.", file=sys.stderr)
+                return 1
+            dnssec = "true" if args.enable_dnssec else "false"
             exit_code = sandbox.run(dns_function, "set-dnssec", dnssec)
-            if exit_code == 0:
-                print_all_status()
-            return exit_code
 
         case "reset":
             exit_code = sandbox.run(dns_function, "reset")
-            if exit_code == 0:
-                print_all_status()
-            return exit_code
+
+        case "resolver":
+            resolver = "unbound" if args.backend == DNSResolver.UNBOUND else "resolved"
+            exit_code = sandbox.run(dns_function, "set-resolver", resolver)
 
         case _:
             print("Invalid option selected. Try --help.", file=sys.stderr)
             return 1
+
+    print_all_status()
+    return exit_code
 
 
 if __name__ == "__main__":

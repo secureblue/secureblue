@@ -41,5 +41,8 @@ pycodestyle.max-doc-length = 100
 pylint.max-statements = 40
 
 [lint.per-file-ignores]
-# Don't require audit checks' function signatures to have type hints
+# Don't require audit checks' function signatures to have type hints.
 "files/system/usr/libexec/secureblue/audit_secureblue.py" = ["ANN"]
+
+# Allow partial executable paths in subprocess invocations in this script.
+"files/po/update_po.py" = ["S607"]

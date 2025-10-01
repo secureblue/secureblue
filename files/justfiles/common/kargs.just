@@ -64,6 +64,7 @@ set-kargs-hardening:
       --append-if-missing=iommu.passthrough=0 \
       --append-if-missing=iommu.strict=1 \
       --append-if-missing=pti=on \
+      --append-if-missing=vdso32=0 \
       --append-if-missing=lockdown=confidentiality \
       --append-if-missing=mitigations=auto,nosmt \
       --append-if-missing=spectre_v2=on \
@@ -96,6 +97,7 @@ remove-kargs-hardening:
       --delete-if-present="iommu.passthrough=0" \
       --delete-if-present="iommu.strict=1" \
       --delete-if-present="pti=on" \
+      --delete-if-present="vdso32=0" \
       --delete-if-present="module.sig_enforce=1" \
       --delete-if-present="mitigations=auto,nosmt" \
       --delete-if-present="efi=disable_early_pci_dma" \

@@ -91,6 +91,7 @@ def audit_kargs():
         "module.sig_enforce=1",
         "page_alloc.shuffle=1",
         "pti=on",
+        "vdso32=0",
         "random.trust_bootloader=off",
         "random.trust_cpu=off",
         "randomize_kstack_offset=on",

@@ -91,7 +91,6 @@ def audit_kargs():
         "module.sig_enforce=1",
         "page_alloc.shuffle=1",
         "pti=on",
-        "vdso32=0",
         "random.trust_bootloader=off",
         "random.trust_cpu=off",
         "randomize_kstack_offset=on",
@@ -100,6 +99,7 @@ def audit_kargs():
         "slab_nomerge",
         "spec_store_bypass_disable=on",
         "spectre_v2=on",
+        "vdso32=0",
         "vsyscall=none",
     )
     for karg in kargs_expected:

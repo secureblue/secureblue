@@ -28,6 +28,13 @@ set-kargs-hardening:
     else
         echo "Not force disabling SMT/Hyperthreading."
     fi
+    read -rp "Do you want to disable the IPv6 stack as a precaution while potentially reducing network performance? [y/N]: " YES
+    if [[ "$YES" == [Yy]* ]]; then
+        IPV6_NO="--append-if-missing=ipv6.disable=1"
+        echo "Disabling the IPv6 network stack."
+    else
+        echo "Retaining all IPv6 functionality."
+    fi
     read -rp "Would you like to set additional (unstable) hardening kargs? (Warning: Setting these kargs may lead to boot or stability issues on some hardware.) [y/N]: " YES
     if [[ "$YES" == [Yy]* ]]; then
     UNSTABLE_YES="--append-if-missing=efi=disable_early_pci_dma \
@@ -50,7 +57,7 @@ set-kargs-hardening:
     fi
     echo "Applying boot parameters..."
     rpm-ostree kargs \
-      ${UNSTABLE_YES:+$UNSTABLE_YES} ${IAEMU_NO:+$IAEMU_NO} ${NOSMT_YES:+$NOSMT_YES} ${SECUREBOOT_KARGS:+$SECUREBOOT_KARGS} \
+      ${UNSTABLE_YES:+$UNSTABLE_YES} ${IAEMU_NO:+$IAEMU_NO} ${NOSMT_YES:+$NOSMT_YES} ${IPV6_NO:+IPV6_NO} ${SECUREBOOT_KARGS:+$SECUREBOOT_KARGS} \
       --append-if-missing=init_on_alloc=1 \
       --append-if-missing=init_on_free=1 \
       --append-if-missing=slab_nomerge \
@@ -108,6 +115,7 @@ remove-kargs-hardening:
       --delete-if-present="l1tf=full,force" \
       --delete-if-present="kvm-intel.vmentry_l1d_flush=always" \
       --delete-if-present="nosmt=force" \
+      --delete-if-present="ipv6.disable=1" \
       --delete-if-present="oops=panic" \
       --delete-if-present="loglevel=0" \
       --delete-if-present="rd.shell=0" \

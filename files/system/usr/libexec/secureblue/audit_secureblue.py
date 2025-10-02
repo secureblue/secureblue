@@ -116,6 +116,11 @@ def audit_kargs():
         status = status.downgrade_to(WARN)
         warnings.append(_("Missing kernel argument: {0} (force-disable SMT)").format(karg_nosmt))
 
+    karg_nosmt = "ipv6.disable=1"
+    if karg_nosmt not in kargs_current:
+        status = status.downgrade_to(WARN)
+        warnings.append(_("Missing kernel argument: {0} (disable IPv6 support)").format(karg_nosmt))
+        
     kargs_expected_unstable = (
         "amd_iommu=force_isolation",
         "debugfs=off",

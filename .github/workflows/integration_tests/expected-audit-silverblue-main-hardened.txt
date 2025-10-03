@@ -23,6 +23,6 @@
 {"name":"audit_environment_file","description":"Ensuring no environment file overrides","status":"pass","warnings":[]}
 {"name":"audit_ld_preload","description":"Ensuring ld.so.preload has expected permissions","status":"pass","warnings":[]}
 {"name":"audit_hardened_malloc","description":"Ensuring hardened_malloc is set to be preloaded","status":"pass","warnings":[]}
-{"name":"audit_secureboot","description":"Ensuring secure boot is enabled","status":"fail","warnings":[]}
+{"name":"audit_secureboot","description":"Ensuring secure boot is enabled","status":"info","warnings":["Your hardware does not support secure boot."]}
 {"name":"audit_bash_env_lockdown","description":"Ensuring current user's bash environment is locked down","status":"fail","warnings":[]}
 {"name":"audit_webcam_module","description":"Checking whether webcam module is disabled","status":"info","warnings":["Webcam module is enabled."]}

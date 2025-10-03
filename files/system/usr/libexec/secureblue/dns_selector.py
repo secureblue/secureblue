@@ -264,6 +264,7 @@ def run_interactive() -> int:
         textwrap.dedent(
             f"""
             What DNS settings would you like to modify?
+            Press Ctrl+C to exit the script at any stage.
             {BOLD}1. Reset to defaults.{RESET}
                Uses the Unbound resolver with DNSSEC disabled.
             {BOLD}2. Configure DNS over HTTPS in Trivalent.{RESET}

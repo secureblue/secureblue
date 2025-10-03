@@ -272,7 +272,7 @@ def run_interactive() -> int:
             """
         ).strip()
     )
-    if DNSResolver.detect() == DNSResolver.RESOLVED:
+    if DNSResolver.detect() != DNSResolver.UNBOUND:
         mode = ask_option(2)
     else:
         print(

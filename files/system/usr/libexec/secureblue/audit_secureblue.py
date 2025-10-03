@@ -99,6 +99,7 @@ def audit_kargs():
         "slab_nomerge",
         "spec_store_bypass_disable=on",
         "spectre_v2=on",
+        "vdso32=0",
         "vsyscall=none",
     )
     for karg in kargs_expected:

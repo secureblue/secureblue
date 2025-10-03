@@ -24,28 +24,6 @@ jobs:
     runs-on: ubuntu-24.04
     permissions:
       packages: read # needed to pull images
-    strategy:
-      fail-fast: false
-      matrix:
-        image:
-          - silverblue-main-hardened
-          - silverblue-nvidia-hardened
-          - silverblue-nvidia-open-hardened
-          - kinoite-main-hardened
-          - kinoite-nvidia-hardened
-          - kinoite-nvidia-open-hardened
-          - sericea-main-hardened
-          - sericea-nvidia-hardened
-          - sericea-nvidia-open-hardened
-          - cosmic-main-hardened
-          - cosmic-nvidia-hardened
-          - cosmic-nvidia-open-hardened
-          - securecore-main-hardened
-          - securecore-nvidia-hardened
-          - securecore-nvidia-open-hardened
-          - securecore-zfs-main-hardened
-          - securecore-zfs-nvidia-hardened
-          - securecore-zfs-nvidia-open-hardened
     steps:
       - name: Install deps
         shell: bash
@@ -56,8 +34,30 @@ jobs:
 
       - name: Verify provenance
         shell: bash
-        env:
-          IMAGE: ${{ matrix.image }}
         run: |
-          DIGEST=$(crane digest "ghcr.io/secureblue/${IMAGE}:latest")
-          slsa-verifier verify-image --source-uri github.com/secureblue/secureblue ghcr.io/secureblue/${IMAGE}:latest@"${DIGEST}"
+          IMAGES=(
+            silverblue-main-hardened
+            silverblue-nvidia-hardened
+            silverblue-nvidia-open-hardened
+            kinoite-main-hardened
+            kinoite-nvidia-hardened
+            kinoite-nvidia-open-hardened
+            sericea-main-hardened
+            sericea-nvidia-hardened
+            sericea-nvidia-open-hardened
+            cosmic-main-hardened
+            cosmic-nvidia-hardened
+            cosmic-nvidia-open-hardened
+            securecore-main-hardened
+            securecore-nvidia-hardened
+            securecore-nvidia-open-hardened
+            securecore-zfs-main-hardened
+            securecore-zfs-nvidia-hardened
+            securecore-zfs-nvidia-open-hardened
+          )
+
+
+          for IMAGE in "${IMAGES[@]}"; do
+            DIGEST=$(crane digest "ghcr.io/secureblue/${IMAGE}:latest")
+            slsa-verifier verify-image --source-uri github.com/secureblue/secureblue ghcr.io/secureblue/${IMAGE}:latest@"${DIGEST}"
+          done

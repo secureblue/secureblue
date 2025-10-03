@@ -13,6 +13,7 @@ kargs = [
   "iommu.passthrough=0",
   "iommu.strict=1",
   "pti=on",
+  "vdso32=0",
   "module.sig_enforce=1",
   "mitigations=auto,nosmt",
   "spectre_v2=on",

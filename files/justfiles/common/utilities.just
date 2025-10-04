@@ -223,10 +223,6 @@ label-external-drives:
         for dir in "$media_path"*/
         do
             echo
-            if [[ "$dir" =~ "'" ]]; then
-                echo "WARNING: Single quotes in drive labels are forbidden to avoid command execution, skipping drive \"$dir\"..."
-                continue
-            fi
             if [[ "$(stat -c '%U' "$dir")" != "$USER" ]]; then
                 echo "Drive root folder is not owned by you, skipping drive \"$dir\"..."
                 continue
@@ -243,7 +239,7 @@ label-external-drives:
             fi
             echo "Labeling drive mounted on \"$dir\" with $selabel"
             dir=${dir%*/} # remove trailing slash
-            if ! run0 sh -c "semanage fcontext -a -t $selabel '$dir(/.*)?' && restorecon -r '$dir'"; then
+            if ! run0 sh -c 'semanage fcontext -a -t "$1" "$2(/.*)?" && restorecon -r "$2"' sh "$selabel" "$dir"; then
                 echo 'Execution failed, aborting.'
                 exit 1
             fi

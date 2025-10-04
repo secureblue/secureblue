@@ -14,7 +14,7 @@
 
 set -euo pipefail
 
-flatpak remote-add --if-not-exists --user --subset=verified flathub-verified https://flathub.org/repo/flathub.flatpakrepo
+flatpak remote-add --if-not-exists --user --subset=verified --title='Flathub Verified' flathub-verified https://flathub.org/repo/flathub.flatpakrepo
 ujust harden-flatpak
 
 RPM_OSTREE_STATUS=$(rpm-ostree status --json --booted)

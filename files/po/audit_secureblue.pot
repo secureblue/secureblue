@@ -17,7 +17,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-09-22 11:23-0400\n"
+"POT-Creation-Date: 2025-09-27 16:04-0400\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -245,7 +245,7 @@ msgid "Ensuring system DNS resolution is secure"
 msgstr ""
 
 #: files/system/usr/libexec/secureblue/audit_secureblue.py:445
-#: files/system/usr/libexec/secureblue/audit_secureblue.py:908
+#: files/system/usr/libexec/secureblue/audit_secureblue.py:934
 #, python-brace-format
 msgid "Unable to read file {0}."
 msgstr ""
@@ -320,7 +320,7 @@ msgstr ""
 
 #: files/system/usr/libexec/secureblue/audit_secureblue.py:652
 #: files/system/usr/libexec/secureblue/audit_secureblue.py:751
-#: files/system/usr/libexec/secureblue/audit_secureblue.py:902
+#: files/system/usr/libexec/secureblue/audit_secureblue.py:928
 msgid "To disable it, run:"
 msgstr ""
 
@@ -441,91 +441,101 @@ msgstr ""
 msgid "Ensuring hardened_malloc is set to be preloaded"
 msgstr ""
 
-#: files/system/usr/libexec/secureblue/audit_secureblue.py:841
+#: files/system/usr/libexec/secureblue/audit_secureblue.py:856
+msgid "Your hardware does not support secure boot."
+msgstr ""
+
+#: files/system/usr/libexec/secureblue/audit_secureblue.py:861
+msgid ""
+"The system will be unable to verify that kernel modules are signed or the "
+"boot process."
+msgstr ""
+
+#: files/system/usr/libexec/secureblue/audit_secureblue.py:867
 msgid "Ensuring secure boot is enabled"
 msgstr ""
 
-#: files/system/usr/libexec/secureblue/audit_secureblue.py:874
+#: files/system/usr/libexec/secureblue/audit_secureblue.py:900
 msgid "Bash environment is not locked down."
 msgstr ""
 
-#: files/system/usr/libexec/secureblue/audit_secureblue.py:875
+#: files/system/usr/libexec/secureblue/audit_secureblue.py:901
 msgid "The following files do not appear to be immutable or do not exist:"
 msgstr ""
 
-#: files/system/usr/libexec/secureblue/audit_secureblue.py:877
+#: files/system/usr/libexec/secureblue/audit_secureblue.py:903
 msgid "To fix this, run:"
 msgstr ""
 
-#: files/system/usr/libexec/secureblue/audit_secureblue.py:884
+#: files/system/usr/libexec/secureblue/audit_secureblue.py:910
 msgid "Ensuring current user's bash environment is locked down"
 msgstr ""
 
-#: files/system/usr/libexec/secureblue/audit_secureblue.py:901
-#: files/system/usr/libexec/secureblue/audit_secureblue.py:906
+#: files/system/usr/libexec/secureblue/audit_secureblue.py:927
+#: files/system/usr/libexec/secureblue/audit_secureblue.py:932
 msgid "Webcam module is enabled."
 msgstr ""
 
-#: files/system/usr/libexec/secureblue/audit_secureblue.py:911
+#: files/system/usr/libexec/secureblue/audit_secureblue.py:937
 msgid "Checking whether webcam module is disabled"
 msgstr ""
 
-#: files/system/usr/libexec/secureblue/audit_secureblue.py:933
+#: files/system/usr/libexec/secureblue/audit_secureblue.py:959
 #, python-brace-format
 msgid "{0} is configured with an unknown URL."
 msgstr ""
 
-#: files/system/usr/libexec/secureblue/audit_secureblue.py:936
+#: files/system/usr/libexec/secureblue/audit_secureblue.py:962
 #, python-brace-format
 msgid "{0} is not a verified flatpak repository."
 msgstr ""
 
-#: files/system/usr/libexec/secureblue/audit_secureblue.py:939
+#: files/system/usr/libexec/secureblue/audit_secureblue.py:965
 #, python-brace-format
 msgid "Auditing flatpak remote {0}"
 msgstr ""
 
-#: files/system/usr/libexec/secureblue/audit_secureblue.py:972
+#: files/system/usr/libexec/secureblue/audit_secureblue.py:998
 #, python-brace-format
 msgid "Auditing {0}"
 msgstr ""
 
-#: files/system/usr/libexec/secureblue/audit_secureblue.py:988
+#: files/system/usr/libexec/secureblue/audit_secureblue.py:1014
 msgid "[Audit process interrupted. Exiting.]"
 msgstr ""
 
-#: files/system/usr/libexec/secureblue/audit_secureblue.py:1001
+#: files/system/usr/libexec/secureblue/audit_secureblue.py:1027
 msgid "Audit secureblue configuration for security"
 msgstr ""
 
-#: files/system/usr/libexec/secureblue/audit_secureblue.py:1005
+#: files/system/usr/libexec/secureblue/audit_secureblue.py:1031
 msgid "skip categories"
 msgstr ""
 
-#: files/system/usr/libexec/secureblue/audit_secureblue.py:1006
+#: files/system/usr/libexec/secureblue/audit_secureblue.py:1032
 msgid "display output as JSON"
 msgstr ""
 
-#: files/system/usr/libexec/secureblue/audit_secureblue.py:1010
+#: files/system/usr/libexec/secureblue/audit_secureblue.py:1036
 #, python-brace-format
 msgid "Valid arguments to {0} are: {1}"
 msgstr ""
 
-#: files/system/usr/libexec/secureblue/audit_secureblue.py:1018
+#: files/system/usr/libexec/secureblue/audit_secureblue.py:1044
 #, python-brace-format
 msgid "*** Error in check '{0}' ***"
 msgstr ""
 
-#: files/system/usr/libexec/secureblue/audit_secureblue.py:1020
+#: files/system/usr/libexec/secureblue/audit_secureblue.py:1046
 msgid "*** Continuing... ***"
 msgstr ""
 
-#: files/system/usr/libexec/secureblue/audit_secureblue.py:1023
+#: files/system/usr/libexec/secureblue/audit_secureblue.py:1049
 #, python-brace-format
 msgid "Use option '{0}' to skip flatpak recommendations."
 msgstr ""
 
-#: files/system/usr/libexec/secureblue/audit_secureblue.py:1026
+#: files/system/usr/libexec/secureblue/audit_secureblue.py:1052
 msgid "*** WARNING: Unexpected error occurred. ***"
 msgstr ""
 

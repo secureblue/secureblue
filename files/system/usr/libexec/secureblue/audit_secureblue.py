@@ -368,10 +368,12 @@ def audit_dns():
         if ":" not in line:
             continue
         key, value = line.split(":", 1)
-        flags[key.strip()] = value.strip() == "enabled"
-    global_dns = flags.get("Global DNS", False)
-    dnssec = flags.get("DNSSEC", False)
-    trivalent_doh = flags.get("Trivalent DoH", False)
+        flags[key.strip()] = value.strip()
+
+    global_dns = flags.get("Global DNS") == "enabled"
+    dnssec = flags.get("DNSSEC") == "enabled"
+    trivalent_doh = flags.get("Trivalent DoH") == "enabled"
+    unbound = flags.get("DNS Resolver") == "Unbound"
 
     recs = []
     warnings = []
@@ -393,7 +395,7 @@ def audit_dns():
         )
 
     # WARN
-    if not global_dns:
+    if unbound and not global_dns:
         status = WARN
         warnings.append(_("Secure global DNS is not configured."))
         recs.append(
@@ -408,7 +410,7 @@ def audit_dns():
         )
 
     # FAIL
-    if not dnssec:
+    if unbound and not dnssec:
         status = FAIL
         warnings.append(_("Local DNSSEC validation is disabled."))
         recs.append(
@@ -420,8 +422,23 @@ def audit_dns():
                 ]
             )
         )
+    if not unbound:
+        status = FAIL
+        warnings.append(_("The secure DNS resolver is not in use, possibly for a VPN."))
+        recs.append(
+            "\n".join(
+                [
+                    _(
+                        "If you use a VPN, consider using it with secure DNS. For instructions, see:"
+                    ),
+                    bold("https://secureblue.dev/faq#dns-vpn"),
+                    _("Otherwise, to view or reset your current DNS configuration, run:"),
+                    "$ ujust dns-selector",
+                ]
+            )
+        )
 
-    # Since we evaluate INFO -> WARN -> FAIL, put the most important ones first
+    # Since we evaluate INFO -> WARN -> FAIL, put the most important ones first.
     warnings.reverse()
     recs.reverse()
 

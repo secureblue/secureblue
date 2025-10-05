@@ -105,8 +105,39 @@ if echo "$CRYPT_DISK_INFO" | grep systemd-fido2 > /dev/null; then
 fi
 
 ## Run crypt enroll
+read -rp 'Do you wish to use fingerprint, rather than PIN, to authenticate? [y/N] ' fingerprint
+if [[ "$fingerprint" == [Yy]* ]]; then
+	echo 'Fingerprint authentication will be used.'
+	echo 'Please note that a password prompt will no longer be shown on boot,'
+	echo 'You are expected to plug in the device before the system boots.'
+	echo 'Otherwise, the system will prompt for a recovery key.'
+else
+	echo 'You will have to enter the PIN code of your FIDO key on boot.'
+fi
+
+echo ''
+
+echo 'The EdDSA algorithm is more efficient, but is not support by all FIDO keys.'
+read -rp 'Use alternative algorithm (EdDSA) for credential generation? [y/N] ' alternative_algorithm
+if [[ "$alternative_algorithm" == [Yy]* ]]; then
+	echo 'The EdDSA algorithm will be used.'
+else
+	echo 'Using the default ECDSA algorithm.'
+fi
+
+echo ''
+
 echo "Enrolling FIDO2 unlock requires your existing LUKS unlock password"
-systemd-cryptenroll --fido2-device=auto "$CRYPT_DISK"
+if [[ "$fingerprint" == [Yy]* && "$alternative_algorithm" == [Yy]* ]]; then
+	systemd-cryptenroll --fido2-device=auto --fido2-with-user-verification=yes --fido2-with-client-pin=no --fido2-credential-algorithm=eddsa "$CRYPT_DISK"
+elif [[ "$fingerprint" == [Yy]* ]]; then
+	systemd-cryptenroll --fido2-device=auto --fido2-with-user-verification=yes --fido2-with-client-pin=no "$CRYPT_DISK"
+elif [[ "$alternative_algorithm" == [Yy]* ]]; then
+	systemd-cryptenroll --fido2-device=auto --fido2-credential-algorithm=eddsa "$CRYPT_DISK"
+else
+	systemd-cryptenroll --fido2-device=auto "$CRYPT_DISK"
+fi
+
 cp /etc/crypttab /etc/crypttab.known-good
 sed -i --sandbox "s/UUID=$(echo "$RD_LUKS_UUID" | cut -c6-) none discard/UUID=$(echo "$RD_LUKS_UUID" | cut -c6-) none - fido2-device=auto - discard/" /etc/crypttab
 

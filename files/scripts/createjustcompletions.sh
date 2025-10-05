@@ -12,6 +12,12 @@
 # distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and limitations under the License.
 
-set -oue pipefail
+set -euo pipefail
 
-just --completions bash | sed -E 's/([\(_" ])just/\1ujust/g' > /usr/share/bash-completion/completions/ujust
+umask 022
+
+mkdir -p /usr/share/bash-completion/completions
+just --completions bash | sed -E 's/([\(_" ])just\>/\1ujust/g' > /usr/share/bash-completion/completions/ujust
+
+mkdir -p /usr/share/fish/vendor_completions.d
+just --completions fish | sed -E 's/([\(_" ])just\>/\1ujust/g' > /usr/share/fish/vendor_completions.d/ujust.fish

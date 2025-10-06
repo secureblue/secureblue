@@ -57,16 +57,13 @@ install-steam:
             echo "Disabling hardened_malloc for Steam."
             flatpak override --user --unset-env=LD_PRELOAD --nofilesystem=host-os com.valvesoftware.Steam
 
-            globalperms="$(flatpak override --user --show)"
-            if [[ "$globalperms" =~ (!network)|(!x11)|(!pulseaudio)|(!multiarch)|(!per-app-dev-shm) ]]; then
-                echo "" # spaced out to be more obvious and for ease of reading
-                echo "Granting Steam necessary permissions for basic functionality, including access to X11 and PulseAudio."
-                echo "This will override the flatpak-permissions-lockdown command, or any other global overrides."
-                echo "Note that to use controllers, you must additionally grant device=input."
-                echo "Games with anti-cheats will likely require granting allow=devel alongside running ujust toggle-anticheat-support."
-                flatpak override --user --share=network --socket=x11 --socket=pulseaudio --allow=multiarch --allow=per-app-dev-shm com.valvesoftware.Steam
-                echo ""
-            fi
+            echo "" # spaced out to be more obvious and for ease of reading
+            echo "Granting Steam necessary permissions for basic functionality, including access to X11 and PulseAudio."
+            echo "This will override the flatpak-permissions-lockdown command, or any other global overrides."
+            echo "Note that to use controllers, you must additionally grant device=input if it is globally denied."
+            echo "Games with anti-cheats will likely require granting allow=devel alongside running ujust toggle-anticheat-support."
+            flatpak override --user --share=network --socket=x11 --socket=pulseaudio --allow=multiarch --allow=per-app-dev-shm com.valvesoftware.Steam
+            echo ""
             ;;
         2)
             echo "Distrobox method selected."

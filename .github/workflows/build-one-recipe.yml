@@ -78,7 +78,7 @@ jobs:
       - name: Verify base image provenance
         shell: bash
         run: |
-          if [[ "$IMAGE_NAME" != *hardened* ]]; then
+          if [[ "$BASE_IMAGE_NAME" != *hardened* ]]; then
             echo "Base image isn't secureblue. Skipping."
             exit 0
           fi

@@ -5,7 +5,7 @@ labels: []
 assignees: []
 
 body:
-  - type: input
+  - type: textarea
     id: description
     attributes:      
       label: Description
@@ -14,7 +14,7 @@ body:
     validations:
       required: true
 
-  - type: input
+  - type: textarea
     id: reproduce
     attributes:      
       label: Reproduce
@@ -23,7 +23,7 @@ body:
     validations:
       required: true
 
-  - type: input
+  - type: textarea
     id: expected
     attributes:      
       label: Expected
@@ -32,7 +32,7 @@ body:
     validations:
       required: true
       
-  - type: input
+  - type: textarea
     id: actual
     attributes:      
       label: Actual

@@ -40,7 +40,7 @@ jobs:
         uses: step-security/harden-runner@f4a75cfd619ee5ce8d5b864b0d183aff3c69b55a # v2.13.1
         with:
           egress-policy: audit
-          
+
       - name: Optimize build times
         shell: bash
         run: |
@@ -74,6 +74,20 @@ jobs:
           echo "IMAGE_MAJOR_VERSION=$(grep '^image-version:' "./recipes/${RECIPE}" | sed 's/^image-version: //')" >> "${GITHUB_ENV}"
           BASE_IMAGE=$(grep '^base-image:' "./recipes/${RECIPE}" | sed 's/^base-image: //')
           echo "BASE_IMAGE_NAME=$(echo "${BASE_IMAGE}" | sed 's/.*\/.*\///')" >> "${GITHUB_ENV}"
+
+      - name: Verify base image provenance
+        shell: bash
+        run: |
+          if [[ "$BASE_IMAGE_NAME" != *hardened* ]]; then
+            echo "Base image isn't secureblue. Skipping."
+            exit 0
+          fi
+
+          go install github.com/slsa-framework/slsa-verifier/v2/cli/slsa-verifier@v2.7.1
+          go install github.com/google/go-containerregistry/cmd/crane@v0.20.6
+          echo "$HOME/go/bin" >> "$GITHUB_PATH"
+          DIGEST=$(crane digest "ghcr.io/secureblue/${BASE_IMAGE_NAME}:latest")
+          slsa-verifier verify-image --source-uri github.com/secureblue/secureblue ghcr.io/secureblue/${BASE_IMAGE_NAME}:latest@"${DIGEST}"
 
       - name: Install cosign
         uses: sigstore/cosign-installer@d7543c93d881b35a8faa02e8e3605f69b7a1ce62 # v3.10.0

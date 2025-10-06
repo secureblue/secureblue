@@ -75,7 +75,7 @@ jobs:
           BASE_IMAGE=$(grep '^base-image:' "./recipes/${RECIPE}" | sed 's/^base-image: //')
           echo "BASE_IMAGE_NAME=$(echo "${BASE_IMAGE}" | sed 's/.*\/.*\///')" >> "${GITHUB_ENV}"
 
-      - name: Install provenance verification deps
+      - name: Verify base image provenance
         shell: bash
         run: |
           if [[ "$BASE_IMAGE_NAME" != *hardened* ]]; then

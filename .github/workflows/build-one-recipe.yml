@@ -74,8 +74,8 @@ jobs:
           echo "IMAGE_MAJOR_VERSION=$(grep '^image-version:' "./recipes/${RECIPE}" | sed 's/^image-version: //')" >> "${GITHUB_ENV}"
           BASE_IMAGE=$(grep '^base-image:' "./recipes/${RECIPE}" | sed 's/^base-image: //')
           echo "BASE_IMAGE_NAME=$(echo "${BASE_IMAGE}" | sed 's/.*\/.*\///')" >> "${GITHUB_ENV}"
-
-      - name: Verify base image provenance
+          
+      - name: Install provenance verification deps
         shell: bash
         run: |
           if [[ "$BASE_IMAGE_NAME" != *hardened* ]]; then
@@ -86,6 +86,15 @@ jobs:
           go install github.com/slsa-framework/slsa-verifier/v2/cli/slsa-verifier@v2.7.1
           go install github.com/google/go-containerregistry/cmd/crane@v0.20.6
           echo "$HOME/go/bin" >> "$GITHUB_PATH"
+
+      - name: Verify base image provenance
+        shell: bash
+        run: |
+          if [[ "$BASE_IMAGE_NAME" != *hardened* ]]; then
+            echo "Base image isn't secureblue. Skipping."
+            exit 0
+          fi
+
           DIGEST=$(crane digest "ghcr.io/secureblue/${BASE_IMAGE_NAME}:latest")
           slsa-verifier verify-image --source-uri github.com/secureblue/secureblue ghcr.io/secureblue/${BASE_IMAGE_NAME}:latest@"${DIGEST}"
 

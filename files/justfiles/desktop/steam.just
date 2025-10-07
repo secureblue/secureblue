@@ -62,7 +62,7 @@ install-steam:
             echo "This will override the flatpak-permissions-lockdown command, or any other global overrides."
             echo "Note that to use controllers, you must additionally grant device=input if it is globally denied."
             echo "Games with anti-cheats will likely require granting allow=devel alongside running ujust toggle-anticheat-support."
-            flatpak override --user --share=network --socket=x11 --socket=pulseaudio --allow=multiarch --allow=per-app-dev-shm com.valvesoftware.Steam
+            flatpak override --user --share=network --share=ipc --socket=x11 --socket=pulseaudio --allow=multiarch --allow=per-app-dev-shm com.valvesoftware.Steam
             echo ""
             ;;
         2)

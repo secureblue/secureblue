@@ -83,6 +83,7 @@ def audit_kargs():
         "iommu.strict=1",
         "iommu=force",
         "kvm-intel.vmentry_l1d_flush=always",
+        "kvm.mitigate_smt_rsb=1",
         "l1d_flush=on",
         "l1tf=full,force",
         "lockdown=confidentiality",

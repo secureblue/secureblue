@@ -21,6 +21,7 @@ kargs = [
   "l1d_flush=on",
   "l1tf=full,force",
   "kvm-intel.vmentry_l1d_flush=always",
+  "ssbd=force-on",
   "loglevel=0",
   "rd.shell=0",
   "rd.emergency=halt"

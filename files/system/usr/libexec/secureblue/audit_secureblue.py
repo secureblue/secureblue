@@ -359,16 +359,32 @@ def audit_chronyd():
 def audit_dns():
     """Ensure system DNS resolution is active and secure."""
 
+    # Parse `ujust dns-selector status` output.
     status_out = command_stdout(
-        "/usr/bin/python3", "/usr/libexec/secureblue/dns_selector.py", "status", check=False
+        "/usr/bin/python3", "/usr/libexec/secureblue/dns_selector.py", "status"
     )
-
     flags = {}
     for line in status_out.splitlines():
         if ":" not in line:
             continue
         key, value = line.split(":", 1)
         flags[key.strip()] = value.strip()
+
+    # Check for Wireguard VPN use.
+    wg_out = command_stdout("/usr/bin/ip", "link", "show", "type", "wireguard")
+    has_wireguard = wg_out != ""
+
+    # For OpenVPN, we need to figure out whether the default route is via a TUN/TAP interface.
+    # Otherwise, we'd detect virtual networks, etc.
+    has_openvpn = False
+    route_out = command_stdout("/usr/bin/ip", "route", "show", "default")
+    tuntap_out = command_stdout("/usr/bin/ip", "tuntap", "list")
+    for tuntap in tuntap_out.splitlines():
+        # `ip tuntap list` has each interface on its own line, as "interface0: info1 info2".
+        tuntap_interface = tuntap.split(":", maxsplit=1)[0]
+        if f"dev {tuntap_interface}" in route_out:
+            has_openvpn = True
+            break
 
     global_dns = flags.get("Global DNS") == "enabled"
     dnssec = flags.get("DNSSEC") == "enabled"
@@ -408,6 +424,17 @@ def audit_dns():
                 ]
             )
         )
+    if not unbound:
+        status = WARN
+        warnings.append(_("The secure DNS resolver is not in use, possibly for a VPN."))
+        recs.append(
+            "\n".join(
+                [
+                    _("To view or reset your current DNS configuration, run:"),
+                    "$ ujust dns-selector",
+                ]
+            )
+        )
 
     # FAIL
     if unbound and not dnssec:
@@ -422,18 +449,14 @@ def audit_dns():
                 ]
             )
         )
-    if not unbound:
+    if unbound and not global_dns and (has_wireguard or has_openvpn):
         status = FAIL
-        warnings.append(_("The secure DNS resolver is not in use, possibly for a VPN."))
+        warnings.append(_("Using a VPN alongside Unbound without Global DNS may cause DNS leaks."))
         recs.append(
             "\n".join(
                 [
-                    _(
-                        "If you use a VPN, consider using it with secure DNS. For instructions, see:"
-                    ),
-                    bold("https://secureblue.dev/faq#dns-vpn"),
-                    _("Otherwise, to view or reset your current DNS configuration, run:"),
-                    "$ ujust dns-selector",
+                    _("If you use a VPN, switch your DNS resolver to systemd-resolved:"),
+                    "$ ujust dns-selector resolver resolved",
                 ]
             )
         )

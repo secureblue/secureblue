@@ -346,6 +346,15 @@ install-vpn:
     }
 
     # script start
+    echo 'Using a VPN is currently incompatible with global DNS or local DNSSEC resolution.'
+    echo 'If you are using Unbound, it will be disabled in favour of systemd-resolved.'
+    read -rp 'Do you want to continue? [y/N] ' proceed
+    if ! [[ "$proceed" == [yY]* ]]; then
+        echo 'Aborting...'
+        exit 0
+    fi
+    echo
+
     echo 'NOTE: You can also install wireguard profiles from your provider directly into your DE, if you prefer.'
     read -rp 'Do you want to continue? [y/N] ' proceed
     if ! [[ "$proceed" == [yY]* ]]; then
@@ -433,6 +442,21 @@ install-vpn:
             fi
         fi
     fi
+
+    # Switch DNS resolver to systemd-resolved if this isn't already set.
+    echo
+    /usr/libexec/secureblue/dns_selector.py status | while IFS=':' read -r key value; do
+        if [[ "$key" == "DNS Resolver" ]]; then
+            resolver=$(echo "$value" | tr -d " ")
+            if [[ "$resolver" == "systemd-resolved" ]]; then
+                echo 'DNS resolver is already systemd-resolved. Continuing...'
+            else
+                echo "Detected DNS resolver as $resolver".
+                echo 'Setting DNS resolver to systemd-resolved...'
+                /usr/libexec/secureblue/dns_selector.py resolver resolved > /dev/null
+            fi
+        fi
+    done
 
     echo
     echo 'Starting installation...'

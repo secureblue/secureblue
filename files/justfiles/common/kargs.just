@@ -73,6 +73,7 @@ set-kargs-hardening:
       --append-if-missing=l1tf=full,force \
       --append-if-missing=kvm-intel.vmentry_l1d_flush=always \
       --append-if-missing=kvm.mitigate_smt_rsb=1 \
+      --append-if-missing=ssbd=force-on \
       --append-if-missing=loglevel=0 \
       --append-if-missing=rd.shell=0 \
       --append-if-missing=rd.emergency=halt
@@ -111,6 +112,7 @@ remove-kargs-hardening:
       --delete-if-present="l1tf=full,force" \
       --delete-if-present="kvm-intel.vmentry_l1d_flush=always" \
       --delete-if-present="kvm.mitigate_smt_rsb=1" \
+      --delete-if-present="ssbd=force-on" \
       --delete-if-present="nosmt=force" \
       --delete-if-present="oops=panic" \
       --delete-if-present="loglevel=0" \

@@ -392,30 +392,29 @@ install-vpn:
     if [[ "$vpn_requirements" =~ "always_needs_xwayland" || "$vpn_requirements" =~ "gui_needs_xwayland" && "$needs_gui" == "1" ]]; then
         echo
 
-        DE="unknown"
+        DE='unknown'
         IMAGE="$(rpm-ostree status 2>&- | grep '●')"
-        if echo "$IMAGE" | grep -q 'silverblue'; then
-            DE="gnome"
-        elif echo "$IMAGE" | grep -q 'kinoite'; then
-            DE="plasma"
-        elif echo "$IMAGE" | grep -q 'sericea' || echo "$IMAGE" | grep 'sway'; then
-            DE=sway
-        fi
+        case "$IMAGE" in
+            *silverblue*) DE='gnome' ;;
+            *kinoite*) DE='plasma' ;;
+            *sericea*|*sway*) DE='sway' ;;
+        esac
 
-        xwayland_enabled="0"
-        if [[ "$DE" == "gnome" ]]; then
-            if ! test -e "/etc/systemd/user/org.gnome.Shell@wayland.service.d/override.conf"; then
-                xwayland_enabled="1"
-            fi
-        elif [[ "$DE" == "plasma" ]]; then
-            if ! test -e "/etc/systemd/user/plasma-kwin_wayland.service.d/override.conf"; then
-                xwayland_enabled="1"
-            fi
-        elif [[ "$DE" == "sway" ]]; then
-            if ! test -e "/etc/sway/config.d/99-noxwayland.conf"; then
-                xwayland_enabled="1"
-            fi
-        fi
+        xwayland_enabled=0
+        case "$DE" in
+            gnome)
+                if [[ ! -e '/etc/systemd/user/org.gnome.Shell@wayland.service.d/override.conf' ]]; then
+                    xwayland_enabled=1
+                fi ;;
+            plasma)
+                if [[ ! -e '/etc/systemd/user/plasma-kwin_wayland.service.d/override.conf' ]]; then
+                    xwayland_enabled=1
+                fi ;;
+            sway)
+                if [[ ! -e '/etc/sway/config.d/99-noxwayland.conf' ]]; then
+                    xwayland_enabled=1
+                fi ;;
+        esac
 
         if [[ "$DE" == "unknown" ]]; then
             echo 'Warning: Unable to identify your desktop environment. Please manually ensure that XWayland is enabled. Skipping...'

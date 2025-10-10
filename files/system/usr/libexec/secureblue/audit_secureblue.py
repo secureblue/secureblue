@@ -52,6 +52,7 @@ from utils import (
     get_flatpak_permissions,
     get_legend,
     get_width,
+    is_using_vpn,
     parse_config,
     print_err,
     validate_sysctl,
@@ -370,22 +371,6 @@ def audit_dns():
         key, value = line.split(":", 1)
         flags[key.strip()] = value.strip()
 
-    # Check for Wireguard VPN use.
-    wg_out = command_stdout("/usr/bin/ip", "link", "show", "type", "wireguard")
-    has_wireguard = wg_out != ""
-
-    # For OpenVPN, we need to figure out whether the default route is via a TUN/TAP interface.
-    # Otherwise, we'd detect virtual networks, etc.
-    has_openvpn = False
-    route_out = command_stdout("/usr/bin/ip", "route", "show", "default")
-    tuntap_out = command_stdout("/usr/bin/ip", "tuntap", "list")
-    for tuntap in tuntap_out.splitlines():
-        # `ip tuntap list` has each interface on its own line, as "interface0: info1 info2".
-        tuntap_interface = tuntap.split(":", maxsplit=1)[0]
-        if f"dev {tuntap_interface}" in route_out:
-            has_openvpn = True
-            break
-
     global_dns = flags.get("Global DNS") == "enabled"
     dnssec = flags.get("DNSSEC") == "enabled"
     trivalent_doh = flags.get("Trivalent DoH") == "enabled"
@@ -449,7 +434,7 @@ def audit_dns():
                 ]
             )
         )
-    if unbound and not global_dns and (has_wireguard or has_openvpn):
+    if unbound and not global_dns and is_using_vpn():
         status = FAIL
         warnings.append(_("Using a VPN alongside Unbound without Global DNS may cause DNS leaks."))
         recs.append(

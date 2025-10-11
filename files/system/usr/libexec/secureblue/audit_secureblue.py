@@ -169,7 +169,7 @@ def audit_signed_image(state):
     """Check that the secureblue image is signed."""
     ostree_status = command_stdout("rpm-ostree", "status", "--json")
     image_ref = json.loads(ostree_status)["deployments"][0]["container-image-reference"]
-    state["image"] = Image.from_image_ref(image_ref)
+     = Image.from_image_ref(image_ref)
     if image_ref.startswith("ostree-image-signed:"):
         status = PASS
         recs = None
@@ -361,8 +361,6 @@ def audit_dns():
     status_out = command_stdout(
         "/usr/bin/python3", "/usr/libexec/secureblue/dns_selector.py", "status"
     )
-    ostree_status = command_stdout("rpm-ostree", "status")
-    is_desktop = "securecore" not in ostree_status
 
     flags = {}
     for line in status_out.splitlines():
@@ -381,7 +379,7 @@ def audit_dns():
     status = PASS
 
     # INFO
-    if not trivalent_doh and is_desktop:
+    if not trivalent_doh and state["image"] != Image.COREOS:
         status = INFO
         warnings.append(_("DNS over HTTPS in Trivalent is disabled."))
         recs.append(
@@ -656,7 +654,7 @@ def audit_wheel():
 @depends_on("audit_signed_image")
 def audit_xwayland(state):
     """Check whether xwayland is disabled."""
-    match state["image"]:
+    match :
         case Image.SILVERBLUE:
             de = _("GNOME")
             path = "/etc/systemd/user/org.gnome.Shell@wayland.service.d/override.conf"

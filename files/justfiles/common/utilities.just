@@ -445,18 +445,19 @@ install-vpn:
 
     # Switch DNS resolver to systemd-resolved if this isn't already set.
     echo
-    /usr/libexec/secureblue/dns_selector.py status | while IFS=':' read -r key value; do
-        if [[ "$key" == "DNS Resolver" ]]; then
-            resolver=$(echo "$value" | tr -d " ")
-            if [[ "$resolver" == "systemd-resolved" ]]; then
-                echo 'DNS resolver is already systemd-resolved. Continuing...'
-            else
-                echo "Detected DNS resolver as $resolver".
-                echo 'Setting DNS resolver to systemd-resolved...'
-                /usr/libexec/secureblue/dns_selector.py resolver resolved > /dev/null
-            fi
-        fi
-    done
+    resolver=$(
+        /usr/libexec/secureblue/dns_selector.py status |
+        grep "^DNS Resolver:" |
+        cut -d ":" -f 2 |
+        tr -d " "
+    )
+    if [[ "$resolver" == "systemd-resolved" ]]; then
+        echo 'DNS resolver is already systemd-resolved. Continuing...'
+    else
+        echo "Detected DNS resolver as $resolver".
+        echo 'Setting DNS resolver to systemd-resolved...'
+        /usr/libexec/secureblue/dns_selector.py resolver resolved > /dev/null
+    fi
 
     echo
     echo 'Starting installation...'

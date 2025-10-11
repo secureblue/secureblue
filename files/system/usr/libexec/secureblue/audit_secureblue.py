@@ -84,6 +84,7 @@ def audit_kargs():
         "iommu.strict=1",
         "iommu=force",
         "kvm-intel.vmentry_l1d_flush=always",
+        "kvm.mitigate_smt_rsb=1",
         "l1d_flush=on",
         "l1tf=full,force",
         "lockdown=confidentiality",
@@ -100,6 +101,7 @@ def audit_kargs():
         "slab_nomerge",
         "spec_store_bypass_disable=on",
         "spectre_v2=on",
+        "ssbd=force-on",
         "vdso32=0",
         "vsyscall=none",
     )
@@ -139,17 +141,12 @@ def audit_kargs():
 @audit
 def audit_sysctl():
     """Check for sysctl overrides."""
-    sysctl_file = "/etc/sysctl.d/60-hardening.conf"
-    with open(f"/usr{sysctl_file}", encoding="utf-8") as f:
+    sysctl_file = "/usr/lib/sysctl.d/55-hardening.conf"
+    with open(sysctl_file, encoding="utf-8") as f:
         conf = f.readlines()
     sysctl_expected = parse_config(conf)
     status = PASS
     sysctl_errors = []
-    with open(sysctl_file, encoding="utf-8") as f:
-        etc_conf = f.readlines()
-    if conf != etc_conf:
-        status = WARN
-        sysctl_errors.append(_("The file {0} has been modified.").format(sysctl_file))
     for sysctl, expected in sysctl_expected.items():
         sysctl_path = f"/proc/sys/{sysctl.replace('.', '/')}"
         for path in glob.iglob(sysctl_path):

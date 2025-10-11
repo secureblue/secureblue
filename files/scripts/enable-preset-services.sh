@@ -14,12 +14,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-set -oue pipefail
+set -euo pipefail
 
-systemctl enable secureblue-migrate-dns.service
-
-# Sometimes /var/lib/unbound/root.key goes missing on CoreOS systems.
-# In that case, unbound-checkconf fails in anticipation of unbound-anchor
-# being unable to bootstrap. This service installs root.key if missing so that
-# dnsconfd-unbound can still work.
-systemctl enable secureblue-unbound-key.service
+# Enable all system or user services that are preset to be enabled.
+systemctl preset-all --preset-mode=enable-only
+systemctl --global preset-all --preset-mode=enable-only

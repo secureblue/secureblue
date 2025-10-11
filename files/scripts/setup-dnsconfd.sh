@@ -16,8 +16,6 @@
 
 set -oue pipefail
 
-systemctl enable dnsconfd.service
-
 # This is usually done by `dnsconfd config install`, which fails if
 # NetworkManager.service is not running. We imitate this by:
 # - installing /etc/NetworkManager/conf.d/dnsconfd.conf manually, which tells

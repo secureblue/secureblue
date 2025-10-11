@@ -23,7 +23,7 @@ modules:
         - hardenlogindefs.sh
         - hardened_malloc-pam.sh
         - disableresolved.sh
-        - enablednsconfd.sh
+        - setup-dnsconfd.sh
     - type: files
       files:
         - source: system/usr

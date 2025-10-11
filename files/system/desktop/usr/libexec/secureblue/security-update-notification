@@ -22,7 +22,7 @@ show-rpm-ostree-status() {
 	xdg-open "$tmpfile"
 }
 
-if [[ "$status"  =~ SecAdvisories:.*(moderate|important|critical) ]]; then
+if [[ "$status"  =~ SecAdvisories:.*(important|critical) ]]; then
 	case "$(notify-send --urgency=critical \
 		--app-name="secureblue" \
 		--action="Reboot" \
@@ -36,7 +36,7 @@ if [[ "$status"  =~ SecAdvisories:.*(moderate|important|critical) ]]; then
 				show-rpm-ostree-status ;;
 	esac
 
-elif [[ "$status"  =~ SecAdvisories:.*(unknown severity|low) ]]; then
+elif [[ "$status"  =~ SecAdvisories:.*(unknown severity|low|moderate) ]]; then
 	case "$(notify-send --urgency=normal \
 		--expire-time=5000 \
 		--app-name="secureblue" \

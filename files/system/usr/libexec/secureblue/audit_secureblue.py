@@ -354,6 +354,7 @@ def audit_chronyd():
 
 
 @audit
+@depends_on("audit_signed_image")
 def audit_dns(state):
     """Ensure system DNS resolution is active and secure."""
 

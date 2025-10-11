@@ -447,9 +447,7 @@ install-vpn:
     echo
     resolver=$(
         /usr/libexec/secureblue/dns_selector.py status |
-        grep "^DNS Resolver:" |
-        cut -d ":" -f 2 |
-        tr -d " "
+        sed -n 's/^DNS Resolver: //p'
     )
     if [[ "$resolver" == "systemd-resolved" ]]; then
         echo 'DNS resolver is already systemd-resolved. Continuing...'

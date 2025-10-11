@@ -361,6 +361,9 @@ def audit_dns():
     status_out = command_stdout(
         "/usr/bin/python3", "/usr/libexec/secureblue/dns_selector.py", "status"
     )
+    ostree_status = command_stdout("rpm-ostree", "status")
+    is_desktop = "securecore" not in ostree_status
+
     flags = {}
     for line in status_out.splitlines():
         if ":" not in line:
@@ -378,7 +381,7 @@ def audit_dns():
     status = PASS
 
     # INFO
-    if not trivalent_doh:
+    if not trivalent_doh and is_desktop:
         status = INFO
         warnings.append(_("DNS over HTTPS in Trivalent is disabled."))
         recs.append(

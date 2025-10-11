@@ -361,7 +361,6 @@ def audit_dns():
     status_out = command_stdout(
         "/usr/bin/python3", "/usr/libexec/secureblue/dns_selector.py", "status"
     )
-
     flags = {}
     for line in status_out.splitlines():
         if ":" not in line:

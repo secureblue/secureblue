@@ -354,7 +354,7 @@ def audit_chronyd():
 
 
 @audit
-def audit_dns():
+def audit_dns(state):
     """Ensure system DNS resolution is active and secure."""
 
     # Parse `ujust dns-selector status` output.

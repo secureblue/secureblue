@@ -22,8 +22,4 @@ scripts:
   - disablenfsdaemons.sh
   - disablesssd.sh
   - disableunconfinedrootfulservices.sh
-  - enableflatpakautoupdate.sh
   - fixupstreamicdloaderbug.sh
-  - enablesecurebluefirstrun.sh
-  - enablekeyverification.sh
-  - enablesecuritynotifications.sh

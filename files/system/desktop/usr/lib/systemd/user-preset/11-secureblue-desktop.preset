@@ -1,1 +1,5 @@
+enable flatpak-user-update.timer
+enable secureblue-flatpak-setup.timer
+enable secureblue-key-enrollment-verification.timer
+enable secureblue-update-verification.timer
 enable security-update-notification.path

@@ -1,5 +1,5 @@
 [Unit]
-Description=disable the KDE splash screen as it is broken without XWayland. See https://secureblue.dev/faq#kde-splash-disabled
+Description=Disable the KDE splash screen as it is broken without XWayland. See https://secureblue.dev/faq#kde-splash-disabled
 Before=dbus-broker.service
 ConditionUser=!@system
 
@@ -9,4 +9,4 @@ ExecCondition=/bin/bash -c '! cmp -s /etc/skel/.config/ksplashrc ~/.config/kspla
 ExecStart=/usr/libexec/secureblue/disablekdesplash
 
 [Install]
-WantedBy=multi-user.target dbus-broker.service
+WantedBy=default.target dbus-broker.service

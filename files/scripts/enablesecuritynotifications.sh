@@ -1,3 +1,5 @@
+#!/usr/bin/env bash
+
 # Copyright 2025 The Secureblue Authors
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -10,20 +12,6 @@
 # distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and limitations under the License.
 
-type: script
-scripts:
-  - removesudo.sh
-  - installandroidudev.sh
-  - disablecups.sh
-  - disablesshd.sh
-  - disableavahidaemon.sh
-  - disablealsastate.sh
-  - disablemodemmanager.sh
-  - disablenfsdaemons.sh
-  - disablesssd.sh
-  - disableunconfinedrootfulservices.sh
-  - enableflatpakautoupdate.sh
-  - fixupstreamicdloaderbug.sh
-  - enablesecurebluefirstrun.sh
-  - enablekeyverification.sh
-  - enablesecuritynotifications.sh
+set -euo pipefail
+
+systemctl --global enable security-update-notification.path

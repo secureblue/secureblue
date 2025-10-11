@@ -113,16 +113,17 @@ alias toggle-ptrace-scope := toggle-anticheat-support
 # Toggle anticheat support by changing ptrace scope (requires restart)
 toggle-anticheat-support:
     #! /bin/run0 /bin/bash
-    SYSCTL_HARDENING_FILE="/etc/sysctl.d/60-hardening.conf"
-    if grep -q '^kernel.yama.ptrace_scope = 3' "$SYSCTL_HARDENING_FILE"; then
-        sed -i 's/^kernel.yama.ptrace_scope =.*/kernel.yama.ptrace_scope = 1/' "$SYSCTL_HARDENING_FILE"
-        echo "Anticheat support enabled. ptrace_scope set to 1. Reboot to take effect."
-    elif grep -q 'kernel.yama.ptrace_scope = 1' "$SYSCTL_HARDENING_FILE"; then
-        sed -i 's/^kernel.yama.ptrace_scope =.*/kernel.yama.ptrace_scope = 3/' "$SYSCTL_HARDENING_FILE"
-        echo "Anticheat support disabled. ptrace_scope set back to 3. Reboot to take effect."
+    set -euo pipefail
+    sysctl_ptrace_file='/etc/sysctl.d/61-ptrace-scope.conf'
+    umask 022
+    if grep -q '^kernel.yama.ptrace_scope[[:blank:]]*=[[:blank:]]*1$' "$sysctl_ptrace_file" 2>/dev/null; then
+        echo 'kernel.yama.ptrace_scope = 3' > "$sysctl_ptrace_file"
+        echo 'Anticheat support disabled. ptrace_scope set back to 3.'
     else
-        echo "The sysctl hardening file is missing the ptrace_scope setting."
+        echo 'kernel.yama.ptrace_scope = 1' > "$sysctl_ptrace_file"
+        echo 'Anticheat support enabled. ptrace_scope set to 1. Reboot to take effect.'
     fi
+    sysctl -p "$sysctl_ptrace_file"
 
 # Toggle bash environment lockdown (mitigates LD_PRELOAD attacks). Use skip_approval to bypass initial prompt, and apply_for_all_users to bypass secondary prompt.
 toggle-bash-environment-lockdown skip_approval="false" apply_for_all_users="prompt":

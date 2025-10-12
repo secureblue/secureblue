@@ -41,6 +41,9 @@ jobs:
           - securecore/recipe-securecore-zfs-main.yml
           - securecore/recipe-securecore-zfs-nvidia-open.yml
           - securecore/recipe-securecore-zfs-nvidia.yml
+          - iot/recipe-iot-zfs-main.yml
+          - iot/recipe-iot-zfs-nvidia-open.yml
+          - iot/recipe-iot-zfs-nvidia.yml
     uses: ./.github/workflows/pr_build.yml
     with:
       recipe: ${{ matrix.recipe }}

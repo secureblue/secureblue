@@ -71,7 +71,10 @@ clean-system:
     #!/usr/bin/bash
     podman image prune -af
     podman volume prune -f
-    flatpak uninstall --unused
+    if command -v flatpak &> /dev/null
+    then
+        flatpak uninstall --unused
+    fi
     rpm-ostree cleanup -bm
 
 # Check for local overrides

@@ -1,0 +1,40 @@
+# SPDX-FileCopyrightText 2025 The Secureblue Authors
+# SPDX-License-Identifier: Apache-2.0 OR MIT
+
+[Unit]
+Description=Secureblue SELinux context update
+After=multi-user.target
+Wants=multi-user.target
+
+[Service]
+Type=oneshot
+ExecCondition=/usr/bin/sh -c 'version=$(cat /var/lib/secureblue-selinux-update.stamp 2>/dev/null); [ "$(( version ))" -lt 1 ]'
+ExecStart=/usr/libexec/secureblue/selinux-context-update
+ExecStartPost=/usr/bin/sh -c 'echo 1 > /var/lib/secureblue-selinux-update.stamp'
+
+ProtectSystem=full
+CapabilityBoundingSet=CAP_DAC_OVERRIDE
+DevicePolicy=closed
+LockPersonality=yes
+MemoryDenyWriteExecute=yes
+NoNewPrivileges=yes
+PrivateDevices=yes
+PrivateIPC=yes
+PrivateNetwork=yes
+ProcSubset=pid
+ProtectClock=yes
+ProtectControlGroups=yes
+ProtectHostname=yes
+ProtectKernelLogs=yes
+ProtectKernelModules=yes
+ProtectKernelTunables=yes
+PrivateTmp=yes
+RestrictAddressFamilies=AF_UNIX
+RestrictNamespaces=yes
+RestrictRealtime=yes
+RestrictSUIDSGID=yes
+SystemCallArchitectures=native
+SystemCallFilter=@system-service
+
+[Install]
+WantedBy=multi-user.target

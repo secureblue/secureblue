@@ -1,0 +1,10 @@
+#!/usr/bin/bash
+
+# SPDX-FileCopyrightText 2025 The Secureblue Authors
+# SPDX-License-Identifier: Apache-2.0 OR MIT
+
+set -euo pipefail
+
+# Restore SELinux contexts in /var that are affected by secureblue's changes to SELinux policy.
+/usr/bin/restorecon -R -i /var/lib/flatpak
+/usr/bin/restorecon -R -i /var/{home/*,roothome}/{.local/share/flatpak,.cache/flatpak,.var}

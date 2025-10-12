@@ -29,7 +29,6 @@ on:
       - 'recipes/**'
       - '!**nvidia**'
       - '!**zfs**'
-      - '!**iot**'
       - '!**.md'
 
 # Cancels running workflows if a new workflow run for

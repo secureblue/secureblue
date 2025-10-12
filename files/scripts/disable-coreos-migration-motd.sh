@@ -17,3 +17,4 @@
 set -euo pipefail
 
 systemctl disable coreos-container-signing-migration-motd.service
+systemctl mask coreos-container-signing-migration-motd.service

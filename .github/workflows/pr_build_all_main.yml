@@ -21,6 +21,7 @@ on:
       - staging
     paths:
       - 'cosign.pub'
+      - '.github/workflows/build-all.yml'
       - 'files/scripts/**'
       - 'files/system/kinoite/**'
       - 'files/system/sericea/**'

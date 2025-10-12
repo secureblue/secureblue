@@ -120,7 +120,7 @@ toggle-anticheat-support:
     # This is because ptrace_scope = 3 cannot be overridden.
     for conf_file in /etc/sysctl.d/*.conf; do
         if [[ "$conf_file" < "$sysctl_ptrace_file" ]]; then
-            sed -i -e '/^kernel.yama.ptrace_scope[[:blank:]]*=[[:blank:]]3/d' "$conf_file"
+            sed -i -e '/^kernel.yama.ptrace_scope[[:blank:]]*=[[:blank:]]*3/d' "$conf_file"
         fi
     done
     # Set the ptrace_scope value we want in 61-ptrace-scope.conf

@@ -354,7 +354,8 @@ def audit_chronyd():
 
 
 @audit
-def audit_dns():
+@depends_on("audit_signed_image")
+def audit_dns(state):
     """Ensure system DNS resolution is active and secure."""
 
     # Parse `ujust dns-selector status` output.
@@ -378,7 +379,7 @@ def audit_dns():
     status = PASS
 
     # INFO
-    if not trivalent_doh:
+    if not trivalent_doh and state["image"] != Image.COREOS:
         status = INFO
         warnings.append(_("DNS over HTTPS in Trivalent is disabled."))
         recs.append(

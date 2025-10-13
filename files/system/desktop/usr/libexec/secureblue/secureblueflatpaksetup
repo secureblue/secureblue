@@ -15,7 +15,7 @@
 set -euo pipefail
 
 in_progress_indicator=~/.cache/secureblue-flatpak-setup-in-progress
-if [ ! -f "$in_progress_indicator ]; then
+if [ ! -f "$in_progress_indicator" ]; then
     notify-send -a 'secureblue' -i 'dialog-information' -u normal 'Provisioning core flatpaks, please wait...'
 fi
 touch "$in_progress_indicator"

@@ -15,5 +15,6 @@
 set -oue pipefail
 
 echo "Disabling the modem manager"
-systemctl disable ModemManager
-systemctl mask ModemManager
+
+systemctl disable ModemManager.service
+systemctl mask ModemManager.service

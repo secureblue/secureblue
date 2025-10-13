@@ -14,8 +14,6 @@
 
 set -euo pipefail
 
-notify-send -a 'secureblue' -i 'dialog-information' -u normal 'Provisioning core flatpaks, please wait...'
-
 flatpak remote-add --if-not-exists --user --subset=verified --title='Flathub Verified' flathub-verified https://flathub.org/repo/flathub.flatpakrepo
 ujust harden-flatpak
 
@@ -29,4 +27,3 @@ if [[ "$IMAGE_REF_NAME" == *"silverblue"* ]]; then
     flatpak install --user -y --noninteractive flathub-verified io.github.flattool.Warehouse
 fi
 
-notify-send -a 'secureblue' -i 'dialog-information' -u normal 'Flatpak provisioning completed.'

@@ -67,6 +67,45 @@ jobs:
           BASE_IMAGE=$(grep '^base-image:' "./recipes/${RECIPE}" | sed 's/^base-image: //')
           echo "BASE_IMAGE_NAME=$(echo "$BASE_IMAGE" | sed 's/.*\/.*\///')" >> "$GITHUB_ENV"
 
+      - name: Verify base image provenance
+        shell: bash
+        run: |
+          if [[ "$BASE_IMAGE_NAME" != *hardened* ]]; then
+            echo "Base image isn't secureblue. Skipping."
+            exit 0
+          fi
+
+          go install github.com/slsa-framework/slsa-verifier/v2/cli/slsa-verifier@v2.7.1
+          go install github.com/google/go-containerregistry/cmd/crane@v0.20.6
+          DIGEST=$(~/go/bin/crane digest "ghcr.io/secureblue/${BASE_IMAGE_NAME}:latest")
+          ~/go/bin/slsa-verifier verify-image --source-uri github.com/secureblue/secureblue ghcr.io/secureblue/${BASE_IMAGE_NAME}:latest@"${DIGEST}"
+
+      - name: Install cosign
+        uses: sigstore/cosign-installer@d7543c93d881b35a8faa02e8e3605f69b7a1ce62 # v3.10.0
+        with:
+          cosign-release: 'v2.6.0'
+
+      - name: Verify base image
+        shell: bash
+        run: |
+          if [[ "$IMAGE_NAME" == *securecore* ]]; then
+            echo "Upstream isn't signed. Skipping."
+            exit 0
+          fi
+          
+          UPSTREAM_CONTAINER="${BASE_IMAGE_NAME}:${IMAGE_MAJOR_VERSION}"
+          if [[ "$IMAGE_NAME" != *nvidia* ]]; then
+            UPSTREAM_REGISTRY='quay.io/fedora-ostree-desktops'
+            UPSTREAM_PUBKEY='https://gitlab.com/fedora/ostree/ci-test/-/raw/main/quay.io-fedora-ostree-desktops.pub'
+          else
+            UPSTREAM_REGISTRY='ghcr.io/secureblue'
+            UPSTREAM_PUBKEY='https://raw.githubusercontent.com/secureblue/secureblue/refs/heads/live/cosign.pub'
+          fi
+          if ! cosign verify --key "${UPSTREAM_PUBKEY}" "${UPSTREAM_REGISTRY}/${UPSTREAM_CONTAINER}" | jq; then
+            echo "NOTICE: Verification failed. Please ensure your public key is correct."
+            exit 1
+          fi
+
       - name: Determine Vars
         id: build_vars
         shell: bash

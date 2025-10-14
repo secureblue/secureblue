@@ -116,14 +116,21 @@ toggle-anticheat-support:
     set -euo pipefail
     sysctl_ptrace_file='/etc/sysctl.d/61-ptrace-scope.conf'
     umask 022
+    # Remove ptrace_scope = 3 from any lexicographically earlier sysctl conf files.
+    # This is because ptrace_scope = 3 cannot be overridden.
+    for conf_file in /etc/sysctl.d/*.conf; do
+        if [[ "$conf_file" < "$sysctl_ptrace_file" ]]; then
+            sed -i -e '/^kernel.yama.ptrace_scope[[:blank:]]*=[[:blank:]]*3/d' "$conf_file"
+        fi
+    done
+    # Set the ptrace_scope value we want in 61-ptrace-scope.conf
     if grep -q '^kernel.yama.ptrace_scope[[:blank:]]*=[[:blank:]]*1$' "$sysctl_ptrace_file" 2>/dev/null; then
         echo 'kernel.yama.ptrace_scope = 3' > "$sysctl_ptrace_file"
-        echo 'Anticheat support disabled. ptrace_scope set back to 3.'
+        echo 'Anticheat support disabled. ptrace_scope set back to 3. Reboot to take effect.'
     else
         echo 'kernel.yama.ptrace_scope = 1' > "$sysctl_ptrace_file"
         echo 'Anticheat support enabled. ptrace_scope set to 1. Reboot to take effect.'
     fi
-    sysctl -p "$sysctl_ptrace_file"
 
 # Toggle bash environment lockdown (mitigates LD_PRELOAD attacks). Use skip_approval to bypass initial prompt, and apply_for_all_users to bypass secondary prompt.
 toggle-bash-environment-lockdown skip_approval="false" apply_for_all_users="prompt":

@@ -1,0 +1,51 @@
+enable flatpak-system-update.timer
+enable securebluecleanup.service
+
+# Disable NFS daemons
+disable gssproxy.service
+disable nfs-blkmap.service
+disable nfs-client.target
+disable nfs-idmapd.service
+disable nfs-mountd.service
+disable nfs-server.service
+disable nfs-utils.service
+disable nfsdcld.service
+disable rpc-gssd.service
+disable rpc-statd-notify.service
+disable rpc-statd.service
+disable rpc_pipefs.target
+disable rpcbind.service
+disable rpcbind.socket
+disable rpcbind.target
+
+# Disable sshd
+disable sshd.service
+disable sshd.socket
+disable sshd-unix-local.socket
+disable sshd-keygen.target
+
+# Disable unconfined rootful services
+disable low-memory-monitor.service
+disable thermald.service
+disable uresourced.service
+
+# Disable sssd
+disable sssd.service
+disable sssd-kcm.service
+disable sssd-kcm.socket
+
+# Disable alsa state daemon
+disable alsa-state.service
+
+# Disable avahi daemon
+disable avahi-daemon.service
+disable avahi-daemon.socket
+
+# Disable print services
+disable cups-browsed.service
+disable cups.path
+disable cups.service
+disable cups.socket
+
+# Disable modem manager
+disable ModemManager.service

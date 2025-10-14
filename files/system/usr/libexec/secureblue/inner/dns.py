@@ -175,6 +175,9 @@ def set_resolver(resolver: DNSResolver) -> None:
             SystemdService("unbound.socket").disable_now()
             SystemdService("unbound-control.socket").disable_now()
 
+            # If switching to systemd-resolved for a VPN, we don't want to carry
+            # over global DNS configuration.
+            NM_GLOBALDNS_CONF_PATH.unlink(missing_ok=True)
             DNSCONFD_MANAGER_PATH.unlink(missing_ok=True)
             # systemd-resolved is implicitly detected by NetworkManager based on
             # a resolv.conf symlink.

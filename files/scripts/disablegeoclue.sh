@@ -15,5 +15,5 @@
 set -oue pipefail
 
 echo "Disabling the location service"
-systemctl disable geoclue
-systemctl mask geoclue
+systemctl disable geoclue.service
+systemctl mask geoclue.service

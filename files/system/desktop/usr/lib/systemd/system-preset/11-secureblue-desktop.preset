@@ -1,2 +1,0 @@
-enable flatpak-system-update.timer
-enable securebluecleanup.service

@@ -15,26 +15,47 @@
 set -oue pipefail
 
 echo "Disabling NFS daemons"
-systemctl disable nfs-idmapd
-systemctl mask nfs-idmapd
 
-systemctl disable nfs-mountd
-systemctl mask nfs-mountd
+systemctl disable nfs-idmapd.service
+systemctl mask nfs-idmapd.service
 
-systemctl disable nfsdcld
-systemctl mask nfsdcld
+systemctl disable nfs-client.target
+systemctl mask nfs-client.target
 
-systemctl disable rpc-gssd
-systemctl mask rpc-gssd
+systemctl disable nfs-blkmap.service
+systemctl mask nfs-blkmap.service
 
-systemctl disable rpc-statd-notify
-systemctl mask rpc-statd-notify
+systemctl disable nfs-mountd.service
+systemctl mask nfs-mountd.service
 
-systemctl disable rpc-statd
-systemctl mask rpc-statd
+systemctl disable nfsdcld.service
+systemctl mask nfsdcld.service
 
-systemctl disable rpcbind
-systemctl mask rpcbind
+systemctl disable nfs-server.service
+systemctl mask nfs-server.service
 
-systemctl disable gssproxy
-systemctl mask gssproxy
+systemctl disable nfs-utils.service
+systemctl mask nfs-utils.service
+
+systemctl disable rpc-gssd.service
+systemctl mask rpc-gssd.service
+
+systemctl disable rpc-statd-notify.service
+systemctl mask rpc-statd-notify.service
+
+systemctl disable rpc-statd.service
+systemctl mask rpc-statd.service
+
+systemctl disable rpcbind.service
+systemctl mask rpcbind.service
+
+systemctl disable rpcbind.socket
+systemctl mask rpcbind.socket
+
+systemctl disable rpcbind.target
+systemctl mask rpcbind.target
+
+systemctl disable rpc_pipefs.target
+
+systemctl disable gssproxy.service
+systemctl mask gssproxy.service

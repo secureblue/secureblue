@@ -15,5 +15,5 @@
 set -oue pipefail
 
 echo "Disabling the alsa state daemon"
-systemctl disable alsa-state
-systemctl mask alsa-state
+systemctl disable alsa-state.service
+systemctl mask alsa-state.service

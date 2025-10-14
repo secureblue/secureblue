@@ -28,6 +28,19 @@ jobs:
       pull-requests: write  # needed to create pull request
 
     steps:
+      - name: Optimize build times
+        shell: bash
+        run: |
+          echo 'set man-db/auto-update false' | sudo debconf-communicate
+          sudo dpkg-reconfigure man-db
+          sudo rm -f /var/lib/man-db/auto-update
+          sudo sed -i 's/^update_initramfs=.*/update_initramfs=no/' /etc/initramfs-tools/update-initramfs.conf
+
+      - name: Install gettext
+        shell: bash
+        run: |
+          sudo apt-get install gettext
+
       - uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8  # v5.0.0
         with:
           persist-credentials: true  # zizmor: ignore[artipacked]

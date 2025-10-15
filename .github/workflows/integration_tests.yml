@@ -46,5 +46,6 @@ jobs:
             ./.github/workflows/integration_tests/check_cleanup.sh
             ./.github/workflows/integration_tests/check_flatpak_setup.sh
             ./.github/workflows/integration_tests/check_unbound_migration.sh
+            ./.github/workflows/integration_tests/validate_systemd_unit_files.sh
           data-files: |
             ./.github/workflows/integration_tests/expected-audit-silverblue-main-hardened.txt

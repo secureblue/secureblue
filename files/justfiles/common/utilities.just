@@ -15,6 +15,15 @@
 uid := `id -u`
 shell := `grep :$(id -u): /etc/passwd | cut -d: -f7`
 
+# Get name of currently booted image
+get-image-name:
+    #!/usr/bin/bash
+    set -euo pipefail
+    image_ref=$(rpm-ostree status --json --booted | jq -r '.deployments[0]."container-image-reference"')
+    image_name_with_tag="${image_ref##*/}"
+    image_name="${image_name_with_tag%:*}"
+    echo "${image_name}"
+
 # Boot into this device's BIOS/UEFI screen
 bios:
     #!/usr/bin/bash
@@ -49,13 +58,12 @@ enroll-secureblue-secure-boot-key:
 # Toggle display of the user-motd in terminal
 toggle-user-motd:
     #!/usr/bin/bash
-    if test -e "${HOME}/.config/no-show-user-motd"; then
-      rm -f "${HOME}/.config/no-show-user-motd"
+    set -euo pipefail
+    if [ -e ~/.config/no-show-user-motd ]; then
+      rm -f ~/.config/no-show-user-motd
     else
-      if test ! -d "${HOME}/.config"; then
-        mkdir "${HOME}/.config"
-      fi
-      touch "${HOME}/.config/no-show-user-motd"
+      mkdir -p ~/.config
+      touch ~/.config/no-show-user-motd
     fi
 
 # Update device firmware
@@ -404,30 +412,28 @@ install-vpn:
     if [[ "$vpn_requirements" =~ "always_needs_xwayland" || "$vpn_requirements" =~ "gui_needs_xwayland" && "$needs_gui" == "1" ]]; then
         echo
 
-        DE="unknown"
-        IMAGE="$(rpm-ostree status 2>&- | grep '●')"
-        if echo "$IMAGE" | grep -q 'silverblue'; then
-            DE="gnome"
-        elif echo "$IMAGE" | grep -q 'kinoite'; then
-            DE="plasma"
-        elif echo "$IMAGE" | grep -q 'sericea' || echo "$IMAGE" | grep 'sway'; then
-            DE=sway
-        fi
+        case "$(ujust get-image-name || echo 'unknown')" in
+            silverblue-*) DE='gnome' ;;
+            kinoite-*) DE='plasma' ;;
+            sericea-*) DE='sway' ;;
+            *) DE='unknown' ;;
+        esac
 
-        xwayland_enabled="0"
-        if [[ "$DE" == "gnome" ]]; then
-            if ! test -e "/etc/systemd/user/org.gnome.Shell@wayland.service.d/override.conf"; then
-                xwayland_enabled="1"
-            fi
-        elif [[ "$DE" == "plasma" ]]; then
-            if ! test -e "/etc/systemd/user/plasma-kwin_wayland.service.d/override.conf"; then
-                xwayland_enabled="1"
-            fi
-        elif [[ "$DE" == "sway" ]]; then
-            if ! test -e "/etc/sway/config.d/99-noxwayland.conf"; then
-                xwayland_enabled="1"
-            fi
-        fi
+        xwayland_enabled=0
+        case "$DE" in
+            gnome)
+                if ! [ -e "/etc/systemd/user/org.gnome.Shell@wayland.service.d/override.conf" ]; then
+                    xwayland_enabled="1"
+                fi ;;
+            plasma)
+                if ! [ -e "/etc/systemd/user/plasma-kwin_wayland.service.d/override.conf" ]; then
+                    xwayland_enabled="1"
+                fi ;;
+            sway)
+                if ! [ -e "/etc/sway/config.d/99-noxwayland.conf" ]; then
+                    xwayland_enabled="1"
+                fi ;;
+        esac
 
         if [[ "$DE" == "unknown" ]]; then
             echo 'Warning: Unable to identify your desktop environment. Please manually ensure that XWayland is enabled. Skipping...'

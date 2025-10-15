@@ -45,7 +45,7 @@ if ! systemctl --user is-enabled --quiet "${timer_name}"; then
 fi
 
 # Wait a few seconds to give the service time to start
-sleep 5
+sleep 20
 
 state=$(systemctl --user show "${service_name}" --property=ActiveState | sed 's/^ActiveState=//')
 
@@ -56,7 +56,7 @@ if [ -e "$HOME/.config/secureblue/secureblue-flatpak-setup.stamp" ]; then
 elif [ "${state}" = 'activating' ] || [ "${state}" = 'active' ]; then
     echo "${service_name} is currently running."
     # flathub-verified remote should be added first, so wait a few more seconds then test for it.
-    sleep 5
+    sleep 20
     check-flatpak-remotes
 elif [ "${state}" = 'failed' ]; then
     test-fail "${service_name} is in a failed state."

@@ -35,3 +35,4 @@ modules:
       - setserverdefaultzone.sh
       - removebrewjust.sh
       - removesuid.sh
+      - disable-coreos-migration-motd.sh

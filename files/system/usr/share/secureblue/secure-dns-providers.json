@@ -1,0 +1,178 @@
+{
+	"providers": [
+		{
+			"providerName": "Control D",
+			"providerDescription": "has content filtering, anycast",
+			"servers": [
+				{
+					"serverDescription": "No filtering",
+					"ipv4": [
+						"dns+tls://76.76.2.0#p0.freedns.controld.com",
+						"dns+tls://76.76.10.0#p0.freedns.controld.com"
+					],
+					"ipv6": [
+						"dns+tls://[2606:1a40::]#p0.freedns.controld.com",
+						"dns+tls://[2606:1a40:1::]#p0.freedns.controld.com"
+					],
+					"https": "https://freedns.controld.com/p0"
+				},
+				{
+					"serverDescription": "Blocks: Malware",
+					"ipv4": [
+						"dns+tls://76.76.2.1#p1.freedns.controld.com",
+						"dns+tls://76.76.10.1#p1.freedns.controld.com"
+					],
+					"ipv6": [
+						"dns+tls://[2606:1a40::1]#p1.freedns.controld.com",
+						"dns+tls://[2606:1a40:1::1]#p1.freedns.controld.com"
+					],
+					"https": "https://freedns.controld.com/p1"
+				},
+				{
+					"serverDescription": "Blocks: Malware + Ads & Tracking",
+					"ipv4": [
+						"dns+tls://76.76.2.2#p2.freedns.controld.com",
+						"dns+tls://76.76.10.2#p2.freedns.controld.com"
+					],
+					"ipv6": [
+						"dns+tls://[2606:1a40::2]#p2.freedns.controld.com",
+						"dns+tls://[2606:1a40:1::2]#p2.freedns.controld.com"
+					],
+					"https": "https://freedns.controld.com/p2"
+				},
+				{
+					"serverDescription": "Blocks: Malware + Ads & Tracking + Social Networks",
+					"ipv4": [
+						"dns+tls://76.76.2.3#p3.freedns.controld.com",
+						"dns+tls://76.76.10.3#p3.freedns.controld.com"
+					],
+					"ipv6": [
+						"dns+tls://[2606:1a40::3]#p3.freedns.controld.com",
+						"dns+tls://[2606:1a40:1::3]#p3.freedns.controld.com"
+					],
+					"https": "https://freedns.controld.com/p3"
+				},
+				{
+					"serverDescription": "Blocks: Malware + Ads & Tracking + Social Networks + Adult Content",
+					"ipv4": [
+						"dns+tls://76.76.2.4#family.freedns.controld.com",
+						"dns+tls://76.76.10.4#family.freedns.controld.com"
+					],
+					"ipv6": [
+						"dns+tls://[2606:1a40::4]#family.freedns.controld.com",
+						"dns+tls://[2606:1a40:1::4]#family.freedns.controld.com"
+					],
+					"https": "https://freedns.controld.com/family"
+				}
+			]
+		},
+		{
+			"providerName": "Mullvad",
+			"providerDescription": "has content filtering, anycast",
+			"servers": [
+				{
+					"serverDescription": "No filtering",
+					"ipv4": [
+						"dns+tls://194.242.2.2#dns.mullvad.net"
+					],
+					"ipv6": [
+						"dns+tls://[2a07:e340::2]#dns.mullvad.net"
+					],
+					"https": "https://dns.mullvad.net/dns-query"
+				},
+				{
+					"serverDescription": "Adblock: Blocks Ads & Tracking",
+					"ipv4": [
+						"dns+tls://194.242.2.3#adblock.dns.mullvad.net"
+					],
+					"ipv6": [
+						"dns+tls://[2a07:e340::3]#adblock.dns.mullvad.net"
+					],
+					"https": "https://adblock.dns.mullvad.net/dns-query"
+				},
+				{
+					"serverDescription": "Base: Blocks Ads & Tracking + Malware",
+					"ipv4": [
+						"dns+tls://194.242.2.4#base.dns.mullvad.net"
+					],
+					"ipv6": [
+						"dns+tls://[2a07:e340::4]#base.dns.mullvad.net"
+					],
+					"https": "https://base.dns.mullvad.net/dns-query"
+				},
+				{
+					"serverDescription": "Extended: Blocks Ads & Tracking + Malware + Social Networks",
+					"ipv4": [
+						"dns+tls://194.242.2.5#extended.dns.mullvad.net"
+					],
+					"ipv6": [
+						"dns+tls://[2a07:e340::5]#extended.dns.mullvad.net"
+					],
+					"https": "https://extended.dns.mullvad.net/dns-query"
+				},
+				{
+					"serverDescription": "Family: Blocks Ads & Tracking + Malware + Gambling & Adult Content",
+					"ipv4": [
+						"dns+tls://194.242.2.6#family.dns.mullvad.net"
+					],
+					"ipv6": [
+						"dns+tls://[2a07:e340::6]#family.dns.mullvad.net"
+					],
+					"https": "https://family.dns.mullvad.net/dns-query"
+				},
+				{
+					"serverDescription": "All: Blocks Ads & Tracking + Malware + Gambling & Adult Content + Social Networks",
+					"ipv4": [
+						"dns+tls://194.242.2.9#all.dns.mullvad.net"
+					],
+					"ipv6": [
+						"dns+tls://[2a07:e340::9]#all.dns.mullvad.net"
+					],
+					"https": "https://all.dns.mullvad.net/dns-query"
+				}
+			]
+		},
+		{
+			"providerName": "Cloudflare",
+			"providerDescription": "very fast with some data collection, anycast",
+			"servers": [
+				{
+					"serverDescription": "No filtering",
+					"ipv4": [
+						"dns+tls://1.1.1.1#cloudflare-dns.com",
+						"dns+tls://1.0.0.1#cloudflare-dns.com"
+					],
+					"ipv6": [
+						"dns+tls://[2606:4700:4700::1111]#cloudflare-dns.com",
+						"dns+tls://[2606:4700:4700::1001]#cloudflare-dns.com"
+					],
+					"https": "https://cloudflare-dns.com/dns-query"
+				},
+				{
+					"serverDescription": "Security: Block Malware",
+					"ipv4": [
+						"dns+tls://1.1.1.2#security.cloudflare-dns.com",
+						"dns+tls://1.0.0.2#security.cloudflare-dns.com"
+					],
+					"ipv6": [
+						"dns+tls://[2606:4700:4700::1112]#security.cloudflare-dns.com",
+						"dns+tls://[2606:4700:4700::1002]#security.cloudflare-dns.com"
+					],
+					"https": "https://security.cloudflare-dns.com/dns-query"
+				},
+				{
+					"serverDescription": "Family: Block Malware + Adult Content",
+					"ipv4": [
+						"dns+tls://1.1.1.3#family.cloudflare-dns.com",
+						"dns+tls://1.0.0.3#family.cloudflare-dns.com"
+					],
+					"ipv6": [
+						"dns+tls://[2606:4700:4700::1113]#family.cloudflare-dns.com",
+						"dns+tls://[2606:4700:4700::1003]#family.cloudflare-dns.com"
+					],
+					"https": "https://family.cloudflare-dns.com/dns-query"
+				}
+			]
+		}
+	]
+}

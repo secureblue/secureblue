@@ -37,6 +37,5 @@ modules:
       - kinoite.just
   - type: script
     scripts:
-      - enabledisablekdesplash.sh
       - setdefaultkdewallpapers.sh
       - systemsettings-standard-malloc.sh

@@ -20,3 +20,7 @@ modules:
         mount:
           type: file
           destination: /tmp/certs/private_key.priv
+  - type: files
+    files:
+      - source: system/zfs
+        destination: /

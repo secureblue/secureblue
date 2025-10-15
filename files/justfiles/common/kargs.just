@@ -39,16 +39,24 @@ set-kargs-hardening:
     else
         echo "Not setting unstable hardening kargs."
     fi
+    # Check for secure boot support, required for some drivers. (e.g. WiFi on some macbooks, plus there would be no way to verify these anyways.)
+    SB_OUTPUT=$(mokutil --sb-state 2>&1)
+    if [[ "$SB_OUTPUT" == "This system doesn't support Secure Boot" ]] || \
+    [[ "$SB_OUTPUT" == *"EFI variables are not supported"* ]]; then
+        echo "Secure Boot not supported. Skipping module signature enforcement."
+        SECUREBOOT_KARGS="--append-if-missing=module.sig_enforce=0"
+    else
+        SECUREBOOT_KARGS="--append-if-missing=module.sig_enforce=1"
+    fi
     echo "Applying boot parameters..."
     rpm-ostree kargs \
-      ${UNSTABLE_YES:+$UNSTABLE_YES} ${IAEMU_NO:+$IAEMU_NO} ${NOSMT_YES:+$NOSMT_YES} \
+      ${UNSTABLE_YES:+$UNSTABLE_YES} ${IAEMU_NO:+$IAEMU_NO} ${NOSMT_YES:+$NOSMT_YES} ${SECUREBOOT_KARGS:+$SECUREBOOT_KARGS} \
       --append-if-missing=init_on_alloc=1 \
       --append-if-missing=init_on_free=1 \
       --append-if-missing=slab_nomerge \
       --append-if-missing=page_alloc.shuffle=1 \
       --append-if-missing=randomize_kstack_offset=on \
       --append-if-missing=vsyscall=none \
-      --append-if-missing=lockdown=confidentiality \
       --append-if-missing=random.trust_cpu=off \
       --append-if-missing=random.trust_bootloader=off \
       --append-if-missing=iommu=force \
@@ -56,13 +64,16 @@ set-kargs-hardening:
       --append-if-missing=iommu.passthrough=0 \
       --append-if-missing=iommu.strict=1 \
       --append-if-missing=pti=on \
-      --append-if-missing=module.sig_enforce=1 \
+      --append-if-missing=vdso32=0 \
+      --append-if-missing=lockdown=confidentiality \
       --append-if-missing=mitigations=auto,nosmt \
       --append-if-missing=spectre_v2=on \
       --append-if-missing=spec_store_bypass_disable=on \
       --append-if-missing=l1d_flush=on \
       --append-if-missing=l1tf=full,force \
       --append-if-missing=kvm-intel.vmentry_l1d_flush=always \
+      --append-if-missing=kvm.mitigate_smt_rsb=1 \
+      --append-if-missing=ssbd=force-on \
       --append-if-missing=loglevel=0 \
       --append-if-missing=rd.shell=0 \
       --append-if-missing=rd.emergency=halt
@@ -88,6 +99,7 @@ remove-kargs-hardening:
       --delete-if-present="iommu.passthrough=0" \
       --delete-if-present="iommu.strict=1" \
       --delete-if-present="pti=on" \
+      --delete-if-present="vdso32=0" \
       --delete-if-present="module.sig_enforce=1" \
       --delete-if-present="mitigations=auto,nosmt" \
       --delete-if-present="efi=disable_early_pci_dma" \
@@ -99,6 +111,8 @@ remove-kargs-hardening:
       --delete-if-present="ia32_emulation=0" \
       --delete-if-present="l1tf=full,force" \
       --delete-if-present="kvm-intel.vmentry_l1d_flush=always" \
+      --delete-if-present="kvm.mitigate_smt_rsb=1" \
+      --delete-if-present="ssbd=force-on" \
       --delete-if-present="nosmt=force" \
       --delete-if-present="oops=panic" \
       --delete-if-present="loglevel=0" \

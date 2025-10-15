@@ -1,0 +1,62 @@
+# Copyright 2025 The Secureblue Authors
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software distributed under the License is
+# distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and limitations under the License.
+
+name: verify-provenance
+permissions: {}
+on:
+  schedule:
+    - cron: "00 7 * * *" # run at 7:00 UTC every day
+
+  workflow_dispatch:
+jobs:
+  verify-provenance:
+    name: Verify provenance
+    if: github.triggering_actor == 'royaloughtness' || github.event_name == 'schedule'
+    runs-on: ubuntu-24.04
+    permissions:
+      packages: read # needed to pull images
+    steps:
+      - name: Install deps
+        shell: bash
+        run: |
+          go install github.com/slsa-framework/slsa-verifier/v2/cli/slsa-verifier@v2.7.1
+          go install github.com/google/go-containerregistry/cmd/crane@v0.20.6
+          echo "$HOME/go/bin" >> "$GITHUB_PATH"
+
+      - name: Verify provenance
+        shell: bash
+        run: |
+          IMAGES=(
+            silverblue-main-hardened
+            silverblue-nvidia-hardened
+            silverblue-nvidia-open-hardened
+            kinoite-main-hardened
+            kinoite-nvidia-hardened
+            kinoite-nvidia-open-hardened
+            sericea-main-hardened
+            sericea-nvidia-hardened
+            sericea-nvidia-open-hardened
+            cosmic-main-hardened
+            cosmic-nvidia-hardened
+            cosmic-nvidia-open-hardened
+            securecore-main-hardened
+            securecore-nvidia-hardened
+            securecore-nvidia-open-hardened
+            securecore-zfs-main-hardened
+            securecore-zfs-nvidia-hardened
+            securecore-zfs-nvidia-open-hardened
+          )
+
+          for IMAGE in "${IMAGES[@]}"; do
+            DIGEST=$(crane digest "ghcr.io/secureblue/${IMAGE}:latest")
+            slsa-verifier verify-image --source-uri github.com/secureblue/secureblue ghcr.io/secureblue/${IMAGE}:latest@"${DIGEST}"
+          done

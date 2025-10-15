@@ -19,7 +19,10 @@ shell := `grep :$(id -u): /etc/passwd | cut -d: -f7`
 bios:
     #!/usr/bin/bash
     if [ -d /sys/firmware/efi ]; then
-      systemctl reboot --firmware-setup
+      read -rp 'The system will reboot into UEFI firmware settings. Proceed? (y/N) ' proceed
+      if [[ "$proceed" == [Yy]* ]]; then
+        systemctl reboot --firmware-setup
+      fi
     else
       echo "Rebooting to legacy BIOS from OS is not supported."
     fi
@@ -68,7 +71,10 @@ clean-system:
     #!/usr/bin/bash
     podman image prune -af
     podman volume prune -f
-    flatpak uninstall --unused
+    if command -v flatpak &> /dev/null
+    then
+        flatpak uninstall --unused
+    fi
     rpm-ostree cleanup -bm
 
 # Check for local overrides
@@ -198,15 +204,11 @@ rebase-secureblue:
 label-external-drives:
     #!/usr/bin/bash
     set -euo pipefail
-    media_path="/run/media/$USER/"
+    media_paths=("/run/media/$USER/" "/mnt/")
     selabel="user_home_t"
     supported_fs=("ext2" "ext3" "ext4" "jfs" "xfs" "btrfs") # ref: https://wiki.gentoo.org/wiki/SELinux/FAQ#Can_I_use_SELinux_with_any_file_system.3F
 
-    if [ -z "$( ls -A "$media_path" 2>&- )" ]; then
-        echo "You don't have any drives mounted in \"$media_path\", aborting."
-        exit 0
-    fi
-    echo "Warning: This will label your drives mounted on \"$media_path\" such that they are treated as an extension to your home directory. (You can select which ones to label)"
+    echo "Warning: This will label your drives mounted on paths $(printf '"%s" and ' "${media_paths[@]}" | sed 's/ and $//') such that they are treated as an extension to your home directory. (You can select which ones to label)"
     echo 'If you do not want Trivalent to have access to these drives, do not proceed.'
     read -rp 'Are you sure you want to do this? [y/N] ' warning_proceed
     if ! [[ "$warning_proceed" == [Yy]* ]]; then
@@ -214,33 +216,37 @@ label-external-drives:
         exit 0
     fi
 
-    for dir in "$media_path"*/
-    do
-        echo
-        if [[ "$dir" =~ "'" ]]; then
-            echo "WARNING: Single quotes in drive labels are forbidden to avoid command execution, skipping drive \"$dir\"..."
+    for media_path in "${media_paths[@]}"; do
+        if [ -z "$( ls -A "$media_path" 2>&- )" ]; then
+            echo
+            echo "You don't have any drives mounted in \"$media_path\", skipping..."
             continue
         fi
-        if [[ "$(stat -c '%U' "$dir")" != "$USER" ]]; then
-            echo "Drive root folder is not owned by you, skipping drive \"$dir\"..."
-            continue
-        fi
-        detected_fs="$(df -T "$dir" | awk '{print $2}' | sed -n 2p)"
-        if ! printf "%s\n" "${supported_fs[@]}" | grep -Fxq "$detected_fs"; then
-            echo "SELinux support is unknown for filesystem $detected_fs, skipping drive \"$dir\"..."
-            continue
-        fi
-        read -rp "Do you want to label \"$dir\"? [y/N] " proceed
-        if ! [[ "$proceed" == [Yy]* ]]; then
-            echo 'Skipping...'
-            continue
-        fi
-        echo "Labeling drive mounted on \"$dir\" with $selabel"
-        dir=${dir%*/} # remove trailing slash
-        if ! run0 sh -c "semanage fcontext -a -t $selabel '$dir(/.*)?' && restorecon -r '$dir'"; then
-            echo 'Execution failed, aborting.'
-            exit 1
-        fi
+
+        for dir in "$media_path"*/
+        do
+            echo
+            if [[ "$(stat -c '%U' "$dir")" != "$USER" ]]; then
+                echo "Drive root folder is not owned by you, skipping drive \"$dir\"..."
+                continue
+            fi
+            detected_fs="$(df -T "$dir" | awk '{print $2}' | sed -n 2p)"
+            if ! printf "%s\n" "${supported_fs[@]}" | grep -Fxq "$detected_fs"; then
+                echo "SELinux support is unknown for filesystem $detected_fs, skipping drive \"$dir\"..."
+                continue
+            fi
+            read -rp "Do you want to label \"$dir\"? [y/N] " proceed
+            if ! [[ "$proceed" == [Yy]* ]]; then
+                echo 'Skipping...'
+                continue
+            fi
+            echo "Labeling drive mounted on \"$dir\" with $selabel"
+            dir=${dir%*/} # remove trailing slash
+            if ! run0 sh -c 'semanage fcontext -a -t "$1" "$2(/.*)?" && restorecon -r "$2"' sh "$selabel" "$dir"; then
+                echo 'Execution failed, aborting.'
+                exit 1
+            fi
+        done
     done
 
     echo -e '\nDone.'
@@ -271,14 +277,14 @@ install-vpn:
     # ref: https://protonvpn.com/support/en/official-linux-vpn-fedora
     function install_vpn() {
         local INSTRUCTIONS
-        local PACKAGE_NAME
+        local PACKAGE_NAMES
         local REPO_NAME
         case "$1" in
             "ivpn")
-                PACKAGE_NAME="ivpn"
-                REPO_NAME="$PACKAGE_NAME"
+                PACKAGE_NAMES="ivpn"
+                REPO_NAME="$PACKAGE_NAMES"
 
-                if util_checkpackage "$PACKAGE_NAME" || util_checkpackage "$PACKAGE_NAME-ui"; then
+                if util_checkpackage "$PACKAGE_NAMES" || util_checkpackage "$PACKAGE_NAMES-ui"; then
                     echo 'Error: IVPN is already installed.'
                     echo 'Aborting...'
                     exit 1
@@ -288,16 +294,16 @@ install-vpn:
                 local proceed2
                 read -rp 'Do you want the IVPN GUI to be installed? [Y/n] ' proceed2
                 if ! [[ "$proceed2" == [nN]* ]]; then
-                    PACKAGE_NAME="$PACKAGE_NAME $PACKAGE_NAME-ui"
+                    PACKAGE_NAMES="$PACKAGE_NAMES $PACKAGE_NAMES-ui"
                 fi
                 INSTRUCTIONS='Successfully installed IVPN. Please execute the command "systemctl enable --now ivpn-service" after rebooting.'
                 ;;
 
             "mullvad")
-                PACKAGE_NAME="mullvad-vpn"
+                PACKAGE_NAMES="mullvad-vpn"
                 REPO_NAME="mullvad"
 
-                if util_checkpackage "$PACKAGE_NAME"; then
+                if util_checkpackage "$PACKAGE_NAMES"; then
                     echo 'Error: Mullvad VPN is already installed.'
                     echo 'Aborting...'
                     exit 1
@@ -308,10 +314,10 @@ install-vpn:
                 ;;
 
             "proton")
-                PACKAGE_NAME="proton-vpn-gnome-desktop"
+                PACKAGE_NAMES="proton-vpn-gnome-desktop"
                 REPO_NAME="protonvpn-stable"
 
-                if util_checkpackage "$PACKAGE_NAME"; then
+                if util_checkpackage "$PACKAGE_NAMES"; then
                     echo 'Error: Proton VPN is already installed.'
                     echo 'Aborting...'
                     exit 1
@@ -327,7 +333,9 @@ install-vpn:
                 ;;
         esac
 
-        if ! run0 sh -c 'sed -Ei "s/^enabled ?=.*/enabled=1/" "/etc/yum.repos.d/$1.repo" && rpm-ostree install --assumeyes "$2"' sh "$REPO_NAME" "$PACKAGE_NAME"; then
+        # The lack of quotes around $2 is intentional.
+        # shellcheck disable=SC2086
+        if ! run0 sh -c 'sed -Ei "s/^enabled[[:space:]]*=.*/enabled=1/" "/etc/yum.repos.d/$1.repo" && rpm-ostree install -y $2' sh "$REPO_NAME" "$PACKAGE_NAMES"; then
             echo "Error: The installation didn't complete successfully, aborting..."
             exit 1
         fi
@@ -341,6 +349,15 @@ install-vpn:
     }
 
     # script start
+    echo 'Using a VPN is currently incompatible with global DNS or local DNSSEC resolution.'
+    echo 'If you are using Unbound, it will be disabled in favour of systemd-resolved.'
+    read -rp 'Do you want to continue? [y/N] ' proceed
+    if ! [[ "$proceed" == [yY]* ]]; then
+        echo 'Aborting...'
+        exit 0
+    fi
+    echo
+
     echo 'NOTE: You can also install wireguard profiles from your provider directly into your DE, if you prefer.'
     read -rp 'Do you want to continue? [y/N] ' proceed
     if ! [[ "$proceed" == [yY]* ]]; then
@@ -429,6 +446,20 @@ install-vpn:
         fi
     fi
 
+    # Switch DNS resolver to systemd-resolved if this isn't already set.
+    echo
+    resolver=$(
+        /usr/libexec/secureblue/dns_selector.py status |
+        sed -n 's/^DNS Resolver: //p'
+    )
+    if [[ "$resolver" == "systemd-resolved" ]]; then
+        echo 'DNS resolver is already systemd-resolved. Continuing...'
+    else
+        echo "Detected DNS resolver as $resolver".
+        echo 'Setting DNS resolver to systemd-resolved...'
+        /usr/libexec/secureblue/dns_selector.py resolver resolved > /dev/null
+    fi
+
     echo
     echo 'Starting installation...'
     install_vpn "$vpn_choice"
@@ -454,3 +485,19 @@ setup-usbguard:
     if ! rpm-ostree status | grep '●' | grep -q 'securecore'; then
         systemctl enable --user --now usbguard-notifier.service
     fi
+
+# Create the admin user and remove wheel from the normal user
+create-admin:
+    #!/usr/bin/run0 /usr/bin/bash
+    set -euo pipefail
+    if id "admin" &>/dev/null; then
+        echo "Error: You already have a user account named admin."
+        echo "This is normal if you have already run this script."
+        echo "If you named your user account admin during installation, you will not be able to use this script."
+        exit 1
+    fi
+    useradd -G wheel admin
+    echo "Please set a new password for the admin user."
+    passwd admin
+    gpasswd -d "${SUDO_USER}" wheel
+    echo "New admin user has been created, please reboot to apply changes."

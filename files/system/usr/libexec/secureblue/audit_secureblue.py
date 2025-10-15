@@ -52,6 +52,7 @@ from utils import (
     get_flatpak_permissions,
     get_legend,
     get_width,
+    is_using_vpn,
     parse_config,
     print_err,
     validate_sysctl,
@@ -83,6 +84,7 @@ def audit_kargs():
         "iommu.strict=1",
         "iommu=force",
         "kvm-intel.vmentry_l1d_flush=always",
+        "kvm.mitigate_smt_rsb=1",
         "l1d_flush=on",
         "l1tf=full,force",
         "lockdown=confidentiality",
@@ -99,6 +101,8 @@ def audit_kargs():
         "slab_nomerge",
         "spec_store_bypass_disable=on",
         "spectre_v2=on",
+        "ssbd=force-on",
+        "vdso32=0",
         "vsyscall=none",
     )
     for karg in kargs_expected:
@@ -137,17 +141,12 @@ def audit_kargs():
 @audit
 def audit_sysctl():
     """Check for sysctl overrides."""
-    sysctl_file = "/etc/sysctl.d/60-hardening.conf"
-    with open(f"/usr{sysctl_file}", encoding="utf-8") as f:
+    sysctl_file = "/usr/lib/sysctl.d/55-hardening.conf"
+    with open(sysctl_file, encoding="utf-8") as f:
         conf = f.readlines()
     sysctl_expected = parse_config(conf)
     status = PASS
     sysctl_errors = []
-    with open(sysctl_file, encoding="utf-8") as f:
-        etc_conf = f.readlines()
-    if conf != etc_conf:
-        status = WARN
-        sysctl_errors.append(_("The file {0} has been modified.").format(sysctl_file))
     for sysctl, expected in sysctl_expected.items():
         sysctl_path = f"/proc/sys/{sysctl.replace('.', '/')}"
         for path in glob.iglob(sysctl_path):
@@ -355,52 +354,103 @@ def audit_chronyd():
 
 
 @audit
-def audit_dns():
+@depends_on("audit_signed_image")
+def audit_dns(state):
     """Ensure system DNS resolution is active and secure."""
-    rec = None
-    warning = None
-    if command_succeeds("systemctl", "is-active", "--quiet", "systemd-resolved"):
-        dnssec = None
-        dot = None
-        conf_path = "/etc/systemd/resolved.conf.d/10-securedns.conf"
-        fail_msg = _("System DNS resolution is not secure.")
-        try:
-            with open(conf_path, encoding="utf-8") as f:
-                config = parse_config(f)
-                dnssec = config.get("DNSSEC")
-                dot = config.get("DNSOverTLS")
-        except FileNotFoundError:
-            status = FAIL
-        except PermissionError:
-            status = UNKNOWN
-            warning = _("Unable to read file {0}.").format(conf_path)
-        else:
-            if dnssec == "true" and dot == "true":
-                status = PASS
-            elif dot == "opportunistic":
-                status = WARN
-                fail_msg = _(
-                    "System DNS resolution is not secure (opportunistic DNS-over-TLS only)."
-                )
-            else:
-                status = FAIL
-        if status in (WARN, FAIL):
-            rec_lines = (
-                fail_msg,
-                _("To select a secure resolver, run:"),
-                "$ ujust dns-selector",
-                _("If you are using a VPN, you may want to disregard this recommendation."),
+
+    # Parse `ujust dns-selector status` output.
+    status_out = command_stdout(
+        "/usr/bin/python3", "/usr/libexec/secureblue/dns_selector.py", "status"
+    )
+    flags = {}
+    for line in status_out.splitlines():
+        if ":" not in line:
+            continue
+        key, value = line.split(":", 1)
+        flags[key.strip()] = value.strip()
+
+    global_dns = flags.get("Global DNS") == "enabled"
+    dnssec = flags.get("DNSSEC") == "enabled"
+    trivalent_doh = flags.get("Trivalent DoH") == "enabled"
+    unbound = flags.get("DNS Resolver") == "Unbound"
+
+    recs = []
+    warnings = []
+    status = PASS
+
+    # INFO
+    if not trivalent_doh and state["image"] != Image.COREOS:
+        status = INFO
+        warnings.append(_("DNS over HTTPS in Trivalent is disabled."))
+        recs.append(
+            "\n".join(
+                [
+                    _("Consider using DNS over HTTPS in Trivalent to hide queries."),
+                    _("However, if you use a VPN, this may cause DNS leaks."),
+                    _("To enable it, run:"),
+                    "$ ujust dns-selector",
+                ]
             )
-            rec = "\n".join(rec_lines)
-    else:
-        status = FAIL
-        rec_lines = (
-            _("{0} is inactive.").format("systemd-resolved"),
-            _("To start and enable it, run:"),
-            "$ systemctl enable --now systemd-resolved",
         )
-        rec = "\n".join(rec_lines)
-    yield Report(_("Ensuring system DNS resolution is secure"), status, warnings=warning, recs=rec)
+
+    # WARN
+    if unbound and not global_dns:
+        status = WARN
+        warnings.append(_("Secure global DNS is not configured."))
+        recs.append(
+            "\n".join(
+                [
+                    _("Consider using secure global DNS."),
+                    _("However, if you use a VPN, this may cause DNS leaks."),
+                    _("To enable it, run:"),
+                    "$ ujust dns-selector",
+                ]
+            )
+        )
+    if not unbound:
+        status = WARN
+        warnings.append(_("The secure DNS resolver is not in use, possibly for a VPN."))
+        recs.append(
+            "\n".join(
+                [
+                    _("To view or reset your current DNS configuration, run:"),
+                    "$ ujust dns-selector",
+                ]
+            )
+        )
+
+    # FAIL
+    if unbound and not dnssec:
+        status = FAIL
+        warnings.append(_("Local DNSSEC validation is disabled."))
+        recs.append(
+            "\n".join(
+                [
+                    _("You should enable local DNSSEC validation to prevent DNS hijacking."),
+                    _("To enable it, run:"),
+                    "$ ujust dns-selector dnssec on",
+                ]
+            )
+        )
+    if unbound and not global_dns and is_using_vpn():
+        status = FAIL
+        warnings.append(_("Using a VPN alongside Unbound without Global DNS may cause DNS leaks."))
+        recs.append(
+            "\n".join(
+                [
+                    _("If you use a VPN, switch your DNS resolver to systemd-resolved:"),
+                    "$ ujust dns-selector resolver resolved",
+                ]
+            )
+        )
+
+    # Since we evaluate INFO -> WARN -> FAIL, put the most important ones first.
+    warnings.reverse()
+    recs.reverse()
+
+    yield Report(
+        _("Ensuring system DNS resolution is secure"), status, warnings=warnings, recs=recs
+    )
 
 
 @audit
@@ -694,7 +744,7 @@ def audit_environment_file():
         warning = _("The file {0} cannot be read.").format(env_file)
     if status != PASS:
         rec_lines = (
-            _("The file {0} has been modified."),
+            _("The file {0} has been modified.").format(env_file),
             _("To reset it, run:"),
             f"$ run0 cp -p /usr{env_file} {env_file}",
         )
@@ -810,9 +860,35 @@ def audit_hardened_malloc():
 @audit
 def audit_secureboot():
     """Ensure secureboot is enabled."""
-    sb_enabled = command_stdout("mokutil", "--sb-state", check=False) == "SecureBoot enabled"
-    status = PASS if sb_enabled else FAIL
-    yield Report(_("Ensuring secure boot is enabled"), status)
+    warning = None
+    rec = None
+
+    result = subprocess.run(
+        ["/usr/bin/mokutil", "--sb-state"],
+        capture_output=True,
+        text=True,
+        check=False,
+    )  # nosec
+
+    if result.returncode == 0 and result.stdout.strip() == "SecureBoot enabled":
+        status = PASS
+    elif (
+        "doesn't support Secure Boot" in result.stderr
+        or "EFI variables are not supported" in result.stderr
+    ):
+        status = INFO
+        warning = _("Your hardware does not support secure boot.")
+        rec = (
+            warning
+            + "\n"
+            + _(
+                "The system will be unable to verify that kernel modules are signed or the boot process."
+            )
+        )
+    else:
+        status = FAIL
+
+    yield Report(_("Ensuring secure boot is enabled"), status, warnings=warning, recs=rec)
 
 
 @audit

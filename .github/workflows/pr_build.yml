@@ -88,13 +88,13 @@ jobs:
       - name: Verify base image
         shell: bash
         run: |
-          if [[ "$IMAGE_NAME" == *securecore* ]]; then
+          if [[ "$IMAGE_NAME" == 'securecore-main-hardened' || "$IMAGE_NAME" == 'iot-main-hardened' ]]; then
             echo "Upstream isn't signed. Skipping."
             exit 0
           fi
           
           UPSTREAM_CONTAINER="${BASE_IMAGE_NAME}:${IMAGE_MAJOR_VERSION}"
-          if [[ "$IMAGE_NAME" != *nvidia* ]]; then
+          if [[ "$IMAGE_NAME" != *nvidia* && "$IMAGE_NAME" != *zfs* ]]; then
             UPSTREAM_REGISTRY='quay.io/fedora-ostree-desktops'
             UPSTREAM_PUBKEY='https://gitlab.com/fedora/ostree/ci-test/-/raw/main/quay.io-fedora-ostree-desktops.pub'
           else
@@ -125,7 +125,7 @@ jobs:
         run: |
           docker create \
             --name blue-build-installer \
-            ghcr.io/blue-build/cli:v0.9.23-installer
+            ghcr.io/blue-build/cli:v0.9.24-installer
           docker cp blue-build-installer:/out/bluebuild /usr/local/bin/bluebuild
           docker rm blue-build-installer
           bluebuild --version

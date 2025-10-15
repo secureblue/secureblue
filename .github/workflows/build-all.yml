@@ -252,3 +252,78 @@ jobs:
     secrets:
       SIGNING_SECRET: ${{ secrets.SIGNING_SECRET }}
       KERNEL_PRIVKEY: ${{ secrets.KERNEL_PRIVKEY }}
+
+  iot-main:
+    name: Build iot main images
+    if: github.triggering_actor == 'royaloughtness' || github.event_name == 'schedule' || github.event_name == 'push'
+    permissions:
+      contents: read # Needed to pull the repo for the build
+      actions: read # Needed to read actions and actions logs for provenance generation
+      packages: write # Needed to publish images
+      id-token: write # Needed for token generation for signing
+    uses: ./.github/workflows/build-one-recipe.yml
+    with:
+      recipe: iot/recipe-iot-main.yml
+    secrets:
+      SIGNING_SECRET: ${{ secrets.SIGNING_SECRET }}
+      KERNEL_PRIVKEY: ${{ secrets.KERNEL_PRIVKEY }}
+
+  iot-nvidia:
+    name: Build iot nvidia images
+    if: github.triggering_actor == 'royaloughtness' || github.event_name == 'schedule' || github.event_name == 'push'
+    needs: iot-main
+    permissions:
+      contents: read # Needed to pull the repo for the build
+      actions: read # Needed to read actions and actions logs for provenance generation
+      packages: write # Needed to publish images
+      id-token: write # Needed for token generation for signing
+    strategy:
+      fail-fast: false
+      matrix:
+        recipe:
+          - iot/recipe-iot-nvidia.yml
+          - iot/recipe-iot-nvidia-open.yml
+    uses: ./.github/workflows/build-one-recipe.yml
+    with:
+      recipe: ${{ matrix.recipe }}
+    secrets:
+      SIGNING_SECRET: ${{ secrets.SIGNING_SECRET }}
+      KERNEL_PRIVKEY: ${{ secrets.KERNEL_PRIVKEY }}
+
+  iot-zfs-main:
+    name: Build iot zfs main images
+    if: github.triggering_actor == 'royaloughtness' || github.event_name == 'schedule' || github.event_name == 'push'
+    needs: iot-main
+    permissions:
+      contents: read # Needed to pull the repo for the build
+      actions: read # Needed to read actions and actions logs for provenance generation
+      packages: write # Needed to publish images
+      id-token: write # Needed for token generation for signing
+    uses: ./.github/workflows/build-one-recipe.yml
+    with:
+      recipe: iot/recipe-iot-zfs-main.yml
+    secrets:
+      SIGNING_SECRET: ${{ secrets.SIGNING_SECRET }}
+      KERNEL_PRIVKEY: ${{ secrets.KERNEL_PRIVKEY }}
+
+  iot-zfs-nvidia:
+    name: Build zfs nvidia images
+    if: github.triggering_actor == 'royaloughtness' || github.event_name == 'schedule' || github.event_name == 'push'
+    needs: iot-zfs-main
+    permissions:
+      contents: read # Needed to pull the repo for the build
+      actions: read # Needed to read actions and actions logs for provenance generation
+      packages: write # Needed to publish images
+      id-token: write # Needed for token generation for signing
+    strategy:
+      fail-fast: false 
+      matrix:
+        recipe:
+          - iot/recipe-iot-zfs-nvidia.yml
+          - iot/recipe-iot-zfs-nvidia-open.yml
+    uses: ./.github/workflows/build-one-recipe.yml
+    with:
+      recipe: ${{ matrix.recipe }}
+    secrets:
+      SIGNING_SECRET: ${{ secrets.SIGNING_SECRET }}
+      KERNEL_PRIVKEY: ${{ secrets.KERNEL_PRIVKEY }}

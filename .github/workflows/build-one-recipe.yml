@@ -96,13 +96,13 @@ jobs:
       - name: Verify base image
         shell: bash
         run: |
-          if [[ "$IMAGE_NAME" == *securecore* ]]; then
+          if [[ "$IMAGE_NAME" == 'securecore-main-hardened' || "$IMAGE_NAME" == 'iot-main-hardened' ]]; then
             echo "Upstream isn't signed. Skipping."
             exit 0
           fi
           
           UPSTREAM_CONTAINER="${BASE_IMAGE_NAME}:${IMAGE_MAJOR_VERSION}"
-          if [[ "$IMAGE_NAME" != *nvidia* ]]; then
+          if [[ "$IMAGE_NAME" != *nvidia* && "$IMAGE_NAME" != *zfs* ]]; then
             UPSTREAM_REGISTRY='quay.io/fedora-ostree-desktops'
             UPSTREAM_PUBKEY='https://gitlab.com/fedora/ostree/ci-test/-/raw/main/quay.io-fedora-ostree-desktops.pub'
           else
@@ -119,7 +119,7 @@ jobs:
         env:
           KERNEL_PRIVKEY: ${{ secrets.KERNEL_PRIVKEY }}
         with:
-          cli_version: v0.9.23
+          cli_version: v0.9.24
           recipe: ${{ inputs.recipe }}
           cosign_private_key: ${{ secrets.SIGNING_SECRET }}
           registry_token: ${{ github.token }}

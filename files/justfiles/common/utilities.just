@@ -482,7 +482,7 @@ setup-usbguard:
         systemctl enable --now usbguard.service
         usbguard add-user "$SUDO_USER"
     '
-    if ! rpm-ostree status | grep '●' | grep -q 'securecore'; then
+    if ! rpm-ostree status | grep '●' | grep -Eq 'securecore|iot'; then
         systemctl enable --user --now usbguard-notifier.service
     fi
 

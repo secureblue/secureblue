@@ -50,6 +50,7 @@ jobs:
           - general/recipe-sericea-main.yml
           # general/recipe-silverblue-main already covered by pr_build_minimal.yml
           - securecore/recipe-securecore-main.yml
+          - iot/recipe-iot-main.yml
     uses: ./.github/workflows/pr_build.yml
     with:
       recipe: ${{ matrix.recipe }}

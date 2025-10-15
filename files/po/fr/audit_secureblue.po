@@ -100,7 +100,7 @@ msgstr "S'assurer d'aucune modification modprobe"
 #: files/system/usr/libexec/secureblue/audit_secureblue.py:229
 #, python-brace-format
 msgid "ptrace is allowed and **unrestricted** ({0})!"
-msgstr "ptrace est autorisé et **sans restrictions** ({0}) !"
+msgstr "ptrace est autorisé et est **sans restrictions** ({0}) !"
 
 #: files/system/usr/libexec/secureblue/audit_secureblue.py:230
 #: files/system/usr/libexec/secureblue/audit_secureblue.py:243

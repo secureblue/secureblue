@@ -23,11 +23,11 @@ modules:
           destination: /usr
         - source: system/etc
           destination: /etc
+    - from-file: common/common-scripts.yml
     - type: justfiles
       validate: true
       include:
         - common
-    - from-file: common/common-scripts.yml
     - type: script
       scripts:
         - signkernel.sh

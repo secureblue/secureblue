@@ -30,7 +30,6 @@ modules:
           - gstreamer1-plugins-ugly
           - gstreamer1-plugin-libav
           - mesa-libxatracker
-          - rar
       remove:
         packages:
           - gstreamer1-plugins-ugly-free
@@ -88,4 +87,5 @@ modules:
 
     - type: script
       scripts:
+        - installrar.sh
         - removeunusedrepos.sh

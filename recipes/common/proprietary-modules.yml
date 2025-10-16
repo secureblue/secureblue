@@ -45,6 +45,7 @@ modules:
           - libswscale-free  
       replace:  
         - from-repo: fedora-multimedia
+          skip-unavailable: true
           packages:
             - libheif
             - libva

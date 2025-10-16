@@ -72,17 +72,20 @@ def print_status(enabled_by_file: bool) -> None:
 
     print(
         f"Bluetooth is currently {cur_status}, and after a reboot will",
-        f"{file_matches_sys}be {file_status}"
+        f"{file_matches_sys}be {file_status}",
     )
 
 
 def main() -> int:
     """Handle the arguments and execute the bluetooth toggle"""
 
-    if len(sys.argv) == 1:
+    argc_interactive = 1
+    argc_yes_no = 2
+
+    if len(sys.argv) == argc_interactive:
         # Ask interactively.
         mode = "on" if ask_yes_no("Would you like to load the Bluetooth modules?") else "off"
-    elif len(sys.argv) == 2:
+    elif len(sys.argv) == argc_yes_no:
         # Take mode from first argument, i.e. 'on' or 'off'.
         mode = sys.argv[1].casefold()
     else:

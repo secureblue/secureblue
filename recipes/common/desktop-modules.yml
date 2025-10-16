@@ -16,6 +16,7 @@ modules:
         - source: system/desktop
           destination: /
     - from-file: common/desktop-packages.yml
+    - from-file: common/desktop-scripts.yml
     - type: rpm-ostree
       repos:
         - https://copr.fedorainfracloud.org/coprs/secureblue/trivalent/repo/fedora-%OS_VERSION%/secureblue-trivalent-fedora-%OS_VERSION%.repo
@@ -25,6 +26,5 @@ modules:
       validate: true
       include:
         - desktop
-    - from-file: common/desktop-scripts.yml
     - type: brew
       brew-analytics: false

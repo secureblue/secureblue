@@ -20,16 +20,37 @@ modules:
         packages:
           - libopenjph
           - heif-pixbuf-loader
-          - ffmpegthumbnailer
           - rar
           - pipewire-libs-extra
+          - ffmpeg
+          - ffmpeg-libs
+          - ffmpegthumbnailer
+          - pipewire-libs-extra
+          - libfdk-aac
+          - gstreamer1-plugins-ugly
+      remove:
+        packages:
+          - gstreamer1-plugins-ugly-free
+          - fdk-aac-free
+          - ffmpeg-free
+          - libavcodec-free  
+          - libavdevice-free
+          - libavfilter-free
+          - libavformat-free  
+          - libavutil-free  
+          - libpostproc-free  
+          - libswresample-free  
+          - libswscale-free  
       replace:  
         - from-repo: fedora-multimedia
           packages:
             - libheif
             - libva
-            - mesa-dri-drivers
             - gstreamer1-plugin-libav
+            - libva-intel-media-driver
+            - intel-gmmlib
+            - intel-mediasdk
+            - mesa-dri-drivers
             - mesa-filesystem
             - mesa-libEGL
             - mesa-libGL
@@ -61,7 +82,6 @@ modules:
               new: libswresample
             - old: libswscale-free
               new: libswscale
-
     - type: script
       scripts:
         - removeunusedrepos.sh

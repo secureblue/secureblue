@@ -27,7 +27,7 @@ trivalent_rpm_search=$(find . -maxdepth 1 -type f -name "trivalent-*.${ARCH}.rpm
 trivalent_rpms_found=$(echo "$trivalent_rpm" | wc -l)
 
 if [ "$trivalent_rpms_found" -eq 1 ]; then
-    echo "Found: $trivalent_rpm"
+    echo "Found: ${trivalent_rpms_found}"
 else
     echo "Number of trivalent rpms not one, found: ${trivalent_rpms_found}"
     exit 1

@@ -33,6 +33,22 @@ modules:
               new: libfdk-aac
             - old: gstreamer1-plugins-ugly-free
               new: gstreamer1-plugins-ugly
+            - old: libavcodec-free
+              new: ffmpeg-libavcodec
+            - old: libavdevice-free
+              new: libavdevice
+            - old: libavfilter-free
+              new: libavfilter
+            - old: libavformat-free
+              new: libavformat
+            - old: libavutil-free
+              new: libavutil
+            - old: libpostproc-free
+              new: libpostproc
+            - old: libswresample-free
+              new: libswresample
+            - old: libswscale-free
+              new: libswscale
 
     - type: dnf
       repos:
@@ -51,16 +67,6 @@ modules:
           - pipewire-libs-extra
           - gstreamer1-plugin-libav
           - mesa-libxatracker
-      remove:
-        packages:
-          - libavcodec-free  
-          - libavdevice-free
-          - libavfilter-free
-          - libavformat-free  
-          - libavutil-free  
-          - libpostproc-free  
-          - libswresample-free  
-          - libswscale-free  
       replace:  
         - from-repo: fedora-multimedia
           skip-unavailable: true

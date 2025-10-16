@@ -24,10 +24,7 @@ curl -Lo /etc/yum.repos.d/repo.secureblue.dev.secureblue.repo https://repo.secur
 dnf4 install --repoid=secureblue --downloadonly --best --downloaddir=. -y trivalent
 
 trivalent_rpm_search=$(find . -maxdepth 1 -type f -name "trivalent-*.${ARCH}.rpm")
-trivalent_rpm=${trivalent_rpm_search#./}
 trivalent_rpms_found=$(echo "$trivalent_rpm" | wc -l)
-trivalent_rpm_sans_suffix=${trivalent_rpm#trivalent-}
-trivalent_version=${trivalent_rpm_sans_suffix%.${ARCH}.rpm}
 
 if [ "$trivalent_rpms_found" -eq 1 ]; then
     echo "Found: $trivalent_rpm"
@@ -35,6 +32,10 @@ else
     echo "Number of trivalent rpms not one, found: ${trivalent_rpms_found}"
     exit 1
 fi
+
+trivalent_rpm=${trivalent_rpm_search#./}
+trivalent_rpm_sans_suffix=${trivalent_rpm#trivalent-}
+trivalent_version=${trivalent_rpm_sans_suffix%.${ARCH}.rpm}
 
 provenance_file="${trivalent_rpm}.intoto.jsonl"
 wget "https://github.com/secureblue/Trivalent/releases/download/${trivalent_rpm_sans_suffix}/${provenance_file}"

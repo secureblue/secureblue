@@ -42,7 +42,7 @@ provenance_file="${trivalent_rpm}.intoto.jsonl"
 wget "https://github.com/secureblue/Trivalent/releases/download/${trivalent_version}/${provenance_file}"
 
 go install github.com/slsa-framework/slsa-verifier/v2/cli/slsa-verifier@v2.7.1
-~/go/bin/slsa-verifier verify-artifact "${trivalent_rpm}" --provenance-path "${provenance_file}" --source-uri github.com/secureblue/Trivalent --source-tag live
+~/go/bin/slsa-verifier verify-artifact "${trivalent_rpm}" --provenance-path "${provenance_file}" --source-uri github.com/secureblue/Trivalent --source-branch live
 go uninstall github.com/slsa-framework/slsa-verifier/v2/cli/slsa-verifier@v2.7.1
 
 dnf5 uninstall dnf4 golang -y

@@ -23,9 +23,10 @@ curl -Lo /etc/yum.repos.d/repo.secureblue.dev.secureblue.repo https://repo.secur
 # dnf4 must be used here due to https://github.com/rpm-software-management/dnf5/issues/1985
 dnf4 install --repoid=secureblue --downloadonly --best --downloaddir=. -y trivalent
 
-trivalent_rpm=$(find . -maxdepth 1 -type f -name "trivalent-*.${ARCH}.rpm")
+trivalent_rpm_search=$(find . -maxdepth 1 -type f -name "trivalent-*.${ARCH}.rpm")
+trivalent_rpm=${trivalent_rpm_search#./}
 trivalent_rpms_found=$(echo "$trivalent_rpm" | wc -l)
-trivalent_rpm_sans_suffix=${trivalent_rpm#./trivalent-}
+trivalent_rpm_sans_suffix=${trivalent_rpm#trivalent-}
 trivalent_version=${trivalent_rpm_sans_suffix%.${ARCH}.rpm}
 
 if [ "$trivalent_rpms_found" -eq 1 ]; then

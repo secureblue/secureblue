@@ -16,6 +16,7 @@ set -oue pipefail
 
 ARCH="$(arch)"
 
+dnf5 install dnf4 -y
 
 curl -Lo /etc/yum.repos.d/repo.secureblue.dev.secureblue.repo https://repo.secureblue.dev/secureblue.repo
 
@@ -46,4 +47,5 @@ fi
 
 go uninstall github.com/slsa-framework/slsa-verifier/v2/cli/slsa-verifier@v2.7.1
 
+dnf5 uninstall dnf4 -y
 dnf5 install "${trivalent_rpm}" -y

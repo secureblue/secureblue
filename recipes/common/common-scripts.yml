@@ -12,7 +12,6 @@
 
 type: script
 scripts:
-  - installcommonpackages.sh
   - manuallyinstalljust.sh
   - hardenlogindefs.sh
   - hardened_malloc-pam.sh

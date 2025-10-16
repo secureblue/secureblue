@@ -16,6 +16,7 @@ modules:
         - createautostartdir.sh
         - httpsmirrors.sh
         - unprotectsudo.sh
+    - from-file: common/common-packages.yml
     - type: files
       files:
         - source: system/usr

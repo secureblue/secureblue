@@ -28,6 +28,9 @@ modules:
           - pipewire-libs-extra
           - libfdk-aac
           - gstreamer1-plugins-ugly
+          - gstreamer1-plugin-libav
+          - mesa-libxatracker
+          - rar
       remove:
         packages:
           - gstreamer1-plugins-ugly-free
@@ -82,6 +85,7 @@ modules:
               new: libswresample
             - old: libswscale-free
               new: libswscale
+
     - type: script
       scripts:
         - removeunusedrepos.sh

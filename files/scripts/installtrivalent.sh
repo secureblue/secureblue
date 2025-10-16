@@ -24,7 +24,7 @@ curl -Lo /etc/yum.repos.d/repo.secureblue.dev.secureblue.repo https://repo.secur
 dnf4 install --repoid=secureblue --downloadonly --best --downloaddir=. -y trivalent
 
 trivalent_rpm_search=$(find . -maxdepth 1 -type f -name "trivalent-*.${ARCH}.rpm")
-trivalent_rpms_found=$(echo "$trivalent_rpm" | wc -l)
+trivalent_rpms_found=$(echo "$trivalent_rpm_search" | wc -l)
 
 if [ "$trivalent_rpms_found" -eq 1 ]; then
     echo "Found: ${trivalent_rpms_found}"

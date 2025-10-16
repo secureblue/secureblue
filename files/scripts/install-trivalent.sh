@@ -16,7 +16,7 @@ set -oue pipefail
 
 ARCH="$(uname -m)"
 
-dnf5 install dnf4 golang -y
+dnf5 install python3-dnf golang -y
 
 curl -Lo /etc/yum.repos.d/repo.secureblue.dev.secureblue.repo https://repo.secureblue.dev/secureblue.repo
 
@@ -46,5 +46,5 @@ GOPROXY=https://proxy.golang.org,direct go install github.com/slsa-framework/sls
 ~/go/bin/slsa-verifier verify-artifact "${trivalent_rpm}" --provenance-path "${provenance_file}" --source-uri github.com/secureblue/Trivalent --source-branch live
 
 rm -rf ~/go
-dnf remove dnf4 golang -y
+dnf remove python3-dnf golang -y
 dnf install "${trivalent_rpm}" -y

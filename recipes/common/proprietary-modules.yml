@@ -15,6 +15,29 @@ modules:
       repos:
         files:
           - https://negativo17.org/repos/fedora-multimedia.repo
+      replace:  
+        - from-repo: fedora-multimedia
+          packages:
+            - libheif
+            - libva
+            - mesa-dri-drivers
+            - mesa-filesystem
+            - mesa-libEGL
+            - mesa-libGL
+            - mesa-libgbm
+            - mesa-va-drivers
+            - mesa-vulkan-drivers
+            - old: ffmpeg-free
+              new: ffmpeg
+            - old: fdk-aac-free
+              new: libfdk-aac
+            - old: gstreamer1-plugins-ugly-free
+              new: gstreamer1-plugins-ugly
+
+    - type: dnf
+      repos:
+        files:
+          - https://negativo17.org/repos/fedora-multimedia.repo
       install:
         install-weak-deps: false
         packages:
@@ -26,15 +49,10 @@ modules:
           - ffmpeg-libs
           - ffmpegthumbnailer
           - pipewire-libs-extra
-          - libfdk-aac
-          - gstreamer1-plugins-ugly
           - gstreamer1-plugin-libav
           - mesa-libxatracker
       remove:
         packages:
-          - gstreamer1-plugins-ugly-free
-          - fdk-aac-free
-          - ffmpeg-free
           - libavcodec-free  
           - libavdevice-free
           - libavfilter-free

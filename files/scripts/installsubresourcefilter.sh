@@ -25,6 +25,6 @@ enabled=1
 enabled_metadata=1
 ' > /etc/yum.repos.d/secureblue-trivalent-fedora-42.repo
 
-dnf install trivalent-subresource-filter
+dnf install -y --setopt=install_weak_deps=False trivalent-subresource-filter
 
 rm -f /etc/yum.repos.d/secureblue-trivalent-fedora-42.repo

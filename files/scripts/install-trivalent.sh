@@ -14,17 +14,19 @@
 
 set -oue pipefail
 
-ARCH="$(arch)"
+ARCH="$(uname -m)"
 
-dnf5 install dnf4 -y
+dnf5 install dnf4 golang -y
 
 curl -Lo /etc/yum.repos.d/repo.secureblue.dev.secureblue.repo https://repo.secureblue.dev/secureblue.repo
 
 # dnf4 must be used here due to https://github.com/rpm-software-management/dnf5/issues/1985
 dnf4 install --repoid=secureblue --downloadonly --best --downloaddir=. -y trivalent
 
-trivalent_rpm_search=$(find . -maxdepth 1 -type f -name "trivalent-*.${ARCH}.rpm")
-trivalent_rpms_found=$(echo "$trivalent_rpm_search" | wc -l)
+trivalent_rpms_found=0
+for trivalent_rpm in trivalent-*."${ARCH}".rpm; do
+    (( ++trivalent_rpms_found ))
+done
 
 if [ "$trivalent_rpms_found" -eq 1 ]; then
     echo "Found: ${trivalent_rpms_found}"
@@ -42,12 +44,7 @@ wget "https://github.com/secureblue/Trivalent/releases/download/${trivalent_vers
 
 go install github.com/slsa-framework/slsa-verifier/v2/cli/slsa-verifier@v2.7.1
 ~/go/bin/slsa-verifier verify-artifact "${trivalent_rpm}" --provenance-path "${provenance_file}" --source-uri github.com/secureblue/Trivalent --source-tag live
-if [ $? != 0 ]; then
-  echo "SLSA verification failed, exiting..."
-  exit 1
-fi
-
 go uninstall github.com/slsa-framework/slsa-verifier/v2/cli/slsa-verifier@v2.7.1
 
-dnf5 uninstall dnf4 -y
+dnf5 uninstall dnf4 golang -y
 dnf5 install "${trivalent_rpm}" -y

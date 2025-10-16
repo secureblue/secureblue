@@ -12,7 +12,7 @@
 
 type: script
 scripts:
-  - installtrivalent.sh
+  - install-trivalent.sh
   - removesudo.sh
   - installandroidudev.sh
   - disablecups.sh

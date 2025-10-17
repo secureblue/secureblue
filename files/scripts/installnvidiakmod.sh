@@ -34,6 +34,7 @@ dnf install -y --setopt=install_weak_deps=False akmods nvidia-kmod-common nvidia
 cp /usr/sbin/akmodsbuild /usr/sbin/akmodsbuild.backup
 # TODO remove this when fixed upstream
 sed -i '/if \[\[ -w \/var \]\] ; then/,/fi/d' /usr/sbin/akmodsbuild
+rm -f /usr/share/rpm/.rpm.lock
 dnf install -y --setopt=install_weak_deps=False "akmod-nvidia*.fc${RELEASE}"
 cp /usr/sbin/akmodsbuild.backup /usr/sbin/akmodsbuild
 

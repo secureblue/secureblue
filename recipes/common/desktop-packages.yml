@@ -51,3 +51,7 @@ replace:
     packages:
       - old: fedora-logos
         new: secureblue-logos
+  - from-repo: fedora
+    packages:
+      - old: OpenCL-ICD-Loader
+        new: ocl-icd

@@ -21,13 +21,13 @@ modules:
           - libopenjph
           - heif-pixbuf-loader
           - ffmpegthumbnailer
+          - rar
           # - pipewire-libs-extra uncomment once this ships https://bodhi.fedoraproject.org/updates/FEDORA-2025-1299cfef2f
       replace:  
         - from-repo: fedora-multimedia
           packages:
             - libheif
             - libva
-            - rar
             - mesa-dri-drivers
             - gstreamer1-plugin-libav
             - mesa-filesystem

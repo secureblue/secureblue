@@ -27,6 +27,7 @@ modules:
           packages:
             - libheif
             - libva
+            - rar
             - mesa-dri-drivers
             - gstreamer1-plugin-libav
             - mesa-filesystem
@@ -63,5 +64,4 @@ modules:
 
     - type: script
       scripts:
-        - installrar.sh
         - removeunusedrepos.sh

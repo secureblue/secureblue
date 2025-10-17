@@ -34,7 +34,7 @@ modules:
             - old: gstreamer1-plugins-ugly-free
               new: gstreamer1-plugins-ugly
             - old: libavcodec-free
-              new: ffmpeg-libavcodec
+              new: libavcodec
             - old: libavdevice-free
               new: libavdevice
             - old: libavfilter-free

@@ -40,13 +40,13 @@ install:
     # ensure universal font coverage
     - google-noto-fonts-all
 remove:
-  - firefox
-  - firefox-langpacks
-  - fuse
-  - passim
-  - fedora-chromium-config
+  packages:
+    - firefox
+    - firefox-langpacks
+    - fuse
+    - passim
+    - fedora-chromium-config
 replace:
-  replace:
   - from-repo: copr.fedorainfracloud.org:secureblue:branding
     packages:
       - old: fedora-logos

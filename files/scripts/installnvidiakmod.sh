@@ -30,11 +30,10 @@ sed -i '/^enabled=1/a\priority=90' /etc/yum.repos.d/negativo17-fedora-nvidia.rep
 
 dnf install -y --setopt=install_weak_deps=False "kernel-devel-matched-$(rpm -q 'kernel' --queryformat '%{VERSION}')"
 
-dnf install -y --setopt=install_weak_deps=False akmods
+dnf install -y --setopt=install_weak_deps=False akmods nvidia-kmod-common nvidia-modprobe
 cp /usr/sbin/akmodsbuild /usr/sbin/akmodsbuild.backup
 # TODO remove this when fixed upstream
 sed -i '/if \[\[ -w \/var \]\] ; then/,/fi/d' /usr/sbin/akmodsbuild
-rm -f /usr/share/rpm/.rpm.lock
 dnf install -y --setopt=install_weak_deps=False "akmod-nvidia*.fc${RELEASE}"
 cp /usr/sbin/akmodsbuild.backup /usr/sbin/akmodsbuild
 

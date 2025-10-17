@@ -21,7 +21,7 @@ modules:
           - libopenjph
           - heif-pixbuf-loader
           - ffmpegthumbnailer
-          - pipewire-libs-extra
+          # - pipewire-libs-extra uncomment once this ships https://bodhi.fedoraproject.org/updates/FEDORA-2025-1299cfef2f
       replace:  
         - from-repo: fedora-multimedia
           packages:

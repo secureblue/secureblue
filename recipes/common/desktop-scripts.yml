@@ -22,4 +22,3 @@ scripts:
   - disablenfsdaemons.sh
   - disablesssd.sh
   - disableunconfinedrootfulservices.sh
-  - fixupstreamicdloaderbug.sh

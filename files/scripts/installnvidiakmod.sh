@@ -32,6 +32,7 @@ dnf install -y --setopt=install_weak_deps=False "kernel-devel-matched-$(rpm -q '
 
 dnf install -y --setopt=install_weak_deps=False akmods
 cp /usr/sbin/akmodsbuild /usr/sbin/akmodsbuild.backup
+# TODO remove this when fixed upstream
 sed -i '/if \[\[ -w \/var \]\] ; then/,/fi/d' /usr/sbin/akmodsbuild
 rm -f /usr/share/rpm/.rpm.lock
 dnf install -y --setopt=install_weak_deps=False "akmod-nvidia*.fc${RELEASE}"

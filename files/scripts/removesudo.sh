@@ -20,6 +20,6 @@ if [[ "$IMAGE_NAME" != *"kinoite"* ]]; then
     SUDO_PACKAGES_TO_REMOVE+=('sudo')
 fi
 
-dnf remove -y "${SUDO_PACKAGES_TO_REMOVE[@]}"
+dnf remove -y --setopt=protected_packages=, "${SUDO_PACKAGES_TO_REMOVE[@]}"
 
 rm -rf /usr/bin/sudo

@@ -30,7 +30,7 @@ sed -i 's/^enabled=0.*/enabled=1/' /etc/yum.repos.d/nvidia-container-toolkit.rep
 sed -i 's/^enabled=0.*/enabled=1\npriority=90/' /etc/yum.repos.d/negativo17-fedora-nvidia.repo
 # required for rpm-ostree to function properly
 # shellcheck disable=SC2068
-rpm-ostree install ${nvidia_packages_list[@]}
+dnf install -y --setopt=install_weak_deps=False ${nvidia_packages_list[@]}
 
 kmod_version=$(rpm -qa | grep akmod-nvidia | awk -F':' '{print $(NF)}' | awk -F'-' '{print $(NF-1)}')
 negativo_version=$(rpm -qa | grep nvidia-modprobe | awk -F':' '{print $(NF)}' | awk -F'-' '{print $(NF-1)}')

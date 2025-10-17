@@ -16,11 +16,13 @@ modules:
         - source: system/desktop
           destination: /
     - from-file: common/desktop-packages.yml
-    - type: rpm-ostree
+    - type: dnf
       repos:
+        files:
         - https://copr.fedorainfracloud.org/coprs/secureblue/trivalent/repo/fedora-%OS_VERSION%/secureblue-trivalent-fedora-%OS_VERSION%.repo
       install:
-        - trivalent-subresource-filter
+        packages:
+          - trivalent-subresource-filter
     - type: justfiles
       validate: true
       include:

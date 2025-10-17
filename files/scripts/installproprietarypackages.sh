@@ -33,7 +33,6 @@ rpm-ostree override replace \
     mesa-libEGL \
     mesa-libGL \
     mesa-libgbm \
-    mesa-libxatracker \
     mesa-va-drivers \
     mesa-vulkan-drivers \
     gstreamer1-plugin-libav \

@@ -16,7 +16,7 @@ description: "IOT with nvidia-open, hardened"
 
 base-image: ghcr.io/secureblue/iot-main-hardened
 
-image-version: latest
+image-version: br-next-43
 
 nushell-version: none
 

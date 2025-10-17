@@ -16,7 +16,7 @@ description: "CoreOS with nvidia, hardened"
 
 base-image: ghcr.io/secureblue/securecore-main-hardened
 
-image-version: latest
+image-version: br-next-43
 
 nushell-version: none
 

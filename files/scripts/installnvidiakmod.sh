@@ -30,10 +30,11 @@ sed -i '/^enabled=1/a\priority=90' /etc/yum.repos.d/negativo17-fedora-nvidia.rep
 
 dnf install -y --setopt=install_weak_deps=False "kernel-devel-matched-$(rpm -q 'kernel' --queryformat '%{VERSION}')"
 
-# remove as soon as this isn't needed
-mv /var /varbackup
+dnf install -y --setopt=install_weak_deps=False akmods
+cp /usr/sbin/akmodsbuild /usr/sbin/akmodsbuild.backup
+sed -i '/if \[\[ -w \/var \]\] ; then/,/fi/d' /usr/sbin/akmodsbuild
 dnf install -y --setopt=install_weak_deps=False "akmod-nvidia*.fc${RELEASE}"
-mv /varbackup /var
+cp /usr/sbin/akmodsbuild.backup /usr/sbin/akmodsbuild
 
 echo "Setting kernel.conf to $KERNEL_MODULE_TYPE"
 sed -i --sandbox "s/^MODULE_VARIANT=.*/MODULE_VARIANT=$KERNEL_MODULE_TYPE/" /etc/nvidia/kernel.conf

@@ -11,30 +11,30 @@
 # See the License for the specific language governing permissions and limitations under the License.
 
 modules:
+    - type: rpm-ostree
+      repos:
+        - https://negativo17.org/repos/fedora-multimedia.repo
+      install:
+        - heif-pixbuf-loader
+        - ffmpeg
+        - ffmpeg-libs
+        - ffmpegthumbnailer
+        - pipewire-libs-extra
+        - libfdk-aac
+        - gstreamer1-plugins-ugly
+      remove:
+        - gstreamer1-plugins-ugly-free
+        - fdk-aac-free
+        - ffmpeg-free
+        - libavcodec-free  
+        - libavdevice-free
+        - libavfilter-free
+        - libavformat-free  
+        - libavutil-free  
+        - libpostproc-free  
+        - libswresample-free  
+        - libswscale-free  
     - type: script
       scripts:
         - installproprietarypackages.sh
-    - type: rpm-ostree
-      install:
-      - heif-pixbuf-loader
-      - ffmpeg
-      - ffmpeg-libs
-      - ffmpegthumbnailer
-      - pipewire-libs-extra
-      - libfdk-aac
-      - gstreamer1-plugins-ugly
-      remove:
-      - gstreamer1-plugins-ugly-free
-      - fdk-aac-free
-      - ffmpeg-free
-      - libavcodec-free  
-      - libavdevice-free
-      - libavfilter-free
-      - libavformat-free  
-      - libavutil-free  
-      - libpostproc-free  
-      - libswresample-free  
-      - libswscale-free  
-    - type: script
-      scripts:
         - removeunusedrepos.sh

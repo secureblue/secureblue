@@ -12,6 +12,8 @@
 
 modules:
   - type: rpm-ostree
+    repos:
+      - https://pkgs.tailscale.com/stable/fedora/tailscale.repo
     install:
       - setools-console
       - usbguard
@@ -24,10 +26,6 @@ modules:
     files:
       - source: system/server
         destination: /
-
-  - type: script
-    scripts:
-      - addtailscalerepo.sh
 
   - type: script
     scripts:

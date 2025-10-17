@@ -23,7 +23,7 @@ ZFS_VERSION=$(jq -r --arg ZMV "zfs-${ZFS_MINOR_VERSION}" '[ .[] | select(.prerel
 echo "ZFS_VERSION==$ZFS_VERSION"
 
 dnf install -y --setopt=install_weak_deps=False "kernel-devel-matched-$(rpm -q 'kernel' --queryformat '%{VERSION}')"
-dnf install -y --setopt=install_weak_deps=False autoconf automake gcc pv akmods mock libtirpc-devel libblkid-devel libuuid-devel libudev-devel openssl-devel libaio-devel libattr-devel elfutils-libelf-devel python3-devel python3-cffi libffi-devel libcurl-devel ncompress python3-setuptools
+dnf install -y --setopt=install_weak_deps=False autoconf automake gcc pv akmods mock libunwind-devel pam-devel libatomic-devel libtirpc-devel libblkid-devel libuuid-devel libudev-devel openssl-devel libaio-devel libattr-devel elfutils-libelf-devel python3-devel python3-cffi libffi-devel libcurl-devel ncompress python3-setuptools
 
 
 ### BUILD zfs

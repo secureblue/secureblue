@@ -21,9 +21,6 @@ modules:
         - usbguard
         - firewalld
         - policycoreutils-python-utils
-    remove:
-      packages:
-        - sudo
 
   - type: files
     files:

@@ -75,7 +75,6 @@ rm ./*devel*.rpm
 rm ./*debug*.rpm
 rm ./zfs-test*.rpm
 
-mv ./*.rpm /var/cache/rpms/kmods/zfs/
 dnf install -y --setopt=install_weak_deps=False ./*.rpm
 cd ..
 

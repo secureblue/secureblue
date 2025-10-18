@@ -16,22 +16,22 @@
 Framework for running rootful functions in a systemd sandbox
 """
 
-import dataclasses
 import subprocess
 import sys
+from dataclasses import dataclass, field
 from typing import Final
 
 INNER_DIR: Final[str] = "/usr/libexec/secureblue/inner"
 
 
-@dataclasses.dataclass
+@dataclass
 class SandboxedFunction:
     """A class that wraps a function to be run in a sandbox"""
 
     file_name: str
-    capabilities: list[str] = dataclasses.field(default_factory=list, kw_only=True)
-    read_write_paths: list[str] = dataclasses.field(default_factory=list, kw_only=True)
-    additional_sandbox_properties: list[str] = dataclasses.field(default_factory=list, kw_only=True)
+    capabilities: list[str] = field(default_factory=list, kw_only=True)
+    read_write_paths: list[str] = field(default_factory=list, kw_only=True)
+    additional_sandbox_properties: list[str] = field(default_factory=list, kw_only=True)
     subprocess_interactive: bool = False
 
     def __post_init__(self):

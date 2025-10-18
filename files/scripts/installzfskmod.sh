@@ -70,8 +70,13 @@ cd "zfs-${ZFS_VERSION}"
     && make -j "$(nproc)" rpm-utils rpm-kmod \
     || { cat config.log; exit 1; }
 
+rm ./*src.rpm
+rm ./*devel*.rpm
+rm ./*debug*.rpm
+rm ./zfs-test*.rpm
 
-dnf install -y --setopt=install_weak_deps=False ./kmod-zfs-${ZFS_VERSION}*.rpm ./zfs-${ZFS_VERSION}*.rpm ./zfs-dracut-${ZFS_VERSION}*.rpm ./libnvpair3*.rpm ./libzpool6*.rpm
+mv ./*.rpm /var/cache/rpms/kmods/zfs/
+dnf install -y --setopt=install_weak_deps=False ./*.rpm
 cd ..
 
 ./signmodules.sh "zfs"

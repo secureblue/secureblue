@@ -71,7 +71,7 @@ cd "zfs-${ZFS_VERSION}"
     || { cat config.log; exit 1; }
 
 
-dnf install -y --setopt=install_weak_deps=False ./zfs-${ZFS_VERSION}-*.rpm ./zfs-dracut-${ZFS_VERSION}-*.rpm
+dnf install -y --setopt=install_weak_deps=False ./kmod-zfs-${ZFS_VERSION}*.rpm ./zfs-${ZFS_VERSION}*.rpm ./zfs-dracut-${ZFS_VERSION}*.rpm ./libnvpair3*.rpm ./libzpool6*.rpm
 cd ..
 
 ./signmodules.sh "zfs"

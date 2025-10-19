@@ -16,6 +16,7 @@ repos:
     - https://copr.fedorainfracloud.org/coprs/secureblue/bubblejail/repo/fedora-%OS_VERSION%/secureblue-bubblejail-fedora-%OS_VERSION%.repo
     - https://repo.secureblue.dev/secureblue.repo
     - https://copr.fedorainfracloud.org/coprs/secureblue/branding/repo/fedora-%OS_VERSION%/secureblue-branding-fedora-%OS_VERSION%.repo
+    - https://copr.fedorainfracloud.org/coprs/secureblue/no_rlimit_as/repo/fedora-%OS_VERSION%/secureblue-no_rlimit_as-fedora-%OS_VERSION%.repo
 install:
   packages:
     - headsetcontrol
@@ -39,6 +40,9 @@ install:
 
     # ensure universal font coverage
     - google-noto-fonts-all
+
+    # address hardened_malloc incompatibilities
+    - no_rlimit_as
 remove:
   packages:
     - firefox

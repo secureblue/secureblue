@@ -202,6 +202,14 @@ class Image(enum.Enum):
         image_prefix = image_name.split("-", maxsplit=1)[0]
         return image_dict.get(image_prefix)
 
+    def is_server(self) -> bool:
+        """Is the image a server image?"""
+        return self in (Image.COREOS, Image.IOT)
+
+    def is_desktop(self) -> bool:
+        """Is the image a desktop image?"""
+        return not self.is_server()
+
 
 async def get_flatpak_permissions(name: str, version: str) -> str:
     """Get permissions for an installed flatpak."""

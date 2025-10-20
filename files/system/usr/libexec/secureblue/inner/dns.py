@@ -29,7 +29,7 @@ from dataclasses import dataclass
 from enum import Enum
 from functools import partialmethod
 from pathlib import Path
-from typing import Final, Optional
+from typing import Final
 
 DNSCONFD_CONF_PATH: Final[Path] = Path("/etc/dnsconfd.conf")
 DNSCONFD_MANAGER_PATH: Final[Path] = Path("/etc/NetworkManager/conf.d/dnsconfd.conf")
@@ -185,7 +185,7 @@ def set_resolver(resolver: DNSResolver) -> None:
             DNSResolver.RESOLVED.service.enable()
 
 
-def set_global_nm_servers(servers: Optional[str] = None) -> None:
+def set_global_nm_servers(servers: str | None = None) -> None:
     """
     Set NetworkManager global DNS servers.
 
@@ -210,7 +210,7 @@ def set_global_nm_servers(servers: Optional[str] = None) -> None:
     NM_GLOBALDNS_CONF_PATH.chmod(0o644)
 
 
-def set_trivalent_doh_endpoint(https_endpoint: Optional[str] = None) -> None:
+def set_trivalent_doh_endpoint(https_endpoint: str | None = None) -> None:
     """
     Sets Trivalent DNS over HTTPS policy.
 

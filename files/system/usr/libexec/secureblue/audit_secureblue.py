@@ -379,7 +379,7 @@ def audit_dns(state):
     status = PASS
 
     # INFO
-    if not trivalent_doh and state["image"] != Image.COREOS:
+    if not trivalent_doh and state["image"] not in (Image.COREOS, Image.IOT):
         status = INFO
         warnings.append(_("DNS over HTTPS in Trivalent is disabled."))
         recs.append(

@@ -1,7 +1,9 @@
 [Unit]
 Description=Flatpak Automatic Update Trigger
 Documentation=man:flatpak(1)
+After=graphical-session.target
 ConditionUser=!@system
+After=graphical-session.target
 
 [Timer]
 RandomizedDelaySec=10m

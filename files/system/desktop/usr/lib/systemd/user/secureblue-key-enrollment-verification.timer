@@ -1,5 +1,6 @@
 [Unit]
 Description=secureblue secureboot key enrollment verification timer
+After=graphical-session.target
 ConditionUser=!@system
 
 [Timer]

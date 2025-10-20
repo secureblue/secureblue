@@ -1,5 +1,6 @@
 [Unit]
 Description=secureblue update verification timer
+After=graphical-session.target
 ConditionUser=!@system
 
 [Timer]

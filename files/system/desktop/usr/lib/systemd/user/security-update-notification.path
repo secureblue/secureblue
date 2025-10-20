@@ -1,6 +1,7 @@
 [Unit]
 Description=Monitor for rpm-ostreed-automatic completion
 Wants=paths.target
+After=graphical-session.target
 ConditionUser=!@system
 
 [Path]

@@ -25,7 +25,7 @@ import textwrap
 from dataclasses import dataclass
 from enum import Enum, auto
 from pathlib import Path
-from typing import Final, Optional
+from typing import Final
 from urllib.parse import urlparse
 
 import sandbox
@@ -109,8 +109,8 @@ def ask_should_validate_dnssec() -> bool:
 class DNSServers:
     """A DNS server to be set as a global upstream by NetworkManager."""
 
-    servers_csv: Optional[str]
-    https_endpoint: Optional[str]
+    servers_csv: str | None
+    https_endpoint: str | None
 
 
 def _ask_custom_ips() -> str:
@@ -468,7 +468,7 @@ def ask_valid_ipv6(prompt: str) -> str:
             print("Invalid IPv6 address, try again.")
 
 
-def ask_valid_https(prompt: str) -> Optional[str]:
+def ask_valid_https(prompt: str) -> str | None:
     """Returns a valid HTTPS URL."""
     while True:
         raw_url = interruptible_ask(prompt)

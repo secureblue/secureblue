@@ -1,4 +1,4 @@
-#!/usr/bin/env bash
+#!/usr/bin/sh
 
 # Copyright 2025 The Secureblue Authors
 #
@@ -14,12 +14,15 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-set -oue pipefail
-
-systemctl enable secureblue-migrate-dns.service
-
-# Sometimes /var/lib/unbound/root.key goes missing on CoreOS systems.
-# In that case, unbound-checkconf fails in anticipation of unbound-anchor
-# being unable to bootstrap. This service installs root.key if missing so that
-# dnsconfd-unbound can still work.
-systemctl enable secureblue-unbound-key.service
+case $- in
+  *i*)
+    if ! command -v sudo > /dev/null; then
+      sudo() {
+        printf 'Secureblue uninstalls \033[1msudo\033[22m for security reasons.\n' >&2
+        printf 'To run commands as root, you can use \033[1mrun0\033[22m instead.\n' >&2
+        printf 'To get a root shell, run \033[1mrun0\033[22m on its own.\n' >&2
+        command sudo "$@"
+      }
+    fi
+    ;;
+esac

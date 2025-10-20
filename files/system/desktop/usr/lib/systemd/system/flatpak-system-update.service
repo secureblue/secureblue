@@ -3,6 +3,8 @@ Description=Flatpak Automatic Update
 Documentation=man:flatpak(1)
 Wants=network-online.target
 After=network-online.target
+StartLimitIntervalSec=24h
+StartLimitBurst=3
 
 [Service]
 Type=oneshot
@@ -10,5 +12,3 @@ ExecCondition=/bin/bash -c '[[ "$(busctl get-property org.freedesktop.NetworkMan
 ExecStart=/usr/bin/flatpak --system uninstall --unused -y --noninteractive ; /usr/bin/flatpak --system update -y --noninteractive ; /usr/bin/flatpak --system repair
 RestartSec=1h
 Restart=on-failure
-StartLimitIntervalSec=24h
-StartLimitBurst=3

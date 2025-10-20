@@ -218,3 +218,24 @@ def validate_sysctl(sysctl: str, actual: str, expected: str) -> bool:
         # https://www.kernel.org/doc/html/latest/admin-guide/sysrq.html
         return actual in (expected, "0", "4")
     return actual == expected
+
+
+def is_using_vpn() -> bool:
+    """Returns whether an OpenVPN or Wireguard VPN is currently in use."""
+
+    # Check for Wireguard VPN use.
+    wg_out = command_stdout("/usr/bin/ip", "link", "show", "type", "wireguard")
+
+    # For OpenVPN, we need to figure out whether the default route is via a TUN/TAP interface.
+    # Otherwise, we'd detect virtual networks, etc.
+    has_openvpn = False
+    route_out = command_stdout("/usr/bin/ip", "route", "show", "default")
+    tuntap_out = command_stdout("/usr/bin/ip", "tuntap", "list")
+    for tuntap in tuntap_out.splitlines():
+        # `ip tuntap list` has each interface on its own line, as "dev0: info1 info2 ...".
+        tuntap_interface = tuntap.split(":", maxsplit=1)[0]
+        if f"dev {tuntap_interface}" in route_out:
+            has_openvpn = True
+            break
+
+    return wg_out or has_openvpn

@@ -52,6 +52,7 @@ from utils import (
     get_flatpak_permissions,
     get_legend,
     get_width,
+    is_using_vpn,
     parse_config,
     print_err,
     validate_sysctl,
@@ -83,6 +84,7 @@ def audit_kargs():
         "iommu.strict=1",
         "iommu=force",
         "kvm-intel.vmentry_l1d_flush=always",
+        "kvm.mitigate_smt_rsb=1",
         "l1d_flush=on",
         "l1tf=full,force",
         "lockdown=confidentiality",
@@ -99,6 +101,7 @@ def audit_kargs():
         "slab_nomerge",
         "spec_store_bypass_disable=on",
         "spectre_v2=on",
+        "ssbd=force-on",
         "vdso32=0",
         "vsyscall=none",
     )
@@ -138,17 +141,12 @@ def audit_kargs():
 @audit
 def audit_sysctl():
     """Check for sysctl overrides."""
-    sysctl_file = "/etc/sysctl.d/60-hardening.conf"
-    with open(f"/usr{sysctl_file}", encoding="utf-8") as f:
+    sysctl_file = "/usr/lib/sysctl.d/55-hardening.conf"
+    with open(sysctl_file, encoding="utf-8") as f:
         conf = f.readlines()
     sysctl_expected = parse_config(conf)
     status = PASS
     sysctl_errors = []
-    with open(sysctl_file, encoding="utf-8") as f:
-        etc_conf = f.readlines()
-    if conf != etc_conf:
-        status = WARN
-        sysctl_errors.append(_("The file {0} has been modified.").format(sysctl_file))
     for sysctl, expected in sysctl_expected.items():
         sysctl_path = f"/proc/sys/{sysctl.replace('.', '/')}"
         for path in glob.iglob(sysctl_path):
@@ -356,13 +354,14 @@ def audit_chronyd():
 
 
 @audit
-def audit_dns():
+@depends_on("audit_signed_image")
+def audit_dns(state):
     """Ensure system DNS resolution is active and secure."""
 
+    # Parse `ujust dns-selector status` output.
     status_out = command_stdout(
-        "/usr/bin/python3", "/usr/libexec/secureblue/dns_selector.py", "status", check=False
+        "/usr/bin/python3", "/usr/libexec/secureblue/dns_selector.py", "status"
     )
-
     flags = {}
     for line in status_out.splitlines():
         if ":" not in line:
@@ -380,7 +379,7 @@ def audit_dns():
     status = PASS
 
     # INFO
-    if not trivalent_doh:
+    if not trivalent_doh and state["image"] != Image.COREOS:
         status = INFO
         warnings.append(_("DNS over HTTPS in Trivalent is disabled."))
         recs.append(
@@ -408,6 +407,17 @@ def audit_dns():
                 ]
             )
         )
+    if not unbound:
+        status = WARN
+        warnings.append(_("The secure DNS resolver is not in use, possibly for a VPN."))
+        recs.append(
+            "\n".join(
+                [
+                    _("To view or reset your current DNS configuration, run:"),
+                    "$ ujust dns-selector",
+                ]
+            )
+        )
 
     # FAIL
     if unbound and not dnssec:
@@ -422,18 +432,14 @@ def audit_dns():
                 ]
             )
         )
-    if not unbound:
+    if unbound and not global_dns and is_using_vpn():
         status = FAIL
-        warnings.append(_("The secure DNS resolver is not in use, possibly for a VPN."))
+        warnings.append(_("Using a VPN alongside Unbound without Global DNS may cause DNS leaks."))
         recs.append(
             "\n".join(
                 [
-                    _(
-                        "If you use a VPN, consider using it with secure DNS. For instructions, see:"
-                    ),
-                    bold("https://secureblue.dev/faq#dns-vpn"),
-                    _("Otherwise, to view or reset your current DNS configuration, run:"),
-                    "$ ujust dns-selector",
+                    _("If you use a VPN, switch your DNS resolver to systemd-resolved:"),
+                    "$ ujust dns-selector resolver resolved",
                 ]
             )
         )

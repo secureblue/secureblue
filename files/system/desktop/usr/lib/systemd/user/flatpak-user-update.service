@@ -4,6 +4,8 @@ Documentation=man:flatpak(1)
 Wants=network-online.target
 After=network-online.target
 ConditionUser=!@system
+StartLimitIntervalSec=24h
+StartLimitBurst=3
 
 [Service]
 Type=oneshot
@@ -11,5 +13,3 @@ ExecCondition=/bin/bash -c '[[ "$(busctl get-property org.freedesktop.NetworkMan
 ExecStart=/usr/bin/flatpak --user uninstall --unused -y --noninteractive ; /usr/bin/flatpak --user update -y --noninteractive ; /usr/bin/flatpak --user repair
 RestartSec=1h
 Restart=on-failure
-StartLimitIntervalSec=24h
-StartLimitBurst=3

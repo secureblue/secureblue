@@ -38,6 +38,7 @@ whitelist=(
     "/usr/lib64/glibc-hwcaps/x86-64-v4/libhardened_malloc-light.so"
     "/usr/lib64/glibc-hwcaps/x86-64-v4/libhardened_malloc-pkey.so"
     "/usr/lib64/glibc-hwcaps/x86-64-v4/libhardened_malloc.so"
+    "/usr/lib64/libno_rlimit_as.so"
 )
 
 

@@ -35,7 +35,7 @@ cp /usr/sbin/akmodsbuild /usr/sbin/akmodsbuild.backup
 # TODO remove this when fixed upstream
 sed -i '/if \[\[ -w \/var \]\] ; then/,/fi/d' /usr/sbin/akmodsbuild
 dnf install -y --setopt=install_weak_deps=False nvidia-kmod-common nvidia-modprobe
-cp /usr/sbin/akmodsbuild.backup /usr/sbin/akmodsbuild
+mv /usr/sbin/akmodsbuild.backup /usr/sbin/akmodsbuild
 
 echo "Setting kernel.conf to $KERNEL_MODULE_TYPE"
 sed -i --sandbox "s/^MODULE_VARIANT=.*/MODULE_VARIANT=$KERNEL_MODULE_TYPE/" /etc/nvidia/kernel.conf

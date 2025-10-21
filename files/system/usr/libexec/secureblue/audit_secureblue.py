@@ -34,6 +34,7 @@ import sys
 import traceback
 from typing import Final
 
+import kargs_hardening_common
 from audit_flatpak import check_flatpak_permissions, parse_flatpak_permissions
 from auditor import (
     Report,
@@ -76,57 +77,23 @@ def audit_kargs():
     rec = None
 
     kargs_current = frozenset(command_stdout("rpm-ostree", "kargs").split())
-    kargs_expected = (
-        "init_on_alloc=1",
-        "init_on_free=1",
-        "intel_iommu=on",
-        "iommu.passthrough=0",
-        "iommu.strict=1",
-        "iommu=force",
-        "kvm-intel.vmentry_l1d_flush=always",
-        "kvm.mitigate_smt_rsb=1",
-        "l1d_flush=on",
-        "l1tf=full,force",
-        "lockdown=confidentiality",
-        "loglevel=0",
-        "mitigations=auto,nosmt",
-        "module.sig_enforce=1",
-        "page_alloc.shuffle=1",
-        "pti=on",
-        "random.trust_bootloader=off",
-        "random.trust_cpu=off",
-        "randomize_kstack_offset=on",
-        "rd.emergency=halt",
-        "rd.shell=0",
-        "slab_nomerge",
-        "spec_store_bypass_disable=on",
-        "spectre_v2=on",
-        "ssbd=force-on",
-        "vdso32=0",
-        "vsyscall=none",
-    )
+    kargs_expected = kargs_hardening_common.DEFAULT_KARGS
     for karg in kargs_expected:
         if karg not in kargs_current:
             status = status.downgrade_to(FAIL)
             warnings.append(_("Missing kernel argument: {0}").format(karg))
 
-    karg_32bit = "ia32_emulation=0"
+    karg_32bit = kargs_hardening_common.DISABLE_32_BIT
     if karg_32bit not in kargs_current:
         status = status.downgrade_to(WARN)
         warnings.append(_("Missing kernel argument: {0} (32-bit support)").format(karg_32bit))
 
-    karg_nosmt = "nosmt=force"
+    karg_nosmt = kargs_hardening_common.FORCE_NOSMT
     if karg_nosmt not in kargs_current:
         status = status.downgrade_to(WARN)
         warnings.append(_("Missing kernel argument: {0} (force-disable SMT)").format(karg_nosmt))
 
-    kargs_expected_unstable = (
-        "amd_iommu=force_isolation",
-        "debugfs=off",
-        "efi=disable_early_pci_dma",
-        "gather_data_sampling=force",
-        "oops=panic",
-    )
+    kargs_expected_unstable = kargs_hardening_common.UNSTABLE_KARGS
     for karg in kargs_expected_unstable:
         if karg not in kargs_current:
             status = status.downgrade_to(WARN)

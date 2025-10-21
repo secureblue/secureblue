@@ -32,3 +32,13 @@ set-bluetooth-modules *args:
 dns-selector *args:
     #!/bin/sh
     exec /usr/bin/python3 /usr/libexec/secureblue/dns_selector.py "$@"
+
+# Add additional boot parameters for hardening (requires reboot)
+set-kargs-hardening:
+    #!/usr/bin/sh
+    /usr/bin/python3 /usr/libexec/secureblue/set_kargs_hardening.py
+
+# Remove all hardening boot parameters (requires reboot)
+remove-kargs-hardening:
+    #!/usr/bin/sh
+    /usr/bin/python3 /usr/libexec/secureblue/remove_kargs_hardening.py

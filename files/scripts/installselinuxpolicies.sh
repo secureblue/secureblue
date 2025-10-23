@@ -19,7 +19,7 @@ dnf install -y --setopt=install_weak_deps=False selinux-policy-devel
 policy_modules=(trivalent flatpakfull nautilus systemsettings thunar)
 
 cil_policy_modules=(
-    './selinux/user_namespace/grant_fm_users.cil'
+    './selinux/user_namespace/grant_fm_userns.cil'
     './selinux/user_namespace/grant_userns.cil'
     './selinux/user_namespace/harden_userns.cil'
     './selinux/user_namespace/harden_container_userns.cil'

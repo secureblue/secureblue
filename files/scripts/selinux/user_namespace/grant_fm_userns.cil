@@ -1,0 +1,4 @@
+(typeattribute file_manager_type)
+(typeattributeset file_manager_type (nautilus_t thunar_t)) 
+
+(allow file_manager_type self (user_namespace (create)))

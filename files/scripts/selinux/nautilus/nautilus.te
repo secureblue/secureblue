@@ -30,7 +30,4 @@ optional_policy(`
 
 	nautilus_run(unconfined_t, unconfined_r)
 	nautilus_run(trivalent_t, unconfined_r)
-
-	# required for trivalent/nautilus clipboard sharing
-	allow trivalent_t nautilus_t:fifo_file write;
 ')

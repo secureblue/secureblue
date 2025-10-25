@@ -114,7 +114,7 @@ allow trivalent_t audio_home_t:lnk_file { manage_lnk_file_perms };
 
 optional_policy(`
 	gen_require(`
-		type file_manager_type;
+		attribute file_manager_type;
 	')
 
   # required for trivalent/FM clipboard sharing

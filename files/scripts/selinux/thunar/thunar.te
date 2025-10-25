@@ -30,4 +30,7 @@ optional_policy(`
 
 	thunar_run(unconfined_t, unconfined_r)
 	thunar_run(trivalent_t, unconfined_r)
+
+	# required for trivalent/thunar clipboard sharing
+	allow trivalent_t thunar_t:fifo_file write;
 ')

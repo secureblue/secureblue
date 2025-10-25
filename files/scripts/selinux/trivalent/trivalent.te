@@ -112,10 +112,14 @@ allow trivalent_t audio_home_t:dir { manage_dir_perms };
 allow trivalent_t audio_home_t:file { manage_file_perms };
 allow trivalent_t audio_home_t:lnk_file { manage_lnk_file_perms };
 
+optional_policy(`
+	gen_require(`
+		type file_manager_type;
+	')
 
-# required for trivalent/FM clipboard sharing
-allow trivalent_t file_manager_type:fifo_file write;
-
+  # required for trivalent/FM clipboard sharing
+  allow trivalent_t file_manager_type:fifo_file write;
+')
 # screenshare access
 allow trivalent_t unconfined_t:unix_stream_socket { connectto rw_socket_perms };
 

@@ -16,24 +16,15 @@ set -oue pipefail
 
 status="$(rpm-ostree status)"
 
-show-rpm-ostree-status() {
-	tmpfile="$(mktemp -t rpm-ostree-status-XXXXXXXXXX.txt)"
-	rpm-ostree status --verbose > "$tmpfile"
-	xdg-open "$tmpfile"
-}
-
 if [[ "$status"  =~ SecAdvisories:.*(important|critical) ]]; then
 	case "$(notify-send --urgency=critical \
 		--app-name="secureblue" \
 		--action="Reboot" \
-		--action="See CVE Details" \
 		"A major security vulnerability has been patched" \
 		"Please reboot to run the updated system")" in
 			"0")
 				systemctl reboot ;;
 
-			"1")
-				show-rpm-ostree-status ;;
 	esac
 
 elif [[ "$status"  =~ SecAdvisories:.*(unknown severity|low|moderate) ]]; then
@@ -41,13 +32,9 @@ elif [[ "$status"  =~ SecAdvisories:.*(unknown severity|low|moderate) ]]; then
 		--expire-time=5000 \
 		--app-name="secureblue" \
 		--action="Reboot" \
-		--action="See CVE Details" \
 		"A security vulnerability has been patched" \
 		"Please reboot to run the updated system")" in
 			"0")
 				systemctl reboot ;;
-
-			"1")
-				show-rpm-ostree-status ;;
 	esac
 fi

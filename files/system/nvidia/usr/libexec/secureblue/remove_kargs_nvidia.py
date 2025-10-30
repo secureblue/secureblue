@@ -1,3 +1,5 @@
+#!/usr/bin/python3
+
 # Copyright 2025 The Secureblue Authors
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -12,12 +14,18 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-# Set Nvidia kernel arguments
-set-kargs-nvidia:
-    #!/usr/bin/sh
-    /usr/bin/python3 /usr/libexec/secureblue/set_kargs_nvidia.py
+"""Remove Nvidia-specific kernel arguments."""
 
-# Remove Nvidia kernel arguments
-remove-kargs-nvidia:
-    #!/usr/bin/sh
-    /usr/bin/python3 /usr/libexec/secureblue/remove_kargs_nvidia.py
+import subprocess  # nosec
+
+import tomllib
+
+with open("/usr/lib/bootc/kargs.d/20-nvidia.toml", "rb") as f:
+    NVIDIA_KARGS = tomllib.load(f)["kargs"]
+
+rpm_ostree_cmd = ["/usr/bin/rpm-ostree", "kargs"]
+for karg in NVIDIA_KARGS:
+    rpm_ostree_cmd.append(f"--delete-if-present={karg}")
+
+print("Removing Nvidia-specific kernel arguments...")
+subprocess.run(rpm_ostree_cmd, check=True)  # nosec

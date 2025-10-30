@@ -21,6 +21,7 @@
 import subprocess  # nosec
 import sys
 import textwrap
+from typing import Final
 
 from kargs_hardening_common import (
     DEFAULT_KARGS,
@@ -29,10 +30,8 @@ from kargs_hardening_common import (
     MODULE_NO_SIG_ENFORCE,
     MODULE_SIG_ENFORCE,
     UNSTABLE_KARGS,
+    apply_kargs,
 )
-
-kargs_to_add = DEFAULT_KARGS
-kargs_to_remove = []
 
 
 def prompt_yes_no(message: str, *, default: bool = False) -> bool:
@@ -54,65 +53,98 @@ def prompt_yes_no(message: str, *, default: bool = False) -> bool:
         print("Invalid reponse, please enter 'y' or 'n'.")
 
 
-msg = """
+def build_kargs_list(
+    *, disable_32_bit: bool, nosmt: bool, unstable: bool, secure_boot: bool
+) -> tuple[list[str], list[str]]:
+    """Build the list of kargs to add and remove."""
+    kargs_to_add = DEFAULT_KARGS
+    kargs_to_remove = []
+
+    if disable_32_bit:
+        kargs_to_add.append(DISABLE_32_BIT)
+    else:
+        kargs_to_remove.append(DISABLE_32_BIT)
+
+    if nosmt:
+        kargs_to_add.append(FORCE_NOSMT)
+    else:
+        kargs_to_remove.append(FORCE_NOSMT)
+
+    if unstable:
+        kargs_to_add += UNSTABLE_KARGS
+    else:
+        kargs_to_remove += UNSTABLE_KARGS
+
+    if secure_boot:
+        kargs_to_remove.append(MODULE_NO_SIG_ENFORCE)
+    else:
+        kargs_to_add.remove(MODULE_SIG_ENFORCE)
+        kargs_to_add.append(MODULE_NO_SIG_ENFORCE)
+        kargs_to_remove.append(MODULE_SIG_ENFORCE)
+
+    return kargs_to_add, kargs_to_remove
+
+
+QUESTION_32_BIT: Final[str] = """
 Do you need support for 32-bit processes/syscalls? (This is mostly used by
 legacy software, with some exceptions, such as Steam.)
 """
 
-if prompt_yes_no(msg):
-    print("Keeping 32-bit support.")
-    kargs_to_remove.append(DISABLE_32_BIT)
-else:
-    print("Disabling 32-bit support for the next boot.")
-    kargs_to_add.append(DISABLE_32_BIT)
-
-msg = """
+QUESTION_NOSMT: Final[str] = """
 Do you want to force disable Simultaneous Multithreading (SMT) / Hyperthreading?
 (This can cause a reduction in the performance of certain tasks in favor of
 security. Note that in most hardware SMT will be disabled anyways to mitigate
 a known vulnerability; this turns it off on all hardware regardless.)
 """
 
-if prompt_yes_no(msg):
-    print("Force disabling SMT/hyperthreading.")
-    kargs_to_add.append(FORCE_NOSMT)
-else:
-    print("Not force disabling SMT/hyperthreading.")
-    kargs_to_remove.append(FORCE_NOSMT)
-
-msg = """
+QUESTION_UNSTABLE: Final[str] = """
 Would you like to set additional (unstable) hardening kernel arguments?
 (Warning: Setting these kernel arguments may lead to boot or stability issues
 on some hardware.)
 """
 
-if prompt_yes_no(msg):
-    print("Setting unstable hardening kernel arguments.")
-    kargs_to_add += UNSTABLE_KARGS
-else:
-    print("Not setting unstable hardening kernel arguments.")
-    kargs_to_remove += UNSTABLE_KARGS
 
-# Check for secure boot support, required for some drivers. (e.g. WiFi on some
-# macbooks, plus there would be no way to verify these anyways.)
-sb_state = subprocess.run(["/usr/bin/mokutil", "--sb-state"], capture_output=True, check=False)  # nosec
-if (
-    b"doesn't support Secure Boot" in sb_state.stderr
-    or b"EFI variables are not supported" in sb_state.stderr
-):
-    print("Secure Boot not supported. Skipping module signature enforcement.")
-    kargs_to_add.remove(MODULE_SIG_ENFORCE)
-    kargs_to_add.append(MODULE_NO_SIG_ENFORCE)
-    kargs_to_remove.append(MODULE_SIG_ENFORCE)
-else:
-    kargs_to_remove.append(MODULE_NO_SIG_ENFORCE)
+def main() -> None:
+    """Main entry point for script."""
+    disable_32_bit = not prompt_yes_no(QUESTION_32_BIT)
+    if disable_32_bit:
+        print("Disabling 32-bit support for the next boot.")
+    else:
+        print("Keeping 32-bit support.")
 
-rpm_ostree_cmd = ["/usr/bin/rpm-ostree", "kargs"]
-for karg in kargs_to_add:
-    rpm_ostree_cmd.append(f"--append-if-missing={karg}")
-for karg in kargs_to_remove:
-    rpm_ostree_cmd.append(f"--delete-if-present={karg}")
+    nosmt = prompt_yes_no(QUESTION_NOSMT)
+    if nosmt:
+        print("Force disabling SMT/hyperthreading.")
+    else:
+        print("Not force disabling SMT/hyperthreading.")
 
-print("Applying boot parameters...")
-subprocess.run(rpm_ostree_cmd, check=True)  # nosec
-print("Hardening kernel arguments applied.")
+    unstable = prompt_yes_no(QUESTION_UNSTABLE)
+    if unstable:
+        print("Setting unstable hardening kernel arguments.")
+    else:
+        print("Not setting unstable hardening kernel arguments.")
+
+    # Check for secure boot support, required for some drivers. (e.g. WiFi on some
+    # Macbooks, plus there would be no way to verify these anyways.)
+    sb_state = subprocess.run(["/usr/bin/mokutil", "--sb-state"], capture_output=True, check=False)  # nosec
+    secure_boot_supported = not (
+        b"doesn't support Secure Boot" in sb_state.stderr
+        or b"EFI variables are not supported" in sb_state.stderr
+    )
+    if not secure_boot_supported:
+        print("Secure Boot not supported. Skipping module signature enforcement.")
+
+    kargs_to_add, kargs_to_remove = build_kargs_list(
+        disable_32_bit=disable_32_bit,
+        nosmt=nosmt,
+        unstable=unstable,
+        secure_boot=secure_boot_supported,
+    )
+
+    print("Applying boot parameters...")
+    apply_kargs(add=kargs_to_add, remove=kargs_to_remove)
+    print("Hardening kernel arguments applied.")
+
+
+if __name__ == "__main__":
+    main()

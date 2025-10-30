@@ -18,16 +18,23 @@
 
 # https://docs.kernel.org/admin-guide/kernel-parameters.html
 
-import subprocess  # nosec
+from kargs_hardening_common import (
+    DEFAULT_KARGS,
+    DISABLE_32_BIT,
+    FORCE_NOSMT,
+    UNSTABLE_KARGS,
+    apply_kargs,
+)
 
-from kargs_hardening_common import DEFAULT_KARGS, DISABLE_32_BIT, FORCE_NOSMT, UNSTABLE_KARGS
 
-kargs_to_remove = DEFAULT_KARGS + DISABLE_32_BIT + FORCE_NOSMT + UNSTABLE_KARGS
+def main() -> None:
+    """Main script entry point."""
+    kargs_to_remove = DEFAULT_KARGS + DISABLE_32_BIT + FORCE_NOSMT + UNSTABLE_KARGS
 
-rpm_ostree_cmd = ["/usr/bin/rpm-ostree", "kargs"]
-for karg in kargs_to_remove:
-    rpm_ostree_cmd.append(f"--delete-if-present={karg}")
+    print("Applying boot parameters...")
+    apply_kargs(add=[], remove=kargs_to_remove)
+    print("Hardening kernel arguments removed.")
 
-print("Applying boot parameters...")
-subprocess.run(rpm_ostree_cmd, check=True)  # nosec
-print("Hardening kernel arguments removed.")
+
+if __name__ == "__main__":
+    main()

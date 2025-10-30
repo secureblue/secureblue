@@ -16,16 +16,20 @@
 
 """Add Nvidia-specific kernel arguments."""
 
-import subprocess  # nosec
+import sys
 
-import tomllib
+from kargs_hardening_common import NVIDIA_KARGS, apply_kargs
 
-with open("/usr/lib/bootc/kargs.d/20-nvidia.toml", "rb") as f:
-    NVIDIA_KARGS = tomllib.load(f)["kargs"]
 
-rpm_ostree_cmd = ["/usr/bin/rpm-ostree", "kargs"]
-for karg in NVIDIA_KARGS:
-    rpm_ostree_cmd.append(f"--append-if-missing={karg}")
+def main() -> int:
+    """Main entry point for script."""
+    if NVIDIA_KARGS is None:
+        print("Error: Nvidia kernel arguments not found!")
+        return 1
+    print("Applying Nvidia-specific kernel arguments...")
+    apply_kargs(add=NVIDIA_KARGS, remove=[])
+    return 0
 
-print("Applying Nvidia-specific kernel arguments...")
-subprocess.run(rpm_ostree_cmd, check=True)  # nosec
+
+if __name__ == "__main__":
+    sys.exit(main())

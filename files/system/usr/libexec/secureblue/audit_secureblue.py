@@ -820,15 +820,12 @@ def audit_ld_preload():
 
 
 @audit
-@depends_on("audit_signed_image")
-def audit_hardened_malloc(state):
+def audit_hardened_malloc():
     """Ensure hardened_malloc is set to be preloaded in place of the default system malloc."""
     rec = None
     ld_preload = os.environ.get("LD_PRELOAD")
     preloads = [] if ld_preload is None else ld_preload.split()
-    expected_preloads = ["libhardened_malloc.so"]
-    if state["image"].is_desktop():
-        expected_preloads.append("libno_rlimit_as.so")
+    expected_preloads = ["libhardened_malloc.so", "libno_rlimit_as.so"]
     if preloads == expected_preloads:
         status = PASS
         warning = None

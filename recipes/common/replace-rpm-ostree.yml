@@ -11,6 +11,9 @@
 # See the License for the specific language governing permissions and limitations under the License.
 
 type: dnf
+repos:
+  files:
+    - https://copr.fedorainfracloud.org/coprs/secureblue/rpm-ostree/repo/fedora-43/secureblue-rpm-ostree-fedora-43.repo
 replace:
   - from-repo: copr:copr.fedorainfracloud.org:secureblue:rpm-ostree
     packages:

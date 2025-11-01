@@ -3,6 +3,7 @@ Description=Security update notification
 Wants=graphical-session.target
 After=graphical-session.target
 ConditionUser=!@system
+ConditionPathIsDirectory=%h/.config
 
 [Service]
 Type=simple

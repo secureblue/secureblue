@@ -17,6 +17,7 @@ modules:
         - httpsmirrors.sh
         - unprotectsudo.sh
     - from-file: common/common-packages.yml
+    - from-file: common/replace-rpm-ostree.yml
     - type: script
       scripts:
         - manuallyinstalljust.sh

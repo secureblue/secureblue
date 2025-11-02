@@ -18,6 +18,7 @@ modules:
   - type: script
     scripts:
       - disablewlrportals.sh
+      - sddmawaitudevsettle.sh
   - type: dnf
     remove:
       packages:

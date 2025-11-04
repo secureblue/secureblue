@@ -31,11 +31,11 @@ class CoseAlgorithms:
 @dataclass
 class FidoDevice:
     device: CtapHidDevice
-    # Same as self.device.product_name()
+    # From self.device.product_name()
     name: str
     cbor: bool
     supported_algorithm: set[str] = field(default_factory=set)
-    # True if the device is equipped with biometric sensor.
+    # True if the device is equipped with biometric sensor, and the user wants to use it.
     bio: bool = False
 
     # Returns the path (/dev/hidrawX) of the device.
@@ -43,10 +43,10 @@ class FidoDevice:
         return self.device.descriptor.path
 
     # Test self.cbor before use!
-    def test_supported_algorithms(self) -> None:
-        supported_algorithms = Ctap2(self.device).get_info().algorithms
+    def test_supported_algorithm(self) -> set:
+        supported_algorithm = Ctap2(self.device).get_info().algorithms
 
-        for algo in supported_algorithms:
+        for algo in supported_algorithm:
             match algo.get("alg"):
                 case CoseAlgorithms.UNSPEC:
                     self.supported_algorithm.add("UNSPEC")
@@ -63,15 +63,22 @@ class FidoDevice:
                 case CoseAlgorithms.RS1:
                     self.supported_algorithm.add("RS1")
 
+        return self.supported_algorithm
+
     # Test self.cbor before use!
-    def test_bio_support(self) -> None:
+    def test_bio_support(self) -> bool:
         info = Ctap2(self.device).get_info()
 
         if (( "bioEnroll" in info.options ) or
             ("FIDO_2_1_PRE" in info.versions
             and "userVerificationMgmtPreview" in info.options )
         ):
-            self.bio = True
+            return True
+        
+        return False
+        
+    def set_bio_support(self) -> None:
+        self.bio = True
 
 @dataclass
 class ConnectedDevices:

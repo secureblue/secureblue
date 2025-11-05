@@ -16,7 +16,7 @@ description: "Cosmic, hardened"
 
 base-image: quay.io/fedora-ostree-desktops/cosmic-atomic
 
-image-version: 42
+image-version: 43
 
 nushell-version: none
 

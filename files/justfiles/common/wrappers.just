@@ -18,6 +18,7 @@ audit-secureblue *args:
     exec /usr/bin/python3 /usr/libexec/secureblue/audit_secureblue.py "$@"
 
 # Run a non-flatpak application with standard memory allocator
+[no-cd]
 with-standard-malloc *args:
     #!/bin/sh
     LD_PRELOAD='' exec "$@"

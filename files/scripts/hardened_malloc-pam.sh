@@ -14,4 +14,4 @@
 
 set -euo pipefail
 
-sed -i -e '$a\LD_PRELOAD DEFAULT=libhardened_malloc.so' -e '/^LD_PRELOAD[[:space:]]/d' /etc/security/pam_env.conf
+sed -i -e '$a\LD_PRELOAD DEFAULT="libhardened_malloc.so libno_rlimit_as.so"' -e '/^LD_PRELOAD[[:space:]]/d' /etc/security/pam_env.conf

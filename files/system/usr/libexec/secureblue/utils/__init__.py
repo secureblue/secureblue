@@ -185,21 +185,30 @@ class Image(enum.Enum):
     SERICEA = enum.auto()
     COSMIC = enum.auto()
     COREOS = enum.auto()
+    IOT = enum.auto()
 
     @classmethod
     def from_image_ref(cls, image_ref: str) -> "Image | None":
         """Convert an image reference to the corresponding Image enum instance."""
-        if "silverblue" in image_ref:
-            return cls.SILVERBLUE
-        if "kinoite" in image_ref:
-            return cls.KINOITE
-        if "sericea" in image_ref:
-            return cls.SERICEA
-        if "cosmic" in image_ref:
-            return cls.COSMIC
-        if "securecore" in image_ref:
-            return cls.COREOS
-        return None
+        image_dict = {
+            "silverblue": cls.SILVERBLUE,
+            "kinoite": cls.KINOITE,
+            "sericea": cls.SERICEA,
+            "cosmic": cls.COSMIC,
+            "securecore": cls.COREOS,
+            "iot": cls.IOT,
+        }
+        image_name = image_ref.rsplit("/", maxsplit=1)[-1]
+        image_prefix = image_name.split("-", maxsplit=1)[0]
+        return image_dict.get(image_prefix)
+
+    def is_server(self) -> bool:
+        """Is the image a server image?"""
+        return self in (Image.COREOS, Image.IOT)
+
+    def is_desktop(self) -> bool:
+        """Is the image a desktop image?"""
+        return not self.is_server()
 
 
 async def get_flatpak_permissions(name: str, version: str) -> str:

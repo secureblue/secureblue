@@ -11,30 +11,57 @@
 # See the License for the specific language governing permissions and limitations under the License.
 
 modules:
-    - type: script
-      scripts:
-        - installproprietarypackages.sh
-    - type: rpm-ostree
+    - type: dnf
+      repos:
+        files:
+          - https://negativo17.org/repos/fedora-multimedia.repo
       install:
-      - heif-pixbuf-loader
-      - ffmpeg
-      - ffmpeg-libs
-      - ffmpegthumbnailer
-      - pipewire-libs-extra
-      - libfdk-aac
-      - gstreamer1-plugins-ugly
-      remove:
-      - gstreamer1-plugins-ugly-free
-      - fdk-aac-free
-      - ffmpeg-free
-      - libavcodec-free  
-      - libavdevice-free
-      - libavfilter-free
-      - libavformat-free  
-      - libavutil-free  
-      - libpostproc-free  
-      - libswresample-free  
-      - libswscale-free  
+        install-weak-deps: false
+        packages:
+          - libopenjph
+          - heif-pixbuf-loader
+          - ffmpegthumbnailer
+          - rar
+          # - pipewire-libs-extra uncomment once this ships https://bodhi.fedoraproject.org/updates/FEDORA-2025-1299cfef2f
+      replace:  
+        - from-repo: fedora-multimedia
+          packages:
+            - libheif
+            - libva
+            - mesa-dri-drivers
+            - gstreamer1-plugin-libav
+            - mesa-filesystem
+            - mesa-libEGL
+            - mesa-libGL
+            - mesa-libgbm
+            - mesa-va-drivers
+            - mesa-vulkan-drivers
+            - libva-intel-media-driver
+            - intel-gmmlib
+            - intel-mediasdk
+            - old: ffmpeg-free
+              new: ffmpeg
+            - old: fdk-aac-free
+              new: libfdk-aac
+            - old: gstreamer1-plugins-ugly-free
+              new: gstreamer1-plugins-ugly
+            - old: libavcodec-free
+              new: libavcodec
+            - old: libavdevice-free
+              new: libavdevice
+            - old: libavfilter-free
+              new: libavfilter
+            - old: libavformat-free
+              new: libavformat
+            - old: libavutil-free
+              new: libavutil
+            - old: libpostproc-free
+              new: libpostproc
+            - old: libswresample-free
+              new: libswresample
+            - old: libswscale-free
+              new: libswscale
+
     - type: script
       scripts:
         - removeunusedrepos.sh

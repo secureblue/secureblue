@@ -232,7 +232,7 @@ jobs:
       KERNEL_PRIVKEY: ${{ secrets.KERNEL_PRIVKEY }}
 
   securecore-zfs-nvidia:
-    name: Build zfs nvidia images
+    name: Build securecore zfs nvidia images
     if: github.triggering_actor == 'royaloughtness' || github.event_name == 'schedule' || github.event_name == 'push'
     needs: securecore-zfs-main
     permissions:
@@ -307,7 +307,7 @@ jobs:
       KERNEL_PRIVKEY: ${{ secrets.KERNEL_PRIVKEY }}
 
   iot-zfs-nvidia:
-    name: Build zfs nvidia images
+    name: Build iot zfs nvidia images
     if: github.triggering_actor == 'royaloughtness' || github.event_name == 'schedule' || github.event_name == 'push'
     needs: iot-zfs-main
     permissions:

@@ -51,8 +51,7 @@ gen_require(`
 	type chrome_sandbox_home_t;
 	type device_t;
 	type dosfs_t;
-	type fs_t;
-	type unconfined_t;
+	type fonts_cache_t;
 	type http_port_t;
 	type http_cache_port_t;
 	type howl_port_t;
@@ -63,6 +62,7 @@ gen_require(`
 	type nsfs_t;
 	type tmp_t;
 	type tmpfs_t;
+	type unconfined_t;
 	type unconfined_dbusd_t;
 	type user_home_t;
 	type xserver_misc_device_t;
@@ -78,7 +78,7 @@ allow trivalent_t self:sem create_sem_perms;
 allow trivalent_t self:netlink_kobject_uevent_socket client_stream_socket_perms;
 allow trivalent_t self:user_namespace create;
 allow trivalent_t self:unix_stream_socket { connectto rw_socket_perms };
-allow trivalent_t self:cap_userns { sys_admin sys_chroot sys_ptrace };
+allow trivalent_t self:cap_userns { sys_admin sys_chroot sys_ptrace net_admin setpcap };
 allow trivalent_t self:capability { dac_read_search sys_admin sys_chroot sys_ptrace };
 allow trivalent_t self:fifo_file { manage_fifo_file_perms relabelfrom relabelto };
 allow trivalent_t self:dir rw_dir_perms;
@@ -91,15 +91,20 @@ allow trivalent_t chrome_sandbox_home_t:lnk_file { manage_lnk_file_perms };
 allow trivalent_t trivalent_home_t:dir { manage_dir_perms };
 allow trivalent_t trivalent_home_t:file { manage_file_perms execute map };
 allow trivalent_t trivalent_home_t:lnk_file { manage_lnk_file_perms };
-allow trivalent_t self:netlink_route_socket nlmsg_read;
+allow trivalent_t self:netlink_route_socket { nlmsg_read nlmsg_write };
 
 # not covered by interfaces
-allow trivalent_t pki_ca_port_t:tcp_socket name_connect;
+allow trivalent_t fonts_cache_t:dir mounton;
 allow trivalent_t howl_port_t:udp_socket name_bind;
 allow trivalent_t http_port_t:tcp_socket { name_connect };
 allow trivalent_t http_cache_port_t:tcp_socket { name_connect };
+allow trivalent_t pki_ca_port_t:tcp_socket name_connect;
+allow trivalent_t root_t:dir mounton;
 allow trivalent_t tmp_t:lnk_file { create unlink };
 allow trivalent_t tmp_t:sock_file { create unlink };
+allow trivalent_t tmp_t:dir mounton;
+allow trivalent_t tmpfs_t:file mounton;
+allow trivalent_t tmpfs_t:dir { create };
 
 # required for trivalent to be able to detect whether it's the default browser
 allow trivalent_t trivalent_script_exec_t:file { execute getattr read execute_no_trans ioctl open };
@@ -112,6 +117,14 @@ allow trivalent_t audio_home_t:dir { manage_dir_perms };
 allow trivalent_t audio_home_t:file { manage_file_perms };
 allow trivalent_t audio_home_t:lnk_file { manage_lnk_file_perms };
 
+optional_policy(`
+	gen_require(`
+		attribute file_manager_type;
+	')
+
+  # required for trivalent/FM clipboard sharing
+  allow trivalent_t file_manager_type:fifo_file write;
+')
 # screenshare access
 allow trivalent_t unconfined_t:unix_stream_socket { connectto rw_socket_perms };
 
@@ -169,6 +182,11 @@ fs_manage_tmpfs_files(trivalent_t)
 fs_map_tmpfs_files(trivalent_t)
 fs_search_cgroup_dirs(trivalent_t)
 fs_associate_proc(trivalent_t)
+fs_unmount_tmpfs(trivalent_t)
+fs_mount_tmpfs(trivalent_t)
+fs_manage_tmpfs_symlinks(trivalent_t)
+fs_all_mount_fs_perms_xattr_fs(trivalent_t)
+fs_mounton_tmpfs(trivalent_t)
 
 miscfiles_read_all_certs(trivalent_t)
 miscfiles_map_generic_certs(trivalent_t)
@@ -199,6 +217,7 @@ tunable_policy(`trivalent_rwmap_video_dev', `
 ')
 
 udev_read_pid_files(trivalent_t)
+term_mount_pty_fs(trivalent_t)
 
 gnome_search_gconf_data_dir(trivalent_t)
 gnome_manage_cache_home_dir(trivalent_t)
@@ -289,13 +308,11 @@ allow trivalent_script_t nsfs_t:file getattr;
 allow trivalent_script_t ld_so_cache_t:file mounton;
 allow trivalent_script_t root_t:dir mounton;
 allow trivalent_script_t tmp_t:dir mounton;
-allow trivalent_script_t tmpfs_t:dir { mounton create };
-allow trivalent_script_t tmpfs_t:filesystem { unmount mount };
+allow trivalent_script_t tmp_t:sock_file getattr;
+allow trivalent_script_t tmpfs_t:dir { create };
 allow trivalent_script_t device_t:filesystem remount;
 allow trivalent_script_t dosfs_t:filesystem remount;
-allow trivalent_script_t fs_t:filesystem { remount unmount };
 allow trivalent_script_t null_device_t:chr_file mounton;
-allow trivalent_script_t tmp_t:sock_file getattr;
 allow trivalent_script_t trivalent_t:process2 { nosuid_transition nnp_transition };
 
 
@@ -305,6 +322,9 @@ dev_rw_xserver_misc(trivalent_script_t)
 dev_map_xserver_misc(trivalent_script_t)
 allow trivalent_script_t xserver_misc_device_t:chr_file { getattr ioctl map open read write };
 
+fs_mounton_tmpfs(trivalent_script_t)
+fs_unmount_tmpfs(trivalent_script_t)
+fs_mount_tmpfs(trivalent_script_t)
 gnome_manage_data(trivalent_script_t)
 gnome_manage_home_config(trivalent_script_t)
 gnome_manage_home_config_dirs(trivalent_script_t)
@@ -323,3 +343,4 @@ kernel_getattr_proc(trivalent_script_t)
 seutil_exec_setfiles(trivalent_script_t)
 seutil_manage_file_contexts(trivalent_script_t)
 userdom_use_inherited_user_terminals(trivalent_script_t)
+fs_all_mount_fs_perms_xattr_fs(trivalent_script_t)

@@ -19,6 +19,7 @@ on:
   push:
     branches-ignore: # don't rebuild for dependabot
       - 'dependabot/**'
+      - 'create-pull-request/**'
     paths-ignore: # don't rebuild if only documentation has changed
       - "**.md"
 

@@ -36,7 +36,7 @@ jobs:
           persist-credentials: false
 
       - name: Run integration tests
-        uses: secureblue/bootc-integration-test-action@0171b0c85dbfa8af4c4d724cd5300ad8f7cd385b # v0.0.8
+        uses: secureblue/bootc-integration-test-action@56f1a17e4ab15b0feaed849d036686e3ec7adc4b # v0.0.9
         with:
           registry: ghcr.io/secureblue
           image: silverblue-main-hardened

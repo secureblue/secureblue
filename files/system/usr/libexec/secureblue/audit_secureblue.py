@@ -379,7 +379,7 @@ def audit_dns(state):
     status = PASS
 
     # INFO
-    if not trivalent_doh and state["image"] != Image.COREOS:
+    if not trivalent_doh and state["image"].is_desktop():
         status = INFO
         warnings.append(_("DNS over HTTPS in Trivalent is disabled."))
         recs.append(
@@ -825,7 +825,8 @@ def audit_hardened_malloc():
     rec = None
     ld_preload = os.environ.get("LD_PRELOAD")
     preloads = [] if ld_preload is None else ld_preload.split()
-    if preloads == ["libhardened_malloc.so"]:
+    expected_preloads = ["libhardened_malloc.so", "libno_rlimit_as.so"]
+    if preloads == expected_preloads:
         status = PASS
         warning = None
     elif "libhardened_malloc.so" in preloads:

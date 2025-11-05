@@ -10,38 +10,49 @@
 # distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and limitations under the License.
 
-type: rpm-ostree
+type: dnf
 repos:
-  - https://copr.fedorainfracloud.org/coprs/secureblue/bubblejail/repo/fedora-%OS_VERSION%/secureblue-bubblejail-fedora-%OS_VERSION%.repo
-  - https://repo.secureblue.dev/secureblue.repo
-  - https://copr.fedorainfracloud.org/coprs/secureblue/branding/repo/fedora-%OS_VERSION%/secureblue-branding-fedora-%OS_VERSION%.repo
+  files:
+    - https://copr.fedorainfracloud.org/coprs/secureblue/bubblejail/repo/fedora-%OS_VERSION%/secureblue-bubblejail-fedora-%OS_VERSION%.repo
+    - https://repo.secureblue.dev/secureblue.repo
+    - https://copr.fedorainfracloud.org/coprs/secureblue/branding/repo/fedora-%OS_VERSION%/secureblue-branding-fedora-%OS_VERSION%.repo
 install:
-  - headsetcontrol
-  - trivalent
-  - secureblue-logos
-  - mediainfo
-  - bubblejail
-  - usbguard-notifier
-  - usbguard
-  - setools
-  - fscrypt
-  - vim
-  - wl-clipboard
-  - alsa-firmware
-  - fzf
+  install-weak-deps: false
+  packages:
+    - headsetcontrol
+    - trivalent
+    - mediainfo
+    - bubblejail
+    - usbguard-notifier
+    - usbguard
+    - setools
+    - fscrypt
+    - vim
+    - wl-clipboard
+    - alsa-firmware
+    - fzf
 
-  # yubikey enablement
-  - pam-u2f
-  - pam_yubico
-  - pamu2fcfg
-  - yubikey-manager
+    # yubikey enablement
+    - pam-u2f
+    - pam_yubico
+    - pamu2fcfg
+    - yubikey-manager
 
-  # ensure universal font coverage
-  - google-noto-fonts-all
+    # ensure universal font coverage
+    - google-noto-fonts-all
 remove:
-  - fedora-logos
-  - firefox
-  - firefox-langpacks
-  - fuse
-  - passim
-  - fedora-chromium-config
+  packages:
+    - firefox
+    - firefox-langpacks
+    - fuse
+    - passim
+    - fedora-chromium-config
+replace:
+  - from-repo: copr.fedorainfracloud.org:secureblue:branding
+    packages:
+      - old: fedora-logos
+        new: secureblue-logos
+  - from-repo: fedora
+    packages:
+      - old: OpenCL-ICD-Loader
+        new: ocl-icd

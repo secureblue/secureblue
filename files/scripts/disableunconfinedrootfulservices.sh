@@ -17,7 +17,6 @@ set -oue pipefail
 systemctl disable uresourced.service
 systemctl mask uresourced.service
 
-systemctl disable --user uresourced.service
 systemctl mask --user uresourced.service
 
 systemctl disable low-memory-monitor.service

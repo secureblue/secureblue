@@ -13,6 +13,7 @@
 modules:
     - type: dnf
       install:
+        install-weak-deps: false
         packages:
           - NetworkManager-tui
           - NetworkManager-openvpn

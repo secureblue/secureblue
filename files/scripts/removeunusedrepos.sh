@@ -24,4 +24,3 @@ rm -f /etc/yum.repos.d/rpmfusion-nonfree-steam.repo
 rm -f /etc/yum.repos.d/rpmfusion-nonfree-nvidia-driver.repo.rpmsave
 rm -f /etc/yum.repos.d/rpmfusion-nonfree-steam.repo.rpmsave
 rm -f /etc/yum.repos.d/fedora-cisco-openh264.repo
-rm -f /etc/yum.repos.d/secureblue-rpm-ostree-fedora-43.repo

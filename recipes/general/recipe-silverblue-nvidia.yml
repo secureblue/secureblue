@@ -16,7 +16,7 @@ description: "Silverblue with nvidia, hardened"
 
 base-image: ghcr.io/secureblue/silverblue-main-hardened
 
-image-version: br-next-43
+image-version: latest
 
 nushell-version: none
 

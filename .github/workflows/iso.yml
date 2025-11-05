@@ -68,7 +68,7 @@ jobs:
           curl -Lo "${WORKSPACE}/secureblue.repo" "https://copr.fedorainfracloud.org/coprs/secureblue/branding/repo/fedora-42/secureblue-branding-fedora-42.repo"
 
       - name: Build ISO
-        uses: jasonn3/build-container-installer@d77e9563739921c2f93de778d4fbad854f52d389 # main
+        uses: jasonn3/build-container-installer@c9ef3de33236e66781ec37bd0485e8009eaefe24 # v1.4.0
         id: iso_build
         env:
           IMAGE_NAME: ${{ matrix.image }}
@@ -77,7 +77,7 @@ jobs:
           image_name: ${{ env.IMAGE_NAME}}
           image_repo: ghcr.io/secureblue
           image_tag: latest
-          version: 42
+          version: 43
           variant: "Kinoite"
           additional_templates: "/github/workspace/.github/workflows/config/lorax/remove_root_password_prompt.tmpl"
           iso_name: ${{ env.IMAGE_NAME }}.iso

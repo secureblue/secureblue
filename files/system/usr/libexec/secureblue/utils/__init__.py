@@ -252,6 +252,7 @@ def is_using_vpn() -> bool:
 
 def interruptible_ask(prompt: str) -> str:
     """Ask for a string input, strip whitespace, and exit gracefully if interrupted."""
+    prompt = textwrap.fill(textwrap.dedent(prompt.strip()))
     try:
         return input(prompt).strip()
     except (KeyboardInterrupt, EOFError):

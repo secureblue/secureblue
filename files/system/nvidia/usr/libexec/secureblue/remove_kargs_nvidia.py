@@ -24,7 +24,7 @@ from kargs_hardening_common import IMAGE_NVIDIA_KARGS, apply_kargs
 def main() -> int:
     """Main entry point for script."""
     if IMAGE_NVIDIA_KARGS is None:
-        print("Error: Nvidia kernel arguments not found!")
+        print("Error: not on a Nvidia image.")
         return 1
     print("Removing Nvidia-specific kernel arguments...")
     apply_kargs(add=[], remove=IMAGE_NVIDIA_KARGS)

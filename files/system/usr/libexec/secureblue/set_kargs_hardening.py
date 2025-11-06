@@ -32,25 +32,7 @@ from kargs_hardening_common import (
     UNSTABLE_KARGS,
     apply_kargs,
 )
-
-
-def prompt_yes_no(message: str, *, default: bool = False) -> bool:
-    """Prompt the user for a yes/no response."""
-    yes_no = " [Y/n]: " if default else " [y/N]: "
-    prompt = "\n" + textwrap.fill(textwrap.dedent(message.strip())) + yes_no
-    while True:
-        try:
-            reply = input(prompt).casefold()
-        except KeyboardInterrupt:
-            print("\n\n[Interrupt received, exiting now.]", file=sys.stderr)
-            sys.exit(130)
-        if not reply:
-            return default
-        if reply.startswith("y"):
-            return True
-        if reply.startswith("n"):
-            return False
-        print("Invalid reponse, please enter 'y' or 'n'.")
+from utils import ask_yes_no
 
 
 def build_kargs_list(
@@ -106,23 +88,23 @@ on some hardware.)
 
 def main() -> None:
     """Main entry point for script."""
-    disable_32_bit = not prompt_yes_no(QUESTION_32_BIT)
+    disable_32_bit = not ask_yes_no(QUESTION_32_BIT)
     if disable_32_bit:
         print("Selected: disable 32-bit support.")
     else:
-        print("Will keep 32-bit support.")
+        print("Selected: keep 32-bit support.")
 
-    nosmt = prompt_yes_no(QUESTION_NOSMT)
+    nosmt = ask_yes_no(QUESTION_NOSMT)
     if nosmt:
         print("Selected: force disable SMT/hyperthreading.")
     else:
-        print("Will not force disable SMT/hyperthreading.")
+        print("Selected: do not force disable SMT/hyperthreading.")
 
-    unstable = prompt_yes_no(QUESTION_UNSTABLE)
+    unstable = ask_yes_no(QUESTION_UNSTABLE)
     if unstable:
         print("Selected: set unstable hardening kernel arguments.")
     else:
-        print("Will not set unstable hardening kernel arguments.")
+        print("Selected: do not set unstable hardening kernel arguments.")
 
     # Check for secure boot support, required for some drivers. (e.g. WiFi on some
     # Macbooks, plus there would be no way to verify these anyways.)

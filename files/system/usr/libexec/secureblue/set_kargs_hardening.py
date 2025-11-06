@@ -108,21 +108,21 @@ def main() -> None:
     """Main entry point for script."""
     disable_32_bit = not prompt_yes_no(QUESTION_32_BIT)
     if disable_32_bit:
-        print("Disabling 32-bit support for the next boot.")
+        print("Selected: disable 32-bit support.")
     else:
-        print("Keeping 32-bit support.")
+        print("Will keep 32-bit support.")
 
     nosmt = prompt_yes_no(QUESTION_NOSMT)
     if nosmt:
-        print("Force disabling SMT/hyperthreading.")
+        print("Selected: force disable SMT/hyperthreading.")
     else:
-        print("Not force disabling SMT/hyperthreading.")
+        print("Will not force disable SMT/hyperthreading.")
 
     unstable = prompt_yes_no(QUESTION_UNSTABLE)
     if unstable:
-        print("Setting unstable hardening kernel arguments.")
+        print("Selected: set unstable hardening kernel arguments.")
     else:
-        print("Not setting unstable hardening kernel arguments.")
+        print("Will not set unstable hardening kernel arguments.")
 
     # Check for secure boot support, required for some drivers. (e.g. WiFi on some
     # Macbooks, plus there would be no way to verify these anyways.)
@@ -132,7 +132,7 @@ def main() -> None:
         or b"EFI variables are not supported" in sb_state.stderr
     )
     if not secure_boot_supported:
-        print("Secure Boot not supported. Skipping module signature enforcement.")
+        print("Secure Boot not supported. Will disable module signature enforcement.")
 
     kargs_to_add, kargs_to_remove = build_kargs_list(
         disable_32_bit=disable_32_bit,

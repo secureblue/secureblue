@@ -26,9 +26,9 @@ with open("/usr/lib/bootc/kargs.d/10-secureblue.toml", "rb") as f:
 
 try:
     with open("/usr/lib/bootc/kargs.d/20-nvidia.toml", "rb") as f:
-        NVIDIA_KARGS = tomllib.load(f)["kargs"]
+        IMAGE_NVIDIA_KARGS = tomllib.load(f)["kargs"]
 except FileNotFoundError:
-    NVIDIA_KARGS = None
+    IMAGE_NVIDIA_KARGS = None
 
 DISABLE_32_BIT = "ia32_emulation=0"
 

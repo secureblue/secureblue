@@ -3,6 +3,7 @@ Description=Image deprecation notification service
 Wants=dbus.service
 After=dbus.service
 ConditionUser=!@system
+ConditionPathIsDirectory=%h/.config
 
 [Service]
 Type=oneshot

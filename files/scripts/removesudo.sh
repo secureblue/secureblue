@@ -14,12 +14,16 @@
 
 set -oue pipefail
 
-SUDO_PACKAGES_TO_REMOVE=('sudo-python-plugin')
+SUDO_PACKAGES_TO_REMOVE=()
 
 if [[ "$IMAGE_NAME" != *"kinoite"* ]]; then
     SUDO_PACKAGES_TO_REMOVE+=('sudo')
 fi
 
-rpm-ostree override remove "${SUDO_PACKAGES_TO_REMOVE[@]}"
+if [[ "$IMAGE_NAME" != *"iot"* && "$IMAGE_NAME" != *"securecore"* ]]; then
+    SUDO_PACKAGES_TO_REMOVE+=('sudo-python-plugin')
+fi
+
+dnf remove -y --setopt=protected_packages=, "${SUDO_PACKAGES_TO_REMOVE[@]}"
 
 rm -rf /usr/bin/sudo

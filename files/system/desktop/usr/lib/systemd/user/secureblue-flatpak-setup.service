@@ -3,6 +3,7 @@ Description=secureblue flatpak setup
 Wants=network-online.target
 After=network-online.target
 ConditionPathExists=!%h/.config/secureblue/secureblue-flatpak-setup.stamp
+ConditionPathIsDirectory=%h/.config
 ConditionUser=!@system
 
 [Service]

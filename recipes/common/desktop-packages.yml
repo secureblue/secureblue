@@ -12,21 +12,24 @@
 
 type: dnf
 repos:
-  - https://copr.fedorainfracloud.org/coprs/secureblue/bubblejail/repo/fedora-%OS_VERSION%/secureblue-bubblejail-fedora-%OS_VERSION%.repo
-  - https://copr.fedorainfracloud.org/coprs/secureblue/branding/repo/fedora-%OS_VERSION%/secureblue-branding-fedora-%OS_VERSION%.repo
+  files:
+    - https://copr.fedorainfracloud.org/coprs/secureblue/bubblejail/repo/fedora-%OS_VERSION%/secureblue-bubblejail-fedora-%OS_VERSION%.repo
+    - https://copr.fedorainfracloud.org/coprs/secureblue/branding/repo/fedora-%OS_VERSION%/secureblue-branding-fedora-%OS_VERSION%.repo
 install:
-  - headsetcontrol
-  - secureblue-logos
-  - mediainfo
-  - bubblejail
-  - usbguard-notifier
-  - usbguard
-  - setools
-  - fscrypt
-  - vim
-  - wl-clipboard
-  - alsa-firmware
-  - fzf
+  install-weak-deps: false
+  packages:
+    - headsetcontrol
+    - secureblue-logos
+    - mediainfo
+    - bubblejail
+    - usbguard-notifier
+    - usbguard
+    - setools
+    - fscrypt
+    - vim
+    - wl-clipboard
+    - alsa-firmware
+    - fzf
 
     # yubikey enablement
     - pam-u2f

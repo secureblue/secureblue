@@ -10,27 +10,34 @@
 # distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and limitations under the License.
 
-type: rpm-ostree
+type: dnf
 repos:
-  - https://copr.fedorainfracloud.org/coprs/secureblue/hardened_malloc/repo/fedora-%OS_VERSION%/secureblue-hardened_malloc-fedora-%OS_VERSION%.repo
-  - https://copr.fedorainfracloud.org/coprs/secureblue/run0edit/repo/fedora-%OS_VERSION%/secureblue-run0edit-fedora-%OS_VERSION%.repo
+  files:
+    - https://copr.fedorainfracloud.org/coprs/secureblue/no_rlimit_as/repo/fedora-%OS_VERSION%/secureblue-no_rlimit_as-fedora-%OS_VERSION%.repo
+    - https://copr.fedorainfracloud.org/coprs/secureblue/hardened_malloc/repo/fedora-%OS_VERSION%/secureblue-hardened_malloc-fedora-%OS_VERSION%.repo
+    - https://copr.fedorainfracloud.org/coprs/secureblue/run0edit/repo/fedora-%OS_VERSION%/secureblue-run0edit-fedora-%OS_VERSION%.repo
 install:
-  - hardened_malloc
-  - run0edit
-  - dnsconfd-unbound
+  install-weak-deps: false
+  packages:
+    - hardened_malloc
+    - run0edit
+    - dnsconfd-unbound
 
-  # missing upstream
-  - openssl
-  - patch
-  - p7zip
-  - distrobox
-  - toolbox
-  - podman
-  - nvme-cli
-  - hdparm
-  - wireguard-tools
-  - gettext
-  - rsync
+    # missing upstream
+    - openssl
+    - patch
+    - p7zip
+    - distrobox
+    - toolbox
+    - podman
+    - nvme-cli
+    - hdparm
+    - wireguard-tools
+    - gettext
+    - rsync
 
-  # signing deps
-  - sbsigntools
+    # signing deps
+    - sbsigntools
+
+    # address hardened_malloc incompatibilities
+    - no_rlimit_as

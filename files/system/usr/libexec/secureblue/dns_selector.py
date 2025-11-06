@@ -25,11 +25,12 @@ import textwrap
 from dataclasses import dataclass
 from enum import Enum, auto
 from pathlib import Path
-from typing import Final, Optional
+from typing import Final
 from urllib.parse import urlparse
 
 import sandbox
 from sandbox import SandboxedFunction
+from utils import ask_option, ask_yes_no, interruptible_ask
 
 RESET: Final[str] = "\033[0m"
 BOLD: Final[str] = "\033[1m"
@@ -47,29 +48,6 @@ dns_function = SandboxedFunction(
     capabilities=["CAP_SYS_ADMIN", "CAP_DAC_OVERRIDE", "CAP_CHOWN", "CAP_FOWNER"],
     additional_sandbox_properties=["--property=SystemCallFilter=@chown", "--background="],
 )
-
-
-def ask_option(options_count: int) -> int:
-    """Returns the user's chosen number between 1 and options_count."""
-
-    while True:
-        raw_option = interruptible_ask(f"Choose an option [1-{options_count}]: ")
-        if raw_option.isdigit():
-            option = int(raw_option)
-            if 1 <= option <= options_count:
-                print()
-                return option
-        print(f"Please enter a number between 1 and {options_count}.")
-
-
-def ask_yes_no(prompt: str) -> bool:
-    """Returns the user's preference between yes/y (True) and no/n (False)."""
-
-    while True:
-        ans = interruptible_ask(prompt + " [y/n] ").casefold()
-        if ans in ("y", "yes", "n", "no"):
-            return ans in ("y", "yes")
-        print("Please enter y (yes) or n (no).")
 
 
 def ask_should_use_doh() -> bool:
@@ -109,8 +87,8 @@ def ask_should_validate_dnssec() -> bool:
 class DNSServers:
     """A DNS server to be set as a global upstream by NetworkManager."""
 
-    servers_csv: Optional[str]
-    https_endpoint: Optional[str]
+    servers_csv: str | None
+    https_endpoint: str | None
 
 
 def _ask_custom_ips() -> str:
@@ -437,15 +415,6 @@ def print_trivalent_doh_status() -> None:
         print("Trivalent DoH: unable to open and parse configuration", file=sys.stderr)
 
 
-def interruptible_ask(prompt: str) -> str:
-    """Ask for a string input, strip whitespace, and exit gracefully if interrupted."""
-    try:
-        return input(prompt).strip()
-    except (KeyboardInterrupt, EOFError):
-        print()
-        sys.exit(130)
-
-
 def ask_valid_ipv4(prompt: str) -> str:
     """Returns a valid IPv4 address."""
     while True:
@@ -468,7 +437,7 @@ def ask_valid_ipv6(prompt: str) -> str:
             print("Invalid IPv6 address, try again.")
 
 
-def ask_valid_https(prompt: str) -> Optional[str]:
+def ask_valid_https(prompt: str) -> str | None:
     """Returns a valid HTTPS URL."""
     while True:
         raw_url = interruptible_ask(prompt)

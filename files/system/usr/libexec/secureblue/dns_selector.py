@@ -30,6 +30,7 @@ from urllib.parse import urlparse
 
 import sandbox
 from sandbox import SandboxedFunction
+from utils import ask_option, ask_yes_no, interruptible_ask
 
 RESET: Final[str] = "\033[0m"
 BOLD: Final[str] = "\033[1m"
@@ -47,29 +48,6 @@ dns_function = SandboxedFunction(
     capabilities=["CAP_SYS_ADMIN", "CAP_DAC_OVERRIDE", "CAP_CHOWN", "CAP_FOWNER"],
     additional_sandbox_properties=["--property=SystemCallFilter=@chown", "--background="],
 )
-
-
-def ask_option(options_count: int) -> int:
-    """Returns the user's chosen number between 1 and options_count."""
-
-    while True:
-        raw_option = interruptible_ask(f"Choose an option [1-{options_count}]: ")
-        if raw_option.isdigit():
-            option = int(raw_option)
-            if 1 <= option <= options_count:
-                print()
-                return option
-        print(f"Please enter a number between 1 and {options_count}.")
-
-
-def ask_yes_no(prompt: str) -> bool:
-    """Returns the user's preference between yes/y (True) and no/n (False)."""
-
-    while True:
-        ans = interruptible_ask(prompt + " [y/n] ").casefold()
-        if ans in ("y", "yes", "n", "no"):
-            return ans in ("y", "yes")
-        print("Please enter y (yes) or n (no).")
 
 
 def ask_should_use_doh() -> bool:
@@ -435,15 +413,6 @@ def print_trivalent_doh_status() -> None:
         print("Trivalent DoH: configuration invalid", file=sys.stderr)
     except (OSError, UnicodeDecodeError):
         print("Trivalent DoH: unable to open and parse configuration", file=sys.stderr)
-
-
-def interruptible_ask(prompt: str) -> str:
-    """Ask for a string input, strip whitespace, and exit gracefully if interrupted."""
-    try:
-        return input(prompt).strip()
-    except (KeyboardInterrupt, EOFError):
-        print()
-        sys.exit(130)
 
 
 def ask_valid_ipv4(prompt: str) -> str:

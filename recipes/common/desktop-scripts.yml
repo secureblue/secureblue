@@ -12,7 +12,6 @@
 
 type: script
 scripts:
-  - removesudo.sh
   - installandroidudev.sh
   - disablecups.sh
   - disablesshd.sh
@@ -22,4 +21,3 @@ scripts:
   - disablenfsdaemons.sh
   - disablesssd.sh
   - disableunconfinedrootfulservices.sh
-  - fixupstreamicdloaderbug.sh

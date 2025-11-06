@@ -14,23 +14,19 @@
 
 set -oue pipefail
 
-nvidia_packages_list=('nvidia-container-toolkit' 'nvidia-driver-cuda')
+# nvidia-container-toolkit is not built with required crypto digests for RPM 6+, introduced in Fedora 43
+nvidia_packages_list=('nvidia-driver-cuda')
 if [[ "$IMAGE_NAME" != *"securecore"* && "$IMAGE_NAME" != *"iot"* ]]; then
     nvidia_packages_list+=('libnvidia-fbc' 'libva-nvidia-driver' 'nvidia-driver' 'nvidia-modprobe' 'nvidia-persistenced' 'nvidia-settings')
 fi
 
-curl -L https://nvidia.github.io/libnvidia-container/stable/rpm/nvidia-container-toolkit.repo \
-    -o /etc/yum.repos.d/nvidia-container-toolkit.repo
-sed -i 's/^gpgcheck=0/gpgcheck=1/' /etc/yum.repos.d/nvidia-container-toolkit.repo
-
 curl -L https://negativo17.org/repos/fedora-nvidia.repo -o /etc/yum.repos.d/negativo17-fedora-nvidia.repo
 
 
-sed -i 's/^enabled=0.*/enabled=1/' /etc/yum.repos.d/nvidia-container-toolkit.repo
 sed -i 's/^enabled=0.*/enabled=1\npriority=90/' /etc/yum.repos.d/negativo17-fedora-nvidia.repo
 # required for rpm-ostree to function properly
 # shellcheck disable=SC2068
-rpm-ostree install ${nvidia_packages_list[@]}
+dnf install -y --setopt=install_weak_deps=False ${nvidia_packages_list[@]}
 
 kmod_version=$(rpm -qa | grep akmod-nvidia | awk -F':' '{print $(NF)}' | awk -F'-' '{print $(NF-1)}')
 negativo_version=$(rpm -qa | grep nvidia-modprobe | awk -F':' '{print $(NF)}' | awk -F'-' '{print $(NF-1)}')
@@ -48,4 +44,3 @@ semodule -i nvidia-container.pp
 
 rm -f nvidia-container.pp
 rm -f /etc/yum.repos.d/negativo17-fedora-nvidia.repo
-rm -f /etc/yum.repos.d/nvidia-container-toolkit.repo

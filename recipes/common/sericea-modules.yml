@@ -18,8 +18,9 @@ modules:
   - type: script
     scripts:
       - disablewlrportals.sh
-  - type: rpm-ostree
+  - type: dnf
     remove:
-      - fedora-flathub-remote
-      - fedora-third-party
-      - fedora-workstation-repositories
+      packages:
+        - fedora-flathub-remote
+        - fedora-third-party
+        - fedora-workstation-repositories

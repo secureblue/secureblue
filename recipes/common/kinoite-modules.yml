@@ -11,22 +11,21 @@
 # See the License for the specific language governing permissions and limitations under the License.
 
 modules:
-  - type: rpm-ostree
-    repos:
-      - https://repo.secureblue.dev/secureblue.repo
+  - type: dnf
     remove:
-      - kde-connect
-      - kde-connect-libs
-      - kdeconnectd
-      - fedora-chromium-config-kde
-      - fedora-flathub-remote
-      - fuse-encfs
-      - krfb
-      - krfb-libs
-      - plasma-discover-rpm-ostree
+      packages:
+        - kde-connect
+        - kde-connect-libs
+        - kdeconnectd
+        - fedora-chromium-config-kde
+        - fedora-flathub-remote
+        - fuse-encfs
+        - krfb
+        - krfb-libs
+        - plasma-discover-rpm-ostree
 
-      # depends on fedora-flathub-remote
-      - plasma-welcome-fedora
+        # depends on fedora-flathub-remote
+        - plasma-welcome-fedora
   - type: files
     files:
       - source: system/kinoite

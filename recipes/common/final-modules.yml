@@ -18,3 +18,4 @@ modules:
         - checksinglekernel.sh
         - removesuid.sh
         - enable-preset-services.sh
+        - ensuresudoabsent.sh

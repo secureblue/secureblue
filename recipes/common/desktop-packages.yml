@@ -19,7 +19,6 @@ install:
   install-weak-deps: false
   packages:
     - headsetcontrol
-    - secureblue-logos
     - mediainfo
     - bubblejail
     - usbguard-notifier

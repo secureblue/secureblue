@@ -3,6 +3,7 @@ Description=secureblue secure boot update verification
 Wants=dbus.service
 After=dbus.service
 ConditionUser=!@system
+ConditionPathIsDirectory=%h/.config
 
 [Service]
 Type=oneshot

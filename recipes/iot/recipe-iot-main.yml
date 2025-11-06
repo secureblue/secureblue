@@ -16,7 +16,7 @@ description: "IOT, hardened"
 
 base-image: quay.io/fedora/fedora-iot
 
-image-version: 42
+image-version: 43
 
 nushell-version: none
 

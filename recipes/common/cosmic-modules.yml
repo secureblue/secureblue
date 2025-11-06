@@ -11,16 +11,19 @@
 # See the License for the specific language governing permissions and limitations under the License.
 
 modules:
-    - type: rpm-ostree
+    - type: dnf
       install:
-        - NetworkManager-tui
-        - NetworkManager-openvpn
-        - cosmic-store
-        - cosmic-player
+        install-weak-deps: false
+        packages:
+          - NetworkManager-tui
+          - NetworkManager-openvpn
+          - cosmic-store
+          - cosmic-player
       remove:
-        - fedora-flathub-remote
-        - fedora-third-party
-        - fedora-workstation-repositories
+        packages:
+          - fedora-flathub-remote
+          - fedora-third-party
+          - fedora-workstation-repositories
     - type: systemd
       system:
         enabled:

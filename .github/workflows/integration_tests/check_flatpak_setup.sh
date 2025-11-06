@@ -55,9 +55,6 @@ if [ -e "$HOME/.config/secureblue/secureblue-flatpak-setup.stamp" ]; then
     check-installed-flatpaks
 elif [ "${state}" = 'activating' ] || [ "${state}" = 'active' ]; then
     echo "${service_name} is currently running."
-    # flathub-verified remote should be added first, so wait a few more seconds then test for it.
-    sleep 20
-    check-flatpak-remotes
 elif [ "${state}" = 'failed' ]; then
     test-fail "${service_name} is in a failed state."
 else

@@ -183,32 +183,32 @@ def audit_signed_image(state):
 
 @audit
 def audit_modprobe(state):
-    """Check that the kernel module blacklist has not been overridden."""
-    blacklist_file = "/etc/modprobe.d/blacklist.conf"
-    with open(f"/usr{blacklist_file}", encoding="utf-8") as f:
-        conf = f.readlines()
-    blacklisted_modules = []
-    for line in conf:
-        words = line.strip().split()
-        if words and words[0] in ["blacklist", "install"]:
-            blacklisted_modules.append(words[1])
+    """Check for modprobe overrides."""
+    modprobe_dir = "/usr/lib/modprobe.d"
+    modprobe_files = ("secureblue.conf", "secureblue-framebuffer.conf")
+    blocked_modules = []
+    for file in modprobe_files:
+        with open(f"{modprobe_dir}/{file}", encoding="utf-8") as f:
+            conf = f.readlines()
+        for line in conf:
+            words = line.strip().split(maxsplit=2)
+            if words and words[0] in ("blacklist", "install"):
+                blocked_modules.append(words[1])
     unwanted_modules = []
     with open("/proc/modules", encoding="utf-8") as f:
         for line in f:
-            mod = line.split()[0]
-            if mod in blacklisted_modules:
+            mod = line.split(maxsplit=1)[0]
+            if mod in blocked_modules:
                 unwanted_modules.append(mod)
     unwanted_modules.sort()
     status = PASS
     warnings = []
-    with open(blacklist_file, encoding="utf-8") as f:
-        if f.readlines() != conf:
-            status = WARN
-            warnings.append(_("The file {0} has been modified.").format(blacklist_file))
     for mod in unwanted_modules:
         status = FAIL
         warnings.append(
-            _("The module {0} is in {1}, but it is loaded.").format(mod, blacklist_file)
+            _("The module {0} is blocked in {1}, but has been loaded anyway.").format(
+                mod, modprobe_dir
+            )
         )
     state["bluetooth_loaded"] = "bluetooth" in unwanted_modules
     yield Report(_("Ensuring no modprobe overrides"), status, warnings=warnings)

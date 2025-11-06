@@ -20,8 +20,13 @@ on:
 
 permissions: {}
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
 jobs:
   zizmor:
+    name: Zizmor
     runs-on: ubuntu-24.04
     permissions:
       security-events: write # write findings to github

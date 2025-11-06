@@ -14,13 +14,11 @@ type: dnf
 repos:
   files:
     - https://copr.fedorainfracloud.org/coprs/secureblue/bubblejail/repo/fedora-%OS_VERSION%/secureblue-bubblejail-fedora-%OS_VERSION%.repo
-    - https://repo.secureblue.dev/secureblue.repo
     - https://copr.fedorainfracloud.org/coprs/secureblue/branding/repo/fedora-%OS_VERSION%/secureblue-branding-fedora-%OS_VERSION%.repo
 install:
   install-weak-deps: false
   packages:
     - headsetcontrol
-    - trivalent
     - mediainfo
     - bubblejail
     - usbguard-notifier

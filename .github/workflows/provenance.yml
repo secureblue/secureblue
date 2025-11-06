@@ -35,7 +35,7 @@ jobs:
       - name: Verify provenance
         shell: bash
         run: |
-          IMAGES=(
+          images=(
             silverblue-main-hardened
             silverblue-nvidia-hardened
             silverblue-nvidia-open-hardened
@@ -56,7 +56,9 @@ jobs:
             securecore-zfs-nvidia-open-hardened
           )
 
-          for IMAGE in "${IMAGES[@]}"; do
-            DIGEST=$(crane digest "ghcr.io/secureblue/${IMAGE}:latest")
-            slsa-verifier verify-image --source-uri github.com/secureblue/secureblue ghcr.io/secureblue/${IMAGE}:latest@"${DIGEST}"
+          for image in "${images[@]}"; do
+            image_url="ghcr.io/secureblue/${image}:latest"
+            digest=$(crane digest "${image_url}")
+            echo "Verifying provenance for ${image_url}@${digest}..."
+            slsa-verifier verify-image --source-uri 'github.com/secureblue/secureblue' "${image_url}@${digest}"
           done

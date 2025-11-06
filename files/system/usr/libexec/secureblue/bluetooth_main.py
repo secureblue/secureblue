@@ -24,6 +24,7 @@ from typing import Final
 
 import sandbox
 from sandbox import SandboxedFunction
+from utils import ask_yes_no
 
 BLUE_HELP: Final[str] = """
 This python script toggles if bluetooth is enabled by creating or deleting a modprobe file at
@@ -31,6 +32,9 @@ This python script toggles if bluetooth is enabled by creating or deleting a mod
 needed for Bluetooth. Note this change only takes affect upon reboot.
 
 usage:
+ujust set-bluetooth-modules
+    Turns Bluetooth on or off interactively based on the user's preference.
+
 ujust set-bluetooth-modules on
     Turns Bluetooth on, does nothing if already on.
 
@@ -67,22 +71,28 @@ def print_status(enabled_by_file: bool) -> None:
     file_status = "enabled" if enabled_by_file else "disabled"
 
     print(
-        f"Bluetooth is currently {cur_status}, and after a reboot will {file_matches_sys}be {file_status}"
+        f"Bluetooth is currently {cur_status}, and after a reboot will",
+        f"{file_matches_sys}be {file_status}",
     )
 
 
 def main() -> int:
     """Handle the arguments and execute the bluetooth toggle"""
 
-    enabled_by_file = Path(BLUE_MOD_FILE).exists()
+    argc_interactive = 1
+    argc_on_off = 2
 
-    required_args_count = 2
-    if len(sys.argv) != required_args_count:
-        print("Needs an option, see usage with --help.")
+    if len(sys.argv) == argc_interactive:
+        # Ask interactively.
+        mode = "on" if ask_yes_no("Would you like to load the Bluetooth modules?") else "off"
+    elif len(sys.argv) == argc_on_off:
+        # Take mode from first argument, i.e. 'on' or 'off'.
+        mode = sys.argv[1].casefold()
+    else:
+        print("Too many options specified, see usage with --help.", file=sys.stderr)
         return 1
 
-    mode = sys.argv[1]
-
+    enabled_by_file = Path(BLUE_MOD_FILE).exists()
     bluetooth_function = SandboxedFunction("bluetooth.py", read_write_paths=[BLUE_MOD_DIR])
     match mode:
         case "on" | "off":

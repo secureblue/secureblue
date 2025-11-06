@@ -16,6 +16,7 @@ modules:
         - source: system/desktop
           destination: /
     - from-file: common/desktop-packages.yml
+    - from-file: common/desktop-scripts.yml
     - type: dnf
       repos:
         files:
@@ -27,6 +28,5 @@ modules:
       validate: true
       include:
         - desktop
-    - from-file: common/desktop-scripts.yml
     - type: brew
       brew-analytics: false

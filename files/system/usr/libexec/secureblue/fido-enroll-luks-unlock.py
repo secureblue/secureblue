@@ -47,7 +47,7 @@ def get_uuid() -> str:
         device_uuid = find_uuid("(?<=rd.luks.uuid=luks-)", line)
 
     # Validation
-    lsblk = subprocess.run(["lsblk", "-o", "NAME"],
+    lsblk = subprocess.run(["/usr/bin/lsblk", "-o", "NAME"],
                             capture_output=True,
                             check=True,
                             text=True).stdout.strip()
@@ -71,15 +71,24 @@ def choose_algorithm(supported_algo: set) -> str | None:
         return "rs256"
     return None # Device is not supported!
 
+
 connected_devices = ConnectedDevices()
 
 if connected_devices.connected_device_count == 0:
     print_err("No compatible device detected!")
     sys.exit(0)
 elif connected_devices.connected_device_count == 1:
-    print("1 compatible device detected!\n")
+    print("1 compatible device detected!")
 else:
-    print(f"{connected_devices.connected_device_count} compatible devices detected!\n")
+    print(f"{connected_devices.connected_device_count} compatible devices detected!")
+
+# Warning message for use of multiple FIDO2 tokens with UV.
+# For future devs: when you remove these lines, please append `\n` to the two print() functions above!
+print_err("""
+Please note that support for using multiple FIDO2 devices is limited.
+If you plan on using the 'user verification' function (e.g. biometric sensors),
+it is advised that you only enroll one FIDO2 token.
+""")
 
 target_uuid = get_uuid()
 
@@ -138,8 +147,7 @@ for i in remove_selected:
 
 print(
 """All devices scanned.
-You will now be prompted for authentication.
-
+You will now be prompted for authentication.\n
 ---
 """)
 

@@ -19,7 +19,9 @@ import json
 import re
 import subprocess
 import sys
+
 import inquirer
+
 
 def validate_uuid(uuid: str) -> str:
     pattern = re.compile(r"[a-z0-9]{8}-"
@@ -59,17 +61,18 @@ def amend_crypttab(uuid: str) -> str:
     subprocess.run(["/usr/bin/cp", "/etc/crypttab", "/etc/crypttab.backup"],
                     capture_output=True,
                     check=True,
-                    text=True).stdout.strip())
+                    text=True.stdout.strip())
 
-    with open("/etc/crypttab.backup", "r", encoding="ascii") as crypttab:
+    with open("/etc/crypttab.backup", encoding="ascii") as crypttab:
         content = crypttab.read()
 
         # Capture all user-specified options in crypttab.
         re.sub(fr"(?<=fido-{uuid} UUID={uuid}\b\w+\b)([- =\w]+)",
-               # Ignore lookahead; Append ", fido-device=auto" to the options captured.
-               fr"\2, fido-device=auto",
-               # Store the amended file content back to the variable "content".
-               content)
+            # Ignore lookahead; Append ", fido-device=auto" to the options captured.
+            r"\2, fido-device=auto",
+            # Store the amended file content back to the variable "content".
+            content
+        )
 
         # Return the amended file content.
         return content

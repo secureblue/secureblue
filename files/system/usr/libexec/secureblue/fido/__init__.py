@@ -69,14 +69,10 @@ class FidoDevice:
     def test_bio_support(self) -> bool:
         info = Ctap2(self.device).get_info()
 
-        if (( "bioEnroll" in info.options ) or
+        return (( "bioEnroll" in info.options ) or
             ("FIDO_2_1_PRE" in info.versions
-            and "userVerificationMgmtPreview" in info.options )
-        ):
-            return True
-        
-        return False
-        
+            and "userVerificationMgmtPreview" in info.options ))
+
     def set_bio_support(self) -> None:
         self.bio = True
 

@@ -19,8 +19,6 @@
 # https://docs.kernel.org/admin-guide/kernel-parameters.html
 
 import subprocess  # nosec
-import sys
-import textwrap
 from typing import Final
 
 from kargs_hardening_common import (

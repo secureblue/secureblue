@@ -1,4 +1,5 @@
-# Copyright 2025 The Secureblue Authors
+# Copyright (C) 2025 The Secureblue Authors
+# Rewritten in python by mathbreed. Original bash code by ShadowSlayer1441.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -11,8 +12,6 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-
-# TODO: initramfs thingy
 
 import json
 import os
@@ -95,8 +94,8 @@ def main(uuid: str, fido_device: list) -> None:
     with open("/etc/crypttab", "w", encoding="ascii") as crypttab:
         crypttab.write(crypttab_content)
 
-    #FIXME - chown root
     os.chmod("/etc/crypttab", 0o600)
+    os.chown("/etc/crypttab", 0, 0)
 
     print(r"File '/etc/crypttab' copied to '/etc/crypttab.backup'.\n")
 

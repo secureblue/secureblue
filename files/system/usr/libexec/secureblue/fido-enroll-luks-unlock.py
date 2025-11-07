@@ -1,4 +1,5 @@
 # Copyright (C) 2025 The Secureblue Authors
+# Rewritten in python by mathbreed. Original bash code by ShadowSlayer1441.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -35,7 +36,7 @@ def find_uuid(lookahead: str, input_str: str) -> str:
     matched = re.findall(pattern, input_str)
 
     if len(matched) != 1:
-        print("NOT SUPPORTED") #FIXME
+        print("NOT SUPPORTED")
         sys.exit(0)
 
     return matched[0]

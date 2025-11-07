@@ -1,4 +1,5 @@
 kargs = [
+  "bdev_allow_write_mounted=0",
   "init_on_alloc=1",
   "init_on_free=1",
   "intel_iommu=on",
@@ -14,6 +15,7 @@ kargs = [
   "mitigations=auto,nosmt",
   "module.sig_enforce=1",
   "page_alloc.shuffle=1",
+  "proc_mem.force_override=ptrace",
   "pti=on",
   "random.trust_bootloader=off",
   "random.trust_cpu=off",

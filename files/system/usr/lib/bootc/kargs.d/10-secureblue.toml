@@ -1,5 +1,4 @@
 kargs = [
-  "bdev_allow_write_mounted=0",
   "init_on_alloc=1",
   "init_on_free=1",
   "intel_iommu=on",

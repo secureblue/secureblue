@@ -30,7 +30,6 @@ modules:
 
   - type: script
     scripts:
-      - addtailscalerepo.sh
       - excludepcsc.sh
       - setserverdefaultzone.sh
       - removebrewjust.sh

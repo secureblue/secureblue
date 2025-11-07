@@ -15,6 +15,8 @@ scripts:
   - manuallyinstalljust.sh
   - hardenlogindefs.sh
   - hardened_malloc-pam.sh
+  - disableresolved.sh
+  - setup-dnsconfd.sh
   - authselect.sh
   - setfilepermissions.sh
   - createmissingdirectories.sh

@@ -12,9 +12,6 @@
 
 modules:
   - type: dnf
-    repos:
-      files:      
-        - https://repo.secureblue.dev/secureblue.repo
     remove:
       packages:
         - kde-connect

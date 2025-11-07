@@ -20,10 +20,6 @@ modules:
         packages:
           - libopenjph
           - heif-pixbuf-loader
-          - rar
-          - pipewire-libs-extra
-          - ffmpeg
-          - ffmpeg-libs
           - ffmpegthumbnailer
           - pipewire-libs-extra
       replace:  
@@ -32,11 +28,8 @@ modules:
           packages:
             - libheif
             - libva
-            - gstreamer1-plugin-libav
-            - libva-intel-media-driver
-            - intel-gmmlib
-            - intel-mediasdk
             - mesa-dri-drivers
+            - gstreamer1-plugin-libav
             - mesa-filesystem
             - mesa-libEGL
             - mesa-libGL

@@ -17,5 +17,6 @@
 set -oue pipefail
 
 echo "Disabling systemd-resolved DNS resolver"
+
 systemctl disable systemd-resolved.service
 systemctl mask systemd-resolved.service

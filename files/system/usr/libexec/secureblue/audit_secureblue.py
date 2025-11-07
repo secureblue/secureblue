@@ -52,6 +52,7 @@ from utils import (
     get_flatpak_permissions,
     get_legend,
     get_width,
+    is_using_vpn,
     parse_config,
     print_err,
     validate_sysctl,
@@ -83,6 +84,7 @@ def audit_kargs():
         "iommu.strict=1",
         "iommu=force",
         "kvm-intel.vmentry_l1d_flush=always",
+        "kvm.mitigate_smt_rsb=1",
         "l1d_flush=on",
         "l1tf=full,force",
         "lockdown=confidentiality",
@@ -99,6 +101,7 @@ def audit_kargs():
         "slab_nomerge",
         "spec_store_bypass_disable=on",
         "spectre_v2=on",
+        "ssbd=force-on",
         "vdso32=0",
         "vsyscall=none",
     )
@@ -138,17 +141,12 @@ def audit_kargs():
 @audit
 def audit_sysctl():
     """Check for sysctl overrides."""
-    sysctl_file = "/etc/sysctl.d/60-hardening.conf"
-    with open(f"/usr{sysctl_file}", encoding="utf-8") as f:
+    sysctl_file = "/usr/lib/sysctl.d/55-hardening.conf"
+    with open(sysctl_file, encoding="utf-8") as f:
         conf = f.readlines()
     sysctl_expected = parse_config(conf)
     status = PASS
     sysctl_errors = []
-    with open(sysctl_file, encoding="utf-8") as f:
-        etc_conf = f.readlines()
-    if conf != etc_conf:
-        status = WARN
-        sysctl_errors.append(_("The file {0} has been modified.").format(sysctl_file))
     for sysctl, expected in sysctl_expected.items():
         sysctl_path = f"/proc/sys/{sysctl.replace('.', '/')}"
         for path in glob.iglob(sysctl_path):
@@ -185,32 +183,32 @@ def audit_signed_image(state):
 
 @audit
 def audit_modprobe(state):
-    """Check that the kernel module blacklist has not been overridden."""
-    blacklist_file = "/etc/modprobe.d/blacklist.conf"
-    with open(f"/usr{blacklist_file}", encoding="utf-8") as f:
-        conf = f.readlines()
-    blacklisted_modules = []
-    for line in conf:
-        words = line.strip().split()
-        if words and words[0] in ["blacklist", "install"]:
-            blacklisted_modules.append(words[1])
+    """Check for modprobe overrides."""
+    modprobe_dir = "/usr/lib/modprobe.d"
+    modprobe_files = ("secureblue.conf", "secureblue-framebuffer.conf")
+    blocked_modules = []
+    for file in modprobe_files:
+        with open(f"{modprobe_dir}/{file}", encoding="utf-8") as f:
+            conf = f.readlines()
+        for line in conf:
+            words = line.strip().split(maxsplit=2)
+            if words and words[0] in ("blacklist", "install"):
+                blocked_modules.append(words[1])
     unwanted_modules = []
     with open("/proc/modules", encoding="utf-8") as f:
         for line in f:
-            mod = line.split()[0]
-            if mod in blacklisted_modules:
+            mod = line.split(maxsplit=1)[0]
+            if mod in blocked_modules:
                 unwanted_modules.append(mod)
     unwanted_modules.sort()
     status = PASS
     warnings = []
-    with open(blacklist_file, encoding="utf-8") as f:
-        if f.readlines() != conf:
-            status = WARN
-            warnings.append(_("The file {0} has been modified.").format(blacklist_file))
     for mod in unwanted_modules:
         status = FAIL
         warnings.append(
-            _("The module {0} is in {1}, but it is loaded.").format(mod, blacklist_file)
+            _("The module {0} is blocked in {1}, but has been loaded anyway.").format(
+                mod, modprobe_dir
+            )
         )
     state["bluetooth_loaded"] = "bluetooth" in unwanted_modules
     yield Report(_("Ensuring no modprobe overrides"), status, warnings=warnings)
@@ -356,13 +354,14 @@ def audit_chronyd():
 
 
 @audit
-def audit_dns():
+@depends_on("audit_signed_image")
+def audit_dns(state):
     """Ensure system DNS resolution is active and secure."""
 
+    # Parse `ujust dns-selector status` output.
     status_out = command_stdout(
-        "/usr/bin/python3", "/usr/libexec/secureblue/dns_selector.py", "status", check=False
+        "/usr/bin/python3", "/usr/libexec/secureblue/dns_selector.py", "status"
     )
-
     flags = {}
     for line in status_out.splitlines():
         if ":" not in line:
@@ -380,7 +379,7 @@ def audit_dns():
     status = PASS
 
     # INFO
-    if not trivalent_doh:
+    if not trivalent_doh and state["image"].is_desktop():
         status = INFO
         warnings.append(_("DNS over HTTPS in Trivalent is disabled."))
         recs.append(
@@ -408,6 +407,17 @@ def audit_dns():
                 ]
             )
         )
+    if not unbound:
+        status = WARN
+        warnings.append(_("The secure DNS resolver is not in use, possibly for a VPN."))
+        recs.append(
+            "\n".join(
+                [
+                    _("To view or reset your current DNS configuration, run:"),
+                    "$ ujust dns-selector",
+                ]
+            )
+        )
 
     # FAIL
     if unbound and not dnssec:
@@ -422,18 +432,14 @@ def audit_dns():
                 ]
             )
         )
-    if not unbound:
+    if unbound and not global_dns and is_using_vpn():
         status = FAIL
-        warnings.append(_("The secure DNS resolver is not in use, possibly for a VPN."))
+        warnings.append(_("Using a VPN alongside Unbound without Global DNS may cause DNS leaks."))
         recs.append(
             "\n".join(
                 [
-                    _(
-                        "If you use a VPN, consider using it with secure DNS. For instructions, see:"
-                    ),
-                    bold("https://secureblue.dev/faq#dns-vpn"),
-                    _("Otherwise, to view or reset your current DNS configuration, run:"),
-                    "$ ujust dns-selector",
+                    _("If you use a VPN, switch your DNS resolver to systemd-resolved:"),
+                    "$ ujust dns-selector resolver resolved",
                 ]
             )
         )
@@ -819,7 +825,8 @@ def audit_hardened_malloc():
     rec = None
     ld_preload = os.environ.get("LD_PRELOAD")
     preloads = [] if ld_preload is None else ld_preload.split()
-    if preloads == ["libhardened_malloc.so"]:
+    expected_preloads = ["libhardened_malloc.so", "libno_rlimit_as.so"]
+    if preloads == expected_preloads:
         status = PASS
         warning = None
     elif "libhardened_malloc.so" in preloads:

@@ -5,7 +5,7 @@ labels: []
 assignees: []
 
 body:
-  - type: input
+  - type: textarea
     id: benefit
     attributes:      
       label: Benefit
@@ -14,7 +14,7 @@ body:
     validations:
       required: true
 
-  - type: input
+  - type: textarea
     id: solution
     attributes:      
       label: Solution
@@ -23,7 +23,7 @@ body:
     validations:
       required: true
 
-  - type: input
+  - type: textarea
     id: alternatives
     attributes:      
       label: Alternatives

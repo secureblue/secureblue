@@ -28,9 +28,14 @@ fi
 curl -Lo /etc/yum.repos.d/negativo17-fedora-nvidia.repo https://negativo17.org/repos/fedora-nvidia.repo
 sed -i '/^enabled=1/a\priority=90' /etc/yum.repos.d/negativo17-fedora-nvidia.repo
 
-dnf install -y "kernel-devel-matched-$(rpm -q 'kernel' --queryformat '%{VERSION}')"
-dnf install -y "akmod-nvidia*.fc${RELEASE}"
+dnf install -y --setopt=install_weak_deps=False "kernel-devel-matched-$(rpm -q 'kernel' --queryformat '%{VERSION}')"
 
+dnf install -y --setopt=install_weak_deps=False akmods
+cp /usr/sbin/akmodsbuild /usr/sbin/akmodsbuild.backup
+# TODO remove this when fixed upstream
+sed -i '/if \[\[ -w \/var \]\] ; then/,/fi/d' /usr/sbin/akmodsbuild
+dnf install -y --setopt=install_weak_deps=False nvidia-kmod-common nvidia-modprobe
+mv /usr/sbin/akmodsbuild.backup /usr/sbin/akmodsbuild
 
 echo "Setting kernel.conf to $KERNEL_MODULE_TYPE"
 sed -i --sandbox "s/^MODULE_VARIANT=.*/MODULE_VARIANT=$KERNEL_MODULE_TYPE/" /etc/nvidia/kernel.conf

@@ -71,7 +71,10 @@ clean-system:
     #!/usr/bin/bash
     podman image prune -af
     podman volume prune -f
-    flatpak uninstall --unused
+    if command -v flatpak &> /dev/null
+    then
+        flatpak uninstall --unused
+    fi
     rpm-ostree cleanup -bm
 
 # Check for local overrides
@@ -252,7 +255,7 @@ label-external-drives:
 install-libvirt-packages:
     #!/usr/bin/bash
     set -euo pipefail
-    rpm-ostree install -y libvirt libvirt-nss qemu qemu-char-spice qemu-device-display-virtio-gpu qemu-device-display-virtio-vga qemu-device-usb-redirect qemu-img qemu-system-x86-core qemu-user-binfmt qemu-user-static virt-install virt-manager virt-v2v virt-viewer
+    rpm-ostree install -y libvirt libvirt-nss qemu qemu-char-spice qemu-device-display-virtio-gpu qemu-device-display-virtio-vga qemu-device-usb-redirect qemu-img qemu-system-x86-core qemu-user-binfmt qemu-user-static virt-install virt-manager virt-viewer
     echo "Check out the Red Hat documentation to see which services to enable for your usecase:"
     echo "https://docs.redhat.com/en/documentation/red_hat_enterprise_linux/9/html/configuring_and_managing_virtualization/optimizing-virtual-machine-performance-in-rhel_configuring-and-managing-virtualization#proc_enabling-modular-libvirt-daemons_assembly_optimizing-libvirt-daemons"
 
@@ -346,6 +349,15 @@ install-vpn:
     }
 
     # script start
+    echo 'Using a VPN is currently incompatible with global DNS or local DNSSEC resolution.'
+    echo 'If you are using Unbound, it will be disabled in favour of systemd-resolved.'
+    read -rp 'Do you want to continue? [y/N] ' proceed
+    if ! [[ "$proceed" == [yY]* ]]; then
+        echo 'Aborting...'
+        exit 0
+    fi
+    echo
+
     echo 'NOTE: You can also install wireguard profiles from your provider directly into your DE, if you prefer.'
     read -rp 'Do you want to continue? [y/N] ' proceed
     if ! [[ "$proceed" == [yY]* ]]; then
@@ -434,6 +446,20 @@ install-vpn:
         fi
     fi
 
+    # Switch DNS resolver to systemd-resolved if this isn't already set.
+    echo
+    resolver=$(
+        /usr/libexec/secureblue/dns_selector.py status |
+        sed -n 's/^DNS Resolver: //p'
+    )
+    if [[ "$resolver" == "systemd-resolved" ]]; then
+        echo 'DNS resolver is already systemd-resolved. Continuing...'
+    else
+        echo "Detected DNS resolver as $resolver".
+        echo 'Setting DNS resolver to systemd-resolved...'
+        /usr/libexec/secureblue/dns_selector.py resolver resolved > /dev/null
+    fi
+
     echo
     echo 'Starting installation...'
     install_vpn "$vpn_choice"
@@ -456,7 +482,7 @@ setup-usbguard:
         systemctl enable --now usbguard.service
         usbguard add-user "$SUDO_USER"
     '
-    if ! rpm-ostree status | grep '●' | grep -q 'securecore'; then
+    if ! rpm-ostree status | grep '●' | grep -Eq 'securecore|iot'; then
         systemctl enable --user --now usbguard-notifier.service
     fi
 

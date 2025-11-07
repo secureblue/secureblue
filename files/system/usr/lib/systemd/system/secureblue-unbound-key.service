@@ -12,8 +12,10 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-# Restore /var/lib/unbound/root.key from its immutable default in
-# /usr/etc/unbound/dnssec-root.key if it goes missing.
+# Sometimes /var/lib/unbound/root.key goes missing on CoreOS systems.
+# In that case, unbound-checkconf fails in anticipation of unbound-anchor
+# being unable to bootstrap. This service installs root.key if missing so that
+# dnsconfd-unbound can still work.
 
 [Unit]
 Description=Secureblue Unbound Root Key Installation Service

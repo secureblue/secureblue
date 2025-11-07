@@ -1,5 +1,5 @@
 {"name":"audit_kargs","description":"Checking for hardened kernel arguments","status":"warn","warnings":["Missing kernel argument: ia32_emulation=0 (32-bit support)","Missing kernel argument: nosmt=force (force-disable SMT)","Missing kernel argument (unstable): amd_iommu=force_isolation","Missing kernel argument (unstable): debugfs=off","Missing kernel argument (unstable): efi=disable_early_pci_dma","Missing kernel argument (unstable): gather_data_sampling=force","Missing kernel argument (unstable): oops=panic"]}
-{"name":"audit_sysctl","description":"Ensuring no sysctl overrides","status":"fail","warnings":["kernel.printk should be 3 3 3 3, but is actually 0\t3\t3\t3."]}
+{"name":"audit_sysctl","description":"Ensuring no sysctl overrides","status":"pass","warnings":[]}
 {"name":"audit_signed_image","description":"Ensuring a signed image is in use","status":"fail","warnings":[]}
 {"name":"audit_modprobe","description":"Ensuring no modprobe overrides","status":"pass","warnings":[]}
 {"name":"audit_ptrace","description":"Ensuring ptrace is forbidden","status":"pass","warnings":[]}

@@ -12,7 +12,7 @@
 
 type: script
 scripts:
-  - removesudo.sh
+  - install-trivalent.sh
   - installandroidudev.sh
   - disablecups.sh
   - disablesshd.sh
@@ -22,7 +22,3 @@ scripts:
   - disablenfsdaemons.sh
   - disablesssd.sh
   - disableunconfinedrootfulservices.sh
-  - enableflatpakautoupdate.sh
-  - fixupstreamicdloaderbug.sh
-  - enablesecurebluefirstrun.sh
-  - enablekeyverification.sh

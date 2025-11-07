@@ -19,7 +19,6 @@ application_domain(nautilus_t, nautilus_exec_t)
 
 role nautilus_roles types nautilus_t;
 
-allow nautilus_t self:user_namespace create;
 unconfined_domain_noaudit(nautilus_t)
 
 optional_policy(`

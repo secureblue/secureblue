@@ -36,7 +36,7 @@ jobs:
           persist-credentials: false
 
       - name: Run integration tests
-        uses: secureblue/bootc-integration-test-action@1d7d321af6f3e1e8324638f676e2023fe8263faa # v0.0.6
+        uses: secureblue/bootc-integration-test-action@56f1a17e4ab15b0feaed849d036686e3ec7adc4b # v0.0.9
         with:
           registry: ghcr.io/secureblue
           image: silverblue-main-hardened
@@ -46,5 +46,6 @@ jobs:
             ./.github/workflows/integration_tests/check_cleanup.sh
             ./.github/workflows/integration_tests/check_flatpak_setup.sh
             ./.github/workflows/integration_tests/check_unbound_migration.sh
+            ./.github/workflows/integration_tests/validate_systemd_unit_files.sh
           data-files: |
             ./.github/workflows/integration_tests/expected-audit-silverblue-main-hardened.txt

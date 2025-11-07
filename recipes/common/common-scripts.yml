@@ -18,7 +18,6 @@ scripts:
   - disablegeoclue.sh
   - createjustcompletions.sh
   - removefedoraflatpakremoteservice.sh
-  - enablecommonautoupdate.sh
   - localization.sh
   - addimageinfo.sh
-  - enableunboundservices.sh
+  - removesudo.sh

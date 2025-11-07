@@ -22,7 +22,7 @@ modules:
           - heif-pixbuf-loader
           - ffmpegthumbnailer
           - rar
-          # - pipewire-libs-extra uncomment once this ships https://bodhi.fedoraproject.org/updates/FEDORA-2025-1299cfef2f
+          - pipewire-libs-extra
       replace:  
         - from-repo: fedora-multimedia
           packages:

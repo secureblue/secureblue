@@ -24,6 +24,10 @@ on:
       KERNEL_PRIVKEY:
         required: true
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}-${{ inputs.recipe }}
+  cancel-in-progress: true
+
 jobs:
   bluebuild:
     name: Build secureblue
@@ -32,9 +36,9 @@ jobs:
       IMAGE_DIGEST: ${{ steps.image_manifest_metadata.outputs.IMAGE_DIGEST }}
       FULL_IMAGE_REF: ${{ steps.image_manifest_metadata.outputs.FULL_IMAGE_REF }}
     permissions:
-      contents: read
-      packages: write
-      id-token: write
+      contents: read # Needed to pull the repo for the build
+      packages: write # Needed to publish images
+      id-token: write # Needed for token generation for signing
     steps:
       - name: Enable egress auditing
         uses: step-security/harden-runner@f4a75cfd619ee5ce8d5b864b0d183aff3c69b55a # v2.13.1

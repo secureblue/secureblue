@@ -3,7 +3,7 @@ Description=secureblue secure boot key enrollment verification
 Wants=dbus.service
 After=dbus.service
 ConditionUser=!@system
-ConditionPathIsDirectory=%h/.config
+ConditionPathIsDirectory=/var/home/%u
 
 [Service]
 Type=oneshot

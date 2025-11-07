@@ -20,12 +20,12 @@ on:
 jobs:
   integration-tests:
     name: Run integration tests
-    if: github.triggering_actor == 'royaloughtness' || ${{ github.event_name == 'schedule' }}
+    if: github.triggering_actor == 'royaloughtness' || github.event_name == 'schedule'
     runs-on: ubuntu-24.04
     permissions:
-      contents: read
-      packages: write
-      id-token: write
+      contents: read # read repo contents
+      packages: write # push integration test image
+      id-token: write # generate token for signing
     strategy:
       fail-fast: false
 

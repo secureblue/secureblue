@@ -67,14 +67,12 @@ def amend_crypttab(uuid: str) -> str:
         content = crypttab.read()
 
         # Capture all user-specified options in crypttab.
-        content = re.sub(fr"(?<=luks-{uuid} UUID={uuid})([-,/ =\w]+)",
+        # And return the amended file content.
+        return re.sub(fr"(?<=luks-{uuid} UUID={uuid})([-,/ =\w]+)",
             # Append ", fido-device=auto" to the options captured.
             r"\1, fido-device=auto",
             content
         )
-
-        # Return the amended file content.
-        return content
 
 def systemd_cryptenroll(additional_args: list) -> str:
     command = ["/usr/bin/systemd-cryptenroll", fr"/dev/disk/by-uuid/{uuid}"]
@@ -105,7 +103,7 @@ def main(uuid: str, fido_device: list) -> None:
     print(f"The following token(s) are currently enrolled for disk {uuid}:")
 
     # Print tokens enrolled.
-    print(systemd_cryptenroll())
+    print(systemd_cryptenroll([]))
 
     # Visual separator
     print()
@@ -132,11 +130,11 @@ def main(uuid: str, fido_device: list) -> None:
             )
 
     # A list of slots that FIDO tokens are enrolled
-    slot_number: list = re.findall("[0-9]+(?= +fido2)", systemd_cryptenroll())
+    slot_number: list = re.findall("[0-9]+(?= +fido2)", systemd_cryptenroll([]))
 
     for i in slot_number:
         print(subprocess.run(
-            ["cryptsetup",
+            ["/usr/bin/cryptsetup",
              "config",
              "--key-slot",
              fr"{i}",
@@ -168,6 +166,7 @@ Please make backup of the recovery key.
 You will have to plug in the FIDO key to unlock your LUKS partition on boot.
 You may not be prompted if UV is in use."""
     )
+
 
 if __name__ == "__main__":
     try:

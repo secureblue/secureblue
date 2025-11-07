@@ -12,10 +12,10 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-# TODO: Make FIDO2 tokens preferred
-# TODO: initfs thingy
+# TODO: initramfs thingy
 
 import json
+import os
 import re
 import subprocess
 import sys
@@ -67,15 +67,27 @@ def amend_crypttab(uuid: str) -> str:
         content = crypttab.read()
 
         # Capture all user-specified options in crypttab.
-        re.sub(fr"(?<=fido-{uuid} UUID={uuid}\b\w+\b)([- =\w]+)",
-            # Ignore lookahead; Append ", fido-device=auto" to the options captured.
-            r"\2, fido-device=auto",
-            # Store the amended file content back to the variable "content".
+        content = re.sub(fr"(?<=luks-{uuid} UUID={uuid})([-,/ =\w]+)",
+            # Append ", fido-device=auto" to the options captured.
+            r"\1, fido-device=auto",
             content
         )
 
         # Return the amended file content.
         return content
+
+def systemd_cryptenroll(additional_args: list) -> str:
+    command = ["/usr/bin/systemd-cryptenroll", fr"/dev/disk/by-uuid/{uuid}"]
+
+    command.extend(additional_args)
+
+    return subprocess.run(
+        command,
+        capture_output=True,
+        check=True,
+        text=True
+    ).stdout.strip()
+
 
 def main(uuid: str, fido_device: list) -> None:
     # Backup and amend crypttab.
@@ -85,23 +97,15 @@ def main(uuid: str, fido_device: list) -> None:
     with open("/etc/crypttab", "w", encoding="ascii") as crypttab:
         crypttab.write(crypttab_content)
 
+    #FIXME - chown root
+    os.chmod("/etc/crypttab", 0o600)
+
     print(r"File '/etc/crypttab' copied to '/etc/crypttab.backup'.\n")
 
     print(f"The following token(s) are currently enrolled for disk {uuid}:")
 
     # Print tokens enrolled.
-    command = ["/usr/bin/systemd-cryptenroll", fr"/dev/disk/by-uuid/{uuid}"]
-
-    print(
-        subprocess.run(
-            command,
-            capture_output=True,
-            check=True,
-            text=True
-            )
-            .stdout
-            .strip()
-    )
+    print(systemd_cryptenroll())
 
     # Visual separator
     print()
@@ -113,20 +117,36 @@ def main(uuid: str, fido_device: list) -> None:
         algo = fido_device[i].get("algorithm")
         bio = bool(fido_device[i].get("bio"))
 
-        command = ["/usr/bin/systemd-cryptenroll",
-                   fr"/dev/disk/by-uuid/{uuid}",
-                   fr"--fido-device={path}",
-                   fr"--fido2-credential-algorithm={algo}"]
-
         # Disable PIN entry if biometric authentication is used.
         if bio:
-            command.append("--fido2-with-client-pin=no")
-            command.append("--fido2-with-user-verification=yes")
+            systemd_cryptenroll(
+                [fr"--fido-device={path}",
+                fr"--fido2-credential-algorithm={algo}",
+                "--fido2-with-client-pin=no",
+                "--fido2-with-user-verification=yes"]
+            )
+        else:
+            systemd_cryptenroll(
+                [fr"--fido-device={path}",
+                fr"--fido2-credential-algorithm={algo}"]
+            )
 
-        subprocess.run(command,
-                    capture_output=True,
-                    check=True,
-                    text=True).stdout.strip()
+    # A list of slots that FIDO tokens are enrolled
+    slot_number: list = re.findall("[0-9]+(?= +fido2)", systemd_cryptenroll())
+
+    for i in slot_number:
+        print(subprocess.run(
+            ["cryptsetup",
+             "config",
+             "--key-slot",
+             fr"{i}",
+             "--priority",
+             "prefer",
+             fr"/dev/disk/by-uuid/{uuid}"],
+            capture_output=True,
+            check=True,
+            text=True
+        ).stdout.strip())
 
     print("---\n")
     print("All tokens enrolled.\n")
@@ -137,25 +157,9 @@ def main(uuid: str, fido_device: list) -> None:
                 )
 
     if rm_passwd:
-        subprocess.run(
-            ["/usr/bin/systemd-cryptenroll",
-             fr"/dev/disk/by-uuid/{uuid}",
-             "--recovery-key",
-             # Make the user use enrolled FIDO device to unlock the LUKS device.
-             "--unlock-fido-device=auto"],
-            capture_output=True,
-            check=True,
-            text=True
-        ).stdout.strip()
-
-        subprocess.run(
-            ["/usr/bin/systemd-cryptenroll",
-             fr"/dev/disk/by-uuid/{uuid}",
-             "--wipe-slot=tpm2, pkcs11, empty, password"],
-            capture_output=True,
-            check=True,
-            text=True
-        ).stdout.strip()
+        # Use enrolled FIDO device to unlock the LUKS device.
+        print(systemd_cryptenroll(["--recovery-key", "--unlock-fido-device=auto"]))
+        print(systemd_cryptenroll(["--wipe-slot=tpm2, pkcs11, empty, password"]))
 
     print("""
 Your recovery key has been created.
@@ -166,6 +170,10 @@ You may not be prompted if UV is in use."""
     )
 
 if __name__ == "__main__":
-    uuid = validate_uuid(sys.argv[1])
-    fido_device = validate_fido_device(sys.argv[2])
+    try:
+        uuid = validate_uuid(sys.argv[1])
+        fido_device = validate_fido_device(sys.argv[2])
+    except IndexError:
+        print("Too few arguments given!")
+        sys.exit()
     main(uuid, fido_device)

@@ -14,14 +14,13 @@
 import json
 import os
 import re
-import subprocess
 import sys
 
 import inquirer
 import sandbox
 from fido import ConnectedDevices
 from sandbox import SandboxedFunction
-from utils import print_err
+from utils import command_stdout, print_err
 
 
 # Given an input_str, find uuid
@@ -47,10 +46,7 @@ def get_uuid() -> str:
         device_uuid = find_uuid("(?<=rd.luks.uuid=luks-)", line)
 
     # Validation
-    lsblk = subprocess.run(["/usr/bin/lsblk", "-o", "NAME"],
-                            capture_output=True,
-                            check=True,
-                            text=True).stdout.strip()
+    lsblk = command_stdout("/usr/bin/lsblk", "-o", "NAME")
 
     if device_uuid not in lsblk:
         print_err(f"Could not find device {device_uuid} in 'lsblk'.")

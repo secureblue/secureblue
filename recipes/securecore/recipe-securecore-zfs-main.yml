@@ -16,7 +16,7 @@ description: "CoreOS with zfs, hardened"
 
 base-image: ghcr.io/secureblue/securecore-main-hardened
 
-image-version: latest
+image-version: br-multiarch-43
 
 cosign-version: none
 nushell-version: none

@@ -166,7 +166,7 @@ print(enroll_fido_devices)
 # Run privileged script.
 sandbox.run(
     SandboxedFunction(
-        "fido-luks-unlock.py",
+        "fido2_enroll_luks_unlock.py",
         read_write_paths=["/etc"]
     ),
     target_uuid,

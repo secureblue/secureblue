@@ -29,7 +29,7 @@ def validate_uuid(uuid: str) -> bool:
                         "[a-z0-9]{4}-"
                         "[a-z0-9]{12}")
 
-    return True if pattern.match(uuid) is not None else False
+    return pattern.match(uuid) is not None
 
 # Check if the json passed is valid.
 def validate_fido_device(fido_device: str) -> list:
@@ -59,11 +59,27 @@ def amend_crypttab(uuid: str) -> str:
     with open("/etc/crypttab.backup", "rb") as crypttab:
         content = crypttab.read()
 
+        # Check if `fido2-device` has already been set
+        pattern = re.compile(
+                                bytes(
+                                    fr"(?<=luks-{uuid} UUID={uuid})"
+                                    # Store user-specified options
+                                    fr"(?P<options>[-,/ =\w]+)",
+                                    encoding="ascii"
+                                )
+                            )
+
+        target_line = re.search(pattern, content)
+
+        # `fido2-device` has already been set. Return unmodified file.
+        if target_line & b"fido2-device" in target_line.group("options"):
+            return content
+
         # Capture all user-specified options in crypttab.
         # And return the amended file content.
-        return re.sub(bytes(fr"(?<=luks-{uuid} UUID={uuid})([-,/ =\w]+)", encoding="ascii"),
-            # Append ", fido-device=auto" to the options captured.
-            bytes(r"\1, fido-device=auto", encoding="ascii"),
+        return re.sub(pattern,
+            # Append ", fido2-device=auto" to the options captured.
+            bytes(r"\1, fido2-device=auto", encoding="ascii"),
             content
         )
 
@@ -111,14 +127,14 @@ def main(uuid: str, fido_device: list) -> None:
         # Disable PIN entry if biometric authentication is used.
         if bio:
             systemd_cryptenroll(
-                [fr"--fido-device={path}",
+                [fr"--fido2-device={path}",
                 fr"--fido2-credential-algorithm={algo}",
                 "--fido2-with-client-pin=no",
                 "--fido2-with-user-verification=yes"]
             )
         else:
             systemd_cryptenroll(
-                [fr"--fido-device={path}",
+                [fr"--fido2-device={path}",
                 fr"--fido2-credential-algorithm={algo}"]
             )
 
@@ -150,7 +166,7 @@ def main(uuid: str, fido_device: list) -> None:
                 "Would you like to remove other authentication methods and add a recovery key? [Y/n] "
             ).strip()
             if ans in ("y", "yes", "n", "no"):
-                rm_passwd = True if ans in ("y", "yes") else False
+                rm_passwd = ans in ("y", "yes")
                 break
             print("Please enter y (yes) or n (no).")
         except (KeyboardInterrupt, EOFError):
@@ -159,7 +175,7 @@ def main(uuid: str, fido_device: list) -> None:
 
     if rm_passwd:
         # Use enrolled FIDO device to unlock the LUKS device.
-        print(systemd_cryptenroll(["--recovery-key", "--unlock-fido-device=auto"]))
+        print(systemd_cryptenroll(["--recovery-key", "--unlock-fido2-device=auto"]))
         print(systemd_cryptenroll(["--wipe-slot=tpm2, pkcs11, empty, password"]))
 
     print("""

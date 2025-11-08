@@ -99,14 +99,16 @@ if [[ "${DIRECT_PULL}" == true ]]; then
     echo "Downloading Brew from homebrew..."
     curl -fLsS --retry 5 --create-dirs "https://raw.githubusercontent.com/Homebrew/install/${INSTALLER_COMMIT}/install.sh" -o /tmp/brew-install
     echo "Downloaded Brew install script"
+    mkdir -p /var/home
+    mkdir -p /var/roothome
     chmod +x /tmp/brew-install
     touch /.dockerenv
-    env --ignore-environment PATH=/usr/bin:/bin:/usr/sbin:/sbin HOME=/var/home/linuxbrew NONINTERACTIVE=1 /usr/bin/bash /tmp/brew-install
+    env --ignore-environment PATH=/usr/bin:/bin:/usr/sbin:/sbin HOME=/home/linuxbrew NONINTERACTIVE=1 /usr/bin/bash /tmp/brew-install
     rm /.dockerenv
 
     # pack homebrew
-    tar --zstd -cvf /tmp/homebrew-install.tar.zst /var/home/linuxbrew/.linuxbrew
-    rm -rf /var/home/linuxbrew/.linuxbrew
+    tar --zstd -cvf /tmp/homebrew-install.tar.zst /home/linuxbrew/.linuxbrew
+    rm -rf /home/linuxbrew/.linuxbrew
 else
     # Download pre-packaged Brew from uBlue repo
     asset_urls=$(curl -fLsS --retry 5 'https://api.github.com/repos/ublue-os/packages/releases' \

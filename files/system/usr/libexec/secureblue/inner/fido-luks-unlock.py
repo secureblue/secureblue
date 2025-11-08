@@ -16,23 +16,22 @@
 import json
 import os
 import re
+import shutil
 import subprocess
 import sys
 
 
-def validate_uuid(uuid: str) -> str:
+# Check whether the string passed follows the pattern of a valid uuid.
+def validate_uuid(uuid: str) -> bool:
     pattern = re.compile(r"[a-z0-9]{8}-"
                         "[a-z0-9]{4}-"
                         "[a-z0-9]{4}-"
                         "[a-z0-9]{4}-"
                         "[a-z0-9]{12}")
 
-    if pattern.match(uuid) is None:
-        print("Malformed arguments.")
-        sys.exit()
-    else:
-        return uuid
+    return True if pattern.match(uuid) is not None else False
 
+# Check if the json passed is valid.
 def validate_fido_device(fido_device: str) -> list:
     fido_device = json.loads(fido_device)
 
@@ -55,10 +54,7 @@ def validate_fido_device(fido_device: str) -> list:
 # Takes uuid and return the file content of the amended crypttab.
 def amend_crypttab(uuid: str) -> str:
     # Backup /etc/crypttab
-    subprocess.run(["/usr/bin/cp", "/etc/crypttab", "/etc/crypttab.backup"],
-                    capture_output=True,
-                    check=True,
-                    text=True.stdout.strip())
+    shutil.copy2("/etc/crypttab", "/etc/crypttab.backup")
 
     with open("/etc/crypttab.backup", encoding="ascii") as crypttab:
         content = crypttab.read()
@@ -71,7 +67,7 @@ def amend_crypttab(uuid: str) -> str:
             content
         )
 
-def systemd_cryptenroll(additional_args: list) -> str:
+def systemd_cryptenroll(additional_args: list[str]) -> str:
     command = ["/usr/bin/systemd-cryptenroll", fr"/dev/disk/by-uuid/{uuid}"]
 
     command.extend(additional_args)
@@ -177,7 +173,8 @@ You may not be prompted if UV is in use."""
 
 if __name__ == "__main__":
     try:
-        uuid = validate_uuid(sys.argv[1])
+        if validate_uuid(sys.argv[1]):
+            uuid = sys.argv[1]
         fido_device = validate_fido_device(sys.argv[2])
     except IndexError:
         print("Too few arguments given!")

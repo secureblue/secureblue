@@ -19,8 +19,6 @@ import re
 import subprocess
 import sys
 
-import inquirer
-
 
 def validate_uuid(uuid: str) -> str:
     pattern = re.compile(r"[a-z0-9]{8}-"
@@ -148,10 +146,20 @@ def main(uuid: str, fido_device: list) -> None:
     print("---\n")
     print("All tokens enrolled.\n")
 
-    rm_passwd = inquirer.list_input(
-                    "Would you like to remove other authentication methods and add a recovery key?",
-                    choices=[("Yes", True), ("No", False)]
-                )
+
+    ## The following code is taken from files/system/usr/libexec/secureblue/utils/__init__.py ##
+    while True:
+        try:
+            ans = input(
+                "Would you like to remove other authentication methods and add a recovery key? [Y/n] "
+            ).strip()
+            if ans in ("y", "yes", "n", "no"):
+                rm_passwd = True if ans in ("y", "yes") else False
+                break
+            print("Please enter y (yes) or n (no).")
+        except (KeyboardInterrupt, EOFError):
+            print()
+            sys.exit(130)
 
     if rm_passwd:
         # Use enrolled FIDO device to unlock the LUKS device.

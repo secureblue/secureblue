@@ -56,14 +56,14 @@ def amend_crypttab(uuid: str) -> str:
     # Backup /etc/crypttab
     shutil.copy2("/etc/crypttab", "/etc/crypttab.backup")
 
-    with open("/etc/crypttab.backup", encoding="ascii") as crypttab:
+    with open("/etc/crypttab.backup", "rb") as crypttab:
         content = crypttab.read()
 
         # Capture all user-specified options in crypttab.
         # And return the amended file content.
-        return re.sub(fr"(?<=luks-{uuid} UUID={uuid})([-,/ =\w]+)",
+        return re.sub(bytes(fr"(?<=luks-{uuid} UUID={uuid})([-,/ =\w]+)", encoding="ascii"),
             # Append ", fido-device=auto" to the options captured.
-            r"\1, fido-device=auto",
+            bytes(r"\1, fido-device=auto", encoding="ascii"),
             content
         )
 
@@ -85,7 +85,7 @@ def main(uuid: str, fido_device: list) -> None:
     crypttab_content = amend_crypttab(uuid)
 
     # Write amended file content to crypttab.
-    with open("/etc/crypttab", "w", encoding="ascii") as crypttab:
+    with open("/etc/crypttab", "wb") as crypttab:
         crypttab.write(crypttab_content)
 
     os.chmod("/etc/crypttab", 0o600)

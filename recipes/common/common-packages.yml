@@ -41,3 +41,6 @@ install:
 
     # address hardened_malloc incompatibilities
     - no_rlimit_as
+
+    # Used in non-privileged ujust.
+    - python3-inquirer

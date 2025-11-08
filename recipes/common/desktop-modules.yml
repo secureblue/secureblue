@@ -30,3 +30,5 @@ modules:
         - desktop
     - type: brew
       brew-analytics: false
+      direct-pull: true
+      installer-commit: 39c012e6db58f84f7469e9346adba57f8302110b

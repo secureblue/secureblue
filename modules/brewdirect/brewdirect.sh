@@ -257,8 +257,8 @@ fi
 
 # Copy shell configuration files
 echo "Copying Brew bash & fish shell completions"
-cp -r "${MODULE_DIRECTORY}"/brew/brew-fish-completions.fish /usr/share/fish/vendor_conf.d/brew-fish-completions.fish
-cp -r "${MODULE_DIRECTORY}"/brew/brew-bash-completions.sh /etc/profile.d/brew-bash-completions.sh
+cp -r "${MODULE_DIRECTORY}"/brewdirect/brew-fish-completions.fish /usr/share/fish/vendor_conf.d/brew-fish-completions.fish
+cp -r "${MODULE_DIRECTORY}"/brewdirect/brew-bash-completions.sh /etc/profile.d/brew-bash-completions.sh
 
 # Register path symlink
 # We do this via tmpfiles.d so that it is created by the live system.

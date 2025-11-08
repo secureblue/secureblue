@@ -107,7 +107,7 @@ if [[ "${DIRECT_PULL}" == true ]]; then
     rm /.dockerenv
 
     # pack homebrew
-    tar --zstd -cvf /tmp/homebrew-install.tar.zst /home/linuxbrew/.linuxbrew
+    tar --zstd -cvf /tmp/homebrew-tarball.tar.zst /home/linuxbrew/.linuxbrew
     rm -rf /home/linuxbrew/.linuxbrew
 else
     # Download pre-packaged Brew from uBlue repo

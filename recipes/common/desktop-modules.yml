@@ -31,4 +31,5 @@ modules:
     - type: brewdirect
       brew-analytics: false
       direct-pull: true
+      source: local
       installer-commit: 39c012e6db58f84f7469e9346adba57f8302110b

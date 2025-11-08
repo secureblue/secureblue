@@ -18,4 +18,5 @@ modules:
         - checksinglekernel.sh
         - removesuid.sh
         - enable-preset-services.sh
+        - removesudo.sh
         - ensuresudoabsent.sh

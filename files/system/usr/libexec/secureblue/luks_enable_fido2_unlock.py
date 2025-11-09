@@ -12,17 +12,39 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and limitations under the License.
 
+import argparse
 import json
 import os
 import re
 import sys
 
+import textwrap
 import inquirer
 import sandbox
 from fido import ConnectedDevices
 from sandbox import SandboxedFunction
 from utils import command_stdout, print_err
 
+parser = argparse.ArgumentParser(prog="ujust setup-luks-fido2-unlock",
+                                 formatter_class=argparse.RawDescriptionHelpFormatter,
+
+                                 description=textwrap.dedent("""
+The script makes the following assumptions:
+1. '/etc/crypttab' was not manually edited.
+2. '/proc/cmdline' should contain exactly one UUID of the target LUKS device.
+3. The user will make backup of the recovery key generated.
+   Such that if the FIDO2 key enrolled is lost, you still have access to the LUKS device.
+
+---
+
+The script will not make any permanent changes to your system prior to the authentication stage.
+If the script fails after you're asked to authenticate, you may have to manually revert the changes.
+Permanent changes are as follows:
+1. '/etc/crypttab' is amended. You may find it's backup at '/etc/crypttab.backup'.
+2. Tokens and credentials used to encrypt/decrypt your LUKS volume may be added/deleted.
+   Run 'systemd cryptenroll <your LUKS device>' for a list of all tokens enrolled."""))
+
+parser.parse_args()
 
 # Given an input_str, find uuid
 def find_uuid(lookahead: str, input_str: str) -> str:

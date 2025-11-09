@@ -121,7 +121,7 @@ def main() -> None:
         secure_boot=secure_boot_supported,
     )
 
-    print("Applying boot parameters...")
+    print("\nApplying boot parameters...")
     apply_kargs(add=kargs_to_add, remove=kargs_to_remove)
     print("Hardening kernel arguments applied.")
 

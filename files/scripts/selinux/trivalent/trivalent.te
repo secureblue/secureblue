@@ -315,20 +315,13 @@ allow trivalent_script_t dosfs_t:filesystem remount;
 allow trivalent_script_t null_device_t:chr_file mounton;
 allow trivalent_script_t trivalent_t:process2 { nosuid_transition nnp_transition };
 
-# Do not audit attempts to read /proc/PID for other processes.
-optional_policy(`
-	gen_require(`
-		attribute domain;
-	')
-	dontaudit trivalent_script_t domain:dir getattr;
-')
-
 # xwayland/nvidia
 xserver_exec(trivalent_script_t)
 dev_rw_xserver_misc(trivalent_script_t)
 dev_map_xserver_misc(trivalent_script_t)
 allow trivalent_script_t xserver_misc_device_t:chr_file { getattr ioctl map open read write };
 
+domain_dontaudit_search_all_domains_state(trivalent_script_t)
 fs_mounton_tmpfs(trivalent_script_t)
 fs_unmount_tmpfs(trivalent_script_t)
 fs_mount_tmpfs(trivalent_script_t)

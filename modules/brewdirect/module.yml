@@ -1,6 +1,0 @@
-name: brewdirect
-shortdesc: The brew module installs Homebrew / Linuxbrew at build time and ensures the package manager remains up-to-date.
-example: |
-  type: brew
-  nofile-limits: true # increase nofile limits
-  brew-analytics: false # disable telemetry

@@ -161,8 +161,6 @@ for i in connected_devices.selected:
 
 enroll_fido_devices = json.dumps(enroll_fido_devices)
 
-print(enroll_fido_devices)
-
 # Run privileged script.
 sandbox.run(
     SandboxedFunction(

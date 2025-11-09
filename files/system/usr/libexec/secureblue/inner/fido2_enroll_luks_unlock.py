@@ -37,7 +37,7 @@ def validate_fido_device(fido_device: str) -> list:
 
     pattern = re.compile(r"/dev/hidraw[0-9]+")
 
-    for i in fido_device:
+    for i in range(len(fido_device)):
         path = fido_device[i].get("path")
         algo = fido_device[i].get("algorithm")
 
@@ -45,7 +45,7 @@ def validate_fido_device(fido_device: str) -> list:
             print("Malformed arguments.")
             sys.exit()
 
-        if not ( algo == "es256" | algo == "rs256" | algo == "eddsa" ):
+        if algo not in ("es256", "rs256", "eddsa"):
             print("Malformed arguments.")
             sys.exit()
 
@@ -72,7 +72,7 @@ def amend_crypttab(uuid: str) -> str:
         target_line = re.search(pattern, content)
 
         # `fido2-device` has already been set. Return unmodified file.
-        if target_line & b"fido2-device" in target_line.group("options"):
+        if target_line and b"fido2-device" in target_line.group("options"):
             return content
 
         # Capture all user-specified options in crypttab.
@@ -107,7 +107,7 @@ def main(uuid: str, fido_device: list) -> None:
     os.chmod("/etc/crypttab", 0o600)
     os.chown("/etc/crypttab", 0, 0)
 
-    print(r"File '/etc/crypttab' copied to '/etc/crypttab.backup'.\n")
+    print("File '/etc/crypttab' copied to '/etc/crypttab.backup'.\n")
 
     print(f"The following token(s) are currently enrolled for disk {uuid}:")
 
@@ -119,7 +119,7 @@ def main(uuid: str, fido_device: list) -> None:
 
     print("Your selected tokens are now enrolled. This may take a while...\n")
     # Enroll selected tokens
-    for i in fido_device:
+    for i in range(len(fido_device)):
         path = fido_device[i].get("path")
         algo = fido_device[i].get("algorithm")
         bio = bool(fido_device[i].get("bio"))
@@ -175,15 +175,18 @@ def main(uuid: str, fido_device: list) -> None:
 
     if rm_passwd:
         # Use enrolled FIDO device to unlock the LUKS device.
-        print(systemd_cryptenroll(["--recovery-key", "--unlock-fido2-device=auto"]))
-        print(systemd_cryptenroll(["--wipe-slot=tpm2, pkcs11, empty, password"]))
+        print("Your recovery key: "
+            "{systemd_cryptenroll(['--recovery-key', '--unlock-fido2-device=auto'])}")
+        print(systemd_cryptenroll(["--wipe-slot=tpm2"]))
+        print(systemd_cryptenroll(["--wipe-slot=pkcs11"]))
+        print(systemd_cryptenroll(["--wipe-slot=empty"]))
+        print(systemd_cryptenroll(["--wipe-slot=password"]))
 
     print("""
 Your recovery key has been created.
 Please make backup of the recovery key.
 
-You will have to plug in the FIDO key to unlock your LUKS partition on boot.
-You may not be prompted if UV is in use."""
+You will have to plug in the FIDO key to unlock your LUKS partition on boot."""
     )
 
 

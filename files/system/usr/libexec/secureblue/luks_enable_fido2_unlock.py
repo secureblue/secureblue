@@ -17,8 +17,8 @@ import json
 import os
 import re
 import sys
-
 import textwrap
+
 import inquirer
 import sandbox
 from fido import ConnectedDevices

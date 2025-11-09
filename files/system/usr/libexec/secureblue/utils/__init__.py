@@ -252,7 +252,8 @@ def is_using_vpn() -> bool:
 
 def interruptible_ask(prompt: str) -> str:
     """Ask for a string input, strip whitespace, and exit gracefully if interrupted."""
-    prompt = textwrap.fill(textwrap.dedent(prompt.strip()))
+    prompt = " ".join(prompt.split())
+    prompt = "\n" + textwrap.fill(prompt) + " "
     try:
         return input(prompt).strip()
     except (KeyboardInterrupt, EOFError):
@@ -262,12 +263,14 @@ def interruptible_ask(prompt: str) -> str:
 
 def ask_yes_no(prompt: str) -> bool:
     """Returns the user's preference between yes/y (True) and no/n (False)."""
-
     while True:
-        ans = interruptible_ask(prompt + " [y/n] ").casefold()
-        if ans in ("y", "yes", "n", "no"):
-            return ans in ("y", "yes")
-        print("Please enter y (yes) or n (no).")
+        match interruptible_ask(prompt + " [y/n] ").casefold():
+            case "y" | "yes":
+                return True
+            case "n" | "no":
+                return False
+            case _:
+                print("Please enter y (yes) or n (no).")
 
 
 def ask_option(options_count: int) -> int:

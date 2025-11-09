@@ -485,19 +485,3 @@ setup-usbguard:
     if ! rpm-ostree status | grep '●' | grep -Eq 'securecore|iot'; then
         systemctl enable --user --now usbguard-notifier.service
     fi
-
-# Create the admin user and remove wheel from the normal user
-create-admin:
-    #!/usr/bin/run0 /usr/bin/bash
-    set -euo pipefail
-    if id "admin" &>/dev/null; then
-        echo "Error: You already have a user account named admin."
-        echo "This is normal if you have already run this script."
-        echo "If you named your user account admin during installation, you will not be able to use this script."
-        exit 1
-    fi
-    useradd -G wheel admin
-    echo "Please set a new password for the admin user."
-    passwd admin
-    gpasswd -d "${SUDO_USER}" wheel
-    echo "New admin user has been created, please reboot to apply changes."

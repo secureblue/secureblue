@@ -86,7 +86,7 @@ def main() -> None:
         print("Too many options specified, see usage with --help.", file=sys.stderr)
         return 1
 
-    linuxbrew_is_installed = Path(LINUXBREW_DIR).exists()
+    linuxbrew_is_installed = Path(LINUXBREW_HOMEDIR).exists()
     brew_disable_function = SandboxedFunction("brew.py", read_write_paths=[LINUXBREW_HOMEDIR, PROFILE_DIR])  
     match mode:
         case "on" | "off":

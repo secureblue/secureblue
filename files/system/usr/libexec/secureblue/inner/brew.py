@@ -19,8 +19,8 @@ The sandboxed brew disable function
 """
 
 import os
-import sys
 import shutil
+import sys
 from typing import Final
 
 LINUXBREW_DIR: Final[str] = "/home/linuxbrew/.linuxbrew/"

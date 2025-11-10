@@ -20,6 +20,7 @@ from pathlib import Path
 import sandbox
 from sandbox import SandboxedFunction
 import subprocess  # nosec
+import sys
 from typing import Final
 from utils import ask_yes_no
 

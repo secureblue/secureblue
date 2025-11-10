@@ -42,3 +42,9 @@ set-kargs-hardening:
 remove-kargs-hardening:
     #!/usr/bin/sh
     /usr/bin/python3 /usr/libexec/secureblue/remove_kargs_hardening.py
+
+
+# Sets Brew on/off (requires reboot)
+set-brew *args:
+    #!/bin/sh
+    exec /usr/bin/python3 /usr/libexec/secureblue/brew_main.py "$@"

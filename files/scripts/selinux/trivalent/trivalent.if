@@ -6,103 +6,91 @@
 
 ########################################
 ## <summary>
-##	Execute trivalent in the trivalent domain.
+##	Allow role to run Trivalent from the given domain.
 ## </summary>
-## <param name="domain">
-## <summary>
-##	Domain allowed to transition.
-## </summary>
-## </param>
-#
-interface(`trivalent_domtrans',`
-	gen_require(`
-		type trivalent_t, trivalent_exec_t;
-	')
-
-	domtrans_pattern($1, trivalent_exec_t, trivalent_t)
-')
-
-
-########################################
-## <summary>
-##	Execute trivalent in the trivalent domain.
-## </summary>
-## <param name="domain">
-## <summary>
-##	Domain allowed to transition.
-## </summary>
+## <param name="domain_prefix">
+##	<summary>
+##	The prefix of the domain (e.g., user is the prefix for user_t).
+##	</summary>
 ## </param>
 ## <param name="role">
 ##	<summary>
-##	Role allowed access.
+##	Role (or role attribute) allowed access.
+##	</summary>
+## </param>
+## <param name="domain">
+##	<summary>
+##	User domain for the role.
 ##	</summary>
 ## </param>
 #
-interface(`trivalent_run',`
+template(`trivalent_role_template',`
 	gen_require(`
-		type trivalent_t;
 		attribute_role trivalent_roles;
+		attribute trivalent_domain;
+		attribute trivalent_script_domain;
 	')
 
-	trivalent_domtrans($1)
+	##############################
+	#
+	# Declarations
+	#
+
 	roleattribute $2 trivalent_roles;
-')
 
+	type $1_trivalent_t, trivalent_domain;
+	application_domain($1_trivalent_t, trivalent_exec_t)
+	ubac_constrained($1_trivalent_t)
 
+	type $1_trivalent_script_t, trivalent_script_domain;
+	application_domain($1_trivalent_script_t, trivalent_script_exec_t)
+	ubac_constrained($1_trivalent_script_t)
 
-########################################
-## <summary>
-##	Execute trivalent script in the trivalent script domain.
-## </summary>
-## <param name="domain">
-## <summary>
-##	Domain allowed to transition.
-## </summary>
-## </param>
-#
-interface(`trivalent_script_domtrans',`
-	gen_require(`
-		type trivalent_script_t, trivalent_script_exec_t;
+	role $2 types { $1_trivalent_t $1_trivalent_script_t };
+
+	##############################
+	#
+	# Local policy
+	#
+
+	domtrans_pattern($3, trivalent_script_exec_t, $1_trivalent_script_t)
+	domtrans_pattern($1_trivalent_script_t, trivalent_exec_t, $1_trivalent_t)
+	allow $1_trivalent_script_t $1_trivalent_t:process2 { nosuid_transition nnp_transition };
+	trivalent_filetrans_home_content($3)
+
+	# screenshare access
+	allow $1_trivalent_t $3:unix_stream_socket { connectto rw_socket_perms };
+
+	kernel_read_system_state($1_trivalent_t)
+	pulseaudio_tmpfs_content($1_trivalent_t)
+
+	optional_policy(`
+		gen_require(`
+			type user_tmpfs_t;
+		')
+		xserver_user_x_domain_template($1_trivalent, $1_trivalent_t, user_tmpfs_t)
 	')
 
-	domtrans_pattern($1, trivalent_script_exec_t, trivalent_script_t)
+	# Trivalent-Flatpak integration
+	# uncomment this once new flatpak policy is in use
+	# optional_policy(`
+	# 	flatpak_role_template($1_trivalent, $2, $1_trivalent_t, $1_t)
+	# 	allow $1_trivalent_t $1_trivalent_flatpak_t:process2 { nnp_transition nosuid_transition };
+	# 	write_fifo_files_pattern($1_trivalent_flatpak_t, $1_trivalent_script_t, $1_trivalent_script_t)
+	# 	# write_fifo_files_pattern($3, $1_trivalent_script_t, $1_trivalent_script_t)
+	# ')
 ')
 
 
 ########################################
 ## <summary>
-##	Execute trivalent script in the trivalent script domain.
+##	Create trivalent directory in the user home directory
+##	with an correct label.
 ## </summary>
 ## <param name="domain">
-## <summary>
-##	Domain allowed to transition.
-## </summary>
-## </param>
-## <param name="role">
 ##	<summary>
-##	Role allowed access.
+##	Domain allowed access.
 ##	</summary>
-## </param>
-#
-interface(`trivalent_script_run',`
-	gen_require(`
-		type trivalent_script_t;
-		attribute_role trivalent_script_roles;
-	')
-
-	trivalent_script_domtrans($1)
-	roleattribute $2 trivalent_script_roles;
-')
-
-########################################
-## <summary>
-##      Create trivalent directory in the user home directory
-##      with an correct label.
-## </summary>
-## <param name="domain">
-##      <summary>
-##      Domain allowed access.
-##      </summary>
 ## </param>
 #
 interface(`trivalent_filetrans_home_content',`

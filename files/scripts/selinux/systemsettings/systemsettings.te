@@ -25,12 +25,12 @@ unconfined_domain_noaudit(systemsettings_t)
 optional_policy(`
 	gen_require(`
 		type unconfined_t;
-		type trivalent_t;
+		attribute trivalent_domain;
 		role unconfined_r;
 	')
 
 	systemsettings_run(unconfined_t, unconfined_r)
-	systemsettings_run(trivalent_t, unconfined_r)
+	systemsettings_run(trivalent_domain, unconfined_r)
 ')
 
 # Required for accountsd to access systemsettings's tmp file.

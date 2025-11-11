@@ -20,4 +20,3 @@ scripts:
   - removefedoraflatpakremoteservice.sh
   - localization.sh
   - addimageinfo.sh
-  - removesudo.sh

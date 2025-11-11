@@ -29,7 +29,7 @@ from kargs_hardening_common import (
 
 def main() -> None:
     """Main script entry point."""
-    kargs_to_remove = DEFAULT_KARGS + DISABLE_32_BIT + FORCE_NOSMT + UNSTABLE_KARGS
+    kargs_to_remove = [*DEFAULT_KARGS, DISABLE_32_BIT, FORCE_NOSMT, *UNSTABLE_KARGS]
 
     print("Applying boot parameters...")
     apply_kargs(add=[], remove=kargs_to_remove)

@@ -18,9 +18,9 @@
 The wheel user creation implementation for ujust
 """
 
-import sys
-import re
 import pwd
+import re
+import sys
 from typing import Final
 
 import sandbox
@@ -46,15 +46,12 @@ ujust create-admin help
 
 
 def check_username(username: str) -> bool:
-    if username == "." or username == "..":
+    if username in {".", ".."}:
         return False
 
     # Regex from https://systemd.io/USER_NAMES/ for RHEL/Fedora systems.
     username_pattern = re.compile(r"^[a-zA-Z0-9_.][a-zA-Z0-9_.-]{0,30}[a-zA-Z0-9_.$-]?$")
-    if username_pattern.fullmatch(username) == None:
-        return False
-    else:
-        return True
+    return username_pattern.fullmatch(username) is None
 
 
 def main() -> int:
@@ -74,7 +71,7 @@ def main() -> int:
     if username == "--help":
         print(HELP)
         return 0
-    if check_username(username) != True:
+    if not check_username(username):
         print("Your username must be follow RHEL/Fedora rules, see https://systemd.io/USER_NAMES/")
         return 1
 

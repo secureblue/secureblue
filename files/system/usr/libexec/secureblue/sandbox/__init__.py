@@ -41,9 +41,10 @@ class SandboxedFunction:
                 raise ValueError(
                     f"Bad argument to SandboxedFunction: expected list, got `{type(prop)}`."
                 )
-        if not isinstance(self.subprocess_interactive, bool):
+        subprocess_inter = self.subprocess_interactive
+        if not isinstance(subprocess_inter, bool):
             raise ValueError(
-                f"Bad argument to SandboxedFunction: expected bool, got `{type(self.subprocess_interactive)}`."
+                f"Bad argument to SandboxedFunction: expected bool, got `{type(subprocess_inter)}`."
             )
 
 
@@ -120,7 +121,7 @@ def run(sandboxed_function: SandboxedFunction, *args: str) -> int:
         *args,
     ]
 
-    if sandboxed_function.subprocess_interactive == True:
+    if sandboxed_function.subprocess_interactive:
         result = subprocess.run(
             command, check=False, stdin=sys.stdin, stdout=sys.stdout, stderr=sys.stderr
         )  # nosec

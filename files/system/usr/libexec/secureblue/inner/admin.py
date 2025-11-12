@@ -18,10 +18,10 @@
 The sandboxed admin create function
 """
 
+import grp
+import os
 import subprocess
 import sys
-import os
-import grp
 from typing import Final
 
 
@@ -33,13 +33,13 @@ def main() -> int:
         return 1
 
     username: Final[str] = sys.argv[1]
-    result = subprocess.run(["useradd", "-M", "-G", "wheel", username], check=False)
+    result = subprocess.run(["/usr/sbin/useradd", "-M", "-G", "wheel", username], check=False)
     if result.returncode != 0:
         print("useradd has failed.")
         return 1
     print("Note passwd will give bad password warning, this is a known bug and expected.")
     result = subprocess.run(
-        ["passwd", username],
+        ["/usr/sbin/passwd", username],
         check=False,
         text=True,
         stdin=sys.stdin,
@@ -53,7 +53,7 @@ def main() -> int:
     current_user = str(os.environ.get("SUDO_USER"))
     wheel_users = grp.getgrnam("wheel").gr_mem
     if (current_user in wheel_users) and (username in wheel_users):
-        result = subprocess.run(["gpasswd", "-d", current_user, "wheel"], check=False)
+        result = subprocess.run(["/usr/sbin/gpasswd", "-d", current_user, "wheel"], check=False)
         if result.returncode != 0:
             print("gpasswd has failed.")
             return 1

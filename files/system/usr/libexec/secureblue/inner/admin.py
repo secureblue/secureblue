@@ -58,7 +58,7 @@ def main() -> int:
             print("gpasswd has failed.")
             return 1
     else:
-        print("Current user not in wheel, current user not modified.")
+        print(f'Current user ("{current_user}") not in wheel, current user not modified.')
 
     print(f'A new administrator user has been created called "{username}".')
     return 0

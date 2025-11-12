@@ -86,8 +86,11 @@ def main() -> int:
         admin_function = SandboxedFunction(
             "admin.py",
             subprocess_interactive=True,
-            read_write_paths=["/etc/passwd", "/etc/shadow", "/etc/group", "/etc/gshadow"],
+            read_write_paths=["/etc"],
             capabilities=["CAP_DAC_OVERRIDE"],
+            additional_sandbox_properties=[
+                "--property=SystemCallFilter=@aio @chown @keyring @memlock @mount @privileged @resources @setuid memfd_create"
+            ],
         )
         return sandbox.run(admin_function, username)
 

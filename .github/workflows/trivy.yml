@@ -23,13 +23,18 @@ on:
       - "**.md"
 
   workflow_dispatch: # allow manually triggering builds
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
 jobs:
   build:
     name: Trivy
     if: github.triggering_actor == 'royaloughtness' || github.event_name == 'schedule' || github.event_name == 'push'
     runs-on: ubuntu-24.04
     permissions:
-      security-events: write
+      security-events: write # write findings to github
     steps:
       - name: Checkout code
         uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0

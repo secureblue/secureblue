@@ -40,9 +40,9 @@ jobs:
           - sericea-nvidia-hardened 
           - sericea-nvidia-open-hardened 
     permissions:
-      contents: read
-      packages: read
-      id-token: write
+      contents: read # read repo contents
+      packages: read # pull images for iso generation
+      id-token: write # generate token for signing
 
     steps:
       - name: Maximize build space

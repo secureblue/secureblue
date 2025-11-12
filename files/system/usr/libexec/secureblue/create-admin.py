@@ -51,8 +51,7 @@ def check_username(username: str) -> bool:
 
     # Regex from https://systemd.io/USER_NAMES/ for RHEL/Fedora systems.
     username_pattern = re.compile(r"^[a-zA-Z0-9_.][a-zA-Z0-9_.-]{0,30}[a-zA-Z0-9_.$-]?$")
-    return username_pattern.fullmatch(username) is None
-
+    return username_pattern.fullmatch(username) != None
 
 def main() -> int:
     """Handle the arguments and passes them to elevated function"""

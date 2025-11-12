@@ -21,6 +21,7 @@ Auditing script for secureblue. See https://secureblue.dev/ for more info.
 import argparse
 import asyncio
 import filecmp
+import getpass
 import glob
 import json
 import os
@@ -601,9 +602,11 @@ def audit_flatpak_auto_update():
 
 
 @audit
-def audit_wheel():
-    """Ensure the current user is not in the wheel group."""
-    if "wheel" in command_stdout("groups").split():
+def audit_groups():
+    """Check whether user is in known groups with security implications."""
+    user_groups = frozenset(command_stdout("groups").split())
+
+    if "wheel" in user_groups:
         rec_lines = (
             _("The current user is in the wheel group."),
             _("To set up a separate wheel account, follow the instructions here:"),
@@ -615,6 +618,57 @@ def audit_wheel():
         rec = None
         status = PASS
     yield Report(_("Ensuring user is not a member of the wheel group"), status, recs=rec)
+
+    username = getpass.getuser()
+    known_groups = (username, "usbguard", "wheel")
+    dangerous_groups = ("docker", "libvirt")
+    status = PASS
+    warnings = []
+    recs = []
+    for group in user_groups:
+        remove_group_cmd = f"$ run0 sh -c 'usermod -rG {group} {username}'"
+        if group in known_groups:
+            continue
+        elif group in dangerous_groups:
+            status = status.downgrade_to(FAIL)
+            warning = _("The current user is in the group '{0}'.").format(group)
+            warnings.append(warning)
+            rec_lines = (
+                warning,
+                _("This allows privilege escalation to root."),
+                _("To remove the user from this group, run:"),
+                remove_group_cmd,
+            )
+            recs.append("\n".join(rec_lines))
+        elif group == "systemd-journal":
+            status = status.downgrade_to(WARN)
+            warning = _("The current user is in the group '{0}'.").format(group)
+            warnings.append(warning)
+            rec_lines = (
+                warning,
+                _("This group allows the user to read system and kernel logs."),
+                _("This might make it easier to exploit kernel vulnerabilities."),
+                _("To remove the user from this group, run:"),
+                remove_group_cmd,
+            )
+            recs.append("\n".join(rec_lines))
+        else:
+            status = status.downgrade_to(WARN)
+            warning = _("The current user is in the unrecognized group '{0}'.").format(group)
+            warnings.append(warning)
+            rec_lines = (
+                warning,
+                _("Group memberships can grant additional privileges and may pose security risks."),
+                _("You may want to consider removing the user from this group:"),
+                remove_group_cmd,
+            )
+            recs.append("\n".join(rec_lines))
+    yield Report(
+        _("Checking if user is in groups with security implications"),
+        status,
+        warnings=warnings,
+        recs=recs,
+    )
 
 
 @audit

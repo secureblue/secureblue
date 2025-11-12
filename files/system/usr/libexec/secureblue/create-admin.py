@@ -88,7 +88,7 @@ def main() -> int:
             subprocess_interactive=True,
             read_write_paths=["/etc"],
             capabilities=["CAP_DAC_OVERRIDE"],
-            additional_sandbox_properties=["--property=SystemCallFilter=@chown"],
+            additional_sandbox_properties=["--property=SystemCallFilter=@chown setuid"],
         )
         return sandbox.run(admin_function, username)
 

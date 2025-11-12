@@ -23,6 +23,7 @@ import sys
 import os
 from typing import Final
 
+
 def main() -> int:
     """Create new wheel username"""
     required_args_count = 2
@@ -31,21 +32,29 @@ def main() -> int:
         return 1
 
     username: Final[str] = sys.argv[1]
-    result = subprocess.run(["useradd", "-M", "-G", "wheel", username], check=True, shell=False)
+    result = subprocess.run(["useradd", "-M", "-G", "wheel", username], check=False)
     if result.returncode != 0:
         print("useradd has failed.")
         return 1
-    result = subprocess.run(["passwd", username], check=True, text=True, stdin=sys.stdin, stdout=sys.stdout, stderr=sys.stderr, shell=False)
+    result = subprocess.run(
+        ["passwd", username],
+        check=False,
+        text=True,
+        stdin=sys.stdin,
+        stdout=sys.stdout,
+        stderr=sys.stderr,
+    )
     if result.returncode != 0:
         print("passwd has failed.")
         return 1
-    result = subprocess.run(["gpasswd", "-d", str(os.getlogin()), "wheel"], check=True, shell=False)
+    result = subprocess.run(["gpasswd", "-d", str(os.getlogin()), "wheel"], check=False)
     if result.returncode != 0:
         print("gpasswd has failed.")
         return 1
 
-    print(f"A new administrator user has been created called \"{username}\".")
+    print(f'A new administrator user has been created called "{username}".')
     return 0
+
 
 if __name__ == "__main__":
     sys.exit(main())

@@ -26,8 +26,8 @@ from typing import Final
 import sandbox
 from sandbox import SandboxedFunction
 
-#Note this script calls the new user admin in userfacing contexts, 
-#and wheel internally for clarity.
+# Note this script calls the new user admin in userfacing contexts,
+# and wheel internally for clarity.
 
 HELP: Final[str] = """
 This script creates a new administrator user, adding them to the wheel
@@ -44,16 +44,18 @@ ujust create-admin help
     Prints this message.
 """
 
+
 def check_username(username: str) -> bool:
-    if (username == "." or username == ".."):
+    if username == "." or username == "..":
         return False
 
-    #Regex from https://systemd.io/USER_NAMES/ for RHEL/Fedora systems.
-    username_pattern = re.compile(r'^[a-zA-Z0-9_.][a-zA-Z0-9_.-]{0,30}[a-zA-Z0-9_.$-]?$')
+    # Regex from https://systemd.io/USER_NAMES/ for RHEL/Fedora systems.
+    username_pattern = re.compile(r"^[a-zA-Z0-9_.][a-zA-Z0-9_.-]{0,30}[a-zA-Z0-9_.$-]?$")
     if username_pattern.fullmatch(username) == None:
         return False
     else:
         return True
+
 
 def main() -> int:
     """Handle the arguments and passes them to elevated function"""
@@ -75,14 +77,20 @@ def main() -> int:
     if check_username(username) != True:
         print("Your username must be follow RHEL/Fedora rules, see https://systemd.io/USER_NAMES/")
         return 1
-    
+
     try:
         pwd.getpwnam(username)
         print("New administrator user must not already exist.")
         return 1
     except KeyError:
-        admin_function = SandboxedFunction("admin.py")
+        admin_function = SandboxedFunction(
+            "admin.py",
+            subprocess_interactive=True,
+            read_write_paths=["/etc/passwd", "/etc/shadow", "/etc/group", "/etc/gshadow"],
+            capabilities=["CAP_DAC_OVERRIDE"],
+        )
         return sandbox.run(admin_function, username)
+
 
 if __name__ == "__main__":
     sys.exit(main())

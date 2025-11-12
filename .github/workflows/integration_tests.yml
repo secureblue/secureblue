@@ -17,6 +17,11 @@ on:
     - cron: "00 7 * * *" # run at 7:00 UTC every day
 
   workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref || github.run_id }}
+  cancel-in-progress: true
+
 jobs:
   integration-tests:
     name: Run integration tests

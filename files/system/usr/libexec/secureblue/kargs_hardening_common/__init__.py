@@ -36,6 +36,7 @@ FORCE_NOSMT = "nosmt=force"
 
 UNSTABLE_KARGS = [
     "amd_iommu=force_isolation",
+    "bdev_allow_write_mounted=0",
     "debugfs=off",
     "efi=disable_early_pci_dma",
     "gather_data_sampling=force",

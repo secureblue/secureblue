@@ -21,6 +21,7 @@ The sandboxed admin create function
 import subprocess
 import sys
 import os
+import grp
 from typing import Final
 
 
@@ -36,6 +37,7 @@ def main() -> int:
     if result.returncode != 0:
         print("useradd has failed.")
         return 1
+    print("Note passwd will give bad password warning, this is a known bug and expected.")
     result = subprocess.run(
         ["passwd", username],
         check=False,
@@ -47,10 +49,16 @@ def main() -> int:
     if result.returncode != 0:
         print("passwd has failed.")
         return 1
-    result = subprocess.run(["gpasswd", "-d", str(os.getlogin()), "wheel"], check=False)
-    if result.returncode != 0:
-        print("gpasswd has failed.")
-        return 1
+
+    current_user = str(os.environ.get("SUDO_USER"))
+    wheel_users = grp.getgrnam("wheel").gr_mem
+    if (current_user in wheel_users) and (username in wheel_users):
+        result = subprocess.run(["gpasswd", "-d", current_user, "wheel"], check=False)
+        if result.returncode != 0:
+            print("gpasswd has failed.")
+            return 1
+    else:
+        print("Current user not in wheel, current user not modified.")
 
     print(f'A new administrator user has been created called "{username}".')
     return 0

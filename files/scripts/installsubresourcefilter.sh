@@ -12,7 +12,7 @@
 # distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and limitations under the License.
 
-echo "
+echo '
 [copr:copr.fedorainfracloud.org:secureblue:trivalent]
 name=Copr repo for trivalent owned by secureblue
 baseurl=https://download.copr.fedorainfracloud.org/results/secureblue/trivalent/fedora-$releasever-x86_64/
@@ -23,7 +23,7 @@ gpgkey=https://download.copr.fedorainfracloud.org/results/secureblue/trivalent/p
 repo_gpgcheck=0
 enabled=1
 enabled_metadata=1
-" > /etc/yum.repos.d/secureblue-trivalent-fedora-43.repo
+' > /etc/yum.repos.d/secureblue-trivalent-fedora-43.repo
 
 dnf install -y --setopt=install_weak_deps=False trivalent-subresource-filter
 

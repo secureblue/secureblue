@@ -20,7 +20,7 @@ The sandboxed admin create function
 
 import grp
 import os
-import subprocess
+import subprocess  # nosec
 import sys
 from typing import Final
 
@@ -33,11 +33,11 @@ def main() -> int:
         return 1
 
     username: Final[str] = sys.argv[1]
-    result = subprocess.run(["/usr/sbin/useradd", "-M", "-G", "wheel", username], check=False)
+    result = subprocess.run(["/usr/sbin/useradd", "-M", "-G", "wheel", username], check=False)  # nosec
     if result.returncode != 0:
         print("useradd has failed.")
         return 1
-    print("Note passwd will give bad password warning, this is a known bug and expected.")
+    print("Note passwd will give a bad password warning, this is a known bug and expected.")
     result = subprocess.run(
         ["/usr/sbin/passwd", username],
         check=False,
@@ -45,7 +45,7 @@ def main() -> int:
         stdin=sys.stdin,
         stdout=sys.stdout,
         stderr=sys.stderr,
-    )
+    )  # nosec
     if result.returncode != 0:
         print("passwd has failed.")
         return 1
@@ -53,7 +53,7 @@ def main() -> int:
     current_user = str(os.environ.get("SUDO_USER"))
     wheel_users = grp.getgrnam("wheel").gr_mem
     if (current_user in wheel_users) and (username in wheel_users):
-        result = subprocess.run(["/usr/sbin/gpasswd", "-d", current_user, "wheel"], check=False)
+        result = subprocess.run(["/usr/sbin/gpasswd", "-d", current_user, "wheel"], check=False)  # nosec
         if result.returncode != 0:
             print("gpasswd has failed.")
             return 1

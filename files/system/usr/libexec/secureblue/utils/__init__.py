@@ -273,6 +273,18 @@ def ask_yes_no(prompt: str) -> bool:
                 print("Please enter y (yes) or n (no).")
 
 
+def ask_enable_disable(prompt: str) -> bool:
+    """Returns the user's preference between enable (True) and disable (False)."""
+    while True:
+        match interruptible_ask(prompt + " [enable/disable] ").casefold():
+            case "enable":
+                return True
+            case "disable":
+                return False
+            case _:
+                print("Please enter enable or disable.")
+
+
 def ask_option(options_count: int) -> int:
     """Returns the user's chosen number between 1 and options_count."""
 

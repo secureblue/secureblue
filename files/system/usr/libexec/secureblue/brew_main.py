@@ -19,10 +19,11 @@
 from pathlib import Path
 import sandbox
 from sandbox import SandboxedFunction
+import shutil
 import subprocess  # nosec
 import sys
 from typing import Final
-from utils import ask_yes_no
+from utils import ask_enable_disable
 
 BREW_HELP: Final[str] = """
 This python script toggles if brew is enabled by enabling or disabling
@@ -78,7 +79,7 @@ def main() -> None:
 
     if len(sys.argv) == argc_interactive:
         # Ask interactively.
-        mode = "on" if ask_yes_no("Would you like to enable Brew?") else "off"
+        mode = "enable" if ask_enable_disable("Set brew to what state?") else "disable"
     elif len(sys.argv) == argc_on_off:
         # Take mode from first argument, i.e. 'on' or 'off'.
         mode = sys.argv[1].casefold()
@@ -86,19 +87,21 @@ def main() -> None:
         print("Too many options specified, see usage with --help.", file=sys.stderr)
         return 1
 
-    linuxbrew_is_installed = Path(LINUXBREW_HOMEDIR).exists()
+    linuxbrew_is_installed = Path(LINUXBREW_HOMEDIR).exists() and Path(PROFILE_DIR).exists()
     brew_disable_function = SandboxedFunction(
       "brew.py", 
       read_write_paths=[LINUXBREW_HOMEDIR, PROFILE_DIR],
       capabilities=["CAP_SYS_ADMIN", "CAP_DAC_OVERRIDE", "CAP_CHOWN", "CAP_FOWNER"]
     )  
     match mode:
-        case "on" | "off":
-            target_state_enabled = mode == "on"
+        case "enable" | "disable":
+            target_state_enabled = mode == "enable"
             state_already_set = target_state_enabled == linuxbrew_is_installed
             if state_already_set:
                 print_status(linuxbrew_is_installed)
             else:
+                brew_cache_dir = os.path.expanduser("~/.cache/Homebrew")
+                shutil.rmtree(brew_cache_dir)
                 return sandbox.run(brew_disable_function, mode)
         case "status":
             print_status(linuxbrew_is_installed)

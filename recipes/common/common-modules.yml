@@ -13,6 +13,7 @@
 modules:
     - type: script
       scripts:
+        - addrepos.sh
         - createautostartdir.sh
         - httpsmirrors.sh
         - unprotectsudo.sh

@@ -11,11 +11,6 @@
 # See the License for the specific language governing permissions and limitations under the License.
 
 type: dnf
-repos:
-  files:
-    - https://copr.fedorainfracloud.org/coprs/secureblue/no_rlimit_as/repo/fedora-%OS_VERSION%/secureblue-no_rlimit_as-fedora-%OS_VERSION%.repo
-    - https://copr.fedorainfracloud.org/coprs/secureblue/hardened_malloc/repo/fedora-%OS_VERSION%/secureblue-hardened_malloc-fedora-%OS_VERSION%.repo
-    - https://copr.fedorainfracloud.org/coprs/secureblue/run0edit/repo/fedora-%OS_VERSION%/secureblue-run0edit-fedora-%OS_VERSION%.repo
 install:
   install-weak-deps: false
   packages:
@@ -45,3 +40,7 @@ install:
 
     # For use in unprivileged ujust scripts
     - python3-inquirer
+    
+    # provenance deps
+    - crane
+    - slsa-verifier

@@ -31,16 +31,16 @@ optional_policy(`
 optional_policy(`
 	gen_require(`
 		type unconfined_t;
-		type trivalent_t;
+		attribute trivalent_domain;
 		role unconfined_r;
 	')
 
 	flatpak_run(unconfined_t, unconfined_r)
-	flatpak_run(trivalent_t, unconfined_r)
-	
+	flatpak_run(trivalent_domain, unconfined_r)
+
 	# required for trivalent/flatpak clipboard sharing
-	allow trivalent_t flatpak_t:fifo_file write;
+	allow trivalent_domain flatpak_t:fifo_file write;
 
 	# required for trivalent/flatpak integration
-	allow trivalent_t flatpak_t:process2 { nnp_transition nosuid_transition };
+	allow trivalent_domain flatpak_t:process2 { nnp_transition nosuid_transition };
 ')

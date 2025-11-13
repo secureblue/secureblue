@@ -87,7 +87,11 @@ def main() -> None:
         return 1
 
     linuxbrew_is_installed = Path(LINUXBREW_HOMEDIR).exists()
-    brew_disable_function = SandboxedFunction("brew.py", read_write_paths=[LINUXBREW_HOMEDIR, PROFILE_DIR])  
+    brew_disable_function = SandboxedFunction(
+      "brew.py", 
+      read_write_paths=[LINUXBREW_HOMEDIR, PROFILE_DIR],
+      capabilities=["CAP_SYS_ADMIN", "CAP_DAC_OVERRIDE", "CAP_CHOWN", "CAP_FOWNER"]
+    )  
     match mode:
         case "on" | "off":
             target_state_enabled = mode == "on"

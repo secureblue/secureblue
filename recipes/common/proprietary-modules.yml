@@ -19,6 +19,8 @@ modules:
           - heif-pixbuf-loader
           - ffmpegthumbnailer
           - pipewire-libs-extra
+
+    - type: dnf
       replace:  
         - from-repo: fedora-multimedia
           skip-unavailable: true
@@ -36,6 +38,12 @@ modules:
             - libva-intel-media-driver
             - intel-gmmlib
             - intel-mediasdk
+
+    - type: dnf
+      replace:  
+        - from-repo: fedora-multimedia
+          skip-unavailable: true
+          packages:
             - old: ffmpeg-free
               new: ffmpeg
             - old: fdk-aac-free

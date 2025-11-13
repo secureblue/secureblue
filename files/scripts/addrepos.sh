@@ -21,6 +21,8 @@ install_repo() {
 }
 
 common_repos=(
+  "https://copr.fedorainfracloud.org/coprs/secureblue/crane/repo/fedora-%OS_VERSION%/secureblue-crane-fedora-%OS_VERSION%.repo"
+  "https://copr.fedorainfracloud.org/coprs/secureblue/slsa-verifier/repo/fedora-%OS_VERSION%/secureblue-slsa-verifier-fedora-%OS_VERSION%.repo"
   "https://copr.fedorainfracloud.org/coprs/secureblue/no_rlimit_as/repo/fedora-%OS_VERSION%/secureblue-no_rlimit_as-fedora-%OS_VERSION%.repo"
   "https://copr.fedorainfracloud.org/coprs/secureblue/hardened_malloc/repo/fedora-%OS_VERSION%/secureblue-hardened_malloc-fedora-%OS_VERSION%.repo"
   "https://copr.fedorainfracloud.org/coprs/secureblue/run0edit/repo/fedora-%OS_VERSION%/secureblue-run0edit-fedora-%OS_VERSION%.repo"

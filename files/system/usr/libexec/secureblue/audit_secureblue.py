@@ -37,6 +37,14 @@ from typing import Final
 
 import kargs_hardening_common
 from audit_flatpak import check_flatpak_permissions, parse_flatpak_permissions
+from audit_utils import (
+    Image,
+    get_flatpak_permissions,
+    get_legend,
+    get_width,
+    validate_sysctl,
+    warn_if_root,
+)
 from auditor import (
     Report,
     Status,
@@ -48,17 +56,11 @@ from auditor import (
     global_audit,
 )
 from utils import (
-    Image,
     command_stdout,
     command_succeeds,
-    get_flatpak_permissions,
-    get_legend,
-    get_width,
     is_using_vpn,
     parse_config,
     print_err,
-    validate_sysctl,
-    warn_if_root,
 )
 
 _: Final = gettext_marker()

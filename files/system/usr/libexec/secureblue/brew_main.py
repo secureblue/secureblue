@@ -17,6 +17,7 @@
 """Disable brew."""
 
 from pathlib import Path
+import os
 import sandbox
 from sandbox import SandboxedFunction
 import shutil

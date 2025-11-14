@@ -62,11 +62,11 @@ def print_status(linuxbrew_installed_by_dir: bool) -> None:
     )
 
     is_brew_setup_enabled = brew_setup_status.returncode
-    if linuxbrew_installed_by_dir and is_brew_setup_enabled:
+    if linuxbrew_installed_by_dir and is_brew_setup_enabled == 0:
         print("Brew is enabled.")
-    elif not linuxbrew_installed_by_dir and is_brew_setup_enabled:
+    elif not linuxbrew_installed_by_dir and is_brew_setup_enabled == 0:
         print("Brew is disabled, but will be enabled on next boot.")
-    elif not linuxbrew_installed_by_dir and not is_brew_setup_enabled:
+    elif not linuxbrew_installed_by_dir and not is_brew_setup_enabled == 0:
         print("Brew is disabled, and will remain disabled on next boot.")
     else:
         print("Inconsistent status. Brew is installed but disabled.")

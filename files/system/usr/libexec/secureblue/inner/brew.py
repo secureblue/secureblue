@@ -20,7 +20,7 @@ The sandboxed brew disable function
 
 import os
 import shutil
-import subprocess
+import subprocess  # nosec
 import sys
 from typing import Final
 
@@ -63,6 +63,7 @@ def main() -> int:
         case _:
             print("Invalid inner script argument.")
             return 1
+
 
 if __name__ == "__main__":
     sys.exit(main())

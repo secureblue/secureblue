@@ -18,7 +18,7 @@
 
 import os
 import shutil
-import subprocess # nosec
+import subprocess  # nosec
 import sys
 from pathlib import Path
 from typing import Final

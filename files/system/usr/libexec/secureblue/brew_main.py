@@ -49,10 +49,11 @@ ujust set-brew --help
 """
 
 
-LINUXBREW_DIR: Final[str] = "/home/linuxbrew/.linuxbrew/"
+LINUXBREW_HOMEDIR: Final[str] = "/home/linuxbrew/"
+ETC_DIR: Final[str] = "/etc"
 BREW_ETC_STAMP: Final[str] = "/etc/.linuxbrew"
 
-def print_status(linuxbrew_installed_by_dir: bool) -> None:
+def print_status(linuxbrew_installed_by_stamp: bool) -> None:
     """Print the current file and runtime status"""
 
     # nosemgrep: dangerous-subprocess-use-audit
@@ -63,11 +64,11 @@ def print_status(linuxbrew_installed_by_dir: bool) -> None:
     )
 
     is_brew_setup_enabled = brew_setup_status.returncode == 0
-    if linuxbrew_installed_by_dir and is_brew_setup_enabled:
+    if linuxbrew_installed_by_stamp and is_brew_setup_enabled:
         print("Brew is enabled.")
-    elif not linuxbrew_installed_by_dir and is_brew_setup_enabled:
+    elif not linuxbrew_installed_by_stamp and is_brew_setup_enabled:
         print("Brew is disabled, but will be enabled on next boot.")
-    elif not linuxbrew_installed_by_dir and not is_brew_setup_enabled:
+    elif not linuxbrew_installed_by_stamp and not is_brew_setup_enabled:
         print("Brew is disabled, and will remain disabled on next boot.")
     else:
         print("Inconsistent status. Brew is installed but disabled.")
@@ -92,7 +93,7 @@ def main() -> None:
     linuxbrew_is_installed = Path(BREW_ETC_STAMP).exists()
     brew_disable_function = SandboxedFunction(
       "brew.py", 
-      read_write_paths=[LINUXBREW_DIR, BREW_ETC_STAMP],
+      read_write_paths=[LINUXBREW_HOMEDIR, ETC_DIR],
       capabilities=["CAP_SYS_ADMIN", "CAP_DAC_OVERRIDE", "CAP_CHOWN", "CAP_FOWNER"]
     )  
     match mode:

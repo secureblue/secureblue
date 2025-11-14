@@ -26,6 +26,8 @@ from typing import Final
 
 LINUXBREW_DIR: Final[str] = "/home/linuxbrew/.linuxbrew/"
 BREW_ETC_STAMP: Final[str] = "/etc/.linuxbrew"
+BREW_PROFILE_FILE: Final[str] = "/etc/profile.d/brew.sh"
+BREW_PROFILE_COMPLETIONS_FILE: Final[str] = "/etc/profile.d/brew.sh"
 
 
 def main() -> int:
@@ -43,10 +45,14 @@ def main() -> int:
                 check=False,
                 capture_output=True,
             )
+            shutil.copy(f"/usr{BREW_PROFILE_FILE}", BREW_PROFILE_FILE)
+            shutil.copy(f"/usr{BREW_PROFILE_COMPLETIONS_FILE}", BREW_PROFILE_COMPLETIONS_FILE)
             print("Brew is now enabled. Start a new shell to use brew.")
         case "disable":
             shutil.rmtree(LINUXBREW_DIR, ignore_errors=False)
             os.remove(BREW_ETC_STAMP)
+            os.remove(BREW_PROFILE_FILE)
+            os.remove(BREW_PROFILE_COMPLETIONS_FILE)
             systemctl = subprocess.run(  # nosec
                 ["/usr/bin/systemctl", "disable", "brew-setup.service"],
                 check=False,

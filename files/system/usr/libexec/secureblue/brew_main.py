@@ -16,7 +16,7 @@
 
 """Disable brew."""
 
-import osi
+import os
 import shutil
 import subprocess # nosec
 import sys
@@ -110,7 +110,7 @@ def main() -> None:
         case "status":
             print_status(linuxbrew_is_installed)
         case "--help":
-            print(BLUE_HELP)
+            print(BREW_HELP)
         case _:
             print("Invalid option selected. Try --help.")
             return 1

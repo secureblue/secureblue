@@ -59,5 +59,6 @@ def main() -> int:
                 capture_output=True,
             )
 
+
 if __name__ == "__main__":
     sys.exit(main())

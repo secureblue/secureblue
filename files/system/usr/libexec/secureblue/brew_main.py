@@ -53,6 +53,7 @@ LINUXBREW_HOMEDIR: Final[str] = "/home/linuxbrew/"
 ETC_DIR: Final[str] = "/etc"
 BREW_ETC_STAMP: Final[str] = "/etc/.linuxbrew"
 
+
 def print_status(linuxbrew_installed_by_stamp: bool) -> None:
     """Print the current file and runtime status"""
 
@@ -92,10 +93,8 @@ def main() -> None:
 
     linuxbrew_is_installed = Path(BREW_ETC_STAMP).exists()
     brew_disable_function = SandboxedFunction(
-      "brew.py", 
-      read_write_paths=[LINUXBREW_HOMEDIR, ETC_DIR],
-      capabilities=["CAP_DAC_OVERRIDE"]
-    )  
+        "brew.py", read_write_paths=[LINUXBREW_HOMEDIR, ETC_DIR], capabilities=["CAP_DAC_OVERRIDE"]
+    )
     match mode:
         case "enable" | "disable":
             target_state_enabled = mode == "enable"
@@ -104,8 +103,8 @@ def main() -> None:
                 print_status(linuxbrew_is_installed)
             else:
                 if not target_state_enabled:
-                  brew_cache_dir = os.path.expanduser("~/.cache/Homebrew")
-                  shutil.rmtree(brew_cache_dir, ignore_errors=True)
+                    brew_cache_dir = os.path.expanduser("~/.cache/Homebrew")
+                    shutil.rmtree(brew_cache_dir, ignore_errors=True)
                 return sandbox.run(brew_disable_function, mode)
         case "status":
             print_status(linuxbrew_is_installed)

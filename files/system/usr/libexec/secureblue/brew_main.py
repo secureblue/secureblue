@@ -101,8 +101,9 @@ def main() -> None:
             if state_already_set:
                 print_status(linuxbrew_is_installed)
             else:
-                brew_cache_dir = os.path.expanduser("~/.cache/Homebrew")
-                shutil.rmtree(brew_cache_dir)
+                if not target_state_enabled:
+                  brew_cache_dir = os.path.expanduser("~/.cache/Homebrew")
+                  shutil.rmtree(brew_cache_dir)
                 return sandbox.run(brew_disable_function, mode)
         case "status":
             print_status(linuxbrew_is_installed)

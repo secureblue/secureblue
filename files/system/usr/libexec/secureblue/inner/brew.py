@@ -40,7 +40,7 @@ def main() -> int:
     mode = sys.argv[1]
     match mode:
         case "enable":
-            systemctl = subprocess.run(  # nosec
+            subprocess.run(  # nosec
                 ["/usr/bin/systemctl", "enable", "--now", "brew-setup.service"],
                 check=False,
                 capture_output=True,
@@ -48,17 +48,21 @@ def main() -> int:
             shutil.copy(f"/usr{BREW_PROFILE_FILE}", BREW_PROFILE_FILE)
             shutil.copy(f"/usr{BREW_PROFILE_COMPLETIONS_FILE}", BREW_PROFILE_COMPLETIONS_FILE)
             print("Brew is now enabled. Start a new shell to use brew.")
+            return 0
         case "disable":
             shutil.rmtree(LINUXBREW_DIR, ignore_errors=False)
             os.remove(BREW_ETC_STAMP)
             os.remove(BREW_PROFILE_FILE)
             os.remove(BREW_PROFILE_COMPLETIONS_FILE)
-            systemctl = subprocess.run(  # nosec
+            subprocess.run(  # nosec
                 ["/usr/bin/systemctl", "disable", "brew-setup.service"],
                 check=False,
                 capture_output=True,
             )
-
+            return 0
+        case _:
+            print("Invalid inner script argument.")
+            return 1
 
 if __name__ == "__main__":
     sys.exit(main())

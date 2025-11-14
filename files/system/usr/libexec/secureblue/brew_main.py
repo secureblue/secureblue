@@ -16,14 +16,15 @@
 
 """Disable brew."""
 
+import osi
+import shutil
+import subprocess # nosec
+import sys
 from pathlib import Path
-import os
+from typing import Final
+
 import sandbox
 from sandbox import SandboxedFunction
-import shutil
-import subprocess  # nosec
-import sys
-from typing import Final
 from utils import ask_enable_disable
 
 BREW_HELP: Final[str] = """

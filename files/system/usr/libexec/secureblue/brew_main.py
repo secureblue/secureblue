@@ -48,8 +48,9 @@ ujust set-brew --help
     Prints this message.
 """
 
-LINUXBREW_DIR: Final[str] = "/home/linuxbrew/.linuxbrew"
-PROFILE_DIR: Final[str] = "/etc/profile.d"
+
+LINUXBREW_DIR: Final[str] = "/home/linuxbrew/.linuxbrew/"
+BREW_ETC_STAMP: Final[str] = "/etc/.linuxbrew"
 
 def print_status(linuxbrew_installed_by_dir: bool) -> None:
     """Print the current file and runtime status"""
@@ -88,10 +89,10 @@ def main() -> None:
         print("Too many options specified, see usage with --help.", file=sys.stderr)
         return 1
 
-    linuxbrew_is_installed = Path(LINUXBREW_DIR).exists() and Path(PROFILE_DIR).exists()
+    linuxbrew_is_installed = Path(BREW_ETC_STAMP).exists()
     brew_disable_function = SandboxedFunction(
       "brew.py", 
-      read_write_paths=[LINUXBREW_DIR, PROFILE_DIR],
+      read_write_paths=[LINUXBREW_DIR, BREW_ETC_STAMP],
       capabilities=["CAP_SYS_ADMIN", "CAP_DAC_OVERRIDE", "CAP_CHOWN", "CAP_FOWNER"]
     )  
     match mode:

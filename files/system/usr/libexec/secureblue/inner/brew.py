@@ -25,7 +25,6 @@ import sys
 from typing import Final
 
 LINUXBREW_DIR: Final[str] = "/home/linuxbrew/.linuxbrew/"
-BREW_PROFILE_FILE: Final[str] = "/etc/profile.d/brew.sh"
 BREW_ETC_STAMP: Final[str] = "/etc/.linuxbrew"
 
 
@@ -39,7 +38,6 @@ def main() -> int:
     mode = sys.argv[1]
     match mode:
         case "enable":
-            shutil.copy(f"/usr{BREW_PROFILE_FILE}", BREW_PROFILE_FILE)
             systemctl = subprocess.run(  # nosec
                 ["/usr/bin/systemctl", "enable", "--now", "brew-setup.service"],
                 check=False,
@@ -47,7 +45,6 @@ def main() -> int:
             )
         case "disable":
             shutil.rmtree(LINUXBREW_DIR, ignore_errors=False)
-            os.remove(BREW_PROFILE_FILE)
             os.remove(BREW_ETC_STAMP)
             systemctl = subprocess.run(  # nosec
                 ["/usr/bin/systemctl", "disable", "brew-setup.service"],

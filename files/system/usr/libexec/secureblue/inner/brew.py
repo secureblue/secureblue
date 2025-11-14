@@ -27,7 +27,7 @@ from typing import Final
 LINUXBREW_DIR: Final[str] = "/home/linuxbrew/.linuxbrew/"
 BREW_ETC_STAMP: Final[str] = "/etc/.linuxbrew"
 BREW_PROFILE_FILE: Final[str] = "/etc/profile.d/brew.sh"
-BREW_PROFILE_COMPLETIONS_FILE: Final[str] = "/etc/profile.d/brew.sh"
+BREW_PROFILE_COMPLETIONS_FILE: Final[str] = "/etc/profile.d/brew-bash-completions.sh"
 
 
 def main() -> int:

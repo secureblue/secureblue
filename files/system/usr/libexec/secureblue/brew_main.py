@@ -66,10 +66,10 @@ def print_status(linuxbrew_installed_by_stamp: bool) -> None:
     is_brew_setup_enabled = brew_setup_status.returncode == 0
     if linuxbrew_installed_by_stamp and is_brew_setup_enabled:
         print("Brew is enabled.")
-    elif not linuxbrew_installed_by_stamp and is_brew_setup_enabled:
-        print("Brew is disabled, but will be enabled on next boot.")
     elif not linuxbrew_installed_by_stamp and not is_brew_setup_enabled:
-        print("Brew is disabled, and will remain disabled on next boot.")
+        print("Brew is disabled.")
+    elif not linuxbrew_installed_by_stamp and is_brew_setup_enabled:
+        print("Inconsistent status. Brew is enabled but not installed")
     else:
         print("Inconsistent status. Brew is installed but disabled.")
 

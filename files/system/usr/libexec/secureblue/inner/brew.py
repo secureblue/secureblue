@@ -43,6 +43,7 @@ def main() -> int:
                 check=False,
                 capture_output=True,
             )
+            print("Brew is now enabled. Start a new shell to use brew.")
         case "disable":
             shutil.rmtree(LINUXBREW_DIR, ignore_errors=False)
             os.remove(BREW_ETC_STAMP)

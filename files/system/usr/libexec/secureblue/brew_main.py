@@ -94,7 +94,7 @@ def main() -> None:
     brew_disable_function = SandboxedFunction(
       "brew.py", 
       read_write_paths=[LINUXBREW_HOMEDIR, ETC_DIR],
-      capabilities=["CAP_SYS_ADMIN", "CAP_DAC_OVERRIDE", "CAP_CHOWN", "CAP_FOWNER"]
+      capabilities=["CAP_DAC_OVERRIDE"]
     )  
     match mode:
         case "enable" | "disable":

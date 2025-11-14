@@ -48,7 +48,7 @@ ujust set-brew --help
     Prints this message.
 """
 
-LINUXBREW_HOMEDIR: Final[str] = "/home/linuxbrew/"
+LINUXBREW_DIR: Final[str] = "/home/linuxbrew/.linuxbrew"
 PROFILE_DIR: Final[str] = "/etc/profile.d"
 
 def print_status(linuxbrew_installed_by_dir: bool) -> None:
@@ -88,10 +88,10 @@ def main() -> None:
         print("Too many options specified, see usage with --help.", file=sys.stderr)
         return 1
 
-    linuxbrew_is_installed = Path(LINUXBREW_HOMEDIR).exists() and Path(PROFILE_DIR).exists()
+    linuxbrew_is_installed = Path(LINUXBREW_DIR).exists() and Path(PROFILE_DIR).exists()
     brew_disable_function = SandboxedFunction(
       "brew.py", 
-      read_write_paths=[LINUXBREW_HOMEDIR, PROFILE_DIR],
+      read_write_paths=[LINUXBREW_DIR, PROFILE_DIR],
       capabilities=["CAP_SYS_ADMIN", "CAP_DAC_OVERRIDE", "CAP_CHOWN", "CAP_FOWNER"]
     )  
     match mode:

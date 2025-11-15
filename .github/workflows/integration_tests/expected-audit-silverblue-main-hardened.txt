@@ -1,4 +1,4 @@
-{"name":"audit_kargs","description":"Checking for hardened kernel arguments","status":"warn","warnings":["Missing kernel argument: ia32_emulation=0 (32-bit support)","Missing kernel argument: nosmt=force (force-disable SMT)","Missing kernel argument (unstable): amd_iommu=force_isolation","Missing kernel argument (unstable): debugfs=off","Missing kernel argument (unstable): efi=disable_early_pci_dma","Missing kernel argument (unstable): gather_data_sampling=force","Missing kernel argument (unstable): oops=panic"]}
+{"name":"audit_kargs","description":"Checking for hardened kernel arguments","status":"warn","warnings":["Missing kernel argument: ia32_emulation=0 (32-bit support)","Missing kernel argument: nosmt=force (force-disable SMT)","Missing kernel argument (unstable): amd_iommu=force_isolation","Missing kernel argument (unstable): bdev_allow_write_mounted=0","Missing kernel argument (unstable): debugfs=off","Missing kernel argument (unstable): efi=disable_early_pci_dma","Missing kernel argument (unstable): gather_data_sampling=force","Missing kernel argument (unstable): oops=panic"]}
 {"name":"audit_sysctl","description":"Ensuring no sysctl overrides","status":"pass","warnings":[]}
 {"name":"audit_signed_image","description":"Ensuring a signed image is in use","status":"fail","warnings":[]}
 {"name":"audit_modprobe","description":"Ensuring no modprobe overrides","status":"pass","warnings":[]}
@@ -16,7 +16,8 @@
 {"name":"audit_podman_global_auto_update","description":"Ensuring podman-auto-update.timer is enabled globally","status":"pass","warnings":[]}
 {"name":"audit_flatpak_auto_update","description":"Ensuring flatpak-user-update.timer is enabled globally","status":"pass","warnings":[]}
 {"name":"audit_flatpak_auto_update","description":"Ensuring flatpak-system-update.timer is enabled","status":"pass","warnings":[]}
-{"name":"audit_wheel","description":"Ensuring user is not a member of the wheel group","status":"fail","warnings":[]}
+{"name":"audit_groups","description":"Ensuring user is not a member of the wheel group","status":"fail","warnings":[]}
+{"name":"audit_groups","description":"Checking if user is in groups with security implications","status":"pass","warnings":[]}
 {"name":"audit_xwayland","description":"Ensuring Xwayland is disabled for GNOME","status":"pass","warnings":[]}
 {"name":"audit_gnome_extensions","description":"Ensuring GNOME user extensions are disabled","status":"pass","warnings":[]}
 {"name":"audit_selinux","description":"Ensuring SELinux is in Enforcing mode","status":"pass","warnings":[]}

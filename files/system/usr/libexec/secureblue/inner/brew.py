@@ -39,7 +39,7 @@ def main() -> int:
 
     mode = sys.argv[1]
     match mode:
-        case "enable":
+        case "on":
             subprocess.run(  # nosec
                 ["/usr/bin/systemctl", "enable", "--now", "brew-setup.service"],
                 check=False,
@@ -49,11 +49,11 @@ def main() -> int:
             shutil.copy(f"/usr{BREW_PROFILE_COMPLETIONS_FILE}", BREW_PROFILE_COMPLETIONS_FILE)
             print("Brew is now enabled. Start a new shell to use brew.")
             return 0
-        case "disable":
+        case "off":
             shutil.rmtree(LINUXBREW_DIR, ignore_errors=False)
-            os.remove(BREW_ETC_STAMP)
-            os.remove(BREW_PROFILE_FILE)
-            os.remove(BREW_PROFILE_COMPLETIONS_FILE)
+            os.remove(BREW_ETC_STAMP, ignore_errors=True)
+            os.remove(BREW_PROFILE_FILE, ignore_errors=True)
+            os.remove(BREW_PROFILE_COMPLETIONS_FILE, ignore_errors=True)
             subprocess.run(  # nosec
                 ["/usr/bin/systemctl", "disable", "brew-setup.service"],
                 check=False,

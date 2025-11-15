@@ -25,7 +25,7 @@ from typing import Final
 
 import sandbox
 from sandbox import SandboxedFunction
-from utils import ask_enable_disable
+from utils import ask_on_off
 
 BREW_HELP: Final[str] = """
 This python script toggles if brew is enabled by enabling or disabling
@@ -71,9 +71,9 @@ def print_status(linuxbrew_installed_by_stamp: bool) -> None:
     elif not linuxbrew_installed_by_stamp and not is_brew_setup_enabled:
         print("Brew is disabled.")
     elif not linuxbrew_installed_by_stamp and is_brew_setup_enabled:
-        print("Inconsistent status. Brew is enabled but not installed")
+        print("Brew has been locally modified. Brew is enabled but not installed.")
     else:
-        print("Inconsistent status. Brew is installed but disabled.")
+        print("Brew has been locally modified. Brew is installed but disabled.")
 
 
 def main() -> None:
@@ -84,7 +84,7 @@ def main() -> None:
 
     if len(sys.argv) == argc_interactive:
         # Ask interactively.
-        mode = "enable" if ask_enable_disable("Set brew to what state?") else "disable"
+        mode = "on" if ask_on_off("Set brew to what state?") else "off"
     elif len(sys.argv) == argc_on_off:
         # Take mode from first argument, i.e. 'on' or 'off'.
         mode = sys.argv[1].casefold()
@@ -97,8 +97,8 @@ def main() -> None:
         "brew.py", read_write_paths=[LINUXBREW_HOMEDIR, ETC_DIR], capabilities=["CAP_DAC_OVERRIDE"]
     )
     match mode:
-        case "enable" | "disable":
-            target_state_enabled = mode == "enable"
+        case "on" | "off":
+            target_state_enabled = mode == "on"
             state_already_set = target_state_enabled == linuxbrew_is_installed
             if state_already_set:
                 print_status(linuxbrew_is_installed)

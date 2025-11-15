@@ -25,7 +25,7 @@ from typing import Final
 
 import sandbox
 from sandbox import SandboxedFunction
-from utils import ask_on_off
+from utils import ask_yes_no
 
 BREW_HELP: Final[str] = """
 This python script toggles if brew is enabled by enabling or disabling
@@ -71,9 +71,9 @@ def print_status(linuxbrew_installed_by_stamp: bool) -> None:
     elif not linuxbrew_installed_by_stamp and not is_brew_setup_enabled:
         print("Brew is disabled.")
     elif not linuxbrew_installed_by_stamp and is_brew_setup_enabled:
-        print("Brew has been locally modified. Brew is enabled but not installed.")
+        print("Brew has been locally modified. Brew is enabled but not installed. Ensure state consistency between /etc/.linuxbrew and brew-setup.service.")
     else:
-        print("Brew has been locally modified. Brew is installed but disabled.")
+        print("Brew has been locally modified. Brew is installed but disabled. Ensure state consistency between /etc/.linuxbrew and brew-setup.service.")
 
 
 def main() -> None:
@@ -84,7 +84,7 @@ def main() -> None:
 
     if len(sys.argv) == argc_interactive:
         # Ask interactively.
-        mode = "on" if ask_on_off("Set brew to what state?") else "off"
+        mode = "on" if ask_yes_no("Would you like Homebrew to be enabled?") else "off"
     elif len(sys.argv) == argc_on_off:
         # Take mode from first argument, i.e. 'on' or 'off'.
         mode = sys.argv[1].casefold()

@@ -71,9 +71,11 @@ def print_status(linuxbrew_installed_by_stamp: bool) -> None:
     elif not linuxbrew_installed_by_stamp and not is_brew_setup_enabled:
         print("Brew is disabled.")
     elif not linuxbrew_installed_by_stamp and is_brew_setup_enabled:
-        print("Brew has been locally modified. Brew is enabled but not installed. Ensure state consistency between /etc/.linuxbrew and brew-setup.service.")
+        print("Brew has been locally modified. Brew is enabled but not installed.")
+        print("Ensure state consistency between /etc/.linuxbrew and brew-setup.service.")
     else:
-        print("Brew has been locally modified. Brew is installed but disabled. Ensure state consistency between /etc/.linuxbrew and brew-setup.service.")
+        print("Brew has been locally modified. Brew is installed but disabled.")
+        print("Ensure state consistency between /etc/.linuxbrew and brew-setup.service.")
 
 
 def main() -> None:

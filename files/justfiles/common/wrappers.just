@@ -33,6 +33,11 @@ dns-selector *args:
     #!/bin/sh
     exec /usr/bin/python3 /usr/libexec/secureblue/dns_selector.py "$@"
 
+# Enable LUKS unlock via a FIDO2 hardware key
+setup-luks-fido2-unlock *args:
+    #!/bin/sh
+    exec /usr/bin/python3 /usr/libexec/secureblue/luks_enable_fido2_unlock.py "$@"
+
 # Add additional boot parameters for hardening (requires reboot)
 set-kargs-hardening:
     #!/usr/bin/sh

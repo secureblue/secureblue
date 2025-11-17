@@ -16,7 +16,7 @@
 set -oue pipefail
 
 install_repo() {
-  versioned_repo=$(sed 's/%OS_VERSION%/43/g' <<< "$1")
+  versioned_repo="${1//%OS_VERSION%/43}"
   curl -L -o "/etc/yum.repos.d/$(basename "$versioned_repo")" "$versioned_repo"
 }
 

@@ -23,7 +23,7 @@ import sys
 from typing import Final
 
 import inquirer
-from utils import command_stdout
+from utils import command_stdout, print_wrapped
 
 DESCRIPTION: Final[str] = """
 Harden flatpaks by preloading hardened_malloc, using the highest supported
@@ -75,7 +75,7 @@ def resolve_app_id(provided: str, installed_app_ids: list[str]) -> str | None:
     if len(matches) == 1:
         return matches[0]
 
-    print(f"'{provided}' is not the application ID of an installed flatpak.")
+    print_wrapped(f"'{provided}' is not the application ID of an installed flatpak.")
 
     # If there's no case-insensitive matches, try substring matches.
     if not matches:
@@ -165,10 +165,15 @@ def main() -> int:
     uarch = best_microarch()
     hmalloc_path = libhardened_malloc_path(uarch)
     hmalloc_description = "hardened_malloc" if uarch is None else f"hardened_malloc (µarch {uarch})"
+    host_os_note = """
+    Note: the filesystem=host-os:ro permission has also been granted. This gives read-only
+    access to /usr, which is where the hardened_malloc shared library is installed.
+    """
 
     if not args.app_id:
         flatpak_override("--filesystem=host-os:ro", f"--env=LD_PRELOAD={hmalloc_path}")
-        print(f"{hmalloc_description} applied to all flatpaks by default.")
+        print_wrapped(f"{hmalloc_description} applied to all flatpaks by default.")
+        print_wrapped(host_os_note)
         return 0
 
     installed_app_ids = installed_app_list()
@@ -177,7 +182,8 @@ def main() -> int:
         print("No matching app IDs found; exiting.")
         return 1
     harden_flatpak_app(app_id, hmalloc_path)
-    print(f"{hmalloc_description} applied to flatpak {app_id}")
+    print_wrapped(f"{hmalloc_description} applied to flatpak {app_id}")
+    print_wrapped(host_os_note)
 
     return 0
 

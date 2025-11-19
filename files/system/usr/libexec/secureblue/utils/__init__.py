@@ -26,6 +26,11 @@ from collections.abc import Iterable
 import rpm
 
 
+def print_wrapped(text: str, *, width: int = 70) -> None:
+    """Print text to stdout, wrapped to the given width."""
+    print(textwrap.fill(" ".join(text.split()), width=width))
+
+
 def print_err(text: str) -> None:
     """Print text to stderr in bold and red."""
     print(f"\x1b[1m\x1b[31m{text}\x1b[0m", file=sys.stderr)

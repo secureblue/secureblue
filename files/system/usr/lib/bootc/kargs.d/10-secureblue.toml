@@ -1,4 +1,5 @@
 kargs = [
+  "hash_pointers=always",
   "init_on_alloc=1",
   "init_on_free=1",
   "intel_iommu=on",
@@ -21,6 +22,7 @@ kargs = [
   "randomize_kstack_offset=on",
   "rd.emergency=halt",
   "rd.shell=0",
+  "slab_debug=FZ",
   "slab_nomerge",
   "spec_store_bypass_disable=on",
   "spectre_v2=on",

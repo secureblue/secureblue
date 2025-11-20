@@ -26,7 +26,7 @@ disable-flathub-unfiltered:
 [positional-arguments]
 harden-flatpak *args:
     #!/usr/bin/sh
-    exec /usr/bin/python3 /usr/libexec/secureblue/harden_flatpak.py
+    exec /usr/bin/python3 /usr/libexec/secureblue/harden_flatpak.py "$@"
 
 # Harden Flatpaks further by disabling all permissions by default and rejecting known arbitrary DBus names, applies only to the current user
 flatpak-permissions-lockdown:

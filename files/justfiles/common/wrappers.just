@@ -44,3 +44,9 @@ set-kargs-hardening:
 remove-kargs-hardening:
     #!/usr/bin/sh
     /usr/bin/python3 /usr/libexec/secureblue/remove_kargs_hardening.py
+
+# Create the admin user and remove wheel from the normal user
+[positional-arguments]
+create-admin *args:
+    #!/bin/sh
+    exec /usr/bin/python3 /usr/libexec/secureblue/create-admin.py "$@"

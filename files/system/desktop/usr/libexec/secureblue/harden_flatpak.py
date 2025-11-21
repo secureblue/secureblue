@@ -172,7 +172,7 @@ def main() -> int:
 
     if not args.app_id:
         flatpak_override("--filesystem=host-os:ro", f"--env=LD_PRELOAD={hmalloc_path}")
-        print_wrapped(f"{hmalloc_description} applied to all flatpaks by default.")
+        print(f"{hmalloc_description} applied to all flatpaks by default.")
         print_wrapped(host_os_note)
         return 0
 
@@ -182,7 +182,7 @@ def main() -> int:
         print("No matching app IDs found; exiting.")
         return 1
     harden_flatpak_app(app_id, hmalloc_path)
-    print_wrapped(f"{hmalloc_description} applied to flatpak {app_id}")
+    print(f"{hmalloc_description} applied to flatpak {app_id}")
     print_wrapped(host_os_note)
 
     return 0

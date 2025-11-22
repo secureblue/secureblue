@@ -18,7 +18,6 @@ Framework for running rootful functions in a systemd sandbox
 
 import dataclasses
 import subprocess
-import sys
 from typing import Final
 
 INNER_DIR: Final[str] = "/usr/libexec/secureblue/inner"
@@ -32,7 +31,6 @@ class SandboxedFunction:
     capabilities: list[str] = dataclasses.field(default_factory=list, kw_only=True)
     read_write_paths: list[str] = dataclasses.field(default_factory=list, kw_only=True)
     additional_sandbox_properties: list[str] = dataclasses.field(default_factory=list, kw_only=True)
-    subprocess_interactive: bool = False
 
     def __post_init__(self):
         """Ensures list fields have expected types."""
@@ -41,11 +39,6 @@ class SandboxedFunction:
                 raise ValueError(
                     f"Bad argument to SandboxedFunction: expected list, got `{type(prop)}`."
                 )
-        subprocess_inter = self.subprocess_interactive
-        if not isinstance(subprocess_inter, bool):
-            raise ValueError(
-                f"Bad argument to SandboxedFunction: expected bool, got `{type(subprocess_inter)}`."
-            )
 
 
 def create_run0_options(sandboxed_function: SandboxedFunction) -> list[str]:
@@ -120,12 +113,5 @@ def run(sandboxed_function: SandboxedFunction, *args: str) -> int:
         f"{INNER_DIR}/{sandboxed_function.file_name}",
         *args,
     ]
-
-    if sandboxed_function.subprocess_interactive:
-        result = subprocess.run(
-            command, check=False, stdin=sys.stdin, stdout=sys.stdout, stderr=sys.stderr
-        )  # nosec
-    else:
-        result = subprocess.run(command, check=False)  # nosec
-
+    result = subprocess.run(command, check=False)  # nosec
     return result.returncode

@@ -49,4 +49,4 @@ remove-kargs-hardening:
 [positional-arguments]
 create-admin *args:
     #!/bin/sh
-    exec /usr/bin/python3 /usr/libexec/secureblue/create-admin.py "$@"
+    exec /usr/bin/python3 /usr/libexec/secureblue/create_admin.py "$@"

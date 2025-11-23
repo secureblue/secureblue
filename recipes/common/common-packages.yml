@@ -41,7 +41,11 @@ install:
 
     # For use in unprivileged ujust scripts
     - python3-inquirer
-    
+
     # provenance deps
     - crane
     - slsa-verifier
+replace:
+  - from-repo: copr.fedorainfracloud.org:secureblue:selinux-policy
+    packages:
+      - selinux-policy

@@ -32,6 +32,4 @@ modules:
     scripts:
       - excludepcsc.sh
       - setserverdefaultzone.sh
-      - removebrewjust.sh
-      - removesuid.sh
       - disable-coreos-migration-motd.sh

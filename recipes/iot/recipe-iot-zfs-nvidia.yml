@@ -18,6 +18,7 @@ base-image: ghcr.io/secureblue/iot-zfs-main-hardened
 
 image-version: latest
 
+cosign-version: none
 nushell-version: none
 
 modules:

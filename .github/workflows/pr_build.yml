@@ -37,7 +37,7 @@ jobs:
         uses: step-security/harden-runner@95d9a5deda9de15063e7595e9719c11c38c90ae2 # v2.13.2
         with:
           egress-policy: audit
-          
+
       - name: Optimize build times
         shell: bash
         run: |
@@ -96,7 +96,7 @@ jobs:
             echo "Upstream isn't signed. Skipping."
             exit 0
           fi
-          
+
           UPSTREAM_CONTAINER="${BASE_IMAGE_NAME}:${IMAGE_MAJOR_VERSION}"
           if [[ "$IMAGE_NAME" != *nvidia* && "$IMAGE_NAME" != *zfs* ]]; then
             UPSTREAM_REGISTRY='quay.io/fedora-ostree-desktops'
@@ -129,7 +129,7 @@ jobs:
         run: |
           docker create \
             --name blue-build-installer \
-            ghcr.io/blue-build/cli:v0.9.24-installer
+            ghcr.io/blue-build/cli:v0.9.26-installer
           docker cp blue-build-installer:/out/bluebuild /usr/local/bin/bluebuild
           docker rm blue-build-installer
           bluebuild --version

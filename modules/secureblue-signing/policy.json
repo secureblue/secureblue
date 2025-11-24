@@ -6,6 +6,34 @@
     ],
     "transports": {
         "docker": {
+          "ghcr.io/blue-build/cli": [
+              {
+                  "type": "sigstoreSigned",
+                  "keyPath": "/usr/etc/pki/containers/bluebuild-cli.pub",
+                  "signedIdentity": {
+                      "type": "matchRepository"
+                  }
+              }
+          ],
+          "ghcr.io/blue-build/modules": [
+              {
+                  "type": "sigstoreSigned",
+                  "keyPath": "/usr/etc/pki/containers/bluebuild-modules.pub",
+                  "signedIdentity": {
+                      "type": "matchRepository"
+                  }
+              }
+          ],
+          "ghcr.io/sigstore/cosign": [
+              {
+                  "type": "sigstoreSigned",
+                  "keyPath": "/usr/etc/pki/containers/cosign-release.pub",
+                  "signedIdentity": {
+                    "type": "exactRepository",
+                    "dockerRepository": "gcr.io/projectsigstore/cosign"
+                  }
+              }
+          ],
           "gcr.io/projectsigstore": [
               {
                   "type": "sigstoreSigned",
@@ -16,31 +44,31 @@
               }
           ],
           "ghcr.io/wayblueorg": [
-            {
-              "type": "sigstoreSigned",
-              "keyPath": "/usr/etc/pki/containers/wayblueorg.pub",
-              "signedIdentity": {
-                "type": "matchRepository"
+              {
+                  "type": "sigstoreSigned",
+                  "keyPath": "/usr/etc/pki/containers/wayblueorg.pub",
+                  "signedIdentity": {
+                      "type": "matchRepository"
+                  }
               }
-            }
           ],
           "ghcr.io/zelikos": [
-            {
-              "type": "sigstoreSigned",
-              "keyPath": "/usr/etc/pki/containers/davincibox.pub",
-              "signedIdentity": {
-                "type": "matchRepository"
+              {
+                  "type": "sigstoreSigned",
+                  "keyPath": "/usr/etc/pki/containers/davincibox.pub",
+                  "signedIdentity": {
+                      "type": "matchRepository"
+                  }
               }
-            }
           ],
           "ghcr.io/jasonn3": [
-            {
-              "type": "sigstoreSigned",
-              "keyPath": "/usr/etc/pki/containers/build-container-installer.pub",
-              "signedIdentity": {
-                "type": "matchRepository"
+              {
+                  "type": "sigstoreSigned",
+                  "keyPath": "/usr/etc/pki/containers/build-container-installer.pub",
+                  "signedIdentity": {
+                      "type": "matchRepository"
+                  }
               }
-            }
           ],
           "registry.access.redhat.com": [
               {

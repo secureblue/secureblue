@@ -1,5 +1,10 @@
 ## <summary>nautilus file manager</summary>
 
+# SPDX-FileCopyrightText 2025 The Secureblue Authors
+#
+# SPDX-License-Identifier: Apache-2.0 OR MIT
+
+
 ########################################
 ## <summary>
 ##	Execute nautilus in the nautilus domain.
@@ -40,6 +45,6 @@ interface(`nautilus_run',`
         attribute_role nautilus_roles;
 	')
 
-    nautilus_domtrans($1)
-    roleattribute $2 nautilus_roles;
+	nautilus_domtrans($1)
+	roleattribute $2 nautilus_roles;
 ')

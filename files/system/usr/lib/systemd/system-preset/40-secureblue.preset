@@ -1,0 +1,8 @@
+enable dnsconfd.service
+enable podman-auto-update.timer
+enable rpm-ostreed-automatic.timer
+enable secureblue-migrate-dns.service
+enable secureblue-unbound-key.service
+
+disable geoclue.service
+disable systemd-resolved.service

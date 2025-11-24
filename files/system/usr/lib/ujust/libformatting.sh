@@ -20,7 +20,7 @@ declare -r hidden=$'\033[8m'
 ########
 declare -r normal=$'\033[0m'
 declare -r n="$normal"
-declare -r unbold=$'\033[21m'
+declare -r unbold=$'\033[22m'
 declare -r undim=$'\033[22m'
 declare -r nounderline=$'\033[24m'
 declare -r unblink=$'\033[25m'
@@ -38,5 +38,5 @@ function Urllink (){
     TEXT=$2
 
     # Generate a clickable hyperlink
-    printf "\e]8;;%s\e\\%s\e]8;;\e\\" "$URL" "$TEXT${n}"
+    printf "\033]8;;%s\033\\%s\033]8;;\033\\" "$URL" "$TEXT${n}"
 }

@@ -1,3 +1,7 @@
+# SPDX-FileCopyrightText 2025 The Secureblue Authors
+#
+# SPDX-License-Identifier: Apache-2.0 OR MIT
+
 /usr/bin/flatpak	--	gen_context(system_u:object_r:flatpak_exec_t,s0)
 /usr/bin/flatpak-bisect	--	gen_context(system_u:object_r:flatpak_exec_t,s0)
 /usr/bin/flatpak-coredumpctl	--	gen_context(system_u:object_r:flatpak_exec_t,s0)

@@ -1,29 +1,54 @@
+# Copyright 2025 The Secureblue Authors
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software distributed under the License is
+# distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and limitations under the License.
+
 modules:
-    - type: rpm-ostree
+    - type: dnf
       install:
-        - firewall-config
-        - gnome-disk-utility
-        - adw-gtk3-theme
-        - gnome-epub-thumbnailer
-        - gnome-tweaks
+        install-weak-deps: false
+        packages:
+          - firewall-config
+          - gnome-disk-utility
+          - adw-gtk3-theme
+          - gnome-tweaks
       remove:
-        - gnome-shell-extension-background-logo
-        - gnome-tour
-        - yelp
-        - gnome-user-share
-        - mod_lua
-        - httpd
-        - httpd-core
-        - mod_http2
-        - mod_dnssd
-        - gnome-remote-desktop
-        - libvncserver
-        - fedora-chromium-config-gnome
-        - gnome-software-rpm-ostree
-        - totem-video-thumbnailer
+        packages:
+          - gnome-shell-extension-background-logo
+          - gnome-tour
+          - yelp
+          - gnome-user-share
+          - mod_lua
+          - httpd
+          - httpd-core
+          - mod_http2
+          - mod_dnssd
+          - gnome-remote-desktop
+          - libvncserver
+          - fedora-chromium-config-gnome
+          - gnome-software-rpm-ostree
+          - totem-video-thumbnailer
+          - fedora-flathub-remote
+          - fedora-third-party
+          - fedora-workstation-repositories
     - type: gschema-overrides
       include:
         - zz1-secureblue.gschema.override
     - type: script
       scripts:
         - removedkmshelper.sh
+    - type: files
+      files:
+        - source: system/silverblue
+          destination: /
+    - type: justfiles
+      validate: true
+      include:
+        - silverblue.just

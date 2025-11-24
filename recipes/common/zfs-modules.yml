@@ -1,9 +1,26 @@
+# Copyright 2025 The Secureblue Authors
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software distributed under the License is
+# distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and limitations under the License.
+
 modules:
-    - type: containerfile
-      snippets:
-      - COPY --from=ghcr.io/ublue-os/akmods-zfs:coreos-testing-41 /rpms /tmp/rpms
-      - RUN find /tmp/rpms
-      - RUN rpm-ostree install pv /tmp/rpms/kmods/zfs/*.rpm /tmp/rpms/kmods/zfs/other/zfs-dracut-*.rpm
-    - type: script
-      scripts:
-        - zfspostinstall.sh
+  - type: script
+    scripts:
+      - installzfskmod.sh
+    secrets:
+      - type: env
+        name: KERNEL_PRIVKEY
+        mount:
+          type: file
+          destination: /tmp/certs/private_key.priv
+  - type: files
+    files:
+      - source: system/zfs
+        destination: /

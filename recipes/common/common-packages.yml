@@ -1,14 +1,47 @@
-type: rpm-ostree
-repos: 
-  - https://copr.fedorainfracloud.org/coprs/secureblue/hardened_malloc/repo/fedora-%OS_VERSION%/secureblue-hardened_malloc-fedora-%OS_VERSION%.repo
-install:
-  - hardened_malloc
+# Copyright 2025 The Secureblue Authors
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software distributed under the License is
+# distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and limitations under the License.
 
-  # missing upstream
-  - openssl
-  - just
-  - patch
-  - p7zip
-  - distrobox
-  - toolbox
-  - podman
+type: dnf
+repos:
+  files:
+    - https://copr.fedorainfracloud.org/coprs/secureblue/no_rlimit_as/repo/fedora-%OS_VERSION%/secureblue-no_rlimit_as-fedora-%OS_VERSION%.repo
+    - https://copr.fedorainfracloud.org/coprs/secureblue/hardened_malloc/repo/fedora-%OS_VERSION%/secureblue-hardened_malloc-fedora-%OS_VERSION%.repo
+    - https://copr.fedorainfracloud.org/coprs/secureblue/run0edit/repo/fedora-%OS_VERSION%/secureblue-run0edit-fedora-%OS_VERSION%.repo
+install:
+  install-weak-deps: false
+  packages:
+    - hardened_malloc
+    - run0edit
+    - dnsconfd-unbound
+
+    # missing upstream
+    - openssl
+    - patch
+    - p7zip
+    - distrobox
+    - toolbox
+    - podman
+    - nvme-cli
+    - hdparm
+    - wireguard-tools
+    - gettext
+    - rsync
+    - steam-devices
+
+    # signing deps
+    - sbsigntools
+
+    # address hardened_malloc incompatibilities
+    - no_rlimit_as
+
+    # For use in unprivileged ujust scripts
+    - python3-inquirer

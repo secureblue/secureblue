@@ -1,43 +1,56 @@
-type: rpm-ostree
+# Copyright 2025 The Secureblue Authors
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software distributed under the License is
+# distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and limitations under the License.
+
+type: dnf
 repos:
-  - https://copr.fedorainfracloud.org/coprs/secureblue/bubblejail/repo/fedora-%OS_VERSION%/secureblue-bubblejail-fedora-%OS_VERSION%.repo
-  - https://repo.secureblue.dev/secureblue.repo
-  - https://copr.fedorainfracloud.org/coprs/secureblue/branding/repo/fedora-%OS_VERSION%/secureblue-branding-fedora-%OS_VERSION%.repo
+  files:
+    - https://copr.fedorainfracloud.org/coprs/secureblue/bubblejail/repo/fedora-%OS_VERSION%/secureblue-bubblejail-fedora-%OS_VERSION%.repo
+    - https://copr.fedorainfracloud.org/coprs/secureblue/branding/repo/fedora-%OS_VERSION%/secureblue-branding-fedora-%OS_VERSION%.repo
 install:
-  - headsetcontrol
-  - trivalent
-  - secureblue-logos
-  - mediainfo
-  - bubblejail
-  - usbguard-notifier
-  - usbguard
-  - setroubleshoot
-  - setools
-  - fscrypt
-  - vim
-  - wl-clipboard
-  - alsa-firmware
-  
-  # yubikey enablement
-  - pam-u2f
-  - pam_yubico
-  - pamu2fcfg
-  - yubikey-manager
+  install-weak-deps: false
+  packages:
+    - headsetcontrol
+    - mediainfo
+    - bubblejail
+    - usbguard-notifier
+    - usbguard
+    - setools
+    - fscrypt
+    - vim
+    - wl-clipboard
+    - alsa-firmware
+    - fzf
 
-  # ensure universal font coverage
-  - google-noto-fonts-all
+    # yubikey enablement
+    - pam-u2f
+    - pam_yubico
+    - pamu2fcfg
+    - yubikey-manager
+
+    # ensure universal font coverage
+    - google-noto-fonts-all
 remove:
-  - fedora-logos
-  - firefox
-  - firefox-langpacks
-  - fuse
-  - fedora-chromium-config
-  - fedora-flathub-remote
-  - passim
-  - sudo
-  - sudo-python-plugin
-
-
-
-
-
+  packages:
+    - firefox
+    - firefox-langpacks
+    - fuse
+    - passim
+    - fedora-chromium-config
+replace:
+  - from-repo: copr.fedorainfracloud.org:secureblue:branding
+    packages:
+      - old: fedora-logos
+        new: secureblue-logos
+  - from-repo: fedora
+    packages:
+      - old: OpenCL-ICD-Loader
+        new: ocl-icd

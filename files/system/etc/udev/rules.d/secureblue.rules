@@ -1,0 +1,2 @@
+# Disable binfmt_misc via sysctl when the module is loaded
+ACTION=="add", SUBSYSTEM=="module", DEVPATH=="/module/binfmt_misc", RUN+="/usr/bin/sysctl -w fs.binfmt_misc.status=0"

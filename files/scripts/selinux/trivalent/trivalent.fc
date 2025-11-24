@@ -1,3 +1,7 @@
+# SPDX-FileCopyrightText 2025 The Secureblue Authors
+#
+# SPDX-License-Identifier: Apache-2.0 OR MIT
+
 /usr/lib/trivalent/trivalent				--	gen_context(system_u:object_r:trivalent_exec_t,s0)
 
 # TODO: move crashpad handler to its own dom

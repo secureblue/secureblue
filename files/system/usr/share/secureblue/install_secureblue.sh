@@ -1,5 +1,17 @@
 #!/usr/bin/env bash
 
+# Copyright 2025 The Secureblue Authors
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software distributed under the License is
+# distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and limitations under the License.
+
 if ! command -v rpm-ostree &> /dev/null
 then
     echo "This script only runs on Fedora Atomic"
@@ -30,10 +42,6 @@ desktop_image_types=(
     "silverblue"
     "kinoite"
     "sericea"
-    "wayblue-wayfire"
-    "wayblue-sway"
-    "wayblue-river"
-    "wayblue-hyprland"
     "cosmic"
 )
 
@@ -45,7 +53,7 @@ printf "%s\n\n" \
     "After answering the following questions, your system will be rebased to secureblue."
 
 # Determine if it's a server or desktop
-read -p "Is this for a CoreOS server? (yes/No): " is_server
+read -rp "Is this for a CoreOS server? (yes/No): " is_server
 if is_yes "$is_server"; then
     if ! grep VARIANT=\"CoreOS\" /etc/os-release >/dev/null; then
         echo "The current operating system is based on Fedora Atomic."
@@ -53,7 +61,7 @@ if is_yes "$is_server"; then
         echo "Refusing to proceed."
         exit 1
     fi
-    read -p "Do you need ZFS support? (yes/No): " use_zfs
+    read -rp "Do you need ZFS support? (yes/No): " use_zfs
     image_name=$(is_yes "$use_zfs" && echo "securecore-zfs" || echo "securecore")
 else
     if grep VARIANT=\"CoreOS\" /etc/os-release >/dev/null; then
@@ -64,8 +72,8 @@ else
     fi
     printf "%s\n" \
         "Select a desktop." \
-        "Silverblue is recommended." \
-        "Wayblue images are currently in beta." \
+        "Silverblue images are recommended." \
+        "Sericea images are recommended for tiling WM users." \
         "Cosmic images are considered experimental."
     PS3=$'Enter your desktop choice: '
     select image_name in "${desktop_image_types[@]}"; do
@@ -79,10 +87,10 @@ else
 fi
 
 # Ask about Nvidia for all options
-read -p "Do you have Nvidia? (yes/No): " use_nvidia
+read -rp "Do you have Nvidia? (yes/No): " use_nvidia
 if is_yes "$use_nvidia"; then
     additional_params+="-nvidia" 
-    read -p "Do you need Nvidia's open drivers? (yes/No): " use_open
+    read -rp "Do you need Nvidia's open drivers? (yes/No): " use_open
     is_yes "$use_open" && additional_params+="-open"
 else
     additional_params+="-main"
@@ -92,7 +100,7 @@ image_name+="$additional_params-hardened"
 
 rebase_command="rpm-ostree rebase ostree-unverified-registry:ghcr.io/secureblue/$image_name:latest"
 
-if [ -n "$(rpm-ostree status | grep '● ostree-image-signed:docker://ghcr.io/secureblue/')" ] ; then
+if rpm-ostree status | grep -q '●.*ghcr\.io/secureblue/'; then
     rebase_command="rpm-ostree rebase ostree-image-signed:docker://ghcr.io/secureblue/$image_name:latest"
 else
     echo "Note: Automatic rebasing to the equivalent signed image will occur on first run."
@@ -100,7 +108,7 @@ fi
 
 printf "Command to execute:\n%s\n\n" "$rebase_command"
 
-read -p "Proceed? (yes/No): " rebase_proceed
+read -rp "Proceed? (yes/No): " rebase_proceed
 if is_yes "$rebase_proceed"; then
-    $rebase_command
+    eval "$rebase_command"
 fi

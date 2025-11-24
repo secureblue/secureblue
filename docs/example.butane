@@ -1,5 +1,5 @@
 variant: fcos
-version: 1.5.0
+version: 1.6.0
 passwd:
   users:
     - name: core
@@ -14,7 +14,7 @@ storage:
       contents:
         source: https://raw.githubusercontent.com/secureblue/secureblue/refs/heads/live/files/system/usr/share/secureblue/install_secureblue.sh
         verification:
-          hash: sha256-3b71dd267d921e35d25128a7caf49b02eeded1fb5c189c988e6c984c4bb20141
+          hash: sha256-e9bef78f28df075b2ec5ac4e47305b9d17d054a8ff00927ff855e1b7c947137a
       mode: 0755
     - path: /opt/run_install_secureblue.sh
       contents:
@@ -28,7 +28,7 @@ storage:
             if [ $? != 0 ]; then
               echo "Error: Secureblue installer failed."
             else
-              sed -i "/\/opt\/run_install_secureblue.sh/d" /var/home/core/.bash_profile
+              sed -i '/\/opt\/run_install_secureblue.sh/d' /var/home/core/.bash_profile
               sudo rm -f /opt/*install_secureblue.sh
               echo "Automatically rebooting in 5 seconds..."
               sleep 5

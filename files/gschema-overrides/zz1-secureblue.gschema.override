@@ -1,6 +1,19 @@
+# Copyright 2025 The Secureblue Authors
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software distributed under the License is
+# distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and limitations under the License.
+
 # Disable GNOME user extensions installation & usage
 # Only GNOME system extensions are trusted if installed
 
+# Switch from Warehouse to Bazaar once it's ready
 [org.gnome.shell]
 allow-extension-installation=false
 favorite-apps = ['trivalent.desktop', 'org.gnome.Nautilus.desktop', 'org.gnome.Ptyxis.desktop', 'com.github.tchx84.Flatseal.desktop', 'io.github.flattool.Warehouse.desktop']
@@ -10,3 +23,7 @@ enabled-extensions = []
 gtk-theme='adw-gtk3'
 font-antialiasing="rgba"
 monospace-font-name="Monospace 12"
+
+[org.gnome.desktop.background]
+picture-uri='file:///usr/share/backgrounds/secureblue/secureblue-blue.svg'
+picture-uri-dark='file:///usr/share/backgrounds/secureblue/secureblue-black.svg'

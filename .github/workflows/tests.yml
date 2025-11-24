@@ -47,6 +47,8 @@ jobs:
            file-path: "${{ github.workspace }}/.bats/bats-file"
 
       - name: Install just
+        env:
+          OS_ARCH: x86_64
         run: |
           sudo bash files/scripts/manuallyinstalljust.sh
 
@@ -55,6 +57,5 @@ jobs:
         env:
           INSTALL_SCRIPT: files/system/usr/share/secureblue/install_secureblue.sh
           BATS_LIB_PATH: "${{ github.workspace }}/.bats"
-          OS_ARCH: x86_64
         run: |
           bats --timing --trace --verbose-run -r .github/workflows/tests

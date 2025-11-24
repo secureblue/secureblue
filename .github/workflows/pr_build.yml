@@ -165,6 +165,8 @@ jobs:
           sudo mv POLICY.tmp "${POLICY_FILE}"
           echo "newpolicy:"
           cat "${POLICY_FILE}"
+          ls -l /etc/pki/containers/blue-build-modules.pub
+
 
       - name: Determine Vars
         id: build_vars

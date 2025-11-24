@@ -29,7 +29,8 @@
                   "type": "sigstoreSigned",
                   "keyPath": "/usr/etc/pki/containers/cosign-release.pub",
                   "signedIdentity": {
-                      "type": "matchRepository"
+                    "type": "exactRepository",
+                    "dockerRepository": "gcr.io/projectsigstore/cosign"
                   }
               }
           ],

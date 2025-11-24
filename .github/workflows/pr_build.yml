@@ -147,7 +147,7 @@ jobs:
                     "type": "sigstoreSigned",
                     "keyPath": $modules_image_pubkey,
                     "signedIdentity": { 
-                        "type": "matchRegistry"
+                        "type": "matchRepository"
                     }
                 }
             ]' "${POLICY_FILE}" > POLICY.tmp

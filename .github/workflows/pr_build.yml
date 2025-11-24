@@ -153,8 +153,9 @@ jobs:
                       }
                   }
               ] } + .' "${POLICY_FILE}" > POLICY.tmp
-          sudo mv POLICY.tmp "${POLICY_FILE}"
+          sudo cp POLICY.tmp "${POLICY_FILE}"
           sudo chmod 644 "${POLICY_FILE}"
+          sudo cp "${POLICY_FILE}" /usr/share/containers/policy.json
 
       - name: Determine Vars
         id: build_vars

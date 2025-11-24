@@ -176,7 +176,7 @@ jobs:
           CLI_INSTALLER_IMAGE=$(docker inspect --format='{{index .RepoDigests 0}}' "${CLI_INSTALLER_IMAGE}")
           slsa-verifier verify-image "${CLI_INSTALLER_IMAGE}" \
               --source-uri github.com/blue-build/cli \
-              "${VERIFY_FLAG}" "${REPO_TAG}"
+              --source-tag v0.9.26
           sudo docker create \
             --name blue-build-installer \
             "${CLI_INSTALLER_IMAGE}"

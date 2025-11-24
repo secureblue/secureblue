@@ -89,6 +89,9 @@ jobs:
         with:
           cosign-release: 'v2.6.0'
 
+      - name: Install the slsa-verifier
+        uses: slsa-framework/slsa-verifier/actions/installer@ea584f4502babc6f60d9bc799dbbb13c1caa9ee6 # v2.7.1
+
       - name: Verify base image
         shell: bash
         run: |
@@ -109,7 +112,6 @@ jobs:
             echo "NOTICE: Verification failed. Please ensure your public key is correct."
             exit 1
           fi
-
 
       - name: Set container policy to validate Blue-Build cli signature
         shell: bash

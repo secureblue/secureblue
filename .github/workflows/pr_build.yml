@@ -154,6 +154,7 @@ jobs:
                   }
               ] } + .' "${POLICY_FILE}" > POLICY.tmp
           sudo mv POLICY.tmp "${POLICY_FILE}"
+          sudo chmod 644 "${POLICY_FILE}"
 
       - name: Determine Vars
         id: build_vars

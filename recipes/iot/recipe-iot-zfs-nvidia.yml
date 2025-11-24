@@ -16,7 +16,7 @@ description: "IOT with nvidia and zfs, hardened"
 
 base-image: ghcr.io/secureblue/iot-zfs-main-hardened
 
-image-version: br-multiarch-43
+image-version: latest
 
 cosign-version: none
 nushell-version: none

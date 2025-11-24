@@ -1,3 +1,5 @@
+#!/usr/bin/env bash
+
 # Copyright 2025 The Secureblue Authors
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -10,20 +12,8 @@
 # distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and limitations under the License.
 
-name: silverblue-nvidia-open-hardened
-
-description: "Silverblue with nvidia-open, hardened"
-
-base-image: ghcr.io/secureblue/silverblue-main-hardened
-
-image-version: latest
-
-cosign-version: none
-nushell-version: none
-
-platforms:
-  - linux/amd64
-
-modules:
-  - from-file: common/nvidia-install.yml
-  - from-file: common/final-modules.yml
+if [[ "$OS_ARCH" == 'x86_64' ]]; then
+    echo "OPTIONS=-F1 -r" > /etc/sysconfig/chronyd
+else
+    echo "OPTIONS=-F2 -r" > /etc/sysconfig/chronyd
+fi

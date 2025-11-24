@@ -84,6 +84,9 @@ jobs:
           DIGEST=$(~/go/bin/crane digest "ghcr.io/secureblue/${BASE_IMAGE_NAME}:latest")
           ~/go/bin/slsa-verifier verify-image --source-uri github.com/secureblue/secureblue ghcr.io/secureblue/${BASE_IMAGE_NAME}:latest@"${DIGEST}"
 
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@29109295f81e9208d7d86ff1c6c12d2833863392 # v3.6.0
+
       - name: Install cosign
         uses: sigstore/cosign-installer@faadad0cce49287aee09b3a48701e75088a2c6ad # v4.0.0
         with:

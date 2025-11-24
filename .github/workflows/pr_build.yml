@@ -163,6 +163,8 @@ jobs:
                 }
             ]' "${POLICY_FILE}" > POLICY.tmp
           sudo mv POLICY.tmp "${POLICY_FILE}"
+          echo "newpolicy:"
+          cat "${POLICY_FILE}"
 
       - name: Determine Vars
         id: build_vars

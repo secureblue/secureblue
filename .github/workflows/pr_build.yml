@@ -116,9 +116,9 @@ jobs:
       - name: Set container policy to validate Blue-Build cli signature
         shell: bash
         run: |
+          POLICY_FILE="/etc/containers/policy.json"
           echo "policy:"
           cat "${POLICY_FILE}"
-          POLICY_FILE="/etc/containers/policy.json"
           CLI_IMAGE_REGISTRY="ghcr.io/blue-build/cli"
           MODULES_IMAGE_REGISTRY="ghcr.io/blue-build/modules"
           CLI_IMAGE_PUBKEY="/etc/pki/containers/blue-build-cli.pub"

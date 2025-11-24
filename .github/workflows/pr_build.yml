@@ -185,6 +185,7 @@ jobs:
           CLI_INSTALLER_IMAGE="ghcr.io/blue-build/cli:v0.9.26-installer"
           docker pull "${CLI_INSTALLER_IMAGE}"
           docker pull ghcr.io/blue-build/modules/script:latest
+          podman pull ghcr.io/blue-build/modules/script:latest
           CLI_INSTALLER_IMAGE=$(docker inspect --format='{{index .RepoDigests 0}}' "${CLI_INSTALLER_IMAGE}")
           slsa-verifier verify-image "${CLI_INSTALLER_IMAGE}" \
               --source-uri github.com/blue-build/cli \

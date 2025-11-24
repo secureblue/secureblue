@@ -121,6 +121,7 @@ jobs:
           cat "${POLICY_FILE}"
           CLI_IMAGE_REGISTRY="ghcr.io/blue-build/cli"
           MODULES_IMAGE_REGISTRY="ghcr.io/blue-build/modules"
+          MODULES_SCRIPT_IMAGE_REGISTRY="${MODULES_IMAGE_REGISTRY}/script"
           CLI_IMAGE_PUBKEY="/etc/pki/containers/blue-build-cli.pub"
           MODULES_IMAGE_PUBKEY="/etc/pki/containers/blue-build-modules.pub"
           sudo mkdir -p /etc/pki/containers
@@ -131,6 +132,7 @@ jobs:
           jq --arg cli_image_registry "${CLI_IMAGE_REGISTRY}" \
             --arg cli_image_pubkey "${CLI_IMAGE_PUBKEY}" \
             --arg modules_image_registry "${MODULES_IMAGE_REGISTRY}" \
+            --arg modules_script_image_registry "${MODULES_SCRIPT_IMAGE_REGISTRY}" \
             --arg modules_image_pubkey "${MODULES_IMAGE_PUBKEY}" \
             '.transports.docker //= {} |
             .transports.docker[$cli_image_registry] = [
@@ -143,6 +145,15 @@ jobs:
                 }
             ] |
             .transports.docker[$modules_image_registry] = [
+                {
+                    "type": "sigstoreSigned",
+                    "keyPath": $modules_image_pubkey,
+                    "signedIdentity": { 
+                        "type": "matchRepository"
+                    }
+                }
+            ] |
+            .transports.docker[$modules_script_image_registry] = [
                 {
                     "type": "sigstoreSigned",
                     "keyPath": $modules_image_pubkey,

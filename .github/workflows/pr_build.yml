@@ -128,36 +128,30 @@ jobs:
           sudo curl -Lo "${MODULES_IMAGE_PUBKEY}" https://raw.githubusercontent.com/blue-build/modules/refs/heads/main/cosign.pub
 
           # add cli pubkey
-          jq --arg image_registry "${CLI_IMAGE_REGISTRY}" \
-            --arg image_pubkey "${CLI_IMAGE_PUBKEY}" \
-            '.transports.docker |= 
-              { $image_registry: [
-                  {
-                      "type": "sigstoreSigned",
-                      "keyPath": $image_pubkey,
-                      "signedIdentity": {
-                          "type": "matchRepository"
-                      }
-                  }
-              ] } + .' "${POLICY_FILE}" > POLICY.tmp
+          jq --arg cli_image_registry "${CLI_IMAGE_REGISTRY}" \
+            --arg cli_image_pubkey "${CLI_IMAGE_PUBKEY}" \
+            --arg modules_image_registry "${MODULES_IMAGE_REGISTRY}" \
+            --arg modules_image_pubkey "${MODULES_IMAGE_PUBKEY}" \
+            '.transports.docker //= {} |
+            .transports.docker[$cli_image_registry] = [
+                {
+                    "type": "sigstoreSigned",
+                    "keyPath": $cli_image_pubkey,
+                    "signedIdentity": { 
+                        "type": "matchRepository"
+                    }
+                }
+            ] |
+            .transports.docker[$modules_image_registry] = [
+                {
+                    "type": "sigstoreSigned",
+                    "keyPath": $modules_image_pubkey,
+                    "signedIdentity": { 
+                        "type": "matchRegistry"
+                    }
+                }
+            ]' "${POLICY_FILE}" > POLICY.tmp
           sudo mv POLICY.tmp "${POLICY_FILE}"
-          
-          # add modules pubkey
-          jq --arg image_registry "${MODULES_IMAGE_REGISTRY}" \
-            --arg image_pubkey "${MODULES_IMAGE_PUBKEY}" \
-            '.transports.docker |= 
-              { $image_registry: [
-                  {
-                      "type": "sigstoreSigned",
-                      "keyPath": $image_pubkey,
-                      "signedIdentity": {
-                          "type": "matchRepository"
-                      }
-                  }
-              ] } + .' "${POLICY_FILE}" > POLICY.tmp
-          sudo cp POLICY.tmp "${POLICY_FILE}"
-          sudo chmod 644 "${POLICY_FILE}"
-          sudo cp "${POLICY_FILE}" /usr/share/containers/policy.json
 
       - name: Determine Vars
         id: build_vars

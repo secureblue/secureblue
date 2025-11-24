@@ -110,6 +110,49 @@ jobs:
             exit 1
           fi
 
+
+      - name: Set container policy to validate Blue-Build cli signature
+        shell: bash
+        run: |
+          POLICY_FILE="/etc/containers/policy.json"
+          CLI_IMAGE_REGISTRY="ghcr.io/blue-build/cli"
+          MODULES_IMAGE_REGISTRY="ghcr.io/blue-build/modules"
+          CLI_IMAGE_PUBKEY="/etc/pki/containers/blue-build-cli.pub"
+          MODULES_IMAGE_PUBKEY="/etc/pki/containers/blue-build-modules.pub"
+          sudo mkdir -p /etc/pki/containers
+          sudo curl -Lo "${CLI_IMAGE_PUBKEY}" https://raw.githubusercontent.com/blue-build/cli/refs/heads/main/cosign.pub
+          sudo curl -Lo "${MODULES_IMAGE_PUBKEY}" https://raw.githubusercontent.com/blue-build/modules/refs/heads/main/cosign.pub
+
+          # add cli pubkey
+          jq --arg image_registry "${CLI_IMAGE_REGISTRY}" \
+            --arg image_pubkey "${CLI_IMAGE_PUBKEY}" \
+            '.transports.docker |= 
+              { $image_registry: [
+                  {
+                      "type": "sigstoreSigned",
+                      "keyPath": $image_pubkey,
+                      "signedIdentity": {
+                          "type": "matchRepository"
+                      }
+                  }
+              ] } + .' "${POLICY_FILE}" > POLICY.tmp
+          sudo mv POLICY.tmp "${POLICY_FILE}"
+          
+          # add modules pubkey
+          jq --arg image_registry "${MODULES_IMAGE_REGISTRY}" \
+            --arg image_pubkey "${MODULES_IMAGE_PUBKEY}" \
+            '.transports.docker |= 
+              { $image_registry: [
+                  {
+                      "type": "sigstoreSigned",
+                      "keyPath": $image_pubkey,
+                      "signedIdentity": {
+                          "type": "matchRepository"
+                      }
+                  }
+              ] } + .' "${POLICY_FILE}" > POLICY.tmp
+          sudo mv POLICY.tmp "${POLICY_FILE}"
+
       - name: Determine Vars
         id: build_vars
         shell: bash
@@ -127,11 +170,18 @@ jobs:
       - name: Install BlueBuild
         shell: bash
         run: |
-          docker create \
+          set -euo pipefail
+          CLI_INSTALLER_IMAGE="ghcr.io/blue-build/cli:v0.9.26-installer"
+          docker pull "${CLI_INSTALLER_IMAGE}"
+          CLI_INSTALLER_IMAGE=$(docker inspect --format='{{index .RepoDigests 0}}' "${CLI_INSTALLER_IMAGE}")
+          slsa-verifier verify-image "${CLI_INSTALLER_IMAGE}" \
+              --source-uri github.com/blue-build/cli \
+              "${VERIFY_FLAG}" "${REPO_TAG}"
+          sudo docker create \
             --name blue-build-installer \
-            ghcr.io/blue-build/cli:v0.9.26-installer
-          docker cp blue-build-installer:/out/bluebuild /usr/local/bin/bluebuild
-          docker rm blue-build-installer
+            "${CLI_INSTALLER_IMAGE}"
+          sudo docker cp blue-build-installer:/out/bluebuild /usr/bin/bluebuild
+          sudo docker rm blue-build-installer
           bluebuild --version
 
       - name: Build Image

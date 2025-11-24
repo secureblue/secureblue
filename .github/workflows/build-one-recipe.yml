@@ -119,7 +119,8 @@ jobs:
           fi
 
       - name: Build secureblue
-        uses: blue-build/github-action@785ecb253aee6ead01454ed5bd070c2921010602 # v1.9.1
+        # uses: blue-build/github-action@785ecb253aee6ead01454ed5bd070c2921010602 # v1.9.1
+        uses: blue-build/github-action@main
         env:
           KERNEL_PRIVKEY: ${{ secrets.KERNEL_PRIVKEY }}
         with:
@@ -133,6 +134,7 @@ jobs:
           skip_checkout: true
           use_cache: false
           retry_push_count: 3
+          verify_install: true
 
       - name: Install regctl
         uses: regclient/actions/regctl-installer@495560f7c3b510b71ff9f22d6c667c2c429b8e45 # main # zizmor: ignore[stale-action-refs] regctl does not publish tags

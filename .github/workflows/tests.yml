@@ -50,7 +50,7 @@ jobs:
         env:
           OS_ARCH: x86_64
         run: |
-          sudo bash files/scripts/manuallyinstalljust.sh
+          sudo --preserve-env=OS_ARCH bash files/scripts/manuallyinstalljust.sh
 
       - name: Run tests
         shell: bash

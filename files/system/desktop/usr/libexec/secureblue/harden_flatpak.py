@@ -36,7 +36,7 @@ def best_microarch() -> str | None:
     """Get best microarchitecture for system."""
     try:
         ld_info = command_stdout("/usr/lib64/ld-linux-x86-64.so.2", "--help")
-    except subprocess.CalledProcessError:
+    except (FileNotFoundError, subprocess.CalledProcessError):
         return None
     m = re.search(
         r"^\s*(x86-64-v\d+).*\(supported, searched\)", ld_info, flags=re.ASCII | re.MULTILINE

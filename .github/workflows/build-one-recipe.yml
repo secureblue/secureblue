@@ -53,16 +53,6 @@ jobs:
           sudo rm -f /var/lib/man-db/auto-update
           sudo sed -i 's/^update_initramfs=.*/update_initramfs=no/' /etc/initramfs-tools/update-initramfs.conf
 
-      - name: Free disk space
-        shell: bash
-        run: |
-          sudo rm -rf /usr/share/dotnet || true
-          sudo rm -rf /opt/ghc || true
-          sudo rm -rf /usr/local/.ghcup || true
-          sudo docker image prune --all --force || true
-          sudo swapoff -a || true
-          sudo rm -f /mnt/swapfile || true
-
       - name: Checkout repo
         uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
         with:
@@ -122,20 +112,21 @@ jobs:
           fi
 
       - name: Build secureblue
-        uses: blue-build/github-action@785ecb253aee6ead01454ed5bd070c2921010602 # v1.9.1
+        uses: blue-build/github-action@5c6916e55b22914100bedc50fbbd001ed95c971a # v1.10.1
         env:
           KERNEL_PRIVKEY: ${{ secrets.KERNEL_PRIVKEY }}
         with:
-          cli_version: v0.9.26
+          cli_version: v0.9.27
           recipe: ${{ inputs.recipe }}
           cosign_private_key: ${{ secrets.SIGNING_SECRET }}
           registry_token: ${{ github.token }}
           pr_event_number: ${{ github.event.number }}
-          maximize_build_space: false
+          maximize_build_space: true
           squash: true
           skip_checkout: true
           use_cache: false
           retry_push_count: 3
+          verify_install: true
 
       - name: Install regctl
         uses: regclient/actions/regctl-installer@495560f7c3b510b71ff9f22d6c667c2c429b8e45 # main # zizmor: ignore[stale-action-refs] regctl does not publish tags

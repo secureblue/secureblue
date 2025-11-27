@@ -30,7 +30,7 @@ jobs:
     name: PR build
     runs-on: ubuntu-24.04
     permissions:
-      contents: read
+      contents: read # Needed to pull the repo for the build
 
     steps:
       - name: Enable egress auditing
@@ -46,16 +46,6 @@ jobs:
           sudo rm -f /var/lib/man-db/auto-update
           sudo sed -i 's/^update_initramfs=.*/update_initramfs=no/' /etc/initramfs-tools/update-initramfs.conf
 
-      - name: Free disk space
-        shell: bash
-        run: |
-          sudo rm -rf /usr/share/dotnet || true
-          sudo rm -rf /opt/ghc || true
-          sudo rm -rf /usr/local/.ghcup || true
-          sudo docker image prune --all --force || true
-          sudo swapoff -a || true
-          sudo rm -f /mnt/swapfile || true
-
       - name: Checkout repo
         uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
         with:
@@ -66,10 +56,10 @@ jobs:
         env:
           RECIPE: ${{ inputs.recipe }}
         run: |
-          echo "IMAGE_NAME=$(grep '^name:' "./recipes/${RECIPE}" | sed 's/^name: //')" >> "$GITHUB_ENV"
-          echo "IMAGE_MAJOR_VERSION=$(grep '^image-version:' "./recipes/${RECIPE}" | sed 's/^image-version: //')" >> "$GITHUB_ENV"
+          echo "IMAGE_NAME=$(grep '^name:' "./recipes/${RECIPE}" | sed 's/^name: //')" >> "${GITHUB_ENV}"
+          echo "IMAGE_MAJOR_VERSION=$(grep '^image-version:' "./recipes/${RECIPE}" | sed 's/^image-version: //')" >> "${GITHUB_ENV}"
           BASE_IMAGE=$(grep '^base-image:' "./recipes/${RECIPE}" | sed 's/^base-image: //')
-          echo "BASE_IMAGE_NAME=$(echo "$BASE_IMAGE" | sed 's/.*\/.*\///')" >> "$GITHUB_ENV"
+          echo "BASE_IMAGE_NAME=$(echo "${BASE_IMAGE}" | sed 's/.*\/.*\///')" >> "${GITHUB_ENV}"
 
       - name: Verify base image provenance
         shell: bash
@@ -113,41 +103,27 @@ jobs:
             exit 1
           fi
 
-      - name: Determine Vars
-        id: build_vars
+      - name: Set up test keys
+        id: test_keys
         shell: bash
-        env:
-          RECIPE: ${{ inputs.recipe }}
-        run: |
-          RECIPE_PATH=""
-          if [ -f "./config/${RECIPE}" ]; then
-            RECIPE_PATH="./config/${RECIPE}"
-          else
-            RECIPE_PATH="./recipes/${RECIPE}"
-          fi
-          echo "recipe_path=${RECIPE_PATH}" >> "${GITHUB_OUTPUT}"
-
-      - name: Install BlueBuild
-        shell: bash
-        run: |
-          docker create \
-            --name blue-build-installer \
-            ghcr.io/blue-build/cli:v0.9.26-installer
-          docker cp blue-build-installer:/out/bluebuild /usr/local/bin/bluebuild
-          docker rm blue-build-installer
-          bluebuild --version
-
-      - name: Build Image
-        shell: bash
-        env:
-          RECIPE_PATH: ${{ steps.build_vars.outputs.recipe_path }}
-          RUST_LOG_STYLE: always
-          CLICOLOR_FORCE: '1'
-          GH_PR_EVENT_NUMBER: ${{ github.event.number }}
         run: |
           cp ./.github/workflows/public_key.der.test ./files/system/etc/pki/akmods/certs/akmods-secureblue.der
-          KERNEL_PRIVKEY=$(< ./.github/workflows/private_key.priv.test)
-          export KERNEL_PRIVKEY
+          {
+            echo 'kernel_privkey<<EOF'
+            cat ./.github/workflows/private_key.priv.test
+            echo 'EOF'
+          } >> "${GITHUB_OUTPUT}"
 
-          BUILD_OPTS="--build-driver podman --squash"
-          bluebuild build -v ${BUILD_OPTS} "${RECIPE_PATH}"
+      - name: Build secureblue
+        uses: blue-build/github-action@5c6916e55b22914100bedc50fbbd001ed95c971a # v1.10.1
+        env:
+          KERNEL_PRIVKEY: ${{ steps.test_keys.outputs.kernel_privkey }}
+        with:
+          cli_version: v0.9.27
+          recipe: ${{ inputs.recipe }}
+          push: false
+          pr_event_number: ${{ github.event.number }}
+          maximize_build_space: true
+          squash: true
+          skip_checkout: true
+          verify_install: true

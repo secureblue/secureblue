@@ -25,3 +25,4 @@ scripts:
   - removefedoraflatpakremoteservice.sh
   - localization.sh
   - addimageinfo.sh
+  - installrar.sh

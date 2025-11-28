@@ -13,28 +13,22 @@
 modules:
     - type: script
       scripts:
+        - addrepos.sh
         - createautostartdir.sh
         - httpsmirrors.sh
         - unprotectsudo.sh
     - from-file: common/common-packages.yml
-    - type: script
-      scripts:
-        - manuallyinstalljust.sh
-        - hardenlogindefs.sh
-        - hardened_malloc-pam.sh
-        - disableresolved.sh
-        - setup-dnsconfd.sh
     - type: files
       files:
         - source: system/usr
           destination: /usr
         - source: system/etc
           destination: /etc
+    - from-file: common/common-scripts.yml
     - type: justfiles
       validate: true
       include:
         - common
-    - from-file: common/common-scripts.yml
     - type: script
       scripts:
         - signkernel.sh

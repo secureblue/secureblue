@@ -12,7 +12,8 @@
 # distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and limitations under the License.
 
-set -oue pipefail
-
-rm -f /usr/share/bluebuild/justfiles/brew.just
-sed -i '/import "\/usr\/share\/bluebuild\/justfiles\/brew.just"/d' /usr/share/ublue-os/just/60-custom.just
+if [[ "$OS_ARCH" == 'x86_64' ]]; then
+    echo "OPTIONS=-F1 -r" > /etc/sysconfig/chronyd
+else
+    echo "OPTIONS=-F2 -r" > /etc/sysconfig/chronyd
+fi

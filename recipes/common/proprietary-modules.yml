@@ -12,19 +12,18 @@
 
 modules:
     - type: dnf
-      repos:
-        files:
-          - https://negativo17.org/repos/fedora-multimedia.repo
       install:
         install-weak-deps: false
         packages:
           - libopenjph
           - heif-pixbuf-loader
           - ffmpegthumbnailer
-          - rar
           - pipewire-libs-extra
+
+    - type: dnf
       replace:  
         - from-repo: fedora-multimedia
+          skip-unavailable: true
           packages:
             - libheif
             - libva
@@ -39,6 +38,12 @@ modules:
             - libva-intel-media-driver
             - intel-gmmlib
             - intel-mediasdk
+
+    - type: dnf
+      replace:  
+        - from-repo: fedora-multimedia
+          skip-unavailable: true
+          packages:
             - old: ffmpeg-free
               new: ffmpeg
             - old: fdk-aac-free

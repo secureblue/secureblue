@@ -13,6 +13,7 @@
 type: script
 scripts:
   - install-trivalent.sh
+  - installsubresourcefilter.sh
   - installandroidudev.sh
   - disablecups.sh
   - disablesshd.sh

@@ -485,3 +485,15 @@ setup-usbguard:
     if ! rpm-ostree status | grep '●' | grep -Eq 'securecore|iot'; then
         systemctl enable --user --now usbguard-notifier.service
     fi
+
+install-tailscale:
+    #! /bin/run0 /bin/bash
+    curl -Lo /etc/yum.repos.d/tailscale.repo https://pkgs.tailscale.com/stable/fedora/tailscale.repo
+    rpm-ostree refresh-md
+    rpm-ostree install tailscale
+
+uninstall-tailscale:
+    #! /bin/run0 /bin/bash
+    rm /etc/yum.repos.d/tailscale.repo
+    rpm-ostree refresh-md
+    rpm-ostree uninstall tailscale

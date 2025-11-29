@@ -16,8 +16,12 @@ on:
   workflow_call:
     inputs:
       recipe:
-        required: true
         type: string
+        required: true
+      rechunk:
+        type: boolean
+        required: false
+        default: false
     secrets:
       SIGNING_SECRET:
         required: true
@@ -120,6 +124,8 @@ jobs:
           pr_event_number: ${{ github.event.number }}
           maximize_build_space: true
           squash: true
+          build_chunked_oci: ${{ inputs.rechunk }}
+          max_layers: 128
           skip_checkout: true
           use_cache: false
           retry_push_count: 3

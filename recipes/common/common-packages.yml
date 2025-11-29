@@ -45,3 +45,9 @@ install:
     # provenance deps
     - crane
     - slsa-verifier
+replace:
+  - from-repo: copr:copr.fedorainfracloud.org:secureblue:selinux-policy
+    packages:
+      - selinux-policy
+      - selinux-policy-targeted
+      - selinux-policy-devel

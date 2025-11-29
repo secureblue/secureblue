@@ -14,6 +14,6 @@
 
 set -oue pipefail
 
-dnf swap selinux-policy selinux-policy --enablerepo=copr:copr.fedorainfracloud.org:secureblue:selinux-policy --allowerasing
-dnf swap selinux-policy-devel selinux-policy-devel --enablerepo=copr:copr.fedorainfracloud.org:secureblue:selinux-policy --allowerasing
-dnf swap selinux-policy-targeted selinux-policy-targeted --enablerepo=copr:copr.fedorainfracloud.org:secureblue:selinux-policy --allowerasing
+dnf swap selinux-policy selinux-policy --enablerepo=copr:copr.fedorainfracloud.org:secureblue:selinux-policy --allowerasing -y
+dnf swap selinux-policy-devel selinux-policy-devel --enablerepo=copr:copr.fedorainfracloud.org:secureblue:selinux-policy --allowerasing -y
+dnf swap selinux-policy-targeted selinux-policy-targeted --enablerepo=copr:copr.fedorainfracloud.org:secureblue:selinux-policy --allowerasing -y

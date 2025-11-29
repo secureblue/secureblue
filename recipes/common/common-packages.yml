@@ -47,6 +47,7 @@ install:
     - slsa-verifier
 replace:
   - from-repo: copr:copr.fedorainfracloud.org:secureblue:selinux-policy
+    allow-erasing: true
     packages:
       - selinux-policy
       - selinux-policy-targeted

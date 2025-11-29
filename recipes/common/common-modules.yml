@@ -18,6 +18,7 @@ modules:
         - createautostartdir.sh
         - httpsmirrors.sh
         - unprotectsudo.sh
+        - replaceselinuxpackages.sh
     - from-file: common/common-packages.yml
     - type: files
       source: ghcr.io/blue-build/modules@sha256:50747361c625c0a5afac314f174243ca7d14373dbbdd20e2261c1f9384a632de

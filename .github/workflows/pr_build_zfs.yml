@@ -34,6 +34,7 @@ jobs:
     name: PR build
     permissions:
       contents: read
+      packages: read # Needed to read base image manifests
     strategy:
       fail-fast: false
       matrix:

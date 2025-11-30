@@ -22,6 +22,7 @@ modules:
       - disablewlrportals.sh
   - type: dnf
     source: ghcr.io/blue-build/modules@sha256:50747361c625c0a5afac314f174243ca7d14373dbbdd20e2261c1f9384a632de
+    install:
       packages:
         - fedora-flathub-remote
         - fedora-third-party

@@ -51,9 +51,9 @@ def main() -> int:
             return 0
         case "off":
             shutil.rmtree(LINUXBREW_DIR, ignore_errors=False)
-            os.remove(BREW_ETC_STAMP, ignore_errors=True)
-            os.remove(BREW_PROFILE_FILE, ignore_errors=True)
-            os.remove(BREW_PROFILE_COMPLETIONS_FILE, ignore_errors=True)
+            os.remove(BREW_ETC_STAMP)
+            os.remove(BREW_PROFILE_FILE)
+            os.remove(BREW_PROFILE_COMPLETIONS_FILE)
             subprocess.run(  # nosec
                 ["/usr/bin/systemctl", "disable", "brew-setup.service"],
                 check=False,

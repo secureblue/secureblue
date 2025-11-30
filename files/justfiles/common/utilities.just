@@ -269,6 +269,7 @@ install-vpn:
         ["ivpn"]="gui_needs_unconfined_userns gui_needs_xwayland"
         ["mullvad"]="gui_needs_unconfined_userns gui_needs_xwayland"
         ["proton"]=""
+        ["tailscale"]=""
     )
 
     # VPN install logic
@@ -327,10 +328,26 @@ install-vpn:
                 INSTRUCTIONS='Successfully installed Proton VPN.'
                 ;;
 
+
+            "tailscale")
+                PACKAGE_NAMES="tailscale"
+                REPO_NAME="tailscale"
+                
+                if util_checkpackage "$PACKAGE_NAMES"; then
+                    echo 'Error: Tailscale VPN is already installed.'
+                    echo 'Aborting...'
+                    exit 1
+                fi
+
+                echo 'Installing Tailscale VPN...'
+                INSTRUCTIONS='Successfully installed Tailscale VPN, please execute the command "run0 systemctl enable --now tailscaled && run0 tailscale up".'
+                ;;
+
             *)
                 echo 'Invalid choice'
                 exit 1
                 ;;
+
         esac
 
         # The lack of quotes around $2 is intentional.
@@ -485,15 +502,3 @@ setup-usbguard:
     if ! rpm-ostree status | grep '●' | grep -Eq 'securecore|iot'; then
         systemctl enable --user --now usbguard-notifier.service
     fi
-
-install-tailscale:
-    #! /bin/run0 /bin/bash
-    curl -Lo /etc/yum.repos.d/tailscale.repo https://pkgs.tailscale.com/stable/fedora/tailscale.repo
-    rpm-ostree refresh-md
-    rpm-ostree install tailscale
-
-uninstall-tailscale:
-    #! /bin/run0 /bin/bash
-    rm /etc/yum.repos.d/tailscale.repo
-    rpm-ostree refresh-md
-    rpm-ostree uninstall tailscale

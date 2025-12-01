@@ -50,11 +50,13 @@ def main() -> int:
             print("Brew is now enabled. Start a new shell to use brew.")
             return 0
         case "off":
-            if os.path.exists(LINUXBREW_DIR):
-                shutil.rmtree(LINUXBREW_DIR, ignore_errors=False)
-            for brew_file in [BREW_ETC_STAMP, BREW_PROFILE_FILE, BREW_PROFILE_COMPLETIONS_FILE]:
-                if os.path.exists(brew_file):
-                    os.remove(brew_file)
+            try: 
+              shutil.rmtree(LINUXBREW_DIR, ignore_errors=False)
+              os.remove(BREW_ETC_STAMP)
+              os.remove(BREW_PROFILE_FILE)
+              os.remove(BREW_PROFILE_COMPLETIONS_FILE)
+            except OSError:
+              pass
             subprocess.run(  # nosec
                 ["/usr/bin/systemctl", "disable", "brew-setup.service"],
                 check=False,

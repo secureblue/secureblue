@@ -27,3 +27,4 @@ scripts:
   - localization.sh
   - addimageinfo.sh
   - installrar.sh
+  - setchronysysconfig.sh

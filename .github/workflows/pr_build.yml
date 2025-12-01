@@ -21,19 +21,23 @@ on:
         required: true
         type: string
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}-${{ inputs.recipe }}
+  cancel-in-progress: true
+
 jobs:
   bluebuild:
     name: PR build
     runs-on: ubuntu-24.04
     permissions:
-      contents: read
+      contents: read # Needed to pull the repo for the build
 
     steps:
       - name: Enable egress auditing
-        uses: step-security/harden-runner@f4a75cfd619ee5ce8d5b864b0d183aff3c69b55a # v2.13.1
+        uses: step-security/harden-runner@95d9a5deda9de15063e7595e9719c11c38c90ae2 # v2.13.2
         with:
           egress-policy: audit
-          
+
       - name: Optimize build times
         shell: bash
         run: |
@@ -41,16 +45,6 @@ jobs:
           sudo dpkg-reconfigure man-db
           sudo rm -f /var/lib/man-db/auto-update
           sudo sed -i 's/^update_initramfs=.*/update_initramfs=no/' /etc/initramfs-tools/update-initramfs.conf
-
-      - name: Free disk space
-        shell: bash
-        run: |
-          sudo rm -rf /usr/share/dotnet || true
-          sudo rm -rf /opt/ghc || true
-          sudo rm -rf /usr/local/.ghcup || true
-          sudo docker image prune --all --force || true
-          sudo swapoff -a || true
-          sudo rm -f /mnt/swapfile || true
 
       - name: Checkout repo
         uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
@@ -62,26 +56,28 @@ jobs:
         env:
           RECIPE: ${{ inputs.recipe }}
         run: |
-          echo "IMAGE_NAME=$(grep '^name:' "./recipes/${RECIPE}" | sed 's/^name: //')" >> "$GITHUB_ENV"
-          echo "IMAGE_MAJOR_VERSION=$(grep '^image-version:' "./recipes/${RECIPE}" | sed 's/^image-version: //')" >> "$GITHUB_ENV"
-          BASE_IMAGE=$(grep '^base-image:' "./recipes/${RECIPE}" | sed 's/^base-image: //')
-          echo "BASE_IMAGE_NAME=$(echo "$BASE_IMAGE" | sed 's/.*\/.*\///')" >> "$GITHUB_ENV"
+          echo "IMAGE_NAME=$(sed -n 's/^name: //p' "./recipes/${RECIPE}")" >> "${GITHUB_ENV}"
+          echo "BASE_IMAGE=$(sed -n 's/^base-image: //p' "./recipes/${RECIPE}")" >> "${GITHUB_ENV}"
+          echo "BASE_IMAGE_VERSION=$(sed -n 's/^image-version: //p' "./recipes/${RECIPE}")" >> "${GITHUB_ENV}"
 
       - name: Verify base image provenance
         shell: bash
         run: |
-          if [[ "$BASE_IMAGE_NAME" != *hardened* ]]; then
+          if [[ "$BASE_IMAGE" != ghcr.io/secureblue/* ]]; then
             echo "Base image isn't secureblue. Skipping."
             exit 0
           fi
 
           go install github.com/slsa-framework/slsa-verifier/v2/cli/slsa-verifier@v2.7.1
           go install github.com/google/go-containerregistry/cmd/crane@v0.20.6
-          DIGEST=$(~/go/bin/crane digest "ghcr.io/secureblue/${BASE_IMAGE_NAME}:latest")
-          ~/go/bin/slsa-verifier verify-image --source-uri github.com/secureblue/secureblue ghcr.io/secureblue/${BASE_IMAGE_NAME}:latest@"${DIGEST}"
+          DIGEST=$(~/go/bin/crane digest "${BASE_IMAGE}:${BASE_IMAGE_VERSION}")
+          ~/go/bin/slsa-verifier verify-image --source-uri 'github.com/secureblue/secureblue' "${BASE_IMAGE}:${BASE_IMAGE_VERSION}@${DIGEST}"
+
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@c7c53464625b32c7a7e944ae62b3e17d2b600130 # v3.7.0
 
       - name: Install cosign
-        uses: sigstore/cosign-installer@d7543c93d881b35a8faa02e8e3605f69b7a1ce62 # v3.10.0
+        uses: sigstore/cosign-installer@faadad0cce49287aee09b3a48701e75088a2c6ad # v4.0.0
         with:
           cosign-release: 'v2.6.0'
 
@@ -92,55 +88,39 @@ jobs:
             echo "Upstream isn't signed. Skipping."
             exit 0
           fi
-          
-          UPSTREAM_CONTAINER="${BASE_IMAGE_NAME}:${IMAGE_MAJOR_VERSION}"
-          if [[ "$IMAGE_NAME" != *nvidia* && "$IMAGE_NAME" != *zfs* ]]; then
-            UPSTREAM_REGISTRY='quay.io/fedora-ostree-desktops'
-            UPSTREAM_PUBKEY='https://gitlab.com/fedora/ostree/ci-test/-/raw/main/quay.io-fedora-ostree-desktops.pub'
-          else
-            UPSTREAM_REGISTRY='ghcr.io/secureblue'
+
+          UPSTREAM_CONTAINER="${BASE_IMAGE}:${BASE_IMAGE_VERSION}"
+          if [[ "$BASE_IMAGE" == ghcr.io/secureblue/* ]]; then
             UPSTREAM_PUBKEY='https://raw.githubusercontent.com/secureblue/secureblue/refs/heads/live/cosign.pub'
+          else
+            UPSTREAM_PUBKEY='https://gitlab.com/fedora/ostree/ci-test/-/raw/main/quay.io-fedora-ostree-desktops.pub'
           fi
-          if ! cosign verify --key "${UPSTREAM_PUBKEY}" "${UPSTREAM_REGISTRY}/${UPSTREAM_CONTAINER}" | jq; then
+          if ! cosign verify --key "${UPSTREAM_PUBKEY}" "${UPSTREAM_CONTAINER}" | jq; then
             echo "NOTICE: Verification failed. Please ensure your public key is correct."
             exit 1
           fi
 
-      - name: Determine Vars
-        id: build_vars
+      - name: Set up test keys
+        id: test_keys
         shell: bash
-        env:
-          RECIPE: ${{ inputs.recipe }}
-        run: |
-          RECIPE_PATH=""
-          if [ -f "./config/${RECIPE}" ]; then
-            RECIPE_PATH="./config/${RECIPE}"
-          else
-            RECIPE_PATH="./recipes/${RECIPE}"
-          fi
-          echo "recipe_path=${RECIPE_PATH}" >> "${GITHUB_OUTPUT}"
-
-      - name: Install BlueBuild
-        shell: bash
-        run: |
-          docker create \
-            --name blue-build-installer \
-            ghcr.io/blue-build/cli:v0.9.24-installer
-          docker cp blue-build-installer:/out/bluebuild /usr/local/bin/bluebuild
-          docker rm blue-build-installer
-          bluebuild --version
-
-      - name: Build Image
-        shell: bash
-        env:
-          RECIPE_PATH: ${{ steps.build_vars.outputs.recipe_path }}
-          RUST_LOG_STYLE: always
-          CLICOLOR_FORCE: '1'
-          GH_PR_EVENT_NUMBER: ${{ github.event.number }}
         run: |
           cp ./.github/workflows/public_key.der.test ./files/system/etc/pki/akmods/certs/akmods-secureblue.der
-          KERNEL_PRIVKEY=$(< ./.github/workflows/private_key.priv.test)
-          export KERNEL_PRIVKEY
+          {
+            echo 'kernel_privkey<<EOF'
+            cat ./.github/workflows/private_key.priv.test
+            echo 'EOF'
+          } >> "${GITHUB_OUTPUT}"
 
-          BUILD_OPTS="--build-driver podman --squash"
-          bluebuild build -v ${BUILD_OPTS} "${RECIPE_PATH}"
+      - name: Build secureblue
+        uses: blue-build/github-action@5c6916e55b22914100bedc50fbbd001ed95c971a # v1.10.1
+        env:
+          KERNEL_PRIVKEY: ${{ steps.test_keys.outputs.kernel_privkey }}
+        with:
+          cli_version: v0.9.27
+          recipe: ${{ inputs.recipe }}
+          push: false
+          pr_event_number: ${{ github.event.number }}
+          maximize_build_space: true
+          squash: true
+          skip_checkout: true
+          verify_install: true

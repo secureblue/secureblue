@@ -1,0 +1,7 @@
+(typeattribute file_manager_type)
+(typeattributeset file_manager_type (nautilus_t thunar_t))
+
+(typeattribute file_manager_exec_type)
+(typeattributeset file_manager_exec_type (nautilus_exec_t thunar_exec_t))
+
+(allow file_manager_type self (user_namespace (create)))

@@ -4,6 +4,7 @@ Documentation=man:flatpak(1)
 Wants=network-online.target
 After=network-online.target
 ConditionUser=!@system
+ConditionPathIsDirectory=/var/home/%u
 StartLimitIntervalSec=24h
 StartLimitBurst=3
 

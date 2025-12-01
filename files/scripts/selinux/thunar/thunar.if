@@ -1,0 +1,50 @@
+## <summary>thunar file manager</summary>
+
+# SPDX-FileCopyrightText 2025 The Secureblue Authors
+#
+# SPDX-License-Identifier: Apache-2.0 OR MIT
+
+
+########################################
+## <summary>
+##	Execute thunar in the thunar domain.
+## </summary>
+## <param name="domain">
+## <summary>
+##	Domain allowed to transition.
+## </summary>
+## </param>
+#
+interface(`thunar_domtrans',`
+	gen_require(`
+		type thunar_t, thunar_exec_t;
+	')
+
+	domtrans_pattern($1, thunar_exec_t, thunar_t)
+')
+
+
+########################################
+## <summary>
+##	Execute thunar in the thunar domain.
+## </summary>
+## <param name="domain">
+## <summary>
+##	Domain allowed to transition.
+## </summary>
+## </param>
+## <param name="role">
+##	<summary>
+##	Role allowed access.
+##	</summary>
+## </param>
+#
+interface(`thunar_run',`
+	gen_require(`
+		type thunar_t;
+        attribute_role thunar_roles;
+	')
+
+	thunar_domtrans($1)
+	roleattribute $2 thunar_roles;
+')

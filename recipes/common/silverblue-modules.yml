@@ -11,42 +11,49 @@
 # See the License for the specific language governing permissions and limitations under the License.
 
 modules:
-    - type: rpm-ostree
+    - type: dnf
+      source: ghcr.io/blue-build/modules@sha256:50747361c625c0a5afac314f174243ca7d14373dbbdd20e2261c1f9384a632de
       install:
-        - firewall-config
-        - gnome-disk-utility
-        - adw-gtk3-theme
-        - gnome-epub-thumbnailer
-        - gnome-tweaks
+        install-weak-deps: false
+        packages:
+          - firewall-config
+          - gnome-disk-utility
+          - adw-gtk3-theme
+          - gnome-tweaks
       remove:
-        - gnome-shell-extension-background-logo
-        - gnome-tour
-        - yelp
-        - gnome-user-share
-        - mod_lua
-        - httpd
-        - httpd-core
-        - mod_http2
-        - mod_dnssd
-        - gnome-remote-desktop
-        - libvncserver
-        - fedora-chromium-config-gnome
-        - gnome-software-rpm-ostree
-        - totem-video-thumbnailer
-        - fedora-flathub-remote
-        - fedora-third-party
-        - fedora-workstation-repositories
+        packages:
+          - gnome-shell-extension-background-logo
+          - gnome-tour
+          - yelp
+          - gnome-user-share
+          - mod_lua
+          - httpd
+          - httpd-core
+          - mod_http2
+          - mod_dnssd
+          - gnome-remote-desktop
+          - libvncserver
+          - fedora-chromium-config-gnome
+          - gnome-software-rpm-ostree
+          - totem-video-thumbnailer
+          - fedora-flathub-remote
+          - fedora-third-party
+          - fedora-workstation-repositories
     - type: gschema-overrides
+      source: ghcr.io/blue-build/modules@sha256:50747361c625c0a5afac314f174243ca7d14373dbbdd20e2261c1f9384a632de
       include:
         - zz1-secureblue.gschema.override
     - type: script
+      source: ghcr.io/blue-build/modules@sha256:50747361c625c0a5afac314f174243ca7d14373dbbdd20e2261c1f9384a632de
       scripts:
         - removedkmshelper.sh
     - type: files
+      source: ghcr.io/blue-build/modules@sha256:50747361c625c0a5afac314f174243ca7d14373dbbdd20e2261c1f9384a632de
       files:
         - source: system/silverblue
           destination: /
     - type: justfiles
+      source: ghcr.io/blue-build/modules@sha256:50747361c625c0a5afac314f174243ca7d14373dbbdd20e2261c1f9384a632de
       validate: true
       include:
         - silverblue.just

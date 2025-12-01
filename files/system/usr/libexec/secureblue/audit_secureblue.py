@@ -21,6 +21,7 @@ Auditing script for secureblue. See https://secureblue.dev/ for more info.
 import argparse
 import asyncio
 import filecmp
+import getpass
 import glob
 import json
 import os
@@ -34,7 +35,16 @@ import sys
 import traceback
 from typing import Final
 
+import kargs_hardening_common
 from audit_flatpak import check_flatpak_permissions, parse_flatpak_permissions
+from audit_utils import (
+    Image,
+    get_flatpak_permissions,
+    get_legend,
+    get_width,
+    validate_sysctl,
+    warn_if_root,
+)
 from auditor import (
     Report,
     Status,
@@ -46,17 +56,11 @@ from auditor import (
     global_audit,
 )
 from utils import (
-    Image,
     command_stdout,
     command_succeeds,
-    get_flatpak_permissions,
-    get_legend,
-    get_width,
     is_using_vpn,
     parse_config,
     print_err,
-    validate_sysctl,
-    warn_if_root,
 )
 
 _: Final = gettext_marker()
@@ -76,57 +80,23 @@ def audit_kargs():
     rec = None
 
     kargs_current = frozenset(command_stdout("rpm-ostree", "kargs").split())
-    kargs_expected = (
-        "init_on_alloc=1",
-        "init_on_free=1",
-        "intel_iommu=on",
-        "iommu.passthrough=0",
-        "iommu.strict=1",
-        "iommu=force",
-        "kvm-intel.vmentry_l1d_flush=always",
-        "kvm.mitigate_smt_rsb=1",
-        "l1d_flush=on",
-        "l1tf=full,force",
-        "lockdown=confidentiality",
-        "loglevel=0",
-        "mitigations=auto,nosmt",
-        "module.sig_enforce=1",
-        "page_alloc.shuffle=1",
-        "pti=on",
-        "random.trust_bootloader=off",
-        "random.trust_cpu=off",
-        "randomize_kstack_offset=on",
-        "rd.emergency=halt",
-        "rd.shell=0",
-        "slab_nomerge",
-        "spec_store_bypass_disable=on",
-        "spectre_v2=on",
-        "ssbd=force-on",
-        "vdso32=0",
-        "vsyscall=none",
-    )
+    kargs_expected = kargs_hardening_common.DEFAULT_KARGS
     for karg in kargs_expected:
         if karg not in kargs_current:
             status = status.downgrade_to(FAIL)
             warnings.append(_("Missing kernel argument: {0}").format(karg))
 
-    karg_32bit = "ia32_emulation=0"
+    karg_32bit = kargs_hardening_common.DISABLE_32_BIT
     if karg_32bit not in kargs_current:
         status = status.downgrade_to(WARN)
         warnings.append(_("Missing kernel argument: {0} (32-bit support)").format(karg_32bit))
 
-    karg_nosmt = "nosmt=force"
+    karg_nosmt = kargs_hardening_common.FORCE_NOSMT
     if karg_nosmt not in kargs_current:
         status = status.downgrade_to(WARN)
         warnings.append(_("Missing kernel argument: {0} (force-disable SMT)").format(karg_nosmt))
 
-    kargs_expected_unstable = (
-        "amd_iommu=force_isolation",
-        "debugfs=off",
-        "efi=disable_early_pci_dma",
-        "gather_data_sampling=force",
-        "oops=panic",
-    )
+    kargs_expected_unstable = kargs_hardening_common.UNSTABLE_KARGS
     for karg in kargs_expected_unstable:
         if karg not in kargs_current:
             status = status.downgrade_to(WARN)
@@ -183,32 +153,32 @@ def audit_signed_image(state):
 
 @audit
 def audit_modprobe(state):
-    """Check that the kernel module blacklist has not been overridden."""
-    blacklist_file = "/etc/modprobe.d/blacklist.conf"
-    with open(f"/usr{blacklist_file}", encoding="utf-8") as f:
-        conf = f.readlines()
-    blacklisted_modules = []
-    for line in conf:
-        words = line.strip().split()
-        if words and words[0] in ["blacklist", "install"]:
-            blacklisted_modules.append(words[1])
+    """Check for modprobe overrides."""
+    modprobe_dir = "/usr/lib/modprobe.d"
+    modprobe_files = ("secureblue.conf", "secureblue-framebuffer.conf")
+    blocked_modules = []
+    for file in modprobe_files:
+        with open(f"{modprobe_dir}/{file}", encoding="utf-8") as f:
+            conf = f.readlines()
+        for line in conf:
+            words = line.strip().split(maxsplit=2)
+            if words and words[0] in ("blacklist", "install"):
+                blocked_modules.append(words[1])
     unwanted_modules = []
     with open("/proc/modules", encoding="utf-8") as f:
         for line in f:
-            mod = line.split()[0]
-            if mod in blacklisted_modules:
+            mod = line.split(maxsplit=1)[0]
+            if mod in blocked_modules:
                 unwanted_modules.append(mod)
     unwanted_modules.sort()
     status = PASS
     warnings = []
-    with open(blacklist_file, encoding="utf-8") as f:
-        if f.readlines() != conf:
-            status = WARN
-            warnings.append(_("The file {0} has been modified.").format(blacklist_file))
     for mod in unwanted_modules:
         status = FAIL
         warnings.append(
-            _("The module {0} is in {1}, but it is loaded.").format(mod, blacklist_file)
+            _("The module {0} is blocked in {1}, but has been loaded anyway.").format(
+                mod, modprobe_dir
+            )
         )
     state["bluetooth_loaded"] = "bluetooth" in unwanted_modules
     yield Report(_("Ensuring no modprobe overrides"), status, warnings=warnings)
@@ -379,7 +349,7 @@ def audit_dns(state):
     status = PASS
 
     # INFO
-    if not trivalent_doh and state["image"] != Image.COREOS:
+    if not trivalent_doh and state["image"].is_desktop():
         status = INFO
         warnings.append(_("DNS over HTTPS in Trivalent is disabled."))
         recs.append(
@@ -634,9 +604,11 @@ def audit_flatpak_auto_update():
 
 
 @audit
-def audit_wheel():
-    """Ensure the current user is not in the wheel group."""
-    if "wheel" in command_stdout("groups").split():
+def audit_groups():
+    """Check whether user is in known groups with security implications."""
+    user_groups = frozenset(command_stdout("groups").split())
+
+    if "wheel" in user_groups:
         rec_lines = (
             _("The current user is in the wheel group."),
             _("To set up a separate wheel account, follow the instructions here:"),
@@ -648,6 +620,57 @@ def audit_wheel():
         rec = None
         status = PASS
     yield Report(_("Ensuring user is not a member of the wheel group"), status, recs=rec)
+
+    username = getpass.getuser()
+    known_groups = (username, "usbguard", "wheel")
+    dangerous_groups = ("docker", "libvirt")
+    status = PASS
+    warnings = []
+    recs = []
+    for group in user_groups:
+        remove_group_cmd = f"$ run0 sh -c 'usermod -rG {group} {username}'"
+        if group in known_groups:
+            continue
+        elif group in dangerous_groups:
+            status = status.downgrade_to(FAIL)
+            warning = _("The current user is in the group '{0}'.").format(group)
+            warnings.append(warning)
+            rec_lines = (
+                warning,
+                _("This allows privilege escalation to root."),
+                _("To remove the user from this group, run:"),
+                remove_group_cmd,
+            )
+            recs.append("\n".join(rec_lines))
+        elif group == "systemd-journal":
+            status = status.downgrade_to(WARN)
+            warning = _("The current user is in the group '{0}'.").format(group)
+            warnings.append(warning)
+            rec_lines = (
+                warning,
+                _("This group allows the user to read system and kernel logs."),
+                _("This might make it easier to exploit kernel vulnerabilities."),
+                _("To remove the user from this group, run:"),
+                remove_group_cmd,
+            )
+            recs.append("\n".join(rec_lines))
+        else:
+            status = status.downgrade_to(WARN)
+            warning = _("The current user is in the unrecognized group '{0}'.").format(group)
+            warnings.append(warning)
+            rec_lines = (
+                warning,
+                _("Group memberships can grant additional privileges and may pose security risks."),
+                _("You may want to consider removing the user from this group:"),
+                remove_group_cmd,
+            )
+            recs.append("\n".join(rec_lines))
+    yield Report(
+        _("Checking if user is in groups with security implications"),
+        status,
+        warnings=warnings,
+        recs=recs,
+    )
 
 
 @audit
@@ -825,7 +848,8 @@ def audit_hardened_malloc():
     rec = None
     ld_preload = os.environ.get("LD_PRELOAD")
     preloads = [] if ld_preload is None else ld_preload.split()
-    if preloads == ["libhardened_malloc.so"]:
+    expected_preloads = ["libhardened_malloc.so", "libno_rlimit_as.so"]
+    if preloads == expected_preloads:
         status = PASS
         warning = None
     elif "libhardened_malloc.so" in preloads:

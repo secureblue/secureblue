@@ -16,9 +16,14 @@ description: "Cosmic, hardened"
 
 base-image: quay.io/fedora-ostree-desktops/cosmic-atomic
 
-image-version: 42
+image-version: 43
 
+cosign-version: none
 nushell-version: none
+
+platforms:
+  - linux/amd64
+  - linux/arm64
 
 modules:
   - from-file: common/common-modules.yml

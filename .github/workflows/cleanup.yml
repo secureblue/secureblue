@@ -22,10 +22,11 @@ concurrency:
 
 jobs:
   delete-older-than-90:
+    name: Delete images older than 90 days
     runs-on: ubuntu-24.04
-    if: github.triggering_actor == 'royaloughtness' || ${{ github.event_name == 'schedule' }}
+    if: github.triggering_actor == 'royaloughtness' || github.event_name == 'schedule'
     permissions:
-      packages: write
+      packages: write # delete old images
     steps:
       - name: Delete Images Older Than 90 Days
         uses: dataaxiom/ghcr-cleanup-action@cd0cdb900b5dbf3a6f2cc869f0dbb0b8211f50c4 # v1.0.16

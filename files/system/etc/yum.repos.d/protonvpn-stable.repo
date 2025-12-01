@@ -8,4 +8,3 @@ enabled = 0
 gpgcheck = 1
 repo_gpgcheck = 1
 gpgkey = https://repo.protonvpn.com/fedora-$releasever-stable/public_key.asc
-includepkgs = proton-vpn-gnome-desktop,proton-vpn-gtk-app,protonvpn-stable-release,python3-proton-core,python3-proton-keyring-linux,python3-proton-vpn-api-core,python3-proton-vpn-local-agent,python3-proton-vpn-network-manager

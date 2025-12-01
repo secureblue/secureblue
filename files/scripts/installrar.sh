@@ -1,3 +1,5 @@
+#!/usr/bin/env bash
+
 # Copyright 2025 The Secureblue Authors
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -10,6 +12,9 @@
 # distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and limitations under the License.
 
-type: script
-scripts:
-  - addchromiumdesktopfile.sh
+# rar is only provided for x86_64
+if [[ "$OS_ARCH" == 'x86_64' ]]; then
+    dnf install --setopt=install_weak_deps=False -y rar
+else
+    dnf install --setopt=install_weak_deps=False -y unrar
+fi

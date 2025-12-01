@@ -11,30 +11,66 @@
 # See the License for the specific language governing permissions and limitations under the License.
 
 modules:
-    - type: script
-      scripts:
-        - installproprietarypackages.sh
-    - type: rpm-ostree
+    - type: dnf
+      source: ghcr.io/blue-build/modules@sha256:50747361c625c0a5afac314f174243ca7d14373dbbdd20e2261c1f9384a632de
       install:
-      - heif-pixbuf-loader
-      - ffmpeg
-      - ffmpeg-libs
-      - ffmpegthumbnailer
-      - pipewire-libs-extra
-      - libfdk-aac
-      - gstreamer1-plugins-ugly
-      remove:
-      - gstreamer1-plugins-ugly-free
-      - fdk-aac-free
-      - ffmpeg-free
-      - libavcodec-free  
-      - libavdevice-free
-      - libavfilter-free
-      - libavformat-free  
-      - libavutil-free  
-      - libpostproc-free  
-      - libswresample-free  
-      - libswscale-free  
+        install-weak-deps: false
+        packages:
+          - libopenjph
+          - heif-pixbuf-loader
+          - ffmpegthumbnailer
+          - pipewire-libs-extra
+
+    - type: dnf
+      source: ghcr.io/blue-build/modules@sha256:50747361c625c0a5afac314f174243ca7d14373dbbdd20e2261c1f9384a632de
+      replace:  
+        - from-repo: fedora-multimedia
+          skip-unavailable: true
+          packages:
+            - libheif
+            - libva
+            - mesa-dri-drivers
+            - gstreamer1-plugin-libav
+            - mesa-filesystem
+            - mesa-libEGL
+            - mesa-libGL
+            - mesa-libgbm
+            - mesa-va-drivers
+            - mesa-vulkan-drivers
+            - libva-intel-media-driver
+            - intel-gmmlib
+            - intel-mediasdk
+
+    - type: dnf
+      source: ghcr.io/blue-build/modules@sha256:50747361c625c0a5afac314f174243ca7d14373dbbdd20e2261c1f9384a632de
+      replace:  
+        - from-repo: fedora-multimedia
+          skip-unavailable: true
+          packages:
+            - old: ffmpeg-free
+              new: ffmpeg
+            - old: fdk-aac-free
+              new: libfdk-aac
+            - old: gstreamer1-plugins-ugly-free
+              new: gstreamer1-plugins-ugly
+            - old: libavcodec-free
+              new: libavcodec
+            - old: libavdevice-free
+              new: libavdevice
+            - old: libavfilter-free
+              new: libavfilter
+            - old: libavformat-free
+              new: libavformat
+            - old: libavutil-free
+              new: libavutil
+            - old: libpostproc-free
+              new: libpostproc
+            - old: libswresample-free
+              new: libswresample
+            - old: libswscale-free
+              new: libswscale
+
     - type: script
+      source: ghcr.io/blue-build/modules@sha256:50747361c625c0a5afac314f174243ca7d14373dbbdd20e2261c1f9384a632de
       scripts:
         - removeunusedrepos.sh

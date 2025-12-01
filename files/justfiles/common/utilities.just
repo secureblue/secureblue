@@ -184,13 +184,17 @@ check-unconfined-userns-state:
 # Install the official docker packages
 install-docker:
     #! /bin/run0 /bin/bash
-    curl -Lo /etc/yum.repos.d/docker-ce.repo https://download.docker.com/linux/fedora/docker-ce.repo
+    set -euo pipefail
+    tempfile=$(mktemp)
+    curl -fLo "$tempfile" https://download.docker.com/linux/fedora/docker-ce.repo
+    mv "$tempfile" /etc/yum.repos.d/docker-ce.repo
     rpm-ostree refresh-md
     rpm-ostree install docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
 
 # Uninstall the official docker packages
 uninstall-docker:
     #! /bin/run0 /bin/bash
+    set -euo pipefail
     rm /etc/yum.repos.d/docker-ce.repo
     rpm-ostree refresh-md
     rpm-ostree uninstall docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
@@ -255,7 +259,7 @@ label-external-drives:
 install-libvirt-packages:
     #!/usr/bin/bash
     set -euo pipefail
-    rpm-ostree install -y libvirt libvirt-nss qemu qemu-char-spice qemu-device-display-virtio-gpu qemu-device-display-virtio-vga qemu-device-usb-redirect qemu-img qemu-system-x86-core qemu-user-binfmt qemu-user-static virt-install virt-manager virt-v2v virt-viewer
+    rpm-ostree install -y libvirt libvirt-nss qemu qemu-char-spice qemu-device-display-virtio-gpu qemu-device-display-virtio-vga qemu-device-usb-redirect qemu-img qemu-system-x86-core qemu-user-binfmt qemu-user-static virt-install virt-manager virt-viewer
     echo "Check out the Red Hat documentation to see which services to enable for your usecase:"
     echo "https://docs.redhat.com/en/documentation/red_hat_enterprise_linux/9/html/configuring_and_managing_virtualization/optimizing-virtual-machine-performance-in-rhel_configuring-and-managing-virtualization#proc_enabling-modular-libvirt-daemons_assembly_optimizing-libvirt-daemons"
 
@@ -485,19 +489,3 @@ setup-usbguard:
     if ! rpm-ostree status | grep '●' | grep -Eq 'securecore|iot'; then
         systemctl enable --user --now usbguard-notifier.service
     fi
-
-# Create the admin user and remove wheel from the normal user
-create-admin:
-    #!/usr/bin/run0 /usr/bin/bash
-    set -euo pipefail
-    if id "admin" &>/dev/null; then
-        echo "Error: You already have a user account named admin."
-        echo "This is normal if you have already run this script."
-        echo "If you named your user account admin during installation, you will not be able to use this script."
-        exit 1
-    fi
-    useradd -G wheel admin
-    echo "Please set a new password for the admin user."
-    passwd admin
-    gpasswd -d "${SUDO_USER}" wheel
-    echo "New admin user has been created, please reboot to apply changes."

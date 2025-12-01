@@ -12,6 +12,8 @@
 # distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and limitations under the License.
 
-set -oue pipefail
-
-curl -L https://pkgs.tailscale.com/stable/fedora/tailscale.repo -o /etc/yum.repos.d/tailscale.repo
+if [[ "$OS_ARCH" == 'x86_64' ]]; then
+    echo "OPTIONS=-F1 -r" > /etc/sysconfig/chronyd
+else
+    echo "OPTIONS=-F2 -r" > /etc/sysconfig/chronyd
+fi

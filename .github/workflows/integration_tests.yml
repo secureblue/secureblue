@@ -17,15 +17,20 @@ on:
     - cron: "00 7 * * *" # run at 7:00 UTC every day
 
   workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref || github.run_id }}
+  cancel-in-progress: true
+
 jobs:
   integration-tests:
     name: Run integration tests
-    if: github.triggering_actor == 'royaloughtness' || ${{ github.event_name == 'schedule' }}
+    if: github.triggering_actor == 'royaloughtness' || github.event_name == 'schedule'
     runs-on: ubuntu-24.04
     permissions:
-      contents: read
-      packages: write
-      id-token: write
+      contents: read # read repo contents
+      packages: write # push integration test image
+      id-token: write # generate token for signing
     strategy:
       fail-fast: false
 
@@ -36,7 +41,7 @@ jobs:
           persist-credentials: false
 
       - name: Run integration tests
-        uses: secureblue/bootc-integration-test-action@0171b0c85dbfa8af4c4d724cd5300ad8f7cd385b # v0.0.8
+        uses: secureblue/bootc-integration-test-action@56f1a17e4ab15b0feaed849d036686e3ec7adc4b # v0.0.9
         with:
           registry: ghcr.io/secureblue
           image: silverblue-main-hardened

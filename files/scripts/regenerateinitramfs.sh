@@ -24,6 +24,11 @@ kmsgloglvl=0
 fileloglvl=0
 EOF
 
+excluded_preload_file='/usr/lib/systemd/system.conf.d/40-hardened_malloc.conf'
+tmp_preload_file='/tmp/40-hardened_malloc.conf'
+
+mv "${excluded_preload_file}" "${tmp_preload_file}"
+
 /usr/bin/dracut \
     --kver "${QUALIFIED_KERNEL}" \
     --force \
@@ -31,6 +36,8 @@ EOF
     --no-hostonly \
     --reproducible \
     "/lib/modules/${QUALIFIED_KERNEL}/initramfs.img"
+
+mv "${tmp_preload_file}" "${excluded_preload_file}"
 
 rm -- "${temp_conf_file}"
 

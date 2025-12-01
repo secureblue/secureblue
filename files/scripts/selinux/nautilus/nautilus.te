@@ -19,16 +19,15 @@ application_domain(nautilus_t, nautilus_exec_t)
 
 role nautilus_roles types nautilus_t;
 
-allow nautilus_t self:user_namespace create;
 unconfined_domain_noaudit(nautilus_t)
 
 optional_policy(`
 	gen_require(`
 		type unconfined_t;
-		type trivalent_t;
+		attribute trivalent_domain;
 		role unconfined_r;
 	')
 
 	nautilus_run(unconfined_t, unconfined_r)
-	nautilus_run(trivalent_t, unconfined_r)
+	nautilus_run(trivalent_domain, unconfined_r)
 ')

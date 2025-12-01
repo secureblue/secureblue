@@ -27,18 +27,18 @@ jobs:
     runs-on: ubuntu-24.04
     if: github.triggering_actor == 'royaloughtness'
     strategy:
-      fail-fast: false      
+      fail-fast: false
       matrix:
         image:
           - silverblue-main-hardened
-          - silverblue-nvidia-hardened 
-          - silverblue-nvidia-open-hardened 
-          - kinoite-main-hardened 
-          - kinoite-nvidia-hardened 
-          - kinoite-nvidia-open-hardened 
-          - sericea-main-hardened 
-          - sericea-nvidia-hardened 
-          - sericea-nvidia-open-hardened 
+          - silverblue-nvidia-hardened
+          - silverblue-nvidia-open-hardened
+          - kinoite-main-hardened
+          - kinoite-nvidia-hardened
+          - kinoite-nvidia-open-hardened
+          - sericea-main-hardened
+          - sericea-nvidia-hardened
+          - sericea-nvidia-open-hardened
     permissions:
       contents: read # read repo contents
       packages: read # pull images for iso generation
@@ -65,7 +65,7 @@ jobs:
         env:
           WORKSPACE: ${{ github.workspace }}
         run: |
-          curl -Lo "${WORKSPACE}/secureblue.repo" "https://copr.fedorainfracloud.org/coprs/secureblue/branding/repo/fedora-43/secureblue-branding-fedora-43.repo"
+          curl -fLsS --retry 5 -o "${WORKSPACE}/secureblue.repo" "https://copr.fedorainfracloud.org/coprs/secureblue/branding/repo/fedora-43/secureblue-branding-fedora-43.repo"
 
       - name: Build ISO
         uses: jasonn3/build-container-installer@c9ef3de33236e66781ec37bd0485e8009eaefe24 # v1.4.0
@@ -129,7 +129,7 @@ jobs:
           echo
 
           # validate signature
-          curl -O "https://repo.secureblue.dev/secureblue.gpg"
+          curl -fLsS --retry 5 -O "https://repo.secureblue.dev/secureblue.gpg"
           gpg --no-default-keyring --keyring ./secureblue-keyring.gpg --import secureblue.gpg
 
           if ! gpgv --keyring ./secureblue-keyring.gpg "${CHECKSUM_NAME}"; then
@@ -169,5 +169,4 @@ jobs:
           OUTPUT_DIRECTORY: ${{ steps.rename.outputs.output-directory }}
           SOURCE_DIR: .
         run: |
-          rclone copy "${OUTPUT_DIRECTORY}" R2:isos 
-      
+          rclone copy "${OUTPUT_DIRECTORY}" R2:isos

@@ -17,7 +17,7 @@ set -oue pipefail
 
 install_repo() {
   versioned_repo="${1//%OS_VERSION%/43}"
-  curl -L -o "/etc/yum.repos.d/$(basename "$versioned_repo")" "$versioned_repo"
+  curl -fLsS --retry 5 -o "/etc/yum.repos.d/${versioned_repo##*/}" "$versioned_repo"
 }
 
 common_repos=(

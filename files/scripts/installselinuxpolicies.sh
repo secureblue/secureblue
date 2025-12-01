@@ -14,8 +14,6 @@
 
 set -oue pipefail
 
-cil_policy_modules=(./selinux/*.cil)
-
-semodule -v -i "${cil_policy_modules[@]}"
+semodule -v -i ./selinux/*.cil
 
 restorecon -FRv /usr

@@ -28,3 +28,4 @@ scripts:
   - addimageinfo.sh
   - installrar.sh
   - setchronysysconfig.sh
+  - installselinuxpolicies.sh

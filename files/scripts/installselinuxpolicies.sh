@@ -14,6 +14,7 @@
 
 set -oue pipefail
 
+semodule -B
 semodule -v -i ./selinux/*.cil
 
 restorecon -FRv /usr

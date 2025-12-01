@@ -18,6 +18,7 @@
 The sandboxed brew disable function
 """
 
+import contextlib
 import os
 import shutil
 import subprocess  # nosec
@@ -50,22 +51,11 @@ def main() -> int:
             print("Brew is now enabled. Start a new shell to use brew.")
             return 0
         case "off":
-            try:
+            with contextlib.suppress(OSError):
                 shutil.rmtree(LINUXBREW_DIR, ignore_errors=False)
-            except OSError:
-                pass
-            try:
                 os.remove(BREW_ETC_STAMP)
-            except OSError:
-                pass
-            try:
                 os.remove(BREW_PROFILE_FILE)
-            except OSError:
-                pass
-            try:
                 os.remove(BREW_PROFILE_COMPLETIONS_FILE)
-            except OSError:
-                pass
             subprocess.run(  # nosec
                 ["/usr/bin/systemctl", "disable", "brew-setup.service"],
                 check=False,

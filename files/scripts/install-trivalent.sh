@@ -18,7 +18,7 @@ ARCH="$(uname -m)"
 
 dnf5 install python3-dnf -y
 
-curl -Lo /etc/yum.repos.d/repo.secureblue.dev.secureblue.repo https://repo.secureblue.dev/secureblue.repo
+curl -fLsS --retry 5 -o /etc/yum.repos.d/repo.secureblue.dev.secureblue.repo https://repo.secureblue.dev/secureblue.repo
 
 # dnf4 must be used here due to https://github.com/rpm-software-management/dnf5/issues/1985
 dnf4 install --repoid=secureblue --downloadonly --best --downloaddir=. -y trivalent

@@ -125,4 +125,3 @@ jobs:
           squash: true
           skip_checkout: true
           verify_install: true
-          build_opts: " -vv "

@@ -22,7 +22,7 @@ on:
     paths:
       - '**nvidia**'
       - '!**.md'
-      - '!.github/**'
+      - '!.github/**' 
 
 # Cancels running workflows if a new workflow run for
 # the same workflow is started

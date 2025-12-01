@@ -20,7 +20,7 @@ if [[ "$IMAGE_NAME" != *"securecore"* && "$IMAGE_NAME" != *"iot"* ]]; then
     nvidia_packages_list+=('libnvidia-fbc' 'libva-nvidia-driver' 'nvidia-driver' 'nvidia-modprobe' 'nvidia-persistenced' 'nvidia-settings')
 fi
 
-curl -L https://negativo17.org/repos/fedora-nvidia.repo -o /etc/yum.repos.d/negativo17-fedora-nvidia.repo
+curl -fLsS --retry 5 https://negativo17.org/repos/fedora-nvidia.repo -o /etc/yum.repos.d/negativo17-fedora-nvidia.repo
 
 
 sed -i 's/^enabled=0.*/enabled=1\npriority=90/' /etc/yum.repos.d/negativo17-fedora-nvidia.repo
@@ -38,7 +38,7 @@ if [[ "$kmod_version" != "$negativo_version" ]]; then
     exit 1
 fi
 
-curl -L https://raw.githubusercontent.com/NVIDIA/dgx-selinux/master/bin/RHEL9/nvidia-container.pp \
+curl -fLsS --retry 5 https://raw.githubusercontent.com/NVIDIA/dgx-selinux/master/bin/RHEL9/nvidia-container.pp \
     -o nvidia-container.pp
 semodule -i nvidia-container.pp
 

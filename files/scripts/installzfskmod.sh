@@ -18,8 +18,8 @@ set -oue pipefail
 KERNEL_VERSION="$(rpm -q "kernel" --queryformat '%{VERSION}-%{RELEASE}.%{ARCH}')"
 ZFS_MINOR_VERSION="2.4"
 
-curl "https://api.github.com/repos/openzfs/zfs/releases" -o data.json
-# TODO add back .prerelease==false when 2.4 is out 
+curl -fLsS --retry 5 -o data.json "https://api.github.com/repos/openzfs/zfs/releases"
+# TODO add back .prerelease==false when 2.4 is out
 ZFS_VERSION=$(jq -r --arg ZMV "zfs-${ZFS_MINOR_VERSION}" '[ .[] | select(.draft==false) | select(.tag_name | startswith($ZMV))][0].tag_name' data.json|cut -f2- -d-)
 echo "ZFS_VERSION==$ZFS_VERSION"
 
@@ -29,9 +29,10 @@ dnf install -y --setopt=install_weak_deps=False autoconf automake gcc pv akmods 
 
 ### BUILD zfs
 echo "getting zfs-${ZFS_VERSION}.tar.gz"
-curl -L -O "https://github.com/openzfs/zfs/releases/download/zfs-${ZFS_VERSION}/zfs-${ZFS_VERSION}.tar.gz"
-curl -L -O "https://github.com/openzfs/zfs/releases/download/zfs-${ZFS_VERSION}/zfs-${ZFS_VERSION}.tar.gz.asc"
-curl -L -O "https://github.com/openzfs/zfs/releases/download/zfs-${ZFS_VERSION}/zfs-${ZFS_VERSION}.sha256.asc"
+curl -fLsS --retry 5 \
+    -O "https://github.com/openzfs/zfs/releases/download/zfs-${ZFS_VERSION}/zfs-${ZFS_VERSION}.tar.gz" \
+    -O "https://github.com/openzfs/zfs/releases/download/zfs-${ZFS_VERSION}/zfs-${ZFS_VERSION}.tar.gz.asc" \
+    -O "https://github.com/openzfs/zfs/releases/download/zfs-${ZFS_VERSION}/zfs-${ZFS_VERSION}.sha256.asc"
 
 echo "Import key"
 # https://openzfs.github.io/openzfs-docs/Project%20and%20Community/Signing%20Keys.html
@@ -90,7 +91,7 @@ depmod -a -v "${KERNEL_VERSION}"
 
 rm -f /etc/dnf/protected.d/sudo.conf
 
-dnf remove -y sudo autoconf automake mock 
+dnf remove -y sudo autoconf automake mock
 
 systemctl disable akmods-keygen@akmods-keygen.service
 systemctl mask akmods-keygen@akmods-keygen.service

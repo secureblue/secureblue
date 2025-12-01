@@ -83,7 +83,7 @@ msgstr "Garantindo que a imagem em uso esteja assinada"
 #: files/system/usr/libexec/secureblue/audit_secureblue.py:179
 #, fuzzy, python-brace-format
 msgid "The module {0} is blocked in {1}, but has been loaded anyway."
-msgstr "O módulo {0} está em {1}, mas está carregado."
+msgstr "O módulo {0} está bloqueado em {1}, mas foi carregado mesmo assim."
 
 #: files/system/usr/libexec/secureblue/audit_secureblue.py:184
 msgid "Ensuring no modprobe overrides"

@@ -26,6 +26,7 @@ modules:
       replace:  
         - from-repo: fedora-multimedia
           skip-unavailable: true
+          install-weak-deps: false
           packages:
             - libheif
             - libva
@@ -46,6 +47,7 @@ modules:
       replace:  
         - from-repo: fedora-multimedia
           skip-unavailable: true
+          install-weak-deps: false
           packages:
             - old: ffmpeg-free
               new: ffmpeg
@@ -55,20 +57,6 @@ modules:
               new: gstreamer1-plugins-ugly
             - old: libavcodec-free
               new: libavcodec
-            - old: libavdevice-free
-              new: libavdevice
-            - old: libavfilter-free
-              new: libavfilter
-            - old: libavformat-free
-              new: libavformat
-            - old: libavutil-free
-              new: libavutil
-            - old: libpostproc-free
-              new: libpostproc
-            - old: libswresample-free
-              new: libswresample
-            - old: libswscale-free
-              new: libswscale
 
     - type: script
       source: ghcr.io/blue-build/modules@sha256:50747361c625c0a5afac314f174243ca7d14373dbbdd20e2261c1f9384a632de

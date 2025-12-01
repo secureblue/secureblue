@@ -16,7 +16,7 @@
 set -oue pipefail
 
 KERNEL_VERSION="$(rpm -q "kernel" --queryformat '%{VERSION}-%{RELEASE}.%{ARCH}')"
-ZFS_MINOR_VERSION="2.4"
+ZFS_MINOR_VERSION="2.4" 
 
 curl -fLsS --retry 5 -o data.json "https://api.github.com/repos/openzfs/zfs/releases"
 # TODO add back .prerelease==false when 2.4 is out

@@ -33,6 +33,7 @@ modules:
           - gettext
           - rsync
           - steam-devices
+          - policycoreutils-devel
 
           # signing deps
           - sbsigntools

@@ -41,7 +41,7 @@ install:
 
     # For use in unprivileged ujust scripts
     - python3-inquirer
-    
+
     # provenance deps
     - crane
     - slsa-verifier

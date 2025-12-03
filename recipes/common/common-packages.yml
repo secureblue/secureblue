@@ -22,7 +22,8 @@ install:
     # missing upstream
     - openssl
     - patch
-    - p7zip
+    - 7zip-standalone-all
+    - 7zip
     - distrobox
     - toolbox
     - podman

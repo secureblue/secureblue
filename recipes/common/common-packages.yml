@@ -52,10 +52,4 @@ modules:
           packages:
             - selinux-policy
             - selinux-policy-targeted
-
-    - type: dnf
-      install:
-        packages:
-          - repo: copr:copr.fedorainfracloud.org:secureblue:selinux-policy
-            packages:
-              - selinux-policy-devel
+            - selinux-policy-devel

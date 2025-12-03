@@ -1,6 +1,0 @@
-;; SPDX-FileCopyrightText 2025 The Secureblue Authors
-;;
-;; SPDX-License-Identifier: Apache-2.0 OR MIT
-
-(allow colord_t self (user_namespace (create)))
-(allow devicekit_power_t self (user_namespace (create)))

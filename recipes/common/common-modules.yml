@@ -19,6 +19,11 @@ modules:
         - httpsmirrors.sh
         - unprotectsudo.sh
     - from-file: common/common-packages.yml
+    - type: script
+      source: ghcr.io/blue-build/modules@sha256:50747361c625c0a5afac314f174243ca7d14373dbbdd20e2261c1f9384a632de
+      scripts:
+        - installselinuxpolicies.sh
+        - signkernel.sh
     - type: files
       source: ghcr.io/blue-build/modules@sha256:50747361c625c0a5afac314f174243ca7d14373dbbdd20e2261c1f9384a632de
       files:
@@ -32,10 +37,6 @@ modules:
       validate: true
       include:
         - common
-    - type: script
-      source: ghcr.io/blue-build/modules@sha256:50747361c625c0a5afac314f174243ca7d14373dbbdd20e2261c1f9384a632de
-      scripts:
-        - signkernel.sh
       secrets:
         - type: env
           name: KERNEL_PRIVKEY

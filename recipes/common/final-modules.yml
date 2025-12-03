@@ -21,4 +21,3 @@ modules:
         - enable-preset-services.sh
         - removesudo.sh
         - ensuresudoabsent.sh
-        - installselinuxpolicies.sh

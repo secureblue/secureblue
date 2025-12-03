@@ -47,6 +47,11 @@ jobs:
           sudo rm -f /var/lib/man-db/auto-update
           sudo sed -i 's/^update_initramfs=.*/update_initramfs=no/' /etc/initramfs-tools/update-initramfs.conf
 
+      - name: Install dependencies
+        shell: bash
+        run: |
+          sudo apt install yq
+
       - name: Checkout repo
         uses: actions/checkout@1af3b93b6815bc44a9784bd300feb67ff0d1eeb3 # v6.0.0
         with:
@@ -57,9 +62,9 @@ jobs:
         env:
           RECIPE: ${{ inputs.recipe }}
         run: |
-          echo "IMAGE_NAME=$(sed -n 's/^name: //p' "./recipes/${RECIPE}")" >> "${GITHUB_ENV}"
-          echo "BASE_IMAGE=$(sed -n 's/^base-image: //p' "./recipes/${RECIPE}")" >> "${GITHUB_ENV}"
-          echo "BASE_IMAGE_VERSION=$(sed -n 's/^image-version: //p' "./recipes/${RECIPE}")" >> "${GITHUB_ENV}"
+          echo "IMAGE_NAME=$(yq -r '."name"' "./recipes/${RECIPE}")" >> "${GITHUB_ENV}"
+          echo "BASE_IMAGE=$(yq -r '."base-image"' "./recipes/${RECIPE}")" >> "${GITHUB_ENV}"
+          echo "BASE_IMAGE_VERSION=$(yq -r '."image-version"' "./recipes/${RECIPE}")" >> "${GITHUB_ENV}"
 
       - name: Verify base image provenance
         shell: bash

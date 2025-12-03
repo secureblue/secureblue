@@ -23,7 +23,7 @@ modules:
 
     - type: dnf
       source: ghcr.io/blue-build/modules@sha256:50747361c625c0a5afac314f174243ca7d14373dbbdd20e2261c1f9384a632de
-      replace:  
+      replace:
         - from-repo: fedora-multimedia
           skip-unavailable: true
           packages:
@@ -43,7 +43,7 @@ modules:
 
     - type: dnf
       source: ghcr.io/blue-build/modules@sha256:50747361c625c0a5afac314f174243ca7d14373dbbdd20e2261c1f9384a632de
-      replace:  
+      replace:
         - from-repo: fedora-multimedia
           skip-unavailable: true
           packages:

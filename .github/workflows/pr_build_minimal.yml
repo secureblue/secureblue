@@ -31,7 +31,8 @@ jobs:
   bluebuild:
     name: PR build (general/recipe-silverblue-main.yml)
     permissions:
-      contents: read
+      contents: read # Needed to pull the repo for the build
+      packages: read # Needed to read base image manifests
     uses: ./.github/workflows/pr_build.yml
     with:
       recipe: general/recipe-silverblue-main.yml

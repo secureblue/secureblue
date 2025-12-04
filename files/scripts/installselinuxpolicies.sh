@@ -25,6 +25,7 @@ cil_policy_modules=(
     './selinux/user_namespace/harden_container_userns.cil'
     './selinux/flatpakfull/grant_systemd_flatpak_exec.cil'
     './selinux/user_namespace/userns_deny_unconfined_relabels.cil'
+    './selinux/user_namespace/unbreak_thunar_thumbs.cil'
 )
 
 for module in "${policy_modules[@]}"; do

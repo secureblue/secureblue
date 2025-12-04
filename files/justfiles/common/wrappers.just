@@ -68,3 +68,9 @@ set-unconfined-userns *args:
 set-container-userns *args:
     #!/bin/sh
     exec /usr/bin/python3 /usr/libexec/secureblue/set_container_userns.py "$@"
+
+# Install Dangerzone (sandboxed PDF sanitizer)
+[positional-arguments]
+install-dangerzone:
+    #!/bin/sh
+    exec /usr/bin/python3 /usr/libexec/secureblue/install_dangerzone.py "$@"

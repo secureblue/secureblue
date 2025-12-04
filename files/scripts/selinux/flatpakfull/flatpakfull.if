@@ -1,0 +1,49 @@
+## <summary>flatpak packaging system</summary>
+
+# SPDX-FileCopyrightText 2025 The Secureblue Authors
+#
+# SPDX-License-Identifier: Apache-2.0 OR MIT
+
+########################################
+## <summary>
+##	Execute flatpak in the flatpak domain.
+## </summary>
+## <param name="domain">
+## <summary>
+##	Domain allowed to transition.
+## </summary>
+## </param>
+#
+interface(`flatpak_domtrans',`
+	gen_require(`
+		type flatpak_t, flatpak_exec_t;
+	')
+
+	domtrans_pattern($1, flatpak_exec_t, flatpak_t)
+')
+
+
+########################################
+## <summary>
+##	Execute flatpak in the flatpak domain.
+## </summary>
+## <param name="domain">
+## <summary>
+##	Domain allowed to transition.
+## </summary>
+## </param>
+## <param name="role">
+##	<summary>
+##	Role allowed access.
+##	</summary>
+## </param>
+#
+interface(`flatpak_run',`
+	gen_require(`
+		type flatpak_t;
+        attribute_role flatpak_roles;
+	')
+
+	flatpak_domtrans($1)
+	roleattribute $2 flatpak_roles;
+')

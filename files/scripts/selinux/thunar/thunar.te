@@ -1,0 +1,33 @@
+policy_module(thunar, 1.0.0)
+
+# SPDX-FileCopyrightText 2025 The Secureblue Authors
+#
+# SPDX-License-Identifier: Apache-2.0 OR MIT
+
+########################################
+#
+# Declarations
+#
+
+attribute_role thunar_roles;
+roleattribute object_r thunar_roles;
+
+type thunar_t;
+type thunar_exec_t;
+domain_type(thunar_t, thunar_exec_t)
+application_domain(thunar_t, thunar_exec_t)
+
+role thunar_roles types thunar_t;
+
+unconfined_domain_noaudit(thunar_t)
+
+optional_policy(`
+	gen_require(`
+		type unconfined_t;
+		attribute trivalent_domain;
+		role unconfined_r;
+	')
+
+	thunar_run(unconfined_t, unconfined_r)
+	thunar_run(trivalent_domain, unconfined_r)
+')

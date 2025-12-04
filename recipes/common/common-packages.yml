@@ -10,47 +10,39 @@
 # distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and limitations under the License.
 
-modules:
-    - type: dnf
-      source: ghcr.io/blue-build/modules@sha256:50747361c625c0a5afac314f174243ca7d14373dbbdd20e2261c1f9384a632de
-      install:
-        install-weak-deps: false
-        packages:
-          - hardened_malloc
-          - run0edit
-          - dnsconfd-unbound
+type: dnf
+source: ghcr.io/blue-build/modules@sha256:50747361c625c0a5afac314f174243ca7d14373dbbdd20e2261c1f9384a632de
+install:
+  install-weak-deps: false
+  packages:
+    - hardened_malloc
+    - run0edit
+    - dnsconfd-unbound
 
-          # missing upstream
-          - openssl
-          - patch
-          - 7zip-standalone-all
-          - 7zip
-          - distrobox
-          - toolbox
-          - podman
-          - nvme-cli
-          - hdparm
-          - wireguard-tools
-          - gettext
-          - rsync
-          - steam-devices
-          - policycoreutils-devel
+    # missing upstream
+    - openssl
+    - patch
+    - 7zip-standalone-all
+    - 7zip
+    - distrobox
+    - toolbox
+    - podman
+    - nvme-cli
+    - hdparm
+    - wireguard-tools
+    - gettext
+    - rsync
+    - steam-devices
 
-          # signing deps
-          - sbsigntools
+    # signing deps
+    - sbsigntools
 
-          # address hardened_malloc incompatibilities
-          - no_rlimit_as
+    # address hardened_malloc incompatibilities
+    - no_rlimit_as
 
-          # For use in unprivileged ujust scripts
-          - python3-inquirer
+    # For use in unprivileged ujust scripts
+    - python3-inquirer
 
-          # provenance deps
-          - crane
-          - slsa-verifier
-      replace:
-        - from-repo: copr:copr.fedorainfracloud.org:secureblue:selinux-policy
-          packages:
-            - selinux-policy
-            - selinux-policy-targeted
-            - selinux-policy-devel
+    # provenance deps
+    - crane
+    - slsa-verifier

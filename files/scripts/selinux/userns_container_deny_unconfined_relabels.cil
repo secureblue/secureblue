@@ -9,7 +9,7 @@
 (typeattributeset userns_container_relabel_allowed (init_t initrc_t install_t kernel_t))
 
 (typeattribute userns_container_relabel_restricted)
-(typeattributeset userns_container_relabel_restricted (and (domain) (not (userns_relabel_allowed))))
+(typeattributeset userns_container_relabel_restricted (and (domain) (not (userns_container_relabel_allowed))))
 
 (deny userns_container_relabel_restricted userns_container_privileged_file_type (blk_file (relabelfrom relabelto)))
 (deny userns_container_relabel_restricted userns_container_privileged_file_type (chr_file (relabelfrom relabelto)))

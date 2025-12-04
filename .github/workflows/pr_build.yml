@@ -79,9 +79,6 @@ jobs:
           DIGEST=$(~/go/bin/crane digest "${BASE_IMAGE}:${BASE_IMAGE_VERSION}")
           ~/go/bin/slsa-verifier verify-image --source-uri 'github.com/secureblue/secureblue' "${BASE_IMAGE}:${BASE_IMAGE_VERSION}@${DIGEST}"
 
-      - name: Set up QEMU
-        uses: docker/setup-qemu-action@c7c53464625b32c7a7e944ae62b3e17d2b600130 # v3.7.0
-
       - name: Install cosign
         uses: sigstore/cosign-installer@faadad0cce49287aee09b3a48701e75088a2c6ad # v4.0.0
         with:
@@ -118,7 +115,7 @@ jobs:
           } >> "${GITHUB_OUTPUT}"
 
       - name: Build secureblue
-        uses: blue-build/github-action@5c6916e55b22914100bedc50fbbd001ed95c971a # v1.10.1
+        uses: blue-build/github-action@f75115e12966070fc35d6be3aab528848c9c979f # v1.10.2
         env:
           KERNEL_PRIVKEY: ${{ steps.test_keys.outputs.kernel_privkey }}
         with:

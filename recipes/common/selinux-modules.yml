@@ -10,23 +10,8 @@
 # distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and limitations under the License.
 
-name: securecore-main-hardened
-
-description: "CoreOS, hardened"
-
-base-image: quay.io/fedora/fedora-coreos
-
-image-version: testing
-
-cosign-version: none
-nushell-version: none
-
-platforms:
-  - linux/amd64
-  - linux/arm64
-
 modules:
-  - from-file: common/common-modules.yml
-  - from-file: common/server-modules.yml
-  - from-file: common/selinux-modules.yml
-  - from-file: common/final-modules.yml
+    - type: script
+      source: ghcr.io/blue-build/modules@sha256:50747361c625c0a5afac314f174243ca7d14373dbbdd20e2261c1f9384a632de
+      scripts:
+        - installselinuxpolicies.sh

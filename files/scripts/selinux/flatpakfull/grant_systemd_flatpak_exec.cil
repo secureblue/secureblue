@@ -1,0 +1,5 @@
+;; SPDX-FileCopyrightText 2025 The Secureblue Authors
+;;
+;; SPDX-License-Identifier: Apache-2.0 OR MIT
+
+(allow init_t flatpak_exec_t (file (execute execute_no_trans open read map)))

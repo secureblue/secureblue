@@ -132,7 +132,7 @@ def main() -> int:
         print("Too many options specified, see usage with --help.", file=sys.stderr)
         return 2
 
-    if mode in ("-h", "--help"):
+    if mode in ("help", "-h", "--help"):
         print(HELP_MESSAGE)
         return 0
 

@@ -14,7 +14,8 @@
 
 set -oue pipefail
 
-dnf install -y --setopt=install_weak_deps=False policycoreutils-devel make m4
+dnf install -y --setopt=install_weak_deps=False policycoreutils-devel
+
 policy_modules=(trivalent flatpakfull nautilus systemsettings thunar)
 
 cil_policy_modules=(

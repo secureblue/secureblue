@@ -16,7 +16,7 @@ set -oue pipefail
 
 dnf install -y --setopt=install_weak_deps=False fedora-repos-archive
 selinux_policy_version_and_release=$(rpm -q --qf '%{VERSION}-%{RELEASE}' selinux-policy)
-dnf install -y -setopt=install_weak_deps=False --repo=updates-archive "selinux-policy-devel-${selinux_policy_version_and_release}.noarch"
+dnf install -y --setopt=install_weak_deps=False --repo=updates-archive "selinux-policy-devel-${selinux_policy_version_and_release}.noarch"
 
 policy_modules=(trivalent flatpakfull nautilus systemsettings thunar)
 

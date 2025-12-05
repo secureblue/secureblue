@@ -249,7 +249,7 @@ def audit_container_policy():
 @audit
 def audit_unconfined_userns():
     """Ensure unconfined-domain processes cannot create user namespaces."""
-    if command_stdout("ujust", "check-unconfined-userns-state") == "disabled":
+    if command_stdout("ujust", "set-unconfined-userns", "status") == "disabled":
         status = PASS
         recs = None
     else:
@@ -257,7 +257,7 @@ def audit_unconfined_userns():
         rec_lines = (
             _("Unconfined domain user namespace creation is permitted."),
             _("To disallow it, run:"),
-            "$ ujust toggle-unconfined-domain-userns-creation",
+            "$ ujust set-unconfined-userns off",
         )
         recs = "\n".join(rec_lines)
     yield Report(_("Ensuring unconfined user namespace creation disallowed"), status, recs=recs)
@@ -266,7 +266,7 @@ def audit_unconfined_userns():
 @audit
 def audit_container_userns():
     """Ensure container-domain processes cannot create user namespaces."""
-    if command_stdout("ujust", "check-container-userns-state") == "disabled":
+    if command_stdout("ujust", "set-container-userns", "status") == "disabled":
         status = PASS
         recs = None
     else:
@@ -274,7 +274,7 @@ def audit_container_userns():
         rec_lines = (
             _("Container domain user namespace creation is permitted."),
             _("To disallow it, run:"),
-            "$ ujust toggle-container-domain-userns-creation",
+            "$ ujust set-container-userns off",
         )
         recs = "\n".join(rec_lines)
     yield Report(_("Ensuring container user namespace creation disallowed"), status, recs=recs)

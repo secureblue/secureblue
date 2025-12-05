@@ -18,12 +18,21 @@
 Various utility functions used in secureblue scripts.
 """
 
+import enum
 import subprocess  # nosec
 import sys
 import textwrap
 from collections.abc import Iterable
 
 import rpm
+
+
+class Mode(enum.StrEnum):
+    """Valid mode for toggle script: 'on', 'off', or 'status'."""
+
+    ON = "on"
+    OFF = "off"
+    STATUS = "status"
 
 
 def print_wrapped(text: str, *, width: int = 70) -> None:

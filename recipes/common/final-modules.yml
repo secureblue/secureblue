@@ -21,3 +21,4 @@ modules:
         - enable-preset-services.sh
         - removesudo.sh
         - ensuresudoabsent.sh
+        - check-selinux-fcontext.sh

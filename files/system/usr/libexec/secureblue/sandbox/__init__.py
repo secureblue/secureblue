@@ -119,6 +119,18 @@ class SandboxedFunction:
             raise ValueError("Invalid sandboxing options: options must start with --")
 
 
+    def run(self, *args: str) -> int:
+        """Run the sandboxed function.
+
+        Args:
+            *args (str): Positional arguments to pass to the sandboxed function.
+
+        Returns:
+            int: The exit status code of the function."""
+
+        return run(self, args)
+
+
 def run(sandboxed_function: SandboxedFunction, *args: str) -> int:
     """Execute a sandboxed function."""
 

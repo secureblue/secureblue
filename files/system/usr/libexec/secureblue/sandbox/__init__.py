@@ -102,7 +102,7 @@ class SandboxedFunction:
     Optional; defaults to no arguments.
     """
 
-    subprocess_interactive: bool = False
+    subprocess_interactive: bool = field(default=False, kw_only=True)
     """Whether to pass the current stdin, stdout and stderr to the sandbox."""
 
     run0_arguments: list[str] = field(default_factory=list, init=False)

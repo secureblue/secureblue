@@ -69,16 +69,36 @@ RUN0_BASE_ARGUMENTS: Final[list[str]] = [
 
 @dataclass
 class SandboxedFunction:
-    """A class that wraps a function to be run in a sandbox"""
+    """A Python worker that runs as root in a sandbox with specified privileges."""
 
     file_name: str
+    """The filename of the privileged worker in INNER_DIR."""
+
     capabilities: list[str] = field(default_factory=list, kw_only=True)
+    """The Linux capabilities to be granted to the worker.
+
+    Optional; defaults to no capabilities.
+    """
+
     read_write_paths: list[str] = field(default_factory=list, kw_only=True)
+    """A list of file or directory names to be made writable.
+
+    Optional; defaults to no paths.
+    """
+
     additional_sandbox_properties: list[str] = field(default_factory=list, kw_only=True)
+    """A list of additional *arguments* to be passed to `run0`.
+
+    These typically begin with `--property=`. See run0(1).
+    Optional; defaults to no arguments.
+    """
+
     subprocess_interactive: bool = False
+    """Whether to pass the current stdin, stdout and stderr to the sandbox."""
 
     def __post_init__(self):
         """Ensures list fields have expected types and creates sandbox properties."""
+
         for prop in (self.capabilities, self.read_write_paths, self.additional_sandbox_properties):
             if not isinstance(prop, list):
                 raise ValueError(
@@ -94,7 +114,7 @@ class SandboxedFunction:
         additional_properties = [
             f"--property=CapabilityBoundingSet={' '.join(self.capabilities)}",
             f"--property=ReadWritePaths={' '.join(self.read_write_paths)}"
-        ] + additional_properties
+        ] + self.additional_sandbox_properties
         if not all(arg.startswith("--") and arg != "--" for arg in additional_properties):
             raise ValueError("Invalid sandboxing options: options must start with --")
 

@@ -23,6 +23,49 @@ from typing import Final
 
 INNER_DIR: Final[str] = "/usr/libexec/secureblue/inner"
 
+# Copyright (C) 2025 Daniel Hast
+# Systemd sandboxing of run0 invocation adapted from run0edit, originally licensed
+# under MIT OR Apache-2.0. Used here under the terms of the Apache License 2.0.
+SYSCALLS_TO_ALLOW: Final[list[str]] = [
+    "@system-service"
+]
+SYSCALLS_TO_DENY: Final[list[str]] = [
+    "@aio",
+    "@chown",
+    "@keyring",
+    "@memlock",
+    "@mount",
+    "@privileged",
+    "@resources",
+    "@setuid",
+    "memfd_create",
+]
+SYSTEMD_BASE_PROPERTIES: Final[list[str]] = [
+    "--property=DevicePolicy=closed",
+    "--property=LockPersonality=yes",
+    "--property=MemoryDenyWriteExecute=yes",
+    "--property=NoNewPrivileges=yes",
+    "--property=PrivateDevices=yes",
+    "--property=PrivateIPC=yes",
+    "--property=PrivateNetwork=yes",
+    "--property=ProcSubset=pid",
+    "--property=ProtectClock=yes",
+    "--property=ProtectControlGroups=yes",
+    "--property=ProtectHostname=yes",
+    "--property=ProtectKernelLogs=yes",
+    "--property=ProtectKernelModules=yes",
+    "--property=ProtectKernelTunables=yes",
+    "--property=ReadOnlyPaths=/",
+    "--property=PrivateTmp=yes",
+    "--property=RestrictAddressFamilies=AF_UNIX",
+    "--property=RestrictNamespaces=yes",
+    "--property=RestrictRealtime=yes",
+    "--property=RestrictSUIDSGID=yes",
+    "--property=SystemCallArchitectures=native",
+    f"--property=SystemCallFilter={' '.join(SYSCALLS_TO_ALLOW)}",
+    f"--property=SystemCallFilter=~{' '.join(SYSCALLS_TO_DENY)}",
+    "--property=SystemCallErrorNumber=EPERM",
+]
 
 @dataclass
 class SandboxedFunction:
@@ -55,49 +98,11 @@ def create_run0_options(sandboxed_function: SandboxedFunction) -> list[str]:
     read_write_paths = sandboxed_function.read_write_paths
     additional_sandbox_properties = sandboxed_function.additional_sandbox_properties
 
-    # Copyright (C) 2025 Daniel Hast
-    # Systemd sandboxing of run0 invocation adapted from run0edit, originally licensed
-    # under MIT OR Apache-2.0. Used here under the terms of the Apache License 2.0.
-    system_calls_to_deny: list[str] = [
-        "@aio",
-        "@chown",
-        "@keyring",
-        "@memlock",
-        "@mount",
-        "@privileged",
-        "@resources",
-        "@setuid",
-        "memfd_create",
-    ]
-    systemd_sandbox_properties: list[str] = [
+    systemd_sandbox_properties = SYSTEMD_BASE_PROPERTIES.copy()
+    systemd_sandbox_properties += [
         f"--property=CapabilityBoundingSet={' '.join(capabilities)}",
-        "--property=DevicePolicy=closed",
-        "--property=LockPersonality=yes",
-        "--property=MemoryDenyWriteExecute=yes",
-        "--property=NoNewPrivileges=yes",
-        "--property=PrivateDevices=yes",
-        "--property=PrivateIPC=yes",
-        "--property=PrivateNetwork=yes",
-        "--property=ProcSubset=pid",
-        "--property=ProtectClock=yes",
-        "--property=ProtectControlGroups=yes",
-        "--property=ProtectHostname=yes",
-        "--property=ProtectKernelLogs=yes",
-        "--property=ProtectKernelModules=yes",
-        "--property=ProtectKernelTunables=yes",
-        "--property=ReadOnlyPaths=/",
-        "--property=PrivateTmp=yes",
-        "--property=RestrictAddressFamilies=AF_UNIX",
-        "--property=RestrictNamespaces=yes",
-        "--property=RestrictRealtime=yes",
-        "--property=RestrictSUIDSGID=yes",
-        "--property=SystemCallArchitectures=native",
-        "--property=SystemCallFilter=@system-service",
-        f"--property=SystemCallFilter=~{' '.join(system_calls_to_deny)}",
-        "--property=SystemCallErrorNumber=EPERM",
+        f"--property=ReadWritePaths={' '.join(read_write_paths)}"
     ]
-
-    systemd_sandbox_properties.append(f"--property=ReadWritePaths={' '.join(read_write_paths)}")
     systemd_sandbox_properties += additional_sandbox_properties
 
     return systemd_sandbox_properties

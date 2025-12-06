@@ -86,6 +86,14 @@ class SandboxedFunction:
     Optional; defaults to no paths.
     """
 
+    allowed_syscalls: list[str] = field(default_factory=list, kw_only=True)
+    """A list of additional syscalls to be granted or denied.
+
+    See systemd.exec(5) and `systemd-analyze syscall-filter`.
+    Optional; defaults to `@system-service ~@aio ~@chown ~@keyring ~@memlock
+    ~@mount ~@privileged ~@resources ~@setuid ~memfd_create`.
+    """
+
     additional_sandbox_properties: list[str] = field(default_factory=list, kw_only=True)
     """A list of additional *arguments* to be passed to `run0`.
 
@@ -99,7 +107,12 @@ class SandboxedFunction:
     def __post_init__(self):
         """Ensures list fields have expected types and creates sandbox properties."""
 
-        for prop in (self.capabilities, self.read_write_paths, self.additional_sandbox_properties):
+        for prop in (
+            self.capabilities,
+            self.read_write_paths,
+            self.allowed_syscalls,
+            self.additional_sandbox_properties,
+        ):
             if not isinstance(prop, list):
                 raise ValueError(
                     f"Bad argument to SandboxedFunction: expected list, got `{type(prop)}`."
@@ -109,14 +122,14 @@ class SandboxedFunction:
             raise ValueError(
                 f"Bad argument to SandboxedFunction: expected bool, got `{type(subprocess_inter)}`."
             )
-
         additional_properties = self.additional_sandbox_properties
-        additional_properties = [
-            f"--property=CapabilityBoundingSet={' '.join(self.capabilities)}",
-            f"--property=ReadWritePaths={' '.join(self.read_write_paths)}"
-        ] + self.additional_sandbox_properties
         if not all(arg.startswith("--") and arg != "--" for arg in additional_properties):
             raise ValueError("Invalid sandboxing options: options must start with --")
+
+        self.additional_sandbox_properties = [
+            f"--property=CapabilityBoundingSet={' '.join(self.capabilities)}",
+            f"--property=ReadWritePaths={' '.join(self.read_write_paths)}"
+        ] + additional_properties
 
 
     def run(self, *args: str) -> int:

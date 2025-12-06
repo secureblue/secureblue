@@ -21,6 +21,7 @@ import sys
 from dataclasses import dataclass, field
 from typing import Final
 
+# DURING development, you may need to alter this directory!
 INNER_DIR: Final[str] = "/usr/libexec/secureblue/inner"
 
 # Copyright (C) 2025 Daniel Hast
@@ -95,7 +96,7 @@ class SandboxedFunction:
     """
 
     additional_sandbox_properties: list[str] = field(default_factory=list, kw_only=True)
-    """A list of additional *arguments* to be passed to `run0`.
+    """A list of additional run0 *arguments*.
 
     These typically begin with `--property=`. See run0(1).
     Optional; defaults to no arguments.
@@ -104,9 +105,13 @@ class SandboxedFunction:
     subprocess_interactive: bool = False
     """Whether to pass the current stdin, stdout and stderr to the sandbox."""
 
+    run0_arguments: list[str] = field(default_factory=list, init=False)
+    """An auto-generated list of run0 arguments, including `additional_sandbox_properties`."""
+
     def __post_init__(self):
         """Ensures list fields have expected types and creates sandbox properties."""
 
+        # Validate types.
         for prop in (
             self.capabilities,
             self.read_write_paths,
@@ -126,10 +131,16 @@ class SandboxedFunction:
         if not all(arg.startswith("--") and arg != "--" for arg in additional_properties):
             raise ValueError("Invalid sandboxing options: options must start with --")
 
-        self.additional_sandbox_properties = [
+        # Generate run0 arguments.
+        derived_properties = [
             f"--property=CapabilityBoundingSet={' '.join(self.capabilities)}",
-            f"--property=ReadWritePaths={' '.join(self.read_write_paths)}"
-        ] + additional_properties
+            f"--property=ReadWritePaths={' '.join(self.read_write_paths)}",
+        ]
+        if self.allowed_syscalls:
+            derived_properties.append(
+                f"--property=SystemCallFilter={' '.join(self.allowed_syscalls)}"
+            )
+        self.run0_arguments = derived_properties + additional_properties
 
 
     def run(self, *args: str) -> int:
@@ -139,7 +150,8 @@ class SandboxedFunction:
             *args (str): Positional arguments to pass to the sandboxed function.
 
         Returns:
-            int: The exit status code of the function."""
+            int: The exit status code of the function.
+        """
 
         return run(self, args)
 

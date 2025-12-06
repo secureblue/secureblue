@@ -40,7 +40,7 @@ SYSCALLS_TO_DENY: Final[list[str]] = [
     "@setuid",
     "memfd_create",
 ]
-SYSTEMD_BASE_PROPERTIES: Final[list[str]] = [
+RUN0_BASE_ARGUMENTS: Final[list[str]] = [
     "--property=DevicePolicy=closed",
     "--property=LockPersonality=yes",
     "--property=MemoryDenyWriteExecute=yes",
@@ -78,7 +78,7 @@ class SandboxedFunction:
     subprocess_interactive: bool = False
 
     def __post_init__(self):
-        """Ensures list fields have expected types."""
+        """Ensures list fields have expected types and creates sandbox properties."""
         for prop in (self.capabilities, self.read_write_paths, self.additional_sandbox_properties):
             if not isinstance(prop, list):
                 raise ValueError(
@@ -90,35 +90,22 @@ class SandboxedFunction:
                 f"Bad argument to SandboxedFunction: expected bool, got `{type(subprocess_inter)}`."
             )
 
-
-def create_run0_options(sandboxed_function: SandboxedFunction) -> list[str]:
-    """Creates the options to be passed to run0."""
-
-    capabilities = sandboxed_function.capabilities
-    read_write_paths = sandboxed_function.read_write_paths
-    additional_sandbox_properties = sandboxed_function.additional_sandbox_properties
-
-    systemd_sandbox_properties = SYSTEMD_BASE_PROPERTIES.copy()
-    systemd_sandbox_properties += [
-        f"--property=CapabilityBoundingSet={' '.join(capabilities)}",
-        f"--property=ReadWritePaths={' '.join(read_write_paths)}"
-    ]
-    systemd_sandbox_properties += additional_sandbox_properties
-
-    return systemd_sandbox_properties
+        additional_properties = self.additional_sandbox_properties
+        additional_properties = [
+            f"--property=CapabilityBoundingSet={' '.join(self.capabilities)}",
+            f"--property=ReadWritePaths={' '.join(self.read_write_paths)}"
+        ] + additional_properties
+        if not all(arg.startswith("--") and arg != "--" for arg in additional_properties):
+            raise ValueError("Invalid sandboxing options: options must start with --")
 
 
 def run(sandboxed_function: SandboxedFunction, *args: str) -> int:
     """Execute a sandboxed function."""
 
-    run0_options = create_run0_options(sandboxed_function)
-    if not run0_options:
-        raise ValueError("Must not have empty list of options to pass to run0.")
-    if not all(arg.startswith("--") and arg != "--" for arg in run0_options):
-        raise ValueError("Invalid sandboxing options: options must start with --")
     command = [
         "/usr/bin/run0",
-        *run0_options,
+        *RUN0_BASE_ARGUMENTS,
+        *sandboxed_function.additional_sandbox_properties,
         "--",
         "/usr/bin/python3",
         "-B",  # prevents use of bytecode (pycache) to ease run0 sandboxing configuration

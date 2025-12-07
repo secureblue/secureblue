@@ -22,7 +22,8 @@ install:
     # missing upstream
     - openssl
     - patch
-    - p7zip
+    - 7zip-standalone-all
+    - 7zip
     - distrobox
     - toolbox
     - podman
@@ -41,7 +42,7 @@ install:
 
     # For use in unprivileged ujust scripts
     - python3-inquirer
-    
+
     # provenance deps
     - crane
     - slsa-verifier

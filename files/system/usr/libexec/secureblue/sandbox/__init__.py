@@ -40,7 +40,9 @@ SYSCALLS_TO_DENY: Final[list[str]] = [
     "memfd_create",
 ]
 RUN0_BASE_ARGUMENTS: Final[list[str]] = [
+    "--background=",
     "--property=DevicePolicy=closed",
+    "--property=InaccessiblePaths=/run/dbus/",
     "--property=LockPersonality=yes",
     "--property=MemoryDenyWriteExecute=yes",
     "--property=NoNewPrivileges=yes",
@@ -64,7 +66,6 @@ RUN0_BASE_ARGUMENTS: Final[list[str]] = [
     f"--property=SystemCallFilter={' '.join(SYSCALLS_TO_ALLOW)}",
     f"--property=SystemCallFilter=~{' '.join(SYSCALLS_TO_DENY)}",
     "--property=SystemCallErrorNumber=EPERM",
-    "--background=",
 ]
 
 
@@ -152,7 +153,7 @@ class SandboxedFunction:
             int: The exit status code of the function.
         """
 
-        return run(self, args)
+        return run(self, *args)
 
 
 def run(sandboxed_function: SandboxedFunction, *args: str) -> int:

@@ -1,0 +1,76 @@
+# Copyright 2025 The Secureblue Authors
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+name: update-modules
+permissions: {}
+on:
+  schedule:
+    - cron: 00 0 * * TUE  # run weekly
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  update-modules:
+    name: Update BlueBuild modules
+    runs-on: ubuntu-24.04
+    permissions:
+      contents: write  # needed to create branch
+      pull-requests: write  # needed to create pull request
+
+    steps:
+      - name: Optimize build times
+        shell: bash
+        run: |
+          echo 'set man-db/auto-update false' | sudo debconf-communicate
+          sudo dpkg-reconfigure man-db
+          sudo rm -f /var/lib/man-db/auto-update
+          sudo sed -i -e 's/^update_initramfs=.*/update_initramfs=no/' /etc/initramfs-tools/update-initramfs.conf
+
+      - name: Install dependencies
+        shell: bash
+        run: |
+          sudo apt install skopeo
+
+      - uses: actions/checkout@1af3b93b6815bc44a9784bd300feb67ff0d1eeb3  # v6.0.0
+        with:
+          persist-credentials: true  # zizmor: ignore[artipacked]
+
+      - name: Update BlueBuild modules
+        shell: bash
+        run: |
+          digest=$(skopeo inspect 'docker://ghcr.io/blue-build/modules:latest' --format='{{.Digest}}')
+          pattern='^sha256:[0-9A-Fa-f]{64}$'
+          if [[ ! $digest =~ $pattern ]]; then
+            echo "Error: image digest had value in unexpected format: '${digest}'." >&2
+            exit 1
+          fi
+          find ./recipes -type f -name '*.yml' \
+            -execdir sed --sandbox -Ei \
+              -e "/\<source: ghcr.io\/blue-build\/modules@/s/@sha256:.*/@${digest}/" \
+              '{}' +
+
+      - uses: peter-evans/create-pull-request@271a8d0340265f705b14b6d32b9829c1cb33d45e  # v7.0.8
+        with:
+          add-paths: |
+            recipes/*.yml
+          commit-message: 'chore(deps): update BlueBuild modules'
+          branch: create-pull-request/update-bluebuild-modules
+          sign-commits: true
+          title: 'chore(deps): update BlueBuild modules'
+          body: |
+            Automatically update BlueBuild modules to the SHA256 hash of the latest build of
+            [blue-build/modules](https://github.com/blue-build/modules/pkgs/container/modules).

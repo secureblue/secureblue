@@ -21,15 +21,13 @@ import sys
 from dataclasses import dataclass, field
 from typing import Final
 
-# DURING development, you may need to alter this directory!
+# Change me during development!
 INNER_DIR: Final[str] = "/usr/libexec/secureblue/inner"
 
 # Copyright (C) 2025 Daniel Hast
 # Systemd sandboxing of run0 invocation adapted from run0edit, originally licensed
 # under MIT OR Apache-2.0. Used here under the terms of the Apache License 2.0.
-SYSCALLS_TO_ALLOW: Final[list[str]] = [
-    "@system-service"
-]
+SYSCALLS_TO_ALLOW: Final[list[str]] = ["@system-service"]
 SYSCALLS_TO_DENY: Final[list[str]] = [
     "@aio",
     "@chown",
@@ -67,6 +65,7 @@ RUN0_BASE_ARGUMENTS: Final[list[str]] = [
     f"--property=SystemCallFilter=~{' '.join(SYSCALLS_TO_DENY)}",
     "--property=SystemCallErrorNumber=EPERM",
 ]
+
 
 @dataclass
 class SandboxedFunction:
@@ -140,8 +139,7 @@ class SandboxedFunction:
             derived_properties.append(
                 f"--property=SystemCallFilter={' '.join(self.allowed_syscalls)}"
             )
-        self.run0_arguments = derived_properties + additional_properties
-
+        self.run0_arguments = RUN0_BASE_ARGUMENTS + derived_properties + additional_properties
 
     def run(self, *args: str) -> int:
         """Run the sandboxed function.
@@ -161,8 +159,7 @@ def run(sandboxed_function: SandboxedFunction, *args: str) -> int:
 
     command = [
         "/usr/bin/run0",
-        *RUN0_BASE_ARGUMENTS,
-        *sandboxed_function.additional_sandbox_properties,
+        *sandboxed_function.run0_arguments,
         "--",
         "/usr/bin/python3",
         "-B",  # prevents use of bytecode (pycache) to ease run0 sandboxing configuration

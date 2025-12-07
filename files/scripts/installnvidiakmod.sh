@@ -23,10 +23,13 @@ RELEASE="$(rpm -E '%fedora.%_arch')"
 KERNEL_MODULE_TYPE="kernel"
 if [[ "$IMAGE_NAME" == *"open"* ]]; then
     KERNEL_MODULE_TYPE+="-open"
+    curl -fLsS --retry 5 -o /etc/yum.repos.d/negativo17-fedora-nvidia.repo https://negativo17.org/repos/fedora-nvidia.repo
+    sed -i '/^enabled=1/a\priority=90' /etc/yum.repos.d/negativo17-fedora-nvidia.repo
+else 
+    curl -fLsS --retry 5 -o /etc/yum.repos.d/fedora-nvidia-580.repo https://negativo17.org/repos/fedora-nvidia-580.repo
+    sed -i '/^enabled=1/a\priority=90' /etc/yum.repos.d/fedora-nvidia-580.repo
 fi
 
-curl -fLsS --retry 5 -o /etc/yum.repos.d/negativo17-fedora-nvidia.repo https://negativo17.org/repos/fedora-nvidia.repo
-sed -i '/^enabled=1/a\priority=90' /etc/yum.repos.d/negativo17-fedora-nvidia.repo
 
 dnf install -y --setopt=install_weak_deps=False "kernel-devel-matched-$(rpm -q 'kernel' --queryformat '%{VERSION}')"
 
@@ -56,6 +59,7 @@ modinfo -l /usr/lib/modules/${KERNEL_VERSION}/extra/nvidia/nvidia{,-drm,-modeset
 ./signmodules.sh "nvidia"
 
 rm -f /etc/yum.repos.d/negativo17-fedora-nvidia.repo
+rm -f /etc/yum.repos.d/fedora-nvidia-580.repo
 
 systemctl disable akmods-keygen@akmods-keygen.service
 systemctl mask akmods-keygen@akmods-keygen.service

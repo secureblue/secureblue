@@ -26,6 +26,7 @@ if [[ "$IMAGE_NAME" == *"open"* ]]; then
 else 
     curl -fLsS --retry 5 -o /etc/yum.repos.d/fedora-nvidia-580.repo https://negativo17.org/repos/fedora-nvidia-580.repo
     sed -i '/^enabled=1/a\priority=90' /etc/yum.repos.d/fedora-nvidia-580.repo
+    sed -i 's/^enabled=.*/enabled=0/' /etc/yum.repos.d/fedora-multimedia.repo
 fi
 
 dnf install -y --setopt=install_weak_deps=False "kernel-devel-matched-$(rpm -q 'kernel' --queryformat '%{VERSION}')"
@@ -52,6 +53,7 @@ modinfo -l /usr/lib/modules/${KERNEL_VERSION}/extra/nvidia/nvidia{,-drm,-modeset
 
 ./signmodules.sh "nvidia"
 
+sed -i 's/^enabled=.*/enabled=1/' /etc/yum.repos.d/fedora-multimedia.repo
 rm -f /etc/yum.repos.d/negativo17-fedora-nvidia.repo
 rm -f /etc/yum.repos.d/fedora-nvidia-580.repo
 

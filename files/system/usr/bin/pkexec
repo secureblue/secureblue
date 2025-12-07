@@ -78,7 +78,8 @@ while [[ $# -gt 0 ]]; do
             ;;
 
         --*)
-            echo "wrapper: unrecognized option '$1'"
+            echo "wrapper: unrecognized option '$1'" >&2
+            echo
             show_help
             exit 1
             ;;

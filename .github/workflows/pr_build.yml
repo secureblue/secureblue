@@ -125,6 +125,7 @@ jobs:
           cli_version: v0.9.27
           recipe: ${{ inputs.recipe }}
           push: false
+          registry_token: ${{ github.token }}
           pr_event_number: ${{ github.event.number }}
           maximize_build_space: true
           squash: true

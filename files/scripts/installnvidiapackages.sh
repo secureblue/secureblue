@@ -25,7 +25,7 @@ if [[ "$IMAGE_NAME" == *"open"* ]]; then
     sed -i 's/^enabled=0.*/enabled=1\npriority=90/' /etc/yum.repos.d/negativo17-fedora-nvidia.repo
 else
     curl -fLsS --retry 5 -o /etc/yum.repos.d/fedora-nvidia-580.repo https://negativo17.org/repos/fedora-nvidia-580.repo
-    sed -i '/^enabled=1/a\priority=90' /etc/yum.repos.d/fedora-nvidia-580.repos
+    sed -i '/^enabled=1/a\priority=90' /etc/yum.repos.d/fedora-nvidia-580.repo
 fi
 # required for rpm-ostree to function properly
 # shellcheck disable=SC2068

@@ -16,8 +16,12 @@ on:
   workflow_call:
     inputs:
       recipe:
-        required: true
         type: string
+        required: true
+      rechunk:
+        type: boolean
+        required: false
+        default: false
     secrets:
       SIGNING_SECRET:
         required: true
@@ -53,8 +57,13 @@ jobs:
           sudo rm -f /var/lib/man-db/auto-update
           sudo sed -i 's/^update_initramfs=.*/update_initramfs=no/' /etc/initramfs-tools/update-initramfs.conf
 
+      - name: Install dependencies
+        shell: bash
+        run: |
+          sudo apt install yq
+
       - name: Checkout repo
-        uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
+        uses: actions/checkout@1af3b93b6815bc44a9784bd300feb67ff0d1eeb3 # v6.0.0
         with:
           persist-credentials: false
 
@@ -64,26 +73,22 @@ jobs:
           RECIPE: ${{ inputs.recipe }}
         run: |
           echo "REGISTRY=ghcr.io/secureblue" >> "${GITHUB_ENV}"
-          echo "IMAGE_NAME=$(grep '^name:' "./recipes/${RECIPE}" | sed 's/^name: //')" >> "${GITHUB_ENV}"
-          echo "IMAGE_MAJOR_VERSION=$(grep '^image-version:' "./recipes/${RECIPE}" | sed 's/^image-version: //')" >> "${GITHUB_ENV}"
-          BASE_IMAGE=$(grep '^base-image:' "./recipes/${RECIPE}" | sed 's/^base-image: //')
-          echo "BASE_IMAGE_NAME=$(echo "${BASE_IMAGE}" | sed 's/.*\/.*\///')" >> "${GITHUB_ENV}"
+          echo "IMAGE_NAME=$(yq -r '."name"' "./recipes/${RECIPE}")" >> "${GITHUB_ENV}"
+          echo "BASE_IMAGE=$(yq -r '."base-image"' "./recipes/${RECIPE}")" >> "${GITHUB_ENV}"
+          echo "BASE_IMAGE_VERSION=$(yq -r '."image-version"' "./recipes/${RECIPE}")" >> "${GITHUB_ENV}"
 
       - name: Verify base image provenance
         shell: bash
         run: |
-          if [[ "$BASE_IMAGE_NAME" != *hardened* ]]; then
+          if [[ "$BASE_IMAGE" != ghcr.io/secureblue/* ]]; then
             echo "Base image isn't secureblue. Skipping."
             exit 0
           fi
 
           go install github.com/slsa-framework/slsa-verifier/v2/cli/slsa-verifier@v2.7.1
           go install github.com/google/go-containerregistry/cmd/crane@v0.20.6
-          DIGEST=$(~/go/bin/crane digest "ghcr.io/secureblue/${BASE_IMAGE_NAME}:latest")
-          ~/go/bin/slsa-verifier verify-image --source-uri github.com/secureblue/secureblue ghcr.io/secureblue/${BASE_IMAGE_NAME}:latest@"${DIGEST}"
-
-      - name: Set up QEMU
-        uses: docker/setup-qemu-action@c7c53464625b32c7a7e944ae62b3e17d2b600130 # v3.7.0
+          DIGEST=$(~/go/bin/crane digest "${BASE_IMAGE}:${BASE_IMAGE_VERSION}")
+          ~/go/bin/slsa-verifier verify-image --source-uri 'github.com/secureblue/secureblue' "${BASE_IMAGE}:${BASE_IMAGE_VERSION}@${DIGEST}"
 
       - name: Install cosign
         uses: sigstore/cosign-installer@faadad0cce49287aee09b3a48701e75088a2c6ad # v4.0.0
@@ -98,21 +103,19 @@ jobs:
             exit 0
           fi
 
-          UPSTREAM_CONTAINER="${BASE_IMAGE_NAME}:${IMAGE_MAJOR_VERSION}"
-          if [[ "$IMAGE_NAME" != *nvidia* && "$IMAGE_NAME" != *zfs* ]]; then
-            UPSTREAM_REGISTRY='quay.io/fedora-ostree-desktops'
-            UPSTREAM_PUBKEY='https://gitlab.com/fedora/ostree/ci-test/-/raw/main/quay.io-fedora-ostree-desktops.pub'
-          else
-            UPSTREAM_REGISTRY='ghcr.io/secureblue'
+          UPSTREAM_CONTAINER="${BASE_IMAGE}:${BASE_IMAGE_VERSION}"
+          if [[ "$BASE_IMAGE" == ghcr.io/secureblue/* ]]; then
             UPSTREAM_PUBKEY='https://raw.githubusercontent.com/secureblue/secureblue/refs/heads/live/cosign.pub'
+          else
+            UPSTREAM_PUBKEY='https://gitlab.com/fedora/ostree/ci-test/-/raw/main/quay.io-fedora-ostree-desktops.pub'
           fi
-          if ! cosign verify --key "${UPSTREAM_PUBKEY}" "${UPSTREAM_REGISTRY}/${UPSTREAM_CONTAINER}" | jq; then
+          if ! cosign verify --key "${UPSTREAM_PUBKEY}" "${UPSTREAM_CONTAINER}" | jq; then
             echo "NOTICE: Verification failed. Please ensure your public key is correct."
             exit 1
           fi
 
       - name: Build secureblue
-        uses: blue-build/github-action@5c6916e55b22914100bedc50fbbd001ed95c971a # v1.10.1
+        uses: blue-build/github-action@f75115e12966070fc35d6be3aab528848c9c979f # v1.10.2
         env:
           KERNEL_PRIVKEY: ${{ secrets.KERNEL_PRIVKEY }}
         with:
@@ -123,6 +126,8 @@ jobs:
           pr_event_number: ${{ github.event.number }}
           maximize_build_space: true
           squash: true
+          build_chunked_oci: ${{ inputs.rechunk }}
+          max_layers: 128
           skip_checkout: true
           use_cache: false
           retry_push_count: 3
@@ -133,11 +138,20 @@ jobs:
 
       - name: Parse image manifest
         id: image_manifest_metadata
+        shell: bash
+        env:
+          DEFAULT_BRANCH: ${{ github.event.repository.default_branch }}
+          PR_EVENT_NUMBER: ${{ github.event.number }}
         run: |
-          FULL_IMAGE_REF="${REGISTRY}/${IMAGE_NAME}:latest"
+          case "$GITHUB_REF" in
+            refs/heads/"$DEFAULT_BRANCH") image_tag='latest' ;;
+            refs/pull/*) image_tag="pr-${PR_EVENT_NUMBER}-43" ;;
+            *) image_tag="br-${GITHUB_REF_NAME}-43" ;;
+          esac
+          FULL_IMAGE_REF="${REGISTRY}/${IMAGE_NAME}:${image_tag}"
           IMAGE_DIGEST="$(regctl image digest "${FULL_IMAGE_REF}")"
-          echo "FULL_IMAGE_REF=${FULL_IMAGE_REF}" >> $GITHUB_OUTPUT
-          echo "IMAGE_DIGEST=${IMAGE_DIGEST}" >> $GITHUB_OUTPUT
+          echo "FULL_IMAGE_REF=${FULL_IMAGE_REF}" >> "${GITHUB_OUTPUT}"
+          echo "IMAGE_DIGEST=${IMAGE_DIGEST}" >> "${GITHUB_OUTPUT}"
 
   provenance:
     needs: [bluebuild]

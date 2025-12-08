@@ -184,13 +184,17 @@ check-unconfined-userns-state:
 # Install the official docker packages
 install-docker:
     #! /bin/run0 /bin/bash
-    curl -Lo /etc/yum.repos.d/docker-ce.repo https://download.docker.com/linux/fedora/docker-ce.repo
+    set -euo pipefail
+    tempfile=$(mktemp)
+    curl -fLo "$tempfile" https://download.docker.com/linux/fedora/docker-ce.repo
+    mv "$tempfile" /etc/yum.repos.d/docker-ce.repo
     rpm-ostree refresh-md
     rpm-ostree install docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
 
 # Uninstall the official docker packages
 uninstall-docker:
     #! /bin/run0 /bin/bash
+    set -euo pipefail
     rm /etc/yum.repos.d/docker-ce.repo
     rpm-ostree refresh-md
     rpm-ostree uninstall docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin

@@ -33,7 +33,8 @@ jobs:
   bluebuild:
     name: PR build
     permissions:
-      contents: read
+      contents: read # Needed to pull the repo for the build
+      packages: read # Needed to read base image manifests
     strategy:
       fail-fast: false
       matrix:

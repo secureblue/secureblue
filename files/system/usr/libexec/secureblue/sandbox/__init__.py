@@ -42,7 +42,7 @@ SYSCALLS_TO_DENY: Final[list[str]] = [
 RUN0_BASE_ARGUMENTS: Final[list[str]] = [
     "--background=",
     "--property=DevicePolicy=closed",
-    "--property=InaccessiblePaths=/run/dbus/",
+    "--property=InaccessiblePaths=/run/dbus/ /run/user/",
     "--property=LockPersonality=yes",
     "--property=MemoryDenyWriteExecute=yes",
     "--property=NoNewPrivileges=yes",

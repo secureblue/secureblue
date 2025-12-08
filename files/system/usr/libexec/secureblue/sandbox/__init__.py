@@ -107,7 +107,7 @@ def create_run0_options(sandboxed_function: SandboxedFunction) -> list[str]:
     systemd_sandbox_properties += additional_sandbox_properties
 
     # Suppress red background tint for non-interactive processes
-    if sandboxed_function.subprocess_interactive and not any(
+    if not sandboxed_function.subprocess_interactive and not any(
         arg.startswith("--background") for arg in additional_sandbox_properties
     ):
         systemd_sandbox_properties.append("--background=")

@@ -4,7 +4,7 @@
 {"name":"audit_modprobe","description":"Ensuring no modprobe overrides","status":"pass","warnings":[]}
 {"name":"audit_ptrace","description":"Ensuring ptrace is forbidden","status":"pass","warnings":[]}
 {"name":"audit_authselect","description":"Ensuring no authselect overrides","status":"pass","warnings":[]}
-{"name":"audit_container_policy","description":"Ensuring no container policy overrides","status":"pass","warnings":[]}
+{"name":"audit_container_policy","description":"Analyzing container policy","status":"pass","warnings":[]}
 {"name":"audit_unconfined_userns","description":"Ensuring unconfined user namespace creation disallowed","status":"pass","warnings":[]}
 {"name":"audit_container_userns","description":"Ensuring container user namespace creation disallowed","status":"pass","warnings":[]}
 {"name":"audit_usbguard","description":"Ensuring USBGuard is active","status":"fail","warnings":["USBGuard is not enabled."]}

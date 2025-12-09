@@ -21,7 +21,6 @@ Enable or disable an SELinux module.
 import enum
 import subprocess  # nosec
 import sys
-from typing import Literal
 
 
 class Mode(enum.StrEnum):
@@ -31,7 +30,7 @@ class Mode(enum.StrEnum):
     DISABLE = "disable"
 
 
-def set_module(mode: Mode | Literal["enable", "disable"], module_name: str) -> int:
+def set_module(mode: Mode, module_name: str) -> int:
     """Enable or disable an SELinux module."""
     proc = subprocess.run(["/usr/bin/semodule", f"--{mode}={module_name}"], check=False)  # nosec
     if proc.returncode == 0:

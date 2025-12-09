@@ -68,13 +68,3 @@ set-unconfined-userns *args:
 set-container-userns *args:
     #!/bin/sh
     exec /usr/bin/python3 /usr/libexec/secureblue/set_container_userns.py "$@"
-
-# Check status of unconfined-domain user namespace creation.
-check-unconfined-userns-state:
-    #!/bin/sh
-    exec ujust set-unconfined-userns status
-
-# Check status of container-domain user namespace creation.
-check-container-userns-state:
-    #!/bin/sh
-    exec ujust set-container-userns status

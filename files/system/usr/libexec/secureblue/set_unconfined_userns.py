@@ -18,10 +18,10 @@
 
 import subprocess  # nosec
 import sys
-from typing import Final, Literal
+from typing import Final
 
 import sandbox
-from utils import Mode, ask_yes_no, command_succeeds, print_wrapped
+from utils import ToggleMode, ask_yes_no, command_succeeds, print_wrapped
 
 HELP_MESSAGE: Final[str] = """\
 Toggles if unconfined-domain user namespace creation is allowed.
@@ -97,7 +97,7 @@ def disable_unconfined_userns(currently_enabled: bool) -> int:
     return exit_code
 
 
-def run(mode: Mode | Literal["on", "off", "status"]) -> int:
+def run(mode: ToggleMode) -> int:
     """Run the logic for enabling or disabling unconfined-domain userns."""
     userns_enabled = unconfined_userns_enabled()
     match mode:
@@ -137,7 +137,7 @@ def main() -> int:
         return 0
 
     try:
-        mode = Mode(mode)
+        mode = ToggleMode(mode)
     except ValueError:
         print("Invalid option selected. Try --help.")
         return 2

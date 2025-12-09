@@ -18,10 +18,10 @@
 
 import subprocess  # nosec
 import sys
-from typing import Final, Literal
+from typing import Final
 
 import sandbox
-from utils import Mode, ask_yes_no, command_succeeds, print_wrapped
+from utils import ToggleMode, ask_yes_no, command_succeeds, print_wrapped
 
 HELP_MESSAGE: Final[str] = """\
 Toggles if container-domain user namespace creation is allowed.
@@ -107,7 +107,11 @@ def disable_container_userns(currently_enabled: bool, *, prompt: bool = True) ->
         Container-domain user namespace creation (e.g. for bubblejail) is currently
         enabled. Disabling it now by enabling SELinux module '{CONTAINER_USERNS_MODULE}'.
     """)
-    proceed = stop_containers(prompt=prompt)
+    try:
+        proceed = stop_containers(prompt=prompt)
+    except subprocess.CalledProcessError:
+        print("Failed to stop containers. Aborting...")
+        return 1
     if not proceed:
         print("Aborting...")
         return 0
@@ -117,7 +121,7 @@ def disable_container_userns(currently_enabled: bool, *, prompt: bool = True) ->
     return exit_code
 
 
-def run(mode: Mode | Literal["on", "off", "status"], *, prompt: bool = True) -> int:
+def run(mode: ToggleMode, *, prompt: bool = True) -> int:
     """Run the logic for enabling or disabling container-domain userns."""
     userns_enabled = container_userns_enabled()
     match mode:
@@ -157,7 +161,7 @@ def main() -> int:
         return 0
 
     try:
-        mode = Mode(mode)
+        mode = ToggleMode(mode)
     except ValueError:
         print("Invalid option selected. Try --help.")
         return 2

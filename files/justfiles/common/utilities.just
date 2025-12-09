@@ -332,7 +332,6 @@ install-vpn:
                 INSTRUCTIONS='Successfully installed Proton VPN.'
                 ;;
 
-
             "tailscale")
                 PACKAGE_NAMES="tailscale"
                 REPO_NAME="tailscale"

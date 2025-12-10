@@ -335,7 +335,7 @@ install-vpn:
             "tailscale")
                 PACKAGE_NAMES="tailscale"
                 REPO_NAME="tailscale"
-                
+
                 if util_checkpackage "$PACKAGE_NAMES"; then
                     echo 'Error: Tailscale VPN is already installed.'
                     echo 'Aborting...'

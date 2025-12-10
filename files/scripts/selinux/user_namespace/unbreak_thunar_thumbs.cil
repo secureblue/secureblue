@@ -1,3 +1,0 @@
-(allow thumb_t tmp_t (dir (mounton)))
-(allow thumb_t tmpfs_t (filesystem (mount unmount)))
-(allow thumb_t devpts_t (filesystem (mount)))

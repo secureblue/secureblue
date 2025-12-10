@@ -244,6 +244,10 @@ def audit_container_policy():
         with open(os.path.expanduser(local_override), "rb") as f:
             policy = json.load(f)
     except FileNotFoundError:
+        if status == PASS:
+            # No need to parse the policy, it's unmodified.
+            yield Report(_("Analyzing container policy"), PASS)
+            return
         with open(policy_file, "rb") as f:
             policy = json.load(f)
     else:

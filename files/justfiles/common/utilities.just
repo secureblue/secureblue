@@ -273,6 +273,7 @@ install-vpn:
         ["ivpn"]="gui_needs_unconfined_userns gui_needs_xwayland"
         ["mullvad"]="gui_needs_unconfined_userns gui_needs_xwayland"
         ["proton"]=""
+        ["tailscale"]=""
     )
 
     # VPN install logic
@@ -331,10 +332,25 @@ install-vpn:
                 INSTRUCTIONS='Successfully installed Proton VPN.'
                 ;;
 
+            "tailscale")
+                PACKAGE_NAMES="tailscale"
+                REPO_NAME="tailscale"
+
+                if util_checkpackage "$PACKAGE_NAMES"; then
+                    echo 'Error: Tailscale VPN is already installed.'
+                    echo 'Aborting...'
+                    exit 1
+                fi
+
+                echo 'Installing Tailscale VPN...'
+                INSTRUCTIONS='Successfully installed Tailscale VPN, please execute the command "run0 systemctl enable --now tailscaled && run0 tailscale up".'
+                ;;
+
             *)
                 echo 'Invalid choice'
                 exit 1
                 ;;
+
         esac
 
         # The lack of quotes around $2 is intentional.

@@ -21,7 +21,14 @@ import sys
 from typing import Final
 
 import sandbox
-from utils import ToggleMode, ask_yes_no, command_succeeds, print_wrapped
+from utils import (
+    CommandUsageError,
+    ToggleMode,
+    ask_yes_no,
+    command_succeeds,
+    parse_basic_toggle_args,
+    print_wrapped,
+)
 
 HELP_MESSAGE: Final[str] = """\
 Toggles if container-domain user namespace creation is allowed.
@@ -123,47 +130,28 @@ def disable_container_userns(currently_enabled: bool, *, prompt: bool = True) ->
 
 def run(mode: ToggleMode, *, prompt: bool = True) -> int:
     """Run the logic for enabling or disabling container-domain userns."""
+    if mode == ToggleMode.HELP:
+        print(HELP_MESSAGE)
+        return 0
     userns_enabled = container_userns_enabled()
     match mode:
-        case "status":
+        case ToggleMode.STATUS:
             print("enabled" if userns_enabled else "disabled")
             return 0
-        case "on":
+        case ToggleMode.ON:
             return enable_container_userns(userns_enabled)
-        case "off":
+        case ToggleMode.OFF:
             return disable_container_userns(userns_enabled, prompt=prompt)
-        case _:
-            raise ValueError(f"Invalid mode '{mode}'")
 
 
 def main() -> int:
     """Handle the arguments and run the script."""
-
-    argc_interactive = 1
-    argc_on_off = 2
-
-    if len(sys.argv) == argc_interactive:
-        # Ask interactively.
-        mode = (
-            "on"
-            if ask_yes_no("Would you like container-domain user namespace creation to be enabled?")
-            else "off"
-        )
-    elif len(sys.argv) == argc_on_off:
-        # Take mode from first argument, i.e. 'on' or 'off'.
-        mode = sys.argv[1].casefold()
-    else:
-        print("Too many options specified, see usage with --help.", file=sys.stderr)
-        return 2
-
-    if mode in ("help", "-h", "--help"):
-        print(HELP_MESSAGE)
-        return 0
-
     try:
-        mode = ToggleMode(mode)
-    except ValueError:
-        print("Invalid option selected. Try --help.")
+        mode = parse_basic_toggle_args(
+            prompt="Would you like container-domain user namespace creation to be enabled?"
+        )
+    except CommandUsageError as e:
+        print(f"Usage error: {e}. See usage with --help.")
         return 2
 
     return run(mode)

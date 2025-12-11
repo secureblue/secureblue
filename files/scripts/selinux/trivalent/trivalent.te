@@ -283,6 +283,7 @@ allow trivalent_script_domain self:user_namespace create;
 allow trivalent_script_domain self:cap_userns { sys_ptrace sys_admin setpcap };
 allow trivalent_script_domain self:process { ptrace setcap setsched };
 allow trivalent_script_domain user_home_t:dir { search };
+allow trivalent_script_domain cache_home_t:dir { mounton };
 allow trivalent_script_domain chrome_sandbox_home_t:dir { manage_dir_perms };
 allow trivalent_script_domain chrome_sandbox_home_t:file { manage_file_perms };
 allow trivalent_script_domain chrome_sandbox_home_t:lnk_file read;
@@ -306,6 +307,7 @@ dev_map_xserver_misc(trivalent_script_domain)
 allow trivalent_script_domain xserver_misc_device_t:chr_file { getattr ioctl map open read write };
 
 domain_dontaudit_search_all_domains_state(trivalent_script_domain)
+files_rw_generic_tmp_dir(trivalent_script_domain)
 fs_mounton_tmpfs(trivalent_script_domain)
 fs_unmount_tmpfs(trivalent_script_domain)
 fs_mount_tmpfs(trivalent_script_domain)

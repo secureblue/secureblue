@@ -18,7 +18,7 @@ set -oue pipefail
 mkdir -p /var/tmp
 chmod 1777 /var/tmp
 
-PINNED_OPEN_VERSION="580.105.08-1"
+PINNED_OPEN_VERSION="580.105.08"
 KERNEL_VERSION="$(rpm -q "kernel" --queryformat '%{VERSION}-%{RELEASE}.%{ARCH}')"
 RELEASE="$(rpm -E '%fedora.%_arch')"
 if [[ "$IMAGE_NAME" == *"open"* ]]; then

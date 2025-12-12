@@ -37,7 +37,7 @@ cp /usr/sbin/akmodsbuild /usr/sbin/akmodsbuild.backup
 # TODO remove this when fixed upstream
 sed -i '/if \[\[ -w \/var \]\] ; then/,/fi/d' /usr/sbin/akmodsbuild
 if [[ "$IMAGE_NAME" == *"open"* ]]; then
-    dnf install -y --setopt=install_weak_deps=False "nvidia-kmod-common-${PINNED_OPEN_VERSION}" "nvidia-modprobe-${PINNED_OPEN_VERSION}"
+    dnf install -y --setopt=install_weak_deps=False "nvidia-kmod-common-${PINNED_OPEN_VERSION}" "akmod-nvidia-${PINNED_OPEN_VERSION}" "nvidia-modprobe-${PINNED_OPEN_VERSION}"
 else
     dnf install -y --setopt=install_weak_deps=False nvidia-kmod-common nvidia-modprobe
 fi

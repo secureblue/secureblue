@@ -22,8 +22,8 @@ if [[ "$IMAGE_NAME" != *"securecore"* && "$IMAGE_NAME" != *"iot"* ]]; then
     if [[ "$IMAGE_NAME" == *"open"* ]]; then
         nvidia_packages_list+=(
             "libnvidia-fbc-${PINNED_OPEN_VERSION}" 
-            "libva-nvidia-driver-${PINNED_OPEN_VERSION}" 
             "nvidia-driver-${PINNED_OPEN_VERSION}" 
+            "nvidia-driver-cuda-${PINNED_OPEN_VERSION}" 
             "nvidia-modprobe-${PINNED_OPEN_VERSION}" 
             "nvidia-persistenced-${PINNED_OPEN_VERSION}" 
             "nvidia-settings-${PINNED_OPEN_VERSION}"

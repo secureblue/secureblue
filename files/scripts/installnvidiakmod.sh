@@ -44,8 +44,8 @@ fi
 mv /usr/sbin/akmodsbuild.backup /usr/sbin/akmodsbuild
 
 if [[ "$IMAGE_NAME" == *"open"* ]]; then
-echo "Setting kernel.conf to kernel-open"
-sed -i --sandbox "s/^MODULE_VARIANT=.*/MODULE_VARIANT=kernel-open/" /etc/nvidia/kernel.conf
+    echo "Setting kernel.conf to kernel-open"
+    sed -i --sandbox "s/^MODULE_VARIANT=.*/MODULE_VARIANT=kernel-open/" /etc/nvidia/kernel.conf
 fi
 
 echo "Installing kmod..."

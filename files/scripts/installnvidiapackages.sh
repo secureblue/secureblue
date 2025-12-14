@@ -17,7 +17,7 @@ set -oue pipefail
 # nvidia-container-toolkit is not built with required crypto digests for RPM 6+, introduced in Fedora 43
 
 PINNED_OPEN_VERSION="580.105.08"
-nvidia_packages_list=('nvidia-driver-cuda')
+nvidia_packages_list=()
 if [[ "$IMAGE_NAME" != *"securecore"* && "$IMAGE_NAME" != *"iot"* ]]; then
     if [[ "$IMAGE_NAME" == *"open"* ]]; then
         nvidia_packages_list+=(
@@ -29,7 +29,7 @@ if [[ "$IMAGE_NAME" != *"securecore"* && "$IMAGE_NAME" != *"iot"* ]]; then
             "nvidia-settings-${PINNED_OPEN_VERSION}"
         )
     else
-        nvidia_packages_list+=('libnvidia-fbc' 'libva-nvidia-driver' 'nvidia-driver' 'nvidia-modprobe' 'nvidia-persistenced' 'nvidia-settings')
+        nvidia_packages_list+=('nvidia-driver-cuda' 'libnvidia-fbc' 'libva-nvidia-driver' 'nvidia-driver' 'nvidia-modprobe' 'nvidia-persistenced' 'nvidia-settings')
     fi
 fi
 

@@ -19,14 +19,14 @@ set -oue pipefail
 PINNED_OPEN_VERSION="580.105.08"
 nvidia_packages_list=('libva-nvidia-driver')
 
-is_desktop=false
-[[ "$IMAGE_NAME" != *"securecore"* && "$IMAGE_NAME" != *"iot"* ]] && is_desktop=true
+is_desktop="false"
+[[ "$IMAGE_NAME" != *"securecore"* && "$IMAGE_NAME" != *"iot"* ]] && is_desktop="true"
 
 if [[ "$IMAGE_NAME" == *"open"* ]]; then
     nvidia_packages_list+=(
         "nvidia-driver-cuda-${PINNED_OPEN_VERSION}" 
     )
-    if [[ "$is_desktop" == true ]]; then
+    if [[ "$is_desktop" == "true" ]]; then
       nvidia_packages_list+=(
           "libnvidia-fbc-${PINNED_OPEN_VERSION}" 
           "nvidia-driver-${PINNED_OPEN_VERSION}" 
@@ -39,7 +39,7 @@ else
     nvidia_packages_list+=(
       'nvidia-driver-cuda'
     )    
-    if [[ "$is_desktop" == true ]]; then
+    if [[ "$is_desktop" == "true" ]]; then
         nvidia_packages_list+=(
             'libnvidia-fbc'
             'nvidia-driver' 

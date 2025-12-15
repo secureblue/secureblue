@@ -45,4 +45,4 @@ slsa-verifier verify-artifact "${trivalent_rpm}" --provenance-path "${provenance
 
 dnf install "${trivalent_rpm}" -y
 
-sed -i 's/org.mozilla.firefox.desktop/trivalent.desktop/' /usr/share/applications/mimeapps.list
+sed -i 's/org\.mozilla\.firefox\.desktop/trivalent.desktop/' /usr/share/applications/mimeapps.list

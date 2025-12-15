@@ -1,3 +1,8 @@
+#!/usr/bin/env bash
+
+set -oue pipefail
+
+# Copyright 2025 fiftydinar
 # Copyright 2025 The Secureblue Authors
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -10,22 +15,8 @@
 # distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and limitations under the License.
 
-type: script
-source: ghcr.io/blue-build/modules@sha256:b143423fb9560a24f362db36621c7e81da56551d32fbbc97e267e811dd7f0c27
-scripts:
-  - manuallyinstalljust.sh
-  - hardenlogindefs.sh
-  - hardened_malloc-pam.sh
-  - disableresolved.sh
-  - setup-dnsconfd.sh
-  - authselect.sh
-  - setfilepermissions.sh
-  - createmissingdirectories.sh
-  - disablegeoclue.sh
-  - createjustcompletions.sh
-  - removefedoraflatpakremoteservice.sh
-  - localization.sh
-  - addimageinfo.sh
-  - installrar.sh
-  - setchronysysconfig.sh
-  - maskbluetoothservices.sh
+systemctl disable --user obex.service
+systemctl mask --user obex.service
+
+systemctl disable bluetooth.service
+systemctl mask bluetooth.service

@@ -87,7 +87,10 @@ def command_succeeds(*args: str) -> bool:
     """Run a command in the shell and return whether it completes with return code 0."""
     # We only call this with trusted inputs and do not set shell=True.
     # nosemgrep: dangerous-subprocess-use-audit
-    return subprocess.run(args, capture_output=True, check=False).returncode == 0  # nosec
+    ret_code = subprocess.run(
+        args, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, check=False
+    ).returncode  # nosec
+    return ret_code == 0
 
 
 def parse_config(

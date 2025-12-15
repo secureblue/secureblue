@@ -76,10 +76,11 @@ def stop_containers(*, prompt: bool = True) -> bool:
     print("Stopping all containers and shutting down podman...")
     subprocess.run(["/usr/bin/podman", "stop", "--all"], check=True)  # nosec
     subprocess.run(["/usr/bin/killall", "catatonit"], check=False)  # nosec
-    print_wrapped("""
-        Warning: If catatonit is running as root, you may need to reboot your
-        machine to reset podman state.
-    """)
+    if command_succeeds("/usr/bin/pgrep", "catatonit"):
+        print_wrapped("""
+            Warning: Catatonit running as another user detected.
+            Reboot your machine to reset podman state.
+        """)
     return True
 
 

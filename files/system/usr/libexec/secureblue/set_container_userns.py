@@ -68,7 +68,10 @@ def container_userns_enabled() -> bool:
 
 
 def stop_containers(*, prompt: bool = True) -> bool:
-    """Stop all containers and shut down podman."""
+    """
+    Stop all containers and shut down podman, optionally asking the user for confirmation.
+    Return value is False if the user chooses not to proceed, True otherwise.
+    """
     if prompt:
         print("Warning: This will stop ALL containers and shut down podman.")
         if not ask_yes_no("Are you sure you want to do this?"):

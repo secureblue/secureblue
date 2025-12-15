@@ -92,7 +92,7 @@ def main() -> int:
     )
     match mode:
         case ToggleMode.ON | ToggleMode.OFF:
-            target_state_enabled = mode == "on"
+            target_state_enabled = mode == ToggleMode.ON
             state_already_set = target_state_enabled == linuxbrew_is_installed
             if state_already_set:
                 print_status(linuxbrew_is_installed)

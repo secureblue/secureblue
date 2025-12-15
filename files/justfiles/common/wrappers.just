@@ -37,16 +37,34 @@ dns-selector *args:
 
 # Add additional boot parameters for hardening (requires reboot)
 set-kargs-hardening:
-    #!/usr/bin/sh
-    /usr/bin/python3 /usr/libexec/secureblue/set_kargs_hardening.py
+    #!/bin/sh
+    exec /usr/bin/python3 /usr/libexec/secureblue/set_kargs_hardening.py
 
 # Remove all hardening boot parameters (requires reboot)
 remove-kargs-hardening:
-    #!/usr/bin/sh
-    /usr/bin/python3 /usr/libexec/secureblue/remove_kargs_hardening.py
+    #!/bin/sh
+    exec /usr/bin/python3 /usr/libexec/secureblue/remove_kargs_hardening.py
+
+# Sets Brew enabled/disabled
+[positional-arguments]
+set-brew *args:
+    #!/bin/sh
+    exec /usr/bin/python3 /usr/libexec/secureblue/brew_main.py "$@"
 
 # Create the admin user and remove wheel from the normal user
 [positional-arguments]
 create-admin *args:
     #!/bin/sh
     exec /usr/bin/python3 /usr/libexec/secureblue/create_admin.py "$@"
+
+# Enable, disable, or check status of unconfined-domain user namespace creation.
+[positional-arguments]
+set-unconfined-userns *args:
+    #!/bin/sh
+    exec /usr/bin/python3 /usr/libexec/secureblue/set_unconfined_userns.py "$@"
+
+# Enable, disable, or check status of container-domain user namespace creation.
+[positional-arguments]
+set-container-userns *args:
+    #!/bin/sh
+    exec /usr/bin/python3 /usr/libexec/secureblue/set_container_userns.py "$@"

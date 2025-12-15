@@ -18,12 +18,52 @@
 Various utility functions used in secureblue scripts.
 """
 
+import enum
 import subprocess  # nosec
 import sys
 import textwrap
 from collections.abc import Iterable
 
 import rpm
+
+
+class ToggleMode(enum.StrEnum):
+    """Valid mode for toggle script: 'on', 'off', 'status', or 'help'."""
+
+    ON = "on"
+    OFF = "off"
+    STATUS = "status"
+    HELP = "help"
+
+
+class CommandUsageError(Exception):
+    """Error in command-line arguments."""
+
+
+def parse_basic_toggle_args(*, prompt: str | None = None) -> ToggleMode:
+    """
+    Parse command-line arguments into a ToggleMode. Raises CommandUsageError on invalid arguments.
+    """
+    argc_interactive = 1
+    argc_on_off = 2
+
+    if prompt is not None and len(sys.argv) == argc_interactive:
+        # Ask interactively.
+        return ToggleMode.ON if ask_yes_no(prompt) else ToggleMode.OFF
+
+    if len(sys.argv) == argc_on_off:
+        # Take mode from first argument, i.e. 'on' or 'off'.
+        mode = sys.argv[1].casefold()
+    else:
+        raise CommandUsageError("Too many options specified")
+
+    if mode in ("help", "-h", "--help"):
+        return ToggleMode.HELP
+
+    try:
+        return ToggleMode(mode)
+    except ValueError as e:
+        raise CommandUsageError("Invalid option selected") from e
 
 
 def print_wrapped(text: str, *, width: int = 70) -> None:
@@ -47,7 +87,10 @@ def command_succeeds(*args: str) -> bool:
     """Run a command in the shell and return whether it completes with return code 0."""
     # We only call this with trusted inputs and do not set shell=True.
     # nosemgrep: dangerous-subprocess-use-audit
-    return subprocess.run(args, capture_output=True, check=False).returncode == 0  # nosec
+    ret_code = subprocess.run(
+        args, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, check=False
+    ).returncode  # nosec
+    return ret_code == 0
 
 
 def parse_config(

@@ -11,6 +11,7 @@
 # See the License for the specific language governing permissions and limitations under the License.
 
 type: dnf
+source: ghcr.io/blue-build/modules@sha256:b143423fb9560a24f362db36621c7e81da56551d32fbbc97e267e811dd7f0c27
 install:
   install-weak-deps: false
   packages:
@@ -42,7 +43,7 @@ remove:
     - passim
     - fedora-chromium-config
 replace:
-  - from-repo: copr.fedorainfracloud.org:secureblue:branding
+  - from-repo: copr:copr.fedorainfracloud.org:secureblue:branding
     packages:
       - old: fedora-logos
         new: secureblue-logos

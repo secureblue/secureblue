@@ -232,24 +232,65 @@ def audit_authselect():
 
 @audit
 def audit_container_policy():
-    """Ensure container policy has not been modified."""
+    """Check for modifications to container policy."""
     status = PASS
     warnings = []
     policy_file = "/etc/containers/policy.json"
     if not filecmp.cmp(f"/usr{policy_file}", policy_file):
-        status = FAIL
+        status = status.downgrade_to(INFO)
         warnings.append(_("The file {0} has been modified.").format(policy_file))
     local_override = "~/.config/containers/policy.json"
-    if os.path.isfile(os.path.expanduser(local_override)):
-        status = FAIL
-        warnings.append(_("{0} exists.").format(local_override))
-    yield Report(_("Ensuring no container policy overrides"), status, warnings=warnings)
+    try:
+        with open(os.path.expanduser(local_override), "rb") as f:
+            policy = json.load(f)
+    except FileNotFoundError:
+        if status == PASS:
+            # No need to parse the policy, it's unmodified.
+            yield Report(_("Analyzing container policy"), PASS)
+            return
+        with open(policy_file, "rb") as f:
+            policy = json.load(f)
+    else:
+        status = status.downgrade_to(INFO)
+        warnings.append(_("Container policy has a local override at {0}.").format(local_override))
+
+    insecure_accept_anything: Final[str] = "insecureAcceptAnything"
+    if policy["default"][0]["type"] == insecure_accept_anything:
+        status = status.downgrade_to(FAIL)
+        warnings.append(_("The default container policy is insecure."))
+
+    insecure_transports = [
+        transport
+        for transport, transport_policy in policy["transports"].items()
+        if transport_policy[""][0]["type"] == insecure_accept_anything
+    ]
+    for transport in insecure_transports:
+        status = status.downgrade_to(FAIL)
+        warnings.append(
+            _("The default container policy for transport '{0}' is insecure.").format(transport)
+        )
+
+    insecure_scopes = [
+        f"{transport}:{scope}"
+        for transport, transport_policy in policy["transports"].items()
+        for scope, scope_policy in transport_policy.items()
+        if scope and scope_policy[0]["type"] == insecure_accept_anything
+    ]
+    if insecure_scopes:
+        status = status.downgrade_to(WARN)
+        warnings.append(
+            _(
+                "Signature validation is disabled for containers at the following scopes:\n{0}"
+            ).format("\n".join(insecure_scopes))
+        )
+
+    yield Report(_("Analyzing container policy"), status, warnings=warnings)
 
 
 @audit
 def audit_unconfined_userns():
     """Ensure unconfined-domain processes cannot create user namespaces."""
-    if command_stdout("ujust", "check-unconfined-userns-state") == "disabled":
+    if command_stdout("ujust", "set-unconfined-userns", "status") == "disabled":
         status = PASS
         recs = None
     else:
@@ -257,7 +298,7 @@ def audit_unconfined_userns():
         rec_lines = (
             _("Unconfined domain user namespace creation is permitted."),
             _("To disallow it, run:"),
-            "$ ujust toggle-unconfined-domain-userns-creation",
+            "$ ujust set-unconfined-userns off",
         )
         recs = "\n".join(rec_lines)
     yield Report(_("Ensuring unconfined user namespace creation disallowed"), status, recs=recs)
@@ -266,7 +307,7 @@ def audit_unconfined_userns():
 @audit
 def audit_container_userns():
     """Ensure container-domain processes cannot create user namespaces."""
-    if command_stdout("ujust", "check-container-userns-state") == "disabled":
+    if command_stdout("ujust", "set-container-userns", "status") == "disabled":
         status = PASS
         recs = None
     else:
@@ -274,7 +315,7 @@ def audit_container_userns():
         rec_lines = (
             _("Container domain user namespace creation is permitted."),
             _("To disallow it, run:"),
-            "$ ujust toggle-container-domain-userns-creation",
+            "$ ujust set-container-userns off",
         )
         recs = "\n".join(rec_lines)
     yield Report(_("Ensuring container user namespace creation disallowed"), status, recs=recs)
@@ -611,8 +652,8 @@ def audit_groups():
     if "wheel" in user_groups:
         rec_lines = (
             _("The current user is in the wheel group."),
-            _("To set up a separate wheel account, follow the instructions here:"),
-            bold("https://secureblue.dev/post-install#wheel"),
+            _("To set up a separate wheel account, run:"),
+            "$ ujust create-admin",
         )
         rec = "\n".join(rec_lines)
         status = FAIL

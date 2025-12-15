@@ -128,15 +128,15 @@ alias assemble := distrobox-assemble
 # Create distroboxes from a defined manifest
 distrobox-assemble CONTAINER="prompt" ACTION="create" FILE="/etc/distrobox/distrobox.ini":
     #!/usr/bin/bash
-    if [[ "$(ujust check-container-userns-state)" == "disabled" ]]; then
+    if [[ "$(ujust set-container-userns status)" == "disabled" ]]; then
         echo "Distrobox requires container domain user namespaces to work, which are disabled by default for security reasons."
-        echo "You need to run 'ujust toggle-container-domain-userns-creation' to allow this."
+        echo "You need to run 'ujust set-container-userns on' to allow this."
         container_userns_now=""
-        read -rp "Would you like to run 'ujust toggle-container-domain-userns-creation' now? [Y/n] " container_userns_now
+        read -rp "Would you like to run 'ujust set-container-userns on' now? [Y/n] " container_userns_now
         container_userns_now=${container_userns_now:-y}
         if [[ "$container_userns_now" == [Yy]* ]]; then
-            echo "Running 'ujust toggle-container-domain-userns-creation'"
-            ujust toggle-container-domain-userns-creation
+            echo "Running 'ujust set-container-userns on'"
+            ujust set-container-userns on
         fi
     fi
     # Distroboxes are gathered from distrobox.ini, please add them there
@@ -146,51 +146,35 @@ distrobox-assemble CONTAINER="prompt" ACTION="create" FILE="/etc/distrobox/distr
 # Create toolbox containers from a defined manifest (this spec will not be expanded)
 toolbox-assemble CONTAINER="prompt" ACTION="create" FILE="/etc/toolbox/toolbox.ini":
     #!/usr/bin/bash
-    if [[ "$(ujust check-container-userns-state)" == "disabled" ]]; then
+    if [[ "$(ujust set-container-userns status)" == "disabled" ]]; then
         echo "Toolbox requires container domain user namespaces to work, which are disabled by default for security reasons."
-        echo "You need to run 'ujust toggle-container-domain-userns-creation' to allow this."
+        echo "You need to run 'ujust set-container-userns on' to allow this."
         container_userns_now=""
-        read -rp "Would you like to run 'ujust toggle-container-domain-userns-creation' now? [Y/n] " container_userns_now
+        read -rp "Would you like to run 'ujust set-container-userns on' now? [Y/n] " container_userns_now
         container_userns_now=${container_userns_now:-y}
         if [[ "$container_userns_now" == [Yy]* ]]; then
-            echo "Running 'ujust toggle-container-domain-userns-creation'"
-            ujust toggle-container-domain-userns-creation
+            echo "Running 'ujust set-container-userns on'"
+            ujust set-container-userns on
         fi
     fi
     # Toolboxes are gathered from toolbox.ini, please add them there
     source /usr/lib/ujust/ujust.sh
     ToolboxAssembleList "{{ FILE }}" "{{ ACTION }}" "{{ CONTAINER }}"
 
-# Returns the state of container domain user namespaces. (enabled/disabled)
-check-container-userns-state:
-    #!/usr/bin/bash
-    set -euo pipefail
-    if [ "$(whoami)" = 'root' ]; then
-        semodule -l | grep -q 'harden_container_userns' && echo 'disabled' || echo 'enabled'
-    else
-        podman unshare true &> /dev/null && echo 'enabled' || echo 'disabled'
-    fi
-
-# Returns the state of unconfined domain user namespaces. (enabled/disabled)
-check-unconfined-userns-state:
-    #!/usr/bin/bash
-    set -euo pipefail
-    if [ "$(whoami)" = 'root' ]; then
-        semodule -l | grep -q 'harden_userns' && echo 'disabled' || echo 'enabled'
-    else
-        unshare -U true &> /dev/null && echo 'enabled' || echo 'disabled'
-    fi
-
 # Install the official docker packages
 install-docker:
     #! /bin/run0 /bin/bash
-    curl -Lo /etc/yum.repos.d/docker-ce.repo https://download.docker.com/linux/fedora/docker-ce.repo
+    set -euo pipefail
+    tempfile=$(mktemp)
+    curl -fLo "$tempfile" https://download.docker.com/linux/fedora/docker-ce.repo
+    mv "$tempfile" /etc/yum.repos.d/docker-ce.repo
     rpm-ostree refresh-md
     rpm-ostree install docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
 
 # Uninstall the official docker packages
 uninstall-docker:
     #! /bin/run0 /bin/bash
+    set -euo pipefail
     rm /etc/yum.repos.d/docker-ce.repo
     rpm-ostree refresh-md
     rpm-ostree uninstall docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
@@ -269,6 +253,7 @@ install-vpn:
         ["ivpn"]="gui_needs_unconfined_userns gui_needs_xwayland"
         ["mullvad"]="gui_needs_unconfined_userns gui_needs_xwayland"
         ["proton"]=""
+        ["tailscale"]=""
     )
 
     # VPN install logic
@@ -327,10 +312,25 @@ install-vpn:
                 INSTRUCTIONS='Successfully installed Proton VPN.'
                 ;;
 
+            "tailscale")
+                PACKAGE_NAMES="tailscale"
+                REPO_NAME="tailscale"
+
+                if util_checkpackage "$PACKAGE_NAMES"; then
+                    echo 'Error: Tailscale VPN is already installed.'
+                    echo 'Aborting...'
+                    exit 1
+                fi
+
+                echo 'Installing Tailscale VPN...'
+                INSTRUCTIONS='Successfully installed Tailscale VPN, please execute the command "run0 systemctl enable --now tailscaled && run0 tailscale up".'
+                ;;
+
             *)
                 echo 'Invalid choice'
                 exit 1
                 ;;
+
         esac
 
         # The lack of quotes around $2 is intentional.
@@ -386,16 +386,16 @@ install-vpn:
 
     if [[ "$vpn_requirements" =~ "always_needs_unconfined_userns" || "$vpn_requirements" =~ "gui_needs_unconfined_userns" && "$needs_gui" == "1" ]]; then
         echo
-        if [[ "$(ujust check-unconfined-userns-state)" == "enabled" ]] ; then
+        if [[ "$(ujust set-unconfined-userns status)" == "enabled" ]] ; then
             echo 'Unconfined domain user namespaces already enabled, skipping...'
         else
             echo 'This VPN requires unconfined domain user namespaces to be enabled.'
-            echo 'This will execute "ujust toggle-unconfined-domain-userns-creation". You can also manually do this later if you skip this step.'
+            echo 'This will execute "ujust set-unconfined-userns on". You can also manually do this later if you skip this step.'
             echo 'Warning: This is a security reduction!'
             read -rp 'Do you want to do this now? [Y/n] ' proceed_userns
             if ! [[ "$proceed_userns" == [nN]* ]]; then
                 echo 'Enabling unconfined domain user namespaces...'
-                ujust toggle-unconfined-domain-userns-creation
+                ujust set-unconfined-userns on
                 echo 'Enabled unconfined domain user namespaces.'
             fi
         fi

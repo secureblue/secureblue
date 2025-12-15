@@ -14,7 +14,7 @@
 
 set -oue pipefail
 
-dnf install -y --setopt=install_weak_deps=False selinux-policy-devel
+dnf install -y --setopt=install_weak_deps=False policycoreutils-devel
 
 policy_modules=(trivalent flatpakfull nautilus systemsettings thunar)
 

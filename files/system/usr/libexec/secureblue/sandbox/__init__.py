@@ -32,6 +32,7 @@ class SandboxedFunction:
     capabilities: list[str] = dataclasses.field(default_factory=list, kw_only=True)
     read_write_paths: list[str] = dataclasses.field(default_factory=list, kw_only=True)
     additional_sandbox_properties: list[str] = dataclasses.field(default_factory=list, kw_only=True)
+    remove_sandbox_properties: list[str] = dataclasses.field(default_factory=list, kw_only=True)
     subprocess_interactive: bool = False
 
     def __post_init__(self):
@@ -97,8 +98,19 @@ def create_run0_options(sandboxed_function: SandboxedFunction) -> list[str]:
         "--property=SystemCallErrorNumber=EPERM",
     ]
 
+    for prop in sandboxed_function.remove_sandbox_properties:
+        prop_arg = f"--property={prop}"
+        if prop_arg in systemd_sandbox_properties:
+            systemd_sandbox_properties.remove(prop_arg)
+
     systemd_sandbox_properties.append(f"--property=ReadWritePaths={' '.join(read_write_paths)}")
     systemd_sandbox_properties += additional_sandbox_properties
+
+    # Suppress red background tint for non-interactive processes
+    if not sandboxed_function.subprocess_interactive and not any(
+        arg.startswith("--background") for arg in additional_sandbox_properties
+    ):
+        systemd_sandbox_properties.append("--background=")
 
     return systemd_sandbox_properties
 
@@ -126,6 +138,6 @@ def run(sandboxed_function: SandboxedFunction, *args: str) -> int:
             command, check=False, stdin=sys.stdin, stdout=sys.stdout, stderr=sys.stderr
         )  # nosec
     else:
-        result = subprocess.run(command, check=False)  # nosec
+        result = subprocess.run(command, check=False, stdin=subprocess.DEVNULL)  # nosec
 
     return result.returncode

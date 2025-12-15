@@ -3,6 +3,7 @@
         "files/system/usr/libexec/secureblue/audit_secureblue.py",
         "files/system/usr/libexec/secureblue/auditor/__init__.py",
         "files/system/usr/libexec/secureblue/audit_flatpak/__init__.py",
+        "files/system/usr/libexec/secureblue/audit_utils/__init__.py",
         "files/system/usr/libexec/secureblue/utils/__init__.py"
     ]
 }

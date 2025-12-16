@@ -44,3 +44,5 @@ wget "https://github.com/secureblue/Trivalent/releases/download/${trivalent_vers
 slsa-verifier verify-artifact "${trivalent_rpm}" --provenance-path "${provenance_file}" --source-uri github.com/secureblue/Trivalent --source-branch live
 
 dnf install "${trivalent_rpm}" -y
+
+sed -i 's/org\.mozilla\.firefox\.desktop/trivalent.desktop/' /usr/share/applications/mimeapps.list

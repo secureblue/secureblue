@@ -12,12 +12,12 @@
 
 modules:
   - type: justfiles
-    source: ghcr.io/blue-build/modules@sha256:50747361c625c0a5afac314f174243ca7d14373dbbdd20e2261c1f9384a632de
+    source: ghcr.io/blue-build/modules@sha256:ee969ad4a84ec8834f5d5497ddd6e2b574c29cedf09ae7e9447b1476aec97ad7
     validate: true
     include:
       - nvidia
   - type: script
-    source: ghcr.io/blue-build/modules@sha256:50747361c625c0a5afac314f174243ca7d14373dbbdd20e2261c1f9384a632de
+    source: ghcr.io/blue-build/modules@sha256:ee969ad4a84ec8834f5d5497ddd6e2b574c29cedf09ae7e9447b1476aec97ad7
     scripts:
       - installnvidiakmod.sh
     secrets:
@@ -27,14 +27,14 @@ modules:
           type: file
           destination: /tmp/certs/private_key.priv
   - type: script
-    source: ghcr.io/blue-build/modules@sha256:50747361c625c0a5afac314f174243ca7d14373dbbdd20e2261c1f9384a632de
+    source: ghcr.io/blue-build/modules@sha256:ee969ad4a84ec8834f5d5497ddd6e2b574c29cedf09ae7e9447b1476aec97ad7
     scripts:
       - installnvidiapackages.sh
       - removeunusedrepos.sh
       - setearlyloading.sh
       - setdrmvariables.sh
   - type: files
-    source: ghcr.io/blue-build/modules@sha256:50747361c625c0a5afac314f174243ca7d14373dbbdd20e2261c1f9384a632de
+    source: ghcr.io/blue-build/modules@sha256:ee969ad4a84ec8834f5d5497ddd6e2b574c29cedf09ae7e9447b1476aec97ad7
     files:
       - source: system/nvidia
         destination: /

@@ -277,55 +277,6 @@ toggle-bash-environment-lockdown skip_approval="false" apply_for_all_users="prom
     echo "${user_list[@]}" "$pending_status."
     echo "${bold}NOTE${unbold}: until a reboot, any process with an open file descriptor will continue to have the access they had before this script was run."
 
-# Toggle unconfined domain userns creation
-toggle-unconfined-domain-userns-creation:
-    #! /bin/run0 /bin/bash
-    set -euo pipefail
-    MODULE_NAME="harden_userns"
-
-    if semodule -l | grep -q "$MODULE_NAME"; then
-        echo "Module $MODULE_NAME is currently enabled. Disabling the hardening, enabling unconfined domain userns (e.g. for bubblejail)."
-        semodule --disable="$MODULE_NAME"
-        echo "Module $MODULE_NAME disabled. Unconfined domain userns enabled."
-    else
-        echo "Module $MODULE_NAME is not currently enabled. Enabling the hardening, disabling unconfined domain userns (e.g. for bubblejail)."
-        semodule --enable="$MODULE_NAME"
-        echo "Module $MODULE_NAME enabled. Unconfined domain userns disabled."
-    fi
-
-# Toggle container domain userns creation
-toggle-container-domain-userns-creation:
-    #! /bin/run0 /bin/bash
-    set -euo pipefail
-    MODULE_NAME="harden_container_userns"
-
-    if semodule -l | grep -q "$MODULE_NAME"; then
-        echo "Module $MODULE_NAME is currently enabled. Disabling the hardening, enabling container domain userns (e.g. for distrobox)."
-        semodule --disable="$MODULE_NAME"
-        echo "Module $MODULE_NAME disabled. Container domain userns enabled."
-    else
-        echo "Module $MODULE_NAME is not currently enabled. Enabling the hardening, disabling container domain userns (e.g. for distrobox)."
-
-        echo 'Warning: This will stop ALL containers and shut down podman.'
-        read -rp 'Are you sure you want to do this? (y/N) ' proceed
-        if ! [[ "$proceed" == [Yy]* ]]; then
-            echo "Aborting..."
-            exit 0
-        fi
-
-        semodule --enable="$MODULE_NAME"
-        echo "Module $MODULE_NAME enabled. Container domain userns disabled."
-
-        echo 'Stopping all containers and shutting down podman...'
-        run0 --user="$SUDO_USER" podman stop --all > /dev/null
-        killall -u "$SUDO_USER" catatonit || true
-        echo 'podman has been shut down.'
-
-        if pgrep -u root -a -x catatonit &> /dev/null; then
-            echo 'WARNING: Catatonit running as root detected, reboot your machine to reset podman state.'
-        fi
-    fi
-
 # Toggle MAC Randomization
 toggle-mac-randomization:
     #! /bin/run0 /bin/bash

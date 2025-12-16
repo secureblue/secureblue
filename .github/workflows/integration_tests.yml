@@ -36,12 +36,12 @@ jobs:
 
     steps:
       - name: Checkout repo
-        uses: actions/checkout@1af3b93b6815bc44a9784bd300feb67ff0d1eeb3 # v6.0.0
+        uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6.0.1
         with:
           persist-credentials: false
 
       - name: Run integration tests
-        uses: secureblue/bootc-integration-test-action@56f1a17e4ab15b0feaed849d036686e3ec7adc4b # v0.0.9
+        uses: secureblue/bootc-integration-test-action@2236e712456801cd0bd47626733e95a180e38675 # v0.0.10
         with:
           registry: ghcr.io/secureblue
           image: silverblue-main-hardened

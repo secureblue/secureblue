@@ -12,11 +12,11 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-name: update-po
+name: update-modules
 permissions: {}
 on:
   schedule:
-    - cron: 00 0 * * MON  # run weekly
+    - cron: 00 0 * * TUE  # run weekly
   workflow_dispatch:
 
 concurrency:
@@ -24,8 +24,8 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  update-po:
-    name: Update PO files
+  update-modules:
+    name: Update BlueBuild modules
     runs-on: ubuntu-24.04
     permissions:
       contents: write  # needed to create branch
@@ -38,32 +38,39 @@ jobs:
           echo 'set man-db/auto-update false' | sudo debconf-communicate
           sudo dpkg-reconfigure man-db
           sudo rm -f /var/lib/man-db/auto-update
-          sudo sed -i 's/^update_initramfs=.*/update_initramfs=no/' /etc/initramfs-tools/update-initramfs.conf
+          sudo sed -i -e 's/^update_initramfs=.*/update_initramfs=no/' /etc/initramfs-tools/update-initramfs.conf
 
-      - name: Install gettext
+      - name: Install dependencies
         shell: bash
         run: |
-          sudo apt-get install gettext
+          sudo apt install skopeo
 
       - uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8  # v6.0.1
         with:
           persist-credentials: true  # zizmor: ignore[artipacked]
 
-      - name: Update PO files
+      - name: Update BlueBuild modules
         shell: bash
         run: |
-          python3 files/po/update_po.py
+          digest=$(skopeo inspect 'docker://ghcr.io/blue-build/modules:latest' --format='{{.Digest}}')
+          pattern='^sha256:[0-9A-Fa-f]{64}$'
+          if [[ ! $digest =~ $pattern ]]; then
+            echo "Error: image digest had value in unexpected format: '${digest}'." >&2
+            exit 1
+          fi
+          find ./recipes -type f -name '*.yml' \
+            -execdir sed --sandbox -Ei \
+              -e "/\<source: ghcr.io\/blue-build\/modules@/s/@sha256:.*/@${digest}/" \
+              '{}' +
 
       - uses: peter-evans/create-pull-request@84ae59a2cdc2258d6fa0732dd66352dddae2a412  # v7.0.9
         with:
           add-paths: |
-            files/po/*.pot
-            files/po/*/*.po
-          commit-message: 'chore(i18n): update PO files'
-          branch: create-pull-request/update-po
+            recipes/*.yml
+          commit-message: 'chore(deps): update BlueBuild modules'
+          branch: create-pull-request/update-bluebuild-modules
           sign-commits: true
-          title: 'chore(i18n): update PO files'
+          title: 'chore(deps): update BlueBuild modules'
           body: |
-            Automatically update POT and PO files by running the script `files/po/update_po.py`.
-
-            Translators may need to add new translations to the PO files.
+            Automatically update BlueBuild modules to the SHA256 hash of the latest build of
+            [blue-build/modules](https://github.com/blue-build/modules/pkgs/container/modules).

@@ -21,7 +21,7 @@ import sys
 from dataclasses import dataclass, field
 from typing import Final
 
-# Change me during development!
+# Directory containing privileged workers - change during development!
 INNER_DIR: Final[str] = "/usr/libexec/secureblue/inner"
 
 # Copyright (C) 2025 Daniel Hast
@@ -40,7 +40,6 @@ SYSCALLS_TO_DENY: Final[list[str]] = [
     "memfd_create",
 ]
 RUN0_BASE_ARGUMENTS: Final[list[str]] = [
-    "--background=",
     "--property=DevicePolicy=closed",
     "--property=InaccessiblePaths=/run/dbus/ /run/user/",
     "--property=LockPersonality=yes",
@@ -63,8 +62,7 @@ RUN0_BASE_ARGUMENTS: Final[list[str]] = [
     "--property=RestrictRealtime=yes",
     "--property=RestrictSUIDSGID=yes",
     "--property=SystemCallArchitectures=native",
-    f"--property=SystemCallFilter={' '.join(SYSCALLS_TO_ALLOW)}",
-    f"--property=SystemCallFilter=~{' '.join(SYSCALLS_TO_DENY)}",
+    f"--property=SystemCallFilter={' '.join(SYSCALLS_TO_ALLOW)} ~{' ~'.join(SYSCALLS_TO_DENY)}",
     "--property=SystemCallErrorNumber=EPERM",
 ]
 
@@ -103,6 +101,13 @@ class SandboxedFunction:
     Optional; defaults to no arguments.
     """
 
+    remove_sandbox_properties: list[str] = field(default_factory=list, kw_only=True)
+    """A list of run0 *properties* to remove from the final sandbox.
+
+    These take the form of a key=value pair. See run0(1).
+    Optional; defaults to no properties.
+    """
+
     subprocess_interactive: bool = field(default=False, kw_only=True)
     """Whether to pass the current stdin, stdout and stderr to the sandbox."""
 
@@ -112,7 +117,7 @@ class SandboxedFunction:
     def __post_init__(self):
         """Ensures list fields have expected types and creates sandbox properties."""
 
-        # Validate types.
+        # Validate argument values and types.
         for prop in (
             self.capabilities,
             self.read_write_paths,
@@ -132,7 +137,7 @@ class SandboxedFunction:
         if not all(arg.startswith("--") and arg != "--" for arg in additional_properties):
             raise ValueError("Invalid sandboxing options: options must start with --")
 
-        # Generate run0 arguments.
+        # Generate run0 arguments derived from own fields.
         derived_properties = [
             f"--property=CapabilityBoundingSet={' '.join(self.capabilities)}",
             f"--property=ReadWritePaths={' '.join(self.read_write_paths)}",
@@ -141,14 +146,26 @@ class SandboxedFunction:
             derived_properties.append(
                 f"--property=SystemCallFilter={' '.join(self.allowed_syscalls)}"
             )
+        if not self.subprocess_interactive and not any(
+            arg.startswith("--background") for arg in additional_properties
+        ):
+            # Suppress red background tint for non-interactive processes.
+            additional_properties.append("--background=")
+
         self.run0_arguments = RUN0_BASE_ARGUMENTS + derived_properties + additional_properties
+
+        # Finally, remove properties.
+        for prop in self.remove_sandbox_properties:
+            prop_arg = f"--property={prop}"
+            if prop_arg in self.run0_arguments:
+                self.run0_arguments.remove(prop_arg)
+
 
     def run(self, *args: str) -> int:
         """Run the sandboxed function.
 
         Args:
             *args (str): Positional arguments to pass to the sandboxed function.
-
         Returns:
             int: The exit status code of the function.
         """
@@ -174,6 +191,6 @@ def run(sandboxed_function: SandboxedFunction, *args: str) -> int:
             command, check=False, stdin=sys.stdin, stdout=sys.stdout, stderr=sys.stderr
         )  # nosec
     else:
-        result = subprocess.run(command, check=False)  # nosec
+        result = subprocess.run(command, check=False, stdin=subprocess.DEVNULL)  # nosec
 
     return result.returncode

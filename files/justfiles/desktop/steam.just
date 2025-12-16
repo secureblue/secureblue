@@ -67,15 +67,15 @@ install-steam:
             ;;
         2)
             echo "Distrobox method selected."
-            if [[ "$(ujust check-container-userns-state)" == "disabled" ]]; then
+            if [[ "$(ujust set-container-userns status)" == "disabled" ]]; then
                 echo "Distrobox requires container domain user namespaces to work, which are disabled by default for security reasons."
-                echo "You need to run 'ujust toggle-container-domain-userns-creation' to allow this."
+                echo "You need to run 'ujust set-container-userns on' to allow this."
                 container_userns_now=""
-                read -rp "Would you like to run 'ujust toggle-container-domain-userns-creation' now? [Y/n] " container_userns_now
+                read -rp "Would you like to run 'ujust set-container-userns on' now? [Y/n] " container_userns_now
                 container_userns_now=${container_userns_now:-y}
                 if [[ "$container_userns_now" == [Yy]* ]]; then
-                    echo "Running 'ujust toggle-container-domain-userns-creation'"
-                    ujust toggle-container-domain-userns-creation
+                    echo "Running 'ujust set-container-userns on'"
+                    ujust set-container-userns on
                 fi
             fi
             echo "Creating bazzite-arch distrobox."

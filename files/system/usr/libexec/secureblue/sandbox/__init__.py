@@ -62,7 +62,8 @@ RUN0_BASE_ARGUMENTS: Final[list[str]] = [
     "--property=RestrictRealtime=yes",
     "--property=RestrictSUIDSGID=yes",
     "--property=SystemCallArchitectures=native",
-    f"--property=SystemCallFilter={' '.join(SYSCALLS_TO_ALLOW)} ~{' ~'.join(SYSCALLS_TO_DENY)}",
+    f"--property=SystemCallFilter={' '.join(SYSCALLS_TO_ALLOW)}",
+    f"--property=SystemCallFilter=~{' '.join(SYSCALLS_TO_DENY)}",
     "--property=SystemCallErrorNumber=EPERM",
 ]
 
@@ -90,7 +91,7 @@ class SandboxedFunction:
     """A list of additional syscalls to be granted or denied.
 
     See systemd.exec(5) and `systemd-analyze syscall-filter`.
-    Optional; defaults to `@system-service ~@aio ~@chown ~@keyring ~@memlock
+    Optional. The default state is `@system-service ~@aio ~@chown ~@keyring ~@memlock
     ~@mount ~@privileged ~@resources ~@setuid ~memfd_create`.
     """
 
@@ -104,8 +105,8 @@ class SandboxedFunction:
     remove_sandbox_arguments: list[str] = field(default_factory=list, kw_only=True)
     """A list of run0 argument terms to remove from the final sandbox.
 
-    Any implicit arguments beginning with any of these terms will be removed. See run0(1).
-    Optional; defaults to no properties.
+    For example, `["--property=SystemCallFilter"]` will remove all syscall filters.
+    See run0(1). Optional; defaults to no properties.
     """
 
     subprocess_interactive: bool = field(default=False, kw_only=True)
@@ -147,7 +148,7 @@ class SandboxedFunction:
         args = RUN0_BASE_ARGUMENTS.copy()
 
         # Add args implied by other fields.
-        args = [
+        args += [
             f"--property=CapabilityBoundingSet={' '.join(self.capabilities)}",
             f"--property=ReadWritePaths={' '.join(self.read_write_paths)}",
         ]
@@ -185,7 +186,7 @@ def run(sandboxed_function: SandboxedFunction, *args: str) -> int:
 
     command = [
         "/usr/bin/run0",
-        *sandboxed_function.get_arguments,
+        *sandboxed_function.get_arguments(),
         "--",
         "/usr/bin/python3",
         "-B",  # prevents use of bytecode (pycache) to ease run0 sandboxing configuration

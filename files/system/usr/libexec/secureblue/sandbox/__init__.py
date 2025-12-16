@@ -103,9 +103,9 @@ class SandboxedFunction:
     """
 
     remove_sandbox_arguments: list[str] = field(default_factory=list, kw_only=True)
-    """A list of run0 argument terms to remove from the final sandbox.
+    """A list of run0 argument terms to fully override the defaults for.
 
-    For example, `["--property=SystemCallFilter"]` will remove all syscall filters.
+    For example, `["--property=SystemCallFilter"]` will remove all default syscall filters.
     See run0(1). Optional; defaults to no properties.
     """
 
@@ -155,6 +155,9 @@ class SandboxedFunction:
         if self.allowed_syscalls:
             args.append(f"--property=SystemCallFilter={' '.join(self.allowed_syscalls)}")
 
+        # Remove any args that begin with a term in remove_sandbox_arguments.
+        args[:] = [arg for arg in args if not arg.startswith(tuple(self.remove_sandbox_arguments))]
+
         # Add explicit additional properties.
         args += self.additional_sandbox_properties
 
@@ -163,9 +166,6 @@ class SandboxedFunction:
             arg.startswith("--background") for arg in args
         ):
             args.append("--background=")
-
-        # Remove any args that begin with a term in remove_sandbox_arguments.
-        args[:] = [arg for arg in args if not arg.startswith(tuple(self.remove_sandbox_arguments))]
 
         return args
 

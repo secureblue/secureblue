@@ -114,10 +114,14 @@ class SandboxedFunction:
     run0_arguments: list[str] = field(default_factory=list, init=False)
     """An auto-generated list of run0 arguments, including `additional_sandbox_properties`."""
 
-    def __post_init__(self):
-        """Ensures list fields have expected types and creates sandbox properties."""
 
-        # Validate argument values and types.
+    def _validate_fields(self) -> None:
+        """Validate init field values and types.
+
+        Raises:
+            ValueError: The value or type of the SandboxedFunction field is invalid.
+        """
+
         for prop in (
             self.capabilities,
             self.read_write_paths,
@@ -133,11 +137,14 @@ class SandboxedFunction:
             raise ValueError(
                 f"Bad argument to SandboxedFunction: expected bool, got `{type(subprocess_inter)}`."
             )
-        additional_properties = self.additional_sandbox_properties
-        if not all(arg.startswith("--") and arg != "--" for arg in additional_properties):
+        additional_props = self.additional_sandbox_properties
+        if not all(arg.startswith("--") and arg != "--" for arg in additional_props):
             raise ValueError("Invalid sandboxing options: options must start with --")
 
-        # Generate run0 arguments derived from own fields.
+
+    def _get_derived_properties(self) -> list[str]:
+        """Generate run0 arguments derived from own fields."""
+
         derived_properties = [
             f"--property=CapabilityBoundingSet={' '.join(self.capabilities)}",
             f"--property=ReadWritePaths={' '.join(self.read_write_paths)}",
@@ -147,12 +154,24 @@ class SandboxedFunction:
                 f"--property=SystemCallFilter={' '.join(self.allowed_syscalls)}"
             )
         if not self.subprocess_interactive and not any(
-            arg.startswith("--background") for arg in additional_properties
+            arg.startswith("--background") for arg in self.additional_sandbox_properties
         ):
             # Suppress red background tint for non-interactive processes.
-            additional_properties.append("--background=")
+            derived_properties.append("--background=")
 
-        self.run0_arguments = RUN0_BASE_ARGUMENTS + derived_properties + additional_properties
+        return derived_properties
+
+
+    def __post_init__(self) -> None:
+        """Ensures list fields have expected types and creates sandbox properties."""
+
+        self._validate_fields()
+
+        self.run0_arguments = (
+            RUN0_BASE_ARGUMENTS
+            + self._get_derived_properties()
+            + self.additional_sandbox_properties
+        )
 
         # Finally, remove properties.
         for prop in self.remove_sandbox_properties:

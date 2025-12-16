@@ -101,32 +101,30 @@ class SandboxedFunction:
     Optional; defaults to no arguments.
     """
 
-    remove_sandbox_properties: list[str] = field(default_factory=list, kw_only=True)
-    """A list of run0 *properties* to remove from the final sandbox.
+    remove_sandbox_arguments: list[str] = field(default_factory=list, kw_only=True)
+    """A list of run0 argument terms to remove from the final sandbox.
 
-    These take the form of a key=value pair. See run0(1).
+    Any implicit arguments beginning with any of these terms will be removed. See run0(1).
     Optional; defaults to no properties.
     """
 
     subprocess_interactive: bool = field(default=False, kw_only=True)
     """Whether to pass the current stdin, stdout and stderr to the sandbox."""
 
-    run0_arguments: list[str] = field(default_factory=list, init=False)
-    """An auto-generated list of run0 arguments, including `additional_sandbox_properties`."""
-
-
-    def _validate_fields(self) -> None:
+    def __post_init__(self) -> None:
         """Validate init field values and types.
 
         Raises:
             ValueError: The value or type of the SandboxedFunction field is invalid.
         """
 
+        # Validate types.
         for prop in (
             self.capabilities,
             self.read_write_paths,
             self.allowed_syscalls,
             self.additional_sandbox_properties,
+            self.remove_sandbox_arguments,
         ):
             if not isinstance(prop, list):
                 raise ValueError(
@@ -137,48 +135,38 @@ class SandboxedFunction:
             raise ValueError(
                 f"Bad argument to SandboxedFunction: expected bool, got `{type(subprocess_inter)}`."
             )
-        additional_props = self.additional_sandbox_properties
-        if not all(arg.startswith("--") and arg != "--" for arg in additional_props):
+
+        # All argument fields must contain only strings beginning with '--'.
+        prop_args = self.additional_sandbox_properties + self.remove_sandbox_arguments
+        if not all(arg.startswith("--") and arg != "--" for arg in prop_args):
             raise ValueError("Invalid sandboxing options: options must start with --")
 
+    def get_arguments(self) -> list[str]:
+        """Generate run0 arguments."""
 
-    def _get_derived_properties(self) -> list[str]:
-        """Generate run0 arguments derived from own fields."""
+        args = RUN0_BASE_ARGUMENTS.copy()
 
-        derived_properties = [
+        # Add args implied by other fields.
+        args = [
             f"--property=CapabilityBoundingSet={' '.join(self.capabilities)}",
             f"--property=ReadWritePaths={' '.join(self.read_write_paths)}",
         ]
         if self.allowed_syscalls:
-            derived_properties.append(
-                f"--property=SystemCallFilter={' '.join(self.allowed_syscalls)}"
-            )
+            args.append(f"--property=SystemCallFilter={' '.join(self.allowed_syscalls)}")
+
+        # Add explicit additional properties.
+        args += self.additional_sandbox_properties
+
+        # Suppress red background tint for non-interactive processes.
         if not self.subprocess_interactive and not any(
-            arg.startswith("--background") for arg in self.additional_sandbox_properties
+            arg.startswith("--background") for arg in args
         ):
-            # Suppress red background tint for non-interactive processes.
-            derived_properties.append("--background=")
+            args.append("--background=")
 
-        return derived_properties
+        # Remove any args that begin with a term in remove_sandbox_arguments.
+        args[:] = [arg for arg in args if not arg.startswith(tuple(self.remove_sandbox_arguments))]
 
-
-    def __post_init__(self) -> None:
-        """Ensures list fields have expected types and creates sandbox properties."""
-
-        self._validate_fields()
-
-        self.run0_arguments = (
-            RUN0_BASE_ARGUMENTS
-            + self._get_derived_properties()
-            + self.additional_sandbox_properties
-        )
-
-        # Finally, remove properties.
-        for prop in self.remove_sandbox_properties:
-            prop_arg = f"--property={prop}"
-            if prop_arg in self.run0_arguments:
-                self.run0_arguments.remove(prop_arg)
-
+        return args
 
     def run(self, *args: str) -> int:
         """Run the sandboxed function.
@@ -197,7 +185,7 @@ def run(sandboxed_function: SandboxedFunction, *args: str) -> int:
 
     command = [
         "/usr/bin/run0",
-        *sandboxed_function.run0_arguments,
+        *sandboxed_function.get_arguments,
         "--",
         "/usr/bin/python3",
         "-B",  # prevents use of bytecode (pycache) to ease run0 sandboxing configuration

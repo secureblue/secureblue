@@ -1,6 +1,6 @@
 contact_links:
-  - name: Discord
+  - name: General Inquiry
     url: https://discord.gg/gNr3Kbks34
-    about: Support and Discussion with the Community
+    about: Project questions, support, and discussion with the community
 # disable blank issue creation
 blank_issues_enabled: false

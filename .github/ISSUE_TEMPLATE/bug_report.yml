@@ -69,7 +69,5 @@ body:
           required: true
         - label: I declare that this is not a request for alternate community messaging or social platforms.
           required: true
-        - label: I declare that this is not an informational question (Informational questions should be directed to the Discord).
-          required: true
         - label: I declare that I have read the [secureblue website](https://secureblue.dev/#about) and my feature request is in-scope.
           required: true

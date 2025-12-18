@@ -19,8 +19,7 @@ KERNEL_VERSION="$(rpm -q "kernel" --queryformat '%{VERSION}-%{RELEASE}.%{ARCH}')
 ZFS_MINOR_VERSION="2.4"
 
 curl -fLsS --retry 5 -o data.json "https://api.github.com/repos/openzfs/zfs/releases"
-# TODO add back .prerelease==false when 2.4 is out
-ZFS_VERSION=$(jq -r --arg ZMV "zfs-${ZFS_MINOR_VERSION}" '[ .[] | select(.draft==false) | select(.tag_name | startswith($ZMV))][0].tag_name' data.json|cut -f2- -d-)
+ZFS_VERSION=$(jq -r --arg ZMV "zfs-${ZFS_MINOR_VERSION}" '[ .[] | select(.prerelease==false and .draft==false) | select(.tag_name | startswith($ZMV))][0].tag_name' data.json|cut -f2- -d-)
 echo "ZFS_VERSION==$ZFS_VERSION"
 
 dnf install -y --setopt=install_weak_deps=False "kernel-devel-matched-$(rpm -q 'kernel' --queryformat '%{VERSION}')"

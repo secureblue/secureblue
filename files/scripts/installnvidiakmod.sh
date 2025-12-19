@@ -18,7 +18,6 @@ set -oue pipefail
 mkdir -p /var/tmp
 chmod 1777 /var/tmp
 
-PINNED_OPEN_VERSION="580.105.08"
 KERNEL_VERSION="$(rpm -q "kernel" --queryformat '%{VERSION}-%{RELEASE}.%{ARCH}')"
 RELEASE="$(rpm -E '%fedora.%_arch')"
 if [[ "$IMAGE_NAME" == *"open"* ]]; then
@@ -36,11 +35,7 @@ dnf install -y --setopt=install_weak_deps=False akmods gcc-c++
 cp /usr/sbin/akmodsbuild /usr/sbin/akmodsbuild.backup
 # TODO remove this when fixed upstream
 sed -i '/if \[\[ -w \/var \]\] ; then/,/fi/d' /usr/sbin/akmodsbuild
-if [[ "$IMAGE_NAME" == *"open"* ]]; then
-    dnf install -y --setopt=install_weak_deps=False "nvidia-kmod-common-${PINNED_OPEN_VERSION}" "akmod-nvidia-${PINNED_OPEN_VERSION}" "nvidia-modprobe-${PINNED_OPEN_VERSION}"
-else
-    dnf install -y --setopt=install_weak_deps=False nvidia-kmod-common nvidia-modprobe
-fi
+dnf install -y --setopt=install_weak_deps=False nvidia-kmod-common nvidia-modprobe akmod-nvidia
 mv /usr/sbin/akmodsbuild.backup /usr/sbin/akmodsbuild
 
 if [[ "$IMAGE_NAME" == *"open"* ]]; then

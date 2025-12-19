@@ -38,11 +38,6 @@ sed -i '/if \[\[ -w \/var \]\] ; then/,/fi/d' /usr/sbin/akmodsbuild
 dnf install -y --setopt=install_weak_deps=False nvidia-kmod-common nvidia-modprobe akmod-nvidia
 mv /usr/sbin/akmodsbuild.backup /usr/sbin/akmodsbuild
 
-if [[ "$IMAGE_NAME" == *"open"* ]]; then
-    echo "Setting kernel.conf to kernel-open"
-    sed -i --sandbox "s/^MODULE_VARIANT=.*/MODULE_VARIANT=kernel-open/" /etc/nvidia/kernel.conf
-fi
-
 echo "Installing kmod..."
 akmods --force --kernels "${KERNEL_VERSION}" --kmod "nvidia"
 

@@ -16,14 +16,14 @@
 install-steam:
     #!/usr/bin/bash
     if [ -z "$(pgrep Xwayland)" ] && [ -z "$(pgrep Xorg)" ] ; then
-        echo "Steam requires X or Xwayland, which your variant of secureblue has disabled by default."
-        echo "Please run 'ujust toggle-xwayland' to re-enable it."
-        toggle_xwayland_now=""
-        read -rp "Would you like to run 'ujust toggle-xwayland' now? [Y/n] " toggle_xwayland_now
-        toggle_xwayland_now=${toggle_xwayland_now:-y}
-        if [[ "$toggle_xwayland_now" == [Yy]* ]]; then
-            echo "Running 'ujust toggle-xwayland'"
-            ujust toggle-xwayland
+        echo "Steam requires X or XWayland, which your variant of secureblue has disabled by default."
+        echo "Please run 'ujust set-xwayland on' to re-enable it."
+        enable_xwayland_now=""
+        read -rp "Would you like to run 'ujust set-xwayland on' now? [Y/n] " enable_xwayland_now
+        enable_xwayland_now=${enable_xwayland_now:-y}
+        if [[ "$enable_xwayland_now" == [Yy]* ]]; then
+            echo "Running 'ujust set-xwayland on'"
+            ujust set-xwayland on
             reboot_now=""
             read -rp "Would you like to reboot now? [y/N] " reboot_now
             if [[ "$reboot_now" == [Yy]* ]]; then

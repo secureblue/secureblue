@@ -19,10 +19,11 @@ Various utility functions used in secureblue scripts.
 """
 
 import enum
+import json
 import subprocess  # nosec
 import sys
 import textwrap
-from collections.abc import Iterable
+from collections.abc import Iterable, Sequence
 
 import rpm
 
@@ -64,6 +65,63 @@ def parse_basic_toggle_args(*, prompt: str | None = None) -> ToggleMode:
         return ToggleMode(mode)
     except ValueError as e:
         raise CommandUsageError("Invalid option selected") from e
+
+
+class Image(enum.Enum):
+    """Fedora atomic base image"""
+
+    SILVERBLUE = enum.auto()
+    KINOITE = enum.auto()
+    SERICEA = enum.auto()
+    COSMIC = enum.auto()
+    COREOS = enum.auto()
+    IOT = enum.auto()
+
+    @classmethod
+    def from_image_ref(cls, image_ref: str) -> "Image | None":
+        """Convert an image reference to the corresponding Image enum instance."""
+        image_dict: dict[str, Image] = {
+            "silverblue": cls.SILVERBLUE,
+            "kinoite": cls.KINOITE,
+            "sericea": cls.SERICEA,
+            "cosmic": cls.COSMIC,
+            "securecore": cls.COREOS,
+            "iot": cls.IOT,
+        }
+        image_name = image_ref.rsplit("/", maxsplit=1)[-1]
+        image_prefix = image_name.split("-", maxsplit=1)[0]
+        return image_dict.get(image_prefix)
+
+    @classmethod
+    def by_alias(cls, alias: str) -> "Image | None":
+        """Look up Image enum instance by alias."""
+        alias = alias.casefold()
+        aliases: dict[Image, Sequence[str]] = {
+            cls.SILVERBLUE: ("silverblue", "gnome"),
+            cls.KINOITE: ("kinoite", "kde", "plasma"),
+            cls.SERICEA: ("sericea", "sway"),
+            cls.COSMIC: ("cosmic",),
+            cls.COREOS: ("securecore", "coreos"),
+            cls.IOT: ("iot",),
+        }
+        for image, image_aliases in aliases.items():
+            if alias in image_aliases:
+                return image
+        return None
+
+    def is_server(self) -> bool:
+        """Is the image a server image?"""
+        return self in (Image.COREOS, Image.IOT)
+
+    def is_desktop(self) -> bool:
+        """Is the image a desktop image?"""
+        return not self.is_server()
+
+
+def booted_image_ref() -> str:
+    """Get the image reference of the booted deployment."""
+    ostree_status = command_stdout("/usr/bin/rpm-ostree", "status", "--json")
+    return json.loads(ostree_status)["deployments"][0]["container-image-reference"]
 
 
 def print_wrapped(text: str, *, width: int = 70) -> None:

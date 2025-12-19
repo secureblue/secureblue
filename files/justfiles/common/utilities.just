@@ -435,12 +435,12 @@ install-vpn:
             echo 'XWayland already enabled, skipping...'
         else
             echo 'This VPN requires XWayland to be enabled.'
-            echo 'This will execute "ujust toggle-xwayland". You can also manually do this later if you skip this step.'
+            echo 'This will execute "ujust set-xwayland on". You can also manually do this later if you skip this step.'
             echo 'Warning: This is a security reduction!'
             read -rp 'Do you want to do this now? [Y/n] ' proceed_xwayland
             if ! [[ "$proceed_xwayland" == [nN]* ]]; then
                 echo 'Enabling XWayland...'
-                ujust toggle-xwayland
+                ujust set-xwayland on
                 echo 'Enabled XWayland.'
             fi
         fi

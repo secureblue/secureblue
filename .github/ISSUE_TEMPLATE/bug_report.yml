@@ -1,6 +1,6 @@
 name: Bug report
-description: Something isn't working
-title: "[BUG] Issue with ..."
+description: Report unintended behavior (not security implicated)
+title: "[BUG] Unintended behavior found in ..."
 labels: []
 assignees: []
 

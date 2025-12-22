@@ -16,7 +16,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-11-24 00:55+0000\n"
+"POT-Creation-Date: 2025-12-22 00:06+0000\n"
 "PO-Revision-Date: 2025-09-22 23:20-0400\n"
 "Last-Translator: Cup-png <232283931+Cup-png@users.noreply.github.com>\n"
 "Language-Team: none\n"
@@ -122,63 +122,81 @@ msgid "Ensuring no authselect overrides"
 msgstr "Asegurando que no hayan sobreescrituras de authselect"
 
 #: files/system/usr/libexec/secureblue/audit_secureblue.py:241
-#: files/system/usr/libexec/secureblue/audit_secureblue.py:761
-#: files/system/usr/libexec/secureblue/audit_secureblue.py:770
+#: files/system/usr/libexec/secureblue/audit_secureblue.py:802
+#: files/system/usr/libexec/secureblue/audit_secureblue.py:811
 #, python-brace-format
 msgid "The file {0} has been modified."
 msgstr "El archivo {0} ha sido modificado."
 
-#: files/system/usr/libexec/secureblue/audit_secureblue.py:245
-#, python-brace-format
-msgid "{0} exists."
-msgstr "{0} existe."
-
-#: files/system/usr/libexec/secureblue/audit_secureblue.py:246
-msgid "Ensuring no container policy overrides"
+#: files/system/usr/libexec/secureblue/audit_secureblue.py:249
+#: files/system/usr/libexec/secureblue/audit_secureblue.py:287
+#, fuzzy
+msgid "Analyzing container policy"
 msgstr "Asegurando que no hayan sobreescrituras de políticas de contenedores"
 
-#: files/system/usr/libexec/secureblue/audit_secureblue.py:258
+#: files/system/usr/libexec/secureblue/audit_secureblue.py:255
+#, python-brace-format
+msgid "Container policy has a local override at {0}."
+msgstr ""
+
+#: files/system/usr/libexec/secureblue/audit_secureblue.py:260
+msgid "The default container policy is insecure."
+msgstr ""
+
+#: files/system/usr/libexec/secureblue/audit_secureblue.py:270
+#, python-brace-format
+msgid "The default container policy for transport '{0}' is insecure."
+msgstr ""
+
+#: files/system/usr/libexec/secureblue/audit_secureblue.py:283
+#, python-brace-format
+msgid ""
+"Signature validation is disabled for containers at the following scopes:\n"
+"{0}"
+msgstr ""
+
+#: files/system/usr/libexec/secureblue/audit_secureblue.py:299
 msgid "Unconfined domain user namespace creation is permitted."
 msgstr ""
 "Creación del dominio de espacios de nombres de usuarios no confinados está "
 "permitido."
 
-#: files/system/usr/libexec/secureblue/audit_secureblue.py:259
-#: files/system/usr/libexec/secureblue/audit_secureblue.py:276
+#: files/system/usr/libexec/secureblue/audit_secureblue.py:300
+#: files/system/usr/libexec/secureblue/audit_secureblue.py:317
 msgid "To disallow it, run:"
 msgstr "Para prohibirlo, ejecute:"
 
-#: files/system/usr/libexec/secureblue/audit_secureblue.py:263
+#: files/system/usr/libexec/secureblue/audit_secureblue.py:304
 msgid "Ensuring unconfined user namespace creation disallowed"
 msgstr ""
 "Asegurando que la creación de espacios de nombres de usuarios no confinados "
 "está prohibida"
 
-#: files/system/usr/libexec/secureblue/audit_secureblue.py:275
+#: files/system/usr/libexec/secureblue/audit_secureblue.py:316
 msgid "Container domain user namespace creation is permitted."
 msgstr ""
 "Creación del dominio de espacios de nombres de usuarios para el uso de "
 "contenedores está permitida."
 
-#: files/system/usr/libexec/secureblue/audit_secureblue.py:280
+#: files/system/usr/libexec/secureblue/audit_secureblue.py:321
 msgid "Ensuring container user namespace creation disallowed"
 msgstr ""
 "Asegurando que la creación del dominio de espacios de nombres de usuarios "
 "para el uso de contenedores está prohibida"
 
-#: files/system/usr/libexec/secureblue/audit_secureblue.py:292
+#: files/system/usr/libexec/secureblue/audit_secureblue.py:333
 msgid "USBGuard is enabled but has failed to run."
 msgstr "USBGuard está habilitado pero ha fallado la ejecución."
 
-#: files/system/usr/libexec/secureblue/audit_secureblue.py:295
+#: files/system/usr/libexec/secureblue/audit_secureblue.py:336
 msgid "USBGuard is not enabled."
 msgstr "USBGuard no está habilitado."
 
-#: files/system/usr/libexec/secureblue/audit_secureblue.py:298
+#: files/system/usr/libexec/secureblue/audit_secureblue.py:339
 msgid "To set up USBGuard, run:"
 msgstr "Para configurar USBGuard, ejecute:"
 
-#: files/system/usr/libexec/secureblue/audit_secureblue.py:301
+#: files/system/usr/libexec/secureblue/audit_secureblue.py:342
 msgid ""
 "Caution: if you have already set up USBGuard, this will overwrite the "
 "existing policy."
@@ -186,330 +204,331 @@ msgstr ""
 "Precaución: si ya tiene activado USBGuard, esto sobreescribirá la política "
 "existente."
 
-#: files/system/usr/libexec/secureblue/audit_secureblue.py:305
+#: files/system/usr/libexec/secureblue/audit_secureblue.py:346
 msgid "Ensuring USBGuard is active"
 msgstr "Asegurando que USBGuard está activo"
 
-#: files/system/usr/libexec/secureblue/audit_secureblue.py:317
-#: files/system/usr/libexec/secureblue/audit_secureblue.py:466
-#: files/system/usr/libexec/secureblue/audit_secureblue.py:497
-#: files/system/usr/libexec/secureblue/audit_secureblue.py:586
+#: files/system/usr/libexec/secureblue/audit_secureblue.py:358
+#: files/system/usr/libexec/secureblue/audit_secureblue.py:507
+#: files/system/usr/libexec/secureblue/audit_secureblue.py:538
+#: files/system/usr/libexec/secureblue/audit_secureblue.py:627
 #, python-brace-format
 msgid "{0} is enabled but has failed to run."
 msgstr "{0} está habilitado pero ha fallado la ejecución."
 
-#: files/system/usr/libexec/secureblue/audit_secureblue.py:320
-#: files/system/usr/libexec/secureblue/audit_secureblue.py:591
+#: files/system/usr/libexec/secureblue/audit_secureblue.py:361
+#: files/system/usr/libexec/secureblue/audit_secureblue.py:632
 #, python-brace-format
 msgid "{0} is not enabled."
 msgstr "{0} no está habilitado."
 
-#: files/system/usr/libexec/secureblue/audit_secureblue.py:321
+#: files/system/usr/libexec/secureblue/audit_secureblue.py:362
 msgid "To start and enable it, run:"
 msgstr "Para iniciar y habilitarlo, ejecute:"
 
-#: files/system/usr/libexec/secureblue/audit_secureblue.py:323
+#: files/system/usr/libexec/secureblue/audit_secureblue.py:364
 msgid "Ensuring chronyd is active"
 msgstr "Asegurando que chronyd está activo"
 
-#: files/system/usr/libexec/secureblue/audit_secureblue.py:354
+#: files/system/usr/libexec/secureblue/audit_secureblue.py:395
 msgid "DNS over HTTPS in Trivalent is disabled."
 msgstr "DNS mediante HTTPS en Trivalent está deshabilitado."
 
-#: files/system/usr/libexec/secureblue/audit_secureblue.py:358
+#: files/system/usr/libexec/secureblue/audit_secureblue.py:399
 msgid "Consider using DNS over HTTPS in Trivalent to hide queries."
 msgstr ""
 "Considere usar DNS mediante HTTPS en Trivalent para esconder consultas de "
 "búsqueda web."
 
-#: files/system/usr/libexec/secureblue/audit_secureblue.py:359
-#: files/system/usr/libexec/secureblue/audit_secureblue.py:374
+#: files/system/usr/libexec/secureblue/audit_secureblue.py:400
+#: files/system/usr/libexec/secureblue/audit_secureblue.py:415
 msgid "However, if you use a VPN, this may cause DNS leaks."
 msgstr "Sin embargo, si usa un VPN, esto puede causar fugas de DNS."
 
-#: files/system/usr/libexec/secureblue/audit_secureblue.py:360
-#: files/system/usr/libexec/secureblue/audit_secureblue.py:375
-#: files/system/usr/libexec/secureblue/audit_secureblue.py:400
-#: files/system/usr/libexec/secureblue/audit_secureblue.py:448
-#: files/system/usr/libexec/secureblue/audit_secureblue.py:474
-#: files/system/usr/libexec/secureblue/audit_secureblue.py:503
-#: files/system/usr/libexec/secureblue/audit_secureblue.py:534
-#: files/system/usr/libexec/secureblue/audit_secureblue.py:569
-#: files/system/usr/libexec/secureblue/audit_secureblue.py:594
+#: files/system/usr/libexec/secureblue/audit_secureblue.py:401
+#: files/system/usr/libexec/secureblue/audit_secureblue.py:416
+#: files/system/usr/libexec/secureblue/audit_secureblue.py:441
+#: files/system/usr/libexec/secureblue/audit_secureblue.py:489
+#: files/system/usr/libexec/secureblue/audit_secureblue.py:515
+#: files/system/usr/libexec/secureblue/audit_secureblue.py:544
+#: files/system/usr/libexec/secureblue/audit_secureblue.py:575
+#: files/system/usr/libexec/secureblue/audit_secureblue.py:610
+#: files/system/usr/libexec/secureblue/audit_secureblue.py:635
 msgid "To enable it, run:"
 msgstr "Para habilitarlo, ejecute:"
 
-#: files/system/usr/libexec/secureblue/audit_secureblue.py:369
+#: files/system/usr/libexec/secureblue/audit_secureblue.py:410
 msgid "Secure global DNS is not configured."
 msgstr "La conexión DNS global segura no está configurada."
 
-#: files/system/usr/libexec/secureblue/audit_secureblue.py:373
+#: files/system/usr/libexec/secureblue/audit_secureblue.py:414
 msgid "Consider using secure global DNS."
 msgstr "Considere usar la conexión global DNS segura."
 
-#: files/system/usr/libexec/secureblue/audit_secureblue.py:382
+#: files/system/usr/libexec/secureblue/audit_secureblue.py:423
 msgid "The secure DNS resolver is not in use, possibly for a VPN."
 msgstr ""
 
-#: files/system/usr/libexec/secureblue/audit_secureblue.py:386
+#: files/system/usr/libexec/secureblue/audit_secureblue.py:427
 msgid "To view or reset your current DNS configuration, run:"
 msgstr ""
 
-#: files/system/usr/libexec/secureblue/audit_secureblue.py:395
+#: files/system/usr/libexec/secureblue/audit_secureblue.py:436
 msgid "Local DNSSEC validation is disabled."
 msgstr "La validación de DNSSEC local está deshabilitada."
 
-#: files/system/usr/libexec/secureblue/audit_secureblue.py:399
+#: files/system/usr/libexec/secureblue/audit_secureblue.py:440
 msgid "You should enable local DNSSEC validation to prevent DNS hijacking."
 msgstr ""
 "De preferencia habilite la validación de DNSSEC local para prevenir "
 "envenenamiento de DNS."
 
-#: files/system/usr/libexec/secureblue/audit_secureblue.py:407
+#: files/system/usr/libexec/secureblue/audit_secureblue.py:448
 msgid "Using a VPN alongside Unbound without Global DNS may cause DNS leaks."
 msgstr ""
 
-#: files/system/usr/libexec/secureblue/audit_secureblue.py:411
+#: files/system/usr/libexec/secureblue/audit_secureblue.py:452
 msgid "If you use a VPN, switch your DNS resolver to systemd-resolved:"
 msgstr ""
 
-#: files/system/usr/libexec/secureblue/audit_secureblue.py:422
+#: files/system/usr/libexec/secureblue/audit_secureblue.py:463
 msgid "Ensuring system DNS resolution is secure"
 msgstr "Asegurando que la resolución de conexión DNS sea segura"
 
-#: files/system/usr/libexec/secureblue/audit_secureblue.py:439
-#: files/system/usr/libexec/secureblue/audit_secureblue.py:982
+#: files/system/usr/libexec/secureblue/audit_secureblue.py:480
+#: files/system/usr/libexec/secureblue/audit_secureblue.py:1023
 #, python-brace-format
 msgid "Unable to read file {0}."
 msgstr "No es posible leer el archivo {0}."
 
-#: files/system/usr/libexec/secureblue/audit_secureblue.py:447
+#: files/system/usr/libexec/secureblue/audit_secureblue.py:488
 msgid "MAC randomization is not enabled."
 msgstr "La aleatorización de MAC no está habilitada."
 
-#: files/system/usr/libexec/secureblue/audit_secureblue.py:454
+#: files/system/usr/libexec/secureblue/audit_secureblue.py:495
 msgid "Ensuring MAC randomization is enabled"
 msgstr "Asegurando que la aleatorización de MAC está habilitada"
 
-#: files/system/usr/libexec/secureblue/audit_secureblue.py:471
-#: files/system/usr/libexec/secureblue/audit_secureblue.py:500
+#: files/system/usr/libexec/secureblue/audit_secureblue.py:512
+#: files/system/usr/libexec/secureblue/audit_secureblue.py:541
 #, python-brace-format
 msgid "{0} is disabled."
 msgstr "{0} está deshabilitado."
 
-#: files/system/usr/libexec/secureblue/audit_secureblue.py:479
-#: files/system/usr/libexec/secureblue/audit_secureblue.py:508
-#: files/system/usr/libexec/secureblue/audit_secureblue.py:599
+#: files/system/usr/libexec/secureblue/audit_secureblue.py:520
+#: files/system/usr/libexec/secureblue/audit_secureblue.py:549
+#: files/system/usr/libexec/secureblue/audit_secureblue.py:640
 #, python-brace-format
 msgid "Ensuring {0} is enabled"
 msgstr "Asegurando que {0} está habilitado"
 
-#: files/system/usr/libexec/secureblue/audit_secureblue.py:526
-#: files/system/usr/libexec/secureblue/audit_secureblue.py:561
+#: files/system/usr/libexec/secureblue/audit_secureblue.py:567
+#: files/system/usr/libexec/secureblue/audit_secureblue.py:602
 #, python-brace-format
 msgid "{0} is enabled globally but has failed to run."
 msgstr "{0} está habilitado globalmente pero ha fallado la ejecución."
 
-#: files/system/usr/libexec/secureblue/audit_secureblue.py:531
-#: files/system/usr/libexec/secureblue/audit_secureblue.py:566
+#: files/system/usr/libexec/secureblue/audit_secureblue.py:572
+#: files/system/usr/libexec/secureblue/audit_secureblue.py:607
 #, python-brace-format
 msgid "{0} is not enabled globally."
 msgstr "{0} no está habilitado globalmente."
 
-#: files/system/usr/libexec/secureblue/audit_secureblue.py:539
-#: files/system/usr/libexec/secureblue/audit_secureblue.py:574
+#: files/system/usr/libexec/secureblue/audit_secureblue.py:580
+#: files/system/usr/libexec/secureblue/audit_secureblue.py:615
 #, python-brace-format
 msgid "Ensuring {0} is enabled globally"
 msgstr "Asegurando que {0} está habilitado globalmente"
 
-#: files/system/usr/libexec/secureblue/audit_secureblue.py:613
+#: files/system/usr/libexec/secureblue/audit_secureblue.py:654
 msgid "The current user is in the wheel group."
 msgstr "El usuario actual está en el grupo wheel."
 
-#: files/system/usr/libexec/secureblue/audit_secureblue.py:614
-msgid "To set up a separate wheel account, follow the instructions here:"
+#: files/system/usr/libexec/secureblue/audit_secureblue.py:655
+#, fuzzy
+msgid "To set up a separate wheel account, run:"
 msgstr "Para crear una cuenta wheel separada, siga las instrucciones aquí:"
 
-#: files/system/usr/libexec/secureblue/audit_secureblue.py:622
+#: files/system/usr/libexec/secureblue/audit_secureblue.py:663
 msgid "Ensuring user is not a member of the wheel group"
 msgstr "Asegurando que el usuario no sea miembro del grupo wheel"
 
-#: files/system/usr/libexec/secureblue/audit_secureblue.py:636
-#: files/system/usr/libexec/secureblue/audit_secureblue.py:647
+#: files/system/usr/libexec/secureblue/audit_secureblue.py:677
+#: files/system/usr/libexec/secureblue/audit_secureblue.py:688
 #, fuzzy, python-brace-format
 msgid "The current user is in the group '{0}'."
 msgstr "El usuario actual está en el grupo wheel."
 
-#: files/system/usr/libexec/secureblue/audit_secureblue.py:640
+#: files/system/usr/libexec/secureblue/audit_secureblue.py:681
 msgid "This allows privilege escalation to root."
 msgstr ""
 
-#: files/system/usr/libexec/secureblue/audit_secureblue.py:641
-#: files/system/usr/libexec/secureblue/audit_secureblue.py:653
+#: files/system/usr/libexec/secureblue/audit_secureblue.py:682
+#: files/system/usr/libexec/secureblue/audit_secureblue.py:694
 #, fuzzy
 msgid "To remove the user from this group, run:"
 msgstr "Para eliminar este permiso de una aplicación, use Flatseal o ejecute:"
 
-#: files/system/usr/libexec/secureblue/audit_secureblue.py:651
+#: files/system/usr/libexec/secureblue/audit_secureblue.py:692
 msgid "This group allows the user to read system and kernel logs."
 msgstr ""
 
-#: files/system/usr/libexec/secureblue/audit_secureblue.py:652
+#: files/system/usr/libexec/secureblue/audit_secureblue.py:693
 msgid "This might make it easier to exploit kernel vulnerabilities."
 msgstr ""
 
-#: files/system/usr/libexec/secureblue/audit_secureblue.py:659
+#: files/system/usr/libexec/secureblue/audit_secureblue.py:700
 #, fuzzy, python-brace-format
 msgid "The current user is in the unrecognized group '{0}'."
 msgstr "El usuario actual está en el grupo wheel."
 
-#: files/system/usr/libexec/secureblue/audit_secureblue.py:663
+#: files/system/usr/libexec/secureblue/audit_secureblue.py:704
 msgid ""
 "Group memberships can grant additional privileges and may pose security "
 "risks."
 msgstr ""
 
-#: files/system/usr/libexec/secureblue/audit_secureblue.py:664
+#: files/system/usr/libexec/secureblue/audit_secureblue.py:705
 msgid "You may want to consider removing the user from this group:"
 msgstr ""
 
-#: files/system/usr/libexec/secureblue/audit_secureblue.py:669
+#: files/system/usr/libexec/secureblue/audit_secureblue.py:710
 msgid "Checking if user is in groups with security implications"
 msgstr ""
 
-#: files/system/usr/libexec/secureblue/audit_secureblue.py:682
+#: files/system/usr/libexec/secureblue/audit_secureblue.py:723
 msgid "GNOME"
 msgstr "GNOME"
 
-#: files/system/usr/libexec/secureblue/audit_secureblue.py:685
+#: files/system/usr/libexec/secureblue/audit_secureblue.py:726
 msgid "KDE Plasma"
 msgstr "KDE Plasma"
 
-#: files/system/usr/libexec/secureblue/audit_secureblue.py:688
+#: files/system/usr/libexec/secureblue/audit_secureblue.py:729
 msgid "Sway"
 msgstr "Sway"
 
-#: files/system/usr/libexec/secureblue/audit_secureblue.py:698
+#: files/system/usr/libexec/secureblue/audit_secureblue.py:739
 #, python-brace-format
 msgid "Xwayland is enabled for {0}."
 msgstr "Xwayland está habilitado para {0}"
 
-#: files/system/usr/libexec/secureblue/audit_secureblue.py:699
-#: files/system/usr/libexec/secureblue/audit_secureblue.py:798
-#: files/system/usr/libexec/secureblue/audit_secureblue.py:976
+#: files/system/usr/libexec/secureblue/audit_secureblue.py:740
+#: files/system/usr/libexec/secureblue/audit_secureblue.py:839
+#: files/system/usr/libexec/secureblue/audit_secureblue.py:1017
 msgid "To disable it, run:"
 msgstr "Para deshabilitarlo, ejecute:"
 
-#: files/system/usr/libexec/secureblue/audit_secureblue.py:703
+#: files/system/usr/libexec/secureblue/audit_secureblue.py:744
 #, python-brace-format
 msgid "Ensuring {0} is disabled for {1}"
 msgstr "Asegurando que {0} está deshabilitado para {1}"
 
-#: files/system/usr/libexec/secureblue/audit_secureblue.py:726
+#: files/system/usr/libexec/secureblue/audit_secureblue.py:767
 msgid "GNOME user extensions are enabled."
 msgstr "Las extensiones de usuarios de GNOME están habilitadas."
 
-#: files/system/usr/libexec/secureblue/audit_secureblue.py:727
+#: files/system/usr/libexec/secureblue/audit_secureblue.py:768
 msgid "To disable this, run:"
 msgstr "Para deshabilitar esto, ejecute:"
 
-#: files/system/usr/libexec/secureblue/audit_secureblue.py:731
+#: files/system/usr/libexec/secureblue/audit_secureblue.py:772
 msgid "Ensuring GNOME user extensions are disabled"
 msgstr ""
 "Asegurando que las extensiones de usuarios de GNOME están deshabilitadas"
 
-#: files/system/usr/libexec/secureblue/audit_secureblue.py:743
+#: files/system/usr/libexec/secureblue/audit_secureblue.py:784
 msgid "SELinux is in Permissive mode."
 msgstr "SELinux está en Modo Permisivo."
 
-#: files/system/usr/libexec/secureblue/audit_secureblue.py:744
+#: files/system/usr/libexec/secureblue/audit_secureblue.py:785
 msgid "To set it to Enforcing mode, run:"
 msgstr "Para configurarlo en Modo Reforzado, ejecute:"
 
-#: files/system/usr/libexec/secureblue/audit_secureblue.py:748
+#: files/system/usr/libexec/secureblue/audit_secureblue.py:789
 msgid "Ensuring SELinux is in Enforcing mode"
 msgstr "Asegurando que SELinux está en Modo Reforzado"
 
-#: files/system/usr/libexec/secureblue/audit_secureblue.py:764
+#: files/system/usr/libexec/secureblue/audit_secureblue.py:805
 #, python-brace-format
 msgid "The file {0} has been deleted."
 msgstr "El archivo {0} ha sido eliminado."
 
-#: files/system/usr/libexec/secureblue/audit_secureblue.py:767
+#: files/system/usr/libexec/secureblue/audit_secureblue.py:808
 #, python-brace-format
 msgid "The file {0} cannot be read."
 msgstr "El archivo {0} no puede ser leído."
 
-#: files/system/usr/libexec/secureblue/audit_secureblue.py:771
+#: files/system/usr/libexec/secureblue/audit_secureblue.py:812
 msgid "To reset it, run:"
 msgstr "Para restablecerlo, ejecute:"
 
-#: files/system/usr/libexec/secureblue/audit_secureblue.py:775
+#: files/system/usr/libexec/secureblue/audit_secureblue.py:816
 msgid "Ensuring no environment file overrides"
 msgstr ""
 "Asegurando que no hayan sobreescrituras de variables de entorno de archivos"
 
-#: files/system/usr/libexec/secureblue/audit_secureblue.py:791
+#: files/system/usr/libexec/secureblue/audit_secureblue.py:832
 #, python-brace-format
 msgid "The file {0} was not found or inaccessible."
 msgstr "No se encontró el archivo {0} o es inaccesible."
 
-#: files/system/usr/libexec/secureblue/audit_secureblue.py:797
+#: files/system/usr/libexec/secureblue/audit_secureblue.py:838
 msgid "KDE GNHS is enabled."
 msgstr "KDE GNHS está habilitado."
 
-#: files/system/usr/libexec/secureblue/audit_secureblue.py:804
+#: files/system/usr/libexec/secureblue/audit_secureblue.py:845
 msgid "Ensuring KDE GHNS is disabled"
 msgstr "Asegurando que KDE GHNS está deshabilitado"
 
-#: files/system/usr/libexec/secureblue/audit_secureblue.py:818
+#: files/system/usr/libexec/secureblue/audit_secureblue.py:859
 #, python-brace-format
 msgid "The file {0} was not found."
 msgstr "No se encontró el archivo {0}."
 
-#: files/system/usr/libexec/secureblue/audit_secureblue.py:825
+#: files/system/usr/libexec/secureblue/audit_secureblue.py:866
 #, python-brace-format
 msgid "{0} has mode {1:o} (expected {2:o})"
 msgstr "{0} tiene modo {1:o} ({2:o} esperado)"
 
-#: files/system/usr/libexec/secureblue/audit_secureblue.py:829
+#: files/system/usr/libexec/secureblue/audit_secureblue.py:870
 #, python-brace-format
 msgid "{0} is owned by a non-root user!"
 msgstr "{0} le pertenece a un usuario no root!"
 
-#: files/system/usr/libexec/secureblue/audit_secureblue.py:832
+#: files/system/usr/libexec/secureblue/audit_secureblue.py:873
 #, python-brace-format
 msgid "The file {0} has been modified or deleted."
 msgstr "El archivo {0} ha sido modificado o eliminado."
 
-#: files/system/usr/libexec/secureblue/audit_secureblue.py:833
+#: files/system/usr/libexec/secureblue/audit_secureblue.py:874
 msgid "To reset it and enable hardened_malloc for system processes, run:"
 msgstr ""
 "Para restablecer y habilitar hardened_malloc para procesos del sistema, "
 "ejecute:"
 
-#: files/system/usr/libexec/secureblue/audit_secureblue.py:838
+#: files/system/usr/libexec/secureblue/audit_secureblue.py:879
 #, python-brace-format
 msgid "Ensuring {0} has expected permissions"
 msgstr "Asegurando que {0} tenga los permisos esperados"
 
-#: files/system/usr/libexec/secureblue/audit_secureblue.py:857
+#: files/system/usr/libexec/secureblue/audit_secureblue.py:898
 #, python-brace-format
 msgid "{0} is set, but {1} has been modified."
 msgstr "{0} está configurado, pero {1} ha sido modificado."
 
-#: files/system/usr/libexec/secureblue/audit_secureblue.py:862
-#: files/system/usr/libexec/secureblue/audit_secureblue.py:865
+#: files/system/usr/libexec/secureblue/audit_secureblue.py:903
+#: files/system/usr/libexec/secureblue/audit_secureblue.py:906
 #, python-brace-format
 msgid "The '{0}' variant of {1} has been set."
 msgstr "La variante '{0}' de {1} ha sido establecida."
 
-#: files/system/usr/libexec/secureblue/audit_secureblue.py:868
+#: files/system/usr/libexec/secureblue/audit_secureblue.py:909
 #, python-brace-format
 msgid "{0} has not been set."
 msgstr "{0} no se ha establecido."
 
-#: files/system/usr/libexec/secureblue/audit_secureblue.py:871
+#: files/system/usr/libexec/secureblue/audit_secureblue.py:912
 #, python-brace-format
 msgid ""
 "The environment variable {0} has been modified or is unset.\n"
@@ -520,107 +539,107 @@ msgstr ""
 "                Verifique que el método {1} no haya sido sobreescrito en\n"
 "                {2} o en archivos de configuración relacionados."
 
-#: files/system/usr/libexec/secureblue/audit_secureblue.py:877
+#: files/system/usr/libexec/secureblue/audit_secureblue.py:918
 msgid "Ensuring hardened_malloc is set to be preloaded"
 msgstr "Asegurando que hardened_malloc está listo para ser precargado"
 
-#: files/system/usr/libexec/secureblue/audit_secureblue.py:904
+#: files/system/usr/libexec/secureblue/audit_secureblue.py:945
 msgid "Your hardware does not support secure boot."
 msgstr ""
 
-#: files/system/usr/libexec/secureblue/audit_secureblue.py:909
+#: files/system/usr/libexec/secureblue/audit_secureblue.py:950
 msgid ""
 "The system will be unable to verify that kernel modules are signed or the "
 "boot process."
 msgstr ""
 
-#: files/system/usr/libexec/secureblue/audit_secureblue.py:915
+#: files/system/usr/libexec/secureblue/audit_secureblue.py:956
 msgid "Ensuring secure boot is enabled"
 msgstr "Asegurando que el arranque seguro está habilitado"
 
-#: files/system/usr/libexec/secureblue/audit_secureblue.py:948
+#: files/system/usr/libexec/secureblue/audit_secureblue.py:989
 msgid "Bash environment is not locked down."
 msgstr "Las variables de entorno de Bash no están confinadas."
 
-#: files/system/usr/libexec/secureblue/audit_secureblue.py:949
+#: files/system/usr/libexec/secureblue/audit_secureblue.py:990
 msgid "The following files do not appear to be immutable or do not exist:"
 msgstr "Los siguientes archivos no parecen ser inmutables o no existen:"
 
-#: files/system/usr/libexec/secureblue/audit_secureblue.py:951
+#: files/system/usr/libexec/secureblue/audit_secureblue.py:992
 msgid "To fix this, run:"
 msgstr "Para solucionar esto, ejecute:"
 
-#: files/system/usr/libexec/secureblue/audit_secureblue.py:958
+#: files/system/usr/libexec/secureblue/audit_secureblue.py:999
 msgid "Ensuring current user's bash environment is locked down"
 msgstr ""
 "Asegurando que las variables de entorno de Bash del usuario están confinadas"
 
-#: files/system/usr/libexec/secureblue/audit_secureblue.py:975
-#: files/system/usr/libexec/secureblue/audit_secureblue.py:980
+#: files/system/usr/libexec/secureblue/audit_secureblue.py:1016
+#: files/system/usr/libexec/secureblue/audit_secureblue.py:1021
 msgid "Webcam module is enabled."
 msgstr "El módulo de la cámara web está habilitado."
 
-#: files/system/usr/libexec/secureblue/audit_secureblue.py:985
+#: files/system/usr/libexec/secureblue/audit_secureblue.py:1026
 msgid "Checking whether webcam module is disabled"
 msgstr "Verificando si el módulo de la cámara web está habilitado."
 
-#: files/system/usr/libexec/secureblue/audit_secureblue.py:1007
+#: files/system/usr/libexec/secureblue/audit_secureblue.py:1048
 #, python-brace-format
 msgid "{0} is configured with an unknown URL."
 msgstr "{0} está configurado con una URL desconocida."
 
-#: files/system/usr/libexec/secureblue/audit_secureblue.py:1010
+#: files/system/usr/libexec/secureblue/audit_secureblue.py:1051
 #, python-brace-format
 msgid "{0} is not a verified flatpak repository."
 msgstr "{0} no es un repositorio de flatpaks verificados."
 
-#: files/system/usr/libexec/secureblue/audit_secureblue.py:1013
+#: files/system/usr/libexec/secureblue/audit_secureblue.py:1054
 #, python-brace-format
 msgid "Auditing flatpak remote {0}"
 msgstr "Verificando repositorio remoto de flatpaks {0}"
 
-#: files/system/usr/libexec/secureblue/audit_secureblue.py:1046
+#: files/system/usr/libexec/secureblue/audit_secureblue.py:1087
 #, python-brace-format
 msgid "Auditing {0}"
 msgstr "Verificando {0}"
 
-#: files/system/usr/libexec/secureblue/audit_secureblue.py:1062
+#: files/system/usr/libexec/secureblue/audit_secureblue.py:1103
 msgid "[Audit process interrupted. Exiting.]"
 msgstr "[Proceso de verificación interrumpido. Saliendo.]"
 
-#: files/system/usr/libexec/secureblue/audit_secureblue.py:1075
+#: files/system/usr/libexec/secureblue/audit_secureblue.py:1116
 msgid "Audit secureblue configuration for security"
 msgstr "Verificando la configuración de secureblue para seguridad"
 
-#: files/system/usr/libexec/secureblue/audit_secureblue.py:1079
+#: files/system/usr/libexec/secureblue/audit_secureblue.py:1120
 msgid "skip categories"
 msgstr "saltarse categorías"
 
-#: files/system/usr/libexec/secureblue/audit_secureblue.py:1080
+#: files/system/usr/libexec/secureblue/audit_secureblue.py:1121
 msgid "display output as JSON"
 msgstr "mostrar salida de datos como JSON"
 
-#: files/system/usr/libexec/secureblue/audit_secureblue.py:1084
+#: files/system/usr/libexec/secureblue/audit_secureblue.py:1125
 #, python-brace-format
 msgid "Valid arguments to {0} are: {1}"
 msgstr "Argumentos válidos de {0} son: {1}"
 
-#: files/system/usr/libexec/secureblue/audit_secureblue.py:1092
+#: files/system/usr/libexec/secureblue/audit_secureblue.py:1133
 #, python-brace-format
 msgid "*** Error in check '{0}' ***"
 msgstr "*** Error en la verificación '{0}' ***"
 
-#: files/system/usr/libexec/secureblue/audit_secureblue.py:1094
+#: files/system/usr/libexec/secureblue/audit_secureblue.py:1135
 msgid "*** Continuing... ***"
 msgstr "*** Continuando... ***"
 
-#: files/system/usr/libexec/secureblue/audit_secureblue.py:1097
+#: files/system/usr/libexec/secureblue/audit_secureblue.py:1138
 #, python-brace-format
 msgid "Use option '{0}' to skip flatpak recommendations."
 msgstr ""
 "Use la opción '{0}' para saltarse las recomendaciones para los flatpaks."
 
-#: files/system/usr/libexec/secureblue/audit_secureblue.py:1100
+#: files/system/usr/libexec/secureblue/audit_secureblue.py:1141
 msgid "*** WARNING: Unexpected error occurred. ***"
 msgstr "*** ADVERTENCIA: Ha ocurrido un error inesperado. ***"
 
@@ -864,90 +883,102 @@ msgid "The following flatpak app(s) can modify flatpak overrides:"
 msgstr ""
 "Los siguientes flatpaks pueden modificar los permisos de otros flatpaks:"
 
-#~ msgid "*** WARNING: Running audit script as root is not recommended. ***"
-#~ msgstr ""
-#~ "*** ADVERTENCIA: Ejecutar el script de verificación como usuario root no "
-#~ "es recomendado. ***"
+#: files/system/usr/libexec/secureblue/audit_utils/__init__.py:81
+msgid "*** WARNING: Running audit script as root is not recommended. ***"
+msgstr ""
+"*** ADVERTENCIA: Ejecutar el script de verificación como usuario root no es "
+"recomendado. ***"
 
-#~ msgid "*** Some results may be misleading or incomplete. ***"
-#~ msgstr ""
-#~ "*** Algunos resultados pueden ser engañosos o estar imcompletos. ***"
+#: files/system/usr/libexec/secureblue/audit_utils/__init__.py:82
+msgid "*** Some results may be misleading or incomplete. ***"
+msgstr "*** Algunos resultados pueden ser engañosos o estar imcompletos. ***"
 
-#~ msgid ""
-#~ "The following status indicators accompany checks run by the audit script:"
-#~ msgstr ""
-#~ "Los siguientes indicadores de estado están acompañados de revisión por el "
-#~ "script de verificación:"
+#: files/system/usr/libexec/secureblue/audit_utils/__init__.py:110
+msgid ""
+"The following status indicators accompany checks run by the audit script:"
+msgstr ""
+"Los siguientes indicadores de estado están acompañados de revisión por el "
+"script de verificación:"
 
-#~ msgid "check failed - the configuration may be less secure."
-#~ msgstr "la verificación falló - la configuración puede ser menos segura."
+#: files/system/usr/libexec/secureblue/audit_utils/__init__.py:113
+msgid "check failed - the configuration may be less secure."
+msgstr "la verificación falló - la configuración puede ser menos segura."
 
-#~ msgid "partial failure, or less significant issue detected."
-#~ msgstr "fallo parcial, o un problema menos significante fue detectado."
+#: files/system/usr/libexec/secureblue/audit_utils/__init__.py:114
+msgid "partial failure, or less significant issue detected."
+msgstr "fallo parcial, o un problema menos significante fue detectado."
 
-#~ msgid "check passed - no problems detected."
-#~ msgstr "la verificación approbó - ningún problema detectado."
+#: files/system/usr/libexec/secureblue/audit_utils/__init__.py:115
+msgid "check passed - no problems detected."
+msgstr "la verificación approbó - ningún problema detectado."
 
-#~ msgid "unable to perform check (usually due to a file permission issue)."
-#~ msgstr ""
-#~ "no es posible realizar la verificación (usualmente debido a un problema "
-#~ "de permisos del archivo)."
+#: files/system/usr/libexec/secureblue/audit_utils/__init__.py:116
+msgid "unable to perform check (usually due to a file permission issue)."
+msgstr ""
+"no es posible realizar la verificación (usualmente debido a un problema de "
+"permisos del archivo)."
 
-#~ msgid ""
-#~ "For flatpak checks, the status indicators have more specific meanings:"
-#~ msgstr ""
-#~ "Para revisión de flatpaks, los indicadores de estado tienen significados "
-#~ "más especificos:"
+#: files/system/usr/libexec/secureblue/audit_utils/__init__.py:121
+msgid "For flatpak checks, the status indicators have more specific meanings:"
+msgstr ""
+"Para revisión de flatpaks, los indicadores de estado tienen significados más "
+"especificos:"
 
-#~ msgid ""
-#~ "app has permissions that can be used as sandbox escapes, allow it to "
-#~ "modify\n"
-#~ "            its own permissions, or otherwise grant very broad access to "
-#~ "the system (e.g. access\n"
-#~ "            to certain directories, direct D-Bus access, X11)."
-#~ msgstr ""
-#~ "la aplicación tiene permisos que pueden ser usados para escapar del "
-#~ "sandbox, permitirle\n"
-#~ "            que modifique sus propios permisos, u otorgarle acceso muy "
-#~ "amplio al sistema (ej. acceso\n"
-#~ "            a ciertos directorios, acceso directo a D-Bus, X11)."
+#: files/system/usr/libexec/secureblue/audit_utils/__init__.py:124
+msgid ""
+"app has permissions that can be used as sandbox escapes, allow it to modify\n"
+"            its own permissions, or otherwise grant very broad access to the "
+"system (e.g. access\n"
+"            to certain directories, direct D-Bus access, X11)."
+msgstr ""
+"la aplicación tiene permisos que pueden ser usados para escapar del sandbox, "
+"permitirle\n"
+"            que modifique sus propios permisos, u otorgarle acceso muy "
+"amplio al sistema (ej. acceso\n"
+"            a ciertos directorios, acceso directo a D-Bus, X11)."
 
-#~ msgid ""
-#~ "app has permissions that have some sandbox escape potential or otherwise\n"
-#~ "            weaken security (e.g. PulseAudio, Bluetooth, not using "
-#~ "hardened_malloc)."
-#~ msgstr ""
-#~ "la aplicación tiene permisos con potencial para ser usados para escapar "
-#~ "del sandbox o\n"
-#~ "            que puedan reducir la seguridad (ej. PulseAudio, Bluetooth, "
-#~ "no usar hardened_malloc)."
+#: files/system/usr/libexec/secureblue/audit_utils/__init__.py:127
+msgid ""
+"app has permissions that have some sandbox escape potential or otherwise\n"
+"            weaken security (e.g. PulseAudio, Bluetooth, not using "
+"hardened_malloc)."
+msgstr ""
+"la aplicación tiene permisos con potencial para ser usados para escapar del "
+"sandbox o\n"
+"            que puedan reducir la seguridad (ej. PulseAudio, Bluetooth, no "
+"usar hardened_malloc)."
 
-#~ msgid ""
-#~ "no potential sandbox escapes detected but some permissions could "
-#~ "increase\n"
-#~ "            attack surface or have privacy implications (e.g. network "
-#~ "access)."
-#~ msgstr ""
-#~ "no se detectaron posibles vectores de escape del sandbox pero algunos "
-#~ "permisos podrían incrementar\n"
-#~ "            la superficie de ataque o tener implicaciones de privacidad "
-#~ "(ej. accesoa la red)."
+#: files/system/usr/libexec/secureblue/audit_utils/__init__.py:129
+msgid ""
+"no potential sandbox escapes detected but some permissions could increase\n"
+"            attack surface or have privacy implications (e.g. network "
+"access)."
+msgstr ""
+"no se detectaron posibles vectores de escape del sandbox pero algunos "
+"permisos podrían incrementar\n"
+"            la superficie de ataque o tener implicaciones de privacidad (ej. "
+"accesoa la red)."
 
-#~ msgid ""
-#~ "no app permissions flagged (however, not all permissions are audited)."
-#~ msgstr ""
-#~ "ningún permiso de aplicación fue señalado (sin embargo, no todos los "
-#~ "permisos son verificados)."
+#: files/system/usr/libexec/secureblue/audit_utils/__init__.py:131
+msgid "no app permissions flagged (however, not all permissions are audited)."
+msgstr ""
+"ningún permiso de aplicación fue señalado (sin embargo, no todos los "
+"permisos son verificados)."
 
-#~ msgid ""
-#~ "            Note that some flatpak apps require broad permissions to "
-#~ "function. Permissions being\n"
-#~ "            flagged by the audit script do not necessarily mean that "
-#~ "action should be taken.\n"
-#~ "            "
-#~ msgstr ""
-#~ "            Note que algunos flatpaks requieren permisos amplios para "
-#~ "funcionar. Los permisos señalados\n"
-#~ "            por el script de verificación no necesariamente indican que "
-#~ "se debería tomar alguna acción.\n"
-#~ "            "
+#: files/system/usr/libexec/secureblue/audit_utils/__init__.py:137
+msgid ""
+"            Note that some flatpak apps require broad permissions to "
+"function. Permissions being\n"
+"            flagged by the audit script do not necessarily mean that action "
+"should be taken.\n"
+"            "
+msgstr ""
+"            Note que algunos flatpaks requieren permisos amplios para "
+"funcionar. Los permisos señalados\n"
+"            por el script de verificación no necesariamente indican que se "
+"debería tomar alguna acción.\n"
+"            "
+
+#, python-brace-format
+#~ msgid "{0} exists."
+#~ msgstr "{0} existe."

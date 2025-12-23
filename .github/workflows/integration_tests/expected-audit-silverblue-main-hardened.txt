@@ -1,29 +1,29 @@
-{"name":"audit_kargs","description":"Checking for hardened kernel arguments","status":"warn","warnings":["Missing kernel argument: ia32_emulation=0 (32-bit support)","Missing kernel argument: nosmt=force (force-disable SMT)","Missing kernel argument (unstable): amd_iommu=force_isolation","Missing kernel argument (unstable): bdev_allow_write_mounted=0","Missing kernel argument (unstable): debugfs=off","Missing kernel argument (unstable): efi=disable_early_pci_dma","Missing kernel argument (unstable): gather_data_sampling=force","Missing kernel argument (unstable): oops=panic"]}
-{"name":"audit_sysctl","description":"Ensuring no sysctl overrides","status":"pass","warnings":[]}
-{"name":"audit_signed_image","description":"Ensuring a signed image is in use","status":"fail","warnings":[]}
-{"name":"audit_modprobe","description":"Ensuring no modprobe overrides","status":"pass","warnings":[]}
-{"name":"audit_ptrace","description":"Ensuring ptrace is forbidden","status":"pass","warnings":[]}
-{"name":"audit_authselect","description":"Ensuring no authselect overrides","status":"pass","warnings":[]}
-{"name":"audit_container_policy","description":"Analyzing container policy","status":"pass","warnings":[]}
-{"name":"audit_unconfined_userns","description":"Ensuring unconfined user namespace creation disallowed","status":"pass","warnings":[]}
-{"name":"audit_container_userns","description":"Ensuring container user namespace creation disallowed","status":"pass","warnings":[]}
-{"name":"audit_usbguard","description":"Ensuring USBGuard is active","status":"fail","warnings":["USBGuard is not enabled."]}
-{"name":"audit_chronyd","description":"Ensuring chronyd is active","status":"pass","warnings":[]}
-{"name":"audit_dns","description":"Ensuring system DNS resolution is secure","status":"fail","warnings":["Local DNSSEC validation is disabled.","Secure global DNS is not configured.","DNS over HTTPS in Trivalent is disabled."]}
-{"name":"audit_mac_randomization","description":"Ensuring MAC randomization is enabled","status":"fail","warnings":[]}
-{"name":"audit_rpm_ostree_timer","description":"Ensuring rpm-ostreed-automatic.timer is enabled","status":"pass","warnings":[]}
-{"name":"audit_podman_auto_update","description":"Ensuring podman-auto-update.timer is enabled","status":"pass","warnings":[]}
-{"name":"audit_podman_global_auto_update","description":"Ensuring podman-auto-update.timer is enabled globally","status":"pass","warnings":[]}
-{"name":"audit_flatpak_auto_update","description":"Ensuring flatpak-user-update.timer is enabled globally","status":"pass","warnings":[]}
-{"name":"audit_flatpak_auto_update","description":"Ensuring flatpak-system-update.timer is enabled","status":"pass","warnings":[]}
-{"name":"audit_groups","description":"Ensuring user is not a member of the wheel group","status":"fail","warnings":[]}
-{"name":"audit_groups","description":"Checking if user is in groups with security implications","status":"pass","warnings":[]}
-{"name":"audit_xwayland","description":"Ensuring Xwayland is disabled for GNOME","status":"pass","warnings":[]}
-{"name":"audit_gnome_extensions","description":"Ensuring GNOME user extensions are disabled","status":"pass","warnings":[]}
-{"name":"audit_selinux","description":"Ensuring SELinux is in Enforcing mode","status":"pass","warnings":[]}
-{"name":"audit_environment_file","description":"Ensuring no environment file overrides","status":"pass","warnings":[]}
-{"name":"audit_ld_preload","description":"Ensuring ld.so.preload has expected permissions","status":"pass","warnings":[]}
-{"name":"audit_hardened_malloc","description":"Ensuring hardened_malloc is set to be preloaded","status":"pass","warnings":[]}
-{"name":"audit_secureboot","description":"Ensuring secure boot is enabled","status":"info","warnings":["Your hardware does not support secure boot."]}
-{"name":"audit_bash_env_lockdown","description":"Ensuring current user's bash environment is locked down","status":"fail","warnings":[]}
-{"name":"audit_webcam_module","description":"Checking whether webcam module is disabled","status":"info","warnings":["Webcam module is enabled."]}
+{"name":"audit_kargs","description":"Checking for hardened kernel arguments","status":"warn","notes":[{"text":"Missing kernel argument: ia32_emulation=0 (32-bit support)","status":"warn"},{"text":"Missing kernel argument: nosmt=force (force-disable SMT)","status":"warn"},{"text":"Missing kernel argument (unstable): amd_iommu=force_isolation","status":"warn"},{"text":"Missing kernel argument (unstable): bdev_allow_write_mounted=0","status":"warn"},{"text":"Missing kernel argument (unstable): debugfs=off","status":"warn"},{"text":"Missing kernel argument (unstable): efi=disable_early_pci_dma","status":"warn"},{"text":"Missing kernel argument (unstable): gather_data_sampling=force","status":"warn"},{"text":"Missing kernel argument (unstable): oops=panic","status":"warn"}]}
+{"name":"audit_sysctl","description":"Ensuring no sysctl overrides","status":"pass","notes":[]}
+{"name":"audit_signed_image","description":"Ensuring a signed image is in use","status":"fail","notes":[]}
+{"name":"audit_modprobe","description":"Ensuring no modprobe overrides","status":"pass","notes":[]}
+{"name":"audit_ptrace","description":"Ensuring ptrace is forbidden","status":"pass","notes":[]}
+{"name":"audit_authselect","description":"Ensuring no authselect overrides","status":"pass","notes":[]}
+{"name":"audit_container_policy","description":"Analyzing container policy","status":"pass","notes":[]}
+{"name":"audit_unconfined_userns","description":"Ensuring unconfined user namespace creation disallowed","status":"pass","notes":[]}
+{"name":"audit_container_userns","description":"Ensuring container user namespace creation disallowed","status":"pass","notes":[]}
+{"name":"audit_usbguard","description":"Ensuring USBGuard is active","status":"fail","notes":[{"text":"USBGuard is not enabled.","status":"fail"}]}
+{"name":"audit_chronyd","description":"Ensuring chronyd is active","status":"pass","notes":[]}
+{"name":"audit_dns","description":"Ensuring system DNS resolution is secure","status":"fail","notes":[{"text":"Local DNSSEC validation is disabled.","status":"fail"},{"text":"Secure global DNS is not configured.","status":"warn"},{"text":"DNS over HTTPS in Trivalent is disabled.","status":"info"}]}
+{"name":"audit_mac_randomization","description":"Ensuring MAC randomization is enabled","status":"fail","notes":[]}
+{"name":"audit_rpm_ostree_timer","description":"Ensuring rpm-ostreed-automatic.timer is enabled","status":"pass","notes":[]}
+{"name":"audit_podman_auto_update","description":"Ensuring podman-auto-update.timer is enabled","status":"pass","notes":[]}
+{"name":"audit_podman_global_auto_update","description":"Ensuring podman-auto-update.timer is enabled globally","status":"pass","notes":[]}
+{"name":"audit_flatpak_auto_update","description":"Ensuring flatpak-user-update.timer is enabled globally","status":"pass","notes":[]}
+{"name":"audit_flatpak_auto_update","description":"Ensuring flatpak-system-update.timer is enabled","status":"pass","notes":[]}
+{"name":"audit_groups","description":"Ensuring user is not a member of the wheel group","status":"fail","notes":[]}
+{"name":"audit_groups","description":"Checking if user is in groups with security implications","status":"pass","notes":[]}
+{"name":"audit_xwayland","description":"Ensuring Xwayland is disabled for GNOME","status":"pass","notes":[]}
+{"name":"audit_gnome_extensions","description":"Ensuring GNOME user extensions are disabled","status":"pass","notes":[]}
+{"name":"audit_selinux","description":"Ensuring SELinux is in Enforcing mode","status":"pass","notes":[]}
+{"name":"audit_environment_file","description":"Ensuring no environment file overrides","status":"pass","notes":[]}
+{"name":"audit_ld_preload","description":"Ensuring ld.so.preload has expected permissions","status":"pass","notes":[]}
+{"name":"audit_hardened_malloc","description":"Ensuring hardened_malloc is set to be preloaded","status":"pass","notes":[]}
+{"name":"audit_secureboot","description":"Ensuring secure boot is enabled","status":"info","notes":[{"text":"Your hardware does not support secure boot.","status":"info"}]}
+{"name":"audit_bash_env_lockdown","description":"Ensuring current user's bash environment is locked down","status":"fail","notes":[]}
+{"name":"audit_webcam_module","description":"Checking whether webcam module is disabled","status":"info","notes":[{"text":"Webcam module is enabled.","status":"info"}]}

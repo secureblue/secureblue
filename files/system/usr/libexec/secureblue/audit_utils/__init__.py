@@ -19,7 +19,6 @@ Utils for system auditing.
 """
 
 import asyncio
-import enum
 import os
 import re
 
@@ -39,40 +38,6 @@ UNKNOWN: Final = Status.UNKNOWN
 
 
 _: Final = gettext_marker()
-
-
-class Image(enum.Enum):
-    """Fedora atomic base image"""
-
-    SILVERBLUE = enum.auto()
-    KINOITE = enum.auto()
-    SERICEA = enum.auto()
-    COSMIC = enum.auto()
-    COREOS = enum.auto()
-    IOT = enum.auto()
-
-    @classmethod
-    def from_image_ref(cls, image_ref: str) -> "Image | None":
-        """Convert an image reference to the corresponding Image enum instance."""
-        image_dict = {
-            "silverblue": cls.SILVERBLUE,
-            "kinoite": cls.KINOITE,
-            "sericea": cls.SERICEA,
-            "cosmic": cls.COSMIC,
-            "securecore": cls.COREOS,
-            "iot": cls.IOT,
-        }
-        image_name = image_ref.rsplit("/", maxsplit=1)[-1]
-        image_prefix = image_name.split("-", maxsplit=1)[0]
-        return image_dict.get(image_prefix)
-
-    def is_server(self) -> bool:
-        """Is the image a server image?"""
-        return self in (Image.COREOS, Image.IOT)
-
-    def is_desktop(self) -> bool:
-        """Is the image a desktop image?"""
-        return not self.is_server()
 
 
 def warn_if_root() -> None:

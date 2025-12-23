@@ -12,7 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-# Enable or disable XWayland
+# Enable or disable Xwayland
 [positional-arguments]
 set-xwayland *args:
     #!/bin/sh

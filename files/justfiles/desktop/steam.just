@@ -16,7 +16,7 @@
 install-steam:
     #!/usr/bin/bash
     if [ -z "$(pgrep Xwayland)" ] && [ -z "$(pgrep Xorg)" ] ; then
-        echo "Steam requires X or XWayland, which your variant of secureblue has disabled by default."
+        echo "Steam requires X or Xwayland, which your variant of secureblue has disabled by default."
         echo "Please run 'ujust set-xwayland on' to re-enable it."
         enable_xwayland_now=""
         read -rp "Would you like to run 'ujust set-xwayland on' now? [Y/n] " enable_xwayland_now

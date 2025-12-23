@@ -391,8 +391,8 @@ msgstr "Sway"
 
 #: files/system/usr/libexec/secureblue/audit_secureblue.py:698
 #, python-brace-format
-msgid "XWayland is enabled for {0}."
-msgstr "XWayland está habilitado para {0}"
+msgid "Xwayland is enabled for {0}."
+msgstr "Xwayland está habilitado para {0}"
 
 #: files/system/usr/libexec/secureblue/audit_secureblue.py:699
 #: files/system/usr/libexec/secureblue/audit_secureblue.py:798

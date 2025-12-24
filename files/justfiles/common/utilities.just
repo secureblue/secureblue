@@ -15,6 +15,16 @@
 uid := `id -u`
 shell := `grep :$(id -u): /etc/passwd | cut -d: -f7`
 
+# Show BIOS/UEFI info
+bios-info:
+    #!/usr/bin/bash
+    run0 bash <<'EOF'
+    echo "Manufacturer: $(dmidecode -s baseboard-manufacturer)"
+    echo "Product Name: $(dmidecode -s baseboard-product-name)"
+    echo "Version: $(dmidecode -s bios-version)"
+    echo "Release Date: $(dmidecode -s bios-release-date)"
+    EOF
+
 # Boot into this device's BIOS/UEFI screen
 bios:
     #!/usr/bin/bash

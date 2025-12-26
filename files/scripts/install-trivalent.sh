@@ -19,6 +19,8 @@ ARCH="$(uname -m)"
 dnf5 install python3-dnf -y
 
 curl -fLsS --retry 5 -o /etc/yum.repos.d/repo.secureblue.dev.secureblue.repo https://repo.secureblue.dev/secureblue.repo
+secureblue_gpg_key_path="$(dnf repo info secureblue --json | jq -r '.[0].gpg_key.[0]')"
+rpmkeys --import "${secureblue_gpg_key_path}"
 
 # The package signature IS NOT being checked at this stage,
 # see https://github.com/rpm-software-management/dnf5/issues/1985

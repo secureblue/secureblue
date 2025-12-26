@@ -1,5 +1,5 @@
 [Unit]
-Description=Disable the KDE splash screen as it is broken without XWayland. See https://secureblue.dev/faq#kde-splash-disabled
+Description=Disable the KDE splash screen as it is broken without Xwayland. See https://secureblue.dev/faq#kde-splash-disabled
 Before=dbus-broker.service
 ConditionUser=!@system
 

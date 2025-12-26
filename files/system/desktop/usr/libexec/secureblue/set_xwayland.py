@@ -14,7 +14,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-"""Enable or disable XWayland."""
+"""Enable or disable Xwayland."""
 
 import os
 import subprocess  # nosec
@@ -42,20 +42,20 @@ DE_NAMES: Final[dict[Image, str]] = {
 }
 
 HELP_MESSAGE: Final[str] = """\
-Enable or disable XWayland for the current desktop environment.
+Enable or disable Xwayland for the current desktop environment.
 
 usage:
 ujust set-xwayland
     Enables or disables interactively based on the user's preference.
 
 ujust set-xwayland on
-    Enables XWayland; does nothing if already on.
+    Enables Xwayland; does nothing if already on.
 
 ujust set-xwayland off
-    Disables XWayland; does nothing if already off.
+    Disables Xwayland; does nothing if already off.
 
 ujust set-xwayland status
-    Reports if XWayland is enabled or disabled.
+    Reports if Xwayland is enabled or disabled.
 
 ujust set-xwayland --help
     Prints this message.
@@ -71,7 +71,7 @@ def run(mode: ToggleMode) -> int:
 
     image = Image.from_image_ref(booted_image_ref())
     if image not in XWAYLAND_OVERRIDE_FILES:
-        print("The booted image does not support toggling XWayland.")
+        print("The booted image does not support toggling Xwayland.")
         return 1
 
     override_file = XWAYLAND_OVERRIDE_FILES[image]
@@ -83,12 +83,12 @@ def run(mode: ToggleMode) -> int:
             print("enabled" if enabled else "disabled")
         case ToggleMode.ON:
             if enabled:
-                print(f"XWayland for {de_name} is already enabled.")
+                print(f"Xwayland for {de_name} is already enabled.")
             else:
                 subprocess.run(
                     ["/usr/bin/run0", "/usr/bin/rm", "-f", "--", override_file], check=True
                 )  # nosec
-                print(f"XWayland for {de_name} has been enabled. Reboot to take effect.")
+                print(f"Xwayland for {de_name} has been enabled. Reboot to take effect.")
         case ToggleMode.OFF:
             if enabled:
                 subprocess.run(
@@ -102,9 +102,9 @@ def run(mode: ToggleMode) -> int:
                     ],
                     check=True,
                 )  # nosec
-                print(f"XWayland for {de_name} has been disabled. Reboot to take effect.")
+                print(f"Xwayland for {de_name} has been disabled. Reboot to take effect.")
             else:
-                print(f"XWayland for {de_name} is already disabled.")
+                print(f"Xwayland for {de_name} is already disabled.")
 
     return 0
 
@@ -112,7 +112,7 @@ def run(mode: ToggleMode) -> int:
 def main() -> int:
     """Main script entry point."""
     try:
-        mode = parse_basic_toggle_args(prompt="Would you like XWayland to be enabled?")
+        mode = parse_basic_toggle_args(prompt="Would you like Xwayland to be enabled?")
     except CommandUsageError as e:
         print(f"Usage error: {e}. See usage with --help.")
         return 2

@@ -775,12 +775,12 @@ def audit_xwayland(state):
     else:
         status = FAIL
         rec_lines = (
-            _("XWayland is enabled for {0}.").format(de),
+            _("Xwayland is enabled for {0}.").format(de),
             _("To disable it, run:"),
             "$ ujust set-xwayland off",
         )
         rec = "\n".join(rec_lines)
-    yield Report(_("Ensuring {0} is disabled for {1}").format("XWayland", de), status, recs=rec)
+    yield Report(_("Ensuring {0} is disabled for {1}").format("Xwayland", de), status, recs=rec)
 
 
 @audit

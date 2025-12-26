@@ -20,8 +20,9 @@ dnf5 install python3-dnf -y
 
 curl -fLsS --retry 5 -o /etc/yum.repos.d/repo.secureblue.dev.secureblue.repo https://repo.secureblue.dev/secureblue.repo
 
-# dnf4 must be used here due to https://github.com/rpm-software-management/dnf5/issues/1985
-dnf4 install --repoid=secureblue --downloadonly --best --downloaddir=. -y trivalent
+# The package signature IS NOT being checked at this stage,
+# see https://github.com/rpm-software-management/dnf5/issues/1985
+dnf5 --best --repo=secureblue download -y trivalent
 
 trivalent_rpms_found=0
 for trivalent_rpm in trivalent-*."${ARCH}".rpm; do
@@ -43,6 +44,7 @@ wget "https://github.com/secureblue/Trivalent/releases/download/${trivalent_vers
 
 slsa-verifier verify-artifact "${trivalent_rpm}" --provenance-path "${provenance_file}" --source-uri github.com/secureblue/Trivalent --source-branch live
 
-dnf install "${trivalent_rpm}" -y
+# Forcing GPG check of a package installed from outside a repository
+dnf5 --setopt=localpkg_gpgcheck=True install "${trivalent_rpm}" -y
 
 sed -i 's/org\.mozilla\.firefox\.desktop/trivalent.desktop/' /usr/share/applications/mimeapps.list

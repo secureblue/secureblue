@@ -115,7 +115,7 @@ jobs:
           fi
 
       - name: Build secureblue
-        uses: blue-build/github-action@f75115e12966070fc35d6be3aab528848c9c979f # v1.10.2
+        uses: blue-build/github-action@9ba737d93ffa82d7cd6826162c7bc3a2648ae73d # v1.10.3
         env:
           KERNEL_PRIVKEY: ${{ secrets.KERNEL_PRIVKEY }}
         with:

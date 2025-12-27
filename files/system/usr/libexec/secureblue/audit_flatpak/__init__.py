@@ -347,9 +347,12 @@ def _handle_flatpak_buses(state: FlatpakPermissionsState, perms: Permissions) ->
         state.arbitrary_permissions = True
         if state.name not in ARBITRARY_PERMISSIONS_EXPECTED:
             if is_session:
+                note = _("{0} can talk to {1} on the session bus.").format(state.name, bus_name)
                 first_line = _("The following flatpak app(s) can talk to {0} on the session bus:")
             else:
+                note = _("{0} can talk to {1} on the system bus.").format(state.name, bus_name)
                 first_line = _("The following flatpak app(s) can talk to {0} on the system bus:")
+            state.notes.append(Note(note, status=FAIL))
             rec_lines = (
                 first_line.format(bus_name),
                 Recommendation.NAMES_PLACEHOLDER,

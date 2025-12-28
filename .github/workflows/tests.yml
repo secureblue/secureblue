@@ -19,7 +19,12 @@ on:
       - staging
     paths-ignore:
       - "**.md"
-  workflow_dispatch: # allow manually triggering 
+  workflow_dispatch: # allow manually triggering
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
 jobs:
   run_tests:
     runs-on: ubuntu-24.04
@@ -28,7 +33,7 @@ jobs:
     name: Install Bats and run tests
     steps:
       - name: Checkout repo
-        uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
+        uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6.0.1
         with:
           persist-credentials: false
 
@@ -40,10 +45,12 @@ jobs:
            assert-path: "${{ github.workspace }}/.bats/bats-assert"
            detik-path: "${{ github.workspace }}/.bats/bats-detik"
            file-path: "${{ github.workspace }}/.bats/bats-file"
-      
+
       - name: Install just
-        run: |          
-          sudo apt-get install just
+        env:
+          OS_ARCH: x86_64
+        run: |
+          sudo --preserve-env=OS_ARCH bash files/scripts/manuallyinstalljust.sh
 
       - name: Run tests
         shell: bash

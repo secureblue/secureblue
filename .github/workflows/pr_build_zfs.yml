@@ -33,14 +33,14 @@ jobs:
   bluebuild:
     name: PR build
     permissions:
-      contents: read
+      contents: read # Needed to pull the repo for the build
+      packages: read # Needed to read base image manifests
     strategy:
       fail-fast: false
       matrix:
         recipe:
           - securecore/recipe-securecore-zfs-main.yml
-          - securecore/recipe-securecore-zfs-nvidia-open.yml
-          - securecore/recipe-securecore-zfs-nvidia.yml
+          - iot/recipe-iot-zfs-main.yml
     uses: ./.github/workflows/pr_build.yml
     with:
       recipe: ${{ matrix.recipe }}

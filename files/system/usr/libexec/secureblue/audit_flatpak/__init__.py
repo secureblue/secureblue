@@ -21,7 +21,7 @@ Flatpak permissions checks for secureblue auditing script.
 from dataclasses import dataclass, field
 from typing import Final
 
-from auditor import Recommendation, Status, gettext_marker
+from auditor import Note, Recommendation, Status, gettext_marker
 
 _: Final = gettext_marker()
 
@@ -134,7 +134,7 @@ class PermissionCheck:
     permission: str
     status: Status
     description: str | None = None
-    note: str | None = None
+    comment: str | None = None
     endnote: str | None = None
     sandbox_escape: bool = False
     arbitrary_permissions: bool = False
@@ -144,10 +144,10 @@ class PermissionCheck:
         perm_type = FLATPAK_OVERRIDE_OPTIONS[self.category][0]
         return f"{perm_type}={self.permission} " + _("permission")
 
-    def warning(self, name: str) -> str:
-        """Give the warning text for if the check fails."""
+    def note(self, name: str) -> Note:
+        """Generate the note for if the check fails."""
         description = self.description or self.default_description()
-        return _("{0} has {1}").format(name, description)
+        return Note(_("{0} has {1}").format(name, description), status=self.status)
 
     def recommendation(self, name: str) -> Recommendation:
         """Give the recommendation for if the check fails."""
@@ -160,7 +160,7 @@ class PermissionCheck:
         rec_lines = (
             _("The following flatpak app(s) have {0}:").format(description),
             Recommendation.NAMES_PLACEHOLDER,
-            self.note or "",
+            self.comment or "",
             sandbox_escape_note,
             _("To remove this permission from an app, use Flatseal or run:"),
             f"$ flatpak override -u --{option}={self.permission} com.example.Example",
@@ -190,7 +190,7 @@ FLATPAK_PERMISSION_CHECKS: list[PermissionCheck] = [
         "session-bus",
         FAIL,
         _("access to the D-Bus session bus"),
-        note=_("This grants access to audio and microphones."),
+        comment=_("This grants access to audio and microphones."),
     ),
     PermissionCheck("sockets", "system-bus", FAIL, _("access to the D-Bus system bus")),
     PermissionCheck("sockets", "ssh-auth", WARN, _("access to the SSH agent")),
@@ -198,26 +198,26 @@ FLATPAK_PERMISSION_CHECKS: list[PermissionCheck] = [
         "devices",
         "all",
         FAIL,
-        note=_("This grants access to input devices, GPUs, raw USB, and virtualization."),
+        comment=_("This grants access to input devices, GPUs, raw USB, and virtualization."),
         sandbox_escape=True,
         endnote=_("If GPU access is required, allow {0} instead.").format("device=dri"),
     ),
-    PermissionCheck("devices", "input", INFO, note=_("This grants access to input devices.")),
+    PermissionCheck("devices", "input", INFO, comment=_("This grants access to input devices.")),
     PermissionCheck(
-        "devices", "kvm", WARN, note=_("This grants access to kernel-based virtualization.")
+        "devices", "kvm", WARN, comment=_("This grants access to kernel-based virtualization.")
     ),
     PermissionCheck(
         "devices",
         "shm",
         FAIL,
-        note=_("This grants access to shared memory."),
+        comment=_("This grants access to shared memory."),
         sandbox_escape=True,
     ),
     PermissionCheck(
         "devices",
         "usb",
         WARN,
-        note=_("This grants raw USB device access."),
+        comment=_("This grants raw USB device access."),
         sandbox_escape=True,
     ),
     PermissionCheck("features", "bluetooth", WARN, _("bluetooth access")),
@@ -235,7 +235,7 @@ ARBITRARY_PERMISSIONS_EXPECTED: list[str] = [
 class FlatpakPermissionsState:
     """The state of a flatpak's permissions."""
 
-    warnings: list[str]
+    notes: list[Note]
     recs: list[Recommendation]
     status: Status
     arbitrary_permissions: bool
@@ -261,13 +261,14 @@ def check_flatpak_permissions(
 
 def _handle_arbitrary_permissions(state: FlatpakPermissionsState) -> None:
     if state.arbitrary_permissions:
-        warning = _("{0} can acquire arbitrary permissions.").format(state.name)
+        note = _("{0} can acquire arbitrary permissions.").format(state.name)
         if state.name in ARBITRARY_PERMISSIONS_EXPECTED:
-            state.status = state.status.downgrade_to(INFO)
-            warning += "\n" + _("However, this is required for its functionality.")
+            status = INFO
+            note += "\n" + _("However, this is required for its functionality.")
         else:
-            state.status = state.status.downgrade_to(FAIL)
-        state.warnings.append(warning)
+            status = FAIL
+        state.status = state.status.downgrade_to(status)
+        state.notes.append(Note(note, status=status))
 
 
 def _check_ld_preload(state: FlatpakPermissionsState, perms: Permissions) -> None:
@@ -278,17 +279,25 @@ def _check_ld_preload(state: FlatpakPermissionsState, perms: Permissions) -> Non
         ld_preload_files = [s.rsplit("/", maxsplit=1)[-1] for s in ld_preload.split()]
     if "libhardened_malloc.so" in ld_preload_files:
         return
-    state.warnings.append(_("{0} is not requesting {1}").format(state.name, "hardened_malloc"))
     if "libhardened_malloc-light.so" in ld_preload_files:
-        state.status = state.status.downgrade_to(INFO)
-        state.warnings.append(
-            _("{0} is requesting {1}").format(state.name, "hardened_malloc-light")
+        status = INFO
+        extra_note = Note(
+            _("{0} is requesting {1}").format(state.name, "hardened_malloc-light"), status=INFO
         )
     elif "libhardened_malloc-pkey.so" in ld_preload_files:
-        state.status = state.status.downgrade_to(INFO)
-        state.warnings.append(_("{0} is requesting {1}").format(state.name, "hardened_malloc-pkey"))
+        status = INFO
+        extra_note = Note(
+            _("{0} is requesting {1}").format(state.name, "hardened_malloc-pkey"), status=INFO
+        )
     else:
-        state.status = state.status.downgrade_to(WARN)
+        status = WARN
+        extra_note = None
+    state.status = state.status.downgrade_to(status)
+    state.notes.append(
+        Note(_("{0} is not requesting {1}").format(state.name, "hardened_malloc"), status=status)
+    )
+    if extra_note is not None:
+        state.notes.append(extra_note)
     rec_lines = (
         _("The following flatpak app(s) are not requesting {0}:").format("hardened_malloc"),
         Recommendation.NAMES_PLACEHOLDER,
@@ -299,16 +308,50 @@ def _check_ld_preload(state: FlatpakPermissionsState, perms: Permissions) -> Non
     state.recs.append(Recommendation("\n".join(rec_lines), mergeable_name=state.name))
 
 
+def _bus_grants_arbitrary_permissions(name: str, is_session: bool) -> bool:
+    """Test if bus name grants arbitrary permissions."""
+    # Ported from Flathub website source code:
+    # https://github.com/flathub-infra/website/blob/c9b16cd964c0a6166f157bb05fb91375b61e01cd/frontend/src/safety.ts#L406-L431
+    # Used under the terms of the Apache-2.0 license.
+    bus_prefixes = ("org.freedesktop.Flatpak.", "org.freedesktop.DBus.")
+    bus_names = (
+        "org.freedesktop.*",
+        "org.gnome.*",
+        "org.kde.*",
+        "org.freedesktop.DBus",
+        "org.freedesktop.systemd1",
+        "org.freedesktop.login1",
+        "org.kde.KWin",
+        "org.kde.plasmashell",
+    )
+    session_bus_names = ("org.freedesktop.Flatpak", "org.freedesktop.impl.portal.PermissionStore")
+    return (
+        any(name.startswith(prefix) for prefix in bus_prefixes)
+        or name in bus_names
+        or (is_session and name in session_bus_names)
+    )
+
+
 def _handle_flatpak_buses(state: FlatpakPermissionsState, perms: Permissions) -> None:
-    dangerous_buses = ("org.freedesktop.Flatpak", "org.freedesktop.impl.portal.PermissionStore")
-    present_bus_names = [bus for bus in dangerous_buses if bus in perms.session_bus_talk]
-    for bus_name in present_bus_names:
+    present_dangerous_buses = [
+        (bus_name, True)
+        for bus_name in perms.session_bus_talk
+        if _bus_grants_arbitrary_permissions(bus_name, is_session=True)
+    ]
+    present_dangerous_buses += [
+        (bus_name, False)
+        for bus_name in perms.system_bus_talk
+        if _bus_grants_arbitrary_permissions(bus_name, is_session=False)
+    ]
+    for bus_name, is_session in present_dangerous_buses:
         state.arbitrary_permissions = True
         if state.name not in ARBITRARY_PERMISSIONS_EXPECTED:
+            if is_session:
+                first_line = _("The following flatpak app(s) can talk to {0} on the session bus:")
+            else:
+                first_line = _("The following flatpak app(s) can talk to {0} on the system bus:")
             rec_lines = (
-                _("The following flatpak app(s) can talk to {0} on the session bus:").format(
-                    bus_name
-                ),
+                first_line.format(bus_name),
                 Recommendation.NAMES_PLACEHOLDER,
                 _("This grants the ability to acquire arbitrary permissions."),
                 _("To remove this permission from an app, use Flatseal or run:"),
@@ -344,7 +387,7 @@ def _check_predefined_flatpak_permissions(
     for check in FLATPAK_PERMISSION_CHECKS:
         if _predefined_check_applies(check, existing_permissions, bluetooth_loaded, ptrace_allowed):
             state.status = state.status.downgrade_to(check.status)
-            state.warnings.append(check.warning(state.name))
+            state.notes.append(check.note(state.name))
             state.recs.append(check.recommendation(state.name))
             state.arbitrary_permissions |= check.arbitrary_permissions
 
@@ -365,8 +408,11 @@ def _check_dangerous_dirs(state: FlatpakPermissionsState, filesystems_rw: dict[s
             is_alias = filesystems_rw[directory.path]
             if is_alias:
                 aliased_path = directory.path.replace(directory.path, ALIASES[directory.path], 1)
-            state.warnings.append(
-                _("{0} has {1} permission").format(state.name, f"filesystem={directory.path}")
+            state.notes.append(
+                Note(
+                    _("{0} has {1} permission").format(state.name, f"filesystem={directory.path}"),
+                    status=directory.status,
+                )
             )
             rec_lines = (
                 _("The following flatpak app(s) have {0} permission:").format(
@@ -389,7 +435,9 @@ def _check_hardened_malloc_access(
 ) -> None:
     if filesystems is None or ("host-os" not in filesystems_ro and "host-os" not in filesystems_rw):
         state.status = state.status.downgrade_to(WARN)
-        state.warnings.append(_("{0} is missing {1} permission").format(state.name, "host-os:ro"))
+        state.notes.append(
+            Note(_("{0} is missing {1} permission").format(state.name, "host-os:ro"), status=WARN)
+        )
         rec_lines = (
             _("The following flatpak app(s) are missing {0} permission:").format("host-os:ro"),
             Recommendation.NAMES_PLACEHOLDER,

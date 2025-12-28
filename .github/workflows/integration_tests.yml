@@ -10,33 +10,38 @@
 # distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and limitations under the License.
 
-name: integration-tests
+name: integ-tests
 permissions: {}
 on:
   schedule:
     - cron: "00 7 * * *" # run at 7:00 UTC every day
 
   workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref || github.run_id }}
+  cancel-in-progress: true
+
 jobs:
   integration-tests:
     name: Run integration tests
-    if: github.triggering_actor == 'royaloughtness' || ${{ github.event_name == 'schedule' }}
+    if: github.triggering_actor == 'royaloughtness' || github.event_name == 'schedule'
     runs-on: ubuntu-24.04
     permissions:
-      contents: read
-      packages: write
-      id-token: write
+      contents: read # read repo contents
+      packages: write # push integration test image
+      id-token: write # generate token for signing
     strategy:
       fail-fast: false
 
     steps:
       - name: Checkout repo
-        uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
+        uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6.0.1
         with:
           persist-credentials: false
 
       - name: Run integration tests
-        uses: secureblue/bootc-integration-test-action@1d7d321af6f3e1e8324638f676e2023fe8263faa # v0.0.6
+        uses: secureblue/bootc-integration-test-action@2236e712456801cd0bd47626733e95a180e38675 # v0.0.10
         with:
           registry: ghcr.io/secureblue
           image: silverblue-main-hardened
@@ -45,5 +50,7 @@ jobs:
             ./.github/workflows/integration_tests/check_audit_results.sh
             ./.github/workflows/integration_tests/check_cleanup.sh
             ./.github/workflows/integration_tests/check_flatpak_setup.sh
+            ./.github/workflows/integration_tests/check_unbound_migration.sh
+            ./.github/workflows/integration_tests/validate_systemd_unit_files.sh
           data-files: |
             ./.github/workflows/integration_tests/expected-audit-silverblue-main-hardened.txt

@@ -12,14 +12,18 @@
 
 modules:
   - type: files
-    files:  
+    source: ghcr.io/blue-build/modules@sha256:3c04c323f281bdb1ab88148a2335608344bcc07c6c4d2f5f777063a16554256d
+    files:
       - source: system/sericea
         destination: /
   - type: script
+    source: ghcr.io/blue-build/modules@sha256:3c04c323f281bdb1ab88148a2335608344bcc07c6c4d2f5f777063a16554256d
     scripts:
       - disablewlrportals.sh
-  - type: rpm-ostree
+  - type: dnf
+    source: ghcr.io/blue-build/modules@sha256:3c04c323f281bdb1ab88148a2335608344bcc07c6c4d2f5f777063a16554256d
     remove:
-      - fedora-flathub-remote
-      - fedora-third-party
-      - fedora-workstation-repositories
+      packages:
+        - fedora-flathub-remote
+        - fedora-third-party
+        - fedora-workstation-repositories

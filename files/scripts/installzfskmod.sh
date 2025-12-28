@@ -16,21 +16,22 @@
 set -oue pipefail
 
 KERNEL_VERSION="$(rpm -q "kernel" --queryformat '%{VERSION}-%{RELEASE}.%{ARCH}')"
-ZFS_MINOR_VERSION="2.3"
+ZFS_MINOR_VERSION="2.4"
 
-curl "https://api.github.com/repos/openzfs/zfs/releases" -o data.json
+curl -fLsS --retry 5 -o data.json "https://api.github.com/repos/openzfs/zfs/releases"
 ZFS_VERSION=$(jq -r --arg ZMV "zfs-${ZFS_MINOR_VERSION}" '[ .[] | select(.prerelease==false and .draft==false) | select(.tag_name | startswith($ZMV))][0].tag_name' data.json|cut -f2- -d-)
 echo "ZFS_VERSION==$ZFS_VERSION"
 
-dnf install -y "kernel-devel-matched-$(rpm -q 'kernel' --queryformat '%{VERSION}')"
-dnf install -y autoconf automake gcc pv akmods mock libtirpc-devel libblkid-devel libuuid-devel libudev-devel openssl-devel libaio-devel libattr-devel elfutils-libelf-devel python3-devel python3-cffi libffi-devel libcurl-devel ncompress python3-setuptools
+dnf install -y --setopt=install_weak_deps=False "kernel-devel-matched-$(rpm -q 'kernel' --queryformat '%{VERSION}')"
+dnf install -y --setopt=install_weak_deps=False autoconf automake gcc pv akmods mock libunwind-devel pam-devel libatomic libtirpc-devel libblkid-devel libuuid-devel libudev-devel openssl-devel libaio-devel libattr-devel elfutils-libelf-devel python3-devel python3-cffi libffi-devel libcurl-devel ncompress python3-setuptools
 
 
 ### BUILD zfs
 echo "getting zfs-${ZFS_VERSION}.tar.gz"
-curl -L -O "https://github.com/openzfs/zfs/releases/download/zfs-${ZFS_VERSION}/zfs-${ZFS_VERSION}.tar.gz"
-curl -L -O "https://github.com/openzfs/zfs/releases/download/zfs-${ZFS_VERSION}/zfs-${ZFS_VERSION}.tar.gz.asc"
-curl -L -O "https://github.com/openzfs/zfs/releases/download/zfs-${ZFS_VERSION}/zfs-${ZFS_VERSION}.sha256.asc"
+curl -fLsS --retry 5 \
+    -O "https://github.com/openzfs/zfs/releases/download/zfs-${ZFS_VERSION}/zfs-${ZFS_VERSION}.tar.gz" \
+    -O "https://github.com/openzfs/zfs/releases/download/zfs-${ZFS_VERSION}/zfs-${ZFS_VERSION}.tar.gz.asc" \
+    -O "https://github.com/openzfs/zfs/releases/download/zfs-${ZFS_VERSION}/zfs-${ZFS_VERSION}.sha256.asc"
 
 echo "Import key"
 # https://openzfs.github.io/openzfs-docs/Project%20and%20Community/Signing%20Keys.html
@@ -69,8 +70,12 @@ cd "zfs-${ZFS_VERSION}"
     && make -j "$(nproc)" rpm-utils rpm-kmod \
     || { cat config.log; exit 1; }
 
+rm ./*src.rpm
+rm ./*devel*.rpm
+rm ./*debug*.rpm
+rm ./zfs-test*.rpm
 
-dnf install -y ./*.rpm
+dnf install -y --setopt=install_weak_deps=False ./*.rpm
 cd ..
 
 ./signmodules.sh "zfs"
@@ -85,7 +90,7 @@ depmod -a -v "${KERNEL_VERSION}"
 
 rm -f /etc/dnf/protected.d/sudo.conf
 
-dnf remove -y sudo autoconf automake mock 
+dnf remove -y sudo autoconf automake mock
 
 systemctl disable akmods-keygen@akmods-keygen.service
 systemctl mask akmods-keygen@akmods-keygen.service

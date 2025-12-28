@@ -18,7 +18,11 @@ base-image: ghcr.io/secureblue/securecore-main-hardened
 
 image-version: latest
 
+cosign-version: none
 nushell-version: none
+
+platforms:
+  - linux/amd64
 
 modules:
   - from-file: common/nvidia-install.yml

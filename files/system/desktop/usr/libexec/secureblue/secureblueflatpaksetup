@@ -14,7 +14,13 @@
 
 set -euo pipefail
 
-flatpak remote-add --if-not-exists --user --subset=verified flathub-verified https://flathub.org/repo/flathub.flatpakrepo
+in_progress_indicator=~/.cache/secureblue-flatpak-setup-in-progress
+if [ ! -f "$in_progress_indicator" ]; then
+    notify-send -a 'secureblue' -i 'dialog-information' -u normal 'Provisioning core flatpaks, please wait...'
+fi
+touch "$in_progress_indicator"
+
+flatpak remote-add --if-not-exists --user --subset=verified --title='Flathub Verified' flathub-verified https://flathub.org/repo/flathub.flatpakrepo
 ujust harden-flatpak
 
 RPM_OSTREE_STATUS=$(rpm-ostree status --json --booted)
@@ -27,3 +33,5 @@ if [[ "$IMAGE_REF_NAME" == *"silverblue"* ]]; then
     flatpak install --user -y --noninteractive flathub-verified io.github.flattool.Warehouse
 fi
 
+notify-send -a 'secureblue' -i 'dialog-information' -u normal 'Flatpak provisioning completed.'
+rm -f "$in_progress_indicator"

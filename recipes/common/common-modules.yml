@@ -12,27 +12,28 @@
 
 modules:
     - type: script
+      source: ghcr.io/blue-build/modules@sha256:3c04c323f281bdb1ab88148a2335608344bcc07c6c4d2f5f777063a16554256d
       scripts:
+        - addrepos.sh
         - createautostartdir.sh
+        - httpsmirrors.sh
         - unprotectsudo.sh
     - from-file: common/common-packages.yml
-    - type: script
-      scripts:
-        - manuallyinstalljust.sh
-        - hardenlogindefs.sh
-        - hardened_malloc-pam.sh
     - type: files
+      source: ghcr.io/blue-build/modules@sha256:3c04c323f281bdb1ab88148a2335608344bcc07c6c4d2f5f777063a16554256d
       files:
         - source: system/usr
           destination: /usr
         - source: system/etc
           destination: /etc
+    - from-file: common/common-scripts.yml
     - type: justfiles
+      source: ghcr.io/blue-build/modules@sha256:3c04c323f281bdb1ab88148a2335608344bcc07c6c4d2f5f777063a16554256d
       validate: true
       include:
         - common
-    - from-file: common/common-scripts.yml
     - type: script
+      source: ghcr.io/blue-build/modules@sha256:3c04c323f281bdb1ab88148a2335608344bcc07c6c4d2f5f777063a16554256d
       scripts:
         - signkernel.sh
       secrets:

@@ -113,15 +113,23 @@ alias toggle-ptrace-scope := toggle-anticheat-support
 # Toggle anticheat support by changing ptrace scope (requires restart)
 toggle-anticheat-support:
     #! /bin/run0 /bin/bash
-    SYSCTL_HARDENING_FILE="/etc/sysctl.d/60-hardening.conf"
-    if grep -q '^kernel.yama.ptrace_scope = 3' "$SYSCTL_HARDENING_FILE"; then
-        sed -i 's/^kernel.yama.ptrace_scope =.*/kernel.yama.ptrace_scope = 1/' "$SYSCTL_HARDENING_FILE"
-        echo "Anticheat support enabled. ptrace_scope set to 1."
-    elif grep -q 'kernel.yama.ptrace_scope = 1' "$SYSCTL_HARDENING_FILE"; then
-        sed -i 's/^kernel.yama.ptrace_scope =.*/kernel.yama.ptrace_scope = 3/' "$SYSCTL_HARDENING_FILE"
-        echo "Anticheat support disabled. ptrace_scope set back to 3."
+    set -euo pipefail
+    sysctl_ptrace_file='/etc/sysctl.d/61-ptrace-scope.conf'
+    umask 022
+    # Remove ptrace_scope = 3 from any lexicographically earlier sysctl conf files.
+    # This is because ptrace_scope = 3 cannot be overridden.
+    for conf_file in /etc/sysctl.d/*.conf; do
+        if [[ "$conf_file" < "$sysctl_ptrace_file" ]]; then
+            sed -i -e '/^kernel.yama.ptrace_scope[[:blank:]]*=[[:blank:]]*3/d' "$conf_file"
+        fi
+    done
+    # Set the ptrace_scope value we want in 61-ptrace-scope.conf
+    if grep -q '^kernel.yama.ptrace_scope[[:blank:]]*=[[:blank:]]*1$' "$sysctl_ptrace_file" 2>/dev/null; then
+        echo 'kernel.yama.ptrace_scope = 3' > "$sysctl_ptrace_file"
+        echo 'Anticheat support disabled. ptrace_scope set back to 3. Reboot to take effect.'
     else
-        echo "The sysctl hardening file is missing the ptrace_scope setting."
+        echo 'kernel.yama.ptrace_scope = 1' > "$sysctl_ptrace_file"
+        echo 'Anticheat support enabled. ptrace_scope set to 1. Reboot to take effect.'
     fi
 
 # Toggle bash environment lockdown (mitigates LD_PRELOAD attacks). Use skip_approval to bypass initial prompt, and apply_for_all_users to bypass secondary prompt.
@@ -268,55 +276,6 @@ toggle-bash-environment-lockdown skip_approval="false" apply_for_all_users="prom
 
     echo "${user_list[@]}" "$pending_status."
     echo "${bold}NOTE${unbold}: until a reboot, any process with an open file descriptor will continue to have the access they had before this script was run."
-
-# Toggle unconfined domain userns creation
-toggle-unconfined-domain-userns-creation:
-    #! /bin/run0 /bin/bash
-    set -euo pipefail
-    MODULE_NAME="harden_userns"
-
-    if semodule -l | grep -q "$MODULE_NAME"; then
-        echo "Module $MODULE_NAME is currently enabled. Disabling the hardening, enabling unconfined domain userns (e.g. for bubblejail)."
-        semodule --disable="$MODULE_NAME"
-        echo "Module $MODULE_NAME disabled. Unconfined domain userns enabled."
-    else
-        echo "Module $MODULE_NAME is not currently enabled. Enabling the hardening, disabling unconfined domain userns (e.g. for bubblejail)."
-        semodule --enable="$MODULE_NAME"
-        echo "Module $MODULE_NAME enabled. Unconfined domain userns disabled."
-    fi
-
-# Toggle container domain userns creation
-toggle-container-domain-userns-creation:
-    #! /bin/run0 /bin/bash
-    set -euo pipefail
-    MODULE_NAME="harden_container_userns"
-
-    if semodule -l | grep -q "$MODULE_NAME"; then
-        echo "Module $MODULE_NAME is currently enabled. Disabling the hardening, enabling container domain userns (e.g. for distrobox)."
-        semodule --disable="$MODULE_NAME"
-        echo "Module $MODULE_NAME disabled. Container domain userns enabled."
-    else
-        echo "Module $MODULE_NAME is not currently enabled. Enabling the hardening, disabling container domain userns (e.g. for distrobox)."
-
-        echo 'Warning: This will stop ALL containers and shut down podman.'
-        read -rp 'Are you sure you want to do this? (y/N) ' proceed
-        if ! [[ "$proceed" == [Yy]* ]]; then
-            echo "Aborting..."
-            exit 0
-        fi
-
-        semodule --enable="$MODULE_NAME"
-        echo "Module $MODULE_NAME enabled. Container domain userns disabled."
-
-        echo 'Stopping all containers and shutting down podman...'
-        run0 --user="$SUDO_USER" podman stop --all > /dev/null
-        killall -u "$SUDO_USER" catatonit || true
-        echo 'podman has been shut down.'
-
-        if pgrep -u root -a -x catatonit &> /dev/null; then
-            echo 'WARNING: Catatonit running as root detected, reboot your machine to reset podman state.'
-        fi
-    fi
 
 # Toggle MAC Randomization
 toggle-mac-randomization:

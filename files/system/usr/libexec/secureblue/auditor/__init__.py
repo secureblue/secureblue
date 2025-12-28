@@ -77,6 +77,21 @@ class Status(enum.Enum):
                 color_code = 37  # white
         return f"\x1b[{color_code}m{self.local_name()}\x1b[39m"
 
+    def icon(self) -> str:
+        """Colored icon associated with status."""
+        match self:
+            case Status.PASS:
+                icon = "🟢"
+            case Status.INFO:
+                icon = "🔵"
+            case Status.WARN:
+                icon = "🟡"
+            case Status.FAIL:
+                icon = "🔴"
+            case Status.UNKNOWN:
+                icon = "⚪"
+        return icon
+
     def width(self) -> int:
         """Printable width of status."""
         return len(self.local_name())
@@ -84,6 +99,23 @@ class Status(enum.Enum):
     def downgrade_to(self, other: Self) -> Self:
         """Returns the more severe of the two statuses."""
         return max(self, other, key=lambda status: status.value)
+
+
+@dataclasses.dataclass
+class Note:
+    """A line with additional info and optionally a status."""
+
+    text: str
+    status: Status | None = None
+
+    def __init__(self, note: str | Self, status: Status | None = None):
+        self.text = note.text if isinstance(note, Note) else str(note)
+        if status is not None:
+            self.status = status
+        elif isinstance(note, Note):
+            self.status = note.status
+        else:
+            self.status = None
 
 
 @dataclasses.dataclass
@@ -96,10 +128,6 @@ class Recommendation:
 
     def __init__(self, rec: str | Self, mergeable_name: str | None = None):
         self.text = rec.text if isinstance(rec, Recommendation) else str(rec)
-        if isinstance(rec, Recommendation):
-            self.text = rec.text
-        else:
-            self.text = str(rec)
         if mergeable_name is not None:
             self.mergeable_name = mergeable_name
         elif isinstance(rec, Recommendation):
@@ -113,7 +141,7 @@ class Report:
 
     description: str
     status: Status
-    warnings: list[str]
+    notes: list[Note]
     recs: list[Recommendation]
 
     def __init__(
@@ -121,17 +149,17 @@ class Report:
         desc: str,
         status: Status,
         *,
-        warnings: str | Sequence[str] | None = None,
+        notes: str | Note | Sequence[str | Note] | None = None,
         recs: str | Recommendation | Sequence[str | Recommendation] | None = None,
     ):
         self.description = desc
         self.status = status
-        if warnings is None:
-            self.warnings = []
-        elif isinstance(warnings, str):
-            self.warnings = [warnings]
+        if notes is None:
+            self.notes = []
+        elif isinstance(notes, (str, Note)):
+            self.notes = [Note(notes)]
         else:
-            self.warnings = list(warnings)
+            self.notes = [Note(note) for note in notes]
         if recs is None:
             self.recs = []
         elif isinstance(recs, (str, Recommendation)):
@@ -147,11 +175,12 @@ class Report:
         reset_color = "\x1b[39m"
         desc_with_sep = f"{self.description} {gray_start}".ljust(desc_width, "…") + reset_color
         report_str = desc_with_sep + status_tag
-        for warning in self.warnings:
-            warning_lines = [line.strip() for line in warning.splitlines() if line.strip()]
-            if warning_lines:
-                report_str += "\n> " + warning_lines[0]
-            for line in warning_lines[1:]:
+        for note in self.notes:
+            note_lines = [line.strip() for line in note.text.splitlines() if line.strip()]
+            if note_lines:
+                icon = ">" if note.status is None else note.status.icon()
+                report_str += f"\n{icon} " + note_lines[0]
+            for line in note_lines[1:]:
                 report_str += "\n  " + line
         return report_str
 
@@ -286,6 +315,13 @@ class Audit:
             if check.category in exclude:
                 continue
             async for report in check.run(self.state):
+                notes = [
+                    {
+                        "text": note.text,
+                        "status": None if note.status is None else note.status.name.lower(),
+                    }
+                    for note in report.notes
+                ]
                 recs = [
                     {"text": rec.text, "mergeable_name": rec.mergeable_name} for rec in report.recs
                 ]
@@ -295,7 +331,7 @@ class Audit:
                         "category": check.category,
                         "description": report.description,
                         "status": report.status.name.lower(),
-                        "warnings": report.warnings,
+                        "notes": notes,
                         "recommendations": recs,
                     }
                 )

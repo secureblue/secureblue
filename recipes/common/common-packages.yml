@@ -10,26 +10,39 @@
 # distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and limitations under the License.
 
-type: rpm-ostree
-repos:
-  - https://copr.fedorainfracloud.org/coprs/secureblue/hardened_malloc/repo/fedora-%OS_VERSION%/secureblue-hardened_malloc-fedora-%OS_VERSION%.repo
-  - https://copr.fedorainfracloud.org/coprs/secureblue/run0edit/repo/fedora-%OS_VERSION%/secureblue-run0edit-fedora-%OS_VERSION%.repo
+type: dnf
+source: ghcr.io/blue-build/modules@sha256:3c04c323f281bdb1ab88148a2335608344bcc07c6c4d2f5f777063a16554256d
 install:
-  - hardened_malloc
-  - run0edit
+  install-weak-deps: false
+  packages:
+    - hardened_malloc
+    - run0edit
+    - dnsconfd-unbound
 
-  # missing upstream
-  - openssl
-  - patch
-  - p7zip
-  - distrobox
-  - toolbox
-  - podman
-  - nvme-cli
-  - hdparm
-  - wireguard-tools
-  - gettext
-  - rsync
+    # missing upstream
+    - openssl
+    - patch
+    - 7zip-standalone-all
+    - 7zip
+    - distrobox
+    - toolbox
+    - podman
+    - nvme-cli
+    - hdparm
+    - wireguard-tools
+    - gettext
+    - rsync
+    - steam-devices
 
-  # signing deps
-  - sbsigntools
+    # signing deps
+    - sbsigntools
+
+    # address hardened_malloc incompatibilities
+    - no_rlimit_as
+
+    # For use in unprivileged ujust scripts
+    - python3-inquirer
+
+    # provenance deps
+    - crane
+    - slsa-verifier

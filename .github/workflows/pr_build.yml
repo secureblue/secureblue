@@ -21,14 +21,24 @@ on:
         required: true
         type: string
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}-${{ inputs.recipe }}
+  cancel-in-progress: true
+
 jobs:
   bluebuild:
     name: PR build
     runs-on: ubuntu-24.04
     permissions:
-      contents: read
+      contents: read # Needed to pull the repo for the build
+      packages: read # Needed to read base image manifests
 
     steps:
+      - name: Enable egress auditing
+        uses: step-security/harden-runner@20cf305ff2072d973412fa9b1e3a4f227bda3c76 # v2.14.0
+        with:
+          egress-policy: audit
+
       - name: Optimize build times
         shell: bash
         run: |
@@ -37,18 +47,13 @@ jobs:
           sudo rm -f /var/lib/man-db/auto-update
           sudo sed -i 's/^update_initramfs=.*/update_initramfs=no/' /etc/initramfs-tools/update-initramfs.conf
 
-      - name: Free disk space
-        uses: jlumbroso/free-disk-space@54081f138730dfa15788a46383842cd2f914a1be # v1.3.1
-        with:
-          android: false
-          dotnet: true
-          haskell: true
-          large-packages: false
-          docker-images: true
-          swap-storage: true
+      - name: Install dependencies
+        shell: bash
+        run: |
+          sudo apt install yq
 
       - name: Checkout repo
-        uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
+        uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6.0.1
         with:
           persist-credentials: false
 
@@ -57,46 +62,69 @@ jobs:
         env:
           RECIPE: ${{ inputs.recipe }}
         run: |
-          echo "IMAGE_NAME=$(grep '^name:' "./recipes/${RECIPE}" | sed 's/^name: //')" >> "$GITHUB_ENV"
-          echo "IMAGE_MAJOR_VERSION=$(grep '^image-version:' "./recipes/${RECIPE}" | sed 's/^image-version: //')" >> "$GITHUB_ENV"
-          BASE_IMAGE=$(grep '^base-image:' "./recipes/${RECIPE}" | sed 's/^base-image: //')
-          echo "BASE_IMAGE_NAME=$(echo "$BASE_IMAGE" | sed 's/.*\/.*\///')" >> "$GITHUB_ENV"
+          echo "IMAGE_NAME=$(yq -r '."name"' "./recipes/${RECIPE}")" >> "${GITHUB_ENV}"
+          echo "BASE_IMAGE=$(yq -r '."base-image"' "./recipes/${RECIPE}")" >> "${GITHUB_ENV}"
+          echo "BASE_IMAGE_VERSION=$(yq -r '."image-version"' "./recipes/${RECIPE}")" >> "${GITHUB_ENV}"
 
-      - name: Determine Vars
-        id: build_vars
+      - name: Verify base image provenance
         shell: bash
-        env:
-          RECIPE: ${{ inputs.recipe }}
         run: |
-          RECIPE_PATH=""
-          if [ -f "./config/${RECIPE}" ]; then
-            RECIPE_PATH="./config/${RECIPE}"
-          else
-            RECIPE_PATH="./recipes/${RECIPE}"
+          if [[ "$BASE_IMAGE" != ghcr.io/secureblue/* ]]; then
+            echo "Base image isn't secureblue. Skipping."
+            exit 0
           fi
-          echo "recipe_path=${RECIPE_PATH}" >> "${GITHUB_OUTPUT}"
 
-      - name: Install BlueBuild
+          go install github.com/slsa-framework/slsa-verifier/v2/cli/slsa-verifier@v2.7.1
+          go install github.com/google/go-containerregistry/cmd/crane@v0.20.6
+          DIGEST=$(~/go/bin/crane digest "${BASE_IMAGE}:${BASE_IMAGE_VERSION}")
+          ~/go/bin/slsa-verifier verify-image --source-uri 'github.com/secureblue/secureblue' "${BASE_IMAGE}:${BASE_IMAGE_VERSION}@${DIGEST}"
+
+      - name: Install cosign
+        uses: sigstore/cosign-installer@faadad0cce49287aee09b3a48701e75088a2c6ad # v4.0.0
+        with:
+          cosign-release: 'v2.6.0'
+
+      - name: Verify base image
         shell: bash
         run: |
-          docker create \
-            --name blue-build-installer \
-            ghcr.io/blue-build/cli:v0.9.21-installer
-          docker cp blue-build-installer:/out/bluebuild /usr/local/bin/bluebuild
-          docker rm blue-build-installer
-          bluebuild --version
+          if [[ "$IMAGE_NAME" == 'securecore-main-hardened' || "$IMAGE_NAME" == 'iot-main-hardened' ]]; then
+            echo "Upstream isn't signed. Skipping."
+            exit 0
+          fi
 
-      - name: Build Image
+          UPSTREAM_CONTAINER="${BASE_IMAGE}:${BASE_IMAGE_VERSION}"
+          if [[ "$BASE_IMAGE" == ghcr.io/secureblue/* ]]; then
+            UPSTREAM_PUBKEY='https://raw.githubusercontent.com/secureblue/secureblue/refs/heads/live/cosign.pub'
+          else
+            UPSTREAM_PUBKEY='https://gitlab.com/fedora/ostree/ci-test/-/raw/main/quay.io-fedora-ostree-desktops.pub'
+          fi
+          if ! cosign verify --key "${UPSTREAM_PUBKEY}" "${UPSTREAM_CONTAINER}" | jq; then
+            echo "NOTICE: Verification failed. Please ensure your public key is correct."
+            exit 1
+          fi
+
+      - name: Set up test keys
+        id: test_keys
         shell: bash
-        env:
-          RECIPE_PATH: ${{ steps.build_vars.outputs.recipe_path }}
-          RUST_LOG_STYLE: always
-          CLICOLOR_FORCE: '1'
-          GH_PR_EVENT_NUMBER: ${{ github.event.number }}
         run: |
           cp ./.github/workflows/public_key.der.test ./files/system/etc/pki/akmods/certs/akmods-secureblue.der
-          KERNEL_PRIVKEY=$(< ./.github/workflows/private_key.priv.test)
-          export KERNEL_PRIVKEY
+          {
+            echo 'kernel_privkey<<EOF'
+            cat ./.github/workflows/private_key.priv.test
+            echo 'EOF'
+          } >> "${GITHUB_OUTPUT}"
 
-          BUILD_OPTS="--build-driver podman --squash"
-          bluebuild build -v ${BUILD_OPTS} "${RECIPE_PATH}"
+      - name: Build secureblue
+        uses: blue-build/github-action@9ba737d93ffa82d7cd6826162c7bc3a2648ae73d # v1.10.3
+        env:
+          KERNEL_PRIVKEY: ${{ steps.test_keys.outputs.kernel_privkey }}
+        with:
+          cli_version: v0.9.27
+          recipe: ${{ inputs.recipe }}
+          push: false
+          registry_token: ${{ github.token }}
+          pr_event_number: ${{ github.event.number }}
+          maximize_build_space: true
+          squash: true
+          skip_checkout: true
+          verify_install: true

@@ -11,14 +11,20 @@
 # See the License for the specific language governing permissions and limitations under the License.
 
 type: script
+source: ghcr.io/blue-build/modules@sha256:3c04c323f281bdb1ab88148a2335608344bcc07c6c4d2f5f777063a16554256d
 scripts:
+  - manuallyinstalljust.sh
+  - hardenlogindefs.sh
+  - hardened_malloc-pam.sh
+  - disableresolved.sh
+  - setup-dnsconfd.sh
   - authselect.sh
   - setfilepermissions.sh
-  - httpsmirrors.sh
   - createmissingdirectories.sh
   - disablegeoclue.sh
   - createjustcompletions.sh
   - removefedoraflatpakremoteservice.sh
-  - enablecommonautoupdate.sh
   - localization.sh
   - addimageinfo.sh
+  - installrar.sh
+  - setchronysysconfig.sh

@@ -19,7 +19,10 @@ shell := `grep :$(id -u): /etc/passwd | cut -d: -f7`
 bios:
     #!/usr/bin/bash
     if [ -d /sys/firmware/efi ]; then
-      systemctl reboot --firmware-setup
+      read -rp 'The system will reboot into UEFI firmware settings. Proceed? (y/N) ' proceed
+      if [[ "$proceed" == [Yy]* ]]; then
+        systemctl reboot --firmware-setup
+      fi
     else
       echo "Rebooting to legacy BIOS from OS is not supported."
     fi
@@ -33,15 +36,6 @@ logs-this-boot:
 logs-last-boot:
     #! /bin/run0 /bin/bash
     journalctl -b -1
-
-# Regenerate GRUB config, useful in dual-boot scenarios where a second operating system isn't listed
-regenerate-grub:
-    #! /bin/run0 /bin/bash
-    if [ -d /sys/firmware/efi ]; then
-      grub2-mkconfig -o /etc/grub2-efi.cfg
-    else
-      grub2-mkconfig -o /etc/grub2.cfg
-    fi
 
 # Enroll secureblue's signing key for secure boot - Enter password "secureblue" if prompted
 enroll-secureblue-secure-boot-key:
@@ -77,7 +71,10 @@ clean-system:
     #!/usr/bin/bash
     podman image prune -af
     podman volume prune -f
-    flatpak uninstall --unused
+    if command -v flatpak &> /dev/null
+    then
+        flatpak uninstall --unused
+    fi
     rpm-ostree cleanup -bm
 
 # Check for local overrides
@@ -131,15 +128,15 @@ alias assemble := distrobox-assemble
 # Create distroboxes from a defined manifest
 distrobox-assemble CONTAINER="prompt" ACTION="create" FILE="/etc/distrobox/distrobox.ini":
     #!/usr/bin/bash
-    if [[ "$(ujust check-container-userns-state)" == "disabled" ]]; then
+    if [[ "$(ujust set-container-userns status)" == "disabled" ]]; then
         echo "Distrobox requires container domain user namespaces to work, which are disabled by default for security reasons."
-        echo "You need to run 'ujust toggle-container-domain-userns-creation' to allow this."
+        echo "You need to run 'ujust set-container-userns on' to allow this."
         container_userns_now=""
-        read -rp "Would you like to run 'ujust toggle-container-domain-userns-creation' now? [Y/n] " container_userns_now
+        read -rp "Would you like to run 'ujust set-container-userns on' now? [Y/n] " container_userns_now
         container_userns_now=${container_userns_now:-y}
         if [[ "$container_userns_now" == [Yy]* ]]; then
-            echo "Running 'ujust toggle-container-domain-userns-creation'"
-            ujust toggle-container-domain-userns-creation
+            echo "Running 'ujust set-container-userns on'"
+            ujust set-container-userns on
         fi
     fi
     # Distroboxes are gathered from distrobox.ini, please add them there
@@ -149,51 +146,35 @@ distrobox-assemble CONTAINER="prompt" ACTION="create" FILE="/etc/distrobox/distr
 # Create toolbox containers from a defined manifest (this spec will not be expanded)
 toolbox-assemble CONTAINER="prompt" ACTION="create" FILE="/etc/toolbox/toolbox.ini":
     #!/usr/bin/bash
-    if [[ "$(ujust check-container-userns-state)" == "disabled" ]]; then
+    if [[ "$(ujust set-container-userns status)" == "disabled" ]]; then
         echo "Toolbox requires container domain user namespaces to work, which are disabled by default for security reasons."
-        echo "You need to run 'ujust toggle-container-domain-userns-creation' to allow this."
+        echo "You need to run 'ujust set-container-userns on' to allow this."
         container_userns_now=""
-        read -rp "Would you like to run 'ujust toggle-container-domain-userns-creation' now? [Y/n] " container_userns_now
+        read -rp "Would you like to run 'ujust set-container-userns on' now? [Y/n] " container_userns_now
         container_userns_now=${container_userns_now:-y}
         if [[ "$container_userns_now" == [Yy]* ]]; then
-            echo "Running 'ujust toggle-container-domain-userns-creation'"
-            ujust toggle-container-domain-userns-creation
+            echo "Running 'ujust set-container-userns on'"
+            ujust set-container-userns on
         fi
     fi
     # Toolboxes are gathered from toolbox.ini, please add them there
     source /usr/lib/ujust/ujust.sh
     ToolboxAssembleList "{{ FILE }}" "{{ ACTION }}" "{{ CONTAINER }}"
 
-# Returns the state of container domain user namespaces. (enabled/disabled)
-check-container-userns-state:
-    #!/usr/bin/bash
-    set -euo pipefail
-    if [ "$(whoami)" = 'root' ]; then
-        semodule -l | grep -q 'harden_container_userns' && echo 'disabled' || echo 'enabled'
-    else
-        podman unshare true &> /dev/null && echo 'enabled' || echo 'disabled'
-    fi
-
-# Returns the state of unconfined domain user namespaces. (enabled/disabled)
-check-unconfined-userns-state:
-    #!/usr/bin/bash
-    set -euo pipefail
-    if [ "$(whoami)" = 'root' ]; then
-        semodule -l | grep -q 'harden_userns' && echo 'disabled' || echo 'enabled'
-    else
-        unshare -U true &> /dev/null && echo 'enabled' || echo 'disabled'
-    fi
-
 # Install the official docker packages
 install-docker:
     #! /bin/run0 /bin/bash
-    curl -Lo /etc/yum.repos.d/docker-ce.repo https://download.docker.com/linux/fedora/docker-ce.repo
+    set -euo pipefail
+    tempfile=$(mktemp)
+    curl -fLo "$tempfile" https://download.docker.com/linux/fedora/docker-ce.repo
+    mv "$tempfile" /etc/yum.repos.d/docker-ce.repo
     rpm-ostree refresh-md
     rpm-ostree install docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
 
 # Uninstall the official docker packages
 uninstall-docker:
     #! /bin/run0 /bin/bash
+    set -euo pipefail
     rm /etc/yum.repos.d/docker-ce.repo
     rpm-ostree refresh-md
     rpm-ostree uninstall docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
@@ -207,15 +188,11 @@ rebase-secureblue:
 label-external-drives:
     #!/usr/bin/bash
     set -euo pipefail
-    media_path="/run/media/$USER/"
+    media_paths=("/run/media/$USER/" "/mnt/")
     selabel="user_home_t"
     supported_fs=("ext2" "ext3" "ext4" "jfs" "xfs" "btrfs") # ref: https://wiki.gentoo.org/wiki/SELinux/FAQ#Can_I_use_SELinux_with_any_file_system.3F
 
-    if [ -z "$( ls -A "$media_path" 2>&- )" ]; then
-        echo "You don't have any drives mounted in \"$media_path\", aborting."
-        exit 0
-    fi
-    echo "Warning: This will label your drives mounted on \"$media_path\" such that they are treated as an extension to your home directory. (You can select which ones to label)"
+    echo "Warning: This will label your drives mounted on paths $(printf '"%s" and ' "${media_paths[@]}" | sed 's/ and $//') such that they are treated as an extension to your home directory. (You can select which ones to label)"
     echo 'If you do not want Trivalent to have access to these drives, do not proceed.'
     read -rp 'Are you sure you want to do this? [y/N] ' warning_proceed
     if ! [[ "$warning_proceed" == [Yy]* ]]; then
@@ -223,33 +200,37 @@ label-external-drives:
         exit 0
     fi
 
-    for dir in "$media_path"*/
-    do
-        echo
-        if [[ "$dir" =~ "'" ]]; then
-            echo "WARNING: Single quotes in drive labels are forbidden to avoid command execution, skipping drive \"$dir\"..."
+    for media_path in "${media_paths[@]}"; do
+        if [ -z "$( ls -A "$media_path" 2>&- )" ]; then
+            echo
+            echo "You don't have any drives mounted in \"$media_path\", skipping..."
             continue
         fi
-        if [[ "$(stat -c '%U' "$dir")" != "$USER" ]]; then
-            echo "Drive root folder is not owned by you, skipping drive \"$dir\"..."
-            continue
-        fi
-        detected_fs="$(df -T "$dir" | awk '{print $2}' | sed -n 2p)"
-        if ! printf "%s\n" "${supported_fs[@]}" | grep -Fxq "$detected_fs"; then
-            echo "SELinux support is unknown for filesystem $detected_fs, skipping drive \"$dir\"..."
-            continue
-        fi
-        read -rp "Do you want to label \"$dir\"? [y/N] " proceed
-        if ! [[ "$proceed" == [Yy]* ]]; then
-            echo 'Skipping...'
-            continue
-        fi
-        echo "Labeling drive mounted on \"$dir\" with $selabel"
-        dir=${dir%*/} # remove trailing slash
-        if ! run0 sh -c "semanage fcontext -a -t $selabel '$dir(/.*)?' && restorecon -r '$dir'"; then
-            echo 'Execution failed, aborting.'
-            exit 1
-        fi
+
+        for dir in "$media_path"*/
+        do
+            echo
+            if [[ "$(stat -c '%U' "$dir")" != "$USER" ]]; then
+                echo "Drive root folder is not owned by you, skipping drive \"$dir\"..."
+                continue
+            fi
+            detected_fs="$(df -T "$dir" | awk '{print $2}' | sed -n 2p)"
+            if ! printf "%s\n" "${supported_fs[@]}" | grep -Fxq "$detected_fs"; then
+                echo "SELinux support is unknown for filesystem $detected_fs, skipping drive \"$dir\"..."
+                continue
+            fi
+            read -rp "Do you want to label \"$dir\"? [y/N] " proceed
+            if ! [[ "$proceed" == [Yy]* ]]; then
+                echo 'Skipping...'
+                continue
+            fi
+            echo "Labeling drive mounted on \"$dir\" with $selabel"
+            dir=${dir%*/} # remove trailing slash
+            if ! run0 sh -c 'semanage fcontext -a -t "$1" "$2(/.*)?" && restorecon -r "$2"' sh "$selabel" "$dir"; then
+                echo 'Execution failed, aborting.'
+                exit 1
+            fi
+        done
     done
 
     echo -e '\nDone.'
@@ -258,7 +239,7 @@ label-external-drives:
 install-libvirt-packages:
     #!/usr/bin/bash
     set -euo pipefail
-    rpm-ostree install -y libvirt libvirt-nss qemu qemu-char-spice qemu-device-display-virtio-gpu qemu-device-display-virtio-vga qemu-device-usb-redirect qemu-img qemu-system-x86-core qemu-user-binfmt qemu-user-static virt-install virt-manager virt-v2v virt-viewer
+    rpm-ostree install -y libvirt libvirt-nss qemu qemu-char-spice qemu-device-display-virtio-gpu qemu-device-display-virtio-vga qemu-device-usb-redirect qemu-img qemu-system-x86-core qemu-user-binfmt qemu-user-static virt-install virt-manager virt-viewer
     echo "Check out the Red Hat documentation to see which services to enable for your usecase:"
     echo "https://docs.redhat.com/en/documentation/red_hat_enterprise_linux/9/html/configuring_and_managing_virtualization/optimizing-virtual-machine-performance-in-rhel_configuring-and-managing-virtualization#proc_enabling-modular-libvirt-daemons_assembly_optimizing-libvirt-daemons"
 
@@ -272,6 +253,7 @@ install-vpn:
         ["ivpn"]="gui_needs_unconfined_userns gui_needs_xwayland"
         ["mullvad"]="gui_needs_unconfined_userns gui_needs_xwayland"
         ["proton"]=""
+        ["tailscale"]=""
     )
 
     # VPN install logic
@@ -280,14 +262,14 @@ install-vpn:
     # ref: https://protonvpn.com/support/en/official-linux-vpn-fedora
     function install_vpn() {
         local INSTRUCTIONS
-        local PACKAGE_NAME
+        local PACKAGE_NAMES
         local REPO_NAME
         case "$1" in
             "ivpn")
-                PACKAGE_NAME="ivpn"
-                REPO_NAME="$PACKAGE_NAME"
+                PACKAGE_NAMES="ivpn"
+                REPO_NAME="$PACKAGE_NAMES"
 
-                if util_checkpackage "$PACKAGE_NAME" || util_checkpackage "$PACKAGE_NAME-ui"; then
+                if util_checkpackage "$PACKAGE_NAMES" || util_checkpackage "$PACKAGE_NAMES-ui"; then
                     echo 'Error: IVPN is already installed.'
                     echo 'Aborting...'
                     exit 1
@@ -297,16 +279,16 @@ install-vpn:
                 local proceed2
                 read -rp 'Do you want the IVPN GUI to be installed? [Y/n] ' proceed2
                 if ! [[ "$proceed2" == [nN]* ]]; then
-                    PACKAGE_NAME="$PACKAGE_NAME $PACKAGE_NAME-ui"
+                    PACKAGE_NAMES="$PACKAGE_NAMES $PACKAGE_NAMES-ui"
                 fi
                 INSTRUCTIONS='Successfully installed IVPN. Please execute the command "systemctl enable --now ivpn-service" after rebooting.'
                 ;;
 
             "mullvad")
-                PACKAGE_NAME="mullvad-vpn"
+                PACKAGE_NAMES="mullvad-vpn"
                 REPO_NAME="mullvad"
 
-                if util_checkpackage "$PACKAGE_NAME"; then
+                if util_checkpackage "$PACKAGE_NAMES"; then
                     echo 'Error: Mullvad VPN is already installed.'
                     echo 'Aborting...'
                     exit 1
@@ -317,10 +299,10 @@ install-vpn:
                 ;;
 
             "proton")
-                PACKAGE_NAME="proton-vpn-gnome-desktop"
+                PACKAGE_NAMES="proton-vpn-gnome-desktop"
                 REPO_NAME="protonvpn-stable"
 
-                if util_checkpackage "$PACKAGE_NAME"; then
+                if util_checkpackage "$PACKAGE_NAMES"; then
                     echo 'Error: Proton VPN is already installed.'
                     echo 'Aborting...'
                     exit 1
@@ -330,13 +312,30 @@ install-vpn:
                 INSTRUCTIONS='Successfully installed Proton VPN.'
                 ;;
 
+            "tailscale")
+                PACKAGE_NAMES="tailscale"
+                REPO_NAME="tailscale"
+
+                if util_checkpackage "$PACKAGE_NAMES"; then
+                    echo 'Error: Tailscale VPN is already installed.'
+                    echo 'Aborting...'
+                    exit 1
+                fi
+
+                echo 'Installing Tailscale VPN...'
+                INSTRUCTIONS='Successfully installed Tailscale VPN, please execute the command "run0 systemctl enable --now tailscaled && run0 tailscale up".'
+                ;;
+
             *)
                 echo 'Invalid choice'
                 exit 1
                 ;;
+
         esac
 
-        if ! run0 sh -c 'sed -Ei "s/^enabled ?=.*/enabled=1/" "/etc/yum.repos.d/$1.repo" && rpm-ostree install --assumeyes "$2"' sh "$REPO_NAME" "$PACKAGE_NAME"; then
+        # The lack of quotes around $2 is intentional.
+        # shellcheck disable=SC2086
+        if ! run0 sh -c 'sed -Ei "s/^enabled[[:space:]]*=.*/enabled=1/" "/etc/yum.repos.d/$1.repo" && rpm-ostree install -y $2' sh "$REPO_NAME" "$PACKAGE_NAMES"; then
             echo "Error: The installation didn't complete successfully, aborting..."
             exit 1
         fi
@@ -350,6 +349,15 @@ install-vpn:
     }
 
     # script start
+    echo 'Using a VPN is currently incompatible with global DNS or local DNSSEC resolution.'
+    echo 'If you are using Unbound, it will be disabled in favour of systemd-resolved.'
+    read -rp 'Do you want to continue? [y/N] ' proceed
+    if ! [[ "$proceed" == [yY]* ]]; then
+        echo 'Aborting...'
+        exit 0
+    fi
+    echo
+
     echo 'NOTE: You can also install wireguard profiles from your provider directly into your DE, if you prefer.'
     read -rp 'Do you want to continue? [y/N] ' proceed
     if ! [[ "$proceed" == [yY]* ]]; then
@@ -378,16 +386,16 @@ install-vpn:
 
     if [[ "$vpn_requirements" =~ "always_needs_unconfined_userns" || "$vpn_requirements" =~ "gui_needs_unconfined_userns" && "$needs_gui" == "1" ]]; then
         echo
-        if [[ "$(ujust check-unconfined-userns-state)" == "enabled" ]] ; then
+        if [[ "$(ujust set-unconfined-userns status)" == "enabled" ]] ; then
             echo 'Unconfined domain user namespaces already enabled, skipping...'
         else
             echo 'This VPN requires unconfined domain user namespaces to be enabled.'
-            echo 'This will execute "ujust toggle-unconfined-domain-userns-creation". You can also manually do this later if you skip this step.'
+            echo 'This will execute "ujust set-unconfined-userns on". You can also manually do this later if you skip this step.'
             echo 'Warning: This is a security reduction!'
             read -rp 'Do you want to do this now? [Y/n] ' proceed_userns
             if ! [[ "$proceed_userns" == [nN]* ]]; then
                 echo 'Enabling unconfined domain user namespaces...'
-                ujust toggle-unconfined-domain-userns-creation
+                ujust set-unconfined-userns on
                 echo 'Enabled unconfined domain user namespaces.'
             fi
         fi
@@ -422,20 +430,34 @@ install-vpn:
         fi
 
         if [[ "$DE" == "unknown" ]]; then
-            echo 'Warning: Unable to identify your desktop environment. Please manually ensure that XWayland is enabled. Skipping...'
+            echo 'Warning: Unable to identify your desktop environment. Please manually ensure that Xwayland is enabled. Skipping...'
         elif [[ "$xwayland_enabled" == "1" ]]; then
-            echo 'XWayland already enabled, skipping...'
+            echo 'Xwayland already enabled, skipping...'
         else
-            echo 'This VPN requires XWayland to be enabled.'
-            echo 'This will execute "ujust toggle-xwayland". You can also manually do this later if you skip this step.'
+            echo 'This VPN requires Xwayland to be enabled.'
+            echo 'This will execute "ujust set-xwayland on". You can also manually do this later if you skip this step.'
             echo 'Warning: This is a security reduction!'
             read -rp 'Do you want to do this now? [Y/n] ' proceed_xwayland
             if ! [[ "$proceed_xwayland" == [nN]* ]]; then
-                echo 'Enabling XWayland...'
-                ujust toggle-xwayland
-                echo 'Enabled XWayland.'
+                echo 'Enabling Xwayland...'
+                ujust set-xwayland on
+                echo 'Enabled Xwayland.'
             fi
         fi
+    fi
+
+    # Switch DNS resolver to systemd-resolved if this isn't already set.
+    echo
+    resolver=$(
+        /usr/libexec/secureblue/dns_selector.py status |
+        sed -n 's/^DNS Resolver: //p'
+    )
+    if [[ "$resolver" == "systemd-resolved" ]]; then
+        echo 'DNS resolver is already systemd-resolved. Continuing...'
+    else
+        echo "Detected DNS resolver as $resolver".
+        echo 'Setting DNS resolver to systemd-resolved...'
+        /usr/libexec/secureblue/dns_selector.py resolver resolved > /dev/null
     fi
 
     echo
@@ -460,6 +482,6 @@ setup-usbguard:
         systemctl enable --now usbguard.service
         usbguard add-user "$SUDO_USER"
     '
-    if ! rpm-ostree status | grep '●' | grep -q 'securecore'; then
+    if ! rpm-ostree status | grep '●' | grep -Eq 'securecore|iot'; then
         systemctl enable --user --now usbguard-notifier.service
     fi

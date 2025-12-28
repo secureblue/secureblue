@@ -11,32 +11,34 @@
 # See the License for the specific language governing permissions and limitations under the License.
 
 modules:
-  - type: rpm-ostree
-    repos:
-      - https://repo.secureblue.dev/secureblue.repo
+  - type: dnf
+    source: ghcr.io/blue-build/modules@sha256:3c04c323f281bdb1ab88148a2335608344bcc07c6c4d2f5f777063a16554256d
     remove:
-      - kde-connect
-      - kde-connect-libs
-      - kdeconnectd
-      - fedora-chromium-config-kde
-      - fedora-flathub-remote
-      - fuse-encfs
-      - krfb
-      - krfb-libs
-      - plasma-discover-rpm-ostree
+      packages:
+        - kde-connect
+        - kde-connect-libs
+        - kdeconnectd
+        - fedora-chromium-config-kde
+        - fedora-flathub-remote
+        - fuse-encfs
+        - krfb
+        - krfb-libs
+        - plasma-discover-rpm-ostree
 
-      # depends on fedora-flathub-remote
-      - plasma-welcome-fedora
+        # depends on fedora-flathub-remote
+        - plasma-welcome-fedora
   - type: files
+    source: ghcr.io/blue-build/modules@sha256:3c04c323f281bdb1ab88148a2335608344bcc07c6c4d2f5f777063a16554256d
     files:
       - source: system/kinoite
         destination: /
   - type: justfiles
+    source: ghcr.io/blue-build/modules@sha256:3c04c323f281bdb1ab88148a2335608344bcc07c6c4d2f5f777063a16554256d
     validate: true
     include:
       - kinoite.just
   - type: script
+    source: ghcr.io/blue-build/modules@sha256:3c04c323f281bdb1ab88148a2335608344bcc07c6c4d2f5f777063a16554256d
     scripts:
-      - enabledisablekdesplash.sh
       - setdefaultkdewallpapers.sh
       - systemsettings-standard-malloc.sh

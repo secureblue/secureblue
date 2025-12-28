@@ -10,7 +10,7 @@
 # distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and limitations under the License.
 
-name: build-secureblue
+name: build
 permissions: {}
 on:
   schedule:
@@ -19,6 +19,7 @@ on:
   push:
     branches-ignore: # don't rebuild for dependabot
       - 'dependabot/**'
+      - 'create-pull-request/**'
     paths-ignore: # don't rebuild if only documentation has changed
       - "**.md"
 
@@ -34,12 +35,14 @@ jobs:
     name: Build silverblue main
     if: github.triggering_actor == 'royaloughtness' || github.event_name == 'schedule' || github.event_name == 'push'
     permissions:
-      contents: read
-      packages: write
-      id-token: write
+      contents: read # Needed to pull the repo for the build
+      actions: read # Needed to read actions and actions logs for provenance generation
+      packages: write # Needed to publish images
+      id-token: write # Needed for token generation for signing
     uses: ./.github/workflows/build-one-recipe.yml
     with:
       recipe: general/recipe-silverblue-main.yml
+      rechunk: true
     secrets:
       SIGNING_SECRET: ${{ secrets.SIGNING_SECRET }}
       KERNEL_PRIVKEY: ${{ secrets.KERNEL_PRIVKEY }}
@@ -48,12 +51,14 @@ jobs:
     name: Build kinoite main
     if: github.triggering_actor == 'royaloughtness' || github.event_name == 'schedule' || github.event_name == 'push'
     permissions:
-      contents: read
-      packages: write
-      id-token: write
+      contents: read # Needed to pull the repo for the build
+      actions: read # Needed to read actions and actions logs for provenance generation
+      packages: write # Needed to publish images
+      id-token: write # Needed for token generation for signing
     uses: ./.github/workflows/build-one-recipe.yml
     with:
       recipe: general/recipe-kinoite-main.yml
+      rechunk: true
     secrets:
       SIGNING_SECRET: ${{ secrets.SIGNING_SECRET }}
       KERNEL_PRIVKEY: ${{ secrets.KERNEL_PRIVKEY }}
@@ -62,12 +67,14 @@ jobs:
     name: Build sericea main
     if: github.triggering_actor == 'royaloughtness' || github.event_name == 'schedule' || github.event_name == 'push'
     permissions:
-      contents: read
-      packages: write
-      id-token: write
+      contents: read # Needed to pull the repo for the build
+      actions: read # Needed to read actions and actions logs for provenance generation
+      packages: write # Needed to publish images
+      id-token: write # Needed for token generation for signing
     uses: ./.github/workflows/build-one-recipe.yml
     with:
       recipe: general/recipe-sericea-main.yml
+      rechunk: true
     secrets:
       SIGNING_SECRET: ${{ secrets.SIGNING_SECRET }}
       KERNEL_PRIVKEY: ${{ secrets.KERNEL_PRIVKEY }}
@@ -76,12 +83,14 @@ jobs:
     name: Build cosmic main
     if: github.triggering_actor == 'royaloughtness' || github.event_name == 'schedule' || github.event_name == 'push'
     permissions:
-      contents: read
-      packages: write
-      id-token: write
+      contents: read # Needed to pull the repo for the build
+      actions: read # Needed to read actions and actions logs for provenance generation
+      packages: write # Needed to publish images
+      id-token: write # Needed for token generation for signing
     uses: ./.github/workflows/build-one-recipe.yml
     with:
       recipe: general/recipe-cosmic-main.yml
+      rechunk: true
     secrets:
       SIGNING_SECRET: ${{ secrets.SIGNING_SECRET }}
       KERNEL_PRIVKEY: ${{ secrets.KERNEL_PRIVKEY }}
@@ -91,9 +100,10 @@ jobs:
     if: github.triggering_actor == 'royaloughtness' || github.event_name == 'schedule' || github.event_name == 'push'
     needs: silverblue-main
     permissions:
-      contents: read
-      packages: write
-      id-token: write
+      contents: read # Needed to pull the repo for the build
+      actions: read # Needed to read actions and actions logs for provenance generation
+      packages: write # Needed to publish images
+      id-token: write # Needed for token generation for signing
     strategy:
       fail-fast: false
       matrix:
@@ -112,9 +122,10 @@ jobs:
     if: github.triggering_actor == 'royaloughtness' || github.event_name == 'schedule' || github.event_name == 'push'
     needs: kinoite-main
     permissions:
-      contents: read
-      packages: write
-      id-token: write
+      contents: read # Needed to pull the repo for the build
+      actions: read # Needed to read actions and actions logs for provenance generation
+      packages: write # Needed to publish images
+      id-token: write # Needed for token generation for signing
     strategy:
       fail-fast: false
       matrix:
@@ -133,9 +144,10 @@ jobs:
     if: github.triggering_actor == 'royaloughtness' || github.event_name == 'schedule' || github.event_name == 'push'
     needs: sericea-main
     permissions:
-      contents: read
-      packages: write
-      id-token: write
+      contents: read # Needed to pull the repo for the build
+      actions: read # Needed to read actions and actions logs for provenance generation
+      packages: write # Needed to publish images
+      id-token: write # Needed for token generation for signing
     strategy:
       fail-fast: false
       matrix:
@@ -154,9 +166,10 @@ jobs:
     if: github.triggering_actor == 'royaloughtness' || github.event_name == 'schedule' || github.event_name == 'push'
     needs: cosmic-main
     permissions:
-      contents: read
-      packages: write
-      id-token: write
+      contents: read # Needed to pull the repo for the build
+      actions: read # Needed to read actions and actions logs for provenance generation
+      packages: write # Needed to publish images
+      id-token: write # Needed for token generation for signing
     strategy:
       fail-fast: false
       matrix:
@@ -174,12 +187,14 @@ jobs:
     name: Build securecore main images
     if: github.triggering_actor == 'royaloughtness' || github.event_name == 'schedule' || github.event_name == 'push'
     permissions:
-      contents: read
-      packages: write
-      id-token: write
+      contents: read # Needed to pull the repo for the build
+      actions: read # Needed to read actions and actions logs for provenance generation
+      packages: write # Needed to publish images
+      id-token: write # Needed for token generation for signing
     uses: ./.github/workflows/build-one-recipe.yml
     with:
       recipe: securecore/recipe-securecore-main.yml
+      rechunk: true
     secrets:
       SIGNING_SECRET: ${{ secrets.SIGNING_SECRET }}
       KERNEL_PRIVKEY: ${{ secrets.KERNEL_PRIVKEY }}
@@ -189,9 +204,10 @@ jobs:
     if: github.triggering_actor == 'royaloughtness' || github.event_name == 'schedule' || github.event_name == 'push'
     needs: securecore-main
     permissions:
-      contents: read
-      packages: write
-      id-token: write
+      contents: read # Needed to pull the repo for the build
+      actions: read # Needed to read actions and actions logs for provenance generation
+      packages: write # Needed to publish images
+      id-token: write # Needed for token generation for signing
     strategy:
       fail-fast: false
       matrix:
@@ -210,9 +226,10 @@ jobs:
     if: github.triggering_actor == 'royaloughtness' || github.event_name == 'schedule' || github.event_name == 'push'
     needs: securecore-main
     permissions:
-      contents: read
-      packages: write
-      id-token: write
+      contents: read # Needed to pull the repo for the build
+      actions: read # Needed to read actions and actions logs for provenance generation
+      packages: write # Needed to publish images
+      id-token: write # Needed for token generation for signing
     uses: ./.github/workflows/build-one-recipe.yml
     with:
       recipe: securecore/recipe-securecore-zfs-main.yml
@@ -221,19 +238,96 @@ jobs:
       KERNEL_PRIVKEY: ${{ secrets.KERNEL_PRIVKEY }}
 
   securecore-zfs-nvidia:
-    name: Build zfs nvidia images
+    name: Build securecore zfs nvidia images
     if: github.triggering_actor == 'royaloughtness' || github.event_name == 'schedule' || github.event_name == 'push'
     needs: securecore-zfs-main
     permissions:
-      contents: read
-      packages: write
-      id-token: write
+      contents: read # Needed to pull the repo for the build
+      actions: read # Needed to read actions and actions logs for provenance generation
+      packages: write # Needed to publish images
+      id-token: write # Needed for token generation for signing
     strategy:
-      fail-fast: false 
+      fail-fast: false
       matrix:
         recipe:
           - securecore/recipe-securecore-zfs-nvidia.yml
           - securecore/recipe-securecore-zfs-nvidia-open.yml
+    uses: ./.github/workflows/build-one-recipe.yml
+    with:
+      recipe: ${{ matrix.recipe }}
+    secrets:
+      SIGNING_SECRET: ${{ secrets.SIGNING_SECRET }}
+      KERNEL_PRIVKEY: ${{ secrets.KERNEL_PRIVKEY }}
+
+  iot-main:
+    name: Build iot main images
+    if: github.triggering_actor == 'royaloughtness' || github.event_name == 'schedule' || github.event_name == 'push'
+    permissions:
+      contents: read # Needed to pull the repo for the build
+      actions: read # Needed to read actions and actions logs for provenance generation
+      packages: write # Needed to publish images
+      id-token: write # Needed for token generation for signing
+    uses: ./.github/workflows/build-one-recipe.yml
+    with:
+      recipe: iot/recipe-iot-main.yml
+      rechunk: true
+    secrets:
+      SIGNING_SECRET: ${{ secrets.SIGNING_SECRET }}
+      KERNEL_PRIVKEY: ${{ secrets.KERNEL_PRIVKEY }}
+
+  iot-nvidia:
+    name: Build iot nvidia images
+    if: github.triggering_actor == 'royaloughtness' || github.event_name == 'schedule' || github.event_name == 'push'
+    needs: iot-main
+    permissions:
+      contents: read # Needed to pull the repo for the build
+      actions: read # Needed to read actions and actions logs for provenance generation
+      packages: write # Needed to publish images
+      id-token: write # Needed for token generation for signing
+    strategy:
+      fail-fast: false
+      matrix:
+        recipe:
+          - iot/recipe-iot-nvidia.yml
+          - iot/recipe-iot-nvidia-open.yml
+    uses: ./.github/workflows/build-one-recipe.yml
+    with:
+      recipe: ${{ matrix.recipe }}
+    secrets:
+      SIGNING_SECRET: ${{ secrets.SIGNING_SECRET }}
+      KERNEL_PRIVKEY: ${{ secrets.KERNEL_PRIVKEY }}
+
+  iot-zfs-main:
+    name: Build iot zfs main images
+    if: github.triggering_actor == 'royaloughtness' || github.event_name == 'schedule' || github.event_name == 'push'
+    needs: iot-main
+    permissions:
+      contents: read # Needed to pull the repo for the build
+      actions: read # Needed to read actions and actions logs for provenance generation
+      packages: write # Needed to publish images
+      id-token: write # Needed for token generation for signing
+    uses: ./.github/workflows/build-one-recipe.yml
+    with:
+      recipe: iot/recipe-iot-zfs-main.yml
+    secrets:
+      SIGNING_SECRET: ${{ secrets.SIGNING_SECRET }}
+      KERNEL_PRIVKEY: ${{ secrets.KERNEL_PRIVKEY }}
+
+  iot-zfs-nvidia:
+    name: Build iot zfs nvidia images
+    if: github.triggering_actor == 'royaloughtness' || github.event_name == 'schedule' || github.event_name == 'push'
+    needs: iot-zfs-main
+    permissions:
+      contents: read # Needed to pull the repo for the build
+      actions: read # Needed to read actions and actions logs for provenance generation
+      packages: write # Needed to publish images
+      id-token: write # Needed for token generation for signing
+    strategy:
+      fail-fast: false 
+      matrix:
+        recipe:
+          - iot/recipe-iot-zfs-nvidia.yml
+          - iot/recipe-iot-zfs-nvidia-open.yml
     uses: ./.github/workflows/build-one-recipe.yml
     with:
       recipe: ${{ matrix.recipe }}

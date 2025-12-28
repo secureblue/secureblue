@@ -11,26 +11,25 @@
 # See the License for the specific language governing permissions and limitations under the License.
 
 modules:
-    - type: rpm-ostree
-      install:
+  - type: dnf
+    source: ghcr.io/blue-build/modules@sha256:3c04c323f281bdb1ab88148a2335608344bcc07c6c4d2f5f777063a16554256d
+    install:
+      install-weak-deps: false
+      packages:
         - setools-console
         - usbguard
         - firewalld
         - policycoreutils-python-utils
-      remove:
-        - sudo
-        
-    - type: files
-      files:
-        - source: system/server
-          destination: /
-    - type: script
-      scripts:
-        - addtailscalerepo.sh
-    - type: script
-      scripts:
-        - excludepcsc.sh
-        - setserverdefaultzone.sh
-        - removebrewjust.sh
-        - removesuid.sh
-        - securecoreremovemigrationmotd.sh
+
+  - type: files
+    source: ghcr.io/blue-build/modules@sha256:3c04c323f281bdb1ab88148a2335608344bcc07c6c4d2f5f777063a16554256d
+    files:
+      - source: system/server
+        destination: /
+
+  - type: script
+    source: ghcr.io/blue-build/modules@sha256:3c04c323f281bdb1ab88148a2335608344bcc07c6c4d2f5f777063a16554256d
+    scripts:
+      - excludepcsc.sh
+      - setserverdefaultzone.sh
+      - disable-coreos-migration-motd.sh

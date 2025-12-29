@@ -36,6 +36,7 @@ jobs:
   bluebuild:
     name: Build secureblue
     runs-on: ubuntu-24.04
+    environment: Build
     outputs:
       IMAGE_DIGEST: ${{ steps.image_manifest_metadata.outputs.IMAGE_DIGEST }}
       FULL_IMAGE_REF: ${{ steps.image_manifest_metadata.outputs.FULL_IMAGE_REF }}

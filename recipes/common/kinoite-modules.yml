@@ -20,7 +20,14 @@ modules:
         - kdeconnectd
         - fedora-chromium-config-kde
         - fedora-flathub-remote
+
+        # Backends of Plasma Vault that have since been dropped,
+        # see https://invent.kde.org/plasma/plasma-vault/-/commit/ba292cce35907707cab41e651fd86b847117ed73,
+        # and also depend on deprecated FUSE2,
+        # but are still installed as recommended dependencies
         - fuse-encfs
+        - cryfs
+
         - krfb
         - krfb-libs
         - plasma-discover-rpm-ostree

@@ -39,7 +39,12 @@ remove:
   packages:
     - firefox
     - firefox-langpacks
+
+    # FUSE2 is deprecated in favor of FUSE3, but is pre-installed
+    # in the base images for AppImage compatibility
     - fuse
+    - fuse-libs
+
     - passim
     - fedora-chromium-config
 replace:

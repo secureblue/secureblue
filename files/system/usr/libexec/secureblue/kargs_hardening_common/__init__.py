@@ -17,7 +17,7 @@
 """Common data for kernel argument hardening."""
 
 import subprocess  # nosec
-from collections.abc import Sequence
+from collections.abc import Iterable, Sequence
 
 import tomllib
 
@@ -30,9 +30,9 @@ try:
 except FileNotFoundError:
     IMAGE_NVIDIA_KARGS = None
 
-DISABLE_32_BIT = "ia32_emulation=0"
-
-FORCE_NOSMT = "nosmt=force"
+OPTIONAL_DISABLE_32BIT = "ia32_emulation=0"
+OPTIONAL_FORCE_NOSMT = "nosmt=force"
+OPTIONAL_LOCKDOWN = "lockdown=confidentiality"
 
 UNSTABLE_KARGS = [
     "amd_iommu=force_isolation",
@@ -44,8 +44,28 @@ UNSTABLE_KARGS = [
     "oops=panic",
 ]
 
-MODULE_SIG_ENFORCE = "module.sig_enforce=1"
-MODULE_NO_SIG_ENFORCE = "module.sig_enforce=0"
+KNOWN_EXACT_KARGS = (
+    DEFAULT_KARGS
+    + UNSTABLE_KARGS
+    + (IMAGE_NVIDIA_KARGS if IMAGE_NVIDIA_KARGS is not None else [])
+    + [
+        "quiet",
+        "rhgb",
+        "rw",
+        OPTIONAL_DISABLE_32BIT,
+        OPTIONAL_FORCE_NOSMT,
+        OPTIONAL_LOCKDOWN,
+    ]
+)
+
+KNOWN_PREFIX_KARGS = [
+    "ostree=",
+    "preempt=",
+    "rd.luks.uuid=",
+    "root=",
+    "rootflags=",
+    "vconsole.keymap=",
+]
 
 
 def apply_kargs(*, add: Sequence[str], remove: Sequence[str]) -> None:
@@ -56,3 +76,13 @@ def apply_kargs(*, add: Sequence[str], remove: Sequence[str]) -> None:
     for karg in remove:
         rpm_ostree_cmd.append(f"--delete-if-present={karg}")
     subprocess.run(rpm_ostree_cmd, check=True)  # nosec
+
+
+def get_unknown_kargs(kargs: Iterable[str]) -> list[str]:
+    """Get kernel arguments not set or otherwise expected by secureblue."""
+    return [
+        karg
+        for karg in kargs
+        if karg not in KNOWN_EXACT_KARGS
+        and not any(karg.startswith(prefix) for prefix in KNOWN_PREFIX_KARGS)
+    ]

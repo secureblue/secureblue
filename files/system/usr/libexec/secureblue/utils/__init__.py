@@ -23,7 +23,7 @@ import json
 import subprocess  # nosec
 import sys
 import textwrap
-from collections.abc import Iterable, Sequence
+from collections.abc import Iterable
 
 import rpm
 
@@ -67,47 +67,27 @@ def parse_basic_toggle_args(*, prompt: str | None = None) -> ToggleMode:
         raise CommandUsageError("Invalid option selected") from e
 
 
-class Image(enum.Enum):
-    """Fedora atomic base image"""
+class Image(enum.StrEnum):
+    """A secureblue image's type (e.g. Kinoite, CoreOS, IoT)."""
 
-    SILVERBLUE = enum.auto()
-    KINOITE = enum.auto()
-    SERICEA = enum.auto()
-    COSMIC = enum.auto()
-    COREOS = enum.auto()
-    IOT = enum.auto()
+    SILVERBLUE = "silverblue"
+    KINOITE = "kinoite"
+    SERICEA = "sericea"
+    COSMIC = "cosmic"
+    COREOS = "securecore"
+    IOT = "iot"
 
     @classmethod
-    def from_image_ref(cls, image_ref: str) -> "Image | None":
-        """Convert an image reference to the corresponding Image enum instance."""
-        image_dict: dict[str, Image] = {
-            "silverblue": cls.SILVERBLUE,
-            "kinoite": cls.KINOITE,
-            "sericea": cls.SERICEA,
-            "cosmic": cls.COSMIC,
-            "securecore": cls.COREOS,
-            "iot": cls.IOT,
-        }
+    def from_system(cls) -> "Image":
+        """Gets the currently running secureblue image type."""
+        return cls.from_image_ref(booted_image_ref())
+
+    @classmethod
+    def from_image_ref(cls, image_ref: str) -> "Image":
+        """Creates a secureblue Image from an OSTree container-image-reference."""
         image_name = image_ref.rsplit("/", maxsplit=1)[-1]
         image_prefix = image_name.split("-", maxsplit=1)[0]
-        return image_dict.get(image_prefix)
-
-    @classmethod
-    def by_alias(cls, alias: str) -> "Image | None":
-        """Look up Image enum instance by alias."""
-        alias = alias.casefold()
-        aliases: dict[Image, Sequence[str]] = {
-            cls.SILVERBLUE: ("silverblue", "gnome"),
-            cls.KINOITE: ("kinoite", "kde", "plasma"),
-            cls.SERICEA: ("sericea", "sway"),
-            cls.COSMIC: ("cosmic",),
-            cls.COREOS: ("securecore", "coreos"),
-            cls.IOT: ("iot",),
-        }
-        for image, image_aliases in aliases.items():
-            if alias in image_aliases:
-                return image
-        return None
+        return cls(image_prefix)
 
     def is_server(self) -> bool:
         """Is the image a server image?"""
@@ -116,6 +96,33 @@ class Image(enum.Enum):
     def is_desktop(self) -> bool:
         """Is the image a desktop image?"""
         return not self.is_server()
+
+
+class ImageModules(enum.StrEnum):
+    """A secureblue image's module type (e.g. main, nvidia-open, zfs-nvidia)."""
+
+    MAIN = "main"
+    NVIDIA = "nvidia"
+    NVIDIA_OPEN = "nvidia-open"
+    ZFS = "zfs-main"
+    ZFS_NVIDIA = "zfs-nvidia"
+    ZFS_NVIDIA_OPEN = "zfs-nvidia-open"
+
+    @classmethod
+    def from_system(cls) -> "ImageModules":
+        """Gets the currently running secureblue image module type."""
+        return cls.from_image_ref(booted_image_ref())
+
+    @classmethod
+    def from_image_ref(cls, image_ref: str) -> "ImageModules":
+        """Creates a secureblue Image from an OSTree container-image-reference."""
+        image_name = image_ref.rsplit("/", maxsplit=1)[-1]  # e.g. silverblue-main-hardened.
+        image_middle = "-".join(image_name.split("-")[1:-1])  # e.g. main.
+        return cls(image_middle)
+
+    def requires_secureboot(self) -> bool:
+        """Whether the image contains kernel modules signed only by secureblue."""
+        return self != ImageModules.MAIN
 
 
 def booted_image_ref() -> str:
@@ -232,3 +239,76 @@ def ask_option(options_count: int) -> int:
                 print()
                 return option
         print(f"Please enter a number between 1 and {options_count}.")
+
+
+class SecurebootStatus(enum.Enum):
+    """Describes a system's secure boot enforcement status."""
+
+    UNSUPPORTED = enum.auto()
+    """Secure boot is unsupported by the firmware."""
+
+    ENABLED = enum.auto()
+    """Secure boot is enabled and shim is validating signatures."""
+
+    FIRMWARE_DISABLED = enum.auto()
+    """Secure boot is unavailable because it has been disabled by the firmware."""
+
+    FIRMWARE_SETUP_MODE = enum.auto()
+    """Secure boot is unavailable because the firmware is awaiting a platform key."""
+
+    SHIM_DISABLED = enum.auto()
+    """Secure boot is enabled in the firmware, but shim is not validating signatures."""
+
+    UNKNOWN = enum.auto()
+    """Unable to determine secure boot enforcement status."""
+
+    @staticmethod
+    def from_system() -> "SecurebootStatus":
+        """Returns the current system's secure boot status.
+
+        NOTE: This function has a complexity of 9, but only parses all relevant
+        mokutil outputs. It has been written using the source code as a guide:
+            https://github.com/lcp/mokutil/blob/master/src/mokutil.c
+
+        Raises:
+            ValueError: `/usr/bin/mokutil` produces unexpected output.
+        """
+
+        mokutil = subprocess.run(
+            ["/usr/bin/mokutil", "--sb-state"],
+            stdout=subprocess.PIPE,
+            stderr=subprocess.STDOUT,
+            text=True,
+            check=False,
+        )  # nosec
+        output = mokutil.stdout
+
+        status = None
+
+        if (
+            "This system doesn't support Secure Boot" in output
+            or "EFI variables are not supported" in output
+        ):
+            status = SecurebootStatus.UNSUPPORTED
+
+        if "SecureBoot enabled" in output:
+            if "SecureBoot validation is disabled in shim" in output:
+                status = SecurebootStatus.SHIM_DISABLED
+            else:
+                status = SecurebootStatus.ENABLED
+
+        if "SecureBoot disabled" in output:
+            if "Platform is in Setup Mode" in output:
+                status = SecurebootStatus.FIRMWARE_SETUP_MODE
+            else:
+                status = SecurebootStatus.FIRMWARE_DISABLED
+
+        if "Cannot determine secure boot state" in output:
+            status = SecurebootStatus.UNKNOWN
+
+        if status is None:
+            raise ValueError(
+                f"Unexpected output from mokutil: '{output}', exit code: {mokutil.returncode}."
+            )
+
+        return status

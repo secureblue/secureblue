@@ -35,9 +35,10 @@ import sys
 import traceback
 from typing import Final
 
-import kargs_hardening_common
+import kargs_hardening_common as kargs
 from audit_flatpak import check_flatpak_permissions, parse_flatpak_permissions
 from audit_utils import (
+    check_karg,
     get_flatpak_permissions,
     get_legend,
     get_width,
@@ -57,6 +58,7 @@ from auditor import (
 )
 from utils import (
     Image,
+    SecurebootStatus,
     booted_image_ref,
     command_stdout,
     command_succeeds,
@@ -79,39 +81,46 @@ def audit_kargs():
     """Check for hardened kernel arguments."""
     status = PASS
     notes = []
-    rec = None
+    recs = []
 
     kargs_current = frozenset(command_stdout("rpm-ostree", "kargs").split())
-    kargs_expected = kargs_hardening_common.DEFAULT_KARGS
-    for karg in kargs_expected:
-        if karg not in kargs_current:
-            status = status.downgrade_to(FAIL)
-            notes.append(Note(_("Missing kernel argument: {0}").format(karg), FAIL))
 
-    karg_32bit = kargs_hardening_common.DISABLE_32_BIT
-    if karg_32bit not in kargs_current:
-        status = status.downgrade_to(WARN)
-        notes.append(
-            Note(_("Missing kernel argument: {0} (32-bit support)").format(karg_32bit), WARN)
+    lockdown_severity = FAIL if SecurebootStatus.from_system() == SecurebootStatus.ENABLED else WARN
+
+    # All the kargs we want to check, and when missing, the note severity and template.
+    karg_checks = [
+        (kargs.DEFAULT_KARGS, FAIL, _("Missing kernel argument: {0}")),
+        ([kargs.OPTIONAL_LOCKDOWN], lockdown_severity, _("Missing kernel argument: {0}")),
+        ([kargs.OPTIONAL_DISABLE_32BIT], WARN, _("Missing kernel argument: {0} (32-bit support)")),
+        ([kargs.OPTIONAL_FORCE_NOSMT], WARN, _("Missing kernel argument: {0} (force-disable SMT)")),
+        (kargs.UNSTABLE_KARGS, WARN, _("Missing kernel argument (unstable): {0}")),
+    ]
+
+    # Check all the expected kargs are present.
+    for kargs_expected, missing_severity, missing_template in karg_checks:
+        check_status, check_notes = check_karg(
+            kargs_current, kargs_expected, missing_severity, missing_template
         )
+        status = check_status.downgrade_to(status)
+        notes += check_notes
 
-    karg_nosmt = kargs_hardening_common.FORCE_NOSMT
-    if karg_nosmt not in kargs_current:
-        status = status.downgrade_to(WARN)
-        notes.append(
-            Note(_("Missing kernel argument: {0} (force-disable SMT)").format(karg_nosmt), WARN)
+    # Check there are no unknown kargs (i.e. not created by secureblue or Anaconda).
+    kargs_unexpected = kargs.get_unknown_kargs(kargs_current)
+    if kargs_unexpected:
+        status = status.downgrade_to(INFO)
+        notes += [
+            Note(_("Unexpected kernel argument: {0}").format(karg), INFO)
+            for karg in kargs_unexpected
+        ]
+        recs.append(
+            _("Custom kernel argmuents were detected. You should review them:")
+            + "\n$ rpm-ostree kargs"
         )
-
-    kargs_expected_unstable = kargs_hardening_common.UNSTABLE_KARGS
-    for karg in kargs_expected_unstable:
-        if karg not in kargs_current:
-            status = status.downgrade_to(WARN)
-            notes.append(Note(_("Missing kernel argument (unstable): {0}").format(karg), WARN))
 
     if status != PASS:
-        rec = _("To set hardened kernel arguments, run:") + "\n$ ujust set-kargs-hardening"
+        recs.append(_("To set hardened kernel arguments, run:") + "\n$ ujust set-kargs-hardening")
 
-    yield Report(_("Checking for hardened kernel arguments"), status, notes=notes, recs=rec)
+    yield Report(_("Checking for hardened kernel arguments"), status, notes=notes, recs=recs)
 
 
 @audit
@@ -976,33 +985,54 @@ def audit_hardened_malloc():
 @audit
 def audit_secureboot():
     """Ensure secureboot is enabled."""
+    status = None
     note = None
     rec = None
 
-    result = subprocess.run(
-        ["/usr/bin/mokutil", "--sb-state"],
-        capture_output=True,
-        text=True,
-        check=False,
-    )  # nosec
+    match SecurebootStatus.from_system():
+        case SecurebootStatus.ENABLED:
+            status = PASS
 
-    if result.returncode == 0 and result.stdout.strip() == "SecureBoot enabled":
-        status = PASS
-    elif (
-        "doesn't support Secure Boot" in result.stderr
-        or "EFI variables are not supported" in result.stderr
-    ):
-        status = INFO
-        note = Note(_("Your hardware does not support secure boot."), INFO)
-        rec = (
-            note.text
-            + "\n"
-            + _(
-                "The system will be unable to verify that kernel modules are signed or the boot process."
+        case SecurebootStatus.UNSUPPORTED:
+            status = INFO
+            note = Note(_("Your hardware does not support secure boot."), INFO)
+            rec = f"{note.text}\n" + _(
+                "The system will be unable to verify that kernel modules are "
+                "signed or the boot process."
             )
-        )
-    else:
-        status = FAIL
+
+        case SecurebootStatus.FIRMWARE_DISABLED:
+            status = FAIL
+            note = Note(_("Secure Boot is supported by your firmware, but has been disabled."))
+            rec = (
+                f"{note.text}\n"
+                + _("You should enable Secure Boot in your UEFI settings:")
+                + "\n$ ujust bios"
+            )
+
+        case SecurebootStatus.FIRMWARE_SETUP_MODE:
+            status = FAIL
+            note = Note(_("Secure Boot is in Setup Mode."))
+            rec = (
+                f"{note.text}\n"
+                + _("You should reset your Secure Boot certificates to factory defaults:")
+                + "\n$ ujust bios"
+            )
+
+        case SecurebootStatus.SHIM_DISABLED:
+            status = FAIL
+            note = Note(_("Secure Boot is enabled, but shim is not validating signatures."))
+            rec = (
+                f"{note.text}\n"
+                + _("Enable signature validation by shim:")
+                + "\n$ mokutil --enable-validation"
+            )
+
+        case SecurebootStatus.UNKNOWN:
+            status = UNKNOWN
+
+        case _:
+            status = UNKNOWN
 
     yield Report(_("Ensuring secure boot is enabled"), status, notes=note, recs=rec)
 

@@ -25,9 +25,10 @@ import re
 # All subprocess calls we make have trusted inputs and do not use shell=True.
 import subprocess  # nosec
 import textwrap
+from collections.abc import Container, Iterable
 from typing import Final
 
-from auditor import AuditError, Status, gettext_marker
+from auditor import AuditError, Note, Status, gettext_marker
 from utils import print_err
 
 PASS: Final = Status.PASS
@@ -147,3 +148,22 @@ def validate_sysctl(sysctl: str, actual: str, expected: str) -> bool:
         # https://www.kernel.org/doc/html/latest/admin-guide/sysrq.html
         return actual in (expected, "0", "4")
     return actual == expected
+
+
+def check_karg(
+    current: Container[str],
+    expected: Iterable[str],
+    missing_severity: Status,
+    missing_template: str = _("Missing kernel argument: {0}"),
+) -> tuple[Status, list[Note]]:
+    """Returns a status and formatted note based on whether all expected kargs are present."""
+
+    status = PASS
+    notes = []
+
+    for karg in expected:
+        if karg not in current:
+            status = missing_severity
+            notes.append(Note(missing_template.format(karg), missing_severity))
+
+    return status, notes

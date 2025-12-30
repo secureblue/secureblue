@@ -12,7 +12,7 @@
 
 modules:
   - type: script
-    source: ghcr.io/blue-build/modules@sha256:3c04c323f281bdb1ab88148a2335608344bcc07c6c4d2f5f777063a16554256d
+    source: ghcr.io/blue-build/modules@sha256:ed05b50b68d37e351549341201e1e6ac8a5d825efba18d1f98de3f35c9e2256e
     scripts:
       - installzfskmod.sh
     secrets:
@@ -22,7 +22,7 @@ modules:
           type: file
           destination: /tmp/certs/private_key.priv
   - type: files
-    source: ghcr.io/blue-build/modules@sha256:3c04c323f281bdb1ab88148a2335608344bcc07c6c4d2f5f777063a16554256d
+    source: ghcr.io/blue-build/modules@sha256:ed05b50b68d37e351549341201e1e6ac8a5d825efba18d1f98de3f35c9e2256e
     files:
       - source: system/zfs
         destination: /

@@ -32,7 +32,7 @@ if [[ "$is_desktop" == "true" ]]; then
     )
 fi
 
-curl -L https://nvidia.github.io/libnvidia-container/stable/rpm/nvidia-container-toolkit.repo \
+curl -fLsS --retry 5 https://nvidia.github.io/libnvidia-container/stable/rpm/nvidia-container-toolkit.repo \
     -o /etc/yum.repos.d/nvidia-container-toolkit.repo
 sed -i -e 's/^gpgcheck=0/gpgcheck=1/' -e 's/^enabled=0.*/enabled=1/' /etc/yum.repos.d/nvidia-container-toolkit.repo
 

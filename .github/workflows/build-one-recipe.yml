@@ -36,6 +36,7 @@ jobs:
   bluebuild:
     name: Build secureblue
     runs-on: ubuntu-24.04
+    environment: Build
     outputs:
       IMAGE_DIGEST: ${{ steps.image_manifest_metadata.outputs.IMAGE_DIGEST }}
       FULL_IMAGE_REF: ${{ steps.image_manifest_metadata.outputs.FULL_IMAGE_REF }}
@@ -119,7 +120,7 @@ jobs:
         env:
           KERNEL_PRIVKEY: ${{ secrets.KERNEL_PRIVKEY }}
         with:
-          cli_version: v0.9.27
+          cli_version: v0.9.28
           recipe: ${{ inputs.recipe }}
           cosign_private_key: ${{ secrets.SIGNING_SECRET }}
           registry_token: ${{ github.token }}

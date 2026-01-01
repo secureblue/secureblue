@@ -1166,7 +1166,7 @@ async def main() -> int:
         epilog=get_legend(),
     )
     # Translatable strings printed by argparse that we want to ensure are included in the PO files.
-    _argparse_translatable_strings = (
+    _argparse_translatable_strings = (  # noqa: RUF100, F841
         _("usage: "),
         _("options"),
         _("show this help message and exit"),

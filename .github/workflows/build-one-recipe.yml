@@ -106,9 +106,9 @@ jobs:
 
           UPSTREAM_CONTAINER="${BASE_IMAGE}:${BASE_IMAGE_VERSION}"
           if [[ "$BASE_IMAGE" == ghcr.io/secureblue/* ]]; then
-            UPSTREAM_PUBKEY='https://raw.githubusercontent.com/secureblue/secureblue/refs/heads/live/cosign.pub'
+            UPSTREAM_PUBKEY='./cosign.pub'
           else
-            UPSTREAM_PUBKEY='https://gitlab.com/fedora/ostree/ci-test/-/raw/main/quay.io-fedora-ostree-desktops.pub'
+            UPSTREAM_PUBKEY='./files/system/etc/pki/containers/quay.io-fedora-ostree-desktops.pub'
           fi
           if ! cosign verify --key "${UPSTREAM_PUBKEY}" "${UPSTREAM_CONTAINER}" | jq; then
             echo "NOTICE: Verification failed. Please ensure your public key is correct."

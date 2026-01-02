@@ -58,6 +58,13 @@ toggle-user-motd:
       touch "${HOME}/.config/no-show-user-motd"
     fi
 
+# Update system (with provenance verification)
+update-system:
+    #!/bin/sh
+    set -eu
+    /usr/libexec/secureblue/verify-provenance.sh
+    /usr/bin/rpm-ostree upgrade
+
 # Update device firmware
 [no-exit-message]
 update-firmware:

@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-01-02 19:02+0000\n"
+"POT-Creation-Date: 2026-01-02 21:24+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -275,7 +275,7 @@ msgid "Ensuring system DNS resolution is secure"
 msgstr ""
 
 #: files/system/usr/libexec/secureblue/audit_secureblue.py:516
-#: files/system/usr/libexec/secureblue/audit_secureblue.py:1104
+#: files/system/usr/libexec/secureblue/audit_secureblue.py:1106
 #, python-brace-format
 msgid "Unable to read file {0}."
 msgstr ""
@@ -392,7 +392,7 @@ msgstr ""
 
 #: files/system/usr/libexec/secureblue/audit_secureblue.py:788
 #: files/system/usr/libexec/secureblue/audit_secureblue.py:889
-#: files/system/usr/libexec/secureblue/audit_secureblue.py:1098
+#: files/system/usr/libexec/secureblue/audit_secureblue.py:1100
 msgid "To disable it, run:"
 msgstr ""
 
@@ -523,115 +523,115 @@ msgid ""
 "boot process."
 msgstr ""
 
-#: files/system/usr/libexec/secureblue/audit_secureblue.py:1006
+#: files/system/usr/libexec/secureblue/audit_secureblue.py:1007
 msgid "Secure Boot is supported by your firmware, but has been disabled."
 msgstr ""
 
-#: files/system/usr/libexec/secureblue/audit_secureblue.py:1009
+#: files/system/usr/libexec/secureblue/audit_secureblue.py:1011
 msgid "You should enable Secure Boot in your UEFI settings:"
 msgstr ""
 
-#: files/system/usr/libexec/secureblue/audit_secureblue.py:1015
+#: files/system/usr/libexec/secureblue/audit_secureblue.py:1017
 msgid "Secure Boot is in Setup Mode."
 msgstr ""
 
-#: files/system/usr/libexec/secureblue/audit_secureblue.py:1018
+#: files/system/usr/libexec/secureblue/audit_secureblue.py:1020
 msgid "You should reset your Secure Boot certificates to factory defaults:"
 msgstr ""
 
-#: files/system/usr/libexec/secureblue/audit_secureblue.py:1024
+#: files/system/usr/libexec/secureblue/audit_secureblue.py:1026
 msgid "Secure Boot is enabled, but shim is not validating signatures."
 msgstr ""
 
-#: files/system/usr/libexec/secureblue/audit_secureblue.py:1027
+#: files/system/usr/libexec/secureblue/audit_secureblue.py:1029
 msgid "Enable signature validation by shim:"
 msgstr ""
 
-#: files/system/usr/libexec/secureblue/audit_secureblue.py:1037
+#: files/system/usr/libexec/secureblue/audit_secureblue.py:1039
 msgid "Ensuring secure boot is enabled"
 msgstr ""
 
-#: files/system/usr/libexec/secureblue/audit_secureblue.py:1070
+#: files/system/usr/libexec/secureblue/audit_secureblue.py:1072
 msgid "Bash environment is not locked down."
 msgstr ""
 
-#: files/system/usr/libexec/secureblue/audit_secureblue.py:1071
+#: files/system/usr/libexec/secureblue/audit_secureblue.py:1073
 msgid "The following files do not appear to be immutable or do not exist:"
 msgstr ""
 
-#: files/system/usr/libexec/secureblue/audit_secureblue.py:1073
+#: files/system/usr/libexec/secureblue/audit_secureblue.py:1075
 msgid "To fix this, run:"
 msgstr ""
 
-#: files/system/usr/libexec/secureblue/audit_secureblue.py:1080
+#: files/system/usr/libexec/secureblue/audit_secureblue.py:1082
 msgid "Ensuring current user's bash environment is locked down"
 msgstr ""
 
-#: files/system/usr/libexec/secureblue/audit_secureblue.py:1097
-#: files/system/usr/libexec/secureblue/audit_secureblue.py:1102
+#: files/system/usr/libexec/secureblue/audit_secureblue.py:1099
+#: files/system/usr/libexec/secureblue/audit_secureblue.py:1104
 msgid "Webcam module is enabled."
 msgstr ""
 
-#: files/system/usr/libexec/secureblue/audit_secureblue.py:1106
+#: files/system/usr/libexec/secureblue/audit_secureblue.py:1108
 msgid "Checking whether webcam module is disabled"
 msgstr ""
 
-#: files/system/usr/libexec/secureblue/audit_secureblue.py:1127
+#: files/system/usr/libexec/secureblue/audit_secureblue.py:1129
 #, python-brace-format
 msgid "{0} is configured with an unknown URL."
 msgstr ""
 
-#: files/system/usr/libexec/secureblue/audit_secureblue.py:1130
+#: files/system/usr/libexec/secureblue/audit_secureblue.py:1132
 #, python-brace-format
 msgid "{0} is not a verified flatpak repository."
 msgstr ""
 
-#: files/system/usr/libexec/secureblue/audit_secureblue.py:1133
+#: files/system/usr/libexec/secureblue/audit_secureblue.py:1135
 #, python-brace-format
 msgid "Auditing flatpak remote {0}"
 msgstr ""
 
-#: files/system/usr/libexec/secureblue/audit_secureblue.py:1166
+#: files/system/usr/libexec/secureblue/audit_secureblue.py:1168
 #, python-brace-format
 msgid "Auditing {0}"
 msgstr ""
 
-#: files/system/usr/libexec/secureblue/audit_secureblue.py:1182
+#: files/system/usr/libexec/secureblue/audit_secureblue.py:1184
 msgid "[Audit process interrupted. Exiting.]"
 msgstr ""
 
-#: files/system/usr/libexec/secureblue/audit_secureblue.py:1195
+#: files/system/usr/libexec/secureblue/audit_secureblue.py:1197
 msgid "Audit secureblue configuration for security"
 msgstr ""
 
-#: files/system/usr/libexec/secureblue/audit_secureblue.py:1199
+#: files/system/usr/libexec/secureblue/audit_secureblue.py:1201
 msgid "skip categories"
 msgstr ""
 
-#: files/system/usr/libexec/secureblue/audit_secureblue.py:1200
+#: files/system/usr/libexec/secureblue/audit_secureblue.py:1202
 msgid "display output as JSON"
 msgstr ""
 
-#: files/system/usr/libexec/secureblue/audit_secureblue.py:1204
+#: files/system/usr/libexec/secureblue/audit_secureblue.py:1206
 #, python-brace-format
 msgid "Valid arguments to {0} are: {1}"
 msgstr ""
 
-#: files/system/usr/libexec/secureblue/audit_secureblue.py:1212
+#: files/system/usr/libexec/secureblue/audit_secureblue.py:1214
 #, python-brace-format
 msgid "*** Error in check '{0}' ***"
 msgstr ""
 
-#: files/system/usr/libexec/secureblue/audit_secureblue.py:1214
+#: files/system/usr/libexec/secureblue/audit_secureblue.py:1216
 msgid "*** Continuing... ***"
 msgstr ""
 
-#: files/system/usr/libexec/secureblue/audit_secureblue.py:1217
+#: files/system/usr/libexec/secureblue/audit_secureblue.py:1219
 #, python-brace-format
 msgid "Use option '{0}' to skip flatpak recommendations."
 msgstr ""
 
-#: files/system/usr/libexec/secureblue/audit_secureblue.py:1220
+#: files/system/usr/libexec/secureblue/audit_secureblue.py:1222
 msgid "*** WARNING: Unexpected error occurred. ***"
 msgstr ""
 
@@ -690,18 +690,18 @@ msgid "The following flatpak app(s) have {0}:"
 msgstr ""
 
 #: files/system/usr/libexec/secureblue/audit_flatpak/__init__.py:165
-#: files/system/usr/libexec/secureblue/audit_flatpak/__init__.py:357
-#: files/system/usr/libexec/secureblue/audit_flatpak/__init__.py:423
-#: files/system/usr/libexec/secureblue/audit_flatpak/__init__.py:466
+#: files/system/usr/libexec/secureblue/audit_flatpak/__init__.py:365
+#: files/system/usr/libexec/secureblue/audit_flatpak/__init__.py:429
+#: files/system/usr/libexec/secureblue/audit_flatpak/__init__.py:474
 msgid "To remove this permission from an app, use Flatseal or run:"
 msgstr ""
 
 #: files/system/usr/libexec/secureblue/audit_flatpak/__init__.py:167
-#: files/system/usr/libexec/secureblue/audit_flatpak/__init__.py:306
-#: files/system/usr/libexec/secureblue/audit_flatpak/__init__.py:359
-#: files/system/usr/libexec/secureblue/audit_flatpak/__init__.py:425
-#: files/system/usr/libexec/secureblue/audit_flatpak/__init__.py:447
-#: files/system/usr/libexec/secureblue/audit_flatpak/__init__.py:468
+#: files/system/usr/libexec/secureblue/audit_flatpak/__init__.py:309
+#: files/system/usr/libexec/secureblue/audit_flatpak/__init__.py:367
+#: files/system/usr/libexec/secureblue/audit_flatpak/__init__.py:431
+#: files/system/usr/libexec/secureblue/audit_flatpak/__init__.py:453
+#: files/system/usr/libexec/secureblue/audit_flatpak/__init__.py:476
 #, python-brace-format
 msgid "(replacing \"{0}\" with the flatpak app ID)"
 msgstr ""
@@ -771,103 +771,118 @@ msgstr ""
 msgid "ptrace access"
 msgstr ""
 
-#: files/system/usr/libexec/secureblue/audit_flatpak/__init__.py:264
+#: files/system/usr/libexec/secureblue/audit_flatpak/__init__.py:272
 #, python-brace-format
 msgid "{0} can acquire arbitrary permissions."
 msgstr ""
 
-#: files/system/usr/libexec/secureblue/audit_flatpak/__init__.py:267
+#: files/system/usr/libexec/secureblue/audit_flatpak/__init__.py:275
 msgid "However, this is required for its functionality."
 msgstr ""
 
-#: files/system/usr/libexec/secureblue/audit_flatpak/__init__.py:285
-#: files/system/usr/libexec/secureblue/audit_flatpak/__init__.py:290
+#: files/system/usr/libexec/secureblue/audit_flatpak/__init__.py:292
+#: files/system/usr/libexec/secureblue/audit_flatpak/__init__.py:297
 #, python-brace-format
 msgid "{0} is requesting {1}"
 msgstr ""
 
-#: files/system/usr/libexec/secureblue/audit_flatpak/__init__.py:297
+#: files/system/usr/libexec/secureblue/audit_flatpak/__init__.py:303
 #, python-brace-format
 msgid "{0} is not requesting {1}"
 msgstr ""
 
-#: files/system/usr/libexec/secureblue/audit_flatpak/__init__.py:302
+#: files/system/usr/libexec/secureblue/audit_flatpak/__init__.py:305
 #, python-brace-format
 msgid "The following flatpak app(s) are not requesting {0}:"
 msgstr ""
 
-#: files/system/usr/libexec/secureblue/audit_flatpak/__init__.py:304
+#: files/system/usr/libexec/secureblue/audit_flatpak/__init__.py:307
 msgid "To enable it for an app, run:"
 msgstr ""
 
-#: files/system/usr/libexec/secureblue/audit_flatpak/__init__.py:350
+#: files/system/usr/libexec/secureblue/audit_flatpak/__init__.py:356
+#, python-brace-format
+msgid "{0} can talk to {1} on the session bus."
+msgstr ""
+
+#: files/system/usr/libexec/secureblue/audit_flatpak/__init__.py:357
 #, python-brace-format
 msgid "The following flatpak app(s) can talk to {0} on the session bus:"
 msgstr ""
 
-#: files/system/usr/libexec/secureblue/audit_flatpak/__init__.py:352
+#: files/system/usr/libexec/secureblue/audit_flatpak/__init__.py:359
+#, python-brace-format
+msgid "{0} can talk to {1} on the system bus."
+msgstr ""
+
+#: files/system/usr/libexec/secureblue/audit_flatpak/__init__.py:360
 #, python-brace-format
 msgid "The following flatpak app(s) can talk to {0} on the system bus:"
 msgstr ""
 
-#: files/system/usr/libexec/secureblue/audit_flatpak/__init__.py:356
-#: files/system/usr/libexec/secureblue/audit_flatpak/__init__.py:465
+#: files/system/usr/libexec/secureblue/audit_flatpak/__init__.py:364
+#: files/system/usr/libexec/secureblue/audit_flatpak/__init__.py:473
 msgid "This grants the ability to acquire arbitrary permissions."
 msgstr ""
 
-#: files/system/usr/libexec/secureblue/audit_flatpak/__init__.py:397
+#: files/system/usr/libexec/secureblue/audit_flatpak/__init__.py:406
 msgid "all system files"
 msgstr ""
 
-#: files/system/usr/libexec/secureblue/audit_flatpak/__init__.py:398
+#: files/system/usr/libexec/secureblue/audit_flatpak/__init__.py:407
 msgid "all user files"
 msgstr ""
 
-#: files/system/usr/libexec/secureblue/audit_flatpak/__init__.py:399
+#: files/system/usr/libexec/secureblue/audit_flatpak/__init__.py:408
 msgid "other applications' configuration files"
 msgstr ""
 
-#: files/system/usr/libexec/secureblue/audit_flatpak/__init__.py:400
+#: files/system/usr/libexec/secureblue/audit_flatpak/__init__.py:409
 msgid "other applications' cache files"
 msgstr ""
 
-#: files/system/usr/libexec/secureblue/audit_flatpak/__init__.py:401
+#: files/system/usr/libexec/secureblue/audit_flatpak/__init__.py:410
 msgid "other applications' data files"
 msgstr ""
 
-#: files/system/usr/libexec/secureblue/audit_flatpak/__init__.py:413
+#: files/system/usr/libexec/secureblue/audit_flatpak/__init__.py:420
 #, python-brace-format
 msgid "{0} has {1} permission"
 msgstr ""
 
-#: files/system/usr/libexec/secureblue/audit_flatpak/__init__.py:418
+#: files/system/usr/libexec/secureblue/audit_flatpak/__init__.py:424
 #, python-brace-format
 msgid "The following flatpak app(s) have {0} permission:"
 msgstr ""
 
-#: files/system/usr/libexec/secureblue/audit_flatpak/__init__.py:422
+#: files/system/usr/libexec/secureblue/audit_flatpak/__init__.py:428
 #, python-brace-format
 msgid "This grants access to {0}."
 msgstr ""
 
-#: files/system/usr/libexec/secureblue/audit_flatpak/__init__.py:439
+#: files/system/usr/libexec/secureblue/audit_flatpak/__init__.py:445
 #, python-brace-format
 msgid "{0} is missing {1} permission"
 msgstr ""
 
-#: files/system/usr/libexec/secureblue/audit_flatpak/__init__.py:442
+#: files/system/usr/libexec/secureblue/audit_flatpak/__init__.py:448
 #, python-brace-format
 msgid "The following flatpak app(s) are missing {0} permission:"
 msgstr ""
 
-#: files/system/usr/libexec/secureblue/audit_flatpak/__init__.py:444
+#: files/system/usr/libexec/secureblue/audit_flatpak/__init__.py:450
 msgid "This is required to load hardened_malloc."
 msgstr ""
 
-#: files/system/usr/libexec/secureblue/audit_flatpak/__init__.py:445
+#: files/system/usr/libexec/secureblue/audit_flatpak/__init__.py:451
 msgid "To add this permission to an app, use Flatseal or run:"
 msgstr ""
 
-#: files/system/usr/libexec/secureblue/audit_flatpak/__init__.py:463
-msgid "The following flatpak app(s) can modify flatpak overrides:"
+#: files/system/usr/libexec/secureblue/audit_flatpak/__init__.py:469
+#, python-brace-format
+msgid "{0} can modify flatpak permissions."
+msgstr ""
+
+#: files/system/usr/libexec/secureblue/audit_flatpak/__init__.py:471
+msgid "The following flatpak app(s) can modify flatpak permissions:"
 msgstr ""

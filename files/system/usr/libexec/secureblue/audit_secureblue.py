@@ -101,7 +101,7 @@ def audit_kargs():
         check_status, check_notes = check_karg(
             kargs_current, kargs_expected, missing_severity, missing_template
         )
-        status = check_status.downgrade_to(status)
+        status = status.downgrade_to(check_status)
         notes += check_notes
 
     # Check there are no unknown kargs (i.e. not created by secureblue or Anaconda).

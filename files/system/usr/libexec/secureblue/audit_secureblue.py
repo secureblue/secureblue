@@ -1003,7 +1003,9 @@ def audit_secureboot():
 
         case SecurebootStatus.FIRMWARE_DISABLED:
             status = FAIL
-            note = Note(_("Secure Boot is supported by your firmware, but has been disabled."))
+            note = Note(
+                _("Secure Boot is supported by your firmware, but has been disabled."), FAIL
+            )
             rec = (
                 f"{note.text}\n"
                 + _("You should enable Secure Boot in your UEFI settings:")
@@ -1012,7 +1014,7 @@ def audit_secureboot():
 
         case SecurebootStatus.FIRMWARE_SETUP_MODE:
             status = FAIL
-            note = Note(_("Secure Boot is in Setup Mode."))
+            note = Note(_("Secure Boot is in Setup Mode."), FAIL)
             rec = (
                 f"{note.text}\n"
                 + _("You should reset your Secure Boot certificates to factory defaults:")
@@ -1021,7 +1023,7 @@ def audit_secureboot():
 
         case SecurebootStatus.SHIM_DISABLED:
             status = FAIL
-            note = Note(_("Secure Boot is enabled, but shim is not validating signatures."))
+            note = Note(_("Secure Boot is enabled, but shim is not validating signatures."), FAIL)
             rec = (
                 f"{note.text}\n"
                 + _("Enable signature validation by shim:")

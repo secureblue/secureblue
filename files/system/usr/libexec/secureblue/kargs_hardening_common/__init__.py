@@ -59,6 +59,7 @@ KNOWN_EXACT_KARGS = (
 )
 
 KNOWN_PREFIX_KARGS = [
+    "module.sig_enforce=",
     "ostree=",
     "preempt=",
     "rd.luks.uuid=",

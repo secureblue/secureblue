@@ -76,7 +76,7 @@ disable-webcam:
     if [ -e "$WEBCAM_MOD_FILE" ]; then
       echo "Webcam module is already disabled."
     else
-      echo "install uvcvideo /bin/false" > "$WEBCAM_MOD_FILE" 
+      echo "install uvcvideo /bin/false" > "$WEBCAM_MOD_FILE"
       chmod 644 "$WEBCAM_MOD_FILE"
       echo "Override created to disable the webcam module. Reboot to take effect."
     fi
@@ -175,8 +175,8 @@ toggle-bash-environment-lockdown skip_approval="false" apply_for_all_users="prom
     # shellcheck disable=SC2050
     if [[ "{{ skip_approval }}" == "false" ]]; then
         echo "Do you understand?"
-        echo 'Please type in "YES I UNDERSTAND" and press enter'
-        read -r accept
+        accept=""
+        read -r -p "Type ${bold}YES I UNDERSTAND${unbold} and press ${bold}Enter${unbold} to continue: " accept
         if [[ "$accept" != "YES I UNDERSTAND" ]]; then
             exit
         fi
@@ -188,10 +188,11 @@ toggle-bash-environment-lockdown skip_approval="false" apply_for_all_users="prom
     # shellcheck disable=SC2050
     if [[ "{{ apply_for_all_users }}" == "prompt" ]]; then
         user_list_lookup
-        echo "Do you want this change to apply to ${bold}all${unbold} users (${user_list[*]})? [y/N]"
-        echo "Otherwise, it will only apply to the user who launched this script ($SUDO_USER)."
-        read -r reply
-        if [[ "$reply" != [yY]* ]]; then
+        echo "This change can be applied to ${bold}all${unbold} users on this system (${user_list[*]})"
+        echo "or only to the user who launched this script ($SUDO_USER)."
+        user_choice=""
+        read -r -p "Apply this change to ${bold}all${unbold} users? [y/N] " user_choice
+        if [[ "$user_choice" != [yY]* ]]; then
             user_list=("$SUDO_USER")
         fi
     elif [[ "{{ apply_for_all_users }}" == "false" ]]; then

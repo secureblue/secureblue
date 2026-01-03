@@ -35,6 +35,11 @@ install:
 
     # ensure universal font coverage
     - google-noto-fonts-all
+
+    # GUI applications for VMs
+    - virt-manager
+    - virt-viewer
+
 remove:
   packages:
     - firefox

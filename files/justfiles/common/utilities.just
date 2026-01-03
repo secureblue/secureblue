@@ -1,16 +1,6 @@
-# vim: set ft=make :
-# Copyright 2025 Universal Blue
-# Copyright 2025 The Secureblue Authors
-#
-# Licensed under the Apache License, Version 2.0 (the "License");
-# you may not use this file except in compliance with the License.
-# You may obtain a copy of the License at
-#
-#     http://www.apache.org/licenses/LICENSE-2.0
-#
-# Unless required by applicable law or agreed to in writing, software distributed under the License is
-# distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-# See the License for the specific language governing permissions and limitations under the License.
+# SPDX-FileCopyrightText: Copyright 2025 Universal Blue
+# SPDX-FileCopyrightText: Copyright 2026 The Secureblue Authors
+# SPDX-License-Identifier: Apache-2.0
 
 uid := `id -u`
 shell := `grep :$(id -u): /etc/passwd | cut -d: -f7`
@@ -241,14 +231,6 @@ label-external-drives:
     done
 
     echo -e '\nDone.'
-
-# Layers a comprehensive set of packages for libvirt/qemu/virt-manager
-install-libvirt-packages:
-    #!/usr/bin/bash
-    set -euo pipefail
-    rpm-ostree install -y libvirt libvirt-nss qemu qemu-char-spice qemu-device-display-virtio-gpu qemu-device-display-virtio-vga qemu-device-usb-redirect qemu-img qemu-system-x86-core qemu-user-binfmt qemu-user-static virt-install virt-manager virt-viewer
-    echo "Check out the Red Hat documentation to see which services to enable for your usecase:"
-    echo "https://docs.redhat.com/en/documentation/red_hat_enterprise_linux/9/html/configuring_and_managing_virtualization/optimizing-virtual-machine-performance-in-rhel_configuring-and-managing-virtualization#proc_enabling-modular-libvirt-daemons_assembly_optimizing-libvirt-daemons"
 
 # Convenience utility for layering VPN provider packages
 install-vpn:

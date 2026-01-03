@@ -23,6 +23,7 @@ modules:
         - fuse-encfs
         - krfb
         - krfb-libs
+        - plasma-browser-integration
         - plasma-discover-rpm-ostree
 
         # depends on fedora-flathub-remote

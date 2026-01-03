@@ -5,6 +5,9 @@
 
 set -euo pipefail
 
+# Ensure $HOME is set.
+export HOME=${HOME:-~}
+
 image_ref=$(rpm-ostree status --booted --json | jq -cr '.deployments[0]."container-image-reference"')
 image_ref=${image_ref#*:docker://}
 case "${image_ref}" in

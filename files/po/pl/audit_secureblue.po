@@ -103,7 +103,7 @@ msgstr "Aby zabronić użycia ptrace, uruchom:"
 
 #: files/system/usr/libexec/secureblue/audit_secureblue.py:204
 msgid "To allow restricted ptrace, run the above command twice."
-msgstr "Aby dozwolić ograniczonego użycia ptrace, uruchom dwukrotnie powyższe polecenie."
+msgstr "Aby pozwolić na ograniczone użycie ptrace, uruchom dwukrotnie powyższe polecenie."
 
 #: files/system/usr/libexec/secureblue/audit_secureblue.py:210
 #, python-brace-format
@@ -231,7 +231,7 @@ msgstr "Rozważ włączenie DNS przez HTTPS w przeglądarce Trivalent, aby ukry�
 #: files/system/usr/libexec/secureblue/audit_secureblue.py:400
 #: files/system/usr/libexec/secureblue/audit_secureblue.py:415
 msgid "However, if you use a VPN, this may cause DNS leaks."
-msgstr "Jeżeli używasz VPNa, może to spowodować wycieki DNS."
+msgstr "Jeżeli używasz VPN, może to spowodować wycieki DNS."
 
 #: files/system/usr/libexec/secureblue/audit_secureblue.py:401
 #: files/system/usr/libexec/secureblue/audit_secureblue.py:416
@@ -271,7 +271,7 @@ msgstr "Lokalna weryfikacja DNSSEC powinna zostać włączona, aby zapobiec prze
 
 #: files/system/usr/libexec/secureblue/audit_secureblue.py:448
 msgid "Using a VPN alongside Unbound without Global DNS may cause DNS leaks."
-msgstr "Używanie VPNa razem z Unbound bez globalnie włączonego bezpiecznego DNS może spowodować wycieki DNS"
+msgstr "Używanie VPN razem z Unbound bez globalnie włączonego bezpiecznego DNS może spowodować wycieki DNS"
 
 #: files/system/usr/libexec/secureblue/audit_secureblue.py:452
 msgid "If you use a VPN, switch your DNS resolver to systemd-resolved:"
@@ -289,11 +289,11 @@ msgstr "Nie można odczytać pliku {0}."
 
 #: files/system/usr/libexec/secureblue/audit_secureblue.py:488
 msgid "MAC randomization is not enabled."
-msgstr "Losowanie adresu MAC nie jest włączone."
+msgstr "Losowa zmiana adresu MAC nie jest włączona."
 
 #: files/system/usr/libexec/secureblue/audit_secureblue.py:495
 msgid "Ensuring MAC randomization is enabled"
-msgstr "Sprawdzanie, czy losowanie adresu MAC jest włączone"
+msgstr "Sprawdzanie, czy losowa zmiana adresu MAC jest włączona"
 
 #: files/system/usr/libexec/secureblue/audit_secureblue.py:512
 #: files/system/usr/libexec/secureblue/audit_secureblue.py:541
@@ -618,7 +618,7 @@ msgstr "*** Kontynuowanie... ***"
 #: files/system/usr/libexec/secureblue/audit_secureblue.py:1138
 #, python-brace-format
 msgid "Use option '{0}' to skip flatpak recommendations."
-msgstr "Użyj opcji '{0}' aby pominąć sugestie dotyczące Flatpaka."
+msgstr "Użyj opcji '{0}' aby pominąć sugestie dotyczące Flatpak."
 
 #: files/system/usr/libexec/secureblue/audit_secureblue.py:1141
 msgid "*** WARNING: Unexpected error occurred. ***"
@@ -855,7 +855,7 @@ msgstr "Jest to wymagane do załadowania hardened_malloc."
 
 #: files/system/usr/libexec/secureblue/audit_flatpak/__init__.py:431
 msgid "To add this permission to an app, use Flatseal or run:"
-msgstr "Aby udzielić aplikacji to uprawnienie, użyj Flatseal lub uruchom:"
+msgstr "Aby udzielić aplikacji to uprawnienie, użyj programu Flatseal lub uruchom:"
 
 #: files/system/usr/libexec/secureblue/audit_flatpak/__init__.py:449
 msgid "The following flatpak app(s) can modify flatpak overrides:"
@@ -863,7 +863,7 @@ msgstr "Następujące aplikacje mogą modyfikować uprawnienia aplikacji Flatpak
 
 #: files/system/usr/libexec/secureblue/audit_utils/__init__.py:81
 msgid "*** WARNING: Running audit script as root is not recommended. ***"
-msgstr "*** UWAGA: Uruchamianie skryptu weryfikacyjnego jako root nie jest zalecane. ***"
+msgstr "*** UWAGA: Uruchamianie skryptu weryfikacyjnego jako użytkownik root nie jest zalecane. ***"
 
 #: files/system/usr/libexec/secureblue/audit_utils/__init__.py:82
 msgid "*** Some results may be misleading or incomplete. ***"
@@ -889,7 +889,7 @@ msgstr "nie wykryto żadnych problemów."
 
 #: files/system/usr/libexec/secureblue/audit_utils/__init__.py:116
 msgid "unable to perform check (usually due to a file permission issue)."
-msgstr "nie można przeprowadzić kontroli (prawdopodopnie przez brakujące uprawnienie)."
+msgstr "nie można przeprowadzić kontroli (prawdopodobnie przez brakujące uprawnienie)."
 
 #: files/system/usr/libexec/secureblue/audit_utils/__init__.py:121
 msgid "For flatpak checks, the status indicators have more specific meanings:"
@@ -924,7 +924,7 @@ msgid ""
 msgstr ""
 "nie wykryto żadnych znanych sposobów ucieczki z sandboxa, ale niektóre uprawnienia\n"
 "            mogą zwiększyć powierzchnię ataku lub wpływać negatywnie na prywatność"
-"            (np. dostęp do internetu)."
+"            (np. dostęp do sieci)."
 
 #: files/system/usr/libexec/secureblue/audit_utils/__init__.py:131
 msgid "no app permissions flagged (however, not all permissions are audited)."

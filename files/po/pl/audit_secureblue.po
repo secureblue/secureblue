@@ -196,7 +196,7 @@ msgstr ""
 
 #: files/system/usr/libexec/secureblue/audit_secureblue.py:346
 msgid "Ensuring USBGuard is active"
-msgstr "Sprawdzanie, czy USBGuard jest włączony"
+msgstr "Sprawdzanie, czy USBGuard jest aktywny"
 
 #: files/system/usr/libexec/secureblue/audit_secureblue.py:358
 #: files/system/usr/libexec/secureblue/audit_secureblue.py:507
@@ -251,7 +251,7 @@ msgstr "Bezpieczny serwis DNS nie jest skonfigurowany globalnie."
 
 #: files/system/usr/libexec/secureblue/audit_secureblue.py:414
 msgid "Consider using secure global DNS."
-msgstr "Rozważ włączenie bezpiecznego DNS globalnie."
+msgstr "Rozważ włączenie bezpiecznego serwisu DNS globalnie."
 
 #: files/system/usr/libexec/secureblue/audit_secureblue.py:423
 msgid "The secure DNS resolver is not in use, possibly for a VPN."
@@ -767,7 +767,7 @@ msgstr "{0} może uzyskać dowolne uprawnienia."
 
 #: files/system/usr/libexec/secureblue/audit_flatpak/__init__.py:267
 msgid "However, this is required for its functionality."
-msgstr "Jest to jednak wymagane dla poprawnego działania."
+msgstr "Jest to jednak wymagane do poprawnego działania."
 
 #: files/system/usr/libexec/secureblue/audit_flatpak/__init__.py:281
 #, python-brace-format

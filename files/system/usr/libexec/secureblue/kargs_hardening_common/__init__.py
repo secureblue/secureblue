@@ -40,6 +40,7 @@ UNSTABLE_KARGS = [
     "debugfs=off",
     "efi=disable_early_pci_dma",
     "gather_data_sampling=force",
+    "mem_encrypt=on",
     "oops=panic",
 ]
 

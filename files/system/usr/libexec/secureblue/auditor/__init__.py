@@ -81,15 +81,15 @@ class Status(enum.Enum):
         """Colored icon associated with status."""
         match self:
             case Status.PASS:
-                icon = "🟢"
+                icon = "✅"
             case Status.INFO:
-                icon = "🔵"
+                icon = "ℹ️"  # noqa: RUF001
             case Status.WARN:
-                icon = "🟡"
+                icon = "⚠️"
             case Status.FAIL:
-                icon = "🔴"
+                icon = "❌"
             case Status.UNKNOWN:
-                icon = "⚪"
+                icon = "❔"
         return icon
 
     def width(self) -> int:

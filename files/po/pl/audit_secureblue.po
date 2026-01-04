@@ -69,9 +69,9 @@ msgid ""
 "            To rebase to a signed image, download and run or re-run {0}\n"
 "            from the secureblue GitHub repository."
 msgstr ""
-"Opecny obraz dysku nie jest podpisany.\n"
+"Obecny obraz dysku nie jest podpisany.\n"
 "            Aby zainstalować podpisany obraz dysku, pobierz i uruchom: {0}\n"
-"            z repozytoria secureblue na GitHub."
+"            z repozytorium secureblue na GitHub."
 
 #: files/system/usr/libexec/secureblue/audit_secureblue.py:151
 msgid "Ensuring a signed image is in use"
@@ -128,21 +128,21 @@ msgstr "Plik {0} został zmodyfikowany."
 #: files/system/usr/libexec/secureblue/audit_secureblue.py:249
 #: files/system/usr/libexec/secureblue/audit_secureblue.py:287
 msgid "Analyzing container policy"
-msgstr "Analizowanie polisy kontenerów"
+msgstr "Analizowanie polityki kontenerów"
 
 #: files/system/usr/libexec/secureblue/audit_secureblue.py:255
 #, python-brace-format
 msgid "Container policy has a local override at {0}."
-msgstr "Lokalna polisa kontenerów została zmodyfikowana w {0}."
+msgstr "Lokalna polityka kontenerów została zmodyfikowana w {0}."
 
 #: files/system/usr/libexec/secureblue/audit_secureblue.py:260
 msgid "The default container policy is insecure."
-msgstr "Domyślna polisa kontenerów nie jest bezpieczna."
+msgstr "Domyślna polityka kontenerów nie jest bezpieczna."
 
 #: files/system/usr/libexec/secureblue/audit_secureblue.py:270
 #, python-brace-format
 msgid "The default container policy for transport '{0}' is insecure."
-msgstr "Domyślna polisa kontenerów dla transportu '{0}' nie jest bezpieczna."
+msgstr "Domyślna polityka kontenerów dla transportu '{0}' nie jest bezpieczna."
 
 #: files/system/usr/libexec/secureblue/audit_secureblue.py:283
 #, python-brace-format
@@ -275,7 +275,7 @@ msgstr "Używanie VPNa razem z Unbound bez globalnie włączonego bezpiecznego D
 
 #: files/system/usr/libexec/secureblue/audit_secureblue.py:452
 msgid "If you use a VPN, switch your DNS resolver to systemd-resolved:"
-msgstr "Jeżeli używasz VPNa, zmień swój servis DNS na systemd-resolved:"
+msgstr "Jeżeli używasz VPN, zmień swój serwis DNS na systemd-resolved:"
 
 #: files/system/usr/libexec/secureblue/audit_secureblue.py:463
 msgid "Ensuring system DNS resolution is secure"
@@ -411,7 +411,7 @@ msgstr "Sprawdzanie, czy {0} jest wyłączony w {1}"
 
 #: files/system/usr/libexec/secureblue/audit_secureblue.py:767
 msgid "GNOME user extensions are enabled."
-msgstr "Rozszeżenia użytkowników w GNOME są włączone."
+msgstr "Rozszerzenia użytkowników w GNOME są włączone."
 
 #: files/system/usr/libexec/secureblue/audit_secureblue.py:768
 msgid "To disable this, run:"
@@ -419,7 +419,7 @@ msgstr "Aby wyłączyć, uruchom:"
 
 #: files/system/usr/libexec/secureblue/audit_secureblue.py:772
 msgid "Ensuring GNOME user extensions are disabled"
-msgstr "Sprawdzanie, czy rozszeżenia użytkowników w GNOME są wyłączone"
+msgstr "Sprawdzanie, czy rozszerzenia użytkowników w GNOME są wyłączone"
 
 #: files/system/usr/libexec/secureblue/audit_secureblue.py:784
 msgid "SELinux is in Permissive mode."
@@ -534,7 +534,7 @@ msgid ""
 "boot process."
 msgstr ""
 "Twój system jest niezdolny do weryfikacji ładowanych modułów jądra lub "
-"przbiegu procesu rozruchu."
+"przebiegu procesu rozruchu."
 
 #: files/system/usr/libexec/secureblue/audit_secureblue.py:956
 msgid "Ensuring secure boot is enabled"
@@ -546,7 +546,7 @@ msgstr "Środowisko bash nie jest chronione."
 
 #: files/system/usr/libexec/secureblue/audit_secureblue.py:990
 msgid "The following files do not appear to be immutable or do not exist:"
-msgstr "Następujące pliki mogą zostać zmodyfikowane lub nieistnieją:"
+msgstr "Następujące pliki mogą zostać zmodyfikowane lub nie istnieją:"
 
 #: files/system/usr/libexec/secureblue/audit_secureblue.py:992
 msgid "To fix this, run:"
@@ -717,7 +717,7 @@ msgstr "dostęp do magistrali sesji D-Bus"
 
 #: files/system/usr/libexec/secureblue/audit_flatpak/__init__.py:193
 msgid "This grants access to audio and microphones."
-msgstr "Zezwala to na dostęp do mikrofonów oraz użądzeń audio."
+msgstr "Zezwala to na dostęp do mikrofonów oraz urządzeń audio."
 
 #: files/system/usr/libexec/secureblue/audit_flatpak/__init__.py:195
 msgid "access to the D-Bus system bus"
@@ -729,7 +729,7 @@ msgstr "dostęp do agenta SSH"
 
 #: files/system/usr/libexec/secureblue/audit_flatpak/__init__.py:201
 msgid "This grants access to input devices, GPUs, raw USB, and virtualization."
-msgstr "Pozwala to na dostęp do użądzeń wejścia, kart graficznych, surowych urządzeń USB, oraz wirtualizacji."
+msgstr "Pozwala to na dostęp do urządzeń wejścia, kart graficznych, surowych urządzeń USB, oraz wirtualizacji."
 
 #: files/system/usr/libexec/secureblue/audit_flatpak/__init__.py:203
 #, python-brace-format
@@ -738,7 +738,7 @@ msgstr "Jeżeli aplikacja jedynie wymaga dostępu do kart graficznych, zamiast t
 
 #: files/system/usr/libexec/secureblue/audit_flatpak/__init__.py:205
 msgid "This grants access to input devices."
-msgstr "Pozwala to na dostęp do użądzeń wejścia."
+msgstr "Pozwala to na dostęp do urządzeń wejścia."
 
 #: files/system/usr/libexec/secureblue/audit_flatpak/__init__.py:207
 msgid "This grants access to kernel-based virtualization."
@@ -750,7 +750,7 @@ msgstr "Pozwala to na dostęp do współdzielonej pamięci."
 
 #: files/system/usr/libexec/secureblue/audit_flatpak/__init__.py:220
 msgid "This grants raw USB device access."
-msgstr "Pozwala to na dostęp do surowych użądzeń USB."
+msgstr "Pozwala to na dostęp do surowych urządzeń USB."
 
 #: files/system/usr/libexec/secureblue/audit_flatpak/__init__.py:223
 msgid "bluetooth access"
@@ -873,7 +873,7 @@ msgstr "*** Niektóre wyniki mogą być niekompletne lub błędne. ***"
 msgid ""
 "The following status indicators accompany checks run by the audit script:"
 msgstr ""
-"Następujące wskaźniki wskazują na status kontrol skryptu weryfikacyjnego:"
+"Następujące wskaźniki wskazują na status kontroli skryptu weryfikacyjnego:"
 
 #: files/system/usr/libexec/secureblue/audit_utils/__init__.py:113
 msgid "check failed - the configuration may be less secure."
@@ -903,7 +903,7 @@ msgid ""
 "            to certain directories, direct D-Bus access, X11)."
 msgstr ""
 "aplikacja ma uprawnienia umożliwiające na ucieczkę z sandboxa, modyfikowanie\n"
-"            własnych uprawnień, lub usyskanie bardzo szerokiego dostępu do reszty systemu"
+"            własnych uprawnień, lub uzyskanie bardzo szerokiego dostępu do reszty systemu"
 "            (np. dostęp do niektórych katalogów, D-Bus, lub X11)."
 
 #: files/system/usr/libexec/secureblue/audit_utils/__init__.py:127

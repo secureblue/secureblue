@@ -40,6 +40,8 @@ ujust set-libvirt-daemons --help
     Prints this message.
 """
 
+QEMU_DRIVER: Final[str] = "virtqemud"
+
 LIBVIRT_MODULAR_DRIVERS: Final[list[str]] = [
     "virtqemud",
     "virtinterfaced",
@@ -71,9 +73,10 @@ LIBVIRT_SOCKETS: Final[list[str]] = [
 ]
 
 
-def _systemd_unit_status(name: str) -> str:
+def _systemd_units_status(*names: str) -> list[str]:
     """Get systemd unit status."""
-    return command_stdout("/usr/bin/systemctl", "is-enabled", "--", name, check=False)
+    output = command_stdout("/usr/bin/systemctl", "is-enabled", "--", *names, check=False)
+    return output.splitlines()
 
 
 @dataclass
@@ -88,12 +91,17 @@ class LibvirtDaemonStatus:
 
     @classmethod
     def current_status(cls, name: str) -> "LibvirtDaemonStatus":
+        (service_status, socket_status, socket_ro_status, socket_admin_status) = (
+            _systemd_units_status(
+                f"{name}.service", f"{name}.socket", f"{name}-ro.socket", f"{name}-admin.socket"
+            )
+        )
         return LibvirtDaemonStatus(
             name=name,
-            service_status=_systemd_unit_status(f"{name}.service"),
-            socket_status=_systemd_unit_status(f"{name}.socket"),
-            socket_ro_status=_systemd_unit_status(f"{name}-ro.socket"),
-            socket_admin_status=_systemd_unit_status(f"{name}-admin.socket"),
+            service_status=service_status,
+            socket_status=socket_status,
+            socket_ro_status=socket_ro_status,
+            socket_admin_status=socket_admin_status,
         )
 
     @staticmethod
@@ -125,7 +133,7 @@ def print_libvirt_status(column_width: int = 15) -> None:
 def enable_libvirt_daemons() -> int:
     """Enable and start libvirt modular daemons."""
     result = subprocess.run(
-        ["/usr/bin/systemctl", "enable", "--now", *LIBVIRT_SERVICES, *LIBVIRT_SOCKETS],
+        ["/usr/bin/systemctl", "enable", "--now", f"{QEMU_DRIVER}.service", *LIBVIRT_SOCKETS],
         check=False,
     )  # nosec
     return result.returncode

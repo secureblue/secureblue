@@ -5,19 +5,12 @@
 
 """Enable, disable, or check status of libvirt daemons."""
 
-import itertools
+import enum
 import subprocess  # nosec
 import sys
-from collections.abc import Sequence
-from dataclasses import dataclass
 from typing import Final
 
-from utils import (
-    CommandUsageError,
-    ToggleMode,
-    command_stdout,
-    parse_basic_toggle_args,
-)
+from utils import command_stdout, print_wrapped
 
 HELP_MESSAGE: Final[str] = """\
 Toggles if libvirt daemons are enabled. For further documentation, see:
@@ -25,155 +18,201 @@ Toggles if libvirt daemons are enabled. For further documentation, see:
 
 usage:
 ujust set-libvirt-daemons
-    Enables or disables interactively based on the user's preference.
+    Interactively toggle libvirt modular daemons.
 
 ujust set-libvirt-daemons on
-    Enables and starts libvirt daemons.
+    Enable and start all libvirt modular daemons.
 
 ujust set-libvirt-daemons off
-    Disables and stops libvirt daemons.
+    Disable and stop all libvirt modular daemons.
 
 ujust set-libvirt-daemons status
-    Reports status of libvirt daemons.
+    Show status of libvirt modular daemons.
 
 ujust set-libvirt-daemons --help
     Prints this message.
 """
 
-QEMU_DRIVER: Final[str] = "virtqemud"
 
-LIBVIRT_MODULAR_DRIVERS: Final[list[str]] = [
-    "virtqemud",
-    "virtinterfaced",
-    "virtnetworkd",
-    "virtnodedevd",
-    "virtnwfilterd",
-    "virtsecretd",
-    "virtstoraged",
-]
-
-LIBVIRT_OTHER_DAEMONS: Final[dict[str, Sequence[str]]] = {
-    "virtlogd": ("", "-admin"),
-    "virtlockd": ("", "-admin"),
-    "virtproxyd": ("", "-ro", "-admin"),
-}
-
-LIBVIRT_SERVICES: Final[list[str]] = [
-    f"{daemon}.service"
-    for daemon in itertools.chain(LIBVIRT_MODULAR_DRIVERS, LIBVIRT_OTHER_DAEMONS.keys())
-]
-LIBVIRT_SOCKETS: Final[list[str]] = [
-    f"{driver}{suffix}.socket"
-    for driver in LIBVIRT_MODULAR_DRIVERS
-    for suffix in ("", "-ro", "-admin")
-] + [
-    f"{daemon}{suffix}.socket"
-    for daemon, suffixes in LIBVIRT_OTHER_DAEMONS.items()
-    for suffix in suffixes
-]
-
-
-def _systemd_units_status(*names: str) -> list[str]:
+def _systemd_units_status(*units: str) -> list[str]:
     """Get systemd unit status."""
-    output = command_stdout("/usr/bin/systemctl", "is-enabled", "--", *names, check=False)
+    output = command_stdout("/usr/bin/systemctl", "is-enabled", "--", *units, check=False)
     return output.splitlines()
 
 
-@dataclass
-class LibvirtDaemonStatus:
-    """Status of a libvirt daemon."""
+def enable_systemd_units(*units: str, start: bool = True) -> int:
+    """Enable a list of systemd units."""
+    now = ("--now",) if start else ()
+    result = subprocess.run(["/usr/bin/systemctl", "enable", *now, "--", *units], check=False)  # nosec
+    return result.returncode
 
-    name: str
-    service_status: str
-    socket_status: str
-    socket_ro_status: str
-    socket_admin_status: str
+
+def disable_systemd_units(*units: str, stop: bool = True) -> int:
+    """Disable a list of systemd units."""
+    now = ("--now",) if stop else ()
+    result = subprocess.run(["/usr/bin/systemctl", "disable", *now, "--", *units], check=False)  # nosec
+    return result.returncode
+
+
+class LibvirtDaemonSelection(enum.Flag):
+    """Selection of libvirt daemons to enable or disable."""
+
+    QEMUD = enum.auto()
+    INTERFACED = enum.auto()
+    NETWORKD = enum.auto()
+    NODEDEVD = enum.auto()
+    NWFILTERD = enum.auto()
+    SECRETD = enum.auto()
+    STORAGED = enum.auto()
+    LOGD = enum.auto()
+    LOCKD = enum.auto()
+    PROXYD = enum.auto()
 
     @classmethod
-    def current_status(cls, name: str) -> "LibvirtDaemonStatus":
-        (service_status, socket_status, socket_ro_status, socket_admin_status) = (
-            _systemd_units_status(
-                f"{name}.service", f"{name}.socket", f"{name}-ro.socket", f"{name}-admin.socket"
-            )
+    def current_status(cls) -> "LibvirtDaemonSelection":
+        """Get current daemon status."""
+        sockets = (~cls(0)).sockets()
+        status_list = _systemd_units_status(*sockets)
+        current = LibvirtDaemonSelection(0)
+        for socket, status in zip(cls, status_list, strict=True):
+            if status == "enabled":
+                current |= socket
+        return current
+
+    def daemons(self) -> list[str]:
+        """Get list of daemons associated with selection."""
+        return ["virt" + daemon.name.lower() for daemon in self if daemon.name is not None]
+
+    def services(self) -> list[str]:
+        """Get service units associated with selection."""
+        return [f"{daemon}.service" for daemon in self.daemons()]
+
+    def sockets(self) -> list[str]:
+        """Get main sockets associated with selection."""
+        return [f"{daemon}.socket" for daemon in self.daemons()]
+
+    def sockets_ro(self) -> list[str]:
+        """Get main sockets associated with selection."""
+        # virtlogd and virtlockd don't have *-ro.socket
+        sockets_ro_mask = ~(self.__class__.LOGD | self.__class__.LOCKD)
+        return [f"{daemon}-ro.socket" for daemon in (self & sockets_ro_mask).daemons()]
+
+    def sockets_admin(self) -> list[str]:
+        """Get main sockets associated with selection."""
+        return [f"{daemon}-admin.socket" for daemon in self.daemons()]
+
+    def enabled_units(self) -> list[str]:
+        """Get units that would be enabled with this selection."""
+        return (
+            # The daemon service units other than virtqemud can be activated on demand
+            # by the corresponding sockets, so they don't need to be enabled.
+            (self & self.__class__.QEMUD).services()
+            + self.sockets()
+            + self.sockets_ro()
+            + self.sockets_admin()
         )
-        return LibvirtDaemonStatus(
-            name=name,
-            service_status=service_status,
-            socket_status=socket_status,
-            socket_ro_status=socket_ro_status,
-            socket_admin_status=socket_admin_status,
+
+    def disabled_units(self) -> list[str]:
+        """Get units that would be disabled with this selection."""
+        return (
+            (~self).services() + (~self).sockets() + (~self).sockets_ro() + (~self).sockets_admin()
         )
 
-    @staticmethod
-    def header_row(column_width: int = 15) -> str:
-        columns = [
-            format(s, f"<{column_width}") for s in ("driver", ".service", ".socket", "-ro.socket")
-        ] + ["-admin.socket"]
-        return "| ".join(columns)
 
-    def status_row(self, column_width: int = 15) -> str:
-        """Format as row for printing in a table."""
-        socket_ro_status = self.socket_ro_status.replace("not-found", "N/A")
-        columns = [
-            format(s, f"<{column_width}")
-            for s in (self.name, self.service_status, self.socket_status, socket_ro_status)
-        ] + [self.socket_admin_status]
-        return "| ".join(columns)
+def enable_all() -> int:
+    """Enable and start all libvirt modular daemons."""
+    units_to_enable = (~LibvirtDaemonSelection(0)).enabled_units()
+    return enable_systemd_units(*units_to_enable, start=True)
 
 
-def print_libvirt_status(column_width: int = 15) -> None:
-    """Print status of libvirt modular daemons."""
-    print(LibvirtDaemonStatus.header_row(column_width))
-    print("-" * ((column_width + 2) * 5))
-    for daemon in itertools.chain(LIBVIRT_MODULAR_DRIVERS, LIBVIRT_OTHER_DAEMONS):
-        status = LibvirtDaemonStatus.current_status(daemon)
-        print(status.status_row(column_width))
+def disable_all() -> int:
+    """Disable and stop all libvirt modular daemons."""
+    units_to_disable = LibvirtDaemonSelection(0).disabled_units()
+    return disable_systemd_units(*units_to_disable, stop=True)
 
 
-def enable_libvirt_daemons() -> int:
-    """Enable and start libvirt modular daemons."""
-    result = subprocess.run(
-        ["/usr/bin/systemctl", "enable", "--now", f"{QEMU_DRIVER}.service", *LIBVIRT_SOCKETS],
-        check=False,
-    )  # nosec
-    return result.returncode
+def show_status() -> None:
+    """Print current libvirt daemon status."""
+    current = LibvirtDaemonSelection.current_status()
+    enabled = ", ".join(current.daemons()) if current else "(none)"
+    disabled = ", ".join((~current).daemons()) if ~current else "(none)"
+    print_wrapped(f"enabled: {enabled}", width=80)
+    print_wrapped(f"disabled: {disabled}", width=80)
 
 
-def disable_libvirt_daemons() -> int:
-    """Disable and start libvirt modular daemons."""
-    result = subprocess.run(
-        ["/usr/bin/systemctl", "disable", "--now", *LIBVIRT_SERVICES, *LIBVIRT_SOCKETS],
-        check=False,
-    )  # nosec
-    return result.returncode
+def get_selection(current: LibvirtDaemonSelection) -> LibvirtDaemonSelection | None:
+    """Get user's selection of libvirt daemons, given current status."""
+    # This import is slow, so put it inside the function so it's only loaded if needed.
+    import inquirer  # noqa: PLC0415
+
+    all_daemons = (~LibvirtDaemonSelection(0)).daemons()
+    questions = [
+        inquirer.Checkbox(
+            "daemons",
+            message="Select libvirt daemons to enable or disable",
+            choices=all_daemons,
+            default=current.daemons(),
+            carousel=True,
+        )
+    ]
+    answers = inquirer.prompt(questions)
+    if answers is None:
+        return None
+
+    selection = LibvirtDaemonSelection(0)
+    for daemon in LibvirtDaemonSelection:
+        if daemon.daemons()[0] in answers["daemons"]:
+            selection |= daemon
+
+    return selection
 
 
-def run(mode: ToggleMode) -> int:
-    """Run the logic for enabling or disabling unconfined-domain userns."""
-    match mode:
-        case ToggleMode.HELP:
-            print(HELP_MESSAGE)
-            return 0
-        case ToggleMode.STATUS:
-            print_libvirt_status()
-            return 0
-        case ToggleMode.ON:
-            return enable_libvirt_daemons()
-        case ToggleMode.OFF:
-            return disable_libvirt_daemons()
+def toggle() -> int:
+    """Toggle libvirt modular daemons interactively."""
+    current = LibvirtDaemonSelection.current_status()
+    selected = get_selection(current)
+
+    if selected is None:
+        return 0
+
+    if selected == current:
+        print("Selection unchanged.")
+        return 0
+
+    ret = 0
+
+    newly_enabled = selected & ~current
+    if newly_enabled:
+        ret = enable_systemd_units(*newly_enabled.enabled_units(), start=True)
+        if ret != 0:
+            return ret
+
+    newly_disabled = current & ~selected
+    if newly_disabled:
+        ret = disable_systemd_units(*(~newly_disabled).disabled_units(), stop=True)
+
+    return ret
 
 
 def main() -> int:
     """Handle the arguments and run the script."""
-    try:
-        mode = parse_basic_toggle_args(
-            prompt="Would you like libvirt modular daemons to be enabled?"
-        )
-    except CommandUsageError as e:
-        print(f"Usage error: {e}. See usage with --help.")
-        return 2
-
-    return run(mode)
+    mode = sys.argv[1].casefold() if len(sys.argv) > 1 else None
+    match mode:
+        case "help" | "-h" | "--help":
+            print(HELP_MESSAGE)
+            return 0
+        case "on":
+            return enable_all()
+        case "off":
+            return disable_all()
+        case "status":
+            show_status()
+            return 0
+        case None:
+            return toggle()
+        case _:
+            print("Invalid argument. See usage with --help.", file=sys.stderr)
+            return 2
 
 
 if __name__ == "__main__":

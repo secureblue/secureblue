@@ -10,8 +10,6 @@ import subprocess  # nosec
 import sys
 from typing import Final
 
-from utils import command_stdout, print_wrapped
-
 HELP_MESSAGE: Final[str] = """\
 Toggles if libvirt daemons are enabled. For further documentation, see:
     https://libvirt.org/daemons.html
@@ -34,24 +32,27 @@ ujust set-libvirt-daemons --help
 """
 
 
-def _systemd_units_status(*units: str) -> list[str]:
+def _systemd_units_status(*units: str) -> tuple[list[str], bool]:
     """Get systemd unit status."""
-    output = command_stdout("/usr/bin/systemctl", "is-enabled", "--", *units, check=False)
-    return output.splitlines()
+    result = subprocess.run(
+        ["/usr/bin/systemctl", "is-enabled", "--", *units],
+        check=False,
+        capture_output=True,
+        text=True,
+    )  # nosec
+    return (result.stdout.strip().splitlines(), result.returncode == 0)
 
 
-def enable_systemd_units(*units: str, start: bool = True) -> int:
+def enable_systemd_units(*units: str, start: bool = True) -> None:
     """Enable a list of systemd units."""
     now = ("--now",) if start else ()
-    result = subprocess.run(["/usr/bin/systemctl", "enable", *now, "--", *units], check=False)  # nosec
-    return result.returncode
+    subprocess.run(["/usr/bin/systemctl", "enable", *now, "--", *units], check=True)  # nosec
 
 
-def disable_systemd_units(*units: str, stop: bool = True) -> int:
+def disable_systemd_units(*units: str, stop: bool = True) -> None:
     """Disable a list of systemd units."""
     now = ("--now",) if stop else ()
-    result = subprocess.run(["/usr/bin/systemctl", "disable", *now, "--", *units], check=False)  # nosec
-    return result.returncode
+    subprocess.run(["/usr/bin/systemctl", "disable", *now, "--", *units], check=True)  # nosec
 
 
 class LibvirtDaemonSelection(enum.Flag):
@@ -72,7 +73,7 @@ class LibvirtDaemonSelection(enum.Flag):
     def current_status(cls) -> "LibvirtDaemonSelection":
         """Get current daemon status."""
         sockets = (~cls(0)).sockets()
-        status_list = _systemd_units_status(*sockets)
+        status_list, _ = _systemd_units_status(*sockets)
         current = LibvirtDaemonSelection(0)
         for socket, status in zip(cls, status_list, strict=True):
             if status == "enabled":
@@ -119,16 +120,32 @@ class LibvirtDaemonSelection(enum.Flag):
         )
 
 
-def enable_all() -> int:
+def disable_monolithic_daemon() -> None:
+    """Disable libvirt monolithic daemon if enabled."""
+    monolithic_units = (
+        "libvirtd.service",
+        "libvirtd.socket",
+        "libvirtd-ro.socket",
+        "libvirtd-admin.socket",
+        "libvirtd-tcp.socket",
+        "libvirtd-tls.socket",
+    )
+    _, is_enabled = _systemd_units_status(*monolithic_units)
+    if is_enabled:
+        print("Disabling libvirt monolithic daemon...")
+        disable_systemd_units(*monolithic_units, stop=True)
+
+
+def enable_all() -> None:
     """Enable and start all libvirt modular daemons."""
     units_to_enable = (~LibvirtDaemonSelection(0)).enabled_units()
-    return enable_systemd_units(*units_to_enable, start=True)
+    enable_systemd_units(*units_to_enable, start=True)
 
 
-def disable_all() -> int:
+def disable_all() -> None:
     """Disable and stop all libvirt modular daemons."""
     units_to_disable = LibvirtDaemonSelection(0).disabled_units()
-    return disable_systemd_units(*units_to_disable, stop=True)
+    disable_systemd_units(*units_to_disable, stop=True)
 
 
 def show_status() -> None:
@@ -136,8 +153,8 @@ def show_status() -> None:
     current = LibvirtDaemonSelection.current_status()
     enabled = ", ".join(current.daemons()) if current else "(none)"
     disabled = ", ".join((~current).daemons()) if ~current else "(none)"
-    print_wrapped(f"enabled: {enabled}", width=80)
-    print_wrapped(f"disabled: {disabled}", width=80)
+    print("enabled:", enabled)
+    print("disabled:", disabled)
 
 
 def get_selection(current: LibvirtDaemonSelection) -> LibvirtDaemonSelection | None:
@@ -167,52 +184,52 @@ def get_selection(current: LibvirtDaemonSelection) -> LibvirtDaemonSelection | N
     return selection
 
 
-def toggle() -> int:
+def toggle() -> None:
     """Toggle libvirt modular daemons interactively."""
     current = LibvirtDaemonSelection.current_status()
     selected = get_selection(current)
 
     if selected is None:
-        return 0
+        return
 
     if selected == current:
         print("Selection unchanged.")
-        return 0
-
-    ret = 0
+        return
 
     newly_enabled = selected & ~current
     if newly_enabled:
-        ret = enable_systemd_units(*newly_enabled.enabled_units(), start=True)
-        if ret != 0:
-            return ret
+        enable_systemd_units(*newly_enabled.enabled_units(), start=True)
 
     newly_disabled = current & ~selected
     if newly_disabled:
-        ret = disable_systemd_units(*(~newly_disabled).disabled_units(), stop=True)
-
-    return ret
+        disable_systemd_units(*(~newly_disabled).disabled_units(), stop=True)
 
 
 def main() -> int:
     """Handle the arguments and run the script."""
     mode = sys.argv[1].casefold() if len(sys.argv) > 1 else None
-    match mode:
-        case "help" | "-h" | "--help":
-            print(HELP_MESSAGE)
-            return 0
-        case "on":
-            return enable_all()
-        case "off":
-            return disable_all()
-        case "status":
-            show_status()
-            return 0
-        case None:
-            return toggle()
-        case _:
-            print("Invalid argument. See usage with --help.", file=sys.stderr)
-            return 2
+    try:
+        match mode:
+            case "help" | "-h" | "--help":
+                print(HELP_MESSAGE)
+            case "status":
+                show_status()
+            case "on":
+                disable_monolithic_daemon()
+                enable_all()
+            case "off":
+                disable_monolithic_daemon()
+                disable_all()
+            case None:
+                disable_monolithic_daemon()
+                toggle()
+            case _:
+                print("Invalid argument. See usage with --help.", file=sys.stderr)
+                return 2
+    except subprocess.CalledProcessError:
+        return 1
+
+    return 0
 
 
 if __name__ == "__main__":

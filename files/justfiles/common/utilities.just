@@ -1,5 +1,5 @@
 # SPDX-FileCopyrightText: Copyright 2025 Universal Blue
-# SPDX-FileCopyrightText: Copyright 2026 The Secureblue Authors
+# SPDX-FileCopyrightText: Copyright 2025-2026 The Secureblue Authors
 # SPDX-License-Identifier: Apache-2.0
 
 uid := `id -u`

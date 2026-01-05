@@ -1,16 +1,7 @@
 #!/usr/bin/env bash
 
-# Copyright 2025 The Secureblue Authors
-#
-# Licensed under the Apache License, Version 2.0 (the "License");
-# you may not use this file except in compliance with the License.
-# You may obtain a copy of the License at
-#
-#     http://www.apache.org/licenses/LICENSE-2.0
-#
-# Unless required by applicable law or agreed to in writing, software distributed under the License is
-# distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-# See the License for the specific language governing permissions and limitations under the License.
+# SPDX-FileCopyrightText: Copyright 2025-2026 The Secureblue Authors
+# SPDX-License-Identifier: Apache-2.0
 
 set -oue pipefail
 
@@ -87,5 +78,17 @@ set_caps_if_present() {
 }
 
 set_caps_if_present "cap_dac_read_search,cap_audit_write=ep" "/usr/bin/chage"
-set_caps_if_present "cap_sys_admin=ep" "/usr/bin/fusermount3"
 set_caps_if_present "cap_dac_read_search,cap_audit_write=ep" "/usr/sbin/unix_chkpwd"
+
+# Mounting and unmounting requires CAP_SYS_ADMIN
+set_caps_if_present "cap_sys_admin=ep" "/usr/bin/fusermount3"
+# TODO: add back these capabilities, these are just commented out for testing purposes
+# set_caps_if_present "cap_sys_admin=ep" "/usr/bin/fusermount-glusterfs"
+
+# qemu-bridge-helper drops all capabilities except CAP_NET_ADMIN:
+# https://gitlab.com/qemu-project/qemu/-/blob/667e1fff878326c35c7f5146072e60a63a9a41c8/qemu-bridge-helper.c#L252
+# set_caps_if_present "cap_net_admin=ep" "/usr/libexec/qemu-bridge-helper"
+
+# spice-client-glib-usb-acl-helper drops all capabilities except CAP_FOWNER:
+# https://gitlab.freedesktop.org/spice/spice-gtk/-/blob/7a2779182b003ec5e8192dc5186f0b1c3eb8e831/src/spice-client-glib-usb-acl-helper.c#L304
+# set_caps_if_present "cap_fowner=ep" "/usr/libexec/spice-gtk-$(uname -m)/spice-client-glib-usb-acl-helper"

@@ -46,3 +46,19 @@ install:
     # provenance deps
     - crane
     - slsa-verifier
+
+    # libvirt/qemu/kvm packages
+    - libvirt
+    - libvirt-nss
+    - qemu
+    - qemu-char-spice
+    - qemu-device-display-virtio-gpu
+    - qemu-device-display-virtio-vga
+    - qemu-device-usb-redirect
+    - qemu-img
+    - qemu-kvm
+    - qemu-system-aarch64-core
+    - qemu-system-x86-core
+    - qemu-user-binfmt
+    - qemu-user-static
+    - virt-install

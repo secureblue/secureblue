@@ -66,3 +66,9 @@ set-container-userns *args:
 install-dangerzone:
     #!/bin/sh
     exec /usr/bin/python3 /usr/libexec/secureblue/install_dangerzone.py "$@"
+
+# Toggle libvirt daemons on or off
+[positional-arguments]
+set-libvirt-daemons:
+    #!/bin/sh
+    exec /usr/bin/python3 /usr/libexec/secureblue/set_libvirt_daemons.py "$@"

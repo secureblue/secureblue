@@ -19,8 +19,6 @@ set -euo pipefail
 resolv_conf="/etc/resolv.conf"
 dnsconfd_service="dnsconfd.service"
 unbound_service="unbound.service"
-migration_service="secureblue-migrate-dns.service"
-migration_stamp="/etc/systemd/resolved.conf.d/migrated.stamp"
 dnsconfd_exec_path="/usr/bin/dnsconfd"
 dnsconfd_exec_expected="system_u:object_r:dnsconfd_exec_t:s0 ${dnsconfd_exec_path}"
 
@@ -29,7 +27,6 @@ test_fail() {
     echo "Service statuses:"
     systemctl status "$dnsconfd_service" --full || true
     systemctl status "$unbound_service" --full || true
-    systemctl status "$migration_service" --full || true
     exit 1
 }
 
@@ -57,16 +54,6 @@ if ! systemctl is-active --quiet "$unbound_service"; then
     test_fail "$unbound_service is not running."
 fi
 echo "$unbound_service is running."
-
-if ! systemctl is-enabled --quiet "$migration_service"; then
-    test_fail "$migration_service is not enabled."
-fi
-echo "$migration_service is enabled."
-
-if [ ! -f "$migration_stamp" ]; then
-    test_fail "$migration_service did not seem to run. No stamp found."
-fi
-echo "$migration_service has run. Stamp found."
 
 # dnsconfd.fc <=v1.7.2 is broken, ensure any workaround is working.
 dnsconfd_exec_info=$(ls -Z "$dnsconfd_exec_path")

@@ -135,7 +135,7 @@ jobs:
           verify_install: true
 
       - name: Install regctl
-        uses: regclient/actions/regctl-installer@495560f7c3b510b71ff9f22d6c667c2c429b8e45 # main # zizmor: ignore[stale-action-refs] regctl does not publish tags
+        uses: regclient/actions/regctl-installer@1b705e32d40851370799ea5814e83d0a5f6a70dc # v0.1.0
 
       - name: Parse image manifest
         id: image_manifest_metadata

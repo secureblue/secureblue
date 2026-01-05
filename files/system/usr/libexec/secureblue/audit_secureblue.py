@@ -1165,6 +1165,12 @@ async def main() -> int:
         description=_("Audit secureblue configuration for security"),
         epilog=get_legend(),
     )
+    # Translatable strings printed by argparse that we want to ensure are included in the PO files.
+    _argparse_translatable_strings = (  # noqa: RUF100, F841
+        _("usage: "),
+        _("options"),
+        _("show this help message and exit"),
+    )
     categories = ",".join(sorted(global_audit.categories))
     parser.add_argument("-s", "--skip", default="", help=_("skip categories") + f" ({categories})")
     parser.add_argument("-j", "--json", action="store_true", help=_("display output as JSON"))

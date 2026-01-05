@@ -323,7 +323,6 @@ def main() -> None:
             set_trivalent_doh_endpoint(args.doh_url)
 
         case "set-resolver":
-            # DNS servers and DNSSEC are not interchangeable. See migrate_dns.py.
             set_global_nm_servers(None)
             set_dnssec_enabled(False)
             if args.resolver == "resolved":

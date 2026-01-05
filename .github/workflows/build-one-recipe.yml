@@ -30,13 +30,13 @@ jobs:
     runs-on: ubuntu-24.04
     environment: Build
     outputs:
+      FULL_IMAGE_REF: ${{ steps.runner_setup.outputs.FULL_IMAGE_REF }}
       IMAGE_DIGEST: ${{ steps.image_manifest_metadata.outputs.IMAGE_DIGEST }}
-      FULL_IMAGE_REF: ${{ steps.image_manifest_metadata.outputs.FULL_IMAGE_REF }}
     permissions:
       contents: read # Needed to pull the repo for the build
       packages: write # Needed to publish images
       id-token: write # Needed for token generation for signing
-    steps:      
+    steps:
       - name: Enable egress auditing
         uses: step-security/harden-runner@20cf305ff2072d973412fa9b1e3a4f227bda3c76 # v2.14.0
         with:
@@ -55,12 +55,12 @@ jobs:
             esm.ubuntu.com:443
 
             # cosign installation
-            github.com:443 
+            github.com:443
 
             # slsa-verifier installation
             tuf-repo-cdn.sigstore.dev:443
             rekor.sigstore.dev:443
-            
+
             # pulling base images
             quay.io:443
             cdn01.quay.io:443
@@ -100,7 +100,7 @@ jobs:
             formulae.brew.sh:443
 
             # Install the tailscale repo
-            pkgs.tailscale.com:443 
+            pkgs.tailscale.com:443
 
             # Install nvidia container toolkit repo
             nvidia.github.io:443
@@ -171,12 +171,32 @@ jobs:
           persist-credentials: false
 
       - name: Runner setup
+        id: runner_setup
         uses: ./.github/workflows/shared-runner-setup
         with:
           recipe: ${{ inputs.recipe }}
 
+      - name: Decide whether to clear previous layer plan
+        id: clear_plan
+        shell: bash
+        env:
+          rechunk: ${{ inputs.rechunk }}
+          FULL_IMAGE_REF: ${{ steps.runner_setup.outputs.FULL_IMAGE_REF }}
+        run: |
+          clear_plan='false'
+          if [[ "$rechunk" == 'true' ]]; then
+            # Clear previous layer plan only on the first build of each month.
+            current_month=$(date -u '+%Y-%m')
+            previous_build_created=$(skopeo inspect -n "docker://${FULL_IMAGE_REF}" | jq -cr '.Created')
+            previous_build_month=$(date -u -d "$previous_build_created" '+%Y-%m')
+            if [[ "$previous_build_month" != "$current_month" ]]; then
+              clear_plan='true'
+            fi
+          fi
+          echo "clear_plan=${clear_plan}" >> "${GITHUB_OUTPUT}"
+
       - name: Build secureblue
-        uses: blue-build/github-action@9ba737d93ffa82d7cd6826162c7bc3a2648ae73d # v1.10.3
+        uses: blue-build/github-action@3cd0c2835e691b87a7eb19261a6aee77a56169e2 # v1.11.0
         env:
           KERNEL_PRIVKEY: ${{ secrets.KERNEL_PRIVKEY }}
         with:
@@ -189,12 +209,11 @@ jobs:
           squash: true
           build_chunked_oci: ${{ inputs.rechunk }}
           max_layers: 128
+          rechunk_clear_plan: ${{ steps.clear_plan.outputs.clear_plan }}
           skip_checkout: true
           use_cache: false
           retry_push_count: 3
           verify_install: true
-          # TODO: remove this after blue-build/github-action updates.
-          build_opts: --remove-base-image
 
       - name: Install regctl
         uses: regclient/actions/regctl-installer@1b705e32d40851370799ea5814e83d0a5f6a70dc # v0.1.0
@@ -203,19 +222,9 @@ jobs:
         id: image_manifest_metadata
         shell: bash
         env:
-          DEFAULT_BRANCH: ${{ github.event.repository.default_branch }}
-          PR_EVENT_NUMBER: ${{ github.event.number }}
-          RECIPE: ${{ inputs.recipe }}
+          FULL_IMAGE_REF: ${{ steps.runner_setup.outputs.FULL_IMAGE_REF }}
         run: |
-          case "$GITHUB_REF" in
-            refs/heads/"$DEFAULT_BRANCH") image_tag='latest' ;;
-            refs/pull/*) image_tag="pr-${PR_EVENT_NUMBER}-43" ;;
-            *) image_tag="br-${GITHUB_REF_NAME}-43" ;;
-          esac
-          IMAGE_NAME=$(yq -r '."name"' "./recipes/${RECIPE}")
-          FULL_IMAGE_REF="ghcr.io/secureblue/${IMAGE_NAME}:${image_tag}"
-          IMAGE_DIGEST="$(regctl image digest "${FULL_IMAGE_REF}")"
-          echo "FULL_IMAGE_REF=${FULL_IMAGE_REF}" >> "${GITHUB_OUTPUT}"
+          IMAGE_DIGEST=$(regctl image digest "${FULL_IMAGE_REF}")
           echo "IMAGE_DIGEST=${IMAGE_DIGEST}" >> "${GITHUB_OUTPUT}"
 
   provenance:
@@ -224,6 +233,8 @@ jobs:
       actions: read # for detecting the Github Actions environment.
       id-token: write # for creating OIDC tokens for signing.
       packages: write # for uploading attestations.
+    # Currently this must be referenced by tag, not by hash:
+    # https://github.com/slsa-framework/slsa-github-generator?tab=readme-ov-file#referencing-slsa-builders-and-generators
     uses: slsa-framework/slsa-github-generator/.github/workflows/generator_container_slsa3.yml@v2.1.0
     with:
       image: ${{ needs.bluebuild.outputs.FULL_IMAGE_REF }}

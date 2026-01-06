@@ -96,6 +96,9 @@ jobs:
             # Install the tailscale repo
             pkgs.tailscale.com:443 
 
+            # Install nvidia container toolkit repo
+            nvidia.github.io:443
+
             # Fedora mirrors
             # https://mirrors.fedoraproject.org/mirrorlist?repo=fedora-43&arch=x86_64&protocol=https
             mirrors.fedoraproject.org:443

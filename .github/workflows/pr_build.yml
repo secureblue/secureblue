@@ -197,7 +197,9 @@ jobs:
           slsa-verifier verify-image --source-uri 'github.com/secureblue/secureblue' "${BASE_IMAGE}:${BASE_IMAGE_VERSION}@${DIGEST}"
 
           # remove slsa-verifier so that it can be installed later by bluebuild
-          rm -rf /home/runner/.slsa/
+          rm -rf ~/.slsa/
+          mkdir -p ~/.slsa
+          chmod 755 ~/.slsa
 
       - name: Install cosign
         uses: sigstore/cosign-installer@faadad0cce49287aee09b3a48701e75088a2c6ad # v4.0.0

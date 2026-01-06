@@ -57,6 +57,7 @@ jobs:
             archive.ubuntu.com:443
             _https._tcp.security.ubuntu.com:443
             security.ubuntu.com:443
+            azure.archive.ubuntu.com:80
 
             # cosign installation
             github.com:443 
@@ -159,6 +160,7 @@ jobs:
             dfw.mirror.rackspace.com:443
             iad.mirror.rackspace.com:443
             lesnet.mm.fcix.net:443
+            ftp2.osuosl.org:443
 
       - name: Optimize build times
         shell: bash

@@ -18,7 +18,8 @@ modules:
         - createautostartdir.sh
         - httpsmirrors.sh
         - unprotectsudo.sh
-    # comment/uncomment the line below to disable/enable kernel pinning
+        # comment/uncomment the line below to disable/enable kernel pinning
+        - installpinnedkernel.sh
     - from-file: common/pin-kernel.yml
     - from-file: common/common-packages.yml
     - type: files

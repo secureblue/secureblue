@@ -19,13 +19,13 @@ KERNEL_HEADERS_VERSION="6.17.4-300"
 dnf install -y fedora-repos-archive
 
 dnf install -y --from-repo=updates-archive \
-  kernel-${KERNEL_VERSION}.fc${OS_VERSION}" \
-  kernel-core-${KERNEL_VERSION}.fc${OS_VERSION}" \
-  kernel-modules-${KERNEL_VERSION}.fc${OS_VERSION}" \
-  kernel-modules-core-${KERNEL_VERSION}.fc${OS_VERSION}" \
-  kernel-modules-extra-${KERNEL_VERSION}.fc${OS_VERSION}" \
-  kernel-tools-${KERNEL_VERSION}.fc${OS_VERSION}" \
-  kernel-tools-libs-${KERNEL_VERSION}.fc${OS_VERSION}" \
-  kernel-headers-${KERNEL_HEADERS_VERSION}.fc${OS_VERSION}" \
+  kernel-${KERNEL_VERSION}.fc${OS_VERSION}.${OS_ARCH}" \
+  kernel-core-${KERNEL_VERSION}.fc${OS_VERSION}.${OS_ARCH}" \
+  kernel-modules-${KERNEL_VERSION}.fc${OS_VERSION}.${OS_ARCH}" \
+  kernel-modules-core-${KERNEL_VERSION}.fc${OS_VERSION}.${OS_ARCH}" \
+  kernel-modules-extra-${KERNEL_VERSION}.fc${OS_VERSION}.${OS_ARCH}" \
+  kernel-tools-${KERNEL_VERSION}.fc${OS_VERSION}.${OS_ARCH}" \
+  kernel-tools-libs-${KERNEL_VERSION}.fc${OS_VERSION}.${OS_ARCH}" \
+  kernel-headers-${KERNEL_HEADERS_VERSION}.fc${OS_VERSION}.${OS_ARCH}" \
   
 dnf remove -y fedora-repos-archive

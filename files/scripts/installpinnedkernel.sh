@@ -16,7 +16,7 @@ set -oue pipefail
 
 
 
-if [["$IMAGE_NAME" != *"securecore"* ]]; then
+if [[ "$IMAGE_NAME" != *"securecore"* ]]; then
   KERNEL_VERSION="6.17.12-300"
   KERNEL_HEADERS_VERSION="6.17.4-300"
   
@@ -28,6 +28,5 @@ if [["$IMAGE_NAME" != *"securecore"* ]]; then
     "kernel-modules-extra-${KERNEL_VERSION}.fc${OS_VERSION}" \
     "kernel-tools-${KERNEL_VERSION}.fc${OS_VERSION}" \
     "kernel-tools-libs-${KERNEL_VERSION}.fc${OS_VERSION}" \
-    "kernel-headers-${KERNEL_HEADERS_VERSION}.fc${OS_VERSION}" \
-  
+    "kernel-headers-${KERNEL_HEADERS_VERSION}.fc${OS_VERSION}"
 fi

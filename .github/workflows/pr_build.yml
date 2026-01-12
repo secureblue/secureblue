@@ -91,7 +91,7 @@ jobs:
             nvidia.github.io:443
 
             # Pull gpg keys
-            _pgpkey-http._tcp.keyserver.ubuntu.com
+            _pgpkey-http._tcp.keyserver.ubuntu.com:443
 
             # Fedora mirrors
             # https://mirrors.fedoraproject.org/mirrorlist?repo=fedora-43&arch=x86_64&protocol=https

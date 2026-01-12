@@ -36,6 +36,7 @@ jobs:
   bluebuild:
     name: Build secureblue
     runs-on: ubuntu-24.04
+    environment: Build
     outputs:
       IMAGE_DIGEST: ${{ steps.image_manifest_metadata.outputs.IMAGE_DIGEST }}
       FULL_IMAGE_REF: ${{ steps.image_manifest_metadata.outputs.FULL_IMAGE_REF }}
@@ -45,7 +46,7 @@ jobs:
       id-token: write # Needed for token generation for signing
     steps:
       - name: Enable egress auditing
-        uses: step-security/harden-runner@95d9a5deda9de15063e7595e9719c11c38c90ae2 # v2.13.2
+        uses: step-security/harden-runner@20cf305ff2072d973412fa9b1e3a4f227bda3c76 # v2.14.0
         with:
           egress-policy: audit
 
@@ -105,9 +106,9 @@ jobs:
 
           UPSTREAM_CONTAINER="${BASE_IMAGE}:${BASE_IMAGE_VERSION}"
           if [[ "$BASE_IMAGE" == ghcr.io/secureblue/* ]]; then
-            UPSTREAM_PUBKEY='https://raw.githubusercontent.com/secureblue/secureblue/refs/heads/live/cosign.pub'
+            UPSTREAM_PUBKEY='./cosign.pub'
           else
-            UPSTREAM_PUBKEY='https://gitlab.com/fedora/ostree/ci-test/-/raw/main/quay.io-fedora-ostree-desktops.pub'
+            UPSTREAM_PUBKEY='./files/system/etc/pki/containers/quay.io-fedora-ostree-desktops.pub'
           fi
           if ! cosign verify --key "${UPSTREAM_PUBKEY}" "${UPSTREAM_CONTAINER}" | jq; then
             echo "NOTICE: Verification failed. Please ensure your public key is correct."
@@ -115,11 +116,11 @@ jobs:
           fi
 
       - name: Build secureblue
-        uses: blue-build/github-action@f75115e12966070fc35d6be3aab528848c9c979f # v1.10.2
+        uses: blue-build/github-action@9ba737d93ffa82d7cd6826162c7bc3a2648ae73d # v1.10.3
         env:
           KERNEL_PRIVKEY: ${{ secrets.KERNEL_PRIVKEY }}
         with:
-          cli_version: v0.9.27
+          cli_version: v0.9.28
           recipe: ${{ inputs.recipe }}
           cosign_private_key: ${{ secrets.SIGNING_SECRET }}
           registry_token: ${{ github.token }}
@@ -134,7 +135,7 @@ jobs:
           verify_install: true
 
       - name: Install regctl
-        uses: regclient/actions/regctl-installer@495560f7c3b510b71ff9f22d6c667c2c429b8e45 # main # zizmor: ignore[stale-action-refs] regctl does not publish tags
+        uses: regclient/actions/regctl-installer@1b705e32d40851370799ea5814e83d0a5f6a70dc # v0.1.0
 
       - name: Parse image manifest
         id: image_manifest_metadata

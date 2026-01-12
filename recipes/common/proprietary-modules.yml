@@ -12,7 +12,7 @@
 
 modules:
     - type: dnf
-      source: ghcr.io/blue-build/modules@sha256:b143423fb9560a24f362db36621c7e81da56551d32fbbc97e267e811dd7f0c27
+      source: ghcr.io/blue-build/modules@sha256:3c04c323f281bdb1ab88148a2335608344bcc07c6c4d2f5f777063a16554256d
       install:
         install-weak-deps: false
         packages:
@@ -22,7 +22,7 @@ modules:
           - pipewire-libs-extra
 
     - type: dnf
-      source: ghcr.io/blue-build/modules@sha256:b143423fb9560a24f362db36621c7e81da56551d32fbbc97e267e811dd7f0c27
+      source: ghcr.io/blue-build/modules@sha256:3c04c323f281bdb1ab88148a2335608344bcc07c6c4d2f5f777063a16554256d
       replace:
         - from-repo: fedora-multimedia
           skip-unavailable: true
@@ -42,7 +42,7 @@ modules:
             - intel-mediasdk
 
     - type: dnf
-      source: ghcr.io/blue-build/modules@sha256:b143423fb9560a24f362db36621c7e81da56551d32fbbc97e267e811dd7f0c27
+      source: ghcr.io/blue-build/modules@sha256:3c04c323f281bdb1ab88148a2335608344bcc07c6c4d2f5f777063a16554256d
       replace:
         - from-repo: fedora-multimedia
           skip-unavailable: true
@@ -71,6 +71,6 @@ modules:
               new: libswscale
 
     - type: script
-      source: ghcr.io/blue-build/modules@sha256:b143423fb9560a24f362db36621c7e81da56551d32fbbc97e267e811dd7f0c27
+      source: ghcr.io/blue-build/modules@sha256:3c04c323f281bdb1ab88148a2335608344bcc07c6c4d2f5f777063a16554256d
       scripts:
         - removeunusedrepos.sh

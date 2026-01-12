@@ -33,7 +33,9 @@ def main() -> int:
         return 1
 
     new_username: Final[str] = sys.argv[1]
-    result = subprocess.run(["/usr/sbin/useradd", "-M", "-G", "wheel", new_username], check=False)  # nosec
+    result = subprocess.run(
+        ["/usr/sbin/useradd", "-G", "wheel", "-r", "-F", new_username], check=False
+    )  # nosec
     if result.returncode != 0:
         print("useradd has failed.")
         return 1

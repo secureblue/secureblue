@@ -14,41 +14,27 @@
 
 set -oue pipefail
 
-# nvidia-container-toolkit is not built with required crypto digests for RPM 6+, introduced in Fedora 43
 
-PINNED_OPEN_VERSION="580.105.08"
-nvidia_packages_list=('libva-nvidia-driver')
+nvidia_packages_list=('libva-nvidia-driver' 'nvidia-container-toolkit')
 
 is_desktop="false"
 [[ "$IMAGE_NAME" != *"securecore"* && "$IMAGE_NAME" != *"iot"* ]] && is_desktop="true"
-
-if [[ "$IMAGE_NAME" == *"open"* ]]; then
+nvidia_packages_list+=(
+  'nvidia-driver-cuda'
+)    
+if [[ "$is_desktop" == "true" ]]; then
     nvidia_packages_list+=(
-        "nvidia-driver-cuda-${PINNED_OPEN_VERSION}" 
+        'libnvidia-fbc'
+        'nvidia-driver' 
+        'nvidia-modprobe' 
+        'nvidia-persistenced' 
+        'nvidia-settings'
     )
-    if [[ "$is_desktop" == "true" ]]; then
-      nvidia_packages_list+=(
-          "libnvidia-fbc-${PINNED_OPEN_VERSION}" 
-          "nvidia-driver-${PINNED_OPEN_VERSION}" 
-          "nvidia-modprobe-${PINNED_OPEN_VERSION}" 
-          "nvidia-persistenced-${PINNED_OPEN_VERSION}" 
-          "nvidia-settings-${PINNED_OPEN_VERSION}"
-      )
-    fi
-else
-    nvidia_packages_list+=(
-      'nvidia-driver-cuda'
-    )    
-    if [[ "$is_desktop" == "true" ]]; then
-        nvidia_packages_list+=(
-            'libnvidia-fbc'
-            'nvidia-driver' 
-            'nvidia-modprobe' 
-            'nvidia-persistenced' 
-            'nvidia-settings'
-        )
-    fi
 fi
+
+curl -fLsS --retry 5 https://nvidia.github.io/libnvidia-container/stable/rpm/nvidia-container-toolkit.repo \
+    -o /etc/yum.repos.d/nvidia-container-toolkit.repo
+sed -i -e 's/^gpgcheck=0/gpgcheck=1/' -e 's/^enabled=0.*/enabled=1/' /etc/yum.repos.d/nvidia-container-toolkit.repo
 
 if [[ "$IMAGE_NAME" == *"open"* ]]; then
     curl -fLsS --retry 5 https://negativo17.org/repos/fedora-nvidia.repo -o /etc/yum.repos.d/negativo17-fedora-nvidia.repo
@@ -71,9 +57,10 @@ if [[ "$kmod_version" != "$negativo_version" ]]; then
     exit 1
 fi
 
-curl -fLsS --retry 5 https://raw.githubusercontent.com/NVIDIA/dgx-selinux/master/bin/RHEL9/nvidia-container.pp \
+curl -fLsS --retry 5 https://raw.githubusercontent.com/NVIDIA/dgx-selinux/b988ea65e7b43009a705eb5e5d7e94048f916734/bin/RHEL9/nvidia-container.pp \
     -o nvidia-container.pp
 semodule -i nvidia-container.pp
 
 rm -f nvidia-container.pp
 rm -f /etc/yum.repos.d/negativo17-fedora-nvidia.repo
+rm -f /etc/yum.repos.d/nvidia-container-toolkit.repo

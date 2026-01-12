@@ -21,6 +21,7 @@ on:
       - staging
     paths:
       - '**nvidia**'
+      - './.github/workflows/pr_build.yml'
       - '!**.md'
       - '!.github/**'
 

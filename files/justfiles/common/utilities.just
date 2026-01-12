@@ -58,6 +58,13 @@ toggle-user-motd:
       touch "${HOME}/.config/no-show-user-motd"
     fi
 
+# Update system (with provenance verification)
+update-system:
+    #!/bin/sh
+    set -eu
+    /usr/libexec/secureblue/verify-provenance.sh
+    /usr/bin/rpm-ostree upgrade
+
 # Update device firmware
 [no-exit-message]
 update-firmware:
@@ -430,18 +437,18 @@ install-vpn:
         fi
 
         if [[ "$DE" == "unknown" ]]; then
-            echo 'Warning: Unable to identify your desktop environment. Please manually ensure that XWayland is enabled. Skipping...'
+            echo 'Warning: Unable to identify your desktop environment. Please manually ensure that Xwayland is enabled. Skipping...'
         elif [[ "$xwayland_enabled" == "1" ]]; then
-            echo 'XWayland already enabled, skipping...'
+            echo 'Xwayland already enabled, skipping...'
         else
-            echo 'This VPN requires XWayland to be enabled.'
-            echo 'This will execute "ujust toggle-xwayland". You can also manually do this later if you skip this step.'
+            echo 'This VPN requires Xwayland to be enabled.'
+            echo 'This will execute "ujust set-xwayland on". You can also manually do this later if you skip this step.'
             echo 'Warning: This is a security reduction!'
             read -rp 'Do you want to do this now? [Y/n] ' proceed_xwayland
             if ! [[ "$proceed_xwayland" == [nN]* ]]; then
-                echo 'Enabling XWayland...'
-                ujust toggle-xwayland
-                echo 'Enabled XWayland.'
+                echo 'Enabling Xwayland...'
+                ujust set-xwayland on
+                echo 'Enabled Xwayland.'
             fi
         fi
     fi

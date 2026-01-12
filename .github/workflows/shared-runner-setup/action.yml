@@ -160,7 +160,10 @@ runs:
 
     - name: Verify base image provenance
       shell: bash
-      if: startsWith(steps.image_data.outputs.BASE_IMAGE, 'ghcr.io/secureblue/')
+      if: startsWith(steps.image_data.outputs.BASE_IMAGE, 'ghcr.io/secureblue/')      
+      env:
+        BASE_IMAGE_VERSION: ${{ steps.image_data.outputs.BASE_IMAGE_VERSION }}
+        BASE_IMAGE: ${{ steps.image_data.outputs.BASE_IMAGE }}
       run: |
         # Install crane
         CRANE_VERSION=v0.20.7

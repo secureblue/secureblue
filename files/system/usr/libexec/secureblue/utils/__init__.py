@@ -23,7 +23,9 @@ import json
 import subprocess  # nosec
 import sys
 import textwrap
+import time
 from collections.abc import Iterable, Sequence
+from dataclasses import dataclass
 from functools import partialmethod
 
 import rpm

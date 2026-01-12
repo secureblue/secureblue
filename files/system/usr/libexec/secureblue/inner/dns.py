@@ -24,8 +24,6 @@ import pwd
 import subprocess  # nosec
 import sys
 import textwrap
-import time
-from dataclasses import dataclass
 from enum import Enum
 from pathlib import Path
 from typing import Final

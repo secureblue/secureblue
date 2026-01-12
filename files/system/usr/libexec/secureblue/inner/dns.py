@@ -27,7 +27,6 @@ import textwrap
 import time
 from dataclasses import dataclass
 from enum import Enum
-from functools import partialmethod
 from pathlib import Path
 from typing import Final
 from utils import SystemdService

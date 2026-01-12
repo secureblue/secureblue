@@ -24,6 +24,7 @@ import subprocess  # nosec
 import sys
 import textwrap
 from collections.abc import Iterable, Sequence
+from functools import partialmethod
 
 import rpm
 

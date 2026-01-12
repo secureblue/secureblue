@@ -31,7 +31,7 @@ jobs:
           persist-credentials: false
 
       - name: Runner setup
-        uses: ./.github/workflows/shared-runner-setup.yml
+        uses: ./.github/workflows/shared-runner-setup
         with:
           recipe: ${{ inputs.recipe }}
 

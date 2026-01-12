@@ -25,10 +25,15 @@ jobs:
       packages: read # Needed to read base image manifests
 
     steps:
+      - name: Checkout repo
+        uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6.0.1
+        with:
+          persist-credentials: false
+
       - name: Runner setup
         uses: ./.github/workflows/shared-runner-setup.yml
         with:
-          recipe: "${{inputs.recipe}}"
+          recipe: ${{ inputs.recipe }}
 
       - name: Set up test keys
         id: test_keys

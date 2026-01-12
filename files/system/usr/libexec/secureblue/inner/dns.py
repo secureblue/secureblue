@@ -21,12 +21,13 @@ import argparse
 import json
 import os
 import pwd
-import subprocess  # nosec
 import sys
 import textwrap
+import time
 from enum import Enum
 from pathlib import Path
 from typing import Final
+
 from utils import SystemdService
 
 DNSCONFD_CONF_PATH: Final[Path] = Path("/etc/dnsconfd.conf")

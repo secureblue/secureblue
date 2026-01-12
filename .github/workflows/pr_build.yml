@@ -90,6 +90,9 @@ jobs:
             # Install nvidia container toolkit repo
             nvidia.github.io:443
 
+            # Pull gpg keys
+            _pgpkey-http._tcp.keyserver.ubuntu.com
+
             # Fedora mirrors
             # https://mirrors.fedoraproject.org/mirrorlist?repo=fedora-43&arch=x86_64&protocol=https
             mirrors.fedoraproject.org:443

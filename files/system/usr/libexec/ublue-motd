@@ -52,7 +52,7 @@ elif [ "$IMAGE_TAG" == 'ERROR-IMAGE-TAG-MISSING' ]; then
 elif [ "$IMAGE_TAG" != "latest" ]; then
     TIP="${bold}You are on a specific tag, which is unsupported by secureblue. Rebase to the ${reset}${slight_red} latest ${reset}${bold} tag to ensure you continue to receive updates.${reset}"
 elif [ "$DIFFERENCE" -ge "$WEEK" ]; then
-    TIP="${bold}Your current image is over 1 week old, run ${reset}${slight_red} rpm-ostree upgrade ${reset}${reset}"
+    TIP="${bold}Your current image is over 1 week old, run ${reset}${slight_red} ujust update-system ${reset}${reset}"
 fi
 
 cat << EOF

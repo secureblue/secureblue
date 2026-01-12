@@ -42,7 +42,6 @@ def main() -> int:
 
     inner_script = sandbox.SandboxedFunction(
         "dangerzone.py",
-        subprocess_interactive=True,
         read_write_paths=[
             "/etc/yum.repos.d/dangerzone.repo",
             "/etc/containers/policy.json",

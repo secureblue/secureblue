@@ -18,6 +18,8 @@ modules:
         - createautostartdir.sh
         - httpsmirrors.sh
         - unprotectsudo.sh
+        # comment/uncomment the line below to disable/enable kernel pinning
+        - installpinnedkernel.sh
     - from-file: common/common-packages.yml
     - type: files
       source: ghcr.io/blue-build/modules@sha256:3c04c323f281bdb1ab88148a2335608344bcc07c6c4d2f5f777063a16554256d

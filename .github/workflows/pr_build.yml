@@ -31,13 +31,10 @@ jobs:
           egress-policy: block
           allowed-endpoints: >
             # ubuntu packages
-            _http._tcp.azure.archive.ubuntu.com:443
-            azure.archive.ubuntu.com:433
             _https._tcp.archive.ubuntu.com:443
             archive.ubuntu.com:443
             _https._tcp.security.ubuntu.com:443
             security.ubuntu.com:443
-            azure.archive.ubuntu.com:80
 
             # cosign installation
             github.com:443 

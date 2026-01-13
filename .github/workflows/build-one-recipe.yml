@@ -105,6 +105,7 @@ jobs:
 
             # Pull gpg keys
             pgp.mit.edu:443
+            _pgpkey-http._tcp.pgp.mit.edu:443
 
             # Fedora mirrors
             # https://mirrors.fedoraproject.org/mirrorlist?repo=fedora-43&arch=x86_64&protocol=https

@@ -35,8 +35,8 @@ curl -fLsS --retry 5 \
 
 echo "Import key"
 # https://openzfs.github.io/openzfs-docs/Project%20and%20Community/Signing%20Keys.html
-gpg --yes --verbose --keyserver pgp.mit.edu --recv D4598027
-gpg --yes --verbose --keyserver pgp.mit.edu --recv C6AF658B
+gpg --yes --verbose --keyserver https://keyserver.ubuntu.com --recv D4598027
+gpg --yes --verbose --keyserver https://keyserver.ubuntu.com --recv C6AF658B
 
 echo "Verifying tar.gz signature"
 if ! gpg --verify "zfs-${ZFS_VERSION}.tar.gz.asc" "zfs-${ZFS_VERSION}.tar.gz"

@@ -35,6 +35,12 @@ jobs:
             archive.ubuntu.com:443
             _https._tcp.security.ubuntu.com:443
             security.ubuntu.com:443
+            _https._tcp.packages.microsoft.com:443
+            packages.microsoft.com:443
+            _https._tcp.motd.ubuntu.com:443
+            _https._tcp.esm.ubuntu.com:443
+            esm.ubuntu.com:443
+
 
             # cosign installation
             github.com:443 
@@ -109,6 +115,7 @@ jobs:
             southfront.mm.fcix.net:443
             forksystems.mm.fcix.net:443
             ix-denver.mm.fcix.net:443
+            irltoolkit.mm.fcix.net:443
             insect.mm.fcix.net:443
             cofractal-sea.mm.fcix.net:443
             mirror.fcix.net:443

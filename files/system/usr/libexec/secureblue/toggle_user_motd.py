@@ -18,11 +18,11 @@ if (Path.home() / ".config" / "no-show-user-motd").is_file():
 
 else:
     if (Path.home() / ".config").is_dir() != True:
-        os.mkdir(Path.home() / ".config(")
+        os.mkdir(Path.home() / ".config")
     open(Path.home() / ".config" / "no-show-user-motd", "x")
     print("MOTD disabled.")
 
 
 
- if __name__ == "__main__":
+if __name__ == "__main__":
      sys.exit(main())

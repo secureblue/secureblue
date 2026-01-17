@@ -19,7 +19,7 @@ modules:
         - httpsmirrors.sh
         - unprotectsudo.sh
         # comment/uncomment the line below to disable/enable kernel pinning
-        - installpinnedkernel.sh
+        # - installpinnedkernel.sh
     - from-file: common/common-packages.yml
     - type: files
       source: ghcr.io/blue-build/modules@sha256:8e92fcaaef385a1728b8d8224296484260b67126ac83f7ed85b4ae3dde4ad19d

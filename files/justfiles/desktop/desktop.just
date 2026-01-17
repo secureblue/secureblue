@@ -4,7 +4,7 @@
 
 # Toggle libvirt daemons on or off
 [positional-arguments]
-set-libvirt-daemons:
+set-libvirt-daemons *args:
     #!/bin/sh
     exec /usr/bin/python3 /usr/libexec/secureblue/set_libvirt_daemons.py "$@"
 

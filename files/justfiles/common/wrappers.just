@@ -74,3 +74,7 @@ set-container-userns *args:
 install-dangerzone:
     #!/bin/sh
     exec /usr/bin/python3 /usr/libexec/secureblue/install_dangerzone.py "$@"
+
+toggle-user-motd.py
+    #!/bin/sh
+    exec /usr/bin/python3 /usr/libexec/secureblue/toggle_user_motd.py

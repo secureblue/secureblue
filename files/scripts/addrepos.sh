@@ -24,6 +24,7 @@ common_repos=(
 desktop_repos=(
   "https://copr.fedorainfracloud.org/coprs/secureblue/bubblejail/repo/fedora-%OS_VERSION%/secureblue-bubblejail-fedora-%OS_VERSION%.repo"
   "https://copr.fedorainfracloud.org/coprs/secureblue/branding/repo/fedora-%OS_VERSION%/secureblue-branding-fedora-%OS_VERSION%.repo"
+  "https://copr.fedorainfracloud.org/coprs/secureblue/bazaar/repo/fedora-%OS_VERSION%/secureblue-bazaar-fedora-%OS_VERSION%.repo"
 )
 
 server_repos=(

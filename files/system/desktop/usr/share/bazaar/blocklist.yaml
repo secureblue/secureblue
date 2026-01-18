@@ -1,0 +1,31 @@
+blocklists:
+  - priority: 0
+    block:
+      # Verified Chromium-based browsers.
+      - com.brave.Browser
+      - org.kde.falkon
+      - ru.yandex.Browser
+
+      # Unverified Chromium-based browsers.
+      - com.google.Chrome
+      - com.google.ChromeDev
+      - com.microsoft.Edge
+      - com.opera.Opera
+      - org.chromium.Chromium
+
+      # Verified Firefox-based browsers.
+      - app.zen_browser.zen
+      - io.gitlab.librewolf-community
+      - net.waterfox.waterfox
+      - one.ablaze.floorp
+      - org.garudalinux.firedragon
+      - org.mozilla.firefox
+      - org.torproject.torbrowser-launcher
+
+      # Unverified Firefox-based browsers.
+      - net.mullvad.MullvadBrowser
+
+      # Other browsers.
+      ## org.gnome.Epiphany uses WebKitGTK and flatpak-spawn for process-level sandboxing.
+      ## Nyxt seems to use WebKitGTK, but without clear sandboxing.
+      - engineer.atlas.Nyxt

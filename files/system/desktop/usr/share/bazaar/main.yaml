@@ -1,0 +1,2 @@
+yaml-blocklist-paths:
+  - /usr/share/bazaar/blocklist.yaml

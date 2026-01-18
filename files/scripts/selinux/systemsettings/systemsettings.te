@@ -1,6 +1,6 @@
 policy_module(systemsettings, 1.0.0)
 
-# SPDX-FileCopyrightText 2025 The Secureblue Authors
+# SPDX-FileCopyrightText: Copyright 2025-2026 The Secureblue Authors
 #
 # SPDX-License-Identifier: Apache-2.0 OR MIT
 

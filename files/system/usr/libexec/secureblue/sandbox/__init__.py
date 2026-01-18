@@ -1,16 +1,7 @@
-# Copyright 2025 The Secureblue Authors
+# SPDX-FileCopyrightText: Copyright 2025 Daniel Hast
+# SPDX-FileCopyrightText: Copyright 2025-2026 The Secureblue Authors
 #
-# Licensed under the Apache License, Version 2.0 (the "License");
-# you may not use this file except in compliance with the License.
-# You may obtain a copy of the License at
-#
-#     http://www.apache.org/licenses/LICENSE-2.0
-#
-# Unless required by applicable law or agreed to in writing, software
-# distributed under the License is distributed on an "AS IS" BASIS,
-# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-# See the License for the specific language governing permissions and
-# limitations under the License.
+# SPDX-License-Identifier: Apache-2.0
 
 """
 Framework for running rootful functions in a systemd sandbox
@@ -24,7 +15,6 @@ from typing import Final
 # Directory containing privileged workers - change during development!
 INNER_DIR: Final[str] = "/usr/libexec/secureblue/inner"
 
-# Copyright (C) 2025 Daniel Hast
 # Systemd sandboxing of run0 invocation adapted from run0edit, originally licensed
 # under MIT OR Apache-2.0. Used here under the terms of the Apache License 2.0.
 SYSCALLS_TO_ALLOW: Final[list[str]] = ["@system-service"]

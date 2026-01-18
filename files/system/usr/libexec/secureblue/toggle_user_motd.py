@@ -1,5 +1,5 @@
-#!/usr/bin/env python3
-
+#!/usr/bin/python3
+#
 # SPDX-FileCopyrightText: Copyright 2026 The Secureblue Authors
 #
 # SPDX-License-Identifier: Apache-2.0
@@ -13,7 +13,7 @@ from pathlib import Path
 
 
 # Extra parentheses added so python doesn't check the individual string instead of the path
-def main():
+def main() -> None:
     try:
         os.remove(Path.home() / ".config" / "no-show-user-motd")
         print("MOTD enabled.")

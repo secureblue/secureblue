@@ -12,11 +12,11 @@ from pathlib import Path
 import os
 
 # Extra parentheses added so python doesn't check the individual string instead of the path
-if (Path.home() / ".config" / "no-show-user-motd").is_file():
+try:
     os.remove(Path.home() / ".config" / "no-show-user-motd")
     print("MOTD enabled.")
 
-else:
+except FileNotFoundError:
     if (Path.home() / ".config").is_dir() != True:
         os.mkdir(Path.home() / ".config")
     open(Path.home() / ".config" / "no-show-user-motd", "x")

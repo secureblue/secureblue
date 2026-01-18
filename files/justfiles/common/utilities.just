@@ -56,7 +56,7 @@ update-system:
     set -eu
     /usr/libexec/secureblue/verify-provenance.sh
     /usr/bin/rpm-ostree upgrade
-    if [ /usr/libexec/secureblue/security-update-notification ]; then
+    if [ -f /usr/libexec/secureblue/security-update-notification ]; then
         /usr/libexec/secureblue/security-update-notification
     fi
 

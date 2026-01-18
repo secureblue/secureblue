@@ -8,8 +8,9 @@
 Toggle display of the user-motd in terminal
 """
 
-from pathlib import Path
 import os
+from pathlib import Path
+
 
 # Extra parentheses added so python doesn't check the individual string instead of the path
 def main():
@@ -18,7 +19,7 @@ def main():
         print("MOTD enabled.")
 
     except FileNotFoundError:
-        if (Path.home() / ".config").is_dir() != True:
+        if not (Path.home() / ".config").is_dir():
             os.mkdir(Path.home() / ".config")
         (Path.home() / ".config" / "no-show-user-motd").touch(exist_ok=False)
         print("MOTD disabled.")

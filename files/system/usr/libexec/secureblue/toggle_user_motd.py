@@ -25,6 +25,5 @@ def main() -> None:
         print("MOTD disabled.")
 
 
-
 if __name__ == "__main__":
-     main()
+    main()

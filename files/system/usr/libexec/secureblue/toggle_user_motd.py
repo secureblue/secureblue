@@ -19,7 +19,7 @@ try:
 except FileNotFoundError:
     if (Path.home() / ".config").is_dir() != True:
         os.mkdir(Path.home() / ".config")
-    open(Path.home() / ".config" / "no-show-user-motd", "x")
+    (Path.home() / ".config" / "no-show-user-motd").touch(exist_ok=False)
     print("MOTD disabled.")
 
 

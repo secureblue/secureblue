@@ -1,0 +1,61 @@
+# Libvirt modular daemons: https://libvirt.org/daemons.html#modular-systemd-integration
+disable virtqemud.service
+disable virtqemud.socket
+disable virtqemud-ro.socket
+disable virtqemud-admin.socket
+
+disable virtinterfaced.service
+disable virtinterfaced.socket
+disable virtinterfaced-ro.socket
+disable virtinterfaced-admin.socket
+
+disable virtnetworkd.service
+disable virtnetworkd.socket
+disable virtnetworkd-ro.socket
+disable virtnetworkd-admin.socket
+
+disable virtnodedevd.service
+disable virtnodedevd.socket
+disable virtnodedevd-ro.socket
+disable virtnodedevd-admin.socket
+
+disable virtnwfilterd.service
+disable virtnwfilterd.socket
+disable virtnwfilterd-ro.socket
+disable virtnwfilterd-admin.socket
+
+disable virtsecretd.service
+disable virtsecretd.socket
+disable virtsecretd-ro.socket
+disable virtsecretd-admin.socket
+
+disable virtstoraged.service
+disable virtstoraged.socket
+disable virtstoraged-ro.socket
+disable virtstoraged-admin.socket
+
+# Libvirt proxy daemon: https://libvirt.org/daemons.html#proxy-systemd-integration
+disable virtproxyd.service
+disable virtproxyd.socket
+disable virtproxyd-ro.socket
+disable virtproxyd-admin.socket
+disable virtproxyd-tcp.socket
+disable virtproxyd-tls.socket
+
+# Libvirt logging daemon: https://libvirt.org/daemons.html#logging-systemd-integration
+disable virtlogd.service
+disable virtlogd.socket
+disable virtlogd-admin.socket
+
+# Libvirt locking daemon: https://libvirt.org/daemons.html#locking-systemd-integration
+disable virtlockd.service
+disable virtlockd.socket
+disable virtlockd-admin.socket
+
+# Libvirt monolithic daemon
+disable libvirtd.service
+disable libvirtd.socket
+disable libvirtd-ro.socket
+disable libvirtd-admin.socket
+disable libvirtd-tcp.socket
+disable libvirtd-tls.socket

@@ -2,6 +2,12 @@
 #
 # SPDX-License-Identifier: Apache-2.0
 
+# Enable or disable Homebrew installation
+[positional-arguments]
+set-brew *args:
+    #!/bin/sh
+    exec /usr/bin/python3 /usr/libexec/secureblue/brew_main.py "$@"
+
 # Toggle libvirt daemons on or off
 [positional-arguments]
 set-libvirt-daemons *args:

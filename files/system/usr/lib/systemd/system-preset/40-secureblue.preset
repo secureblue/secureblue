@@ -1,7 +1,7 @@
+disable geoclue.service
+disable systemd-resolved.service
 enable dnsconfd.service
+enable fwupd-refresh.timer
 enable podman-auto-update.timer
 enable rpm-ostreed-automatic.timer
 enable secureblue-unbound-key.service
-
-disable geoclue.service
-disable systemd-resolved.service

@@ -9,6 +9,7 @@ Toggle display of the user-motd in terminal
 """
 
 import os
+import sys
 from pathlib import Path
 
 
@@ -23,6 +24,9 @@ def main() -> None:
             os.mkdir(Path.home() / ".config")
         (Path.home() / ".config" / "no-show-user-motd").touch(exist_ok=False)
         print("MOTD disabled.")
+
+    except Exception as e:
+        print(f"ERROR:{e}", file=sys.stderr)
 
 
 if __name__ == "__main__":

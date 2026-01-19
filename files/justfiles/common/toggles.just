@@ -117,10 +117,10 @@ toggle-anticheat-support:
     done
     # Set the ptrace_scope value we want in 61-ptrace-scope.conf
     if grep -q '^kernel.yama.ptrace_scope[[:blank:]]*=[[:blank:]]*1$' "$sysctl_ptrace_file" 2>/dev/null; then
-        echo 'kernel.yama.ptrace_scope = 3' > "$sysctl_ptrace_file"
+        echo -e '# https://www.kernel.org/doc/html/latest/admin-guide/LSM/Yama.html\nkernel.yama.ptrace_scope = 3' > "$sysctl_ptrace_file"
         echo 'Anticheat support disabled. ptrace_scope set back to 3. Reboot to take effect.'
     else
-        echo 'kernel.yama.ptrace_scope = 1' > "$sysctl_ptrace_file"
+        echo -e '# https://www.kernel.org/doc/html/latest/admin-guide/LSM/Yama.html\nkernel.yama.ptrace_scope = 1' > "$sysctl_ptrace_file"
         echo 'Anticheat support enabled. ptrace_scope set to 1. Reboot to take effect.'
     fi
 

@@ -29,3 +29,7 @@ blocklists:
       ## org.gnome.Epiphany uses WebKitGTK and flatpak-spawn for process-level sandboxing.
       ## Nyxt seems to use WebKitGTK, but without clear sandboxing.
       - engineer.atlas.Nyxt
+
+      # Other apps.
+      ## We ship the RPM.
+      - io.github.kolunmi.Bazaar

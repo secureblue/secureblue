@@ -107,18 +107,14 @@ async def async_command_stdout(cmd: str, *args: str, check: bool = True) -> str:
     """Asynchronously run a command in the shell and return the contents of stdout."""
     # nosemgrep: dangerous-subprocess-use-audit, dangerous-asyncio-create-exec-audit
     sub = await asyncio.create_subprocess_exec(
-        cmd, *args, stdout=subprocess.PIPE, stderr=subprocess.DEVNULL
+        cmd, *args, stdout=subprocess.PIPE, stderr=subprocess.PIPE
     )
-    await sub.wait()
+    (stdout, stderr) = await sub.communicate()
     # pylint: disable=use-implicit-booleaness-not-comparison-to-zero
     if check and sub.returncode != 0:
-        err = f"async command `{cmd} {' '.join(args)}` returned nonzero exit code {sub.returncode}"
-        raise AsyncProcessError(err)
-    if sub.stdout is None:
-        err = f"Failed to get stdout for async command `{cmd} {' '.join(args)}`"
-        raise AsyncProcessError(err)
-    output = await sub.stdout.read()
-    return output.decode("utf-8", errors="replace").strip()
+        msg = f"async command `{cmd} {' '.join(args)}` returned nonzero exit code {sub.returncode}"
+        raise AsyncProcessError(msg, stderr)
+    return stdout.decode("utf-8", errors="replace").strip()
 
 
 async def get_flatpak_permissions(name: str, version: str) -> str:

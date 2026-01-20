@@ -25,9 +25,12 @@ def main() -> None:
         (Path.home() / ".config" / "no-show-user-motd").touch(exist_ok=False)
         print("MOTD disabled.")
 
-    except Exception as e:
+    except OSError as e:
         print(f"ERROR:{e}", file=sys.stderr)
+        return 1
+
+    return 0
 
 
 if __name__ == "__main__":
-    main()
+    sys.exit(main())

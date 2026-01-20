@@ -30,4 +30,5 @@ optional_policy(`
 
 	nautilus_run(unconfined_t, unconfined_r)
 	nautilus_run(trivalent_domain, unconfined_r)
+	domtrans_pattern(thunar_t, file_type, unconfined_t)
 ')

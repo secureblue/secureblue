@@ -31,5 +31,5 @@ optional_policy(`
 
 	thunar_run(unconfined_t, unconfined_r)
 	thunar_run(trivalent_domain, unconfined_r)
-	domtrans_pattern(thunar_t, bin_t, unconfined_t)
+	domtrans_pattern(thunar_t, file_type, unconfined_t)
 ')

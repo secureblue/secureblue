@@ -25,8 +25,8 @@ optional_policy(`
 	gen_require(`
 		type unconfined_t;
 		attribute trivalent_domain;
+    attribute file_type;
 		role unconfined_r;
-		type bin_t;
 	')
 
 	thunar_run(unconfined_t, unconfined_r)

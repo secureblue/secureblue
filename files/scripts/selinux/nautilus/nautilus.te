@@ -25,6 +25,7 @@ optional_policy(`
 	gen_require(`
 		type unconfined_t;
 		attribute trivalent_domain;
+    attribute file_type;
 		role unconfined_r;
 	')
 

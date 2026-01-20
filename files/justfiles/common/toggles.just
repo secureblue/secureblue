@@ -252,7 +252,7 @@ toggle-bash-environment-lockdown skip_approval="false" apply_for_all_users="prom
                 fi
             done
 
-            chmod -R 700 "$user_home/bash_env_files"
+            chmod -R 600 "$user_home/bash_env_files"
             chown -R "$user:" "$user_home/bash_env_files"
         else
             for file in "${BASH_ENV_FILES[@]}"; do

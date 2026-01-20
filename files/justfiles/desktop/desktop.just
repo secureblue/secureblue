@@ -2,6 +2,12 @@
 #
 # SPDX-License-Identifier: Apache-2.0
 
+# Toggle libvirt daemons on or off
+[positional-arguments]
+set-libvirt-daemons *args:
+    #!/bin/sh
+    exec /usr/bin/python3 /usr/libexec/secureblue/set_libvirt_daemons.py "$@"
+
 # Enable or disable Xwayland
 [positional-arguments]
 set-xwayland *args:

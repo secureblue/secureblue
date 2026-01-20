@@ -27,6 +27,22 @@ install:
 
     # ensure universal font coverage
     - google-noto-fonts-all
+
+    # libvirt/qemu/kvm packages
+    - libvirt
+    - libvirt-nss
+    - qemu-device-display-virtio-gpu
+    - qemu-device-display-virtio-vga
+    - qemu-device-usb-redirect
+    - qemu-img
+    - qemu-kvm
+    - qemu-tools
+    - qemu-user
+    - qemu-user-binfmt
+    - virt-install
+    - virt-manager
+    - virt-viewer
+
 remove:
   packages:
     - firefox

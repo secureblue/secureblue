@@ -14,7 +14,7 @@ from pathlib import Path
 
 
 # Extra parentheses added so python doesn't check the individual string instead of the path
-def main() -> None:
+def main() -> int:
     try:
         os.remove(Path.home() / ".config" / "no-show-user-motd")
         print("MOTD enabled.")

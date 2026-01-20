@@ -159,7 +159,7 @@ toggle-bash-environment-lockdown skip_approval="false" apply_for_all_users="prom
     if [[ "$pending_status" == "locked" ]]; then
         echo "${bold}WARNING${unbold} This will change your ~/.bashrc, ~/.bash_profile, ~/.config/bash_completion, ~/.profile, ~/.bash_logout, ~/.bash_login, ~/.bashrc.d/, and ~/.config/environment.d/"
         echo "This is needed to ensure the mitigation (see LD_PRELOAD attacks) is effective."
-        echo "This script will create backups of the old versions in ~/bash_env_files/$current_time."
+        echo "This script will create backups of the old versions in ~/.bash_env_files/$current_time."
     else
         echo "${bold}WARNING${unbold} .bashrc, .bash_profile, and more will be unlocked and made editable by non-root users. This represents a security risk (see LD_PRELOAD attacks)"
     fi
@@ -221,7 +221,7 @@ toggle-bash-environment-lockdown skip_approval="false" apply_for_all_users="prom
         #        add immutability
 
         if [[ "$pending_status" == "locked" ]]; then
-            backup_dest="$user_home/bash_env_files/$current_time/"
+            backup_dest="$user_home/.bash_env_files/$current_time/"
             mkdir -p "$backup_dest"
 
             for file in "${BASH_ENV_FILES[@]}"; do
@@ -252,8 +252,8 @@ toggle-bash-environment-lockdown skip_approval="false" apply_for_all_users="prom
                 fi
             done
 
-            chmod -R 600 "$user_home/bash_env_files"
-            chown -R "$user:" "$user_home/bash_env_files"
+            chmod -R 600 "$user_home/.bash_env_files"
+            chown -R "$user:" "$user_home/.bash_env_files"
         else
             for file in "${BASH_ENV_FILES[@]}"; do
                 if [ ! -f "$file" ] && [ ! -d "$file" ] && [ -e "$file" ]; then

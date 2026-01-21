@@ -48,6 +48,16 @@ systemctl disable rpcbind.target
 systemctl mask rpcbind.target
 
 systemctl disable rpc_pipefs.target
+systemctl mask rpc_pipefs.target
 
 systemctl disable gssproxy.service
 systemctl mask gssproxy.service
+
+systemctl disable proc-fs-nfsd.mount
+systemctl mask proc-fs-nfsd.mount
+
+systemctl disable var-lib-nfs-rpc_pipefs.mount
+systemctl mask var-lib-nfs-rpc_pipefs.mount
+
+systemctl disable auth-rpcgss-module.service
+systemctl mask auth-rpcgss-module.service

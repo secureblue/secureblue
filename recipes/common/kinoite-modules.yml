@@ -17,6 +17,8 @@ modules:
         - krfb-libs
         - plasma-browser-integration
         - plasma-discover-rpm-ostree
+        - fedora-third-party
+        - fedora-workstation-repositories
 
         # depends on fedora-flathub-remote
         - plasma-welcome-fedora

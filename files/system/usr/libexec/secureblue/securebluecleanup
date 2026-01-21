@@ -20,6 +20,8 @@ if command -v flatpak &> /dev/null
 then
     flatpak remote-delete --system --force fedora || true
     flatpak remote-delete --user --force fedora || true
+    flatpak remote-delete --system --force fedora-testing || true
+    flatpak remote-delete --user --force fedora-testing || true
     flatpak remote-delete --system --force flathub || true
     flatpak remote-delete --user --force flathub || true
     flatpak remove --system --noninteractive --all || true

@@ -12,16 +12,18 @@ modules:
         - kdeconnectd
         - fedora-chromium-config-kde
         - fedora-flathub-remote
+        - fedora-third-party
         - fuse-encfs
         - krfb
         - krfb-libs
         - plasma-browser-integration
         - plasma-discover-rpm-ostree
-        - fedora-third-party
-        - fedora-workstation-repositories
 
         # depends on fedora-flathub-remote
         - plasma-welcome-fedora
+
+        # depends on fedora-third-party
+        - fedora-workstation-repositories
   - type: files
     source: ghcr.io/blue-build/modules@sha256:8e92fcaaef385a1728b8d8224296484260b67126ac83f7ed85b4ae3dde4ad19d
     files:

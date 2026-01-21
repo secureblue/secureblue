@@ -44,3 +44,4 @@ modules:
     scripts:
       - setdefaultkdewallpapers.sh
       - systemsettings-standard-malloc.sh
+      - removekrunnerappstream.sh

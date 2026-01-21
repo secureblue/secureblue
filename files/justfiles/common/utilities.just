@@ -56,8 +56,8 @@ update-system:
     set -eu
     /usr/libexec/secureblue/verify-provenance.sh
     /usr/bin/rpm-ostree upgrade
-    if [ -f /usr/libexec/secureblue/security-update-notification ]; then
-        /usr/libexec/secureblue/security-update-notification
+    if [ -f /usr/libexec/secureblue/security-update-notification.py ]; then
+        /usr/bin/python3 /usr/libexec/secureblue/security-update-notification.py
     fi
 
 # Update device firmware

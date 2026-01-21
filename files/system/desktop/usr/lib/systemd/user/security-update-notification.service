@@ -7,4 +7,4 @@ ConditionPathIsDirectory=/var/home/%u
 
 [Service]
 Type=simple
-ExecStart=/usr/libexec/secureblue/security-update-notification
+ExecStart=/usr/bin/python3 /usr/libexec/secureblue/security-update-notification.py

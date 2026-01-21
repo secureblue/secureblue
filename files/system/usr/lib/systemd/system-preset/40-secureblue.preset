@@ -4,5 +4,6 @@ enable rpm-ostreed-automatic.timer
 enable secureblue-unbound-key.service
 
 disable fedora-third-party-refresh.service
+disable flatpak-add-fedora-repos.service
 disable geoclue.service
 disable systemd-resolved.service

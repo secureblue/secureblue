@@ -2,6 +2,7 @@ enable flatpak-system-update.timer
 enable securebluecleanup.service
 
 # Disable NFS daemons
+disable auth-rpcgss-module.service
 disable gssproxy.service
 disable nfs-blkmap.service
 disable nfs-client.target
@@ -10,6 +11,7 @@ disable nfs-mountd.service
 disable nfs-server.service
 disable nfs-utils.service
 disable nfsdcld.service
+disable proc-fs-nfsd.mount
 disable rpc-gssd.service
 disable rpc-statd-notify.service
 disable rpc-statd.service
@@ -17,6 +19,7 @@ disable rpc_pipefs.target
 disable rpcbind.service
 disable rpcbind.socket
 disable rpcbind.target
+disable var-lib-nfs-rpc_pipefs.mount
 
 # Disable sshd
 disable sshd.service

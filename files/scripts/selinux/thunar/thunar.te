@@ -25,11 +25,13 @@ optional_policy(`
 	gen_require(`
 		type unconfined_t;
 		attribute trivalent_domain;
-		role unconfined_r;
+		attribute user_home_type;
 		type bin_t;
+		role unconfined_r;
 	')
 
 	thunar_run(unconfined_t, unconfined_r)
 	thunar_run(trivalent_domain, unconfined_r)
 	domtrans_pattern(thunar_t, bin_t, unconfined_t)
+	domtrans_pattern(thunar_t, user_home_type, unconfined_t)
 ')

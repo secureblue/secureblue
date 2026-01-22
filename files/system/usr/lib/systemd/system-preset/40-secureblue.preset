@@ -5,4 +5,7 @@ enable secureblue-unbound-key.service
 
 disable flatpak-add-fedora-repos.service
 disable geoclue.service
+disable systemd-homed-activate.service
+disable systemd-homed-firstboot.service
+disable systemd-homed.service
 disable systemd-resolved.service

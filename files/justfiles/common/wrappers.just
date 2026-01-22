@@ -66,3 +66,8 @@ set-container-userns *args:
 install-dangerzone:
     #!/bin/sh
     exec /usr/bin/python3 /usr/libexec/secureblue/install_dangerzone.py "$@"
+
+# Toggle display of the user-motd in terminal
+toggle-user-motd:
+    #!/bin/sh
+    exec /usr/bin/python3 /usr/libexec/secureblue/toggle_user_motd.py

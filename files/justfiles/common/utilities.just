@@ -173,7 +173,7 @@ uninstall-docker:
 rebase-secureblue:
     #!/usr/bin/bash
     set -euo pipefail
-    REBASE_SECUREBLUE_PROVENANCE=true
+    export REBASE_SECUREBLUE_PROVENANCE=true
     /usr/bin/bash /usr/share/secureblue/install_secureblue.sh
 
 # Apply SELinux type "user_home_t" on external drives to allow access from Trivalent

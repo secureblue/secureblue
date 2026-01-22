@@ -107,6 +107,8 @@ def run(mode: ToggleMode) -> int:
             return enable_unconfined_userns(userns_enabled)
         case ToggleMode.OFF:
             return disable_unconfined_userns(userns_enabled)
+        case _:
+            raise ValueError(f"Invalid mode value: {mode}")
 
 
 def main() -> int:

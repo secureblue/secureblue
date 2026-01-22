@@ -37,12 +37,6 @@ remove-kargs-hardening:
     #!/bin/sh
     exec /usr/bin/python3 /usr/libexec/secureblue/remove_kargs_hardening.py
 
-# Sets Brew enabled/disabled
-[positional-arguments]
-set-brew *args:
-    #!/bin/sh
-    exec /usr/bin/python3 /usr/libexec/secureblue/brew_main.py "$@"
-
 # Create the admin user and remove wheel from the normal user
 [positional-arguments]
 create-admin *args:

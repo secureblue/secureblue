@@ -7,6 +7,9 @@
 
 set -oue pipefail
 
+# We never use this repo, so remove it early to prevent failed calls to it
+rm -f /etc/yum.repos.d/fedora-cisco-openh264.repo
+
 install_repo() {
   versioned_repo="${1//%OS_VERSION%/43}"
   curl -fLsS --retry 5 -o "/etc/yum.repos.d/${versioned_repo##*/}" "$versioned_repo"

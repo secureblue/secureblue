@@ -172,8 +172,6 @@ uninstall-docker:
 # Rebase to a different secureblue Desktop Environment/Atomic Desktop
 rebase-secureblue:
     #!/usr/bin/bash
-    set -euo pipefail
-    export REBASE_SECUREBLUE_PROVENANCE=true
     /usr/bin/bash /usr/share/secureblue/install_secureblue.sh
 
 # Apply SELinux type "user_home_t" on external drives to allow access from Trivalent

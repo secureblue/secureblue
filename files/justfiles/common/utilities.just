@@ -21,17 +21,17 @@ bios:
 
 # Show all messages from this boot
 logs-this-boot:
-    #! /bin/run0 /bin/bash
+    #!/usr/bin/bin0 /usr/bin/bash
     journalctl -b 0
 
 # Show all messages from last boot
 logs-last-boot:
-    #! /bin/run0 /bin/bash
+    #!/usr/bin/bin0 /usr/bin/bash
     journalctl -b -1
 
 # Enroll secureblue's signing key for secure boot - Enter password "secureblue" if prompted
 enroll-secureblue-secure-boot-key:
-    #! /bin/run0 /bin/bash
+    #!/usr/bin/bin0 /usr/bin/bash
     mokutil --timeout -1
     echo 'The next line will prompt for a MOK password. Input "secureblue".'
     mokutil --import /etc/pki/akmods/certs/akmods-secureblue.der
@@ -40,7 +40,7 @@ enroll-secureblue-secure-boot-key:
 
 # Update system (with provenance verification)
 update-system:
-    #!/bin/sh
+    #!/usr/bin/bash
     set -eu
     /usr/libexec/secureblue/verify-provenance.sh
     /usr/bin/rpm-ostree upgrade
@@ -153,7 +153,7 @@ toolbox-assemble CONTAINER="prompt" ACTION="create" FILE="/etc/toolbox/toolbox.i
 
 # Install the official docker packages
 install-docker:
-    #! /bin/run0 /bin/bash
+    #!/usr/bin/bin0 /usr/bin/bash
     set -euo pipefail
     tempfile=$(mktemp)
     curl -fLo "$tempfile" https://download.docker.com/linux/fedora/docker-ce.repo
@@ -163,7 +163,7 @@ install-docker:
 
 # Uninstall the official docker packages
 uninstall-docker:
-    #! /bin/run0 /bin/bash
+    #!/usr/bin/bin0 /usr/bin/bash
     set -euo pipefail
     rm /etc/yum.repos.d/docker-ce.repo
     rpm-ostree refresh-md

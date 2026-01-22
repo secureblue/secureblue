@@ -44,12 +44,12 @@ jobs:
             esm.ubuntu.com:443
 
             # cosign installation
-            github.com:443 
+            github.com:443
 
             # slsa-verifier installation
             tuf-repo-cdn.sigstore.dev:443
             rekor.sigstore.dev:443
-            
+
             # pulling base images
             quay.io:443
             cdn01.quay.io:443
@@ -89,7 +89,7 @@ jobs:
             formulae.brew.sh:443
 
             # Install the tailscale repo
-            pkgs.tailscale.com:443 
+            pkgs.tailscale.com:443
 
             # Install nvidia container toolkit repo
             nvidia.github.io:443
@@ -160,6 +160,7 @@ jobs:
           persist-credentials: false
 
       - name: Runner setup
+        id: runner_setup
         uses: ./.github/workflows/shared-runner-setup
         with:
           recipe: ${{ inputs.recipe }}
@@ -176,7 +177,7 @@ jobs:
           } >> "${GITHUB_OUTPUT}"
 
       - name: Build secureblue
-        uses: blue-build/github-action@9ba737d93ffa82d7cd6826162c7bc3a2648ae73d # v1.10.3
+        uses: blue-build/github-action@3cd0c2835e691b87a7eb19261a6aee77a56169e2 # v1.11.0
         env:
           KERNEL_PRIVKEY: ${{ steps.test_keys.outputs.kernel_privkey }}
         with:

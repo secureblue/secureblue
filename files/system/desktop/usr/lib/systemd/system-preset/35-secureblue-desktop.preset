@@ -1,6 +1,11 @@
 enable flatpak-system-update.timer
 enable securebluecleanup.service
 
+# Homebrew
+enable brew-setup.service
+enable brew-update.timer
+enable brew-upgrade.timer
+
 # Disable NFS daemons
 disable gssproxy.service
 disable nfs-blkmap.service

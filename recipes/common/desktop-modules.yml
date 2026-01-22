@@ -15,8 +15,3 @@ modules:
       validate: true
       include:
         - desktop
-    - type: brew
-      source: ghcr.io/blue-build/modules@sha256:8e92fcaaef385a1728b8d8224296484260b67126ac83f7ed85b4ae3dde4ad19d
-      brew-analytics: false
-      direct-pull: true
-      installer-commit: 39c012e6db58f84f7469e9346adba57f8302110b

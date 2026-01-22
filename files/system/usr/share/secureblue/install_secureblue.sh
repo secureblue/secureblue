@@ -98,6 +98,12 @@ else
     echo "Note: Automatic rebasing to the equivalent signed image will occur on first run."
 fi
 
+# Check if we should verify provenance
+if [ "${REBASE_SECUREBLUE_PROVENANCE}" == "true" ]; then
+    rebase_crane="crane digest --full-ref ghcr.io/secureblue/${image_name}:latest"
+    slsa-verifier verify-image --source-uri "github.com/secureblue/secureblue" --source-branch "live" "${rebase_crane}"
+fi
+
 printf "Command to execute:\n%s\n\n" "$rebase_command"
 
 read -rp "Proceed? (yes/No): " rebase_proceed

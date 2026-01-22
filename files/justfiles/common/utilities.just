@@ -41,7 +41,7 @@ enroll-secureblue-secure-boot-key:
 # Update system (with provenance verification)
 update-system:
     #!/usr/bin/bash
-    set -eu
+    set -euo pipefail
     /usr/libexec/secureblue/verify-provenance.sh
     /usr/bin/rpm-ostree upgrade
     if [ -f /usr/libexec/secureblue/security-update-notification ]; then

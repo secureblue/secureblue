@@ -69,7 +69,7 @@ else
         "Cosmic images are considered experimental."
     PS3=$'Enter your desktop choice: '
     select image_name in "${desktop_image_types[@]}"; do
-        if [[ -n "$image_name" ]]; then        
+        if [[ -n "$image_name" ]]; then
             echo "Selected desktop: $image_name"
             break
         else
@@ -81,7 +81,7 @@ fi
 # Ask about Nvidia for all options
 read -rp "Do you have Nvidia? (yes/No): " use_nvidia
 if is_yes "$use_nvidia"; then
-    additional_params+="-nvidia" 
+    additional_params+="-nvidia"
     read -rp "Do you need Nvidia's open drivers? (yes/No): " use_open
     is_yes "$use_open" && additional_params+="-open"
 else
@@ -98,15 +98,19 @@ else
     echo "Note: Automatic rebasing to the equivalent signed image will occur on first run."
 fi
 
-# Check if we should verify provenance
-if [ "${REBASE_SECUREBLUE_PROVENANCE}" == "true" ]; then
-    rebase_crane="crane digest --full-ref ghcr.io/secureblue/${image_name}:latest"
-    slsa-verifier verify-image --source-uri "github.com/secureblue/secureblue" --source-branch "live" "${rebase_crane}"
-fi
-
 printf "Command to execute:\n%s\n\n" "$rebase_command"
 
 read -rp "Proceed? (yes/No): " rebase_proceed
 if is_yes "$rebase_proceed"; then
     eval "$rebase_command"
+fi
+
+# Check if we should verify provenance
+if [ "${REBASE_SECUREBLUE_PROVENANCE}" == "true" ]; then
+    echo
+    echo Verifying image provenance...
+    echo
+    rebase_crane=$(crane digest --full-ref "ghcr.io/secureblue/${image_name}:latest")
+    export rebase_crane
+    slsa-verifier verify-image --source-uri "github.com/secureblue/secureblue" --source-branch "live" "${rebase_crane}"
 fi

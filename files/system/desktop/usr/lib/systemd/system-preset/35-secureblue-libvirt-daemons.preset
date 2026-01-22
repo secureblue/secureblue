@@ -4,6 +4,26 @@ disable virtqemud.socket
 disable virtqemud-ro.socket
 disable virtqemud-admin.socket
 
+disable virtxend.service
+disable virtxend.socket
+disable virtxend-ro.socket
+disable virtxend-admin.socket
+
+disable virtlxcd.service
+disable virtlxcd.socket
+disable virtlxcd-ro.socket
+disable virtlxcd-admin.socket
+
+disable virtbhyved.service
+disable virtbhyved.socket
+disable virtbhyved-ro.socket
+disable virtbhyved-admin.socket
+
+disable virtvboxd.service
+disable virtvboxd.socket
+disable virtvboxd-ro.socket
+disable virtvboxd-admin.socket
+
 disable virtinterfaced.service
 disable virtinterfaced.socket
 disable virtinterfaced-ro.socket

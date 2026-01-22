@@ -29,71 +29,140 @@ jobs:
       - name: Enable egress auditing
         uses: step-security/harden-runner@20cf305ff2072d973412fa9b1e3a4f227bda3c76 # v2.14.0
         with:
-          egress-policy: audit
+          egress-policy: block
+          allowed-endpoints: >
+            # ubuntu packages
+            _https._tcp.archive.ubuntu.com:443
+            archive.ubuntu.com:443
+            _https._tcp.security.ubuntu.com:443
+            security.ubuntu.com:443
+            _https._tcp.packages.microsoft.com:443
+            packages.microsoft.com:443
+            _https._tcp.motd.ubuntu.com:443
+            motd.ubuntu.com:443
+            _https._tcp.esm.ubuntu.com:443
+            esm.ubuntu.com:443
 
-      - name: Optimize build times
-        shell: bash
-        run: |
-          echo 'set man-db/auto-update false' | sudo debconf-communicate
-          sudo dpkg-reconfigure man-db
-          sudo rm -f /var/lib/man-db/auto-update
-          sudo sed -i 's/^update_initramfs=.*/update_initramfs=no/' /etc/initramfs-tools/update-initramfs.conf
+            # cosign installation
+            github.com:443 
 
-      - name: Install dependencies
-        shell: bash
-        run: |
-          sudo apt install yq
+            # slsa-verifier installation
+            tuf-repo-cdn.sigstore.dev:443
+            rekor.sigstore.dev:443
+            
+            # pulling base images
+            quay.io:443
+            cdn01.quay.io:443
+
+            # Trivalent SLSA
+            release-assets.githubusercontent.com:443
+
+            # pulling secureblue images
+            ghcr.io:443
+            pkg-containers.githubusercontent.com:443
+
+            # bluebuild schema validation
+            schema.blue-build.org:443
+
+            # Install packages from our COPR repos
+            copr.fedorainfracloud.org:443
+            download.copr.fedorainfracloud.org:443
+
+            # Docker installation
+            production.cloudflare.docker.com:443
+            registry-1.docker.io:443
+            auth.docker.io:443
+
+            # Negativo packages installation
+            negativo17.org:443
+
+            # Trivalent installation
+            repo.secureblue.dev:443
+
+            # Fedora archive
+            fedoraproject-updates-archive.fedoraproject.org:443
+
+            # Pull various cosign pubkeys
+            raw.githubusercontent.com:443
+
+            # Install brew
+            formulae.brew.sh:443
+
+            # Install the tailscale repo
+            pkgs.tailscale.com:443 
+
+            # Install nvidia container toolkit repo
+            nvidia.github.io:443
+
+            # Pull gpg keys
+            keyserver.ubuntu.com:443
+
+            # Fedora mirrors
+            # https://mirrors.fedoraproject.org/mirrorlist?repo=fedora-43&arch=x86_64&protocol=https
+            mirrors.fedoraproject.org:443
+            download-cc-rdu01.fedoraproject.org:443
+            dl.fedoraproject.org:443
+            solidrock.mm.fcix.net:443
+            ftp-chi.osuosl.org:443
+            mirror.lstn.net:80
+            paducahix.mm.fcix.net:443
+            fedora.mirror.constant.com:443
+            volico.mm.fcix.net:443
+            ziply.mm.fcix.net:443
+            opencolo.mm.fcix.net:443
+            ftp-nyc.osuosl.org:443
+            nocix.mm.fcix.net:443
+            ohioix.mm.fcix.net:443
+            southfront.mm.fcix.net:443
+            forksystems.mm.fcix.net:443
+            ix-denver.mm.fcix.net:443
+            irltoolkit.mm.fcix.net:443
+            insect.mm.fcix.net:443
+            cofractal-sea.mm.fcix.net:443
+            mirror.fcix.net:443
+            gigsouth.mm.fcix.net:443
+            nnenix.mm.fcix.net:443
+            coresite-atl.mm.fcix.net:443
+            mirror.servaxnet.com:443
+            mirrors.mit.edu:443
+            mirror.us.mirhosting.net:443
+            cofractal-ewr.mm.fcix.net:443
+            download-ib01.fedoraproject.org:443
+            d2lzkl7pfhq30w.cloudfront.net:443
+            ftp-osl.osuosl.org:443
+            na.edge.kernel.org:443
+            codingflyboy.mm.fcix.net:443
+            mirror.web-ster.com:443
+            pubmirror1.math.uh.edu:443
+            pubmirror2.math.uh.edu:443
+            pubmirror3.math.uh.edu:443
+            lolhost.mm.fcix.net:443
+            mirror.lstn.net:443
+            abqix.mm.fcix.net:443
+            mirror.cs.siue.edu:443
+            ryamer.mm.fcix.net:443
+            coresite.mm.fcix.net:443
+            mirrors.xmission.com:443
+            fedora-mirror-atl.gigsouth.com:443
+            cfhcable.mm.fcix.net:443
+            ord.mirror.rackspace.com:443
+            mirror.dst.ca:443
+            sjc.mirror.rackspace.com:443
+            dfw.mirror.rackspace.com:443
+            iad.mirror.rackspace.com:443
+            lesnet.mm.fcix.net:443
+            ftp2.osuosl.org:443
+            us.mirrors.cicku.me:443
 
       - name: Checkout repo
         uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6.0.1
         with:
           persist-credentials: false
 
-      - name: Gather image data from recipe
-        shell: bash
-        env:
-          RECIPE: ${{ inputs.recipe }}
-        run: |
-          echo "IMAGE_NAME=$(yq -r '."name"' "./recipes/${RECIPE}")" >> "${GITHUB_ENV}"
-          echo "BASE_IMAGE=$(yq -r '."base-image"' "./recipes/${RECIPE}")" >> "${GITHUB_ENV}"
-          echo "BASE_IMAGE_VERSION=$(yq -r '."image-version"' "./recipes/${RECIPE}")" >> "${GITHUB_ENV}"
-
-      - name: Verify base image provenance
-        shell: bash
-        run: |
-          if [[ "$BASE_IMAGE" != ghcr.io/secureblue/* ]]; then
-            echo "Base image isn't secureblue. Skipping."
-            exit 0
-          fi
-
-          go install github.com/slsa-framework/slsa-verifier/v2/cli/slsa-verifier@v2.7.1
-          go install github.com/google/go-containerregistry/cmd/crane@v0.20.6
-          DIGEST=$(~/go/bin/crane digest "${BASE_IMAGE}:${BASE_IMAGE_VERSION}")
-          ~/go/bin/slsa-verifier verify-image --source-uri 'github.com/secureblue/secureblue' "${BASE_IMAGE}:${BASE_IMAGE_VERSION}@${DIGEST}"
-
-      - name: Install cosign
-        uses: sigstore/cosign-installer@faadad0cce49287aee09b3a48701e75088a2c6ad # v4.0.0
+      - name: Runner setup
+        uses: ./.github/workflows/shared-runner-setup
         with:
-          cosign-release: 'v2.6.0'
-
-      - name: Verify base image
-        shell: bash
-        run: |
-          if [[ "$IMAGE_NAME" == 'securecore-main-hardened' || "$IMAGE_NAME" == 'iot-main-hardened' ]]; then
-            echo "Upstream isn't signed. Skipping."
-            exit 0
-          fi
-
-          UPSTREAM_CONTAINER="${BASE_IMAGE}:${BASE_IMAGE_VERSION}"
-          if [[ "$BASE_IMAGE" == ghcr.io/secureblue/* ]]; then
-            UPSTREAM_PUBKEY='./cosign.pub'
-          else
-            UPSTREAM_PUBKEY='./files/system/etc/pki/containers/quay.io-fedora-ostree-desktops.pub'
-          fi
-          if ! cosign verify --key "${UPSTREAM_PUBKEY}" "${UPSTREAM_CONTAINER}" | jq; then
-            echo "NOTICE: Verification failed. Please ensure your public key is correct."
-            exit 1
-          fi
+          recipe: ${{ inputs.recipe }}
 
       - name: Set up test keys
         id: test_keys

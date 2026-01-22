@@ -11,6 +11,7 @@ setup() {
 
 
     sudo cp -fr files/system/usr/lib/ujust /usr/lib/ujust
+    sudo cp -fr files/system/usr/libexec/secureblue /usr/libexec/secureblue
     sudo cp -f files/system/usr/bin/ujust /usr/bin/ujust
     sudo cp -f files/system/usr/share/ublue-os/just/60-custom.just /usr/share/ublue-os/just/
     sudo cp -f files/system/usr/share/ublue-os/justfile /usr/share/ublue-os/

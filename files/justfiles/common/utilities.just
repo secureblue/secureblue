@@ -38,18 +38,6 @@ enroll-secureblue-secure-boot-key:
     echo 'At next reboot, the mokutil UEFI menu UI will be displayed (*QWERTY* keyboard input and navigation).'
     echo 'Then, select "Enroll MOK", and input "secureblue" as the password.'
 
-# Toggle display of the user-motd in terminal
-toggle-user-motd:
-    #!/usr/bin/bash
-    if test -e "${HOME}/.config/no-show-user-motd"; then
-      rm -f "${HOME}/.config/no-show-user-motd"
-    else
-      if test ! -d "${HOME}/.config"; then
-        mkdir "${HOME}/.config"
-      fi
-      touch "${HOME}/.config/no-show-user-motd"
-    fi
-
 # Update system (with provenance verification)
 update-system:
     #!/bin/sh

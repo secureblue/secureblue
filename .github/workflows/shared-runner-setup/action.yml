@@ -1,0 +1,96 @@
+# SPDX-FileCopyrightText: Copyright 2025-2026 The Secureblue Authors
+#
+# SPDX-License-Identifier: Apache-2.0
+
+name: shared-runner-setup
+description: Build runner setup
+inputs:
+  recipe:
+    type: string
+    required: true
+
+runs:
+  using: composite
+  steps:
+    - name: Optimize build times
+      shell: bash
+      run: |
+        echo 'set man-db/auto-update false' | sudo debconf-communicate
+        sudo dpkg-reconfigure man-db
+        sudo rm -f /var/lib/man-db/auto-update
+        sudo sed -i 's/^update_initramfs=.*/update_initramfs=no/' /etc/initramfs-tools/update-initramfs.conf
+
+    - name: Drop Ubuntu HTTP mirrors
+      shell: bash
+      run: |
+        sudo sed -i '/^http:\/\//d' /etc/apt/apt-mirrors.txt
+        sudo apt-get update 
+
+    - name: Install dependencies
+      shell: bash
+      run: |
+        sudo apt install yq
+
+    - name: Gather image data from recipe
+      id: image_data
+      shell: bash
+      env:
+        RECIPE: ${{ inputs.recipe }}
+      run: |
+        echo "IMAGE_NAME=$(yq -r '."name"' "./recipes/${RECIPE}")" >> "${GITHUB_OUTPUT}"
+        echo "BASE_IMAGE=$(yq -r '."base-image"' "./recipes/${RECIPE}")" >> "${GITHUB_OUTPUT}"
+        echo "BASE_IMAGE_VERSION=$(yq -r '."image-version"' "./recipes/${RECIPE}")" >> "${GITHUB_OUTPUT}"
+
+    - name: Install slsa-verifier
+      if: startsWith(steps.image_data.outputs.BASE_IMAGE, 'ghcr.io/secureblue/')
+      uses: slsa-framework/slsa-verifier/actions/installer@ea584f4502babc6f60d9bc799dbbb13c1caa9ee6 # v2.7.1
+
+    - name: Verify base image provenance
+      shell: bash
+      if: startsWith(steps.image_data.outputs.BASE_IMAGE, 'ghcr.io/secureblue/')      
+      env:
+        BASE_IMAGE_VERSION: ${{ steps.image_data.outputs.BASE_IMAGE_VERSION }}
+        BASE_IMAGE: ${{ steps.image_data.outputs.BASE_IMAGE }}
+      run: |
+        # Install crane
+        CRANE_VERSION=v0.20.7
+        CRANE_OS=Linux  
+        CRANE_ARCH=x86_64  
+        curl -fLsS --retry 5 "https://github.com/google/go-containerregistry/releases/download/${CRANE_VERSION}/go-containerregistry_${CRANE_OS}_${CRANE_ARCH}.tar.gz" > go-containerregistry.tar.gz
+        curl -fLsS --retry 5 "https://github.com/google/go-containerregistry/releases/download/${CRANE_VERSION}/multiple.intoto.jsonl" > provenance.intoto.jsonl
+        slsa-verifier verify-artifact go-containerregistry.tar.gz --provenance-path provenance.intoto.jsonl --source-uri github.com/google/go-containerregistry --source-tag "${CRANE_VERSION}"
+        tar -zxvf go-containerregistry.tar.gz -C /usr/local/bin/ crane
+
+        DIGEST=$(crane digest "${BASE_IMAGE}:${BASE_IMAGE_VERSION}")
+        slsa-verifier verify-image --source-uri 'github.com/secureblue/secureblue' "${BASE_IMAGE}:${BASE_IMAGE_VERSION}@${DIGEST}"
+
+    - name: Uninstall slsa-verifier
+      shell: bash
+      if: startsWith(steps.image_data.outputs.BASE_IMAGE, 'ghcr.io/secureblue/')
+      run: |
+        # remove slsa-verifier so that it can be successfully reinstalled later by bluebuild
+        rm -rf ~/.slsa/
+
+    - name: Install cosign
+      uses: sigstore/cosign-installer@faadad0cce49287aee09b3a48701e75088a2c6ad # v4.0.0
+      if: steps.image_data.outputs.IMAGE_NAME != 'securecore-main-hardened' && steps.image_data.outputs.IMAGE_NAME != 'iot-main-hardened'
+      with:
+        cosign-release: 'v2.6.0'
+
+    - name: Verify base image
+      shell: bash      
+      if: steps.image_data.outputs.IMAGE_NAME != 'securecore-main-hardened' && steps.image_data.outputs.IMAGE_NAME != 'iot-main-hardened'
+      env:
+        BASE_IMAGE_VERSION: ${{ steps.image_data.outputs.BASE_IMAGE_VERSION }}
+        BASE_IMAGE: ${{ steps.image_data.outputs.BASE_IMAGE }}
+      run: |
+        UPSTREAM_CONTAINER="${BASE_IMAGE}:${BASE_IMAGE_VERSION}"
+        if [[ "$BASE_IMAGE" == ghcr.io/secureblue/* ]]; then
+          UPSTREAM_PUBKEY='./cosign.pub'
+        else
+          UPSTREAM_PUBKEY='./files/system/etc/pki/containers/quay.io-fedora-ostree-desktops.pub'
+        fi
+        if ! cosign verify --key "${UPSTREAM_PUBKEY}" "${UPSTREAM_CONTAINER}" | jq; then
+          echo "NOTICE: Verification failed. Please ensure your public key is correct."
+          exit 1
+        fi

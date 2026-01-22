@@ -27,8 +27,8 @@ curl -fLsS --retry 5 \
 
 echo "Import key"
 # https://openzfs.github.io/openzfs-docs/Project%20and%20Community/Signing%20Keys.html
-gpg --yes --keyserver keyserver.ubuntu.com --recv D4598027
-gpg --yes --keyserver keyserver.ubuntu.com --recv C6AF658B
+curl -fLsS --retry 5 "https://keyserver.ubuntu.com/pks/lookup?op=get&search=0xD4598027"| gpg --yes --import
+curl -fLsS --retry 5 "https://keyserver.ubuntu.com/pks/lookup?op=get&search=0xC6AF658B"| gpg --yes --import
 
 echo "Verifying tar.gz signature"
 if ! gpg --verify "zfs-${ZFS_VERSION}.tar.gz.asc" "zfs-${ZFS_VERSION}.tar.gz"

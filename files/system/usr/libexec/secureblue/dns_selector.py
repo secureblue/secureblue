@@ -19,7 +19,6 @@ from typing import Final
 from urllib.parse import urlparse
 
 import sandbox
-from sandbox import SandboxedFunction
 from utils import ask_option, ask_yes_no, interruptible_ask
 
 RESET: Final[str] = "\033[0m"
@@ -32,7 +31,7 @@ TRIVALENT_POLICY_PATH: Final[Path] = Path(
 )
 SERVERS_JSON_PATH: Final[Path] = Path("/usr/share/secureblue/secure-dns-providers.json")
 
-dns_function = SandboxedFunction(
+dns_function = sandbox.SandboxedFunction(
     "dns.py",
     read_write_paths=["/etc"],
     capabilities=["CAP_SYS_ADMIN", "CAP_DAC_OVERRIDE", "CAP_CHOWN", "CAP_FOWNER"],

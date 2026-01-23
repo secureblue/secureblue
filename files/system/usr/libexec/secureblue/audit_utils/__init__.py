@@ -15,10 +15,13 @@ import re
 # All subprocess calls we make have trusted inputs and do not use shell=True.
 import subprocess  # nosec
 import textwrap
+from pathlib import Path
 from typing import Final
 
 from auditor import AuditError, Status, gettext_marker
 from utils import print_err
+
+from .containers import ContainersPolicyAudit
 
 PASS: Final = Status.PASS
 INFO: Final = Status.INFO
@@ -133,3 +136,21 @@ def validate_sysctl(sysctl: str, actual: str, expected: str) -> bool:
         # https://www.kernel.org/doc/html/latest/admin-guide/sysrq.html
         return actual in (expected, "0", "4")
     return actual == expected
+
+
+def analyze_active_container_policy() -> tuple[ContainersPolicyAudit, str]:
+    """
+    Analyze active containers policy. Returns the results of the analysis and
+    the path of the policy file.
+    """
+    system_policy_file = "/etc/containers/policy.json"
+    local_override = "~/.config/containers/policy.json"
+    local_override_file = Path(local_override).expanduser()
+    if local_override_file.exists():
+        policy_file = local_override_file
+        path_str = local_override
+    else:
+        policy_file = system_policy_file
+        path_str = system_policy_file
+
+    return ContainersPolicyAudit.from_file(policy_file), path_str

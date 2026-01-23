@@ -5,7 +5,7 @@
 # Add the unfiltered Flathub flatpak repo
 enable-flathub-unfiltered:
     #!/usr/bin/bash
-    flatpak remote-add --if-not-exists --user flathub https://flathub.org/repo/flathub.flatpakrepo
+    flatpak remote-add --if-not-exists --user flathub https://dl.flathub.org/repo/flathub.flatpakrepo
 
 # Remove the unfiltered Flathub flatpak repo
 disable-flathub-unfiltered:

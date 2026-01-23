@@ -8,6 +8,6 @@ set -euo pipefail
 
 if command -v sudo &> /dev/null
 then
-    "sudo found. Exiting..."
+    echo "sudo found. Exiting..."
     exit 1
 fi

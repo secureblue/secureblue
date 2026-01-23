@@ -31,7 +31,7 @@ else
 fi
 
 trivalent_rpm_sans_prefix=${trivalent_rpm#trivalent-}
-trivalent_version=${trivalent_rpm_sans_prefix%.${ARCH}.rpm}
+trivalent_version=${trivalent_rpm_sans_prefix%".${ARCH}.rpm"}
 
 provenance_file="${trivalent_rpm}.intoto.jsonl"
 wget "https://github.com/secureblue/Trivalent/releases/download/${trivalent_version}/${provenance_file}"

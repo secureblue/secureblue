@@ -90,7 +90,7 @@ def enable_container_userns(currently_enabled: bool) -> int:
         print("Container-domain user namespace creation is already enabled.")
         return 0
     print_wrapped(f"""
-        Container-domain user namespace creation (e.g. for distrobox) is currently
+        Container-domain user namespace creation (e.g. for podman or distrobox) is currently
         disabled. Enabling it now by disabling SELinux module '{CONTAINER_USERNS_MODULE}'.
     """)
     exit_code = sandbox.run(semodule_function, "disable", CONTAINER_USERNS_MODULE)
@@ -105,7 +105,7 @@ def disable_container_userns(currently_enabled: bool, *, prompt: bool = True) ->
         print("Container-domain user namespace creation is already disabled.")
         return 0
     print_wrapped(f"""
-        Container-domain user namespace creation (e.g. for bubblejail) is currently
+        Container-domain user namespace creation (e.g. for podman or distrobox) is currently
         enabled. Disabling it now by enabling SELinux module '{CONTAINER_USERNS_MODULE}'.
     """)
     try:

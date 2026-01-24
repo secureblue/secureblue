@@ -101,53 +101,26 @@ fi
 printf "Command to execute:\n%s\n\n" "$rebase_command"
 
 read -rp "Proceed? (yes/No): " rebase_proceed
+
+if ! is_yes "$rebase_proceed"; then
+    exit 1
+fi
+
 echo
 
-# Check if we should verify provenance
-PROVENANCE_ON_REBASE=true
-PROVENANCE_NO_CRANE=false
-PROVENANCE_NO_SLSA_VERIFIER=false
-
+# Check if necessary provenance dependencies are installed
+# Otherwise, prompt user to confirm continuation without them
 if ! command -v crane &> /dev/null || ! command -v slsa-verifier &> /dev/null
 then
     PROVENANCE_ON_REBASE=false
-
-    if ! command -v crane &> /dev/null
-    then
-        PROVENANCE_NO_CRANE=true
-    fi
-
-    if ! command -v slsa-verifier &> /dev/null
-    then
-        PROVENANCE_NO_SLSA_VERIFIER=true
-    fi
 fi
 
-if [[ "${PROVENANCE_NO_CRANE}" == "true" && "${PROVENANCE_NO_SLSA_VERIFIER}" == "true" ]]
+if [[ "${PROVENANCE_ON_REBASE}" == "false" ]]
 then
-    echo -e "⚠️\033[31m WARNING: COMMANDS 'crane' and 'slsa-verifier' ARE NOT AVAILABLE ON YOUR SYSTEM.\nWITHOUT THEM, YOU WILL NOT BE ABLE TO VERIFY THE PROVENANCE OF IMAGES."
+    echo -e "⚠️\033[31m WARNING: commands 'crane' and/or 'slsa-verifier' are not available on your system.\nWithout them, you will not be able to verify the provenance of images."
     echo -e "\033[0m"
     read -rp "Proceed anyway? [NOT RECOMMENDED] (yes/No): " provenance_faulty_proceed
-    echo
-elif [[ "${PROVENANCE_NO_CRANE}" == "false" && "${PROVENANCE_NO_SLSA_VERIFIER}" == "true" ]]
-then
-    echo -e "⚠️\033[31m WARNING: COMMAND 'crane' IS NOT AVAILABLE ON YOUR SYSTEM.\nWITHOUT IT, YOU WILL NOT BE ABLE TO VERIFY THE PROVENANCE OF IMAGES."
-    echo -e "\033[0m"
-    read -rp "Proceed anyway? [NOT RECOMMENDED] (yes/No): " provenance_faulty_proceed
-    echo
-elif [[ "${PROVENANCE_NO_CRANE}" == "true" && "${PROVENANCE_NO_SLSA_VERIFIER}" == "false" ]]
-then
-    echo -e "⚠️\033[31m WARNING: COMMAND 'slsa-verifier' IS NOT AVAILABLE ON YOUR SYSTEM.\nWITHOUT IT, YOU WILL NOT BE ABLE TO VERIFY THE PROVENANCE OF IMAGES."
-    echo -e "\033[0m"
-    read -rp "Proceed anyway? [NOT RECOMMENDED] (yes/No): " provenance_faulty_proceed
-    echo
-fi
-
-if is_yes "$provenance_faulty_proceed"; then
-    /usr/bin/true
-fi
-
-if [[ "${PROVENANCE_ON_REBASE}" == "true" ]]; then
+else
     echo Verifying image provenance...
     echo
     rebase_crane=$(crane digest --full-ref "ghcr.io/secureblue/${image_name}:latest")
@@ -155,6 +128,12 @@ if [[ "${PROVENANCE_ON_REBASE}" == "true" ]]; then
     echo
 fi
 
-if is_yes "$rebase_proceed"; then
-    eval "$rebase_command"
+if [[ "${PROVENANCE_ON_REBASE}" == "false" ]]
+then
+    if ! is_yes "$provenance_faulty_proceed"; then
+        exit 1
+    fi
 fi
+
+# Commence rebase process
+eval "$rebase_command"

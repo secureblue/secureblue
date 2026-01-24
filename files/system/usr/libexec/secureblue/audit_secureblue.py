@@ -13,7 +13,6 @@ import asyncio
 import filecmp
 import getpass
 import glob
-import json
 import os
 import os.path
 import signal
@@ -28,6 +27,7 @@ from typing import Final
 import kargs_hardening_common
 from audit_flatpak import check_flatpak_permissions, parse_flatpak_permissions
 from audit_utils import (
+    analyze_active_container_policy,
     get_flatpak_permissions,
     get_legend,
     get_width,
@@ -238,54 +238,45 @@ def audit_container_policy():
     """Check for modifications to container policy."""
     status = PASS
     notes = []
-    policy_file = "/etc/containers/policy.json"
-    if not filecmp.cmp(f"/usr{policy_file}", policy_file):
+    system_policy_file = "/etc/containers/policy.json"
+    if not filecmp.cmp(f"/usr{system_policy_file}", system_policy_file):
         status = status.downgrade_to(INFO)
-        notes.append(Note(_("The file {0} has been modified.").format(policy_file), INFO))
-    local_override = "~/.config/containers/policy.json"
-    try:
-        with open(os.path.expanduser(local_override), "rb") as f:
-            policy = json.load(f)
-    except FileNotFoundError:
-        if status == PASS:
-            # No need to parse the policy, it's unmodified.
-            yield Report(_("Analyzing container policy"), PASS)
-            return
-        with open(policy_file, "rb") as f:
-            policy = json.load(f)
-    else:
+        notes.append(Note(_("The file {0} has been modified.").format(system_policy_file), INFO))
+
+    policy_audit, policy_path = analyze_active_container_policy()
+
+    if policy_path != str(system_policy_file):
         status = status.downgrade_to(INFO)
         notes.append(
-            Note(_("Container policy has a local override at {0}.").format(local_override), INFO)
+            Note(_("Container policy has a local override at {0}.").format(policy_path), INFO)
         )
+    elif status == PASS:
+        # No need to parse the policy, it's unmodified.
+        yield Report(_("Analyzing container policy"), PASS)
+        return
 
-    insecure_accept_anything: Final[str] = "insecureAcceptAnything"
-    if policy["default"][0]["type"] == insecure_accept_anything:
+    if not policy_audit.default_secure:
         status = status.downgrade_to(FAIL)
         notes.append(Note(_("The default container policy is insecure."), FAIL))
 
-    insecure_transports = [
-        transport
-        for transport, transport_policy in policy["transports"].items()
-        if transport_policy[""][0]["type"] == insecure_accept_anything
-    ]
-    for transport in insecure_transports:
-        status = status.downgrade_to(FAIL)
-        notes.append(
-            Note(
-                _("The default container policy for transport '{0}' is insecure.").format(
-                    transport
-                ),
-                FAIL,
-            )
-        )
+    insecure_scopes = []
 
-    insecure_scopes = [
-        f"{transport}:{scope}"
-        for transport, transport_policy in policy["transports"].items()
-        for scope, scope_policy in transport_policy.items()
-        if scope and scope_policy[0]["type"] == insecure_accept_anything
-    ]
+    for transport_name, transport_policy in policy_audit.transports.items():
+        if not transport_policy.default_secure:
+            status = status.downgrade_to(FAIL)
+            notes.append(
+                Note(
+                    _("The default container policy for transport '{0}' is insecure.").format(
+                        transport_name
+                    ),
+                    FAIL,
+                )
+            )
+
+        insecure_scopes += [
+            f"{transport_name}:{scope}" for scope in transport_policy.insecure_scopes
+        ]
+
     if insecure_scopes:
         status = status.downgrade_to(WARN)
         notes.append(

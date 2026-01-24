@@ -51,6 +51,8 @@ class Status(enum.Enum):
                 return _("FAIL")
             case Status.UNKNOWN:
                 return _("UNKNOWN")
+            case _:
+                raise ValueError(f"Invalid enum value: {self}")
 
     def to_str_in_color(self) -> str:
         """Colored text representation of the status."""

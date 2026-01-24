@@ -14,7 +14,6 @@ from pathlib import Path
 from typing import Final
 
 import sandbox
-from sandbox import SandboxedFunction
 from utils import CommandUsageError, ToggleMode, parse_basic_toggle_args
 
 BREW_HELP: Final[str] = """
@@ -77,7 +76,7 @@ def main() -> int:
         return 2
 
     linuxbrew_is_installed = Path(BREW_ETC_STAMP).exists()
-    brew_disable_function = SandboxedFunction(
+    brew_disable_function = sandbox.SandboxedFunction(
         "brew.py", read_write_paths=[LINUXBREW_HOMEDIR, ETC_DIR], capabilities=["CAP_DAC_OVERRIDE"]
     )
     match mode:

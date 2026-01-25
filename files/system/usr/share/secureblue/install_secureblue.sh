@@ -109,30 +109,22 @@ fi
 echo
 
 # Check if necessary provenance dependencies are installed
-# Otherwise, prompt user to confirm continuation without them
+# Otherwise, prompt user to proceed without them
 if ! command -v crane &> /dev/null || ! command -v slsa-verifier &> /dev/null
-then
-    PROVENANCE_ON_REBASE=false
-fi
-
-if [[ "${PROVENANCE_ON_REBASE}" == "false" ]]
 then
     echo -e "⚠️\033[31m WARNING: commands 'crane' and/or 'slsa-verifier' are not available on your system.\nWithout them, you will not be able to verify the provenance of images."
     echo -e "\033[0m"
     read -rp "Proceed anyway? [NOT RECOMMENDED] (yes/No): " provenance_faulty_proceed
+    if ! is_yes "$provenance_faulty_proceed"; then
+        exit 1
+    fi
+    echo
 else
     echo Verifying image provenance...
     echo
     rebase_crane=$(crane digest --full-ref "ghcr.io/secureblue/${image_name}:latest")
     slsa-verifier verify-image --source-uri "github.com/secureblue/secureblue" --source-branch "live" "${rebase_crane}"
     echo
-fi
-
-if [[ "${PROVENANCE_ON_REBASE}" == "false" ]]
-then
-    if ! is_yes "$provenance_faulty_proceed"; then
-        exit 1
-    fi
 fi
 
 # Commence rebase process

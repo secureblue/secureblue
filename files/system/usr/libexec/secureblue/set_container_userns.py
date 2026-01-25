@@ -136,6 +136,8 @@ def run(mode: ToggleMode, *, prompt: bool = True) -> int:
             return enable_container_userns(userns_enabled)
         case ToggleMode.OFF:
             return disable_container_userns(userns_enabled, prompt=prompt)
+        case _:
+            raise ValueError(f"Invalid mode value: {mode}")
 
 
 def main() -> int:

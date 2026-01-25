@@ -12,7 +12,7 @@ if [ ! -f "$in_progress_indicator" ]; then
 fi
 touch "$in_progress_indicator"
 
-flatpak remote-add --if-not-exists --user --subset=verified --title='Flathub Verified' flathub-verified https://flathub.org/repo/flathub.flatpakrepo
+flatpak remote-add --if-not-exists --user --subset=verified --title='Flathub Verified' flathub-verified https://dl.flathub.org/repo/flathub.flatpakrepo
 ujust harden-flatpak
 
 RPM_OSTREE_STATUS=$(rpm-ostree status --json --booted)

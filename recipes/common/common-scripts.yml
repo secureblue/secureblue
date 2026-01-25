@@ -17,6 +17,5 @@ scripts:
   - createjustcompletions.sh
   - removefedoraflatpakremoteservice.sh
   - localization.sh
-  - addimageinfo.sh
   - installrar.sh
   - setchronysysconfig.sh

@@ -13,7 +13,6 @@ from pathlib import Path
 from typing import Final
 
 import sandbox
-from sandbox import SandboxedFunction
 from utils import ask_yes_no
 
 BLUE_HELP: Final[str] = """
@@ -83,7 +82,7 @@ def main() -> int:
         return 1
 
     enabled_by_file = Path(BLUE_MOD_FILE).exists()
-    bluetooth_function = SandboxedFunction("bluetooth.py", read_write_paths=[BLUE_MOD_DIR])
+    bluetooth_function = sandbox.SandboxedFunction("bluetooth.py", read_write_paths=[BLUE_MOD_DIR])
     match mode:
         case "on" | "off":
             target_state_enabled = mode == "on"

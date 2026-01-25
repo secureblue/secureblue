@@ -79,6 +79,7 @@ install-steam:
     if rpm-ostree kargs | grep -q 'ia32_emulation=0'; then
         echo "This script will now remove the 'ia32_emulation=0' kernel argument."
         rpm-ostree kargs --delete-if-present="ia32_emulation=0"
+        echo "Reboot your computer before running steam."
     else
         echo "Do not set the 'ia32_emulation=0' kernel argument."
     fi

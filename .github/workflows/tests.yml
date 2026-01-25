@@ -45,17 +45,11 @@ jobs:
           sudo --preserve-env=OS_ARCH bash files/scripts/manuallyinstalljust.sh
 
       - name: Install slsa-verifier
-        if: startsWith(steps.image_data.outputs.BASE_IMAGE, 'ghcr.io/secureblue/')
         uses: slsa-framework/slsa-verifier/actions/installer@ea584f4502babc6f60d9bc799dbbb13c1caa9ee6 # v2.7.1
 
-      - name: Verify base image provenance
+      - name: Install crane
         shell: bash
-        if: startsWith(steps.image_data.outputs.BASE_IMAGE, 'ghcr.io/secureblue/')
-        env:
-          BASE_IMAGE_VERSION: ${{ steps.image_data.outputs.BASE_IMAGE_VERSION }}
-          BASE_IMAGE: ${{ steps.image_data.outputs.BASE_IMAGE }}
         run: |
-          # Install crane
           CRANE_VERSION=v0.20.7
           CRANE_OS=Linux
           CRANE_ARCH=x86_64

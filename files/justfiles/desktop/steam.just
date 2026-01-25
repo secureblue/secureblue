@@ -87,9 +87,8 @@ install-steam:
             echo "Rebooting"
             systemctl reboot
         fi
-    else
-        echo "Do not set the 'ia32_emulation=0' kernel argument."
     fi
+    echo "Do not set the 'ia32_emulation=0' kernel argument."
 
     if grep -q '^kernel.yama.ptrace_scope[[:blank:]]*=[[:blank:]]*1$' /etc/sysctl.d/61-ptrace-scope.conf 2>/dev/null; then
         echo "Some game anti-cheats require ptrace_scope set to 1."

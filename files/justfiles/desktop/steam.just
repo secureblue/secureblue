@@ -24,9 +24,9 @@ install-steam:
     fi
     valid_input="0"
     method_selection=""
-    echo "Please select a method to install steam:"
-    echo "    1) Flatpak - will install the steam flatpak from flathub-unverified"
-    echo "    2) Distrobox - will set up steam via the bazzite-arch distrobox image"
+    echo "Please select a method to install Steam:"
+    echo "    1) Flatpak - will install the Steam flatpak from flathub-unverified"
+    echo "    2) Distrobox - will set up Steam via the bazzite-arch distrobox image"
     while [[ "$valid_input" == "0" ]]; do
         read -rp "Selection [1-2]: " method_selection
         if [[ "$method_selection" == [12]* ]]; then
@@ -79,7 +79,7 @@ install-steam:
     if rpm-ostree kargs | grep -q 'ia32_emulation=0'; then
         echo "This script will now remove the 'ia32_emulation=0' kernel argument."
         rpm-ostree kargs --delete-if-present="ia32_emulation=0"
-        echo "Reboot your computer before running steam."
+        echo "Reboot your computer before running Steam."
     else
         echo "Do not set the 'ia32_emulation=0' kernel argument."
     fi

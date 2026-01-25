@@ -44,6 +44,26 @@ jobs:
         run: |
           sudo --preserve-env=OS_ARCH bash files/scripts/manuallyinstalljust.sh
 
+      - name: Install slsa-verifier
+        if: startsWith(steps.image_data.outputs.BASE_IMAGE, 'ghcr.io/secureblue/')
+        uses: slsa-framework/slsa-verifier/actions/installer@ea584f4502babc6f60d9bc799dbbb13c1caa9ee6 # v2.7.1
+
+      - name: Verify base image provenance
+        shell: bash
+        if: startsWith(steps.image_data.outputs.BASE_IMAGE, 'ghcr.io/secureblue/')
+        env:
+          BASE_IMAGE_VERSION: ${{ steps.image_data.outputs.BASE_IMAGE_VERSION }}
+          BASE_IMAGE: ${{ steps.image_data.outputs.BASE_IMAGE }}
+        run: |
+          # Install crane
+          CRANE_VERSION=v0.20.7
+          CRANE_OS=Linux
+          CRANE_ARCH=x86_64
+          curl -fLsS --retry 5 "https://github.com/google/go-containerregistry/releases/download/${CRANE_VERSION}/go-containerregistry_${CRANE_OS}_${CRANE_ARCH}.tar.gz" > go-containerregistry.tar.gz
+          curl -fLsS --retry 5 "https://github.com/google/go-containerregistry/releases/download/${CRANE_VERSION}/multiple.intoto.jsonl" > provenance.intoto.jsonl
+          slsa-verifier verify-artifact go-containerregistry.tar.gz --provenance-path provenance.intoto.jsonl --source-uri github.com/google/go-containerregistry --source-tag "${CRANE_VERSION}"
+          tar -zxvf go-containerregistry.tar.gz -C /usr/local/bin/ crane
+
       - name: Run tests
         shell: bash
         env:

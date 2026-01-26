@@ -16,7 +16,6 @@ install-steam:
             echo "Running 'ujust set-xwayland on'"
             ujust set-xwayland on
             need_reboot=true
-            fi
         fi
     fi
     valid_input="0"

@@ -4,6 +4,9 @@
 #
 # SPDX-License-Identifier: Apache-2.0
 
+
+# This is a noarch package that we only build on x86_64, for both arches. As such, this is 
+# hardcoded to x86_64 deliberately.
 echo '
 [copr:copr.fedorainfracloud.org:secureblue:packages]
 name=Copr repo for trivalent owned by secureblue

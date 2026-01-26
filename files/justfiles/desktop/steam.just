@@ -5,6 +5,7 @@
 # Install Steam via choice of 2 methods
 install-steam:
     #!/usr/bin/bash
+    need_reboot=false
     if [ -z "$(pgrep Xwayland)" ] && [ -z "$(pgrep Xorg)" ] ; then
         echo "Steam requires X or Xwayland, which your variant of secureblue has disabled by default."
         echo "Please run 'ujust set-xwayland on' to re-enable it."
@@ -14,11 +15,7 @@ install-steam:
         if [[ "$enable_xwayland_now" == [Yy]* ]]; then
             echo "Running 'ujust set-xwayland on'"
             ujust set-xwayland on
-            reboot_now=""
-            read -rp "Would you like to reboot now? [y/N] " reboot_now
-            if [[ "$reboot_now" == [Yy]* ]]; then
-                echo "Rebooting"
-                systemctl reboot
+            need_reboot=true
             fi
         fi
     fi
@@ -81,12 +78,7 @@ install-steam:
         rpm-ostree kargs --delete-if-present="ia32_emulation=0"
         echo "Changing kernel arguments requires a reboot to take effect."
         echo "Reboot before running Steam."
-        reboot_now=""
-        read -rp "Would you like to reboot now? [y/N] " reboot_now
-        if [[ "$reboot_now" == [Yy]* ]]; then
-            echo "Rebooting"
-            systemctl reboot
-        fi
+        need_reboot=true
     fi
     echo "Do not set the 'ia32_emulation=0' kernel argument."
 
@@ -97,6 +89,17 @@ install-steam:
         read -rp "Would you like to set ptrace_scope to 1 now? [y/N] " toggle_anticheat
         if [[ "$toggle_anticheat" == [Yy]* ]]; then
             ujust toggle-anticheat-support
+            need_reboot=true
         fi
     fi
 
+    if need_reboot; then
+        echo "One or more of the changes made necessitates a reboot."
+        eacho "Steam will not work until you reboot."
+        reboot_now=""
+        read -rp "Would you like to reboot now? [y/N] " reboot_now
+        if [[ "$reboot_now" == [Yy]* ]]; then
+            echo "Rebooting"
+            systemctl reboot
+        fi
+    fi

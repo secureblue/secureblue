@@ -14,7 +14,7 @@ rm -f /etc/yum.repos.d/fedora-cisco-openh264.repo
 
 install_repo() {
   repo="${1}"
-  curl -fLsS --retry 5 -o "/etc/yum.repos.d/${repo}" "${repo}"
+  curl -fLsS --retry 5 -o "/etc/yum.repos.d/${repo##*/}" "${repo}"
 }
 
 common_repos=(

@@ -83,7 +83,7 @@ install-steam:
 
     if ! grep -q '^kernel.yama.ptrace_scope[[:blank:]]*=[[:blank:]]*1$' /etc/sysctl.d/61-ptrace-scope.conf 2>/dev/null; then
         echo "Some game anti-cheats require ptrace_scope set to 1."
-        echo 'You can change your ptrace_scope setting by running `ujust toggle-anticheat-support`.'
+        echo "You can change your ptrace_scope setting by running 'ujust toggle-anticheat-support'."
         toggle_anticheat=""
         read -rp "Would you like to set ptrace_scope to 1 now? [y/N] " toggle_anticheat
         if [[ "$toggle_anticheat" == [Yy]* ]]; then

@@ -16,7 +16,7 @@ concurrency:
 jobs:
   update-po:
     name: Update PO files
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-slim
     permissions:
       contents: write  # needed to create branch
       pull-requests: write  # needed to create pull request

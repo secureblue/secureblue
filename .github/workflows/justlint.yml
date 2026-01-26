@@ -19,11 +19,9 @@ concurrency:
 jobs:
   bluebuild:
     name: Just lint
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-slim
     permissions:
       contents: read
-    strategy:
-      fail-fast: false 
 
     steps:
       - name: Checkout repo
@@ -32,7 +30,7 @@ jobs:
           persist-credentials: false
 
       - name: Lint justfiles
-        run: |          
+        run: |
           sudo apt-get install pipx
           pipx install rust-just
           find "./files/justfiles" -type f -name "*.just" | while read -r file; do

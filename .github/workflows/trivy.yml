@@ -24,7 +24,7 @@ jobs:
   build:
     name: Trivy
     if: github.triggering_actor == 'royaloughtness' || github.event_name == 'schedule' || github.event_name == 'push'
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-slim
     permissions:
       security-events: write # write findings to github
     steps:

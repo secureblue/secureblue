@@ -4,7 +4,7 @@
 
 name: installer-checksum
 permissions: {}
-on: 
+on:
   pull_request:
     branches:
       - live
@@ -17,7 +17,7 @@ concurrency:
 jobs:
   verify-installer-checksum:
     name: Installer Checksum Verification
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-slim
     permissions:
       contents: read
     steps:

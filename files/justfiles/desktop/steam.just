@@ -94,7 +94,7 @@ install-steam:
 
     if need_reboot; then
         echo "One or more of the changes made necessitates a reboot."
-        eacho "Steam will not work until you reboot."
+        echo "Steam will not work until you reboot."
         reboot_now=""
         read -rp "Would you like to reboot now? [y/N] " reboot_now
         if [[ "$reboot_now" == [Yy]* ]]; then

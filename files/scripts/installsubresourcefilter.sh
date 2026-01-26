@@ -19,7 +19,7 @@ gpgkey=https://download.copr.fedorainfracloud.org/results/secureblue/packages/pu
 repo_gpgcheck=0
 enabled=1
 enabled_metadata=1
-priority=99
+priority=1
 ' > /etc/yum.repos.d/secureblue-packages-x86_64-fedora-43.repo
 
 dnf install -y --setopt=install_weak_deps=False trivalent-subresource-filter

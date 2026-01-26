@@ -5,7 +5,7 @@
 #
 # SPDX-License-Identifier: Apache-2.0
 
-set -oue pipefail
+set -euo pipefail
 
 # We never use this repo, so remove it early to prevent failed calls to it
 rm -f /etc/yum.repos.d/fedora-cisco-openh264.repo

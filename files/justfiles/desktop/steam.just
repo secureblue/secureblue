@@ -81,7 +81,7 @@ install-steam:
     fi
     echo "Do not set the 'ia32_emulation=0' kernel argument."
 
-    if grep -q '^kernel.yama.ptrace_scope[[:blank:]]*=[[:blank:]]*1$' /etc/sysctl.d/61-ptrace-scope.conf 2>/dev/null; then
+    if ! grep -q '^kernel.yama.ptrace_scope[[:blank:]]*=[[:blank:]]*1$' /etc/sysctl.d/61-ptrace-scope.conf 2>/dev/null; then
         echo "Some game anti-cheats require ptrace_scope set to 1."
         echo "You can change your ptrace_scope setting by running `ujust toggle-anticheat-support`."
         toggle_anticheat=""

@@ -173,7 +173,7 @@ uninstall-docker:
 rebase-secureblue:
     #!/usr/bin/bash
     current_image=$(grep VARIANT= /etc/os-release | cut -d'"' -f2)
-    if [[ $current_image == 'CoreOS' ]] || [[ $current_image == 'IOT' ]]; then
+    if [[ "$current_image" == 'CoreOS' ]] || [[ "$current_image" == 'IOT' ]]; then
         image_name=$(grep VARIANT_ID= /etc/os-release | cut -d'=' -f2 | cut -d'-' -f1)
     else
         desktop_image_types=(
@@ -209,7 +209,7 @@ rebase-secureblue:
 
     image_name+="$additional_params-hardened"
 
-    if [[ $current_image == 'IOT' ]]; then
+    if [[ "$current_image" == 'IOT' ]]; then
         rebase_command="bootc switch ghcr.io/secureblue/$image_name:latest"
     else
         rebase_command="rpm-ostree rebase ostree-image-signed:docker://ghcr.io/secureblue/$image_name:latest"

@@ -15,3 +15,4 @@ modules:
         - removesudo.sh
         - ensuresudoabsent.sh
         - check-selinux-fcontext.sh
+        - libdnf5-clear-history.sh

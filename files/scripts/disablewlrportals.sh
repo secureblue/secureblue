@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-set -oue pipefail
+set -euo pipefail
 
 PORTALS_CONF="/usr/share/xdg-desktop-portal/sway-portals.conf"
 

@@ -30,8 +30,9 @@ jobs:
           persist-credentials: false
 
       - name: Lint justfiles
-        run: |
-          sudo apt-get install pipx
+        run: |          
+          sudo apt update
+          sudo apt install pipx
           pipx install rust-just
           find "./files/justfiles" -type f -name "*.just" | while read -r file; do
             echo "Checking syntax: $file"

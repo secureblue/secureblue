@@ -22,12 +22,20 @@ jobs:
     permissions:
       packages: read # needed to pull images
     steps:
-      - name: Install deps
+      - name: Install slsa-verifier
+        uses: slsa-framework/slsa-verifier/actions/installer@ea584f4502babc6f60d9bc799dbbb13c1caa9ee6 # v2.7.1
+
+      - name: Install crane
         shell: bash
         run: |
-          go install github.com/slsa-framework/slsa-verifier/v2/cli/slsa-verifier@v2.7.1
-          go install github.com/google/go-containerregistry/cmd/crane@v0.20.6
-          echo "$HOME/go/bin" >> "$GITHUB_PATH"
+          CRANE_VERSION=v0.20.7
+          CRANE_OS=Linux
+          CRANE_ARCH=x86_64
+          curl -fLsS --retry 5 \
+            -o 'go-containerregistry.tar.gz' "https://github.com/google/go-containerregistry/releases/download/${CRANE_VERSION}/go-containerregistry_${CRANE_OS}_${CRANE_ARCH}.tar.gz" \
+            -o 'provenance.intoto.jsonl' "https://github.com/google/go-containerregistry/releases/download/${CRANE_VERSION}/multiple.intoto.jsonl"
+          slsa-verifier verify-artifact go-containerregistry.tar.gz --provenance-path provenance.intoto.jsonl --source-uri github.com/google/go-containerregistry --source-tag "${CRANE_VERSION}"
+          tar -zxvf go-containerregistry.tar.gz -C /usr/local/bin/ crane
 
       - name: Verify provenance
         shell: bash
@@ -45,6 +53,12 @@ jobs:
             cosmic-main-hardened
             cosmic-nvidia-hardened
             cosmic-nvidia-open-hardened
+            iot-main-hardened
+            iot-nvidia-hardened
+            iot-nvidia-open-hardened
+            iot-zfs-main-hardened
+            iot-zfs-nvidia-hardened
+            iot-zfs-nvidia-open-hardened
             securecore-main-hardened
             securecore-nvidia-hardened
             securecore-nvidia-open-hardened
@@ -53,9 +67,17 @@ jobs:
             securecore-zfs-nvidia-open-hardened
           )
 
+          failed_images=0
           for image in "${images[@]}"; do
             image_url="ghcr.io/secureblue/${image}:latest"
-            digest=$(crane digest "${image_url}")
-            echo "Verifying provenance for ${image_url}@${digest}..."
-            slsa-verifier verify-image --source-uri 'github.com/secureblue/secureblue' "${image_url}@${digest}"
+            full_ref=$(crane digest --full-ref "${image_url}")
+            echo "Verifying provenance for ${full_ref}..."
+            if ! slsa-verifier verify-image --source-uri 'github.com/secureblue/secureblue' --source-branch 'live' "${full_ref}"; then
+              failed_images=$(( failed_images + 1 ))
+              echo "FAIL: Provenance verification failed for ${image}"
+            fi
           done
+          if (( failed_images > 0 )); then
+            echo "FAIL: ${failed_images} image(s) failed provenance verification."
+            exit 1
+          fi

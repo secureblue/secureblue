@@ -213,6 +213,7 @@ rebase-secureblue:
         rebase_command="bootc switch ghcr.io/secureblue/$image_name:latest"
     else
         rebase_command="rpm-ostree rebase ostree-image-signed:docker://ghcr.io/secureblue/$image_name:latest"
+    fi
 
     printf "Command to execute:\n%s\n\n" "$rebase_command"
 

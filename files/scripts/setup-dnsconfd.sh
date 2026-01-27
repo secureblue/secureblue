@@ -4,7 +4,7 @@
 #
 # SPDX-License-Identifier: Apache-2.0
 
-set -oue pipefail
+set -euo pipefail
 
 # This is usually done by `dnsconfd config install`, which fails if
 # NetworkManager.service is not running. We imitate this by:

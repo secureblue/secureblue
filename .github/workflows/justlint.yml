@@ -19,11 +19,9 @@ concurrency:
 jobs:
   bluebuild:
     name: Just lint
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-slim
     permissions:
       contents: read
-    strategy:
-      fail-fast: false 
 
     steps:
       - name: Checkout repo

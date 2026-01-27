@@ -4,7 +4,7 @@
 
 name: validate-exec-bit
 permissions: {}
-on: 
+on:
   pull_request:
     branches:
       - live
@@ -17,7 +17,7 @@ concurrency:
 jobs:
   validate-exec-bit:
     name: Validate exec bit
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-slim
     permissions:
       contents: read
     steps:

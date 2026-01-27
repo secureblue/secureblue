@@ -58,7 +58,7 @@ jobs:
         env:
           WORKSPACE: ${{ github.workspace }}
         run: |
-          curl -fLsS --retry 5 -o "${WORKSPACE}/secureblue.repo" "https://copr.fedorainfracloud.org/coprs/secureblue/branding/repo/fedora-43/secureblue-branding-fedora-43.repo"
+          curl -fLsS --retry 5 -o "${WORKSPACE}/secureblue.repo" "https://copr.fedorainfracloud.org/coprs/secureblue/packages/repo/fedora-43/secureblue-packages-fedora-43.repo"
 
       - name: Build ISO
         uses: jasonn3/build-container-installer@c9ef3de33236e66781ec37bd0485e8009eaefe24 # v1.4.0

@@ -32,7 +32,7 @@ jobs:
       - name: Lint justfiles
         run: |          
           sudo apt update
-          sudo apt-get install pipx
+          sudo apt install pipx
           pipx install rust-just
           find "./files/justfiles" -type f -name "*.just" | while read -r file; do
             echo "Checking syntax: $file"

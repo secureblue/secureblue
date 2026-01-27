@@ -198,11 +198,11 @@ rebase-secureblue:
         done
     fi
 
-    read -rp "Do you have Nvidia? (yes/No): " use_nvidia
-    if is_yes "$use_nvidia"; then
+    read -rp "Do you have Nvidia? [y/N]: " use_nvidia
+    if [[ "$use_nvidia" == [Yy]* ]]; then
         additional_params+="-nvidia" 
-        read -rp "Do you need Nvidia's open drivers? (yes/No): " use_open
-        is_yes "$use_open" && additional_params+="-open"
+        read -rp "Do you need Nvidia's open drivers? [y/N]: " use_open
+        [[ "$use_open" == [Yy]* ]] && additional_params+="-open"
     else
         additional_params+="-main"
     fi
@@ -217,8 +217,8 @@ rebase-secureblue:
 
     printf "Command to execute:\n%s\n\n" "$rebase_command"
 
-    read -rp "Proceed? (yes/No): " rebase_proceed
-    if is_yes "$rebase_proceed"; then
+    read -rp "Proceed? [y/N]: " rebase_proceed
+    if [[ "$rebase_proceed" == [Yy]* ]]; then
         eval "$rebase_command"
     fi
 

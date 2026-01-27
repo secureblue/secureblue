@@ -53,12 +53,24 @@ if is_yes "$is_server"; then
         echo "Refusing to proceed."
         exit 1
     fi
+    if grep -E 'VARIANT_ID=silverblue|VARIANT_ID=kinoite|VARIANT_ID=sericea|VARIANT_ID=cosmic' /etc/os-release >/dev/null; then
+        echo "The current operating system is a desktop."
+        echo "rebasing between server/desktop can cause critical issues (like not booting)."
+        echo "Refusing to proceed."
+        exit 1
+    fi
     read -rp "Do you need ZFS support? (yes/No): " use_zfs
     image_name=$(is_yes "$use_zfs" && echo "securecore-zfs" || echo "securecore")
 else
     if grep VARIANT=\"CoreOS\" /etc/os-release >/dev/null; then
         echo "The current operating system is based on CoreOS."
         echo "Fedora Atomic and CoreOS use different partitioning schemes and are not compatible."
+        echo "Refusing to proceed."
+        exit 1
+    fi
+    if grep -E 'VARIANT_ID=iot|VARIANT_ID=securecore' /etc/os-release >/dev/null; then
+        echo "The current operating system is a server."
+        echo "rebasing between server/desktop can cause critical issues (like not booting)."
         echo "Refusing to proceed."
         exit 1
     fi

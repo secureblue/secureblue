@@ -175,6 +175,8 @@ rebase-secureblue:
     current_image=$(grep VARIANT= /etc/os-release | cut -d'"' -f2)
     if [[ "$current_image" == 'CoreOS' ]] || [[ "$current_image" == 'IOT' ]]; then
         image_name=$(grep VARIANT_ID= /etc/os-release | cut -d'=' -f2 | cut -d'-' -f1)
+        read -rp "Do you need ZFS support? [y/N]: " use_zfs
+        [[ "$use_zfs" == [Yy]* ]] && image_name+="-zfs"
     else
         desktop_image_types=(
             "silverblue"
@@ -200,14 +202,14 @@ rebase-secureblue:
 
     read -rp "Do you have Nvidia? [y/N]: " use_nvidia
     if [[ "$use_nvidia" == [Yy]* ]]; then
-        additional_params+="-nvidia" 
+        image_name+="-nvidia" 
         read -rp "Do you need Nvidia's open drivers? [y/N]: " use_open
-        [[ "$use_open" == [Yy]* ]] && additional_params+="-open"
+        [[ "$use_open" == [Yy]* ]] && image_name+="-open"
     else
-        additional_params+="-main"
+        image_name+="-main"
     fi
 
-    image_name+="$additional_params-hardened"
+    image_name+="-hardened"
 
     if [[ "$current_image" == 'IOT' ]]; then
         rebase_command="bootc switch ghcr.io/secureblue/$image_name:latest"

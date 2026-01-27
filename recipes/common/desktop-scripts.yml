@@ -3,7 +3,7 @@
 # SPDX-License-Identifier: Apache-2.0
 
 type: script
-source: ghcr.io/blue-build/modules@sha256:8e92fcaaef385a1728b8d8224296484260b67126ac83f7ed85b4ae3dde4ad19d
+source: ghcr.io/blue-build/modules@sha256:4eeed12ff342da5493b1cca51285cba4179f8e21a609798facc55769080e9243
 scripts:
   - install-trivalent.sh
   - installsubresourcefilter.sh

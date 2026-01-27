@@ -6,9 +6,9 @@
 
 set -euo pipefail
 
-# Systemd service
 echo "Disabling the location service"
 
+# Systemd service
 systemctl disable geoclue.service
 systemctl mask geoclue.service
 

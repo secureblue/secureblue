@@ -5,7 +5,7 @@
 # SPDX-License-Identifier: Apache-2.0
 
 """
-The wheel user creation implementation for ujust
+Toggles MAC address randomisation
 """
 
 '''

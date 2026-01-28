@@ -11,6 +11,36 @@ Toggles MAC address randomisation
 import os
 import subprocess
 from pathlib import Path
+import sandbox
+from utils import (
+    CommandUsageError,
+    ToggleMode,
+    ask_yes_no,
+    command_succeeds,
+    parse_basic_toggle_args,
+    print_wrapped,
+)
+from typing import final
+
+HELP_MESSAGE: Final[str] = """\
+Sets the MAC randomisation mode.
+
+usage:
+ujust set_mac_randomization
+    Enables or disables interactively based on the user's preference.
+
+ujust set-container-userns on
+    Enables container-domain userns creation; does nothing if already on.
+
+ujust set-container-userns off
+    Disables container-domain userns creation; does nothing if already off.
+
+ujust set-container-userns status
+    Reports if container-domain userns creation is enabled or disabled.
+
+ujust set-container-userns --help
+    Prints this message.
+"""
 
 RAND_MAC_FILE = "/etc/NetworkManager/conf.d/rand_mac.conf"
 
@@ -52,6 +82,7 @@ def disable_randomization():
 
 
 def set_stable():
+
     randomization_level = "stable"
     print("Selected state: per-network (stable)")
 
@@ -73,6 +104,7 @@ def set_stable():
 
 
 def set_random():
+
     randomization_level = "random"
     print("Selected state: per-connection")
 
@@ -93,4 +125,10 @@ def set_random():
     rebounce_connection()
 
 
+def return_status():
 
+    with open(RAND_MAC_FILE, "r") as f:
+        out = f.read()
+        status = out.split("wifi.cloned-mac-address=", 1)
+
+        print("The current status is" + status)

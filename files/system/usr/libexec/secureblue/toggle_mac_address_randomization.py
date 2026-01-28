@@ -9,8 +9,6 @@ Toggles MAC address randomisation
 """
 
 import os
-import sys
-from pathlib import Path
 
 RAND_MAC_FILE="/etc/NetworkManager/conf.d/rand_mac.conf"
 
@@ -21,14 +19,21 @@ if RAND_MAC_FILE.exists():
 
     # bounce the connection to refresh MAC address with host
 
-    connection_profile_name = subprocess.run(["nmcli", "-t", "-f", "NAME,DEVICE", "connection", "show", "--active"], capture_output = True, text = True).stdout.strip().splitlines()
+    active_connections = subprocess.run(["nmcli", "-t", "-f", "NAME,DEVICE,TYPE", "connection", "show", "--active"], capture_output = True, text = True).stdout.strip().splitlines()
     # check if there is wifi
-    for line in connection_profile_name:
-        name, device = line.split(':', 1)
+    # handle multiple connections
+    for connection in active_connections:
+
+        try:
+            name, device, con_type = connection.split(':', 2)
+        except ValueError:
+            continue # skipping malformed lines
+
+        if con_type != "wifi": continue # dont disconnect from ethernet needlessly
         if device == "lo": continue
-        connection_profile_name = connection_profile_name.split(':')[0] # The output of the above contains excess data, which can be removed by only taking the part of the string before the first ':'
-        subprocess.run(["nmcli", "connection", "down", connection_profile_name])
-        subprocess.run(["nmcli", "connection", "up", connection_profile_name])
+
+        subprocess.run(["nmcli", "connection", "down", name], check = True)
+        subprocess.run(["nmcli", "connection", "up", name], check = True)
 
 else:
 
@@ -58,16 +63,20 @@ else:
     os.chmod(RAND_MAC_FILE, 0o644)
     print("MAC randomization enabled.")
 
-    # bounce the connection
+    # bounce the connection to refresh MAC address with host
 
-    connection_profile_name = subprocess.run(["nmcli", "-t", "-f", "NAME,DEVICE", "connection", "show", "--active"]).stdout.strip()
+    active_connections = subprocess.run(["nmcli", "-t", "-f", "NAME,DEVICE,TYPE", "connection", "show", "--active"], capture_output = True, text = True).stdout.strip().splitlines()
     # check if there is wifi
-    if connection_profile_name == "lo:lo":
-        pass
-    else:
-        connection_profile_name = connection_profile_name.split(':')[0] # The output of the above contains excess data, which can be removed by only taking the part of the string before the first ':'
-        subprocess.run(["nmcli", "connection", "down", connection_profile_name])
-        subprocess.run(["nmcli", "connection", "up", connection_profile_name])
+    # handle multiple connections
+    for connection in active_connections:
 
+        try:
+            name, device, con_type = connection.split(':', 2)
+        except ValueError:
+            continue # skipping malformed lines
 
+        if con_type != "wifi": continue # dont disconnect from ethernet needlessly
+        if device == "lo": continue
 
+        subprocess.run(["nmcli", "connection", "down", name], check = True)
+        subprocess.run(["nmcli", "connection", "up", name], check = True)

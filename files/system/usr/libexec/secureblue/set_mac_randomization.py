@@ -18,7 +18,7 @@ def rebounce_connection(): # bounces the connection to refresh MAC address with 
 
     active_connections = (
         subprocess.run(
-            ["nmcli", "-t", "-f", "NAME,DEVICE,TYPE", "connection", "show", "--active"],
+            ["/usr/bin/nmcli", "-t", "-f", "NAME,DEVICE,TYPE", "connection", "show", "--active"],
             capture_output=True,
             text=True,
             check=True,
@@ -39,46 +39,58 @@ def rebounce_connection(): # bounces the connection to refresh MAC address with 
         if device == "lo":
             continue
 
-        subprocess.run(["nmcli", "connection", "down", name], check=True)
-        subprocess.run(["nmcli", "connection", "up", name], check=True)
+        subprocess.run(["/usr/bin/nmcli", "connection", "down", name], check=True)
+        subprocess.run(["/usr/bin/nmcli", "connection", "up", name], check=True)
 
 
-if Path(RAND_MAC_FILE).exists():
+def disable_randomization():
+
     os.remove(RAND_MAC_FILE)
     print("MAC randomization disabled")
     rebounce_connection()
+    exit()
 
-else:
-    print(
-        "MAC randomization can be stable (persisting the same random MAC per access point across disconnects/reboots),"
-    )
-    print(
-        "or it can be randomized per-connection (every time it connects to the same access point it uses a new MAC)."
-    )
 
-    randomization_choice = input(
-        "Do you want to use per-connection Wi-Fi MAC address randomization? [y/N] "
-    )
-
-    if randomization_choice in "Yy":
-        randomization_level = "random"
-        print("Selected state: per-connection")
-    else:
-        randomization_level = "stable"
-        print("Selected state: per-network (stable)")
+def set_stable():
+    randomization_level = "stable"
+    print("Selected state: per-network (stable)")
 
     with open(RAND_MAC_FILE, "w") as f:
-        f.write(
-            "[device-mac-randomization]\n"
-            # "yes" is already the default for scanning
-            "wifi.scan-rand-mac-address=yes\n\n"
-            "[connection-mac-randomization]\n"
-            # Generate a random MAC for each Network and associate the two permanently.
-            "ethernet.cloned-mac-address=stable\n"
-            "wifi.cloned-mac-address=" + randomization_level + "\n"
-        )
+    f.write(
+        "[device-mac-randomization]\n"
+        # "yes" is already the default for scanning
+        "wifi.scan-rand-mac-address=yes\n\n"
+        "[connection-mac-randomization]\n"
+        # Generate a random MAC for each Network and associate the two permanently.
+        "ethernet.cloned-mac-address=stable\n"
+        "wifi.cloned-mac-address=" + randomization_level + "\n"
+    )
 
     os.chmod(RAND_MAC_FILE, 0o644)
     print("MAC randomization enabled.")
 
     rebounce_connection()
+
+
+def set_random():
+    randomization_level = "random"
+    print("Selected state: per-connection")
+
+    with open(RAND_MAC_FILE, "w") as f:
+    f.write(
+        "[device-mac-randomization]\n"
+        # "yes" is already the default for scanning
+        "wifi.scan-rand-mac-address=yes\n\n"
+        "[connection-mac-randomization]\n"
+        # Generate a random MAC for each Network and associate the two permanently.
+        "ethernet.cloned-mac-address=stable\n"
+        "wifi.cloned-mac-address=" + randomization_level + "\n"
+    )
+
+    os.chmod(RAND_MAC_FILE, 0o644)
+    print("MAC randomization enabled.")
+
+    rebounce_connection()
+
+
+

@@ -24,8 +24,8 @@ fi
     sudo cp -f rpm-ostree /usr/bin/rpm-ostree
 
 # Mock out crane and slsa-verifier
-ln -s /usr/bin/true /usr/bin/crane
-ln -s /usr/bin/true /usr/bin/slsa-verifier
+sudo ln -s /usr/bin/true /usr/bin/crane
+sudo ln -s /usr/bin/true /usr/bin/slsa-verifier
 }
 
 @test "Script exits with error if rpm-ostree is not installed" {

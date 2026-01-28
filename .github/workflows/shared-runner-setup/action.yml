@@ -74,8 +74,9 @@ runs:
         CRANE_VERSION=v0.20.7
         CRANE_OS=Linux
         CRANE_ARCH=x86_64
-        curl -fLsS --retry 5 "https://github.com/google/go-containerregistry/releases/download/${CRANE_VERSION}/go-containerregistry_${CRANE_OS}_${CRANE_ARCH}.tar.gz" > go-containerregistry.tar.gz
-        curl -fLsS --retry 5 "https://github.com/google/go-containerregistry/releases/download/${CRANE_VERSION}/multiple.intoto.jsonl" > provenance.intoto.jsonl
+          curl -fLsS --retry 5 \
+            -o 'go-containerregistry.tar.gz' "https://github.com/google/go-containerregistry/releases/download/${CRANE_VERSION}/go-containerregistry_${CRANE_OS}_${CRANE_ARCH}.tar.gz" \
+            -o 'provenance.intoto.jsonl' "https://github.com/google/go-containerregistry/releases/download/${CRANE_VERSION}/multiple.intoto.jsonl"
         slsa-verifier verify-artifact go-containerregistry.tar.gz --provenance-path provenance.intoto.jsonl --source-uri github.com/google/go-containerregistry --source-tag "${CRANE_VERSION}"
         tar -zxvf go-containerregistry.tar.gz -C /usr/local/bin/ crane
 

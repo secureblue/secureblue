@@ -9,10 +9,12 @@ Toggles MAC address randomisation
 """
 
 import os
+import subprocess
+from pathlib import Path
 
 RAND_MAC_FILE="/etc/NetworkManager/conf.d/rand_mac.conf"
 
-if RAND_MAC_FILE.exists():
+if Path(RAND_MAC_FILE).exists():
 
     os.remove(RAND_MAC_FILE)
     print("MAC randomization disabled")

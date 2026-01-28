@@ -27,19 +27,17 @@ Sets the MAC randomisation mode.
 
 usage:
 ujust set_mac_randomization
-    Enables or disables interactively based on the user's preference.
+    Sets MAC randomization status interactively based on the user's preference.
 
-ujust set-container-userns on
-    Enables container-domain userns creation; does nothing if already on.
+ujust set-mac-randomization stable
+    Sets MAC randomization to per-network.
 
-ujust set-container-userns off
-    Disables container-domain userns creation; does nothing if already off.
+ujust set-mac-randomization random
+    Sets MAC randomization to per-connection.
 
-ujust set-container-userns status
-    Reports if container-domain userns creation is enabled or disabled.
+ujust set-mac-randomization off
+    Disables MAC randomization.
 
-ujust set-container-userns --help
-    Prints this message.
 """
 
 RAND_MAC_FILE = "/etc/NetworkManager/conf.d/rand_mac.conf"
@@ -125,7 +123,7 @@ def set_random():
     rebounce_connection()
 
 
-def return_status():
+def return_status(): # probably doesnt work TODO
 
     with open(RAND_MAC_FILE, "r") as f:
         out = f.read()

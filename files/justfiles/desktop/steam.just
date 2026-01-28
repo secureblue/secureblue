@@ -6,6 +6,7 @@
 install-steam:
     #!/usr/bin/bash
     need_reboot=false
+    need_relog=false
     if [ -z "$(pgrep Xwayland)" ] && [ -z "$(pgrep Xorg)" ] ; then
         echo "Steam requires X or Xwayland, which your variant of secureblue has disabled by default."
         echo "Please run 'ujust set-xwayland on' to re-enable it."
@@ -15,7 +16,7 @@ install-steam:
         if [[ "$enable_xwayland_now" == [Yy]* ]]; then
             echo "Running 'ujust set-xwayland on'"
             ujust set-xwayland on
-            need_reboot=true
+            need_relog=true
         fi
     fi
     valid_input="0"
@@ -100,5 +101,16 @@ install-steam:
         if [[ "$reboot_now" == [Yy]* ]]; then
             echo "Rebooting"
             systemctl reboot
+        fi
+    else
+        if $need_relog; then
+            echo "One or more of the changes made necessitates logging out."
+            echo "Steam will not work until you log out."
+            relog_now=""
+            read -rp "Would you like to log out now? [y/N] " relog_now
+            if [[ "$relog_now" == [Yy]* ]]; then
+                echo "Logging out"
+                loginctl terminate-user $(whoami)
+            fi
         fi
     fi

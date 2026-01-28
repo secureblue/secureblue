@@ -4,7 +4,7 @@
 #
 # SPDX-License-Identifier: Apache-2.0
 
-set -oue pipefail
+set -euo pipefail
 
 dnf install -y --setopt=install_weak_deps=False policycoreutils-devel
 

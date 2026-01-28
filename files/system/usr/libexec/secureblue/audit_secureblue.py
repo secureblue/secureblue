@@ -224,16 +224,6 @@ def audit_ptrace(state):
 
 
 @audit
-def audit_authselect():
-    """Ensure no authselect overrides have been made."""
-    status = PASS
-    cmp = filecmp.dircmp("/usr/etc/authselect", "/etc/authselect", shallow=False, ignore=[])
-    if cmp.left_only or cmp.right_only or cmp.diff_files or cmp.funny_files:
-        status = FAIL
-    yield Report(_("Ensuring no authselect overrides"), status)
-
-
-@audit
 def audit_container_policy():
     """Check for modifications to container policy."""
     status = PASS

@@ -4,7 +4,7 @@
 #
 # SPDX-License-Identifier: Apache-2.0
 
-set -oue pipefail
+set -euo pipefail
 
 rm -f /etc/yum.repos.d/negativo17-fedora-nvidia.repo
 rm -f /etc/yum.repos.d/eyecantcu-supergfxctl.repo

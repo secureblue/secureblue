@@ -23,6 +23,9 @@ fi
     chmod +x rpm-ostree
     sudo cp -f rpm-ostree /usr/bin/rpm-ostree
 
+# Mock out crane and slsa-verifier
+ln -s /usr/bin/true /usr/bin/crane
+ln -s /usr/bin/true /usr/bin/slsa-verifier
 }
 
 @test "Script exits with error if rpm-ostree is not installed" {
@@ -80,7 +83,6 @@ fi
   [ "$status" -eq 0 ]
   [[ "$output" == *"silverblue-nvidia-hardened"* ]]
 }
-
 
 @test "Test command for silverblue-nvidia-open-hardened" {
   run bash -c "echo -e 'no\n1\nyes\nyes\no\nno' | bash '$INSTALL_SCRIPT'"

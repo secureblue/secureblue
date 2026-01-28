@@ -14,11 +14,7 @@ from pathlib import Path
 
 RAND_MAC_FILE = "/etc/NetworkManager/conf.d/rand_mac.conf"
 
-if Path(RAND_MAC_FILE).exists():
-    os.remove(RAND_MAC_FILE)
-    print("MAC randomization disabled")
-
-    # bounce the connection to refresh MAC address with host
+def rebounce_connection(): # bounces the connection to refresh MAC address with host
 
     active_connections = (
         subprocess.run(
@@ -45,6 +41,12 @@ if Path(RAND_MAC_FILE).exists():
 
         subprocess.run(["nmcli", "connection", "down", name], check=True)
         subprocess.run(["nmcli", "connection", "up", name], check=True)
+
+
+if Path(RAND_MAC_FILE).exists():
+    os.remove(RAND_MAC_FILE)
+    print("MAC randomization disabled")
+    rebounce_connection()
 
 else:
     print(
@@ -79,30 +81,4 @@ else:
     os.chmod(RAND_MAC_FILE, 0o644)
     print("MAC randomization enabled.")
 
-    # bounce the connection to refresh MAC address with host
-
-    active_connections = (
-        subprocess.run(
-            ["nmcli", "-t", "-f", "NAME,DEVICE,TYPE", "connection", "show", "--active"],
-            capture_output=True,
-            text=True,
-            check=True,
-        )
-        .stdout.strip()
-        .splitlines()
-    )
-    # check if there is wifi
-    # handle multiple connections
-    for connection in active_connections:
-        try:
-            name, device, con_type = connection.split(":", 2)
-        except ValueError:
-            continue  # skipping malformed lines
-
-        if con_type != "wifi":
-            continue  # dont disconnect from ethernet needlessly
-        if device == "lo":
-            continue
-
-        subprocess.run(["nmcli", "connection", "down", name], check=True)
-        subprocess.run(["nmcli", "connection", "up", name], check=True)
+    rebounce_connection()

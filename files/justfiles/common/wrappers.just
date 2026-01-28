@@ -65,3 +65,9 @@ install-dangerzone:
 toggle-user-motd:
     #!/bin/sh
     exec /usr/bin/python3 /usr/libexec/secureblue/toggle_user_motd.py
+
+# Set MAC randomisation (per-connection/per-network/off)
+[positinal-arguments]
+set-mac-randomization *args:
+    #!/bin/sh
+    exec /usr/bin/python3 /usr/libexec/secureblue/set_mac_randomization.py "$@"

@@ -269,8 +269,3 @@ toggle-bash-environment-lockdown skip_approval="false" apply_for_all_users="prom
 
     echo "${user_list[@]}" "$pending_status."
     echo "${bold}NOTE${unbold}: until a reboot, any process with an open file descriptor will continue to have the access they had before this script was run."
-
-# Toggle MAC Randomization
-toggle-mac-randomization:
-    #! /bin/run0 /bin/bash
-    exec /usr/bin/python3 /usr/libexec/secureblue/toggle_mac_address_randomization.py

@@ -110,7 +110,7 @@ install-steam:
             read -rp "Would you like to log out now? [y/N] " relog_now
             if [[ "$relog_now" == [Yy]* ]]; then
                 echo "Logging out"
-                loginctl terminate-user $(whoami)
+                pkill -KILL -u $(whoami)
             fi
         fi
     fi

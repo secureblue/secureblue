@@ -13,6 +13,7 @@ install-steam:
         echo "'ia32_emulation=0' has been detected in your kernel arguments (it's not enabled by default)."
         echo "The script will now remove it from your kernel arguments as to allow Steam to function properly."
         rpm-ostree kargs --delete-if-present="ia32_emulation=0"
+        need_reboot=true
         echo "Kernel argument removed."
     else
         echo "Do not add 'ia32_emulation=0' to your kernel arguments, as that would cause Steam to cease functioning."
@@ -31,6 +32,7 @@ install-steam:
             echo
             echo "Running 'ujust set-xwayland on'"
             ujust set-xwayland on
+            need_reboot=true
         fi
     fi
 
@@ -51,6 +53,7 @@ install-steam:
             echo "Running 'ujust toggle-anticheat-support'"
             echo
             ujust toggle-anticheat-support
+            need_reboot=true
         fi
     fi
 
@@ -108,7 +111,8 @@ install-steam:
             ;;
     esac
 
-    echo "The script will now prompt you to reboot your system to apply your changes."
+    if [[ ${need_reboot} == "true" ]]; then
+    echo "A reboot is required for Steam to function properly."
     echo "If you refuse to proceed, the script will exit with a status code of 1, indicating an error."
     echo "The script itself will have worked, but Steam may cease to function properly until you reboot your computer."
     echo "It's fine not to reboot right now, as long as you reboot once before launching Steam for the first time."
@@ -116,11 +120,14 @@ install-steam:
     echo "Please save all your work and close all apps before proceeding."
     echo
     read -rp "Reboot now? [y/N] " reboot_now
-    if [[ "$reboot_now" == [Yy]* ]]; then
-        echo
-        echo "The system will reboot now!"
-        echo
-        systemctl reboot
+        if [[ "$reboot_now" == [Yy]* ]]; then
+            echo
+            echo "The system will reboot now!"
+            echo
+            systemctl reboot
+        else
+            exit 1
+        fi
     else
-        exit 1
+    echo Done. Everything is ready!
     fi

@@ -12,7 +12,7 @@ import os
 import sys
 import subprocess
 from pathlib import Path
-import sandbox # TODO
+import sandbox  # TODO
 from utils import (
     CommandUsageError,
     ToggleMode,
@@ -56,8 +56,7 @@ ethernet.cloned-mac-address=stable
 wifi.cloned-mac-address="""
 
 
-def rebounce_connection(): # bounces the connection to refresh MAC address with host
-
+def rebounce_connection():  # bounces the connection to refresh MAC address with host
     active_connections = (
         subprocess.run(
             ["/usr/bin/nmcli", "-t", "-f", "NAME,DEVICE,TYPE", "connection", "show", "--active"],
@@ -86,11 +85,12 @@ def rebounce_connection(): # bounces the connection to refresh MAC address with 
 
 
 def disable_randomization() -> int:
-
     try:
         os.remove(RAND_MAC_FILE)
     except:
-        print("MAC randomization config file not found. This usually means that MAC randomization was already off.")
+        print(
+            "MAC randomization config file not found. This usually means that MAC randomization was already off."
+        )
 
     print("MAC randomization disabled")
     rebounce_connection()
@@ -99,14 +99,11 @@ def disable_randomization() -> int:
 
 
 def set_stable() -> int:
-
     randomization_level = "stable"
     print("Selected state: per-network (stable)")
 
     with open(RAND_MAC_FILE, "w") as f:
-        f.write(
-            RMF_PROLOGUE_STRING + randomization_level + "\n"
-        )
+        f.write(RMF_PROLOGUE_STRING + randomization_level + "\n")
 
     os.chmod(RAND_MAC_FILE, 0o644)
     print("MAC randomization enabled.")
@@ -117,14 +114,11 @@ def set_stable() -> int:
 
 
 def set_random() -> int:
-
     randomization_level = "random"
     print("Selected state: per-connection")
 
     with open(RAND_MAC_FILE, "w") as f:
-        f.write(
-            RMF_PROLOGUE_STRING + randomization_level + "\n"
-        )
+        f.write(RMF_PROLOGUE_STRING + randomization_level + "\n")
 
     os.chmod(RAND_MAC_FILE, 0o644)
     print("MAC randomization enabled.")
@@ -135,27 +129,27 @@ def set_random() -> int:
 
 
 def return_status() -> int:
-
     try:
         with open(RAND_MAC_FILE, "r") as f:
             for line in f:
                 if line.startswith("wifi.cloned-mac-address="):
-                    status = line.strip().split("=",1)[1]
+                    status = line.strip().split("=", 1)[1]
                     print(f"The current status is: {status}")
     except:
         print("The current status is: Off")
 
     return 0
 
-def interactive_selection() -> int:
 
+def interactive_selection() -> int:
     questions = [
-    inquirer.List("Mode",
-                    message="Select a mode of MAC randomization",
-                    choices=["Status", "Per-network", "Per-connection", "Off"],
-                ),
+        inquirer.List(
+            "Mode",
+            message="Select a mode of MAC randomization",
+            choices=["Status", "Per-network", "Per-connection", "Off"],
+        ),
     ]
-    answer = inquirer.prompt(questions)['Mode']
+    answer = inquirer.prompt(questions)["Mode"]
     print("Selection: " + answer)
     match answer:
         case "Status":
@@ -171,18 +165,16 @@ def interactive_selection() -> int:
             return disable_randomization()
 
         case _:
-            raise ValueError("Script malfunction: Prompt returned an unexpected value.") # This line *should* never run
-
-
-
+            raise ValueError(
+                "Script malfunction: Prompt returned an unexpected value."
+            )  # This line *should* never run
 
 
 def parse_mode_args() -> str:
-
     args = sys.argv[1:]
 
     if not args:
-        return "INTERACTIVE" # User will use inquirer module to select
+        return "INTERACTIVE"  # User will use inquirer module to select
 
     if args[0] in ("--help", "-h", "help"):
         return "HELP"
@@ -205,7 +197,9 @@ def parse_mode_args() -> str:
 
 
 def run(mode) -> int:
-    print("WARNING: It is known that set-mac-randomization breaks network connectivity on some hypervisors (Hyper-V for example).")
+    print(
+        "\nWARNING: It is known that set-mac-randomization breaks network connectivity on some hypervisors (Hyper-V for example).\n"
+    )
     match mode:
         case "INTERACTIVE":
             return interactive_selection()
@@ -246,5 +240,3 @@ def main() -> int:
 
 if __name__ == "__main__":
     sys.exit(main())
-
-

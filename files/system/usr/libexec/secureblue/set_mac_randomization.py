@@ -25,7 +25,7 @@ from typing import final
 import inquirer
 
 HELP_MESSAGE: Final[str] = """\
-Sets the MAC randomisation mode.
+Sets the MAC randomization mode.
 
 usage:
 ujust set_mac_randomization

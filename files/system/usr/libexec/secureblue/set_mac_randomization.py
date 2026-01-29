@@ -205,6 +205,7 @@ def parse_mode_args() -> str:
 
 
 def run(mode) -> int:
+    print("WARNING: It is known that set-mac-randomization breaks network connectivity on some hypervisors (Hyper-V for example).")
     match mode:
         case "INTERACTIVE":
             return interactive_selection()

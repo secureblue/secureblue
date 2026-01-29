@@ -29,14 +29,6 @@ function is_yes {
     esac
 }
 
-# Define image configurations
-desktop_image_types=(
-    "silverblue"
-    "kinoite"
-    "sericea"
-    "cosmic"
-)
-
 image_name=""
 additional_params=""
 
@@ -44,39 +36,16 @@ printf "%s\n\n" \
     "Welcome to the secureblue interactive installer!" \
     "After answering the following questions, your system will be rebased to secureblue."
 
-# Determine if it's a server or desktop
-read -rp "Is this for a CoreOS server? (yes/No): " is_server
-if is_yes "$is_server"; then
-    if ! grep VARIANT=\"CoreOS\" /etc/os-release >/dev/null; then
-        echo "The current operating system is based on Fedora Atomic."
-        echo "Fedora Atomic and CoreOS use different partitioning schemes and are not compatible."
-        echo "Refusing to proceed."
-        exit 1
-    fi
-    read -rp "Do you need ZFS support? (yes/No): " use_zfs
-    image_name=$(is_yes "$use_zfs" && echo "securecore-zfs" || echo "securecore")
-else
-    if grep VARIANT=\"CoreOS\" /etc/os-release >/dev/null; then
-        echo "The current operating system is based on CoreOS."
-        echo "Fedora Atomic and CoreOS use different partitioning schemes and are not compatible."
-        echo "Refusing to proceed."
-        exit 1
-    fi
-    printf "%s\n" \
-        "Select a desktop." \
-        "Silverblue images are recommended." \
-        "Sericea images are recommended for tiling WM users." \
-        "Cosmic images are considered experimental."
-    PS3=$'Enter your desktop choice: '
-    select image_name in "${desktop_image_types[@]}"; do
-        if [[ -n "$image_name" ]]; then        
-            echo "Selected desktop: $image_name"
-            break
-        else
-            echo "Invalid option, please select a valid number."
-        fi
-    done
+
+if ! grep VARIANT=\"CoreOS\" /etc/os-release >/dev/null; then
+    echo "The current operating system is based on Fedora Atomic."
+    echo "Fedora Atomic and CoreOS use different partitioning schemes and are not compatible."
+    echo "Refusing to proceed."
+    exit 1
 fi
+read -rp "Do you need ZFS support? (yes/No): " use_zfs
+image_name=$(is_yes "$use_zfs" && echo "securecore-zfs" || echo "securecore")
+
 
 # Ask about Nvidia for all options
 read -rp "Do you have Nvidia? (yes/No): " use_nvidia

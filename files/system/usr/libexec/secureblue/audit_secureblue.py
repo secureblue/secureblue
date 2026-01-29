@@ -146,8 +146,7 @@ def audit_signed_image(state):
     else:
         status = FAIL
         recs = _("""The current image is not signed.
-            To rebase to a signed image, download and run or re-run {0}
-            from the secureblue GitHub repository.""").format("install_secureblue.sh")
+            To rebase to a signed image, run {0}.""").format("ujust rebase-secureblue")
     yield Report(_("Ensuring a signed image is in use"), status, recs=recs)
 
 

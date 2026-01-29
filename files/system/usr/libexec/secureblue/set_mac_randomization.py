@@ -12,10 +12,10 @@ import os
 import sys
 import subprocess
 
-import sandbox  # TODO
+# import sandbox  # TODO
 from utils import (
     CommandUsageError,
-    print_wrapped,
+    # ,print_wrapped,
 )
 import inquirer
 from pathlib import Path
@@ -52,7 +52,7 @@ ethernet.cloned-mac-address=stable
 wifi.cloned-mac-address="""
 
 
-def rebounce_connection() -> None:  #
+def rebounce_connection() -> None:
     """bounces the connection to refresh MAC address with host"""
     active_connections = (
         subprocess.run(
@@ -129,13 +129,13 @@ def set_random() -> int:
 
 
 def return_status() -> int:
-    try:
-        with open(RAND_MAC_FILE, "r") as f:
+    if Path(RAND_MAC_FILE).exists():
+        with open(RAND_MAC_FILE, "r", encoding="utf-8") as f:
             for line in f:
                 if line.startswith("wifi.cloned-mac-address="):
                     status = line.strip().split("=", 1)[1]
                     print(f"The current status is: {status}")
-    except:
+    else:
         print("The current status is: Off")
 
     return 0

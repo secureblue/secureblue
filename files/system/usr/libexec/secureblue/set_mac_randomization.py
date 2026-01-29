@@ -11,14 +11,13 @@ Sets MAC address randomisation
 import os
 import sys
 import subprocess
+from pathlib import Path
 
-# import sandbox  # TODO
+import sandbox
 from utils import (
-    CommandUsageError,
-    # ,print_wrapped,
+    CommandUsageError
 )
 import inquirer
-from pathlib import Path
 
 HELP_MESSAGE = """\
 Sets the MAC randomization mode.
@@ -43,16 +42,8 @@ ujust set-mac-randomization status
 
 RAND_MAC_FILE = "/etc/NetworkManager/conf.d/rand_mac.conf"
 
-# RMF stands for RAND_MAC_FILE
-RMF_PROLOGUE_STRING = """\
-[device-mac-randomization]
-wifi.scan-rand-mac-address=yes
-[connection-mac-randomization]
-ethernet.cloned-mac-address=stable
-wifi.cloned-mac-address="""
 
-
-def rebounce_connection() -> None:
+def rebounce_connection() -> None: # TODO: switch this with a reset NetworkManager function
     """bounces the connection to refresh MAC address with host"""
     active_connections = (
         subprocess.run(
@@ -71,9 +62,6 @@ def rebounce_connection() -> None:
             name, device, con_type = connection.split(":", 2)
         except ValueError:
             continue  # skipping malformed lines
-
-        if con_type != "wifi":
-            continue  # dont disconnect from ethernet needlessly
         if device == "lo":
             continue
 
@@ -81,51 +69,37 @@ def rebounce_connection() -> None:
         subprocess.run(["/usr/bin/nmcli", "connection", "up", name], check=True)
 
 
-def disable_randomization() -> int:
-    """Disables MAC address randomisation"""
-    if Path(RAND_MAC_FILE).exists():
-        os.remove(RAND_MAC_FILE)
-    else:
-        print(
-            "MAC randomization config not found. This usually means MAC randomization was already off."
-        )
-
-    print("MAC randomization disabled")
+disable_mac_randomization = sandbox.SandboxedFunction(
+    file_name = "disable_mac_randomization.py",
+    read_write_paths = ["/etc/NetworkManager/conf.d"]
+    )
+def run_disable_randomization() -> int:
+    """Runs sandboxed disable_randomization() function."""
+    out = sandbox.run(disable_mac_randomization)
     rebounce_connection()
+    return out
 
-    return 0
 
-
-def set_stable() -> int:
-    """Sets MAC address randomisation to occur on a per-network basis"""
-    randomization_level = "stable"
-    print("Selected state: per-network (stable)")
-
-    with open(RAND_MAC_FILE, "w", encoding="utf-8") as f:
-        f.write(RMF_PROLOGUE_STRING + randomization_level + "\n")
-
-    os.chmod(RAND_MAC_FILE, 0o644)
-    print("MAC randomization enabled.")
-
+set_mac_randomization_stable = sandbox.SandboxedFunction(
+    file_name = "set_mac_randomization_stable.py",
+    read_write_paths = ["/etc/NetworkManager/conf.d"]
+    )
+def run_set_randomization_stable() -> int:
+    """Runs sandboxed set_mac_randomization_stable function."""
+    out = sandbox.run(set_mac_randomization_stable)
     rebounce_connection()
+    return out
 
-    return 0
 
-
-def set_random() -> int:
-    """Sets MAC address randomisation to occur on a per-connection basis"""
-    randomization_level = "random"
-    print("Selected state: per-connection")
-
-    with open(RAND_MAC_FILE, "w", encoding="utf-8") as f:
-        f.write(RMF_PROLOGUE_STRING + randomization_level + "\n")
-
-    os.chmod(RAND_MAC_FILE, 0o644)
-    print("MAC randomization enabled.")
-
+set_mac_randomization_random = sandbox.SandboxedFunction(
+    file_name = "set_mac_randomization_random.py",
+    read_write_paths = ["/etc/NetworkManager/conf.d"]
+    )
+def run_set_randomization_random() -> int:
+    """Runs sandboxed set_mac_randomization_random function."""
+    out = sandbox.run(set_mac_randomization_random)
     rebounce_connection()
-
-    return 0
+    return out
 
 
 def return_status() -> int:
@@ -158,13 +132,13 @@ def interactive_selection() -> int:
             return return_status()
 
         case "Per-network":
-            return set_stable()
+            return run_set_randomization_stable()
 
         case "Per-connection":
-            return set_random()
+            return run_set_randomization_random()
 
         case "Off":
-            return disable_randomization()
+            return run_disable_randomization()
 
         case _:
             raise ValueError(
@@ -209,13 +183,13 @@ def run(mode: str) -> int:
             return interactive_selection()
 
         case "STABLE":
-            return set_stable()
+            return run_set_randomization_stable()
 
         case "RANDOM":
-            return set_random()
+            return run_set_randomization_random()
 
         case "OFF":
-            return disable_randomization()
+            return run_disable_randomization()
 
         case "STATUS":
             return return_status()

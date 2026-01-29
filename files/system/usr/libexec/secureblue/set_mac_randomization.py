@@ -9,6 +9,7 @@ Sets MAC address randomisation
 """
 
 import os
+import sys
 import subprocess
 from pathlib import Path
 import sandbox # TODO
@@ -52,8 +53,7 @@ RMF_PROLOGUE_STRING: Final[str] = """\
 wifi.scan-rand-mac-address=yes
 [connection-mac-randomization]
 ethernet.cloned-mac-address=stable
-wifi.cloned-mac-address=
-"""
+wifi.cloned-mac-address="""
 
 
 def rebounce_connection(): # bounces the connection to refresh MAC address with host
@@ -87,7 +87,11 @@ def rebounce_connection(): # bounces the connection to refresh MAC address with 
 
 def disable_randomization() -> int:
 
-    os.remove(RAND_MAC_FILE)
+    try:
+        os.remove(RAND_MAC_FILE)
+    except:
+        print("MAC randomisation config file not found. This usually means that MAC randomisation was already off.")
+
     print("MAC randomization disabled")
     rebounce_connection()
 
@@ -100,9 +104,9 @@ def set_stable() -> int:
     print("Selected state: per-network (stable)")
 
     with open(RAND_MAC_FILE, "w") as f:
-    f.write(
-        RMF_PROLOGUE_STRING + randomization_level + "\n"
-    )
+        f.write(
+            RMF_PROLOGUE_STRING + randomization_level + "\n"
+        )
 
     os.chmod(RAND_MAC_FILE, 0o644)
     print("MAC randomization enabled.")
@@ -118,9 +122,9 @@ def set_random() -> int:
     print("Selected state: per-connection")
 
     with open(RAND_MAC_FILE, "w") as f:
-    f.write(
-        RMF_PROLOGUE_STRING + randomization_level + "\n"
-    )
+        f.write(
+            RMF_PROLOGUE_STRING + randomization_level + "\n"
+        )
 
     os.chmod(RAND_MAC_FILE, 0o644)
     print("MAC randomization enabled.")
@@ -132,13 +136,14 @@ def set_random() -> int:
 
 def return_status() -> int:
 
-    with open(RAND_MAC_FILE, "r") as f:
-        for line in f:
-            if line.startswith("wifi.cloned-mac-address="):
-                status = line.strip().split("=",1)[1]
-                print(f"The current status is <{status}>")
-
-    print("The current status is <Off>")
+    try:
+        with open(RAND_MAC_FILE, "r") as f:
+            for line in f:
+                if line.startswith("wifi.cloned-mac-address="):
+                    status = line.strip().split("=",1)[1]
+                    print(f"The current status is: {status}")
+    except:
+        print("The current status is: Off")
 
     return 0
 
@@ -150,10 +155,11 @@ def interactive_selection() -> int:
                     choices=["Status", "Per-network", "Per-connection", "Off"],
                 ),
     ]
-
-    match inquirer.prompt(questions):
+    answer = inquirer.prompt(questions)['Mode']
+    print("Selection: " + answer)
+    match answer:
         case "Status":
-            return interactive_selection()
+            return return_status()
 
         case "Per-network":
             return set_stable()
@@ -171,51 +177,51 @@ def interactive_selection() -> int:
 
 
 
-def parse_mode_args() -> Mode:
+def parse_mode_args() -> str:
 
     args = sys.argv[1:]
 
     if not args:
-        return Mode.INTERACTIVE # User will use inquirer module to select
+        return "INTERACTIVE" # User will use inquirer module to select
 
     if args[0] in ("--help", "-h", "help"):
-        return Mode.HELP
+        return "HELP"
 
     match args[0]:
         case "stable":
-            return Mode.STABLE
+            return "STABLE"
 
         case "random":
-            return Mode.RANDOM
+            return "RANDOM"
 
         case "off":
-            return Mode.OFF
+            return "OFF"
 
         case "status":
-            return Mode.STATUS
+            return "STATUS"
 
         case _:
             raise ValueError(f"Invalid argument value: {args[0]}")
 
 
-def run(mode: Mode) -> int:
+def run(mode) -> int:
     match mode:
-        case Mode.INTERACTIVE:
+        case "INTERACTIVE":
             return interactive_selection()
 
-        case Mode.STABLE:
+        case "STABLE":
             return set_stable()
 
-        case Mode.RANDOM:
+        case "RANDOM":
             return set_random()
 
-        case Mode.OFF:
+        case "OFF":
             return disable_randomization()
 
-        case Mode.STATUS:
+        case "STATUS":
             return return_status()
 
-        case Mode.HELP:
+        case "HELP":
             print(HELP_MESSAGE)
             return 0
 
@@ -226,9 +232,7 @@ def run(mode: Mode) -> int:
 def main() -> int:
     """Handle the arguments and run the script."""
     try:
-        mode = parse_mode_args(
-            prompt="This is a test"
-        )
+        mode = parse_mode_args()
     except CommandUsageError as e:
         print(f"Usage error: {e}. See usage with --help.")
         return 2

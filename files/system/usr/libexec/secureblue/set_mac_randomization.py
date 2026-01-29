@@ -201,7 +201,7 @@ def parse_mode_args() -> str:
             return "STATUS"
 
         case _:
-            raise ValueError(f"Invalid argument value: {args[0]}")
+            raise CommandUsageError(f"Invalid argument value: '{args[0]}'")
 
 
 def run(mode) -> int:
@@ -229,12 +229,15 @@ def run(mode) -> int:
             raise ValueError("Unhandled mode: " + mode)
 
 
+# -------------------------------- #
+
+
 def main() -> int:
     """Handle the arguments and run the script."""
     try:
         mode = parse_mode_args()
     except CommandUsageError as e:
-        print(f"Usage error: {e}. See usage with --help.")
+        print(f"Usage error: {e}. See usage with --help or --h.")
         return 2
 
     return run(mode)

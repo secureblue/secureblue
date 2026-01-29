@@ -12,7 +12,7 @@ storage:
   files:
     - path: /opt/install_secureblue.sh
       contents:
-        source: https://raw.githubusercontent.com/secureblue/secureblue/refs/heads/live/files/system/usr/share/secureblue/install_secureblue.sh
+        source: https://raw.githubusercontent.com/secureblue/secureblue/refs/heads/live/install/install_secureblue.sh
         verification:
           hash: sha256-3147019786df697e769a17e600144effcdd413903e4ce8f8a690e2390f390e93
       mode: 0755

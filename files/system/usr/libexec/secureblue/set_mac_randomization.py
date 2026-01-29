@@ -129,8 +129,9 @@ def set_random() -> int:
 
 
 def return_status() -> int:
+    """Returns the current MAC randomisation status [stable/random/off]"""
     if Path(RAND_MAC_FILE).exists():
-        with open(RAND_MAC_FILE, "r", encoding="utf-8") as f:
+        with open(RAND_MAC_FILE, encoding="utf-8") as f:
             for line in f:
                 if line.startswith("wifi.cloned-mac-address="):
                     status = line.strip().split("=", 1)[1]

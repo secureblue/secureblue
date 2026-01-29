@@ -90,7 +90,7 @@ def disable_randomization() -> int:
     try:
         os.remove(RAND_MAC_FILE)
     except:
-        print("MAC randomisation config file not found. This usually means that MAC randomisation was already off.")
+        print("MAC randomization config file not found. This usually means that MAC randomization was already off.")
 
     print("MAC randomization disabled")
     rebounce_connection()
@@ -151,7 +151,7 @@ def interactive_selection() -> int:
 
     questions = [
     inquirer.List("Mode",
-                    message="Select a mode of MAC randomisation",
+                    message="Select a mode of MAC randomization",
                     choices=["Status", "Per-network", "Per-connection", "Off"],
                 ),
     ]

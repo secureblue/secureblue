@@ -11,7 +11,7 @@ Sets MAC address randomisation
 import os
 import subprocess
 from pathlib import Path
-import sandbox
+import sandbox # TODO
 from utils import (
     CommandUsageError,
     ToggleMode,
@@ -45,6 +45,15 @@ ujust set-mac-randomization status
 """
 
 RAND_MAC_FILE = "/etc/NetworkManager/conf.d/rand_mac.conf"
+
+# RMF stands for RAND_MAC_FILE
+RMF_PROLOGUE_STRING: Final[str] = """\
+[device-mac-randomization]
+wifi.scan-rand-mac-address=yes
+[connection-mac-randomization]
+ethernet.cloned-mac-address=stable
+wifi.cloned-mac-address=
+"""
 
 
 def rebounce_connection(): # bounces the connection to refresh MAC address with host
@@ -92,13 +101,7 @@ def set_stable() -> int:
 
     with open(RAND_MAC_FILE, "w") as f:
     f.write(
-        "[device-mac-randomization]\n"
-        # "yes" is already the default for scanning
-        "wifi.scan-rand-mac-address=yes\n\n"
-        "[connection-mac-randomization]\n"
-        # Generate a random MAC for each Network and associate the two permanently.
-        "ethernet.cloned-mac-address=stable\n"
-        "wifi.cloned-mac-address=" + randomization_level + "\n"
+        RMF_PROLOGUE_STRING + randomization_level + "\n"
     )
 
     os.chmod(RAND_MAC_FILE, 0o644)
@@ -116,13 +119,7 @@ def set_random() -> int:
 
     with open(RAND_MAC_FILE, "w") as f:
     f.write(
-        "[device-mac-randomization]\n"
-        # "yes" is already the default for scanning
-        "wifi.scan-rand-mac-address=yes\n\n"
-        "[connection-mac-randomization]\n"
-        # Generate a random MAC for each Network and associate the two permanently.
-        "ethernet.cloned-mac-address=stable\n"
-        "wifi.cloned-mac-address=" + randomization_level + "\n"
+        RMF_PROLOGUE_STRING + randomization_level + "\n"
     )
 
     os.chmod(RAND_MAC_FILE, 0o644)
@@ -181,7 +178,7 @@ def parse_mode_args() -> Mode:
     if not args:
         return Mode.INTERACTIVE # User will use inquirer module to select
 
-    if args[0] in ("--help", "-h"):
+    if args[0] in ("--help", "-h", "help"):
         return Mode.HELP
 
     match args[0]:
@@ -217,6 +214,10 @@ def run(mode: Mode) -> int:
 
         case Mode.STATUS:
             return return_status()
+
+        case Mode.HELP:
+            print(HELP_MESSAGE)
+            return 0
 
         case _:
             raise ValueError("Unhandled mode: " + mode)

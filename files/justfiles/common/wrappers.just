@@ -66,7 +66,7 @@ toggle-user-motd:
     #!/bin/sh
     exec /usr/bin/python3 /usr/libexec/secureblue/toggle_user_motd.py
 
-# Set MAC randomisation (per-connection/per-network/off)
+# Set MAC randomisation (per-connection/per-network/off/status)
 [positinal-arguments]
 set-mac-randomization *args:
     #!/bin/sh

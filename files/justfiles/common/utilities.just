@@ -172,7 +172,57 @@ uninstall-docker:
 # Rebase to a different secureblue Desktop Environment/Atomic Desktop
 rebase-secureblue:
     #!/usr/bin/bash
-    /usr/bin/bash /usr/share/secureblue/install_secureblue.sh
+    current_image=$(grep VARIANT= /etc/os-release | cut -d'"' -f2)
+    if [[ "$current_image" == 'CoreOS' ]] || [[ "$current_image" == 'IOT' ]]; then
+        image_name=$(grep VARIANT_ID= /etc/os-release | cut -d'=' -f2 | cut -d'-' -f1)
+        read -rp "Do you need ZFS support? [y/N]: " use_zfs
+        [[ "$use_zfs" == [Yy]* ]] && image_name+="-zfs"
+    else
+        desktop_image_types=(
+            "silverblue"
+            "kinoite"
+            "sericea"
+            "cosmic"
+        )
+        printf "%s\n" \
+            "Select a desktop." \
+            "Silverblue images are recommended." \
+            "Sericea images are recommended for tiling WM users." \
+            "Cosmic images are considered experimental."
+        PS3=$'Enter your desktop choice: '
+        select image_name in "${desktop_image_types[@]}"; do
+            if [[ -n "$image_name" ]]; then        
+                echo "Selected desktop: $image_name"
+                break
+            else
+                echo "Invalid option, please select a valid number."
+            fi
+        done
+    fi
+
+    read -rp "Do you have Nvidia? [y/N]: " use_nvidia
+    if [[ "$use_nvidia" == [Yy]* ]]; then
+        image_name+="-nvidia" 
+        read -rp "Do you need Nvidia's open drivers? [y/N]: " use_open
+        [[ "$use_open" == [Yy]* ]] && image_name+="-open"
+    else
+        image_name+="-main"
+    fi
+
+    image_name+="-hardened"
+
+    if [[ "$current_image" == 'IOT' ]]; then
+        rebase_command="bootc switch ghcr.io/secureblue/$image_name:latest"
+    else
+        rebase_command="rpm-ostree rebase ostree-image-signed:docker://ghcr.io/secureblue/$image_name:latest"
+    fi
+
+    printf "Command to execute:\n%s\n\n" "$rebase_command"
+
+    read -rp "Proceed? [y/N]: " rebase_proceed
+    if [[ "$rebase_proceed" == [Yy]* ]]; then
+        eval "$rebase_command"
+    fi
 
 # Apply SELinux type "user_home_t" on external drives to allow access from Trivalent
 label-external-drives:

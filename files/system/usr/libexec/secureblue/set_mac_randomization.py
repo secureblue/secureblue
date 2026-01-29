@@ -11,15 +11,16 @@ Sets MAC address randomisation
 import os
 import sys
 import subprocess
-from typing import final
+
 import sandbox  # TODO
 from utils import (
     CommandUsageError,
     print_wrapped,
 )
 import inquirer
+from pathlib import Path
 
-HELP_MESSAGE: Final[str] = """\
+HELP_MESSAGE = """\
 Sets the MAC randomization mode.
 
 usage:
@@ -43,7 +44,7 @@ ujust set-mac-randomization status
 RAND_MAC_FILE = "/etc/NetworkManager/conf.d/rand_mac.conf"
 
 # RMF stands for RAND_MAC_FILE
-RMF_PROLOGUE_STRING: Final[str] = """\
+RMF_PROLOGUE_STRING = """\
 [device-mac-randomization]
 wifi.scan-rand-mac-address=yes
 [connection-mac-randomization]
@@ -51,7 +52,8 @@ ethernet.cloned-mac-address=stable
 wifi.cloned-mac-address="""
 
 
-def rebounce_connection():  # bounces the connection to refresh MAC address with host
+def rebounce_connection() -> None:  #
+    """bounces the connection to refresh MAC address with host"""
     active_connections = (
         subprocess.run(
             ["/usr/bin/nmcli", "-t", "-f", "NAME,DEVICE,TYPE", "connection", "show", "--active"],
@@ -80,11 +82,12 @@ def rebounce_connection():  # bounces the connection to refresh MAC address with
 
 
 def disable_randomization() -> int:
-    try:
+    """Disables MAC address randomisation"""
+    if Path(RAND_MAC_FILE).exists():
         os.remove(RAND_MAC_FILE)
-    except:
+    else:
         print(
-            "MAC randomization config file not found. This usually means that MAC randomization was already off."
+            "MAC randomization config not found. This usually means MAC randomization was already off."
         )
 
     print("MAC randomization disabled")
@@ -94,10 +97,11 @@ def disable_randomization() -> int:
 
 
 def set_stable() -> int:
+    """Sets MAC address randomisation to occur on a per-network basis"""
     randomization_level = "stable"
     print("Selected state: per-network (stable)")
 
-    with open(RAND_MAC_FILE, "w") as f:
+    with open(RAND_MAC_FILE, "w", encoding="utf-8") as f:
         f.write(RMF_PROLOGUE_STRING + randomization_level + "\n")
 
     os.chmod(RAND_MAC_FILE, 0o644)
@@ -109,10 +113,11 @@ def set_stable() -> int:
 
 
 def set_random() -> int:
+    """Sets MAC address randomisation to occur on a per-connection basis"""
     randomization_level = "random"
     print("Selected state: per-connection")
 
-    with open(RAND_MAC_FILE, "w") as f:
+    with open(RAND_MAC_FILE, "w", encoding="utf-8") as f:
         f.write(RMF_PROLOGUE_STRING + randomization_level + "\n")
 
     os.chmod(RAND_MAC_FILE, 0o644)
@@ -137,6 +142,7 @@ def return_status() -> int:
 
 
 def interactive_selection() -> int:
+    """Uses the inquirer module and user input to select an mode via the CLI"""
     questions = [
         inquirer.List(
             "Mode",
@@ -166,6 +172,7 @@ def interactive_selection() -> int:
 
 
 def parse_mode_args() -> str:
+    """Parses the argument passed to this script"""
     args = sys.argv[1:]
 
     if not args:
@@ -191,7 +198,8 @@ def parse_mode_args() -> str:
             raise CommandUsageError(f"Invalid argument value: '{args[0]}'")
 
 
-def run(mode) -> int:
+def run(mode: str) -> int:
+    """Selects which function to run by referencing the provided mode"""
     print(
         "\nWARNING: It is known that set-mac-randomization breaks network connectivity on some hypervisors (Hyper-V for example).\n"
     )

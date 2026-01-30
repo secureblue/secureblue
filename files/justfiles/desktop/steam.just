@@ -94,8 +94,8 @@ install-steam:
 
             steam_flatpak_overrides_general="flatpak override --user --share=network --share=ipc --socket=x11 --socket=pulseaudio --allow=multiarch --allow=per-app-dev-shm com.valvesoftware.Steam"
             steam_flatpak_overrides_ac="flatpak override --user --allow=devel com.valvesoftware.Steam"
-            steam_flatpak_overrides_input="flatpak override --user --device=input"
-            steam_flatpak_overrides_input_wireless="flatpak override --user --allow=bluetooth"
+            steam_flatpak_overrides_input="flatpak override --user --device=input com.valvesoftware.Steam"
+            steam_flatpak_overrides_input_wireless="flatpak override --user --allow=bluetooth com.valvesoftware.Steam"
 
             echo "General overrides — Command to be run:"
             echo

@@ -83,6 +83,75 @@ install-steam:
             flatpak install -y flathub com.valvesoftware.Steam
             echo "Disabling hardened_malloc for Steam to prevent compatibility issues."
             flatpak override --user --unset-env=LD_PRELOAD --nofilesystem=host-os com.valvesoftware.Steam
+
+            echo
+            echo "When using Steam via Flatpak in a hardened Flatpak environment, Steam needs access to some restricted systems in order to ensure proper functionality."
+            echo "If you proceed, this will give Steam access to some system functionality, including access X11 and PulseAudio."
+            echo "This will override the 'flatpak-permissions-lockdown' command, or any other global overrides (for the Steam Flatpak only)."
+            echo "Note that to use controllers you must additionally grant the 'device=input' and 'allow=bluetooth' (for wireless controller support) permissions if they are globally denied."
+            echo "Games with anti-cheats will likely require granting 'allow=devel' alongside running 'ujust toggle-anticheat-support'."
+            echo
+
+            steam_flatpak_overrides_general="flatpak override --user --share=network --share=ipc --socket=x11 --socket=pulseaudio --allow=multiarch --allow=per-app-dev-shm com.valvesoftware.Steam"
+            steam_flatpak_overrides_ac="flatpak override --user --allow=devel com.valvesoftware.Steam"
+            steam_flatpak_overrides_input="flatpak override --user --device=input"
+            steam_flatpak_overrides_input_wireless="flatpak override --user --allow=bluetooth"
+
+            echo "General overrides — Command to be run:"
+            echo
+            echo "${steam_flatpak_overrides_general}"
+            echo
+            # If the user skips general overrides, all subsequent Flatpak overrides are skipped as well
+            read -rp "Proceed with applying general overrides? (RECOMMENDED) [Y/n]" apply_steam_overrides_general
+            apply_steam_overrides_general=${apply_steam_overrides_general:-y}
+            if [[ "$apply_steam_overrides_general" == [Yy]* ]]; then
+            echo "Applying general Steam Flatpak overrides..."
+            eval "$(steam_flatpak_overrides_general)"
+
+                if [[ "$(sysctl -n kernel.yama.ptrace_scope)" = "1" ]]; then
+                echo
+                echo "Anti-cheat support seems to be enabled system-wide. Flatpak Steam needs 'allow=devel' to make processs tracing work as expected, which is required by anti-cheat solutions."
+                echo
+                echo "Anti-cheat override — Command to be run:"
+                echo
+                echo "${steam_flatpak_overrides_ac}"
+                echo
+                # Note that this will only run if the user has enabled support system-wide first, so it will not blindly ask to enable ptrace support
+                read -rp "Grant the Steam Flatpak access to process tracing? (RECOMMENDED) [Y/n]" apply_steam_overrides_ac
+                apply_steam_overrides_ac=${apply_steam_overrides_ac:-y}
+                if [[ "$apply_steam_overrides_ac" == [Yy]* ]]; then
+                echo "Applying anti-cheat override for the Steam Flatpak..."
+                eval "$(steam_flatpak_overrides_ac)"
+                fi
+                else
+                echo "Anti-cheat support is not enabled system-wide. The script will not grant the 'allow=devel' permission to the Steam Flatpak."
+                fi
+
+                echo
+                echo "Input overrides — Command to be run:"
+                echo
+                echo "${steam_flatpak_overrides_input}"
+                echo
+                read -rp "Grant the Steam Flatpak access to joysticks and game controllers? [y/N]" apply_steam_overrides_input
+                if [[ "$apply_steam_overrides_input" == [Yy]* ]]; then
+                echo "Applying joystick override for the Steam Flatpak..."
+                eval "$(steam_flatpak_overrides_input)"
+                steam_joystick_applied=true
+                fi
+
+                    if [[ "${steam_joystick_applied}" == "true" ]]; then
+                    echo "Wireless controller support — Command to be run:"
+                    echo
+                    echo "${steam_flatpak_overrides_input_wireless}"
+                    echo
+                    read -rp "Also grant the Steam Flatpak access to wireless controllers? [y/N]" apply_steam_overrides_input_wireless
+                    if [[ "$apply_steam_overrides_input_wireless" == [Yy]* ]]; then
+                    echo "Applying joystick override for the Steam Flatpak..."
+                    eval "$(steam_flatpak_overrides_input_wireless)"
+                    fi
+                    fi
+
+            fi
             ;;
         2)
             echo "Distrobox method selected."

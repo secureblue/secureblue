@@ -11,6 +11,7 @@ Sets MAC randomization to per-network
 import os
 import sys
 
+
 def set_stable() -> int:
     """Sets MAC address randomisation to occur on a per-network basis."""
     print("Selected state: per-network (stable)")
@@ -22,8 +23,7 @@ wifi.scan-rand-mac-address=yes
 [connection-mac-randomization]
 ethernet.cloned-mac-address=stable
 wifi.cloned-mac-address=stable
-            """
-        )
+            """)
 
     os.chmod("/etc/NetworkManager/conf.d/rand_mac.conf", 0o644)
     print("MAC randomization enabled.")
@@ -31,11 +31,10 @@ wifi.cloned-mac-address=stable
     return 0
 
 
-
-
 def main() -> int:
     """Main script entry point."""
     return set_stable()
+
 
 if __name__ == "__main__":
     sys.exit(main())

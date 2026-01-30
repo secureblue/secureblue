@@ -45,7 +45,7 @@ update-system:
     /usr/libexec/secureblue/verify-provenance.sh
     /usr/bin/rpm-ostree upgrade
     if [ -f /usr/libexec/secureblue/security-update-notification ]; then
-        /usr/libexec/secureblue/security-update-notification
+        /usr/libexec/secureblue/security-update-notification >/dev/null 2>&1 &
     fi
 
 # Update device firmware

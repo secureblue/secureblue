@@ -48,10 +48,13 @@ image_name=$(is_yes "$use_zfs" && echo "securecore-zfs" || echo "securecore")
 
 
 # Ask about Nvidia for all options
-read -rp "Do you have Nvidia? (yes/No): " use_nvidia
+echo "Nvidia's proprietary drivers provide superior performance on Nvidia hardware."
+read -rp "Do you want Nvidia proprietary drivers? [y/N]: " use_nvidia
 if is_yes "$use_nvidia"; then
-    additional_params+="-nvidia" 
-    read -rp "Do you need Nvidia's open drivers? (yes/No): " use_open
+    additional_params+="-nvidia"
+    echo "Nvidia's open kernel modules are recommended for Turing or newer cards (GTX 16XX+)"
+    read -rp "Do you want Nvidia's open kernel modules? (Yes/no): " use_open
+    use_open=${use_open:-y}
     is_yes "$use_open" && additional_params+="-open"
 else
     additional_params+="-main"

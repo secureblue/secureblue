@@ -8,16 +8,12 @@
 Sets MAC address randomisation
 """
 
-import os
 import sys
-import subprocess
 from pathlib import Path
 
-import sandbox
-from utils import (
-    CommandUsageError
-)
 import inquirer
+import sandbox
+from utils import CommandUsageError
 
 HELP_MESSAGE = """\
 Sets the MAC randomization mode.
@@ -43,62 +39,54 @@ ujust set-mac-randomization status
 RAND_MAC_FILE = "/etc/NetworkManager/conf.d/rand_mac.conf"
 
 
-def rebounce_connection() -> None: # TODO: switch this with a reset NetworkManager function
-    """bounces the connection to refresh MAC address with host"""
-    active_connections = (
-        subprocess.run(
-            ["/usr/bin/nmcli", "-t", "-f", "NAME,DEVICE,TYPE", "connection", "show", "--active"],
-            capture_output=True,
-            text=True,
-            check=True,
-        )
-        .stdout.strip()
-        .splitlines()
-    )
-    # check if there is wifi
-    # handle multiple connections
-    for connection in active_connections:
-        try:
-            name, device, con_type = connection.split(":", 2)
-        except ValueError:
-            continue  # skipping malformed lines
-        if device == "lo":
-            continue
+def restart_networkmanager() -> int:
+    """Resets NetworkManager so the MAC address can be refreshed."""
+    """Note: Simply toggling connections is not a substitute."""
 
-        subprocess.run(["/usr/bin/nmcli", "connection", "down", name], check=True)
-        subprocess.run(["/usr/bin/nmcli", "connection", "up", name], check=True)
+    # Placeholder for if this functionality can ever be implemented in a sandboxed way.
+
+    return 0
 
 
 disable_mac_randomization = sandbox.SandboxedFunction(
-    file_name = "disable_mac_randomization.py",
-    read_write_paths = ["/etc/NetworkManager/conf.d"]
-    )
+    file_name="disable_mac_randomization.py", read_write_paths=["/etc/NetworkManager/conf.d"]
+)
+
+
 def run_disable_randomization() -> int:
     """Runs sandboxed disable_randomization() function."""
     out = sandbox.run(disable_mac_randomization)
-    rebounce_connection()
+    print("\nChanges will not take effect until NetworkManager is restarted.")
+    print("NetworkManager can be restarted by running $ systemctl restart NetworkManager")
+    print("or by restarting this computer.")
     return out
 
 
 set_mac_randomization_stable = sandbox.SandboxedFunction(
-    file_name = "set_mac_randomization_stable.py",
-    read_write_paths = ["/etc/NetworkManager/conf.d"]
-    )
+    file_name="set_mac_randomization_stable.py", read_write_paths=["/etc/NetworkManager/conf.d"]
+)
+
+
 def run_set_randomization_stable() -> int:
     """Runs sandboxed set_mac_randomization_stable function."""
     out = sandbox.run(set_mac_randomization_stable)
-    rebounce_connection()
+    print("\nChanges will not take effect until NetworkManager is restarted.")
+    print("NetworkManager can be restarted by running $ systemctl restart NetworkManager")
+    print("or by restarting this computer.")
     return out
 
 
 set_mac_randomization_random = sandbox.SandboxedFunction(
-    file_name = "set_mac_randomization_random.py",
-    read_write_paths = ["/etc/NetworkManager/conf.d"]
-    )
+    file_name="set_mac_randomization_random.py", read_write_paths=["/etc/NetworkManager/conf.d"]
+)
+
+
 def run_set_randomization_random() -> int:
     """Runs sandboxed set_mac_randomization_random function."""
     out = sandbox.run(set_mac_randomization_random)
-    rebounce_connection()
+    print("\nChanges will not take effect until NetworkManager is restarted.")
+    print("NetworkManager can be restarted by running $ systemctl restart NetworkManager")
+    print("or by restarting this computer.")
     return out
 
 

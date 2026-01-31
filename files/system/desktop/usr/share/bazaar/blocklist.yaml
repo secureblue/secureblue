@@ -5,6 +5,7 @@ blocklists:
       - com.brave.Browser
       - org.kde.falkon
       - ru.yandex.Browser
+      - io.github.ungoogled_software.ungoogled_chromium
 
       # Unverified Chromium-based browsers.
       - com.google.Chrome
@@ -24,11 +25,18 @@ blocklists:
 
       # Unverified Firefox-based browsers.
       - net.mullvad.MullvadBrowser
+      - com.humatarayici.od
 
       # Other browsers.
       ## org.gnome.Epiphany uses WebKitGTK and flatpak-spawn for process-level sandboxing.
       ## Nyxt seems to use WebKitGTK, but without clear sandboxing.
       - engineer.atlas.Nyxt
+      - org.netsurf_browser.NetSurf
+      - org.catacombing.kumo
+      # Uses an internal browser
+      - net.codelogistics.webapps
+      # Appears to only support flatpaked browsers
+      - org.pvermeer.WebAppHub
 
       # Other apps.
       ## We ship the RPM.

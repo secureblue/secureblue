@@ -38,15 +38,13 @@ ujust set-mac-randomization status
 
 RAND_MAC_FILE = "/etc/NetworkManager/conf.d/rand_mac.conf"
 
-restart_networkmanager = sandbox.SandboxedFunction(
-    file_name="restart_networkmanager",
-    )
+restart_networkmanager = SystemdService("NetworkManager.service")
 
-def run_restart_networkmanager() -> int:
-    """Resets NetworkManager so the MAC address can be refreshed."""
+def run_restart_networkmanager() -> None:
+    """Restarts NetworkManager so the MAC address can be refreshed."""
     """Note: Simply toggling connections is not a substitute."""
 
-    return sandbox.run(restart_networkmanager)
+    return restart_networkmanager._do_systemctl_action("restart")
 
 
 disable_mac_randomization = sandbox.SandboxedFunction(

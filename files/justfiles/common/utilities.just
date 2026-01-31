@@ -204,7 +204,7 @@ rebase-secureblue:
     read -rp "Do you want Nvidia proprietary drivers? [y/N]: " use_nvidia
     if [[ "$use_nvidia" == [Yy]* ]]; then
         image_name+="-nvidia"
-        echo "Nvidia's proprietary drivers with open source kernel modules are recommended for Turing or newer cards (GTX 16XX+)"
+        echo "Nvidia's proprietary drivers with open source kernel modules are recommended for Turing or newer cards (GTX 16XX+)."
         read -rp "Do you want Nvidia's proprietary drivers with open source kernel modules? [Y/n]: " use_open
         use_open=${use_open:-y}
         [[ "$use_open" == [Yy]* ]] && image_name+="-open"

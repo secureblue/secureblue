@@ -52,7 +52,7 @@ echo "Nvidia's proprietary drivers provide superior performance on Nvidia hardwa
 read -rp "Do you want Nvidia proprietary drivers? (yes/No): " use_nvidia
 if is_yes "$use_nvidia"; then
     additional_params+="-nvidia"
-    echo "Nvidia's proprietary drivers with open source kernel modules are recommended for Turing or newer cards (GTX 16XX+)"
+    echo "Nvidia's proprietary drivers with open source kernel modules are recommended for Turing or newer cards (GTX 16XX+)."
     read -rp "Do you want Nvidia's proprietary drivers with open source kernel modules? (Yes/no): " use_open
     use_open=${use_open:-y}
     is_yes "$use_open" && additional_params+="-open"

@@ -6,16 +6,9 @@
 
 set -euo pipefail
 
-FWUPD_STATUS=$(/usr/bin/fwupdmgr get-updates --json)
-EXPECTED_STATUS=$(/usr/bin/cat <<EOF
-{
-  "Devices" : []
-}
-EOF
-)
+FWUPD_DEVICE_COUNT=$(fwupdmgr get-updates --json | jq '.Devices | length')
 
-if [[ "$FWUPD_STATUS" != "$EXPECTED_STATUS" ]]; then
-    # Exit success if update available.
+if [[ "$FWUPD_DEVICE_COUNT" -eq 0 ]]; then
     exit 0
 else
     exit 1

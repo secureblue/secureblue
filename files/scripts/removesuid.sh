@@ -90,6 +90,7 @@ set_caps_if_present "cap_fowner=ep" "/usr/libexec/spice-gtk-$(uname -m)/spice-cl
 # not seem to be needed for ordinary libvirt/QEMU/KVM usage. They are left
 # commented out for reference in case we later determine that the capabilities
 # should be added back.
+
 # Mounting and unmounting requires CAP_SYS_ADMIN:
 # set_caps_if_present "cap_sys_admin=ep" "/usr/bin/fusermount-glusterfs"
 

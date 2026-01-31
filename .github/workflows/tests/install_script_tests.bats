@@ -69,47 +69,10 @@ fi
   [[ "$output" == *"Welcome to the secureblue interactive installer"* ]]
 }
 
-@test "Test command for silverblue-main-hardened" {
-  run bash -c "echo -e 'no\n1\nno\nno' | bash '$INSTALL_SCRIPT'"
-  [ "$status" -eq 0 ]
-  [[ "$output" == *"silverblue-main-hardened"* ]]
-}
-
-@test "Test command for silverblue-nvidia-hardened" {
-  run bash -c "echo -e 'no\n1\nyes\nno\nno' | bash '$INSTALL_SCRIPT'"
-  [ "$status" -eq 0 ]
-  [[ "$output" == *"silverblue-nvidia-hardened"* ]]
-}
-
-
-@test "Test command for silverblue-nvidia-open-hardened" {
-  run bash -c "echo -e 'no\n1\nyes\nyes\no\nno' | bash '$INSTALL_SCRIPT'"
-  [ "$status" -eq 0 ]
-  [[ "$output" == *"silverblue-nvidia-open-hardened"* ]]
-}
-
-@test "Test command for kinoite-main-hardened" {
-  run bash -c "echo -e 'no\n2\nno\nno' | bash '$INSTALL_SCRIPT'"
-  [ "$status" -eq 0 ]
-  [[ "$output" == *"kinoite-main-hardened"* ]]
-}
-
-@test "Test command for sericea-main-hardened" {
-  run bash -c "echo -e 'no\n3\nno\nno' | bash '$INSTALL_SCRIPT'"
-  [ "$status" -eq 0 ]
-  [[ "$output" == *"sericea-main-hardened"* ]]
-}
-
-@test "Test command for cosmic-main-hardened" {
-  run bash -c "echo -e 'no\n4\nno\nno' | bash '$INSTALL_SCRIPT'"
-  [ "$status" -eq 0 ]
-  [[ "$output" == *"cosmic-main-hardened"* ]]
-}
-
 @test "Test command for securecore-zfs-main-hardened" {
   sudo mv /etc/os-release /etc/os-release.bak
   echo 'VARIANT="CoreOS"' | sudo tee /etc/os-release
-  run bash -c "echo -e 'yes\nyes\nno\no' | bash '$INSTALL_SCRIPT'"
+  run bash -c "echo -e 'yes\nno\no' | bash '$INSTALL_SCRIPT'"
   [ "$status" -eq 0 ]
   [[ "$output" == *"securecore-zfs-main-hardened"* ]]
   sudo mv /etc/os-release.bak /etc/os-release
@@ -118,7 +81,7 @@ fi
 @test "Test command for securecore-main-hardened" {
   sudo mv /etc/os-release /etc/os-release.bak
   echo 'VARIANT="CoreOS"' | sudo tee /etc/os-release
-  run bash -c "echo -e 'yes\nno\nno\no' | bash '$INSTALL_SCRIPT'"
+  run bash -c "echo -e 'no\nno\no' | bash '$INSTALL_SCRIPT'"
   [ "$status" -eq 0 ]
   [[ "$output" == *"securecore-main-hardened"* ]]
   sudo mv /etc/os-release.bak /etc/os-release

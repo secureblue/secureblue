@@ -4,6 +4,6 @@
 #
 # SPDX-License-Identifier: Apache-2.0
 
-set -oue pipefail
+set -euo pipefail
 
 sed -i 's/^DefaultZone=public/DefaultZone=FedoraServer/' /etc/firewalld/firewalld.conf

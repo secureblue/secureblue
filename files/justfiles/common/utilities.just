@@ -36,18 +36,6 @@ enroll-secureblue-secure-boot-key:
     echo 'At next reboot, the mokutil UEFI menu UI will be displayed (*QWERTY* keyboard input and navigation).'
     echo 'Then, select "Enroll MOK", and input "secureblue" as the password.'
 
-# Toggle display of the user-motd in terminal
-toggle-user-motd:
-    #!/usr/bin/bash
-    if test -e "${HOME}/.config/no-show-user-motd"; then
-      rm -f "${HOME}/.config/no-show-user-motd"
-    else
-      if test ! -d "${HOME}/.config"; then
-        mkdir "${HOME}/.config"
-      fi
-      touch "${HOME}/.config/no-show-user-motd"
-    fi
-
 # Update system (with provenance verification)
 update-system:
     #!/bin/sh
@@ -55,7 +43,7 @@ update-system:
     /usr/libexec/secureblue/verify-provenance.sh
     /usr/bin/rpm-ostree upgrade
     if [ -f /usr/libexec/secureblue/security-update-notification ]; then
-        /usr/libexec/secureblue/security-update-notification
+        /usr/libexec/secureblue/security-update-notification >/dev/null 2>&1 &
     fi
 
 # Update device firmware
@@ -243,7 +231,7 @@ install-vpn:
     # supported VPN providers and the security features they need disabled, separated by spaces
     declare -A vpn_providers=(
         ["ivpn"]="gui_needs_unconfined_userns gui_needs_xwayland"
-        ["mullvad"]="gui_needs_unconfined_userns gui_needs_xwayland"
+        ["mullvad"]="gui_needs_unconfined_userns"
         ["proton"]=""
         ["tailscale"]=""
     )

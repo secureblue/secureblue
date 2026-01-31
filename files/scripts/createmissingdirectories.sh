@@ -4,7 +4,7 @@
 #
 # SPDX-License-Identifier: Apache-2.0
 
-set -oue pipefail
+set -euo pipefail
 
 # https://bugzilla.redhat.com/show_bug.cgi?id=2259249
 mkdir -p /var/log/usbguard

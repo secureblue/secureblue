@@ -13,9 +13,9 @@ on:
       - staging
     paths:
       - '**nvidia**'
-      - './.github/workflows/pr_build.yml'
       - '!**.md'
       - '!.github/**'
+      - '.github/workflows/pr_build.yml'
 
 # Cancels running workflows if a new workflow run for
 # the same workflow is started

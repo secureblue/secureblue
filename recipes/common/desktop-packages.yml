@@ -19,6 +19,7 @@ install:
     - alsa-firmware
     - fzf
     - bazaar
+    - homebrew
 
     # yubikey enablement
     - pam-u2f
@@ -52,7 +53,7 @@ remove:
     - passim
     - fedora-chromium-config
 replace:
-  - from-repo: copr:copr.fedorainfracloud.org:secureblue:branding
+  - from-repo: copr:copr.fedorainfracloud.org:secureblue:packages
     packages:
       - old: fedora-logos
         new: secureblue-logos

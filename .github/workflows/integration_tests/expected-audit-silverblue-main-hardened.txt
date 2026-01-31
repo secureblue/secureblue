@@ -3,7 +3,6 @@
 {"name":"audit_signed_image","description":"Ensuring a signed image is in use","status":"fail","notes":[]}
 {"name":"audit_modprobe","description":"Ensuring no modprobe overrides","status":"pass","notes":[]}
 {"name":"audit_ptrace","description":"Ensuring ptrace is forbidden","status":"pass","notes":[]}
-{"name":"audit_authselect","description":"Ensuring no authselect overrides","status":"pass","notes":[]}
 {"name":"audit_container_policy","description":"Analyzing container policy","status":"pass","notes":[]}
 {"name":"audit_unconfined_userns","description":"Ensuring unconfined user namespace creation disallowed","status":"pass","notes":[]}
 {"name":"audit_container_userns","description":"Ensuring container user namespace creation disallowed","status":"pass","notes":[]}

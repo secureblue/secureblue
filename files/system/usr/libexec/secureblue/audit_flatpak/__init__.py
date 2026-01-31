@@ -464,7 +464,7 @@ def _check_overrides_access(
                 Recommendation.NAMES_PLACEHOLDER,
                 _("This grants the ability to acquire arbitrary permissions."),
                 _("To remove this permission from an app, use Flatseal or run:"),
-                "$ flatpak override -u --nofilesystem={override_path} com.example.Example",
+                f"$ flatpak override -u --nofilesystem={override_path} com.example.Example",
                 _('(replacing "{0}" with the flatpak app ID)').format("com.example.Example"),
             )
             rec = Recommendation("\n".join(rec_lines), mergeable_name=state.name)

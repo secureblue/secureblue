@@ -79,7 +79,6 @@ set_caps_if_present() {
 }
 
 set_caps_if_present "cap_dac_read_search,cap_audit_write=ep" "/usr/bin/chage"
-set_caps_if_present "cap_sys_admin=ep" "/usr/bin/fusermount3"
 set_caps_if_present "cap_dac_read_search,cap_audit_write=ep" "/usr/sbin/unix_chkpwd"
 
 # spice-client-glib-usb-acl-helper drops all capabilities except CAP_FOWNER:
@@ -92,6 +91,9 @@ set_caps_if_present "cap_fowner=ep" "/usr/libexec/spice-gtk-$(uname -m)/spice-cl
 # should be added back.
 
 # Mounting and unmounting requires CAP_SYS_ADMIN:
+# Mounting and unmounting requires CAP_SYS_ADMIN
+set_caps_if_present "cap_sys_admin=ep" "/usr/bin/fusermount3"
+# TODO: add back these capabilities, these are just commented out for testing purposes
 # set_caps_if_present "cap_sys_admin=ep" "/usr/bin/fusermount-glusterfs"
 
 # qemu-bridge-helper drops all capabilities except CAP_NET_ADMIN:

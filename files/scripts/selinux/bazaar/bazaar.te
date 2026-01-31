@@ -1,0 +1,33 @@
+policy_module(bazaar, 1.0.0)
+
+# SPDX-FileCopyrightText: Copyright 2025-2026 The Secureblue Authors
+#
+# SPDX-License-Identifier: Apache-2.0 OR MIT
+
+########################################
+#
+# Declarations
+#
+
+attribute_role bazaar_roles;
+roleattribute object_r bazaar_roles;
+
+type bazaar_t;
+type bazaar_exec_t;
+domain_type(bazaar_t, bazaar_exec_t)
+application_domain(bazaar_t, bazaar_exec_t)
+
+role bazaar_roles types bazaar_t;
+
+unconfined_domain_noaudit(bazaar_t)
+
+optional_policy(`
+	gen_require(`
+		type unconfined_t;
+		attribute trivalent_domain;
+		attribute user_home_type;
+		role unconfined_r;
+	')
+
+	bazaar_run(unconfined_t, unconfined_r)
+')

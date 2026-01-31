@@ -79,21 +79,13 @@ set_caps_if_present() {
 }
 
 set_caps_if_present "cap_dac_read_search,cap_audit_write=ep" "/usr/bin/chage"
+set_caps_if_present "cap_sys_admin=ep" "/usr/bin/fusermount3"
 set_caps_if_present "cap_dac_read_search,cap_audit_write=ep" "/usr/sbin/unix_chkpwd"
 
 # spice-client-glib-usb-acl-helper drops all capabilities except CAP_FOWNER:
-# https://gitlab.freedesktop.org/spice/spice-gtk/-/blob/7a2779182b003ec5e8192dc5186f0b1c3eb8e831/src/spice-client-glib-usb-acl-helper.c#L304
-set_caps_if_present "cap_fowner=ep" "/usr/libexec/spice-gtk-$(uname -m)/spice-client-glib-usb-acl-helper"
-
-# The below capabilities are expected by these QEMU-related executables but do
-# not seem to be needed for ordinary libvirt/QEMU/KVM usage. They are left
-# commented out for reference in case we later determine that the capabilities
 # should be added back.
 
 # Mounting and unmounting requires CAP_SYS_ADMIN:
-# Mounting and unmounting requires CAP_SYS_ADMIN
-set_caps_if_present "cap_sys_admin=ep" "/usr/bin/fusermount3"
-# TODO: add back these capabilities, these are just commented out for testing purposes
 # set_caps_if_present "cap_sys_admin=ep" "/usr/bin/fusermount-glusterfs"
 
 # qemu-bridge-helper drops all capabilities except CAP_NET_ADMIN:

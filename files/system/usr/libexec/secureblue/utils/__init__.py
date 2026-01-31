@@ -13,7 +13,10 @@ import json
 import subprocess  # nosec
 import sys
 import textwrap
+import time
 from collections.abc import Iterable, Sequence
+from dataclasses import dataclass
+from functools import partialmethod
 
 import rpm
 
@@ -106,6 +109,63 @@ class Image(enum.Enum):
     def is_desktop(self) -> bool:
         """Is the image a desktop image?"""
         return not self.is_server()
+
+@dataclass(frozen=True)
+class SystemdService:
+    """
+    A systemd service.
+
+    Attributes:
+        name (str): The unit name, e.g. "dnsconfd.service".
+    """
+
+    name: str
+
+    def _do_systemctl_action(self, *actions: str) -> None:
+        """
+        Perform an action on a systemd service. Retry and eventually log on failure.
+
+        Args:
+            action (str): systemctl action (e.g. "start")
+        """
+        # nosemgrep: dangerous-subprocess-use-audit
+        systemctl = subprocess.run(  # nosec
+            ["/usr/bin/systemctl", *actions, self.name], check=False, capture_output=True
+        )
+
+        if not systemctl.returncode:
+            # All good.
+            return
+
+        # Error, so wait a few seconds and try again.
+        time.sleep(3)
+        # nosemgrep: dangerous-subprocess-use-audit
+        systemctl = subprocess.run(  # nosec
+            ["/usr/bin/systemctl", *actions, self.name], check=False, stdout=subprocess.PIPE
+        )
+
+        if systemctl.returncode:
+            print(f"Failed to {' '.join(actions)} {self.name}.", file=sys.stderr)
+            sys.exit(systemctl.returncode)
+
+    disable = partialmethod(_do_systemctl_action, "disable")
+    disable_now = partialmethod(_do_systemctl_action, "disable", "--now")
+    enable = partialmethod(_do_systemctl_action, "enable")
+    enable_now = partialmethod(_do_systemctl_action, "enable", "--now")
+    stop = partialmethod(_do_systemctl_action, "stop")
+    start = partialmethod(_do_systemctl_action, "start")
+    mask = partialmethod(_do_systemctl_action, "mask")
+    unmask = partialmethod(_do_systemctl_action, "unmask")
+
+    def is_enabled(self) -> bool:
+        """Returns whether the systemd service is enabled."""
+        # nosemgrep: dangerous-subprocess-use-audit
+        systemctl = subprocess.run(  # nosec
+            ["/usr/bin/systemctl", "is-enabled", "--quiet", self.name],
+            check=False,
+            capture_output=True,
+        )
+        return not systemctl.returncode
 
 
 def booted_image_ref() -> str:

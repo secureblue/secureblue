@@ -13,7 +13,7 @@ from pathlib import Path
 
 import inquirer
 import sandbox
-from utils import CommandUsageError
+from utils import CommandUsageError, SystemdService
 
 HELP_MESSAGE = """\
 Sets the MAC randomization mode.
@@ -38,14 +38,15 @@ ujust set-mac-randomization status
 
 RAND_MAC_FILE = "/etc/NetworkManager/conf.d/rand_mac.conf"
 
+restart_networkmanager = sandbox.SandboxedFunction(
+    file_name="restart_networkmanager",
+    )
 
-def restart_networkmanager() -> int:
+def run_restart_networkmanager() -> int:
     """Resets NetworkManager so the MAC address can be refreshed."""
     """Note: Simply toggling connections is not a substitute."""
 
-    # Placeholder for if this functionality can ever be implemented in a sandboxed way.
-
-    return 0
+    return sandbox.run(restart_networkmanager)
 
 
 disable_mac_randomization = sandbox.SandboxedFunction(
@@ -56,9 +57,7 @@ disable_mac_randomization = sandbox.SandboxedFunction(
 def run_disable_randomization() -> int:
     """Runs sandboxed disable_randomization() function."""
     out = sandbox.run(disable_mac_randomization)
-    print("\nChanges will not take effect until NetworkManager is restarted.")
-    print("NetworkManager can be restarted by running $ systemctl restart NetworkManager")
-    print("or by restarting this computer.")
+    run_restart_networkmanager()
     return out
 
 
@@ -70,9 +69,7 @@ set_mac_randomization_stable = sandbox.SandboxedFunction(
 def run_set_randomization_stable() -> int:
     """Runs sandboxed set_mac_randomization_stable function."""
     out = sandbox.run(set_mac_randomization_stable)
-    print("\nChanges will not take effect until NetworkManager is restarted.")
-    print("NetworkManager can be restarted by running $ systemctl restart NetworkManager")
-    print("or by restarting this computer.")
+    run_restart_networkmanager()
     return out
 
 
@@ -84,9 +81,7 @@ set_mac_randomization_random = sandbox.SandboxedFunction(
 def run_set_randomization_random() -> int:
     """Runs sandboxed set_mac_randomization_random function."""
     out = sandbox.run(set_mac_randomization_random)
-    print("\nChanges will not take effect until NetworkManager is restarted.")
-    print("NetworkManager can be restarted by running $ systemctl restart NetworkManager")
-    print("or by restarting this computer.")
+    run_restart_networkmanager()
     return out
 
 
@@ -145,13 +140,13 @@ def parse_mode_args() -> str:
         return "HELP"
 
     match args[0]:
-        case "stable":
+        case "stable" | "per-network":
             return "STABLE"
 
-        case "random":
+        case "random" | "per-connection":
             return "RANDOM"
 
-        case "off":
+        case "off" | "disable":
             return "OFF"
 
         case "status":
@@ -206,4 +201,3 @@ def main() -> int:
 
 if __name__ == "__main__":
     sys.exit(main())
-

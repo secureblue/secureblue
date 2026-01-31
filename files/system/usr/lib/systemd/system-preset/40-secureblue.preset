@@ -1,5 +1,3 @@
-disable geoclue.service
-disable systemd-resolved.service
 enable dnsconfd.service
 enable fwupd-refresh.timer
 enable podman-auto-update.timer

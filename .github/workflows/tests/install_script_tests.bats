@@ -27,9 +27,7 @@ fi
 
 @test "Script exits with error if rpm-ostree is not installed" {
   sudo bash -c 'mv /usr/bin/rpm-ostree /usr/bin/rpm-ostree.backup'
-  run bash -c "echo -e 'yes
-no
-o' | bash '$INSTALL_SCRIPT'"
+  run bash -c "echo -e 'no\nno\nno' | bash '$INSTALL_SCRIPT'"
   [ "$status" -eq 1 ]
   [[ "$output" == *"This script only runs on Fedora Atomic"* ]]
   sudo bash -c 'mv /usr/bin/rpm-ostree.backup /usr/bin/rpm-ostree'
@@ -37,9 +35,7 @@ o' | bash '$INSTALL_SCRIPT'"
 
 @test "Script exits with error if rpm-ostree is very old" {
   sudo sed -i 's/2024\.9/2023\.5/' /usr/bin/rpm-ostree
-  run bash -c "echo -e 'yes
-no
-o' | bash '$INSTALL_SCRIPT'"
+  run bash -c "echo -e 'no\nno\nno' | bash '$INSTALL_SCRIPT'"
   [ "$status" -eq 1 ]
   [[ "$output" == *"rpm-ostree is too old, please upgrade before running this script."* ]]
   sudo sed -i 's/2023\.5/2024\.9/' /usr/bin/rpm-ostree
@@ -47,9 +43,7 @@ o' | bash '$INSTALL_SCRIPT'"
 
 @test "Script exits with error if rpm-ostree is slightly old" {
   sudo sed -i 's/2024\.9/2024\.8/' /usr/bin/rpm-ostree
-  run bash -c "echo -e 'yes
-no
-o' | bash '$INSTALL_SCRIPT'"
+  run bash -c "echo -e 'no\nno\nno' | bash '$INSTALL_SCRIPT'"
   [ "$status" -eq 1 ]
   [[ "$output" == *"rpm-ostree is too old, please upgrade before running this script."* ]]
   sudo sed -i 's/2024\.8/2024\.9/' /usr/bin/rpm-ostree
@@ -57,26 +51,20 @@ o' | bash '$INSTALL_SCRIPT'"
 
 @test "Script works if rpm-ostree is new" {
   sudo sed -i 's/2024\.9/2024\.11/' /usr/bin/rpm-ostree
-  run bash -c "echo -e 'yes
-no
-o' | bash '$INSTALL_SCRIPT'"
+  run bash -c "echo -e 'no\nno\nno' | bash '$INSTALL_SCRIPT'"
   [ "$status" -eq 0 ]
   sudo sed -i 's/2024\.11/2024\.9/' /usr/bin/rpm-ostree
 }
 
 @test "Script works if rpm-ostree is very new" {
   sudo sed -i 's/2024\.9/2025\.3/' /usr/bin/rpm-ostree
-  run bash -c "echo -e 'yes
-no
-o' | bash '$INSTALL_SCRIPT'"
+  run bash -c "echo -e 'no\nno\nno' | bash '$INSTALL_SCRIPT'"
   [ "$status" -eq 0 ]
   sudo sed -i 's/2025\.3/2024\.9/' /usr/bin/rpm-ostree
 }
 
 @test "Script passes rpm-ostree check if it is installed" {
-  run bash -c "echo -e 'yes
-no
-o' | bash '$INSTALL_SCRIPT'"
+  run bash -c "echo -e 'no\nno\nno' | bash '$INSTALL_SCRIPT'"
   [ "$status" -eq 0 ]
   [[ "$output" == *"Welcome to the secureblue interactive installer"* ]]
 }
@@ -84,7 +72,7 @@ o' | bash '$INSTALL_SCRIPT'"
 @test "Test command for securecore-zfs-main-hardened" {
   sudo mv /etc/os-release /etc/os-release.bak
   echo 'VARIANT="CoreOS"' | sudo tee /etc/os-release
-  run bash -c "echo -e 'yes\nno\no' | bash '$INSTALL_SCRIPT'"
+  run bash -c "echo -e 'yes\nno\nno' | bash '$INSTALL_SCRIPT'"
   [ "$status" -eq 0 ]
   [[ "$output" == *"securecore-zfs-main-hardened"* ]]
   sudo mv /etc/os-release.bak /etc/os-release
@@ -93,7 +81,7 @@ o' | bash '$INSTALL_SCRIPT'"
 @test "Test command for securecore-main-hardened" {
   sudo mv /etc/os-release /etc/os-release.bak
   echo 'VARIANT="CoreOS"' | sudo tee /etc/os-release
-  run bash -c "echo -e 'no\nno\no' | bash '$INSTALL_SCRIPT'"
+  run bash -c "echo -e 'no\nno\nno' | bash '$INSTALL_SCRIPT'"
   [ "$status" -eq 0 ]
   [[ "$output" == *"securecore-main-hardened"* ]]
   sudo mv /etc/os-release.bak /etc/os-release

@@ -18,6 +18,7 @@ install:
     - wl-clipboard
     - alsa-firmware
     - fzf
+    - bazaar
     - homebrew
 
     # yubikey enablement

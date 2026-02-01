@@ -17,12 +17,11 @@ def disable_randomization() -> int:
     """Disables MAC address randomisation"""
     if Path("/etc/NetworkManager/conf.d/rand_mac.conf").exists():
         os.remove("/etc/NetworkManager/conf.d/rand_mac.conf")
+        print("MAC randomization disabled.")
     else:
         print(
             "MAC randomization config not found. This usually means MAC randomization was already off."
         )
-
-    print("MAC randomization disabled")
 
     return 0
 

@@ -38,6 +38,7 @@ ujust set-mac-randomization status
 
 RAND_MAC_FILE = "/etc/NetworkManager/conf.d/rand_mac.conf"
 
+
 restart_networkmanager = SystemdService("NetworkManager.service")
 
 def run_restart_networkmanager() -> None:

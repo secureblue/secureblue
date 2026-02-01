@@ -6,10 +6,4 @@
 
 set -euo pipefail
 
-FWUPD_DEVICE_COUNT=$(fwupdmgr get-updates --json | jq '.Devices | length')
-
-if [[ "$FWUPD_DEVICE_COUNT" -eq 0 ]]; then
-    exit 0
-else
-    exit 1
-fi
+fwupdmgr get-updates --json | jq -e '.Devices != []' > /dev/null

@@ -31,6 +31,7 @@ from audit_utils import (
     get_flatpak_permissions,
     get_legend,
     get_width,
+    normalize_sysctl,
     validate_sysctl,
     warn_if_root,
 )
@@ -112,18 +113,28 @@ def audit_sysctl():
         conf = f.readlines()
     sysctl_expected = parse_config(conf)
     status = PASS
-    sysctl_errors = []
+    notes = []
     for sysctl, expected in sysctl_expected.items():
         sysctl_path = f"/proc/sys/{sysctl.replace('.', '/')}"
         for path in glob.iglob(sysctl_path):
             try:
                 with open(path, encoding="utf-8") as f:
-                    actual = f.read().strip()
+                    actual = normalize_sysctl(f.read())
             except PermissionError:
                 continue
+            if sysctl == "kernel.printk" and actual == "15 3 3 3":
+                status = WARN
+                note_lines = [
+                    _("{0} should be {1}, but is actually {2}.").format(sysctl, expected, actual),
+                    _("This is likely due to a kernel fault, as documented in `{0}`.").format(
+                        "man 2 syslog"
+                    ),
+                ]
+                notes.append(Note("\n".join(note_lines), WARN))
+                break
             if not validate_sysctl(sysctl, actual, expected):
                 status = FAIL
-                sysctl_errors.append(
+                notes.append(
                     Note(
                         _("{0} should be {1}, but is actually {2}.").format(
                             sysctl, expected, actual
@@ -132,7 +143,7 @@ def audit_sysctl():
                     )
                 )
                 break
-    yield Report(_("Ensuring no sysctl overrides"), status, notes=sysctl_errors)
+    yield Report(_("Ensuring no sysctl overrides"), status, notes=notes)
 
 
 @audit

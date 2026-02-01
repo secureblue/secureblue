@@ -125,12 +125,15 @@ async def get_flatpak_permissions(name: str, version: str) -> str:
     return await async_command_stdout("flatpak", "info", "--show-permissions", name, version)
 
 
+def normalize_sysctl(sysctl: str) -> str:
+    """Normalize a sysctl value."""
+    result = re.sub(r"\s+", " ", sysctl.strip())
+    replacements = {"disabled": "0", "enabled": "1"}
+    return replacements.get(result, result)
+
+
 def validate_sysctl(sysctl: str, actual: str, expected: str) -> bool:
     """Validate a sysctl value against an expected value."""
-    actual = re.sub(r"\s+", " ", actual.strip())
-    replace = {"disabled": "0", "enabled": "1"}.get(actual)
-    if replace is not None:
-        actual = replace
     if sysctl == "kernel.sysrq":
         # Both 0 and 4 are secure values for this setting. For details, see:
         # https://www.kernel.org/doc/html/latest/admin-guide/sysrq.html

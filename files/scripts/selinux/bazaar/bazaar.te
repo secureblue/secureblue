@@ -24,10 +24,11 @@ unconfined_domain_noaudit(bazaar_t)
 optional_policy(`
 	gen_require(`
 		type unconfined_t;
-		attribute trivalent_domain;
-		attribute user_home_type;
+		type flatpak_t;
+		type flatpak_exec_t;
 		role unconfined_r;
 	')
 
 	bazaar_run(unconfined_t, unconfined_r)
+	domtrans_pattern(bazaar_t, flatpak_exec_t, flatpak_t)
 ')

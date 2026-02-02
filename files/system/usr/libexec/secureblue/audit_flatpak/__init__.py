@@ -216,7 +216,6 @@ FLATPAK_PERMISSION_CHECKS: list[PermissionCheck] = [
 
 ARBITRARY_PERMISSIONS_EXPECTED: list[str] = [
     "com.github.tchx84.Flatseal",
-    "io.github.flattool.Warehouse",
     "io.github.kolunmi.Bazaar",
 ]
 

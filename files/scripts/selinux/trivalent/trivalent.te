@@ -158,6 +158,9 @@ files_rw_generic_tmp_sockets(trivalent_domain)
 files_rw_tmp_file_leaks(trivalent_domain)
 files_map_generic_tmp_files(trivalent_domain)
 
+# copy/pasting to distrobox apps
+container_spc_rw_pipes(trivalent_domain)
+
 # memory pressure
 kernel_read_psi(trivalent_domain)
 kernel_read_kernel_sysctls(trivalent_domain)

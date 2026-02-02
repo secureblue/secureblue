@@ -5,10 +5,9 @@
 # Disable GNOME user extensions installation & usage
 # Only GNOME system extensions are trusted if installed
 
-# Switch from Warehouse to Bazaar once it's ready
 [org.gnome.shell]
 allow-extension-installation=false
-favorite-apps = ['trivalent.desktop', 'org.gnome.Nautilus.desktop', 'org.gnome.Ptyxis.desktop', 'com.github.tchx84.Flatseal.desktop', 'io.github.flattool.Warehouse.desktop']
+favorite-apps = ['trivalent.desktop', 'org.gnome.Nautilus.desktop', 'org.gnome.Ptyxis.desktop', 'com.github.tchx84.Flatseal.desktop', 'io.github.kolunmi.Bazaar.desktop']
 enabled-extensions = []
 
 [org.gnome.desktop.interface]

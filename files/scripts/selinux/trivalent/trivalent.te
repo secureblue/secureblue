@@ -346,6 +346,16 @@ optional_policy(`
 
 optional_policy(`
 	gen_require(`
+		type flatpak_t;
+    type unconfined_trivalent_script_t;
+	')
+
+	domtrans_pattern(flatpak_t, trivalent_script_exec_t, unconfined_trivalent_script_t)
+')
+
+
+optional_policy(`
+	gen_require(`
 		type sysadm_t;
 		role sysadm_r;
 	')

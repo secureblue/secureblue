@@ -331,12 +331,17 @@ seutil_manage_file_contexts(trivalent_script_domain)
 userdom_use_inherited_user_terminals(trivalent_script_domain)
 fs_all_mount_fs_perms_xattr_fs(trivalent_script_domain)
 
-domtrans_pattern(flatpak_t, trivalent_script_exec_t, unconfined_trivalent_script_t)
+optional_policy(`
+	gen_require(`
+		type flatpak_t;
+	')
+
+	domtrans_pattern(flatpak_t, trivalent_script_exec_t, unconfined_trivalent_script_t)
+')
 
 optional_policy(`
 	gen_require(`
 		type unconfined_t;
-		type flatpak_t;
 		role unconfined_r;
 	')
 

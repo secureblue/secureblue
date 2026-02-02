@@ -41,7 +41,7 @@ interface(`flatpak_domtrans',`
 interface(`flatpak_run',`
 	gen_require(`
 		type flatpak_t;
-        attribute_role flatpak_roles;
+		attribute_role flatpak_roles;
 	')
 
 	flatpak_domtrans($1)

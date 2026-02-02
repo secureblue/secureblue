@@ -334,10 +334,12 @@ fs_all_mount_fs_perms_xattr_fs(trivalent_script_domain)
 optional_policy(`
 	gen_require(`
 		type unconfined_t;
+		type flatpak_t;
 		role unconfined_r;
 	')
 
 	trivalent_role_template(unconfined, unconfined_r, unconfined_t)
+	trivalent_role_template(unconfined, unconfined_r, flatpak_t)
 ')
 
 optional_policy(`

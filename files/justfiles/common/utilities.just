@@ -233,7 +233,7 @@ install-vpn:
     # supported VPN providers and the security features they need disabled, separated by spaces
     declare -A vpn_providers=(
         ["ivpn"]="gui_needs_unconfined_userns gui_needs_xwayland"
-        ["mullvad"]="gui_needs_unconfined_userns"
+        ["mullvad"]="gui_needs_unconfined_userns gui_needs_xwayland"
         ["proton"]=""
         ["tailscale"]=""
     )

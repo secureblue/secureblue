@@ -10,17 +10,16 @@ Disables MAC randomisation
 
 import os
 import sys
-from pathlib import Path
 
 
 def disable_randomization() -> int:
     """Disables MAC address randomisation"""
     try:
         os.remove("/etc/NetworkManager/conf.d/rand_mac.conf")
-    except:
-        return 1 # failure
+    except FileNotFoundError:
+        return 1  # failure
 
-    return 0 # success
+    return 0  # success
 
 
 def main() -> int:

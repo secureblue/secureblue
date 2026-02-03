@@ -9,16 +9,12 @@ Sets MAC address randomisation
 """
 
 import sys
-from pathlib import Path
 from enum import StrEnum
+from pathlib import Path
 
 import inquirer
 import sandbox
-from utils import (
-    CommandUsageError,
-    SystemdService,
-    print_wrapped
-    )
+from utils import CommandUsageError, SystemdService, print_wrapped
 
 HELP_MESSAGE = """\
 Sets the MAC randomization mode.
@@ -43,6 +39,7 @@ ujust set-mac-randomization status
 
 RAND_MAC_FILE = "/etc/NetworkManager/conf.d/rand_mac.conf"
 
+
 class Mode(StrEnum):
     HELP = "HELP"
     INTERACTIVE = "INTERACTIVE"
@@ -52,18 +49,16 @@ class Mode(StrEnum):
     STATUS = "STATUS"
 
 
-
 def run_restart_networkmanager() -> None:
     """Restarts NetworkManager so the MAC address can be refreshed."""
 
     # Note: Simply toggling connections is not a substitute.
 
-    return SystemdService("NetworkManager.service").restart()
-
+    SystemdService("NetworkManager.service").restart()
 
 
 def return_status(silent: bool = False) -> str:
-    """Returns the current MAC randomisation status [stable/random/off]"""
+    """Returns the current MAC randomisation status [stable/random/off] and optionally prints it out."""
     if Path(RAND_MAC_FILE).exists():
         with open(RAND_MAC_FILE, encoding="utf-8") as f:
             for line in f:
@@ -77,26 +72,30 @@ def return_status(silent: bool = False) -> str:
             print("The current status is: Off")
         return "Off"
 
+    return "Somethings gone wrong!"
+
+
 disable_mac_randomization = sandbox.SandboxedFunction(
     file_name="disable_mac_randomization.py", read_write_paths=["/etc/NetworkManager/conf.d"]
 )
 
+
 def run_disable_randomization() -> int:
     """Runs sandboxed disable_randomization() function."""
-    if Path("/etc/NetworkManager/conf.d/rand_mac.conf").exists():
+    if Path(RAND_MAC_FILE).exists():
         out = sandbox.run(disable_mac_randomization)
-        if out: # out != 0 means failure
-            print("Failed to disable MAC randomization.")
-        else:
-            run_restart_networkmanager()
-            print("MAC randomization disabled.")
-
-
     else:
         print(
             "MAC randomization config not found. This usually means MAC randomization is already off."
         )
+        return 0
 
+    if out:  # out != 0 means failure
+        print("Failed to disable MAC randomization.")
+        return 1
+    run_restart_networkmanager()
+    print("MAC randomization disabled.")
+    return 0
 
 
 set_mac_randomization_stable = sandbox.SandboxedFunction(
@@ -112,20 +111,20 @@ def run_set_randomization_stable() -> int:
         print("MAC randomization is already set to per-network (stable).")
         return 0
 
-    else:
-        out = sandbox.run(set_mac_randomization_stable)
-        if out:
-            print("Failed to set MAC randomization to per-network (stable).")
-            return out
+    out = sandbox.run(set_mac_randomization_stable)
+    if out:
+        print("Failed to set MAC randomization to per-network (stable).")
+        return out
 
-        run_restart_networkmanager()
-        print("MAC randomization enabled.")
-
+    run_restart_networkmanager()
+    print("MAC randomization enabled.")
+    return 0
 
 
 set_mac_randomization_random = sandbox.SandboxedFunction(
     file_name="set_mac_randomization_random.py", read_write_paths=["/etc/NetworkManager/conf.d"]
 )
+
 
 def run_set_randomization_random() -> int:
     """Runs sandboxed set_mac_randomization_random function."""
@@ -135,17 +134,14 @@ def run_set_randomization_random() -> int:
         print("MAC randomization is already set to per-network (random).")
         return 0
 
-    else:
-        out = sandbox.run(set_mac_randomization_random)
-        if out:
-            print("Failed to enable MAC randomization.")
-            return out
-        else:
-            run_restart_networkmanager()
-            print("MAC randomization enabled.")
-
-
+    out = sandbox.run(set_mac_randomization_random)
+    if out:
+        print("Failed to enable MAC randomization.")
         return out
+    run_restart_networkmanager()
+    print("MAC randomization enabled.")
+
+    return out
 
 
 def interactive_selection() -> int:
@@ -179,7 +175,7 @@ def interactive_selection() -> int:
             )  # This line *should* never run
 
 
-def parse_mode_args() -> strEnum:
+def parse_mode_args() -> StrEnum:
     """Parses the argument passed to this script"""
     args = sys.argv[1:]
 
@@ -206,13 +202,13 @@ def parse_mode_args() -> strEnum:
             raise CommandUsageError(f"Invalid argument value: '{args[0]}'")
 
 
-def run(mode: strEnum) -> int:
+def run(mode: StrEnum) -> int:
     """Selects which function to run by referencing the provided mode."""
-    print("") # newline for readability
+    print()  # newline for readability
     print_wrapped(
         "WARNING: It is known that MAC randomization breaks network connectivity on some hypervisors (Hyper-V for example)."
     )
-    print("") # newline for readability
+    print()  # newline for readability
     match mode:
         case Mode.INTERACTIVE:
             return interactive_selection()
@@ -239,7 +235,6 @@ def run(mode: strEnum) -> int:
 
 
 # -------------------------------- #
-
 
 
 def main() -> int:

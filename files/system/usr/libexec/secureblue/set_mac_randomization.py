@@ -43,6 +43,14 @@ ujust set-mac-randomization status
 
 RAND_MAC_FILE = "/etc/NetworkManager/conf.d/rand_mac.conf"
 
+Mode = strEnum("Mode", [(
+    HELP = auto()
+    INTERACTIVE = auto()
+    STABLE = auto()
+    RANDOM = auto()
+    OFF = auto()
+    STATUS = auto()
+    )])
 
 
 def run_restart_networkmanager() -> None:
@@ -58,16 +66,35 @@ disable_mac_randomization = sandbox.SandboxedFunction(
 )
 
 
+def return_status() -> int:
+    """Returns the current MAC randomisation status [stable/random/off]"""
+    if Path(RAND_MAC_FILE).exists():
+        with open(RAND_MAC_FILE, encoding="utf-8") as f:
+            for line in f:
+                if line.startswith("wifi.cloned-mac-address="):
+                    status = line.split("=", 1)[1].strip()
+                    print(f"The current status is: {status}")
+    else:
+        print("The current status is: Off")
+
+    return 0
+
 def run_disable_randomization() -> int:
     """Runs sandboxed disable_randomization() function."""
-    out = sandbox.run(disable_mac_randomization)
+    if Path("/etc/NetworkManager/conf.d/rand_mac.conf").exists():
+        out = sandbox.run(disable_mac_randomization)
+        if not out: # out == 0 means success
+            run_restart_networkmanager()
+        else:
+            print("Failed to disable MAC randomization.")
 
-    if out:
-        run_restart_networkmanager()
+        return out
+
     else:
-        print("Failed to disable MAC randomization.")
+        print(
+            "MAC randomization config not found. This usually means MAC randomization was already off."
+        )
 
-    return out
 
 
 set_mac_randomization_stable = sandbox.SandboxedFunction(
@@ -95,20 +122,6 @@ def run_set_randomization_random() -> int:
     out = sandbox.run(set_mac_randomization_random)
     run_restart_networkmanager()
     return out
-
-
-def return_status() -> int:line.strip().split("=", 1)
-    """Returns the current MAC randomisation status [stable/random/off]"""
-    if Path(RAND_MAC_FILE).exists():
-        with open(RAND_MAC_FILE, encoding="utf-8") as f:
-            for line in f:
-                if line.startswith("wifi.cloned-mac-address="):
-                    status = line.split("=", 1)[1].strip()
-                    print(f"The current status is: {status}")
-    else:
-        print("The current status is: Off")
-
-    return 0
 
 
 def interactive_selection() -> int:
@@ -140,14 +153,6 @@ def interactive_selection() -> int:
                 "Script malfunction: Prompt returned an unexpected value."
             )  # This line *should* never run
 
-Mode = strEnum("Mode", [(
-    HELP = auto()
-    INTERACTIVE = auto()
-    STABLE = auto()
-    RANDOM = auto()
-    OFF = auto()
-    STATUS = auto()
-    )])
 
 def parse_mode_args() -> strEnum:
     """Parses the argument passed to this script"""

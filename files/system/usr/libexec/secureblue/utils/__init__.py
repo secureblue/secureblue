@@ -168,7 +168,7 @@ class SystemdService:
         return not systemctl.returncode
 
     def restart(self) -> None:
-        """Restartsa a systemd service."""
+        """Restarts a systemd service."""
         return self._do_systemctl_action("restart")
 
 

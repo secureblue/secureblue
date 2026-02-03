@@ -15,10 +15,12 @@ from pathlib import Path
 
 def disable_randomization() -> int:
     """Disables MAC address randomisation"""
-    os.remove("/etc/NetworkManager/conf.d/rand_mac.conf")
-    print("MAC randomization disabled.")
+    try:
+        os.remove("/etc/NetworkManager/conf.d/rand_mac.conf")
+    except:
+        return 1 # failure
 
-    return 0
+    return 0 # success
 
 
 def main() -> int:

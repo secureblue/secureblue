@@ -14,7 +14,6 @@ import sys
 
 def set_stable() -> int:
     """Sets MAC address randomisation to occur on a per-network basis."""
-    print("Selected state: per-network (stable)")
 
     with open("/etc/NetworkManager/conf.d/rand_mac.conf", "w", encoding="utf-8") as f:
         f.write("""\
@@ -26,7 +25,6 @@ wifi.cloned-mac-address=stable
             """)
 
     os.chmod("/etc/NetworkManager/conf.d/rand_mac.conf", 0o644)
-    print("MAC randomization enabled.")
 
     return 0
 

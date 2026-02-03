@@ -10,7 +10,7 @@ Sets MAC address randomisation
 
 import sys
 from pathlib import Path
-from enum import strEnum
+from enum import StrEnum
 
 import inquirer
 import sandbox
@@ -43,14 +43,14 @@ ujust set-mac-randomization status
 
 RAND_MAC_FILE = "/etc/NetworkManager/conf.d/rand_mac.conf"
 
-Mode = strEnum("Mode", [(
-    HELP = auto()
-    INTERACTIVE = auto()
-    STABLE = auto()
-    RANDOM = auto()
-    OFF = auto()
-    STATUS = auto()
-    )])
+class Mode(StrEnum):
+    HELP = "HELP"
+    INTERACTIVE = "INTERACTIVE"
+    STABLE = "STABLE"
+    RANDOM = "RANDOM"
+    OFF = "OFF"
+    STATUS = "STATUS"
+
 
 
 def run_restart_networkmanager() -> None:
@@ -66,7 +66,7 @@ disable_mac_randomization = sandbox.SandboxedFunction(
 )
 
 
-def return_status() -> int:
+def return_status() -> str:
     """Returns the current MAC randomisation status [stable/random/off]"""
     if Path(RAND_MAC_FILE).exists():
         with open(RAND_MAC_FILE, encoding="utf-8") as f:
@@ -74,10 +74,11 @@ def return_status() -> int:
                 if line.startswith("wifi.cloned-mac-address="):
                     status = line.split("=", 1)[1].strip()
                     print(f"The current status is: {status}")
+                    return status
     else:
         print("The current status is: Off")
+        return "Off"
 
-    return 0
 
 def run_disable_randomization() -> int:
     """Runs sandboxed disable_randomization() function."""
@@ -104,12 +105,17 @@ set_mac_randomization_stable = sandbox.SandboxedFunction(
 
 def run_set_randomization_stable() -> int:
     """Runs sandboxed set_mac_randomization_stable function."""
-    out = sandbox.run(set_mac_randomization_stable)
-    restart_success = run_restart_networkmanager()
-    if not restart_success: # restart_success == 0 if successful
-        return out
+    if return_status() == "stable":
+        print("MAC randomization is already set to per-network (stable).")
+        return 0
+
     else:
-        return restart_success
+        out = sandbox.run(set_mac_randomization_stable)
+        restart_success = run_restart_networkmanager()
+        if not restart_success: # restart_success == 0 if successful
+            return out
+        else:
+            return restart_success # return the fail code
 
 
 set_mac_randomization_random = sandbox.SandboxedFunction(
@@ -119,9 +125,14 @@ set_mac_randomization_random = sandbox.SandboxedFunction(
 
 def run_set_randomization_random() -> int:
     """Runs sandboxed set_mac_randomization_random function."""
-    out = sandbox.run(set_mac_randomization_random)
-    run_restart_networkmanager()
-    return out
+    if return_status() == "random":
+        print("MAC randomization is already set to per-network (random).")
+        return 0
+
+    else:
+        out = sandbox.run(set_mac_randomization_random)
+        run_restart_networkmanager()
+        return out
 
 
 def interactive_selection() -> int:
@@ -137,7 +148,8 @@ def interactive_selection() -> int:
     print("Selection: " + answer)
     match answer:
         case "Status":
-            return return_status()
+            return_status()
+            return 0
 
         case "Per-network":
             return run_set_randomization_stable()
@@ -184,9 +196,9 @@ def parse_mode_args() -> strEnum:
 def run(mode: strEnum) -> int:
     """Selects which function to run by referencing the provided mode."""
     print_wrapped(
-        "\nWARNING: It is known that MAC randomization breaks network connectivity on some hypervisors (Hyper-V for example).\n",
-        64
+        "\nWARNING: It is known that MAC randomization breaks network connectivity on some hypervisors (Hyper-V for example)."
     )
+    print("") # newline for readability
     match mode:
         case Mode.INTERACTIVE:
             return interactive_selection()
@@ -201,7 +213,8 @@ def run(mode: strEnum) -> int:
             return run_disable_randomization()
 
         case Mode.STATUS:
-            return return_status()
+            return_status()
+            return 0
 
         case Mode.HELP:
             print(HELP_MESSAGE)

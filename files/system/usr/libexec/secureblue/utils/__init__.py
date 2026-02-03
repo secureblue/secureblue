@@ -167,9 +167,9 @@ class SystemdService:
         )
         return not systemctl.returncode
 
-    def restart -> None:
+    def restart(self) -> None:
         """Restartsa a systemd service."""
-        return _do_systemctl_action("restart")
+        return self._do_systemctl_action("restart")
 
 
 def booted_image_ref() -> str:

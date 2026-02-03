@@ -359,9 +359,9 @@ install-vpn:
         echo 'You can instead use the VPN app's command-line interface, which does not require disabling hardening.'
         read -rp 'Do you intend to use the graphical interface? [y/N] ' proceed_gui
         if [[ "$proceed_gui" == [yY]* ]]; then
-            echo 'Additional hardening features that break the GUI will be disabled.'
+            echo 'Additional hardening features that break the graphical interface will be disabled.'
         else
-            echo 'Additional hardening features that break the GUI will not be disabled.'
+            echo 'Additional hardening features that break the graphical interface will not be disabled.'
             needs_gui="0"
         fi
     fi

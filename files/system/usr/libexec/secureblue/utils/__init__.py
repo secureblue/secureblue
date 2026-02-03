@@ -146,7 +146,7 @@ class SystemdService:
 
         if systemctl.returncode:
             print(f"Failed to {' '.join(actions)} {self.name}.", file=sys.stderr)
-            sys.exit(systemctl.returncode)
+            return systemctl.returncode
 
     disable = partialmethod(_do_systemctl_action, "disable")
     disable_now = partialmethod(_do_systemctl_action, "disable", "--now")
@@ -166,6 +166,10 @@ class SystemdService:
             capture_output=True,
         )
         return not systemctl.returncode
+
+    def restart -> None:
+        """Restartsa a systemd service."""
+        return _do_systemctl_action("restart")
 
 
 def booted_image_ref() -> str:

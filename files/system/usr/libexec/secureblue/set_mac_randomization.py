@@ -10,10 +10,15 @@ Sets MAC address randomisation
 
 import sys
 from pathlib import Path
+from enum import strEnum
 
 import inquirer
 import sandbox
-from utils import CommandUsageError, SystemdService
+from utils import (
+    CommandUsageError,
+    SystemdService,
+    print_wrapped
+    )
 
 HELP_MESSAGE = """\
 Sets the MAC randomization mode.
@@ -39,13 +44,13 @@ ujust set-mac-randomization status
 RAND_MAC_FILE = "/etc/NetworkManager/conf.d/rand_mac.conf"
 
 
-restart_networkmanager = SystemdService("NetworkManager.service")
 
 def run_restart_networkmanager() -> None:
     """Restarts NetworkManager so the MAC address can be refreshed."""
-    """Note: Simply toggling connections is not a substitute."""
 
-    return restart_networkmanager._do_systemctl_action("restart")
+    # Note: Simply toggling connections is not a substitute.
+
+    return SystemdService("NetworkManager.service").restart()
 
 
 disable_mac_randomization = sandbox.SandboxedFunction(
@@ -56,7 +61,12 @@ disable_mac_randomization = sandbox.SandboxedFunction(
 def run_disable_randomization() -> int:
     """Runs sandboxed disable_randomization() function."""
     out = sandbox.run(disable_mac_randomization)
-    run_restart_networkmanager()
+
+    if out:
+        run_restart_networkmanager()
+    else:
+        print("Failed to disable MAC randomization.")
+
     return out
 
 
@@ -68,8 +78,11 @@ set_mac_randomization_stable = sandbox.SandboxedFunction(
 def run_set_randomization_stable() -> int:
     """Runs sandboxed set_mac_randomization_stable function."""
     out = sandbox.run(set_mac_randomization_stable)
-    run_restart_networkmanager()
-    return out
+    restart_success = run_restart_networkmanager()
+    if not restart_success: # restart_success == 0 if successful
+        return out
+    else:
+        return restart_success
 
 
 set_mac_randomization_random = sandbox.SandboxedFunction(
@@ -84,13 +97,13 @@ def run_set_randomization_random() -> int:
     return out
 
 
-def return_status() -> int:
+def return_status() -> int:line.strip().split("=", 1)
     """Returns the current MAC randomisation status [stable/random/off]"""
     if Path(RAND_MAC_FILE).exists():
         with open(RAND_MAC_FILE, encoding="utf-8") as f:
             for line in f:
                 if line.startswith("wifi.cloned-mac-address="):
-                    status = line.strip().split("=", 1)[1]
+                    status = line.split("=", 1)[1].strip()
                     print(f"The current status is: {status}")
     else:
         print("The current status is: Off")
@@ -127,56 +140,65 @@ def interactive_selection() -> int:
                 "Script malfunction: Prompt returned an unexpected value."
             )  # This line *should* never run
 
+Mode = strEnum("Mode", [(
+    HELP = auto()
+    INTERACTIVE = auto()
+    STABLE = auto()
+    RANDOM = auto()
+    OFF = auto()
+    STATUS = auto()
+    )])
 
-def parse_mode_args() -> str:
+def parse_mode_args() -> strEnum:
     """Parses the argument passed to this script"""
     args = sys.argv[1:]
 
     if not args:
-        return "INTERACTIVE"  # User will use inquirer module to select
+        return Mode.INTERACTIVE  # User will use inquirer module to select
 
     if args[0] in ("--help", "-h", "help"):
-        return "HELP"
+        return Mode.HELP
 
     match args[0]:
         case "stable" | "per-network":
-            return "STABLE"
+            return Mode.STABLE
 
         case "random" | "per-connection":
-            return "RANDOM"
+            return Mode.RANDOM
 
         case "off" | "disable":
-            return "OFF"
+            return Mode.OFF
 
         case "status":
-            return "STATUS"
+            return Mode.STATUS
 
         case _:
             raise CommandUsageError(f"Invalid argument value: '{args[0]}'")
 
 
-def run(mode: str) -> int:
-    """Selects which function to run by referencing the provided mode"""
-    print(
-        "\nWARNING: It is known that MAC randomization breaks network connectivity on some hypervisors (Hyper-V for example).\n"
+def run(mode: strEnum) -> int:
+    """Selects which function to run by referencing the provided mode."""
+    print_wrapped(
+        "\nWARNING: It is known that MAC randomization breaks network connectivity on some hypervisors (Hyper-V for example).\n",
+        64
     )
     match mode:
-        case "INTERACTIVE":
+        case Mode.INTERACTIVE:
             return interactive_selection()
 
-        case "STABLE":
+        case Mode.STABLE:
             return run_set_randomization_stable()
 
-        case "RANDOM":
+        case Mode.RANDOM:
             return run_set_randomization_random()
 
-        case "OFF":
+        case Mode.OFF:
             return run_disable_randomization()
 
-        case "STATUS":
+        case Mode.STATUS:
             return return_status()
 
-        case "HELP":
+        case Mode.HELP:
             print(HELP_MESSAGE)
             return 0
 
@@ -185,6 +207,7 @@ def run(mode: str) -> int:
 
 
 # -------------------------------- #
+
 
 
 def main() -> int:

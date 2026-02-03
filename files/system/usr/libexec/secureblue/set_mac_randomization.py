@@ -61,10 +61,6 @@ def run_restart_networkmanager() -> None:
     return SystemdService("NetworkManager.service").restart()
 
 
-disable_mac_randomization = sandbox.SandboxedFunction(
-    file_name="disable_mac_randomization.py", read_write_paths=["/etc/NetworkManager/conf.d"]
-)
-
 
 def return_status(silent: bool = False) -> str:
     """Returns the current MAC randomisation status [stable/random/off]"""
@@ -81,6 +77,9 @@ def return_status(silent: bool = False) -> str:
             print("The current status is: Off")
         return "Off"
 
+disable_mac_randomization = sandbox.SandboxedFunction(
+    file_name="disable_mac_randomization.py", read_write_paths=["/etc/NetworkManager/conf.d"]
+)
 
 def run_disable_randomization() -> int:
     """Runs sandboxed disable_randomization() function."""
@@ -155,7 +154,7 @@ def interactive_selection() -> int:
         inquirer.List(
             "Mode",
             message="Select a mode of MAC randomization",
-            choices=["Status", "Per-network", "Per-connection", "Off"],
+            choices=["Status", "Per-network (stable)", "Per-connection (random)", "Off"],
         ),
     ]
     answer = inquirer.prompt(questions)["Mode"]
@@ -165,10 +164,10 @@ def interactive_selection() -> int:
             return_status()
             return 0
 
-        case "Per-network":
+        case "Per-network (stable)":
             return run_set_randomization_stable()
 
-        case "Per-connection":
+        case "Per-connection (random)":
             return run_set_randomization_random()
 
         case "Off":

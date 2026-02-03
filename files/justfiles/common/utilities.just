@@ -341,7 +341,7 @@ install-vpn:
     echo
 
     echo 'NOTE: You can also install wireguard profiles from your provider directly into your DE, if you prefer.'
-    read -rp 'Do you want to continue? [y/N] ' proceed
+    read -rp 'Do you want to continue with installing a VPN app anyway? [y/N] ' proceed
     if ! [[ "$proceed" == [yY]* ]]; then
         echo 'Aborting...'
         exit 0
@@ -355,14 +355,14 @@ install-vpn:
     needs_gui="1"
     if [[ "$vpn_requirements" =~ "gui_needs_" ]]; then
         echo
-        echo 'Notice: This VPN requires additional security features to be disabled if you intend to use its graphical interface.'
+        echo 'Notice: This VPN requires additional security features to be disabled in order to use its graphical interface.'
         echo 'If you only intend on using the command-line interface, you can skip those.'
-        read -rp 'Do you intend to use the GUI? [Y/n] ' proceed_gui
-        if [[ "$proceed_gui" == [nN]* ]]; then
-            echo 'Additional hardening features required for the GUI will not be disabled.'
-            needs_gui="0"
+        read -rp 'Do you intend to use the GUI? [y/N] ' proceed_gui
+        if [[ "$proceed_gui" == [yY]* ]]; then
+            echo 'Additional hardening features that break the GUI will be disabled.'
         else
-            echo 'Additional hardening features required for the GUI will be disabled.'
+            echo 'Additional hardening features that break the GUI will not be disabled.'
+            needs_gui="0"
         fi
     fi
 

@@ -82,7 +82,7 @@ disable_mac_randomization = sandbox.SandboxedFunction(
 
 def run_disable_randomization() -> int:
     """Runs sandboxed disable_randomization() function."""
-    if Path(RAND_MAC_FILE).exists():
+    if Path(RAND_MAC_FILE).exists(): # may TOCTOU
         out = sandbox.run(disable_mac_randomization)
     else:
         print(

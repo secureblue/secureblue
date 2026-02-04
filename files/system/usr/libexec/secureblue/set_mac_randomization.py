@@ -59,8 +59,12 @@ def run_restart_networkmanager() -> None:
 
 
 def return_status(silent: bool = False) -> str:
-    """Returns the current randomisation status [stable/random/off], optionally prints it out."""
-    if Path(RAND_MAC_FILE).exists():
+    """
+    Returns the current randomisation status [stable/random/off]
+    and optionally prints it out.
+    """
+
+    try:
         with open(RAND_MAC_FILE, encoding="utf-8") as f:
             for line in f:
                 if line.startswith("wifi.cloned-mac-address="):
@@ -68,12 +72,12 @@ def return_status(silent: bool = False) -> str:
                     if not silent:
                         print(f"The current status is: {status}")
                     return status
-    else:
+    except FileNotFoundError:
         if not silent:
             print("The current status is: Off")
         return "Off"
 
-    return "Somethings gone wrong!"
+    return "Off" # File exists but has no contents, defaulting to off.
 
 
 disable_mac_randomization = sandbox.SandboxedFunction(
@@ -86,8 +90,9 @@ def run_disable_randomization() -> int:
     if Path(RAND_MAC_FILE).exists(): # may TOCTOU
         out = sandbox.run(disable_mac_randomization)
     else:
-        print(
-           "MAC randomization config missing. This usually means MAC randomization is already off."
+        print_wrapped(
+            "MAC randomization config not found." +
+            "This usually means MAC randomization is already off."
         )
         return 0
 
@@ -203,7 +208,7 @@ def parse_mode_args() -> StrEnum:
             raise CommandUsageError(f"Invalid argument value: '{args[0]}'")
 
 
-def run(mode: StrEnum) -> int:
+def run(mode: Mode) -> int:
     """Selects which function to run by referencing the provided mode."""
     print()  # newline for readability
     print_wrapped(

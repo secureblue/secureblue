@@ -121,7 +121,7 @@ class SystemdService:
 
     name: str
 
-    def _do_systemctl_action(self, *actions: str) -> None:
+    def _do_systemctl_action(self, *actions: str) -> int:
         """
         Perform an action on a systemd service. Retry and eventually log on failure.
 
@@ -135,7 +135,7 @@ class SystemdService:
 
         if not systemctl.returncode:
             # All good.
-            return None
+            return 0
 
         # Error, so wait a few seconds and try again.
         time.sleep(3)
@@ -148,7 +148,7 @@ class SystemdService:
             print(f"Failed to {' '.join(actions)} {self.name}.", file=sys.stderr)
             return systemctl.returncode
 
-        return None
+        return 0
 
     disable = partialmethod(_do_systemctl_action, "disable")
     disable_now = partialmethod(_do_systemctl_action, "disable", "--now")
@@ -169,7 +169,7 @@ class SystemdService:
         )
         return not systemctl.returncode
 
-    def restart(self) -> None:
+    def restart(self) -> int:
         """Restarts a systemd service."""
         return self._do_systemctl_action("restart")
 

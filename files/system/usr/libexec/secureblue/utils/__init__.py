@@ -158,6 +158,7 @@ class SystemdService:
     start = partialmethod(_do_systemctl_action, "start")
     mask = partialmethod(_do_systemctl_action, "mask")
     unmask = partialmethod(_do_systemctl_action, "unmask")
+    restart = partialmethod(_do_systemctl_action, "restart")
 
     def is_enabled(self) -> bool:
         """Returns whether the systemd service is enabled."""
@@ -168,10 +169,6 @@ class SystemdService:
             capture_output=True,
         )
         return not systemctl.returncode
-
-    def restart(self) -> int:
-        """Restarts a systemd service."""
-        return self._do_systemctl_action("restart")
 
 
 def booted_image_ref() -> str:

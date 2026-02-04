@@ -92,7 +92,7 @@ def run_disable_randomization() -> int:
     else:
         print_wrapped(
             "MAC randomization config not found." +
-            "This usually means MAC randomization is already off."
+            " This usually means MAC randomization is already off."
         )
         return 0
 

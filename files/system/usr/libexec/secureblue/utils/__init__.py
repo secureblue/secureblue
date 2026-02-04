@@ -135,7 +135,7 @@ class SystemdService:
 
         if not systemctl.returncode:
             # All good.
-            return
+            return None
 
         # Error, so wait a few seconds and try again.
         time.sleep(3)
@@ -147,6 +147,8 @@ class SystemdService:
         if systemctl.returncode:
             print(f"Failed to {' '.join(actions)} {self.name}.", file=sys.stderr)
             return systemctl.returncode
+
+        return None
 
     disable = partialmethod(_do_systemctl_action, "disable")
     disable_now = partialmethod(_do_systemctl_action, "disable", "--now")

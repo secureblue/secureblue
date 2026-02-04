@@ -41,6 +41,7 @@ RAND_MAC_FILE = "/etc/NetworkManager/conf.d/rand_mac.conf"
 
 
 class Mode(StrEnum):
+    """Predefine randomisation selection enums"""
     HELP = "HELP"
     INTERACTIVE = "INTERACTIVE"
     STABLE = "STABLE"
@@ -58,7 +59,7 @@ def run_restart_networkmanager() -> None:
 
 
 def return_status(silent: bool = False) -> str:
-    """Returns the current MAC randomisation status [stable/random/off] and optionally prints it out."""
+    """Returns the current randomisation status [stable/random/off], optionally prints it out."""
     if Path(RAND_MAC_FILE).exists():
         with open(RAND_MAC_FILE, encoding="utf-8") as f:
             for line in f:
@@ -86,7 +87,7 @@ def run_disable_randomization() -> int:
         out = sandbox.run(disable_mac_randomization)
     else:
         print(
-            "MAC randomization config not found. This usually means MAC randomization is already off."
+           "MAC randomization config missing. This usually means MAC randomization is already off."
         )
         return 0
 
@@ -206,7 +207,7 @@ def run(mode: StrEnum) -> int:
     """Selects which function to run by referencing the provided mode."""
     print()  # newline for readability
     print_wrapped(
-        "WARNING: It is known that MAC randomization breaks network connectivity on some hypervisors (Hyper-V for example)."
+       "WARNING: MAC randomization breaks network connectivity on some hypervisors (e.g. Hyper-V)."
     )
     print()  # newline for readability
     match mode:

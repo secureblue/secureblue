@@ -50,12 +50,12 @@ class Mode(StrEnum):
     STATUS = "STATUS"
 
 
-def run_restart_networkmanager() -> None:
+def run_restart_networkmanager() -> int:
     """Restarts NetworkManager so the MAC address can be refreshed."""
 
     # Note: Simply toggling connections is not a substitute.
 
-    SystemdService("NetworkManager.service").restart()
+    return SystemdService("NetworkManager.service").restart()
 
 
 def return_status(silent: bool = False) -> str:
@@ -91,15 +91,20 @@ def run_disable_randomization() -> int:
         out = sandbox.run(disable_mac_randomization)
     else:
         print_wrapped(
-            "MAC randomization config not found." +
-            " This usually means MAC randomization is already off."
+            "MAC randomization config not found. " +
+            "This usually means MAC randomization is already off."
         )
         return 0
 
     if out:  # out != 0 means failure
         print("Failed to disable MAC randomization.")
         return 1
-    run_restart_networkmanager()
+    restart_success = run_restart_networkmanager()
+    if restart_success: # 0 == success, not 0 == failure
+        print_wrapped("Failed to restart NetworkManager. " +
+                      "Restart it or this computer for changes to take effect.")
+        return restart_success # return the error code
+
     print("MAC randomization disabled.")
     return 0
 
@@ -122,7 +127,11 @@ def run_set_randomization_stable() -> int:
         print("Failed to set MAC randomization to per-network (stable).")
         return out
 
-    run_restart_networkmanager()
+    restart_success = run_restart_networkmanager()
+    if restart_success: # 0 == success, not 0 == failure
+        print_wrapped("Failed to restart NetworkManager. " +
+                      "Restart it or this computer for changes to take effect.")
+        return restart_success # return the error code
     print("MAC randomization enabled.")
     return 0
 
@@ -144,7 +153,11 @@ def run_set_randomization_random() -> int:
     if out:
         print("Failed to enable MAC randomization.")
         return out
-    run_restart_networkmanager()
+    restart_success = run_restart_networkmanager()
+    if restart_success: # 0 == success, not 0 == failure
+        print_wrapped("Failed to restart NetworkManager. " +
+                      "Restart it or this computer for changes to take effect.")
+        return restart_success # return the error code
     print("MAC randomization enabled.")
 
     return out

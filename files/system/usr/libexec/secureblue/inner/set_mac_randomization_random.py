@@ -5,7 +5,7 @@
 # SPDX-License-Identifier: Apache-2.0
 
 """
-Sets MAC randomization to per-network
+Sets MAC randomization to per-connection
 """
 
 import os

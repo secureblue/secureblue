@@ -38,8 +38,12 @@ blocklists:
       # Other apps.
       ## We ship the RPM.
       - io.github.kolunmi.Bazaar
-      # Uses an internal browser
+      ## Uses an internal browser.
       - net.codelogistics.webapps
-      # Appears to only support flatpaked browsers
+      ## Appears to only support flatpaked browsers.
       - org.pvermeer.WebAppHub
+      ## These apps were meant to be email clients, but they can also work as web browsers.
+      - org.mozilla.Thunderbird
+      - eu.betterbird.Betterbird
+      
 

@@ -164,6 +164,13 @@ jobs:
             lesnet.mm.fcix.net:443
             ftp2.osuosl.org:443
             us.mirrors.cicku.me:443
+            mirror.csclub.uwaterloo.ca:443
+            mirror.cpsc.ucalgary.ca:443
+            muug.ca:443
+            mirror.xenyth.net:443
+            yycix.mm.fcix.net:443
+            yxeix.mm.fcix.net:443
+            stix.mm.fcix.net:443
 
       - name: Checkout repo
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2

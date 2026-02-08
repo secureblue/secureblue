@@ -356,7 +356,7 @@ install-vpn:
     if [[ "$vpn_requirements" =~ "gui_needs_" ]]; then
         echo
         echo 'Notice: This VPN requires additional security features to be disabled in order to use its graphical interface.'
-        echo 'You can instead use the VPN app's command-line interface, which does not require disabling hardening.'
+        echo "You can instead use the VPN app's command-line interface, which does not require disabling hardening."
         read -rp 'Do you intend to use the graphical interface? [y/N] ' proceed_gui
         if [[ "$proceed_gui" == [yY]* ]]; then
             echo 'Additional hardening features that break the graphical interface will be disabled.'

@@ -1,3 +1,8 @@
+# SPDX-FileCopyrightText: Copyright 2025-2026 The Secureblue Authors
+#
+# SPDX-License-Identifier: Apache-2.0
+
+enable fix-qemu-user-session.service
 enable flatpak-user-update.timer
 enable secureblue-firmware-check.timer
 enable secureblue-flatpak-setup.timer

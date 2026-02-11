@@ -18,20 +18,28 @@ rpmkeys --import "${secureblue_gpg_key_path}"
 # see https://github.com/rpm-software-management/dnf5/issues/1985
 dnf --best --repo=secureblue -y download trivalent
 
-trivalent_rpms_found=0
-for trivalent_rpm in trivalent-*."${ARCH}".rpm; do
-    (( ++trivalent_rpms_found ))
-done
+# TEMP: Uncomment after trivalent is fixed
+# trivalent_rpms_found=0
+# for trivalent_rpm in trivalent-*."${ARCH}".rpm; do
+#     (( ++trivalent_rpms_found ))
+# done
 
-if [ "$trivalent_rpms_found" -eq 1 ]; then
-    echo "Found: ${trivalent_rpms_found}"
+# if [ "$trivalent_rpms_found" -eq 1 ]; then
+#     echo "Found: ${trivalent_rpms_found}"
+# else
+#     echo "Number of trivalent rpms not one, found: ${trivalent_rpms_found}"
+#     exit 1
+# fi
+
+# trivalent_rpm_sans_prefix=${trivalent_rpm#trivalent-}
+# trivalent_version=${trivalent_rpm_sans_prefix%".${ARCH}.rpm"}
+
+# TEMP: Remove after trivalent is fixed
+if [[ "$ARCH" == 'x86_64' ]]; then
+  trivalent_version="144.0.7559.132-442539"
 else
-    echo "Number of trivalent rpms not one, found: ${trivalent_rpms_found}"
-    exit 1
+  trivalent_version="144.0.7559.132-442541"
 fi
-
-trivalent_rpm_sans_prefix=${trivalent_rpm#trivalent-}
-trivalent_version=${trivalent_rpm_sans_prefix%".${ARCH}.rpm"}
 
 provenance_file="${trivalent_rpm}.intoto.jsonl"
 wget "https://github.com/secureblue/Trivalent/releases/download/${trivalent_version}/${provenance_file}"

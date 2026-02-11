@@ -33,6 +33,7 @@ dnf --best --repo=secureblue -y download trivalent
 
 # trivalent_rpm_sans_prefix=${trivalent_rpm#trivalent-}
 # trivalent_version=${trivalent_rpm_sans_prefix%".${ARCH}.rpm"}
+# trivalent_rpm_path="${trivalent_version}.${ARCH}.rpm"
 
 # TEMP: Remove after trivalent is fixed
 if [[ "$ARCH" == 'x86_64' ]]; then
@@ -41,12 +42,14 @@ else
   trivalent_version="144.0.7559.132-442541"
 fi
 
-provenance_file="${trivalent_rpm}.intoto.jsonl"
+trivalent_rpm_path="${trivalent_version}.${ARCH}.rpm"
+
+provenance_file="${trivalent_rpm_path}.intoto.jsonl"
 wget "https://github.com/secureblue/Trivalent/releases/download/${trivalent_version}/${provenance_file}"
 
-slsa-verifier verify-artifact "${trivalent_rpm}" --provenance-path "${provenance_file}" --source-uri github.com/secureblue/Trivalent --source-branch live
+slsa-verifier verify-artifact "${trivalent_rpm_path}" --provenance-path "${provenance_file}" --source-uri github.com/secureblue/Trivalent --source-branch live
 
 # Forcing GPG check for a package installed outside of a repository
-dnf --setopt=localpkg_gpgcheck=True -y install "${trivalent_rpm}"
+dnf --setopt=localpkg_gpgcheck=True -y install "${trivalent_rpm_path}"
 
 sed -i 's/org\.mozilla\.firefox\.desktop/trivalent.desktop/' /usr/share/applications/mimeapps.list

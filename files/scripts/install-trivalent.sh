@@ -47,7 +47,7 @@ else
   dnf --best --repo=secureblue -y download trivalent
 fi
 
-trivalent_rpm="${trivalent_version}.${ARCH}.rpm"
+trivalent_rpm="trivalent-${trivalent_version}.${ARCH}.rpm"
 
 provenance_file="${trivalent_rpm}.intoto.jsonl"
 wget "https://github.com/secureblue/Trivalent/releases/download/${trivalent_version}/${provenance_file}"

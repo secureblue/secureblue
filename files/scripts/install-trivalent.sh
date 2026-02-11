@@ -14,9 +14,7 @@ curl -fLsS --retry 5 -o /etc/yum.repos.d/repo.secureblue.dev.secureblue.repo htt
 secureblue_gpg_key_path="$(dnf repo info secureblue --json | jq -r '.[0].gpg_key.[0]')"
 rpmkeys --import "${secureblue_gpg_key_path}"
 
-# The package signature is NOT being checked at this stage,
-# see https://github.com/rpm-software-management/dnf5/issues/1985
-dnf --best --repo=secureblue -y download trivalent
+
 
 # TEMP: Uncomment after trivalent is fixed
 # trivalent_rpms_found=0
@@ -33,23 +31,30 @@ dnf --best --repo=secureblue -y download trivalent
 
 # trivalent_rpm_sans_prefix=${trivalent_rpm#trivalent-}
 # trivalent_version=${trivalent_rpm_sans_prefix%".${ARCH}.rpm"}
-# trivalent_rpm_path="${trivalent_version}.${ARCH}.rpm"
 
-# TEMP: Remove after trivalent is fixed
+# TEMP: Revert after trivalent is fixed
 if [[ "$ARCH" == 'x86_64' ]]; then
   trivalent_version="144.0.7559.132-442539"
+
+  # The package signature is NOT being checked at this stage,
+  # see https://github.com/rpm-software-management/dnf5/issues/1985
+  dnf --repo=secureblue -y download trivalent-${trivalent_version}.x86_64
 else
   trivalent_version="144.0.7559.132-442541"
+
+  # The package signature is NOT being checked at this stage,
+  # see https://github.com/rpm-software-management/dnf5/issues/1985
+  dnf --best --repo=secureblue -y download trivalent
 fi
 
-trivalent_rpm_path="${trivalent_version}.${ARCH}.rpm"
+trivalent_rpm="${trivalent_version}.${ARCH}.rpm"
 
-provenance_file="${trivalent_rpm_path}.intoto.jsonl"
+provenance_file="${trivalent_rpm}.intoto.jsonl"
 wget "https://github.com/secureblue/Trivalent/releases/download/${trivalent_version}/${provenance_file}"
 
-slsa-verifier verify-artifact "${trivalent_rpm_path}" --provenance-path "${provenance_file}" --source-uri github.com/secureblue/Trivalent --source-branch live
+slsa-verifier verify-artifact "${trivalent_rpm}" --provenance-path "${provenance_file}" --source-uri github.com/secureblue/Trivalent --source-branch live
 
 # Forcing GPG check for a package installed outside of a repository
-dnf --setopt=localpkg_gpgcheck=True -y install "${trivalent_rpm_path}"
+dnf --setopt=localpkg_gpgcheck=True -y install "${trivalent_rpm}"
 
 sed -i 's/org\.mozilla\.firefox\.desktop/trivalent.desktop/' /usr/share/applications/mimeapps.list

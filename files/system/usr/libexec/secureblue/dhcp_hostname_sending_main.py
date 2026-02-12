@@ -20,19 +20,19 @@ This python script toggles if the system's hostname is sent to the DHCP server b
 "/etc/NetworkManager/conf.d/dhcp_no_hostname.conf" to disable or enable this functionality.
 
 usage:
-ujust set-hostname-sending
+ujust set-dhcp-hostname-sending
     Enables or disables interactively based on the user's preference.
 
-ujust set-hostname-sending on
+ujust set-dhcp-hostname-sending on
     Enables hostname sending to the DHCP server; does nothing if already on.
 
-ujust set-hostname-sending off
+ujust set-dhcp-hostname-sending off
     Disables hostname sending to the DHCP server; does nothing if already off.
 
-ujust set-hostname-sending status
+ujust set-dhcp-hostname-sending status
     Reports whether the system is set to send its hostname to the DHCP server or not.
 
-ujust set-hostname-sending --help
+ujust set-dhcp-hostname-sending --help
     Prints this message.
 """
 

@@ -192,12 +192,14 @@ jobs:
         run: |
           clear_plan='false'
           if [[ "$rechunk" == 'true' ]]; then
-            # Clear previous layer plan only on the first build of each month.
-            current_month=$(date -u '+%Y-%m')
-            previous_build_created=$(skopeo inspect -n "docker://${FULL_IMAGE_REF}" | jq -cr '.Created')
-            previous_build_month=$(date -u -d "$previous_build_created" '+%Y-%m')
-            if [[ "$previous_build_month" != "$current_month" ]]; then
-              clear_plan='true'
+            previous_build_created=$(skopeo inspect -n "docker://${FULL_IMAGE_REF}" 2>/dev/null | jq -cr '.Created' || echo "")
+            if [[ -n "$previous_build_created" ]]; then
+              # Clear previous layer plan only on the first build of each month.
+              current_month=$(date -u '+%Y-%m')
+              previous_build_month=$(date -u -d "$previous_build_created" '+%Y-%m')
+              if [[ "$previous_build_month" != "$current_month" ]]; then
+                clear_plan='true'
+              fi
             fi
           fi
           echo "clear_plan=${clear_plan}" >> "${GITHUB_OUTPUT}"

@@ -15,10 +15,13 @@ import re
 # All subprocess calls we make have trusted inputs and do not use shell=True.
 import subprocess  # nosec
 import textwrap
+from pathlib import Path
 from typing import Final
 
 from auditor import AuditError, Status, gettext_marker
 from utils import print_err
+
+from .containers import ContainersPolicyAudit
 
 PASS: Final = Status.PASS
 INFO: Final = Status.INFO
@@ -107,18 +110,14 @@ async def async_command_stdout(cmd: str, *args: str, check: bool = True) -> str:
     """Asynchronously run a command in the shell and return the contents of stdout."""
     # nosemgrep: dangerous-subprocess-use-audit, dangerous-asyncio-create-exec-audit
     sub = await asyncio.create_subprocess_exec(
-        cmd, *args, stdout=subprocess.PIPE, stderr=subprocess.DEVNULL
+        cmd, *args, stdout=subprocess.PIPE, stderr=subprocess.PIPE
     )
-    await sub.wait()
+    (stdout, stderr) = await sub.communicate()
     # pylint: disable=use-implicit-booleaness-not-comparison-to-zero
     if check and sub.returncode != 0:
-        err = f"async command `{cmd} {' '.join(args)}` returned nonzero exit code {sub.returncode}"
-        raise AsyncProcessError(err)
-    if sub.stdout is None:
-        err = f"Failed to get stdout for async command `{cmd} {' '.join(args)}`"
-        raise AsyncProcessError(err)
-    output = await sub.stdout.read()
-    return output.decode("utf-8", errors="replace").strip()
+        msg = f"async command `{cmd} {' '.join(args)}` returned nonzero exit code {sub.returncode}"
+        raise AsyncProcessError(msg, stderr)
+    return stdout.decode("utf-8", errors="replace").strip()
 
 
 async def get_flatpak_permissions(name: str, version: str) -> str:
@@ -126,14 +125,35 @@ async def get_flatpak_permissions(name: str, version: str) -> str:
     return await async_command_stdout("flatpak", "info", "--show-permissions", name, version)
 
 
+def normalize_sysctl(sysctl: str) -> str:
+    """Normalize a sysctl value."""
+    result = re.sub(r"\s+", " ", sysctl.strip())
+    replacements = {"disabled": "0", "enabled": "1"}
+    return replacements.get(result, result)
+
+
 def validate_sysctl(sysctl: str, actual: str, expected: str) -> bool:
     """Validate a sysctl value against an expected value."""
-    actual = re.sub(r"\s+", " ", actual.strip())
-    replace = {"disabled": "0", "enabled": "1"}.get(actual)
-    if replace is not None:
-        actual = replace
     if sysctl == "kernel.sysrq":
         # Both 0 and 4 are secure values for this setting. For details, see:
         # https://www.kernel.org/doc/html/latest/admin-guide/sysrq.html
         return actual in (expected, "0", "4")
     return actual == expected
+
+
+def analyze_active_container_policy() -> tuple[ContainersPolicyAudit, str]:
+    """
+    Analyze active containers policy. Returns the results of the analysis and
+    the path of the policy file.
+    """
+    system_policy_file = "/etc/containers/policy.json"
+    local_override = "~/.config/containers/policy.json"
+    local_override_file = Path(local_override).expanduser()
+    if local_override_file.exists():
+        policy_file = local_override_file
+        path_str = local_override
+    else:
+        policy_file = system_policy_file
+        path_str = system_policy_file
+
+    return ContainersPolicyAudit.from_file(policy_file), path_str

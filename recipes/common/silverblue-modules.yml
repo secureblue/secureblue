@@ -26,7 +26,8 @@ modules:
           - gnome-remote-desktop
           - libvncserver
           - fedora-chromium-config-gnome
-          - gnome-software-rpm-ostree
+          - gnome-software
+          - epiphany-runtime
           - totem-video-thumbnailer
           - fedora-flathub-remote
           - fedora-third-party

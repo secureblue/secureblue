@@ -13,7 +13,6 @@ import asyncio
 import filecmp
 import getpass
 import glob
-import json
 import os
 import os.path
 import signal
@@ -28,9 +27,11 @@ from typing import Final
 import kargs_hardening_common
 from audit_flatpak import check_flatpak_permissions, parse_flatpak_permissions
 from audit_utils import (
+    analyze_active_container_policy,
     get_flatpak_permissions,
     get_legend,
     get_width,
+    normalize_sysctl,
     validate_sysctl,
     warn_if_root,
 )
@@ -112,18 +113,28 @@ def audit_sysctl():
         conf = f.readlines()
     sysctl_expected = parse_config(conf)
     status = PASS
-    sysctl_errors = []
+    notes = []
     for sysctl, expected in sysctl_expected.items():
         sysctl_path = f"/proc/sys/{sysctl.replace('.', '/')}"
         for path in glob.iglob(sysctl_path):
             try:
                 with open(path, encoding="utf-8") as f:
-                    actual = f.read().strip()
+                    actual = normalize_sysctl(f.read())
             except PermissionError:
                 continue
+            if sysctl == "kernel.printk" and actual == "15 3 3 3":
+                status = WARN
+                note_lines = [
+                    _("{0} should be {1}, but is actually {2}.").format(sysctl, expected, actual),
+                    _("This is likely due to a kernel fault, as documented in `{0}`.").format(
+                        "man 2 syslog"
+                    ),
+                ]
+                notes.append(Note("\n".join(note_lines), WARN))
+                break
             if not validate_sysctl(sysctl, actual, expected):
                 status = FAIL
-                sysctl_errors.append(
+                notes.append(
                     Note(
                         _("{0} should be {1}, but is actually {2}.").format(
                             sysctl, expected, actual
@@ -132,7 +143,7 @@ def audit_sysctl():
                     )
                 )
                 break
-    yield Report(_("Ensuring no sysctl overrides"), status, notes=sysctl_errors)
+    yield Report(_("Ensuring no sysctl overrides"), status, notes=notes)
 
 
 @audit
@@ -224,68 +235,49 @@ def audit_ptrace(state):
 
 
 @audit
-def audit_authselect():
-    """Ensure no authselect overrides have been made."""
-    status = PASS
-    cmp = filecmp.dircmp("/usr/etc/authselect", "/etc/authselect", shallow=False, ignore=[])
-    if cmp.left_only or cmp.right_only or cmp.diff_files or cmp.funny_files:
-        status = FAIL
-    yield Report(_("Ensuring no authselect overrides"), status)
-
-
-@audit
 def audit_container_policy():
     """Check for modifications to container policy."""
     status = PASS
     notes = []
-    policy_file = "/etc/containers/policy.json"
-    if not filecmp.cmp(f"/usr{policy_file}", policy_file):
+    system_policy_file = "/etc/containers/policy.json"
+    if not filecmp.cmp(f"/usr{system_policy_file}", system_policy_file):
         status = status.downgrade_to(INFO)
-        notes.append(Note(_("The file {0} has been modified.").format(policy_file), INFO))
-    local_override = "~/.config/containers/policy.json"
-    try:
-        with open(os.path.expanduser(local_override), "rb") as f:
-            policy = json.load(f)
-    except FileNotFoundError:
-        if status == PASS:
-            # No need to parse the policy, it's unmodified.
-            yield Report(_("Analyzing container policy"), PASS)
-            return
-        with open(policy_file, "rb") as f:
-            policy = json.load(f)
-    else:
+        notes.append(Note(_("The file {0} has been modified.").format(system_policy_file), INFO))
+
+    policy_audit, policy_path = analyze_active_container_policy()
+
+    if policy_path != str(system_policy_file):
         status = status.downgrade_to(INFO)
         notes.append(
-            Note(_("Container policy has a local override at {0}.").format(local_override), INFO)
+            Note(_("Container policy has a local override at {0}.").format(policy_path), INFO)
         )
+    elif status == PASS:
+        # No need to parse the policy, it's unmodified.
+        yield Report(_("Analyzing container policy"), PASS)
+        return
 
-    insecure_accept_anything: Final[str] = "insecureAcceptAnything"
-    if policy["default"][0]["type"] == insecure_accept_anything:
+    if not policy_audit.default_secure:
         status = status.downgrade_to(FAIL)
         notes.append(Note(_("The default container policy is insecure."), FAIL))
 
-    insecure_transports = [
-        transport
-        for transport, transport_policy in policy["transports"].items()
-        if transport_policy[""][0]["type"] == insecure_accept_anything
-    ]
-    for transport in insecure_transports:
-        status = status.downgrade_to(FAIL)
-        notes.append(
-            Note(
-                _("The default container policy for transport '{0}' is insecure.").format(
-                    transport
-                ),
-                FAIL,
-            )
-        )
+    insecure_scopes = []
 
-    insecure_scopes = [
-        f"{transport}:{scope}"
-        for transport, transport_policy in policy["transports"].items()
-        for scope, scope_policy in transport_policy.items()
-        if scope and scope_policy[0]["type"] == insecure_accept_anything
-    ]
+    for transport_name, transport_policy in policy_audit.transports.items():
+        if not transport_policy.default_secure:
+            status = status.downgrade_to(FAIL)
+            notes.append(
+                Note(
+                    _("The default container policy for transport '{0}' is insecure.").format(
+                        transport_name
+                    ),
+                    FAIL,
+                )
+            )
+
+        insecure_scopes += [
+            f"{transport_name}:{scope}" for scope in transport_policy.insecure_scopes
+        ]
+
     if insecure_scopes:
         status = status.downgrade_to(WARN)
         notes.append(

@@ -26,11 +26,7 @@ dnf install -y --setopt=install_weak_deps=False akmods gcc-c++
 cp /usr/sbin/akmodsbuild /usr/sbin/akmodsbuild.backup
 # TODO remove this when fixed upstream
 sed -i '/if \[\[ -w \/var \]\] ; then/,/fi/d' /usr/sbin/akmodsbuild
-if [[ "$IMAGE_NAME" == *"open"* ]]; then
-  dnf install -y --setopt=install_weak_deps=False nvidia-kmod-common nvidia-modprobe akmod-nvidia-590.48.01-1.fc43
-else 
-  dnf install -y --setopt=install_weak_deps=False nvidia-kmod-common nvidia-modprobe akmod-nvidia
-fi
+dnf install -y --setopt=install_weak_deps=False nvidia-kmod-common nvidia-modprobe akmod-nvidia
 mv /usr/sbin/akmodsbuild.backup /usr/sbin/akmodsbuild
 
 echo "Installing kmod..."

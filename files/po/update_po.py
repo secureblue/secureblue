@@ -1,5 +1,9 @@
 #!/usr/bin/env python3
 
+# SPDX-FileCopyrightText: Copyright 2025-2026 The Secureblue Authors
+#
+# SPDX-License-Identifier: Apache-2.0
+
 """
 Run this script to update POT and PO files to reflect source code changes.
 """
@@ -40,6 +44,10 @@ os.chdir(git_root)
 
 with open(SOURCE_FILES_PATH, encoding="utf8") as f:
     domain_map = json.load(f)
+
+# This is the locale used for translatable strings in the repo.
+# `msginit` requires this to be set to work properly.
+os.environ["LANG"] = "en_US.UTF-8"
 
 for domain, source_files in domain_map.items():
     pot_path = f"files/po/{domain}.pot"

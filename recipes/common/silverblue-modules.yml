@@ -4,7 +4,7 @@
 
 modules:
     - type: dnf
-      source: ghcr.io/blue-build/modules@sha256:8e92fcaaef385a1728b8d8224296484260b67126ac83f7ed85b4ae3dde4ad19d
+      source: ghcr.io/blue-build/modules@sha256:bfc7637d823742eaabc7c01bbd3def9de1eeff28e9891916e501f54644ff1d7a
       install:
         install-weak-deps: false
         packages:
@@ -33,20 +33,20 @@ modules:
           - fedora-third-party
           - fedora-workstation-repositories
     - type: gschema-overrides
-      source: ghcr.io/blue-build/modules@sha256:8e92fcaaef385a1728b8d8224296484260b67126ac83f7ed85b4ae3dde4ad19d
+      source: ghcr.io/blue-build/modules@sha256:bfc7637d823742eaabc7c01bbd3def9de1eeff28e9891916e501f54644ff1d7a
       include:
         - zz1-secureblue.gschema.override
     - type: script
-      source: ghcr.io/blue-build/modules@sha256:8e92fcaaef385a1728b8d8224296484260b67126ac83f7ed85b4ae3dde4ad19d
+      source: ghcr.io/blue-build/modules@sha256:bfc7637d823742eaabc7c01bbd3def9de1eeff28e9891916e501f54644ff1d7a
       scripts:
         - removedkmshelper.sh
     - type: files
-      source: ghcr.io/blue-build/modules@sha256:8e92fcaaef385a1728b8d8224296484260b67126ac83f7ed85b4ae3dde4ad19d
+      source: ghcr.io/blue-build/modules@sha256:bfc7637d823742eaabc7c01bbd3def9de1eeff28e9891916e501f54644ff1d7a
       files:
         - source: system/silverblue
           destination: /
     - type: justfiles
-      source: ghcr.io/blue-build/modules@sha256:8e92fcaaef385a1728b8d8224296484260b67126ac83f7ed85b4ae3dde4ad19d
+      source: ghcr.io/blue-build/modules@sha256:bfc7637d823742eaabc7c01bbd3def9de1eeff28e9891916e501f54644ff1d7a
       validate: true
       include:
         - silverblue.just

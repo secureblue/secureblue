@@ -16,12 +16,12 @@ ALERT_ON_PACKAGE_UPGRADE = {
 }
 
 
-class AdvisorySeverity(StrEnum):
-    UNKNOWN = auto(),
-    LOW = auto(),
-    MODERATE = auto(),
-    IMPORTANT = auto(),
-    CRITICAL = auto(),
+class AdvisorySeverity(IntEnum):
+    UNKNOWN = 0,
+    LOW = 1,
+    MODERATE = 2,
+    IMPORTANT = 3,
+    CRITICAL = 4,
 
 
 class Action(IntEnum):
@@ -35,27 +35,29 @@ class NotificationUrgency(StrEnum):
 
 
 def is_package_upgraded(target_packages: set(str)) -> bool:
-    upgraded_packages = json.loads(
-        command_stdout(
-            "rpm-ostree",
-            "status",
-            "--verbose",
-            "--booted",
-            "--jsonpath",
-            ".cached-update.rpm-diff.upgraded",
-        )
+    upgraded_packages = command_stdout(
+        "rpm-ostree",
+        "status",
+        "--verbose",
+        "--booted",
+        "--jsonpath",
+        ".cached-update.rpm-diff.upgraded",
     )
 
-    try:
-        # For each upgraded package
-        for i in range(len(upgraded_packages[0])):
-            # Extract package name
-            package_name = upgraded_packages[0][i][1]
-
-            if package_name in target_packages:
-                return True
-    except IndexError:
+    if upgraded_packages == "[]":
         return False
+    else:
+        upgraded_packages = json.loads(upgraded_packages)
+
+    # For each upgraded package
+    for package in upgraded_packages[0]:
+        # Extract package name
+        package_name = package[1]
+
+        if package_name in target_packages:
+            return True
+
+    return False
 
 
 def advisory_patched() -> AdvisorySeverity | None:
@@ -70,28 +72,19 @@ def advisory_patched() -> AdvisorySeverity | None:
 
     if advisory_info == "[]":
         return None
+    else:
+        advisory_info = json.loads(advisory_info)
 
-    advisory_info = json.loads(advisory_info)
+    max_severity = -1
 
-    try:
-        # For each advisory
-        for i in range(len(advisory_info[0][0])):
-            # Extract advisory severity
-            match advisory_info[0][i][2]:
-                case 4:
-                    return AdvisorySeverity.CRITICAL
-                case 3:
-                    return AdvisorySeverity.IMPORTANT
-                case 2:
-                    return AdvisorySeverity.MODERATE
-                case 1:
-                    return AdvisorySeverity.LOW
-                case 0:
-                    return AdvisorySeverity.UNKNOWN
-                case _:
-                    sys.exit(1) # Should not reach this.
-    except IndexError:
-        sys.exit(1) # Should not reach as advisory_info != "[]"
+    # For each advisory
+    for advisory in advisory_info[0][0]:
+        # Extract advisory severity
+        severity = advisory[2]
+        if severity > max_severity:
+            max_severity = severity
+    
+    return max_severity
 
 
 def show_notification(urgency: NotificationUrgency) -> Action | None:
@@ -152,13 +145,13 @@ def do_action(action: Action) -> None:
 def main() -> int:
     advisory_severity = advisory_patched()
 
-    if is_package_upgraded(ALERT_ON_PACKAGE_UPGRADE) | ( advisory_severity in {"important", "critical"} ):
+    if is_package_upgraded(ALERT_ON_PACKAGE_UPGRADE) | ( advisory_severity in {3, 4} ):
         do_action(show_notification(NotificationUrgency.CRITICAL))
-    elif advisory_severity in {"unknown", "low", "moderate"}:
+    elif advisory_severity in {0, 1, 2}:
         do_action(show_notification(NotificationUrgency.NORMAL))
 
-    sys.exit(0)
+    return 0
 
 
 if __name__ == "__main__":
-    main()
+    sys.exit(main())

@@ -5,7 +5,7 @@
 #
 # SPDX-License-Identifier: Apache-2.0
 
-set -oue pipefail
+set -euo pipefail
 
 IMAGE_PRETTY_NAME="secureblue"
 IMAGE_LIKE="fedora"

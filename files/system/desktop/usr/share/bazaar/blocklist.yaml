@@ -1,0 +1,45 @@
+blocklists:
+  - priority: 0
+    block:
+      # Verified Chromium-based browsers.
+      - com.brave.Browser
+      - io.github.ungoogled_software.ungoogled_chromium
+      - org.kde.falkon
+      - ru.yandex.Browser
+
+      # Unverified Chromium-based browsers.
+      - com.google.Chrome
+      - com.google.ChromeDev
+      - com.microsoft.Edge
+      - com.opera.Opera
+      - com.vivaldi.Vivaldi
+      - org.chromium.Chromium
+
+      # Verified Firefox-based browsers.
+      - app.zen_browser.zen
+      - io.gitlab.librewolf-community
+      - net.waterfox.waterfox
+      - one.ablaze.floorp
+      - org.garudalinux.firedragon
+      - org.mozilla.firefox
+      - org.torproject.torbrowser-launcher
+
+      # Unverified Firefox-based browsers.
+      - com.humatarayici.od
+      - net.mullvad.MullvadBrowser
+
+      # Other browsers.
+      ## org.gnome.Epiphany uses WebKitGTK and flatpak-spawn for process-level sandboxing.
+      ## Nyxt seems to use WebKitGTK, but without clear sandboxing.
+      - engineer.atlas.Nyxt
+      - org.catacombing.kumo
+      - org.netsurf_browser.NetSurf
+
+      # Other apps.
+      ## We ship the RPM.
+      - io.github.kolunmi.Bazaar
+      # Uses an internal browser
+      - net.codelogistics.webapps
+      # Appears to only support flatpaked browsers
+      - org.pvermeer.WebAppHub
+

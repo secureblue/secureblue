@@ -26,7 +26,6 @@ DNSCONFD_MANAGER_PATH: Final[Path] = Path("/etc/NetworkManager/conf.d/dnsconfd.c
 NM_GLOBALDNS_CONF_PATH: Final[Path] = Path("/etc/NetworkManager/conf.d/global-dns.conf")
 RESOLVCONF_PATH: Final[Path] = Path("/etc/resolv.conf")
 RESOLVED_RESOLVCONF_PATH: Final[Path] = Path("/run/systemd/resolve/stub-resolv.conf")
-RESOLVED_SECUREDNS_PATH: Final[Path] = Path("/etc/systemd/resolved.conf.d/10-securedns.conf")
 TRIVALENT_POLICY_PATH: Final[Path] = Path(
     "/etc/trivalent/policies/managed/10-securedns-browser.json"
 )

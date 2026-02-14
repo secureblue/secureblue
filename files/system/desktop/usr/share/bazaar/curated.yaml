@@ -1,0 +1,43 @@
+css: |
+  .main banner {
+    background: linear-gradient(45deg, #754e7680, #3bc5f580);
+    box-shadow: 3px 3px 10px rgba(0, 0, 0, 0.2);
+    margin: 25px 25px 0px 25px;
+  }
+  .main banner-text {
+    padding: 50px 50px 25px 50px;
+    font-size: 60%;
+  }
+  .main subtitle {
+    font-weight: normal;
+  }
+
+rows:
+  - sections:
+    - expand-horizontally: true
+      category:
+        title: "Suggested by secureblue"
+        subtitle: "These apps provide security functionality or are well-maintained applications that provide common functionality."
+        # This is static in pixels, but there seems to be no way to change that yet.
+        banner-height: 250
+        # see https://docs.gtk.org/gtk4/enum.Align.html
+        banner-text-halign: start
+        banner-text-valign: center
+        # see https://docs.gtk.org/gtk4/property.Label.xalign.html
+        banner-text-label-xalign: 0.0
+        appids:
+          - org.gnome.Firmware
+          - org.fedoraproject.MediaWriter
+          - com.github.tchx84.Flatseal
+          - org.kde.kleopatra
+          - org.gnome.Loupe
+          - io.github.diegopvlk.Cine
+          - org.kde.haruna
+          - io.github.mpobaschnig.Vaults
+          - io.github.mhogomchungu.sirikali
+          - org.gnome.World.PikaBackup
+          - io.github.vmkspv.lenspect
+          - org.keepassxc.KeePassXC
+          - io.github.flattool.Ignition
+      classes:
+        - main

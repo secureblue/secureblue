@@ -17,7 +17,7 @@ concurrency:
 jobs:
   comment-filter:
     name: Comment filter
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-slim
     permissions:
       issues: write # delete spam
     steps:

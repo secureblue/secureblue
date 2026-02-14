@@ -46,8 +46,8 @@ def is_package_upgraded(target_packages: set(str)) -> bool:
 
     if upgraded_packages == "[]":
         return False
-    else:
-        upgraded_packages = json.loads(upgraded_packages)
+
+    upgraded_packages = json.loads(upgraded_packages)
 
     # For each upgraded package
     for package in upgraded_packages[0]:
@@ -72,8 +72,8 @@ def advisory_patched() -> AdvisorySeverity | None:
 
     if advisory_info == "[]":
         return None
-    else:
-        advisory_info = json.loads(advisory_info)
+
+    advisory_info = json.loads(advisory_info)
 
     max_severity = -1
 
@@ -81,8 +81,7 @@ def advisory_patched() -> AdvisorySeverity | None:
     for advisory in advisory_info[0][0]:
         # Extract advisory severity
         severity = advisory[2]
-        if severity > max_severity:
-            max_severity = severity
+        max_severity = max(max_severity, severity)
     
     return max_severity
 

@@ -9,7 +9,7 @@ set -euo pipefail
 status="$(rpm-ostree status)"
 db_diff="$(rpm-ostree db diff 2>&1)"
 trivalent_updated="false"
-if [[ "$db_diff" == *"pending deployment"* ]] && [[ "$db_diff" == *"trivalent"* ]]; then
+if [[ "$db_diff" == *"pending deployment"* ]] && [[ "$db_diff" == *"trivalent "* ]]; then
   trivalent_updated="true"
 fi
 

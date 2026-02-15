@@ -1,3 +1,7 @@
+# SPDX-FileCopyrightText: Copyright 2025-2026 The Secureblue Authors
+#
+# SPDX-License-Identifier: Apache-2.0
+
 enable dnsconfd.service
 enable fwupd-refresh.timer
 enable podman-auto-update.timer
@@ -6,4 +10,5 @@ enable secureblue-unbound-key.service
 
 disable flatpak-add-fedora-repos.service
 disable geoclue.service
+disable sshd-vsock.socket
 disable systemd-resolved.service

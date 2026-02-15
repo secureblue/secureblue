@@ -1,3 +1,7 @@
+# SPDX-FileCopyrightText: Copyright 2025-2026 The Secureblue Authors
+#
+# SPDX-License-Identifier: Apache-2.0
+
 kargs = [
   "hash_pointers=always",
   "init_on_alloc=1",
@@ -30,6 +34,7 @@ kargs = [
   "spec_store_bypass_disable=on",
   "spectre_v2=on",
   "ssbd=force-on",
+  "systemd.ssh_auto=no",
   "vdso32=0",
   "vsyscall=none",
 ]

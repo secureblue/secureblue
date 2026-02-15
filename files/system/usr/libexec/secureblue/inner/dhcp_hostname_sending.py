@@ -9,9 +9,9 @@ The sandboxed dhcp hostname sending toggle function
 """
 
 import os
+import subprocess  # nosec
 import sys
 import time
-import subprocess # nosec
 from typing import Final
 
 HOSTNAME_SENDING_FILE: Final[str] = "/etc/NetworkManager/conf.d/dhcp_no_hostname.conf"
@@ -20,26 +20,29 @@ ipv4.dhcp-send-hostname=0
 ipv6.dhcp-send-hostname=0
 """
 
+
 def restart_nm() -> None:
     """Restart the NetworkManager service via systemctl."""
-    systemctl = subprocess.run( # nosec
-        ["/usr/bin/systemctl", "restart", "NetworkManager.service"], check=False, capture_output=True
+    systemctl = subprocess.run(  # nosec
+        ["/usr/bin/systemctl", "restart", "NetworkManager.service"],
+        check=False,
+        capture_output=True,
     )
 
     if not systemctl.returncode:
         return
-    
+
     time.sleep(3)
     systemctl = subprocess.run(  # nosec
-        ["/usr/bin/systemctl", "restart", "NetworkManager.service"], check=False, stdout=subprocess.PIPE
+        ["/usr/bin/systemctl", "restart", "NetworkManager.service"],
+        check=False,
+        stdout=subprocess.PIPE,
     )
 
     if systemctl.returncode:
         print("Failed to restart NetworkManager.", file=sys.stderr)
         sys.exit(systemctl.returncode)
-    
-    
-    
+
 
 def main() -> int:
     """Set or remove the hostname sending block"""

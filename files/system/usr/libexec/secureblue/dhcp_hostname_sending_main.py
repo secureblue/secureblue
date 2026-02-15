@@ -16,8 +16,9 @@ import sandbox
 from utils import ask_yes_no
 
 HOSTNAME_SENDING_HELP: Final[str] = """
-This python script toggles if the system's hostname is sent to the DHCP server by creating or deleting a configuration file at
-"/etc/NetworkManager/conf.d/dhcp_no_hostname.conf" to disable or enable this functionality.
+This python script toggles if the system's hostname is sent to the DHCP server
+by creating or deleting a configuration file at /etc/NetworkManager/conf.d/dhcp_no_hostname.conf"
+to disable or enable this functionality.
 
 usage:
 ujust set-dhcp-hostname-sending
@@ -45,12 +46,11 @@ def hostname_sending_enabled() -> bool:
     """Return whether the system is set to send its hostname to the DHCP server or not."""
     if Path(HOSTNAME_SENDING_FILE).exists():
         return False
-    else:
-        return True
+    return not Path(HOSTNAME_SENDING_FILE).exists()
 
 
-def print_status(disabled_by_file: bool) -> None:
-    """Print the current file and runtime status"""
+def print_status() -> None:
+    """Print the current file status"""
 
     cur_status = "enabled" if hostname_sending_enabled() else "disabled"
 
@@ -67,7 +67,11 @@ def main() -> int:
 
     if len(sys.argv) == argc_interactive:
         # Ask interactively.
-        mode = "on" if ask_yes_no("Would you like to send the system's hostname to the DHCP server?") else "off"
+        mode = (
+            "on"
+            if ask_yes_no("Would you like to send the system's hostname to the DHCP server?")
+            else "off"
+        )
     elif len(sys.argv) == argc_on_off:
         # Take mode from first argument, i.e. 'on' or 'off'.
         mode = sys.argv[1].casefold()
@@ -76,17 +80,19 @@ def main() -> int:
         return 1
 
     disabled_by_file = Path(HOSTNAME_SENDING_FILE).exists()
-    hostname_sending_function = sandbox.SandboxedFunction("dhcp_hostname_sending.py", read_write_paths=[HOSTNAME_SENDING_DIR])
+    hostname_sending_function = sandbox.SandboxedFunction(
+        "dhcp_hostname_sending.py", read_write_paths=[HOSTNAME_SENDING_DIR]
+    )
     match mode:
         case "on" | "off":
             target_state_disabled = mode == "off"
             state_already_set = target_state_disabled == disabled_by_file
             if state_already_set:
-                print_status(disabled_by_file)
+                print_status()
             else:
                 return sandbox.run(hostname_sending_function, mode)
         case "status":
-            print_status(disabled_by_file)
+            print_status()
         case "--help":
             print(HOSTNAME_SENDING_HELP)
         case _:

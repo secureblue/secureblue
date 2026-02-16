@@ -19,7 +19,7 @@ import signal
 import stat
 
 # All subprocess calls we make have trusted inputs and do not use shell=True.
-import subprocess  # nosec
+import subprocess
 import sys
 import traceback
 from typing import Final
@@ -987,7 +987,7 @@ def audit_secureboot():
         capture_output=True,
         text=True,
         check=False,
-    )  # nosec
+    )
 
     if result.returncode == 0 and result.stdout.strip() == "SecureBoot enabled":
         status = PASS

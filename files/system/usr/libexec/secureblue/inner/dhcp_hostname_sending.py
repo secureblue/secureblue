@@ -9,7 +9,7 @@ The sandboxed dhcp hostname sending toggle function
 """
 
 import os
-import subprocess  # nosec
+import subprocess
 import sys
 import time
 from typing import Final
@@ -23,7 +23,7 @@ ipv6.dhcp-send-hostname=0
 
 def restart_nm() -> None:
     """Restart the NetworkManager service via systemctl."""
-    systemctl = subprocess.run(  # nosec
+    systemctl = subprocess.run(
         ["/usr/bin/systemctl", "restart", "NetworkManager.service"],
         check=False,
         capture_output=True,
@@ -33,7 +33,7 @@ def restart_nm() -> None:
         return
 
     time.sleep(3)
-    systemctl = subprocess.run(  # nosec
+    systemctl = subprocess.run(
         ["/usr/bin/systemctl", "restart", "NetworkManager.service"],
         check=False,
         stdout=subprocess.PIPE,

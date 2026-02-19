@@ -13,7 +13,7 @@ from pathlib import Path
 from typing import Final
 
 import sandbox
-from utils import ask_yes_no
+from utils import CommandUsageError, ToggleMode, parse_basic_toggle_args
 
 HOSTNAME_SENDING_HELP: Final[str] = """
 This python script toggles if the system's hostname is sent to the DHCP server
@@ -58,48 +58,44 @@ def print_status() -> None:
         f"DHCP hostname sending is currently {cur_status}",
     )
 
-
-def main() -> int:
-    """Handle the arguments and execute the toggle"""
-
-    argc_interactive = 1
-    argc_on_off = 2
-
-    if len(sys.argv) == argc_interactive:
-        # Ask interactively.
-        mode = (
-            "on"
-            if ask_yes_no("Would you like to send the system's hostname to the DHCP server?")
-            else "off"
-        )
-    elif len(sys.argv) == argc_on_off:
-        # Take mode from first argument, i.e. 'on' or 'off'.
-        mode = sys.argv[1].casefold()
-    else:
-        print("Too many options specified, see usage with --help.", file=sys.stderr)
-        return 1
+def run(mode: ToggleMode) -> int:
+    """Run the logic for enabling or disabling DHCP hostname sending"""
 
     disabled_by_file = Path(HOSTNAME_SENDING_FILE).exists()
+    target_state_disabled = mode == "off"
+    state_already_set = target_state_disabled == disabled_by_file
     hostname_sending_function = sandbox.SandboxedFunction(
         "dhcp_hostname_sending.py", read_write_paths=[HOSTNAME_SENDING_DIR]
     )
+
+    if mode == ToggleMode.HELP:
+        print(HOSTNAME_SENDING_HELP)
+        return 0
+    enabled = hostname_sending_enabled()
     match mode:
-        case "on" | "off":
-            target_state_disabled = mode == "off"
-            state_already_set = target_state_disabled == disabled_by_file
+        case ToggleMode.STATUS:
+            print("enabled" if enabled else "disabled")
+            return 0
+        case ToggleMode.ON | ToggleMode.OFF:
             if state_already_set:
                 print_status()
-            else:
-                return sandbox.run(hostname_sending_function, mode)
-        case "status":
-            print_status()
-        case "--help":
-            print(HOSTNAME_SENDING_HELP)
+                return 0
+            return sandbox.run(hostname_sending_function, mode)
         case _:
-            print("Invalid option selected. Try --help.")
-            return 1
-    return 0
+            raise ValueError(f"Invalid mode value: {mode}")
 
+
+def main() -> int:
+    """Handle the arguments and execute the toggle"""
+    try:
+        mode = parse_basic_toggle_args(
+                prompt = "Would you like to send the system's hostname to the DHCP server?"
+                )
+    except CommandUsageError as e:
+        print(f"Usage error: {e}. see usage with --help.")
+        return 2
+
+    return run(mode)
 
 if __name__ == "__main__":
     sys.exit(main())

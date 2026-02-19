@@ -44,8 +44,6 @@ HOSTNAME_SENDING_FILE: Final[str] = f"{HOSTNAME_SENDING_DIR}/dhcp_no_hostname.co
 
 def hostname_sending_enabled() -> bool:
     """Return whether the system is set to send its hostname to the DHCP server or not."""
-    if Path(HOSTNAME_SENDING_FILE).exists():
-        return False
     return not Path(HOSTNAME_SENDING_FILE).exists()
 
 

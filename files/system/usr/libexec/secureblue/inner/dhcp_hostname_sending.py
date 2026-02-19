@@ -39,9 +39,10 @@ def restart_nm() -> int:
         stdout=subprocess.PIPE,
     )
 
-    if systemctl.returncode:
+    if systemctl.returncode != 0:
         print("Failed to restart NetworkManager.", file=sys.stderr)
-        return systemctl.returncode
+
+    return systemctl.returncode
 
 
 def main() -> int:

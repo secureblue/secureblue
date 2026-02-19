@@ -58,6 +58,7 @@ def print_status() -> None:
         f"DHCP hostname sending is currently {cur_status}",
     )
 
+
 def run(mode: ToggleMode) -> int:
     """Run the logic for enabling or disabling DHCP hostname sending"""
 
@@ -96,6 +97,7 @@ def main() -> int:
         return 2
 
     return run(mode)
+
 
 if __name__ == "__main__":
     sys.exit(main())

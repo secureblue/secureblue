@@ -71,4 +71,3 @@ toggle-user-motd:
 set-dhcp-hostname-sending *args:
     #!/bin/sh
     exec /usr/bin/python3 /usr/libexec/secureblue/dhcp_hostname_sending_main.py "$@"
-

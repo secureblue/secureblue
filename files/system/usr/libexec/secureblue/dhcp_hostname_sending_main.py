@@ -90,8 +90,8 @@ def main() -> int:
     """Handle the arguments and execute the toggle"""
     try:
         mode = parse_basic_toggle_args(
-                prompt = "Would you like to send the system's hostname to the DHCP server?"
-                )
+            prompt="Would you like to send the system's hostname to the DHCP server?"
+        )
     except CommandUsageError as e:
         print(f"Usage error: {e}. see usage with --help.")
         return 2

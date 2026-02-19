@@ -21,7 +21,7 @@ ipv6.dhcp-send-hostname=0
 """
 
 
-def restart_nm() -> None:
+def restart_nm() -> int:
     """Restart the NetworkManager service via systemctl."""
     systemctl = subprocess.run(
         ["/usr/bin/systemctl", "restart", "NetworkManager.service"],
@@ -29,8 +29,8 @@ def restart_nm() -> None:
         capture_output=True,
     )
 
-    if not systemctl.returncode:
-        return
+    if systemctl.returncode == 0:
+        return 0
 
     time.sleep(3)
     systemctl = subprocess.run(
@@ -41,7 +41,7 @@ def restart_nm() -> None:
 
     if systemctl.returncode:
         print("Failed to restart NetworkManager.", file=sys.stderr)
-        sys.exit(systemctl.returncode)
+        return systemctl.returncode
 
 
 def main() -> int:
@@ -57,13 +57,11 @@ def main() -> int:
                 fd.write(HOSTNAME_SENDING_TEXT)
             os.chmod(HOSTNAME_SENDING_FILE, 0o644)
             print("DHCP hostname sending has been disabled. Restarting NetworkManager.")
-            restart_nm()
-            return 0
+            return restart_nm()
         case "on":
             os.remove(HOSTNAME_SENDING_FILE)
             print("DHCP hostname sending has been enabled. Restarting NetworkManager.")
-            restart_nm()
-            return 0
+            return restart_nm()
         case _:
             print("Invalid inner script argument.")
             return 1

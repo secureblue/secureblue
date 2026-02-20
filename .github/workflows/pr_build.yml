@@ -160,6 +160,10 @@ jobs:
             yycix.mm.fcix.net:443
             yxeix.mm.fcix.net:443
             stix.mm.fcix.net:443
+            paducahix.mm.fcix.net:443
+            lesnet.mm.fcix.net:443
+            mirror.fcix.net:443
+            mirror.math.princeton.edu:443
 
       - name: Checkout repo
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2

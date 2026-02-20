@@ -150,7 +150,6 @@ jobs:
             sjc.mirror.rackspace.com:443
             dfw.mirror.rackspace.com:443
             iad.mirror.rackspace.com:443
-            lesnet.mm.fcix.net:443
             ftp2.osuosl.org:443
             us.mirrors.cicku.me:443
             mirror.csclub.uwaterloo.ca:443
@@ -164,6 +163,7 @@ jobs:
             lesnet.mm.fcix.net:443
             mirror.fcix.net:443
             mirror.math.princeton.edu:443
+            mirror.cs.princeton.edu:443
 
       - name: Checkout repo
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2

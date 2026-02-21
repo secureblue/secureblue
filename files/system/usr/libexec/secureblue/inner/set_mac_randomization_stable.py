@@ -24,7 +24,7 @@ def set_stable() -> int:
     """Sets MAC address randomisation to occur on a per-network basis."""
 
     with open("/etc/NetworkManager/conf.d/rand_mac.conf", "w", encoding="utf-8") as f:
-        f.write(CONFIG_DOCSTRING)
+        f.write(CONFIG_STRING)
 
     os.chmod("/etc/NetworkManager/conf.d/rand_mac.conf", 0o644)
 

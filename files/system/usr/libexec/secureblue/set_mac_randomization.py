@@ -5,7 +5,7 @@
 # SPDX-License-Identifier: Apache-2.0
 
 """
-Sets MAC address randomisation
+Sets MAC address randomization
 """
 
 import sys
@@ -132,7 +132,7 @@ def run_set_randomization_stable() -> int:
         return out
 
     restart_success = run_restart_networkmanager()
-    if restart_success:  # 0 == success, not 0 == failure
+    if restart_success != 0:  # 0 == success, not 0 == failure
         print_wrapped(
             "Failed to restart NetworkManager. "
             + "Restart it or this computer for changes to take effect."
@@ -160,7 +160,7 @@ def run_set_randomization_random() -> int:
         print("Failed to enable MAC randomization.")
         return out
     restart_success = run_restart_networkmanager()
-    if restart_success:  # 0 == success, not 0 == failure
+    if restart_success != 0:  # 0 == success, not 0 == failure
         print_wrapped(
             "Failed to restart NetworkManager. "
             + "Restart it or this computer for changes to take effect."

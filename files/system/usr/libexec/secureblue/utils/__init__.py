@@ -121,7 +121,7 @@ class SystemdService:
 
     name: str
 
-    def _do_systemctl_action(self, *actions: str, retry_on_fail: bool = True) -> int:
+    def _do_systemctl_action(self, *actions: str, retry_on_fail: bool = False) -> int:
         """
         Perform an action on a systemd service. Retry and eventually log on failure.
 
@@ -159,7 +159,7 @@ class SystemdService:
     start = partialmethod(_do_systemctl_action, "start")
     mask = partialmethod(_do_systemctl_action, "mask")
     unmask = partialmethod(_do_systemctl_action, "unmask")
-    restart = partialmethod(_do_systemctl_action, "restart", retry_on_fail=False)
+    restart = partialmethod(_do_systemctl_action, "restart")
 
     def is_enabled(self) -> bool:
         """Returns whether the systemd service is enabled."""

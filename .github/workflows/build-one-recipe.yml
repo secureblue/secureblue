@@ -110,71 +110,69 @@ jobs:
 
             # Fedora mirrors
             # https://mirrors.fedoraproject.org/mirrorlist?repo=fedora-43&arch=x86_64&protocol=https
-            mirrors.fedoraproject.org:443
-            download-cc-rdu01.fedoraproject.org:443
+            abqix.mm.fcix.net:443
+            cfhcable.mm.fcix.net:443
+            codingflyboy.mm.fcix.net:443
+            cofractal-ewr.mm.fcix.net:443
+            cofractal-sea.mm.fcix.net:443
+            coresite-atl.mm.fcix.net:443
+            coresite.mm.fcix.net:443
+            d2lzkl7pfhq30w.cloudfront.net:443
+            dfw.mirror.rackspace.com:443
             dl.fedoraproject.org:443
-            solidrock.mm.fcix.net:443
-            ftp-chi.osuosl.org:443
-            mirror.lstn.net:80
-            paducahix.mm.fcix.net:443
+            download-cc-rdu01.fedoraproject.org:443
+            download-ib01.fedoraproject.org:443
+            fedora-mirror-atl.gigsouth.com:443
             fedora.mirror.constant.com:443
-            volico.mm.fcix.net:443
-            ziply.mm.fcix.net:443
-            opencolo.mm.fcix.net:443
+            forksystems.mm.fcix.net:443
+            ftp2.osuosl.org:443
+            ftp-chi.osuosl.org:443
             ftp-nyc.osuosl.org:443
+            ftp-osl.osuosl.org:443
+            gigsouth.mm.fcix.net:443
+            iad.mirror.rackspace.com:443
+            insect.mm.fcix.net:443
+            irltoolkit.mm.fcix.net:443
+            ix-denver.mm.fcix.net:443
+            lesnet.mm.fcix.net:443
+            lolhost.mm.fcix.net:443
+            mirror.cpsc.ucalgary.ca:443
+            mirror.csclub.uwaterloo.ca:443
+            mirror.cs.princeton.edu:443
+            mirror.cs.siue.edu:443
+            mirror.dst.ca:443
+            mirror.fcix.net:443
+            mirror.lstn.net:443
+            mirror.math.princeton.edu:443
+            mirror.servaxnet.com:443
+            mirrors.fedoraproject.org:443
+            mirrors.mit.edu:443
+            mirrors.xmission.com:443
+            mirror.us.mirhosting.net:443
+            mirror.web-ster.com:443
+            mirror.xenyth.net:443
+            muug.ca:443
+            na.edge.kernel.org:443
+            nnenix.mm.fcix.net:443
             nocix.mm.fcix.net:443
             ohioix.mm.fcix.net:443
-            southfront.mm.fcix.net:443
-            forksystems.mm.fcix.net:443
-            ix-denver.mm.fcix.net:443
-            irltoolkit.mm.fcix.net:443
-            insect.mm.fcix.net:443
-            cofractal-sea.mm.fcix.net:443
-            mirror.fcix.net:443
-            gigsouth.mm.fcix.net:443
-            nnenix.mm.fcix.net:443
-            coresite-atl.mm.fcix.net:443
-            mirror.servaxnet.com:443
-            mirrors.mit.edu:443
-            mirror.us.mirhosting.net:443
-            cofractal-ewr.mm.fcix.net:443
-            download-ib01.fedoraproject.org:443
-            d2lzkl7pfhq30w.cloudfront.net:443
-            ftp-osl.osuosl.org:443
-            na.edge.kernel.org:443
-            codingflyboy.mm.fcix.net:443
-            mirror.web-ster.com:443
+            opencolo.mm.fcix.net:443
+            ord.mirror.rackspace.com:443
+            paducahix.mm.fcix.net:443
+            paducahix.mm.fcix.net:443
             pubmirror1.math.uh.edu:443
             pubmirror2.math.uh.edu:443
             pubmirror3.math.uh.edu:443
-            lolhost.mm.fcix.net:443
-            mirror.lstn.net:443
-            abqix.mm.fcix.net:443
-            mirror.cs.siue.edu:443
             ryamer.mm.fcix.net:443
-            coresite.mm.fcix.net:443
-            mirrors.xmission.com:443
-            fedora-mirror-atl.gigsouth.com:443
-            cfhcable.mm.fcix.net:443
-            ord.mirror.rackspace.com:443
-            mirror.dst.ca:443
             sjc.mirror.rackspace.com:443
-            dfw.mirror.rackspace.com:443
-            iad.mirror.rackspace.com:443
-            lesnet.mm.fcix.net:443
-            ftp2.osuosl.org:443
-            us.mirrors.cicku.me:443
-            mirror.csclub.uwaterloo.ca:443
-            mirror.cpsc.ucalgary.ca:443
-            muug.ca:443
-            mirror.xenyth.net:443
-            yycix.mm.fcix.net:443
-            yxeix.mm.fcix.net:443
+            solidrock.mm.fcix.net:443
+            southfront.mm.fcix.net:443
             stix.mm.fcix.net:443
-            paducahix.mm.fcix.net:443
-            lesnet.mm.fcix.net:443
-            mirror.fcix.net:443
-            mirror.math.princeton.edu:443
+            us.mirrors.cicku.me:443
+            volico.mm.fcix.net:443
+            yxeix.mm.fcix.net:443
+            yycix.mm.fcix.net:443
+            ziply.mm.fcix.net:443
 
       - name: Checkout repo
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2

@@ -11,7 +11,7 @@ Sets MAC randomization to per-network
 import os
 import sys
 
-CONFIG_DOCSTRING = """\
+CONFIG_STRING = """\
 [device-mac-randomization]
 wifi.scan-rand-mac-address=yes
 [connection-mac-randomization]

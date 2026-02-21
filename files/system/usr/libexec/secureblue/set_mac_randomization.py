@@ -14,6 +14,7 @@ from pathlib import Path
 
 import inquirer
 import sandbox
+from typing import assert_never
 from utils import CommandUsageError, SystemdService, print_wrapped
 
 HELP_MESSAGE = """\
@@ -42,6 +43,7 @@ RAND_MAC_FILE = "/etc/NetworkManager/conf.d/rand_mac.conf"
 
 class Mode(StrEnum):
     """Predefine randomisation selection enums"""
+
     HELP = "HELP"
     INTERACTIVE = "INTERACTIVE"
     STABLE = "STABLE"
@@ -77,7 +79,7 @@ def return_status(silent: bool = False) -> str:
             print("The current status is: Off")
         return "Off"
 
-    return "Off" # File exists but has no contents, defaulting to off.
+    return "Off"  # File exists but has no contents, defaulting to off.
 
 
 disable_mac_randomization = sandbox.SandboxedFunction(
@@ -87,12 +89,12 @@ disable_mac_randomization = sandbox.SandboxedFunction(
 
 def run_disable_randomization() -> int:
     """Runs sandboxed disable_randomization() function."""
-    if Path(RAND_MAC_FILE).exists(): # may TOCTOU
+    if Path(RAND_MAC_FILE).exists():  # may TOCTOU
         out = sandbox.run(disable_mac_randomization)
     else:
         print_wrapped(
-            "MAC randomization config not found. " +
-            "This usually means MAC randomization is already off."
+            "MAC randomization config not found. "
+            + "This usually means MAC randomization is already off."
         )
         return 0
 
@@ -100,10 +102,12 @@ def run_disable_randomization() -> int:
         print("Failed to disable MAC randomization.")
         return 1
     restart_success = run_restart_networkmanager()
-    if restart_success: # 0 == success, not 0 == failure
-        print_wrapped("Failed to restart NetworkManager. " +
-                      "Restart it or this computer for changes to take effect.")
-        return restart_success # return the error code
+    if restart_success:  # 0 == success, not 0 == failure
+        print_wrapped(
+            "Failed to restart NetworkManager. "
+            + "Restart it or this computer for changes to take effect."
+        )
+        return restart_success  # return the error code
 
     print("MAC randomization disabled.")
     return 0
@@ -128,10 +132,12 @@ def run_set_randomization_stable() -> int:
         return out
 
     restart_success = run_restart_networkmanager()
-    if restart_success: # 0 == success, not 0 == failure
-        print_wrapped("Failed to restart NetworkManager. " +
-                      "Restart it or this computer for changes to take effect.")
-        return restart_success # return the error code
+    if restart_success:  # 0 == success, not 0 == failure
+        print_wrapped(
+            "Failed to restart NetworkManager. "
+            + "Restart it or this computer for changes to take effect."
+        )
+        return restart_success  # return the error code
     print("MAC randomization enabled.")
     return 0
 
@@ -154,10 +160,12 @@ def run_set_randomization_random() -> int:
         print("Failed to enable MAC randomization.")
         return out
     restart_success = run_restart_networkmanager()
-    if restart_success: # 0 == success, not 0 == failure
-        print_wrapped("Failed to restart NetworkManager. " +
-                      "Restart it or this computer for changes to take effect.")
-        return restart_success # return the error code
+    if restart_success:  # 0 == success, not 0 == failure
+        print_wrapped(
+            "Failed to restart NetworkManager. "
+            + "Restart it or this computer for changes to take effect."
+        )
+        return restart_success  # return the error code
     print("MAC randomization enabled.")
 
     return out
@@ -188,10 +196,8 @@ def interactive_selection() -> int:
         case "Off":
             return run_disable_randomization()
 
-        case _:
-            raise ValueError(
-                "Script malfunction: Prompt returned an unexpected value."
-            )  # This line *should* never run
+        case _ as unreachable:
+            assert_never(unreachable)
 
 
 def parse_mode_args() -> StrEnum:
@@ -201,7 +207,7 @@ def parse_mode_args() -> StrEnum:
     if not args:
         return Mode.INTERACTIVE  # User will use inquirer module to select
 
-    if args[0] in ("--help", "-h", "help"):
+    if args[0] in ("--help", "-h", "help", "?") or len(args) != 1:
         return Mode.HELP
 
     match args[0]:
@@ -225,7 +231,7 @@ def run(mode: Mode) -> int:
     """Selects which function to run by referencing the provided mode."""
     print()  # newline for readability
     print_wrapped(
-       "WARNING: MAC randomization breaks network connectivity on some hypervisors (e.g. Hyper-V)."
+        "WARNING: MAC randomization breaks network connectivity on some hypervisors (e.g. Hyper-V)."
     )
     print()  # newline for readability
     match mode:

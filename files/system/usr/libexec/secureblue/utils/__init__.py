@@ -121,7 +121,7 @@ class SystemdService:
 
     name: str
 
-    def _do_systemctl_action(self, *actions: str) -> int:
+    def _do_systemctl_action(self, *actions: str, retry_on_fail: bool = True) -> int:
         """
         Perform an action on a systemd service. Retry and eventually log on failure.
 
@@ -138,11 +138,12 @@ class SystemdService:
             return 0
 
         # Error, so wait a few seconds and try again.
-        time.sleep(3)
-        # nosemgrep: dangerous-subprocess-use-audit
-        systemctl = subprocess.run(  # nosec
-            ["/usr/bin/systemctl", *actions, self.name], check=False, stdout=subprocess.PIPE
-        )
+        if retry_on_fail:
+            time.sleep(3)
+            # nosemgrep: dangerous-subprocess-use-audit
+            systemctl = subprocess.run(  # nosec
+                ["/usr/bin/systemctl", *actions, self.name], check=False, stdout=subprocess.PIPE
+            )
 
         if systemctl.returncode:
             print(f"Failed to {' '.join(actions)} {self.name}.", file=sys.stderr)
@@ -158,7 +159,7 @@ class SystemdService:
     start = partialmethod(_do_systemctl_action, "start")
     mask = partialmethod(_do_systemctl_action, "mask")
     unmask = partialmethod(_do_systemctl_action, "unmask")
-    restart = partialmethod(_do_systemctl_action, "restart")
+    restart = partialmethod(_do_systemctl_action, "restart", retry_on_fail=False)
 
     def is_enabled(self) -> bool:
         """Returns whether the systemd service is enabled."""

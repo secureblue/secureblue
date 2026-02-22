@@ -11,10 +11,10 @@ Sets MAC address randomization
 import sys
 from enum import StrEnum
 from pathlib import Path
+from typing import assert_never
 
 import inquirer
 import sandbox
-from typing import assert_never
 from utils import CommandUsageError, SystemdService, print_wrapped
 
 HELP_MESSAGE = """\
@@ -102,7 +102,7 @@ def run_disable_randomization() -> int:
         print("Failed to disable MAC randomization.")
         return 1
     restart_success = run_restart_networkmanager()
-    if restart_success:  # 0 == success, not 0 == failure
+    if restart_success != 0:  # 0 == success, not 0 == failure
         print_wrapped(
             "Failed to restart NetworkManager. "
             + "Restart it or this computer for changes to take effect."

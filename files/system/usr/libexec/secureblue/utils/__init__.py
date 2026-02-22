@@ -111,7 +111,10 @@ class Image(enum.Enum):
 def booted_image_ref() -> str:
     """Get the image reference of the booted deployment."""
     ostree_status = command_stdout("/usr/bin/rpm-ostree", "status", "--json")
-    return json.loads(ostree_status)["deployments"][0]["container-image-reference"]
+    image_ref = json.loads(ostree_status)["deployments"][0]["container-image-reference"]
+    if not isinstance(image_ref, str):
+        raise ValueError("container-image-reference should be a JSON string")
+    return image_ref
 
 
 def print_wrapped(text: str, *, width: int = 70) -> None:

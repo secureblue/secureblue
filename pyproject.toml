@@ -1,6 +1,27 @@
+[project]
+name = "secureblue"
+requires-python = ">= 3.10"
+maintainers = [{name = "RoyalOughtness"}]
+description = "secureblue is a a security-focused desktop and server Linux operating system."
+readme = "docs/README.md"
+license-files = ["LICENSES/*.txt"]
+
+[project.urls]
+Repository = "https://github.com/secureblue/secureblue"
+Issues = "https://github.com/secureblue/secureblue/issues"
+
+[tool.mypy]
+strict = true
+ignore_missing_imports = true
+
+[[tool.mypy.overrides]]
+module = "audit_secureblue"
+disallow_untyped_defs = false
+
+[tool.ruff]
 line-length = 100
 
-[lint]
+[tool.ruff.lint]
 select = [
     "ANN", # flake8-annotations
     "S", # flake8-bandit
@@ -40,7 +61,7 @@ pycodestyle.max-line-length = 110
 pycodestyle.max-doc-length = 100
 pylint.max-statements = 40
 
-[lint.per-file-ignores]
+[tool.ruff.lint.per-file-ignores]
 # Don't require audit checks' function signatures to have type hints.
 "files/system/usr/libexec/secureblue/audit_secureblue.py" = ["ANN"]
 

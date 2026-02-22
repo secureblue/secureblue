@@ -110,6 +110,7 @@ class Image(enum.Enum):
         """Is the image a desktop image?"""
         return not self.is_server()
 
+
 @dataclass(frozen=True)
 class SystemdService:
     """

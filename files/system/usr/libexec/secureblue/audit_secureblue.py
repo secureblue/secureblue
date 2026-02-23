@@ -19,7 +19,7 @@ import signal
 import stat
 
 # All subprocess calls we make have trusted inputs and do not use shell=True.
-import subprocess  # nosec
+import subprocess
 import sys
 import traceback
 from typing import Final
@@ -310,12 +310,13 @@ def audit_unconfined_userns():
 
 
 @audit
-def audit_container_userns():
+def audit_container_userns(state):
     """Ensure container-domain processes cannot create user namespaces."""
-    if command_stdout("ujust", "set-container-userns", "status") == "disabled":
-        status = PASS
-        recs = None
-    else:
+    status = PASS
+    recs = None
+    container_userns = command_stdout("ujust", "set-container-userns", "status") != "disabled"
+    state["container_userns_enabled"] = container_userns
+    if container_userns:
         status = WARN
         rec_lines = (
             _("Container domain user namespace creation is permitted."),
@@ -507,17 +508,10 @@ def audit_mac_randomization():
 @audit
 def audit_rpm_ostree_timer():
     """Ensure rpm-ostree automatic updates are enabled."""
-    if command_succeeds("systemctl", "is-enabled", "--quiet", "rpm-ostreed-automatic.timer"):
-        status = PASS
-        note = None
-        rec = None
-        if command_succeeds("systemctl", "is-failed", "--quiet", "rpm-ostreed-automatic.timer"):
-            status = status.downgrade_to(WARN)
-            note = Note(
-                _("{0} is enabled but has failed to run.").format("rpm-ostreed-automatic.timer"),
-                WARN,
-            )
-    else:
+    status = PASS
+    note = None
+    rec = None
+    if not command_succeeds("systemctl", "is-enabled", "--quiet", "rpm-ostreed-automatic.timer"):
         status = FAIL
         note = Note(_("{0} is disabled.").format("rpm-ostreed-automatic.timer"), FAIL)
         rec_lines = (
@@ -526,6 +520,10 @@ def audit_rpm_ostree_timer():
             "$ systemctl enable --now rpm-ostreed-automatic.timer",
         )
         rec = "\n".join(rec_lines)
+    elif command_succeeds("systemctl", "is-failed", "--quiet", "rpm-ostreed-automatic.service"):
+        status = status.downgrade_to(WARN)
+        note = Note(_("{0} has failed to run.").format("rpm-ostreed-automatic.service"), WARN)
+
     yield Report(
         _("Ensuring {0} is enabled").format("rpm-ostreed-automatic.timer"),
         status,
@@ -537,18 +535,10 @@ def audit_rpm_ostree_timer():
 @audit
 def audit_podman_auto_update():
     """Ensure podman automatic updates are enabled."""
-    if command_succeeds("systemctl", "is-enabled", "--quiet", "podman-auto-update.timer"):
-        status = PASS
-        note = None
-        rec = None
-        if command_succeeds(
-            "systemctl", "--user", "is-failed", "--quiet", "podman-auto-update.timer"
-        ):
-            status = status.downgrade_to(WARN)
-            note = Note(
-                _("{0} is enabled but has failed to run.").format("podman-auto-update.timer"), WARN
-            )
-    else:
+    status = PASS
+    note = None
+    rec = None
+    if not command_succeeds("systemctl", "is-enabled", "--quiet", "podman-auto-update.timer"):
         status = FAIL
         note = Note(_("{0} is disabled.").format("podman-auto-update.timer"), FAIL)
         rec_lines = (
@@ -557,6 +547,10 @@ def audit_podman_auto_update():
             "$ systemctl enable --now podman-auto-update.timer",
         )
         rec = "\n".join(rec_lines)
+    elif command_succeeds("systemctl", "is-failed", "--quiet", "podman-auto-update.service"):
+        status = status.downgrade_to(WARN)
+        note = Note(_("{0} has failed to run.").format("podman-auto-update.service"), WARN)
+
     yield Report(
         _("Ensuring {0} is enabled").format("podman-auto-update.timer"),
         status,
@@ -566,23 +560,15 @@ def audit_podman_auto_update():
 
 
 @audit
-def audit_podman_global_auto_update():
+@depends_on("audit_container_userns")
+def audit_podman_global_auto_update(state):
     """Ensure podman automatic updates are enabled globally."""
-    if command_succeeds(
+    status = PASS
+    note = None
+    rec = None
+    if not command_succeeds(
         "systemctl", "--global", "is-enabled", "--quiet", "podman-auto-update.timer"
     ):
-        status = PASS
-        note = None
-        rec = None
-        if command_succeeds("systemctl", "is-failed", "--quiet", "podman-auto-update.timer"):
-            status = status.downgrade_to(WARN)
-            note = Note(
-                _("{0} is enabled globally but has failed to run.").format(
-                    "podman-auto-update.timer"
-                ),
-                WARN,
-            )
-    else:
         status = FAIL
         note = Note(_("{0} is not enabled globally.").format("podman-auto-update.timer"), FAIL)
         rec_lines = (
@@ -591,6 +577,12 @@ def audit_podman_global_auto_update():
             "$ systemctl enable --global podman-auto-update.timer",
         )
         rec = "\n".join(rec_lines)
+    elif state["container_userns_enabled"] and command_succeeds(
+        "systemctl", "--user", "is-failed", "--quiet", "podman-auto-update.service"
+    ):
+        status = status.downgrade_to(WARN)
+        note = Note(_("{0} has failed to run.").format("podman-auto-update.service"), WARN)
+
     yield Report(
         _("Ensuring {0} is enabled globally").format("podman-auto-update.timer"),
         status,
@@ -604,23 +596,12 @@ def audit_flatpak_auto_update():
     """Ensure flatpak automatic updates are enabled."""
     if not command_succeeds("command", "-v", "flatpak"):
         return
-    if command_succeeds(
+    status = PASS
+    note = None
+    rec = None
+    if not command_succeeds(
         "systemctl", "--global", "is-enabled", "--quiet", "flatpak-user-update.timer"
     ):
-        status = PASS
-        note = None
-        rec = None
-        if command_succeeds(
-            "systemctl", "--user", "is-failed", "--quiet", "flatpak-user-update.timer"
-        ):
-            status = status.downgrade_to(WARN)
-            note = Note(
-                _("{0} is enabled globally but has failed to run.").format(
-                    "flatpak-user-update.timer"
-                ),
-                WARN,
-            )
-    else:
         status = FAIL
         note = Note(_("{0} is not enabled globally.").format("flatpak-user-update.timer"), FAIL)
         rec_lines = (
@@ -629,6 +610,12 @@ def audit_flatpak_auto_update():
             "$ systemctl enable --global flatpak-user-update.timer",
         )
         rec = "\n".join(rec_lines)
+    elif command_succeeds(
+        "systemctl", "--user", "is-failed", "--quiet", "flatpak-user-update.service"
+    ):
+        status = status.downgrade_to(WARN)
+        note = Note(_("{0} has failed to run.").format("flatpak-user-update.service"), WARN)
+
     yield Report(
         _("Ensuring {0} is enabled globally").format("flatpak-user-update.timer"),
         status,
@@ -636,17 +623,10 @@ def audit_flatpak_auto_update():
         recs=rec,
     )
 
-    if command_succeeds("systemctl", "is-enabled", "--quiet", "flatpak-system-update.timer"):
-        status = PASS
-        note = None
-        rec = None
-        if command_succeeds("systemctl", "is-failed", "--quiet", "flatpak-system-update.timer"):
-            status = status.downgrade_to(WARN)
-            note = Note(
-                _("{0} is enabled but has failed to run.").format("flatpak-system-update.timer"),
-                WARN,
-            )
-    else:
+    status = PASS
+    note = None
+    rec = None
+    if not command_succeeds("systemctl", "is-enabled", "--quiet", "flatpak-system-update.timer"):
         status = FAIL
         note = Note(_("{0} is not enabled.").format("flatpak-system-update.timer"), FAIL)
         rec_lines = (
@@ -655,10 +635,51 @@ def audit_flatpak_auto_update():
             "$ systemctl enable --now flatpak-system-update.timer",
         )
         rec = "\n".join(rec_lines)
+    elif command_succeeds("systemctl", "is-failed", "--quiet", "flatpak-system-update.service"):
+        status = status.downgrade_to(WARN)
+        note = Note(_("{0} has failed to run.").format("flatpak-system-update.service"), WARN)
+
     yield Report(
         _("Ensuring {0} is enabled").format("flatpak-system-update.timer"),
         status,
         notes=note,
+        recs=rec,
+    )
+
+
+@audit
+def audit_brew_auto_update():
+    """Ensure Homebrew automatic updates are enabled."""
+    if not command_succeeds("command", "-v", "brew"):
+        return
+    status = PASS
+    disabled_timers = []
+    notes = []
+    rec = None
+    for unit in ("brew-update", "brew-upgrade"):
+        timer = f"{unit}.timer"
+        service = f"{unit}.service"
+        if not command_succeeds("systemctl", "is-enabled", "--quiet", timer):
+            status = FAIL
+            disabled_timers.append(timer)
+            notes.append(Note(_("{0} is not enabled.").format(timer), FAIL))
+        elif command_succeeds("systemctl", "is-failed", "--quiet", service):
+            status = status.downgrade_to(WARN)
+            notes.append(Note(_("{0} has failed to run.").format(service), WARN))
+
+    if disabled_timers:
+        rec = "\n".join(
+            (
+                _("Automatic updates for Homebrew are not enabled."),
+                _("To enable them, run:"),
+                f"$ systemctl enable --now {' '.join(disabled_timers)}",
+            )
+        )
+
+    yield Report(
+        _("Ensuring automatic Homebrew updates are enabled"),
+        status,
+        notes=notes,
         recs=rec,
     )
 
@@ -966,7 +987,7 @@ def audit_secureboot():
         capture_output=True,
         text=True,
         check=False,
-    )  # nosec
+    )
 
     if result.returncode == 0 and result.stdout.strip() == "SecureBoot enabled":
         status = PASS

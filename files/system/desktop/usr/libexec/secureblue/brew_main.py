@@ -8,7 +8,7 @@
 
 import os
 import shutil
-import subprocess  # nosec
+import subprocess
 import sys
 from pathlib import Path
 from typing import Final
@@ -48,7 +48,7 @@ def print_status(linuxbrew_installed_by_stamp: bool) -> None:
     """Print the current file and runtime status"""
 
     # nosemgrep: dangerous-subprocess-use-audit
-    brew_setup_status = subprocess.run(  # nosec
+    brew_setup_status = subprocess.run(
         ["/usr/bin/systemctl", "is-enabled", "--quiet", "brew-setup.service"],
         check=False,
         capture_output=True,

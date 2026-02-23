@@ -187,8 +187,8 @@ def run(sandboxed_function: SandboxedFunction, *args: str) -> int:
     if sandboxed_function.subprocess_interactive:
         result = subprocess.run(
             command, check=False, stdin=sys.stdin, stdout=sys.stdout, stderr=sys.stderr
-        )  # nosec
+        )
     else:
-        result = subprocess.run(command, check=False, stdin=subprocess.DEVNULL)  # nosec
+        result = subprocess.run(command, check=False, stdin=subprocess.DEVNULL)
 
     return result.returncode

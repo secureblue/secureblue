@@ -9,7 +9,6 @@
 
 [Unit]
 Description=Secureblue Unbound Root Key Installation Service
-ConditionPathExists=!/var/lib/unbound/root.key
 After=local-fs.target
 Before=unbound.service unbound-anchor.service
 RequiresMountsFor=/var/lib
@@ -17,6 +16,7 @@ RequiresMountsFor=/usr/etc
 
 [Service]
 Type=oneshot
+ExecCondition=/usr/bin/test ! -e /var/lib/unbound/root.key
 ExecStartPre=/usr/bin/mkdir -p /var/lib/unbound
 ExecStart=/usr/bin/cp /etc/unbound/dnssec-root.key /var/lib/unbound/root.key
 ExecStartPost=/usr/bin/chown -R unbound:unbound /var/lib/unbound

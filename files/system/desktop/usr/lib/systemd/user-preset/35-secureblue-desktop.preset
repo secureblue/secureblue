@@ -8,3 +8,7 @@ enable secureblue-flatpak-setup.timer
 enable secureblue-key-enrollment-verification.timer
 enable secureblue-update-verification.timer
 enable security-update-notification.path
+
+# Homebrew
+enable brew-update.timer
+enable brew-upgrade.timer

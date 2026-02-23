@@ -61,7 +61,7 @@ def run(mode: ToggleMode) -> int:
     """Run the logic for enabling or disabling DHCP hostname sending"""
 
     disabled_by_file = Path(HOSTNAME_SENDING_FILE).exists()
-    target_state_disabled = mode == "off"
+    target_state_disabled = mode == ToggleMode.OFF
     state_already_set = target_state_disabled == disabled_by_file
     hostname_sending_function = sandbox.SandboxedFunction(
         "dhcp_hostname_sending.py", read_write_paths=[HOSTNAME_SENDING_DIR]

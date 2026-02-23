@@ -35,3 +35,5 @@ if [[ "$IMAGE_NAME" == *"iot"* || "$IMAGE_NAME" == *"securecore"* ]]; then
     install_repo "$repo"
   done
 fi
+
+dnf clean all

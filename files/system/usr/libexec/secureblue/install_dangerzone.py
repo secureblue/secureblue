@@ -8,7 +8,7 @@
 Install Dangerzone (sandboxed PDF sanitizer): https://dangerzone.rocks/
 """
 
-import subprocess  # nosec
+import subprocess
 import sys
 from typing import Final
 
@@ -43,11 +43,11 @@ def main() -> int:
     if exit_code != 0:
         return exit_code
     print("Enabling container-domain user namespace creation...")
-    proc = subprocess.run(["/usr/bin/ujust", "set-container-userns", "on"], check=False)  # nosec
+    proc = subprocess.run(["/usr/bin/ujust", "set-container-userns", "on"], check=False)
     if proc.returncode != 0:
         return proc.returncode
     print("Installing Dangerzone as layered package...")
-    proc = subprocess.run(["/usr/bin/rpm-ostree", "install", "dangerzone"], check=False)  # nosec
+    proc = subprocess.run(["/usr/bin/rpm-ostree", "install", "dangerzone"], check=False)
     if proc.returncode != 0:
         return proc.returncode
     print("Reboot to complete the installation.")

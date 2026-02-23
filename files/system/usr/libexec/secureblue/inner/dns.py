@@ -11,7 +11,7 @@ import argparse
 import json
 import os
 import pwd
-import subprocess  # nosec
+import subprocess
 import sys
 import textwrap
 import time
@@ -50,7 +50,7 @@ class SystemdService:
             action (str): systemctl action (e.g. "start")
         """
         # nosemgrep: dangerous-subprocess-use-audit
-        systemctl = subprocess.run(  # nosec
+        systemctl = subprocess.run(
             ["/usr/bin/systemctl", *actions, self.name], check=False, capture_output=True
         )
 
@@ -61,7 +61,7 @@ class SystemdService:
         # Error, so wait a few seconds and try again.
         time.sleep(3)
         # nosemgrep: dangerous-subprocess-use-audit
-        systemctl = subprocess.run(  # nosec
+        systemctl = subprocess.run(
             ["/usr/bin/systemctl", *actions, self.name], check=False, stdout=subprocess.PIPE
         )
 
@@ -81,7 +81,7 @@ class SystemdService:
     def is_enabled(self) -> bool:
         """Returns whether the systemd service is enabled."""
         # nosemgrep: dangerous-subprocess-use-audit
-        systemctl = subprocess.run(  # nosec
+        systemctl = subprocess.run(
             ["/usr/bin/systemctl", "is-enabled", "--quiet", self.name],
             check=False,
             capture_output=True,

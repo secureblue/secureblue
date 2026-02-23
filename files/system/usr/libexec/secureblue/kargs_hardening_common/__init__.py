@@ -6,7 +6,7 @@
 
 """Common data for kernel argument hardening."""
 
-import subprocess  # nosec
+import subprocess
 from collections.abc import Sequence
 
 import tomllib
@@ -45,4 +45,4 @@ def apply_kargs(*, add: Sequence[str], remove: Sequence[str]) -> None:
         rpm_ostree_cmd.append(f"--append-if-missing={karg}")
     for karg in remove:
         rpm_ostree_cmd.append(f"--delete-if-present={karg}")
-    subprocess.run(rpm_ostree_cmd, check=True)  # nosec
+    subprocess.run(rpm_ostree_cmd, check=True)

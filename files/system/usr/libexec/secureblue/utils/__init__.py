@@ -10,7 +10,7 @@ Various utility functions used in secureblue scripts.
 
 import enum
 import json
-import subprocess  # nosec
+import subprocess
 import sys
 import textwrap
 from collections.abc import Iterable, Sequence
@@ -128,7 +128,7 @@ def command_stdout(*args: str, check: bool = True) -> str:
     """Run a command in the shell and return the contents of stdout."""
     # We only call this with trusted inputs and do not set shell=True.
     # nosemgrep: dangerous-subprocess-use-audit
-    return subprocess.run(args, capture_output=True, check=check, text=True).stdout.strip()  # nosec
+    return subprocess.run(args, capture_output=True, check=check, text=True).stdout.strip()
 
 
 def command_succeeds(*args: str) -> bool:
@@ -137,7 +137,7 @@ def command_succeeds(*args: str) -> bool:
     # nosemgrep: dangerous-subprocess-use-audit
     ret_code = subprocess.run(
         args, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, check=False
-    ).returncode  # nosec
+    ).returncode
     return ret_code == 0
 
 

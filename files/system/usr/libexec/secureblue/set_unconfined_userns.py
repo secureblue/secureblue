@@ -6,7 +6,7 @@
 
 """Enable, disable, or check status of unconfined-domain user namespace creation."""
 
-import subprocess  # nosec
+import subprocess
 import sys
 from typing import Final
 
@@ -47,7 +47,7 @@ def unconfined_userns_enabled() -> bool:
     # First try to read the list of enabled SELinux modules directly.
     semodule_proc = subprocess.run(
         ["/usr/bin/semodule", "-l"], check=False, capture_output=True, text=True
-    )  # nosec
+    )
     if semodule_proc.returncode == 0:
         return UNCONFINED_USERNS_MODULE not in semodule_proc.stdout.splitlines()
 

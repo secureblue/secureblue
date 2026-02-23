@@ -6,7 +6,7 @@
 
 """Enable, disable, or check status of container-domain user namespace creation."""
 
-import subprocess  # nosec
+import subprocess
 import sys
 from typing import Final
 
@@ -48,7 +48,7 @@ def container_userns_enabled() -> bool:
     # First try to read the list of enabled SELinux modules directly.
     semodule_proc = subprocess.run(
         ["/usr/bin/semodule", "-l"], check=False, capture_output=True, text=True
-    )  # nosec
+    )
     if semodule_proc.returncode == 0:
         return CONTAINER_USERNS_MODULE not in semodule_proc.stdout.splitlines()
 
@@ -67,8 +67,8 @@ def stop_containers(*, prompt: bool = True) -> bool:
         if not ask_yes_no("Are you sure you want to do this?"):
             return False
     print("Stopping all containers and shutting down podman...")
-    subprocess.run(["/usr/bin/podman", "stop", "--all"], check=True)  # nosec
-    subprocess.run(["/usr/bin/killall", "catatonit"], check=False)  # nosec
+    subprocess.run(["/usr/bin/podman", "stop", "--all"], check=True)
+    subprocess.run(["/usr/bin/killall", "catatonit"], check=False)
     if command_succeeds("/usr/bin/pgrep", "catatonit"):
         print_wrapped("""
             Warning: Catatonit running as another user detected.

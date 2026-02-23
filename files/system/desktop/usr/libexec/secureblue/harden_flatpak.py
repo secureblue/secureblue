@@ -8,7 +8,7 @@ import argparse
 import contextlib
 import os
 import re
-import subprocess  # nosec
+import subprocess
 import sys
 from typing import Final
 
@@ -44,7 +44,7 @@ def libhardened_malloc_path(uarch: str | None) -> str:
 
 def flatpak_override(*args: str) -> None:
     """Apply flatpak overrides."""
-    subprocess.run(["/usr/bin/flatpak", "override", "--user", *args], check=True)  # nosec
+    subprocess.run(["/usr/bin/flatpak", "override", "--user", *args], check=True)
 
 
 def installed_app_list() -> list[str]:

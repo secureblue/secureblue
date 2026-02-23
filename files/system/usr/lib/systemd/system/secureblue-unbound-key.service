@@ -18,7 +18,7 @@ RequiresMountsFor=/usr/etc
 [Service]
 Type=oneshot
 ExecStartPre=/usr/bin/mkdir -p /var/lib/unbound
-ExecStart=/usr/bin/cp /usr/etc/unbound/dnssec-root.key /var/lib/unbound/root.key
+ExecStart=/usr/bin/cp /etc/unbound/dnssec-root.key /var/lib/unbound/root.key
 ExecStartPost=/usr/bin/chown -R unbound:unbound /var/lib/unbound
 ExecStartPost=/usr/bin/chmod 0644 /var/lib/unbound/root.key
 ExecStartPost=/usr/bin/restorecon -R /var/lib/unbound

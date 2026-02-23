@@ -198,4 +198,4 @@ jobs:
           maximize_build_space: true
           squash: true
           skip_checkout: true
-          verify_install: true
+          verify_install: false

@@ -12,7 +12,7 @@ Description=Secureblue Unbound Root Key Installation Service
 After=local-fs.target
 Before=unbound.service unbound-anchor.service
 RequiresMountsFor=/var/lib
-RequiresMountsFor=/usr/etc
+RequiresMountsFor=/etc
 
 [Service]
 Type=oneshot

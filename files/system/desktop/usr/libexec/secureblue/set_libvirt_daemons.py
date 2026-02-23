@@ -167,12 +167,13 @@ def get_selection(current: LibvirtDaemonSelection) -> LibvirtDaemonSelection | N
     questions = [
         inquirer.Checkbox(
             "daemons",
-            message="Select libvirt daemons to enable or disable",
+            message="(space to toggle, up/down to navigate, enter to confirm, Ctrl+C to cancel)",
             choices=all_daemons,
             default=current.daemons(),
             carousel=True,
         )
     ]
+    print("Select libvirt daemons (https://libvirt.org/daemons.html) to enable or disable:")
     answers = inquirer.prompt(questions)
     if answers is None:
         return None

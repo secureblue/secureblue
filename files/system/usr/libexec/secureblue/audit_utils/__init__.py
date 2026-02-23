@@ -13,7 +13,7 @@ import os
 import re
 
 # All subprocess calls we make have trusted inputs and do not use shell=True.
-import subprocess  # nosec
+import subprocess
 import textwrap
 from pathlib import Path
 from typing import Final

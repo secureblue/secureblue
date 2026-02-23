@@ -9,6 +9,7 @@
 
 [Unit]
 Description=Secureblue Unbound Root Key Installation Service
+ConditionPathExists=!/var/lib/unbound/root.key
 After=local-fs.target
 Before=unbound.service unbound-anchor.service
 RequiresMountsFor=/var/lib

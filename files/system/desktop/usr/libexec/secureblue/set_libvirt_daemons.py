@@ -7,7 +7,7 @@
 """Enable, disable, or check status of libvirt daemons."""
 
 import enum
-import subprocess  # nosec
+import subprocess
 import sys
 from typing import Final
 
@@ -40,20 +40,20 @@ def _systemd_units_status(*units: str) -> tuple[list[str], bool]:
         check=False,
         capture_output=True,
         text=True,
-    )  # nosec
+    )
     return (result.stdout.strip().splitlines(), result.returncode == 0)
 
 
 def enable_systemd_units(*units: str, start: bool = True) -> None:
     """Enable a list of systemd units."""
     now = ("--now",) if start else ()
-    subprocess.run(["/usr/bin/systemctl", "enable", *now, "--", *units], check=True)  # nosec
+    subprocess.run(["/usr/bin/systemctl", "enable", *now, "--", *units], check=True)
 
 
 def disable_systemd_units(*units: str, stop: bool = True) -> None:
     """Disable a list of systemd units."""
     now = ("--now",) if stop else ()
-    subprocess.run(["/usr/bin/systemctl", "disable", *now, "--", *units], check=True)  # nosec
+    subprocess.run(["/usr/bin/systemctl", "disable", *now, "--", *units], check=True)
 
 
 class LibvirtDaemonSelection(enum.Flag):

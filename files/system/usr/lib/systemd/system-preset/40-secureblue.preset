@@ -2,6 +2,7 @@
 #
 # SPDX-License-Identifier: Apache-2.0
 
+enable securebluecleanup.service
 enable dnsconfd.service
 enable fwupd-refresh.timer
 enable podman-auto-update.timer

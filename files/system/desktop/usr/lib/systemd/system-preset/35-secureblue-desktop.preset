@@ -2,8 +2,6 @@ enable flatpak-system-update.timer
 
 # Homebrew
 enable brew-setup.service
-enable brew-update.timer
-enable brew-upgrade.timer
 
 # Disable NFS daemons
 disable gssproxy.service

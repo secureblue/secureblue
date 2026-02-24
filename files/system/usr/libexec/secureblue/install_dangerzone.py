@@ -17,9 +17,9 @@ from utils import ask_yes_no, print_wrapped
 
 WARNING_MESSAGE: Final[str] = """
 Warning: Dangerzone (https://dangerzone.rocks/) requires enabling both container-domain
-user namespace creation and (restricted) ptrace. This is a security tradeoff, as other
-programs on your system will also be able to use container tools such as podman and to
-use ptrace to inspect child processes.
+user namespace creation and (admin-only attach) ptrace. This is a security tradeoff, as
+other programs on your system will also be able to use container tools such as podman
+and to use ptrace to inspect child processes.
 """
 
 

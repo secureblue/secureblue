@@ -7,7 +7,7 @@
 """Enable or disable Xwayland."""
 
 import os
-import subprocess  # nosec
+import subprocess
 import sys
 from typing import Final
 
@@ -77,7 +77,7 @@ def run(mode: ToggleMode) -> int:
             else:
                 subprocess.run(
                     ["/usr/bin/run0", "/usr/bin/rm", "-f", "--", override_file], check=True
-                )  # nosec
+                )
                 print(f"Xwayland for {de_name} has been enabled. Reboot to take effect.")
         case ToggleMode.OFF:
             if enabled:
@@ -91,7 +91,7 @@ def run(mode: ToggleMode) -> int:
                         override_file,
                     ],
                     check=True,
-                )  # nosec
+                )
                 print(f"Xwayland for {de_name} has been disabled. Reboot to take effect.")
             else:
                 print(f"Xwayland for {de_name} is already disabled.")

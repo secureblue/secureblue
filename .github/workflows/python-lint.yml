@@ -1,0 +1,92 @@
+# SPDX-FileCopyrightText: Copyright 2025-2026 The Secureblue Authors
+#
+# SPDX-License-Identifier: Apache-2.0
+
+name: Python linters
+permissions: {}
+on:
+  pull_request:
+    paths:
+      - '**.py'
+      - 'ruff.toml'
+      - '.github/workflows/python-lint.yml'
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+defaults:
+  run:
+    shell: bash
+
+jobs:
+  ruff:
+    name: Ruff (Python linter)
+    runs-on: ubuntu-slim
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd  # v6.0.2
+        with:
+          persist-credentials: false
+
+      - name: Set up Python
+        uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405  # v6.2.0
+        with:
+          python-version: "3.14"
+
+      - name: Install dependencies
+        run: |
+          tmpfile=$(mktemp)
+          cat <<'EOF' > "$tmpfile"
+          pip==26.0.1 \
+            --hash=sha256:bdb1b08f4274833d62c1aa29e20907365a2ceb950410df15fc9521bad440122b
+
+          ruff==0.15.2 \
+            --hash=sha256:b7a672c82b5f9887576087d97be5ce439f04bbaf548ee987b92d3a7dede41d3a
+          EOF
+
+          python -m pip install --require-hashes -r "$tmpfile"
+
+      - name: Run Ruff
+        run: ruff check --output-format=github .
+
+      - name: Check code formatting
+        run: ruff format --diff
+
+  mypy:
+    name: Mypy type-checker
+    runs-on: ubuntu-slim
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          persist-credentials: false
+
+      - name: Set up Python
+        uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405 # v6.2.0
+        with:
+          python-version: "3.14"
+
+      - name: Install dependencies
+        run: |
+          tmpfile=$(mktemp)
+          cat <<'EOF' > "$tmpfile"
+          pip==26.0.1 \
+            --hash=sha256:bdb1b08f4274833d62c1aa29e20907365a2ceb950410df15fc9521bad440122b
+
+          librt==0.8.1 \
+            --hash=sha256:6b1977c4ea97ce5eb7755a78fae68d87e4102e4aaf54985e8b56806849cc06a3
+          mypy==1.19.1 \
+            --hash=sha256:28902ee51f12e0f19e1e16fbe2f8f06b6637f482c459dd393efddd0ec7f82045
+          mypy_extensions==1.1.0 \
+            --hash=sha256:1be4cccdb0f2482337c4743e60421de3a356cd97508abadd57d47403e94f5505
+          pathspec==1.0.4 \
+            --hash=sha256:fb6ae2fd4e7c921a165808a552060e722767cfa526f99ca5156ed2ce45a5c723
+          typing_extensions==4.15.0 \
+            --hash=sha256:f0fa19c6845758ab08074a0cfa8b7aecb71c999ca73d62883bc25cc018c4e548
+          EOF
+
+          python -m pip install --require-hashes -r "$tmpfile"
+
+      - name: Run Mypy
+        run: |
+          PATH="$HOME/.local/bin:$PATH"
+          mypy .

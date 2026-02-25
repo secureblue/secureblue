@@ -20,7 +20,7 @@ class ContainersPolicyError(Exception):
     """The provided containers policy is invalid."""
 
 
-def policy_requirements_secure(requirements: Sequence) -> bool:
+def policy_requirements_secure(requirements: Sequence[Mapping[str, Any]]) -> bool:
     """Assess if a list of container policy requirements are secure."""
     try:
         return any(req["type"] in ("reject", "signedBy", "sigstoreSigned") for req in requirements)
@@ -36,7 +36,7 @@ class TransportPolicyAudit:
     insecure_scopes: list[str]
 
     @staticmethod
-    def from_data(scopes: Mapping[str, Sequence]) -> "TransportPolicyAudit":
+    def from_data(scopes: Mapping[str, Sequence[Mapping[str, Any]]]) -> "TransportPolicyAudit":
         """Analyze container transport policy from given JSON data."""
         default_secure = True
         insecure_scopes = []

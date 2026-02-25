@@ -126,6 +126,9 @@ toggle-anticheat-support skip_dangerzone_approval="false":
                 if [[ "$user_choice" != [yY]* ]]; then
                     exit
                 fi
+            elif [[ "{{ skip_dangerzone_approval }}" != "true" ]]; then
+                echo 'Invalid skip_dangerzone_approval arguement, only "true", "false", or empty allowed.'
+                exit
             fi 
         fi
         echo 'kernel.yama.ptrace_scope = 3' > "$sysctl_ptrace_file"

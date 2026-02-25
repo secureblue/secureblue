@@ -209,18 +209,18 @@ def audit_ptrace(state):
             rec = None
         case 0:
             status = FAIL
-            rec_lines = (
+            rec_lines = [
                 _("ptrace is allowed and **unrestricted** ({0})!").format("ptrace_scope = 0"),
                 _("For more info on what this means, see:"),
                 "https://www.kernel.org/doc/html/latest/admin-guide/LSM/Yama.html",
                 _("To forbid ptrace, run:"),
                 "$ ujust toggle-ptrace-scope",
                 _("To allow restricted ptrace, run the above command twice."),
-            )
+            ]
             rec = "\n".join(rec_lines)
         case _:
             status = WARN
-            rec_lines = (
+            rec_lines = [
                 _("ptrace is allowed, but restricted ({0}).").format(
                     f"ptrace_scope = {ptrace_scope}"
                 ),
@@ -228,7 +228,7 @@ def audit_ptrace(state):
                 "https://www.kernel.org/doc/html/latest/admin-guide/LSM/Yama.html",
                 _("To forbid ptrace, run:"),
                 "$ ujust toggle-ptrace-scope",
-            )
+            ]
             rec = "\n".join(rec_lines)
     state["ptrace_allowed"] = status != PASS
     yield Report(_("Ensuring ptrace is forbidden"), status, recs=rec)
@@ -300,11 +300,11 @@ def audit_unconfined_userns():
         recs = None
     else:
         status = FAIL
-        rec_lines = (
+        rec_lines = [
             _("Unconfined domain user namespace creation is permitted."),
             _("To disallow it, run:"),
             "$ ujust set-unconfined-userns off",
-        )
+        ]
         recs = "\n".join(rec_lines)
     yield Report(_("Ensuring unconfined user namespace creation disallowed"), status, recs=recs)
 
@@ -318,11 +318,11 @@ def audit_container_userns(state):
     state["container_userns_enabled"] = container_userns
     if container_userns:
         status = WARN
-        rec_lines = (
+        rec_lines = [
             _("Container domain user namespace creation is permitted."),
             _("To disallow it, run:"),
             "$ ujust set-container-userns off",
-        )
+        ]
         recs = "\n".join(rec_lines)
     yield Report(_("Ensuring container user namespace creation disallowed"), status, recs=recs)
 
@@ -340,14 +340,14 @@ def audit_usbguard():
     else:
         status = FAIL
         note = Note(_("USBGuard is not enabled."), FAIL)
-        rec_lines = (
+        rec_lines = [
             note.text,
             _("To set up USBGuard, run:"),
             "$ ujust setup-usbguard",
             _(
                 "Caution: if you have already set up USBGuard, this will overwrite the existing policy."
             ),
-        )
+        ]
         rec = "\n".join(rec_lines)
     yield Report(_("Ensuring USBGuard is active"), status, notes=note, recs=rec)
 
@@ -365,11 +365,11 @@ def audit_chronyd():
     else:
         status = FAIL
         note = Note(_("{0} is not enabled.").format("chronyd"), FAIL)
-        rec_lines = (
+        rec_lines = [
             note.text,
             _("To start and enable it, run:"),
             "$ systemctl enable --now chronyd",
-        )
+        ]
         rec = "\n".join(rec_lines)
     yield Report(_("Ensuring chronyd is active"), status, notes=note, recs=rec)
 
@@ -494,11 +494,11 @@ def audit_mac_randomization():
         if ethernet and wifi:
             status = PASS
     if status == FAIL:
-        rec_lines = (
+        rec_lines = [
             _("MAC randomization is not enabled."),
             _("To enable it, run:"),
             "$ ujust toggle-mac-randomization",
-        )
+        ]
         rec = "\n".join(rec_lines)
     else:
         rec = None
@@ -514,11 +514,11 @@ def audit_rpm_ostree_timer():
     if not command_succeeds("systemctl", "is-enabled", "--quiet", "rpm-ostreed-automatic.timer"):
         status = FAIL
         note = Note(_("{0} is disabled.").format("rpm-ostreed-automatic.timer"), FAIL)
-        rec_lines = (
+        rec_lines = [
             note.text,
             _("To enable it, run:"),
             "$ systemctl enable --now rpm-ostreed-automatic.timer",
-        )
+        ]
         rec = "\n".join(rec_lines)
     elif command_succeeds("systemctl", "is-failed", "--quiet", "rpm-ostreed-automatic.service"):
         status = status.downgrade_to(WARN)
@@ -541,11 +541,11 @@ def audit_podman_auto_update():
     if not command_succeeds("systemctl", "is-enabled", "--quiet", "podman-auto-update.timer"):
         status = FAIL
         note = Note(_("{0} is disabled.").format("podman-auto-update.timer"), FAIL)
-        rec_lines = (
+        rec_lines = [
             note.text,
             _("To enable it, run:"),
             "$ systemctl enable --now podman-auto-update.timer",
-        )
+        ]
         rec = "\n".join(rec_lines)
     elif command_succeeds("systemctl", "is-failed", "--quiet", "podman-auto-update.service"):
         status = status.downgrade_to(WARN)
@@ -571,11 +571,11 @@ def audit_podman_global_auto_update(state):
     ):
         status = FAIL
         note = Note(_("{0} is not enabled globally.").format("podman-auto-update.timer"), FAIL)
-        rec_lines = (
+        rec_lines = [
             note.text,
             _("To enable it, run:"),
             "$ systemctl enable --global --now podman-auto-update.timer",
-        )
+        ]
         rec = "\n".join(rec_lines)
     elif state["container_userns_enabled"] and command_succeeds(
         "systemctl", "--user", "is-failed", "--quiet", "podman-auto-update.service"
@@ -604,11 +604,11 @@ def audit_flatpak_auto_update():
     ):
         status = FAIL
         note = Note(_("{0} is not enabled globally.").format("flatpak-user-update.timer"), FAIL)
-        rec_lines = (
+        rec_lines = [
             note.text,
             _("To enable it, run:"),
             "$ systemctl enable --global --now flatpak-user-update.timer",
-        )
+        ]
         rec = "\n".join(rec_lines)
     elif command_succeeds(
         "systemctl", "--user", "is-failed", "--quiet", "flatpak-user-update.service"
@@ -629,11 +629,11 @@ def audit_flatpak_auto_update():
     if not command_succeeds("systemctl", "is-enabled", "--quiet", "flatpak-system-update.timer"):
         status = FAIL
         note = Note(_("{0} is not enabled.").format("flatpak-system-update.timer"), FAIL)
-        rec_lines = (
+        rec_lines = [
             note.text,
             _("To enable it, run:"),
             "$ systemctl enable --now flatpak-system-update.timer",
-        )
+        ]
         rec = "\n".join(rec_lines)
     elif command_succeeds("systemctl", "is-failed", "--quiet", "flatpak-system-update.service"):
         status = status.downgrade_to(WARN)
@@ -690,11 +690,11 @@ def audit_groups():
     user_groups = frozenset(command_stdout("groups").split())
 
     if "wheel" in user_groups:
-        rec_lines = (
+        rec_lines = [
             _("The current user is in the wheel group."),
             _("To set up a separate wheel account, run:"),
             "$ ujust create-admin",
-        )
+        ]
         rec = "\n".join(rec_lines)
         status = FAIL
     else:
@@ -716,24 +716,24 @@ def audit_groups():
             status = status.downgrade_to(FAIL)
             note = Note(_("The current user is in the group '{0}'.").format(group), FAIL)
             notes.append(note)
-            rec_lines = (
+            rec_lines = [
                 note.text,
                 _("This allows privilege escalation to root."),
                 _("To remove the user from this group, run:"),
                 remove_group_cmd,
-            )
+            ]
             recs.append("\n".join(rec_lines))
         elif group == "systemd-journal":
             status = status.downgrade_to(WARN)
             note = Note(_("The current user is in the group '{0}'.").format(group), WARN)
             notes.append(note)
-            rec_lines = (
+            rec_lines = [
                 note.text,
                 _("This group allows the user to read system and kernel logs."),
                 _("This might make it easier to exploit kernel vulnerabilities."),
                 _("To remove the user from this group, run:"),
                 remove_group_cmd,
-            )
+            ]
             recs.append("\n".join(rec_lines))
         else:
             status = status.downgrade_to(WARN)
@@ -741,12 +741,12 @@ def audit_groups():
                 _("The current user is in the unrecognized group '{0}'.").format(group), WARN
             )
             notes.append(note)
-            rec_lines = (
+            rec_lines = [
                 note.text,
                 _("Group memberships can grant additional privileges and may pose security risks."),
                 _("You may want to consider removing the user from this group:"),
                 remove_group_cmd,
-            )
+            ]
             recs.append("\n".join(rec_lines))
     yield Report(
         _("Checking if user is in groups with security implications"),
@@ -777,11 +777,11 @@ def audit_xwayland(state):
         rec = None
     else:
         status = FAIL
-        rec_lines = (
+        rec_lines = [
             _("Xwayland is enabled for {0}.").format(de),
             _("To disable it, run:"),
             "$ ujust set-xwayland off",
-        )
+        ]
         rec = "\n".join(rec_lines)
     yield Report(_("Ensuring {0} is disabled for {1}").format("Xwayland", de), status, recs=rec)
 
@@ -805,11 +805,11 @@ def audit_gnome_extensions(state):
         rec = None
     else:
         status = FAIL
-        rec_lines = (
+        rec_lines = [
             _("GNOME user extensions are enabled."),
             _("To disable this, run:"),
             "$ ujust toggle-gnome-extensions",
-        )
+        ]
         rec = "\n".join(rec_lines)
     yield Report(_("Ensuring GNOME user extensions are disabled"), status, recs=rec)
 
@@ -822,11 +822,11 @@ def audit_selinux():
         rec = None
     else:
         status = FAIL
-        rec_lines = (
+        rec_lines = [
             _("SELinux is in Permissive mode."),
             _("To set it to Enforcing mode, run:"),
             "$ run0 setenforce 1",
-        )
+        ]
         rec = "\n".join(rec_lines)
     yield Report(_("Ensuring SELinux is in Enforcing mode"), status, recs=rec)
 
@@ -849,11 +849,11 @@ def audit_environment_file():
         status = WARN
         note = Note(_("The file {0} cannot be read.").format(env_file), WARN)
     if status != PASS:
-        rec_lines = (
+        rec_lines = [
             _("The file {0} has been modified.").format(env_file),
             _("To reset it, run:"),
             f"$ run0 cp -p /usr{env_file} {env_file}",
-        )
+        ]
         rec = "\n".join(rec_lines)
     yield Report(_("Ensuring no environment file overrides"), status, notes=note, recs=rec)
 
@@ -878,11 +878,11 @@ def audit_kde_ghns(state):
         if config.get("ghns") == "false":
             status = PASS
     if status == FAIL:
-        rec_lines = (
+        rec_lines = [
             _("KDE GNHS is enabled."),
             _("To disable it, run:"),
             "$ ujust toggle-ghns",
-        )
+        ]
         rec = "\n".join(rec_lines)
     else:
         rec = None
@@ -918,11 +918,11 @@ def audit_ld_preload():
             status = FAIL
             notes.append(Note(_("{0} is owned by a non-root user!").format(ld_so_preload), FAIL))
     if status != PASS:
-        rec_lines = (
+        rec_lines = [
             _("The file {0} has been modified or deleted.").format(ld_so_preload),
             _("To reset it and enable hardened_malloc for system processes, run:"),
             f"$ run0 cp -p /usr{ld_so_preload} {ld_so_preload}",
-        )
+        ]
         rec = "\n".join(rec_lines)
     yield Report(
         _("Ensuring {0} has expected permissions").format("ld.so.preload"),
@@ -1039,13 +1039,13 @@ def audit_bash_env_lockdown():
                 unlocked_files.append(path)
     if unlocked_files:
         status = FAIL
-        rec_lines = (
+        rec_lines = [
             _("Bash environment is not locked down."),
             _("The following files do not appear to be immutable or do not exist:"),
             *unlocked_files,
             _("To fix this, run:"),
             "$ ujust toggle-bash-environment-lockdown",
-        )
+        ]
         rec = "\n".join(rec_lines)
     else:
         status = PASS
@@ -1066,11 +1066,11 @@ def audit_webcam_module():
                 status = PASS
     except FileNotFoundError:
         status = INFO
-        rec_lines = (
+        rec_lines = [
             _("Webcam module is enabled."),
             _("To disable it, run:"),
             "$ ujust disable-webcam",
-        )
+        ]
         rec = "\n".join(rec_lines)
         note = Note(_("Webcam module is enabled."), INFO)
     except PermissionError:

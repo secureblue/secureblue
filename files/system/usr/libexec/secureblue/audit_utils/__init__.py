@@ -15,7 +15,6 @@ import re
 # All subprocess calls we make have trusted inputs and do not use shell=True.
 import subprocess
 import textwrap
-from pathlib import Path
 from typing import Final
 
 from auditor import AuditError, Status, gettext_marker
@@ -148,8 +147,8 @@ def analyze_active_container_policy() -> tuple[ContainersPolicyAudit, str]:
     """
     system_policy_file = "/etc/containers/policy.json"
     local_override = "~/.config/containers/policy.json"
-    local_override_file = Path(local_override).expanduser()
-    if local_override_file.exists():
+    local_override_file = os.path.expanduser(local_override)
+    if os.path.exists(local_override_file):
         policy_file = local_override_file
         path_str = local_override
     else:

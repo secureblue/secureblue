@@ -88,7 +88,7 @@ class Status(enum.Enum):
         """Printable width of status."""
         return len(self.local_name())
 
-    def downgrade_to(self, other: Self) -> Self:
+    def downgrade_to(self, other: "Status") -> "Status":
         """Returns the more severe of the two statuses."""
         return max(self, other, key=lambda status: status.value)
 
@@ -256,7 +256,7 @@ def _print_recs(recs: list[Recommendation], width: int = 80) -> None:
 class Audit:
     """A system audit."""
 
-    def __init__(self):
+    def __init__(self) -> None:
         self.checks: list[Check] = []
         self.state: dict[str, Any] = {}
         self.recs: list[Recommendation] = []
@@ -344,7 +344,7 @@ def make_check(
 
     if inspect.isgeneratorfunction(f):
 
-        async def f_async(*args: Any, **kwargs: Any) -> AsyncGenerator:
+        async def f_async(*args: Any, **kwargs: Any) -> AsyncGenerator[Report]:
             for item in f(*args, **kwargs):
                 yield item
 
@@ -365,7 +365,9 @@ def audit(
 def depends_on(*dependencies: str) -> Callable[..., Check]:
     """Add a dependency to a check."""
 
-    def add_dependencies(f: Check | Callable) -> Check:
+    def add_dependencies(
+        f: Check | Callable[..., AsyncGenerator[Report]] | Callable[..., Generator[Report]],
+    ) -> Check:
         check = make_check(f)
         check.dependencies += list(dependencies)
         return check
@@ -376,7 +378,9 @@ def depends_on(*dependencies: str) -> Callable[..., Check]:
 def categorize(cat: str) -> Callable[..., Check]:
     """Mark a check as belonging to a given category."""
 
-    def add_category(f: Check | Callable) -> Check:
+    def add_category(
+        f: Check | Callable[..., AsyncGenerator[Report]] | Callable[..., Generator[Report]],
+    ) -> Check:
         check = make_check(f)
         check.category = cat
         return check

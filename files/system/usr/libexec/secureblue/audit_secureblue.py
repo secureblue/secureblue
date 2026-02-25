@@ -574,7 +574,7 @@ def audit_podman_global_auto_update(state):
         rec_lines = (
             note.text,
             _("To enable it, run:"),
-            "$ systemctl enable --global podman-auto-update.timer",
+            "$ systemctl enable --global --now podman-auto-update.timer",
         )
         rec = "\n".join(rec_lines)
     elif state["container_userns_enabled"] and command_succeeds(
@@ -607,7 +607,7 @@ def audit_flatpak_auto_update():
         rec_lines = (
             note.text,
             _("To enable it, run:"),
-            "$ systemctl enable --global flatpak-user-update.timer",
+            "$ systemctl enable --global --now flatpak-user-update.timer",
         )
         rec = "\n".join(rec_lines)
     elif command_succeeds(
@@ -659,11 +659,11 @@ def audit_brew_auto_update():
     for unit in ("brew-update", "brew-upgrade"):
         timer = f"{unit}.timer"
         service = f"{unit}.service"
-        if not command_succeeds("systemctl", "is-enabled", "--quiet", timer):
+        if not command_succeeds("systemctl", "--global", "is-enabled", "--quiet", timer):
             status = FAIL
             disabled_timers.append(timer)
             notes.append(Note(_("{0} is not enabled.").format(timer), FAIL))
-        elif command_succeeds("systemctl", "is-failed", "--quiet", service):
+        elif command_succeeds("systemctl", "--user", "is-failed", "--quiet", service):
             status = status.downgrade_to(WARN)
             notes.append(Note(_("{0} has failed to run.").format(service), WARN))
 
@@ -672,7 +672,7 @@ def audit_brew_auto_update():
             (
                 _("Automatic updates for Homebrew are not enabled."),
                 _("To enable them, run:"),
-                f"$ systemctl enable --now {' '.join(disabled_timers)}",
+                f"$ systemctl enable --global --now {' '.join(disabled_timers)}",
             )
         )
 

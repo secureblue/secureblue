@@ -78,7 +78,7 @@ def resolve_app_id(provided: str, installed_app_ids: list[str]) -> str | None:
         "app_id", message="Did you mean one of the following? (Ctrl+C to cancel)", choices=matches
     )
     answer = inquirer.prompt([question])
-    return answer and answer["app_id"]
+    return None if answer is None else answer["app_id"]
 
 
 def current_override_status(app_id: str, hmalloc_path: str) -> tuple[bool, bool]:

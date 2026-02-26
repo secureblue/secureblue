@@ -33,7 +33,6 @@ def main() -> int:
     result = subprocess.run(
         ["/usr/sbin/passwd", new_username],
         check=False,
-        text=True,
         stdin=sys.stdin,
         stdout=sys.stdout,
         stderr=sys.stderr,

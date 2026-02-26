@@ -10,7 +10,6 @@ Privileged inner script to install Dangerzone.
 
 import configparser
 import json
-import os
 import re
 from typing import Final
 
@@ -20,7 +19,7 @@ DZ_REPO_PATH: Final[str] = "/etc/yum.repos.d/dangerzone.repo"
 PTRACE_CONF_PATH: Final[str] = "/etc/sysctl.d/61-ptrace-scope.conf"
 
 
-def enable_repo(path: str | bytes | os.PathLike, name: str) -> None:
+def enable_repo(path: str | bytes, name: str) -> None:
     """Enable RPM repository"""
     config = configparser.ConfigParser()
     config.read(path)

@@ -40,6 +40,8 @@ ujust set-mac-randomization status
 
 RAND_MAC_FILE = "/etc/NetworkManager/conf.d/rand_mac.conf"
 
+status_string_off = "Off"
+
 
 class Mode(StrEnum):
     """Predefine randomisation selection enums"""
@@ -77,88 +79,67 @@ def return_status(silent: bool = False) -> str:
     except FileNotFoundError:
         if not silent:
             print("The current status is: Off")
-        return "Off"
+        return status_string_off
 
-    return "Off"  # File exists but has no contents, defaulting to off.
+    return status_string_off  # File exists but has no contents, defaulting to off.
 
 
 disable_mac_randomization = sandbox.SandboxedFunction(
     file_name="disable_mac_randomization.py", read_write_paths=["/etc/NetworkManager/conf.d"]
 )
 
-
-def run_disable_randomization() -> int:
-    """Runs sandboxed disable_randomization() function."""
-    if Path(RAND_MAC_FILE).exists():  # may TOCTOU
-        out = sandbox.run(disable_mac_randomization)
-    else:
-        print_wrapped(
-            "MAC randomization config not found. "
-            + "This usually means MAC randomization is already off."
-        )
-        return 0
-
-    if out:  # out != 0 means failure
-        print("Failed to disable MAC randomization.")
-        return 1
-    restart_success = run_restart_networkmanager()
-    if restart_success != 0:  # 0 == success, not 0 == failure
-        print_wrapped(
-            "Failed to restart NetworkManager. "
-            + "Restart it or this computer for changes to take effect."
-        )
-        return restart_success  # return the error code
-
-    print("MAC randomization disabled.")
-    return 0
-
-
 set_mac_randomization_stable = sandbox.SandboxedFunction(
     file_name="set_mac_randomization_stable.py", read_write_paths=["/etc/NetworkManager/conf.d"]
 )
-
-
-def run_set_randomization_stable() -> int:
-    """Runs sandboxed set_mac_randomization_stable function."""
-    print("Selected state: per-network (stable)")
-
-    if return_status(silent=True) == "stable":
-        print("MAC randomization is already set to per-network (stable).")
-        return 0
-
-    out = sandbox.run(set_mac_randomization_stable)
-    if out:
-        print("Failed to set MAC randomization to per-network (stable).")
-        return out
-
-    restart_success = run_restart_networkmanager()
-    if restart_success != 0:  # 0 == success, not 0 == failure
-        print_wrapped(
-            "Failed to restart NetworkManager. "
-            + "Restart it or this computer for changes to take effect."
-        )
-        return restart_success  # return the error code
-    print("MAC randomization enabled.")
-    return 0
-
 
 set_mac_randomization_random = sandbox.SandboxedFunction(
     file_name="set_mac_randomization_random.py", read_write_paths=["/etc/NetworkManager/conf.d"]
 )
 
 
-def run_set_randomization_random() -> int:
-    """Runs sandboxed set_mac_randomization_random function."""
-    print("Selected state: per-connection (random)")
+def set_randomization_state(state: Mode) -> int:
+    """Sets the mac randomization state (stable, random, off), running the sandboxed functions."""
+    sandboxed_function_exitcode = 0
 
-    if return_status(silent=True) == "random":
-        print("MAC randomization is already set to per-network (random).")
-        return 0
+    match state:
+        case Mode.OFF:
+            # Run sandboxed disable_randomization() function.
+            if Path(RAND_MAC_FILE).exists():  # may TOCTOU
+                sandboxed_function_exitcode = sandbox.run(disable_mac_randomization)
+            else:
+                print_wrapped(
+                    "MAC randomization config not found. "
+                    + "This usually means MAC randomization is already off."
+                )
+                return 0
 
-    out = sandbox.run(set_mac_randomization_random)
-    if out:
-        print("Failed to enable MAC randomization.")
-        return out
+        case Mode.STABLE:
+            # Run sandboxed set_mac_randomization_stable function.
+            print("Selected state: per-network (stable)")
+
+            if return_status(silent=True) == "stable":
+                print("MAC randomization is already set to per-network (stable).")
+                return 0
+
+            sandboxed_function_exitcode = sandbox.run(set_mac_randomization_stable)
+
+        case Mode.RANDOM:
+            # Run sandboxed set_mac_randomization_random function.
+            print("Selected state: per-connection (random)")
+
+            if return_status(silent=True) == "random":
+                print("MAC randomization is already set to per-network (random).")
+                return 0
+
+            sandboxed_function_exitcode = sandbox.run(set_mac_randomization_random)
+
+        case _:
+            raise ValueError("Unhandled mode: " + state)
+
+    if sandboxed_function_exitcode:  # sandboxed_function_exitcode != 0 means failure
+        print(f"Failed set MAC randomization. Code:{sandboxed_function_exitcode}")
+        return 1
+
     restart_success = run_restart_networkmanager()
     if restart_success != 0:  # 0 == success, not 0 == failure
         print_wrapped(
@@ -166,9 +147,9 @@ def run_set_randomization_random() -> int:
             + "Restart it or this computer for changes to take effect."
         )
         return restart_success  # return the error code
-    print("MAC randomization enabled.")
 
-    return out
+    print(f"MAC randomization set to {state} successfully.")
+    return 0
 
 
 def interactive_selection() -> int:
@@ -188,13 +169,13 @@ def interactive_selection() -> int:
             return 0
 
         case "Per-network (stable)":
-            return run_set_randomization_stable()
+            return set_randomization_state(Mode.STABLE)
 
         case "Per-connection (random)":
-            return run_set_randomization_random()
+            return set_randomization_state(Mode.RANDOM)
 
         case "Off":
-            return run_disable_randomization()
+            return set_randomization_state(Mode.OFF)
 
         case _ as unreachable:
             assert_never(unreachable)
@@ -239,13 +220,13 @@ def run(mode: Mode) -> int:
             return interactive_selection()
 
         case Mode.STABLE:
-            return run_set_randomization_stable()
+            return set_randomization_state(mode)
 
         case Mode.RANDOM:
-            return run_set_randomization_random()
+            return set_randomization_state(mode)
 
         case Mode.OFF:
-            return run_disable_randomization()
+            return set_randomization_state(mode)
 
         case Mode.STATUS:
             return_status()

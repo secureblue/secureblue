@@ -497,8 +497,8 @@ def audit_mac_randomization():
         rec_lines = [
             _("MAC randomization is not enabled."),
             _("To enable it, run:"),
-            "$ ujust set-mac-randomization",
-        )
+            "$ ujust set-mac-randomization"
+            ]
         rec = "\n".join(rec_lines)
     else:
         rec = None

@@ -30,6 +30,17 @@ DEFAULT_COPYRIGHT_HEADER: Final[str] = """\
 
 SOURCE_FILES_PATH: Final[str] = "files/po/po-source-files.json"
 
+# This is the locale used for translatable strings in the repo.
+LOCALE: Final[str] = "en_US.UTF-8"
+
+# Reference for locale environment variables:
+# https://www.gnu.org/software/gettext/manual/html_node/Locale-Environment-Variables.html
+# `msginit` requires this to be set to work properly.
+os.environ["LC_MESSAGES"] = LOCALE
+os.environ["LANG"] = LOCALE
+del os.environ["LANGUAGE"]
+del os.environ["LC_ALL"]
+
 
 def command_stdout(*args: str) -> str:
     """Run a command in the shell and return the contents of stdout."""
@@ -42,10 +53,6 @@ os.chdir(git_root)
 
 with open(SOURCE_FILES_PATH, encoding="utf8") as f:
     domain_map = json.load(f)
-
-# This is the locale used for translatable strings in the repo.
-# `msginit` requires this to be set to work properly.
-os.environ["LANG"] = "en_US.UTF-8"
 
 for domain, source_files in domain_map.items():
     pot_path = f"files/po/{domain}.pot"

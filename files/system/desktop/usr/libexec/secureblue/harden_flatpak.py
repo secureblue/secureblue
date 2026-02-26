@@ -161,9 +161,22 @@ def main() -> int:
     """
 
     if not args.app_id:
-        flatpak_override("--filesystem=host-os:ro", f"--env=LD_PRELOAD={hmalloc_path}")
+        flatpak_override(
+            "--filesystem=host-os:ro",
+            f"--env=LD_PRELOAD={hmalloc_path}",
+            "--env=ELECTRON_OZONE_PLATFORM_HINT=auto",
+        )
         print(f"{hmalloc_description} applied to all flatpaks by default.")
+        print()
         print_wrapped(host_os_note)
+        print()
+        print_wrapped(
+            """
+            ELECTRON_OZONE_PLATFORM_HINT=auto has also been set for all flatpaks, ensuring that
+            older Electron flatpaks prefer Wayland over X11. (This is already the default for
+            newer Electron apps.)
+            """
+        )
         return 0
 
     installed_app_ids = installed_app_list()
@@ -173,6 +186,7 @@ def main() -> int:
         return 1
     harden_flatpak_app(app_id, hmalloc_path)
     print(f"{hmalloc_description} applied to flatpak {app_id}")
+    print()
     print_wrapped(host_os_note)
 
     return 0

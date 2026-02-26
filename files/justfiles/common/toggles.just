@@ -103,7 +103,7 @@ toggle-debug-mode:
 alias toggle-ptrace-scope := toggle-anticheat-support
 
 # Toggle anticheat support by changing ptrace scope (requires restart)
-toggle-anticheat-support skip_dangerzone_approval="false":
+toggle-anticheat-support:
     #! /bin/run0 /bin/bash
     set -euo pipefail
     sysctl_ptrace_file='/etc/sysctl.d/61-ptrace-scope.conf'
@@ -121,15 +121,10 @@ toggle-anticheat-support skip_dangerzone_approval="false":
             echo "${bold}WARNING${unbold} Dangerzone (https://dangerzone.rocks) is installed on this system and requires ptrace_scope set to 2 or lower to work."
             echo 'This script disables Anticheat and sets ptrace_scope to 3 which will break Dangerzone.'
             echo 'If you still want Dangerzone to work you can keep Anticheat enabled or edit /etc/sysctl.d/61-ptrace-scope.conf.'
-            if [[ "{{ skip_dangerzone_approval }}" == "false" ]]; then
-                read -r -p "Are you sure you would like to break Dangerzone by setting ptrace_scope to 3? [y/N] " user_choice
-                if [[ "$user_choice" != [yY]* ]]; then
-                    exit
-                fi
-            elif [[ "{{ skip_dangerzone_approval }}" != "true" ]]; then
-                echo 'Invalid skip_dangerzone_approval arguement, only "true", "false", or empty allowed.'
+            read -r -p "Are you sure you would like to break Dangerzone by setting ptrace_scope to 3? [y/N] " user_choice
+            if [[ "$user_choice" != [yY]* ]]; then
                 exit
-            fi 
+            fi
         fi
         echo 'kernel.yama.ptrace_scope = 3' > "$sysctl_ptrace_file"
         echo 'Anticheat support disabled. ptrace_scope set back to 3. Reboot to take effect.'

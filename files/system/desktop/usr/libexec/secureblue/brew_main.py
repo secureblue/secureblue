@@ -8,13 +8,12 @@
 
 import os
 import shutil
-import subprocess  # nosec
+import subprocess
 import sys
 from pathlib import Path
 from typing import Final
 
 import sandbox
-from sandbox import SandboxedFunction
 from utils import CommandUsageError, ToggleMode, parse_basic_toggle_args
 
 BREW_HELP: Final[str] = """
@@ -49,7 +48,7 @@ def print_status(linuxbrew_installed_by_stamp: bool) -> None:
     """Print the current file and runtime status"""
 
     # nosemgrep: dangerous-subprocess-use-audit
-    brew_setup_status = subprocess.run(  # nosec
+    brew_setup_status = subprocess.run(
         ["/usr/bin/systemctl", "is-enabled", "--quiet", "brew-setup.service"],
         check=False,
         capture_output=True,
@@ -77,7 +76,7 @@ def main() -> int:
         return 2
 
     linuxbrew_is_installed = Path(BREW_ETC_STAMP).exists()
-    brew_disable_function = SandboxedFunction(
+    brew_disable_function = sandbox.SandboxedFunction(
         "brew.py", read_write_paths=[LINUXBREW_HOMEDIR, ETC_DIR], capabilities=["CAP_DAC_OVERRIDE"]
     )
     match mode:

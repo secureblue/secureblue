@@ -38,24 +38,15 @@ enroll-secureblue-secure-boot-key:
     echo 'At next reboot, the mokutil UEFI menu UI will be displayed (*QWERTY* keyboard input and navigation).'
     echo 'Then, select "Enroll MOK", and input "secureblue" as the password.'
 
-# Toggle display of the user-motd in terminal
-toggle-user-motd:
-    #!/usr/bin/bash
-    if test -e "${HOME}/.config/no-show-user-motd"; then
-      rm -f "${HOME}/.config/no-show-user-motd"
-    else
-      if test ! -d "${HOME}/.config"; then
-        mkdir "${HOME}/.config"
-      fi
-      touch "${HOME}/.config/no-show-user-motd"
-    fi
-
 # Update system (with provenance verification)
 update-system:
     #!/bin/sh
     set -eu
     /usr/libexec/secureblue/verify-provenance.sh
     /usr/bin/rpm-ostree upgrade
+    if [ -f /usr/libexec/secureblue/security-update-notification ]; then
+        /usr/libexec/secureblue/security-update-notification >/dev/null 2>&1 &
+    fi
 
 # Update device firmware
 [no-exit-message]
@@ -234,14 +225,6 @@ label-external-drives:
 
     echo -e '\nDone.'
 
-# Layers a comprehensive set of packages for libvirt/qemu/virt-manager
-install-libvirt-packages:
-    #!/usr/bin/bash
-    set -euo pipefail
-    rpm-ostree install -y libvirt libvirt-nss qemu qemu-char-spice qemu-device-display-virtio-gpu qemu-device-display-virtio-vga qemu-device-usb-redirect qemu-img qemu-system-x86-core qemu-user-binfmt qemu-user-static virt-install virt-manager virt-viewer
-    echo "Check out the Red Hat documentation to see which services to enable for your usecase:"
-    echo "https://docs.redhat.com/en/documentation/red_hat_enterprise_linux/9/html/configuring_and_managing_virtualization/optimizing-virtual-machine-performance-in-rhel_configuring-and-managing-virtualization#proc_enabling-modular-libvirt-daemons_assembly_optimizing-libvirt-daemons"
-
 # Convenience utility for layering VPN provider packages
 install-vpn:
     #!/usr/bin/bash
@@ -358,7 +341,7 @@ install-vpn:
     echo
 
     echo 'NOTE: You can also install wireguard profiles from your provider directly into your DE, if you prefer.'
-    read -rp 'Do you want to continue? [y/N] ' proceed
+    read -rp 'Do you want to continue with installing a VPN app anyway? [y/N] ' proceed
     if ! [[ "$proceed" == [yY]* ]]; then
         echo 'Aborting...'
         exit 0
@@ -372,14 +355,14 @@ install-vpn:
     needs_gui="1"
     if [[ "$vpn_requirements" =~ "gui_needs_" ]]; then
         echo
-        echo 'Notice: This VPN requires additional security features to be disabled if you intend to use its graphical interface.'
-        echo 'If you only intend on using the command-line interface, you can skip those.'
-        read -rp 'Do you intend to use the GUI? [Y/n] ' proceed_gui
-        if [[ "$proceed_gui" == [nN]* ]]; then
-            echo 'Additional hardening features required for the GUI will not be disabled.'
-            needs_gui="0"
+        echo 'Notice: This VPN requires additional security features to be disabled in order to use its graphical interface.'
+        echo "You can instead use the VPN app's command-line interface, which does not require disabling hardening."
+        read -rp 'Do you intend to use the graphical interface? [y/N] ' proceed_gui
+        if [[ "$proceed_gui" == [yY]* ]]; then
+            echo 'Additional hardening features that break the graphical interface will be disabled.'
         else
-            echo 'Additional hardening features required for the GUI will be disabled.'
+            echo 'Additional hardening features that break the graphical interface will not be disabled.'
+            needs_gui="0"
         fi
     fi
 

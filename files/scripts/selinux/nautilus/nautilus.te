@@ -25,9 +25,11 @@ optional_policy(`
 	gen_require(`
 		type unconfined_t;
 		attribute trivalent_domain;
+		attribute user_home_type;
 		role unconfined_r;
 	')
 
 	nautilus_run(unconfined_t, unconfined_r)
 	nautilus_run(trivalent_domain, unconfined_r)
+	domtrans_pattern(nautilus_t, user_home_type, unconfined_t)
 ')

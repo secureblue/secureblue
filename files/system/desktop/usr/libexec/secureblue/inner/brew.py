@@ -11,7 +11,7 @@ The sandboxed brew disable function
 import contextlib
 import os
 import shutil
-import subprocess  # nosec
+import subprocess
 import sys
 from typing import Final
 
@@ -31,7 +31,7 @@ def main() -> int:
     mode = sys.argv[1]
     match mode:
         case "on":
-            subprocess.run(  # nosec
+            subprocess.run(
                 ["/usr/bin/systemctl", "enable", "--now", "brew-setup.service"],
                 check=False,
                 capture_output=True,
@@ -49,7 +49,7 @@ def main() -> int:
                 os.remove(BREW_PROFILE_FILE)
             with contextlib.suppress(OSError):
                 os.remove(BREW_PROFILE_COMPLETIONS_FILE)
-            subprocess.run(  # nosec
+            subprocess.run(
                 ["/usr/bin/systemctl", "disable", "brew-setup.service"],
                 check=False,
                 capture_output=True,

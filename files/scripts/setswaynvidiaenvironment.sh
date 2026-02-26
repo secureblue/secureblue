@@ -5,7 +5,7 @@
 #
 # SPDX-License-Identifier: MIT
 
-set -oue pipefail
+set -euo pipefail
 
 rm /etc/sway/environment
 

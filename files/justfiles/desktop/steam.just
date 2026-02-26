@@ -24,9 +24,9 @@ install-steam:
     fi
     valid_input="0"
     method_selection=""
-    echo "Please select a method to install steam:"
-    echo "    1) Flatpak - will install the steam flatpak from flathub-unverified"
-    echo "    2) Distrobox - will set up steam via the bazzite-arch distrobox image"
+    echo "Please select a method to install Steam:"
+    echo "    1) Flatpak - Install the Steam flatpak from flathub-unverified (Recommended for most users)"
+    echo "    2) Distrobox - Install Steam via the bazzite-arch distrobox image (Recommended for SteamVR users)"
     while [[ "$valid_input" == "0" ]]; do
         read -rp "Selection [1-2]: " method_selection
         if [[ "$method_selection" == [12]* ]]; then

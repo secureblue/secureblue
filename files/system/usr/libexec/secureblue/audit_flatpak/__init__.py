@@ -33,9 +33,12 @@ class Permissions:
     system_bus_own: list[str] = field(default_factory=list)
 
 
-def _parse_config_sections(conf_text: str) -> dict[str | None, dict[str, str]]:
+ConfigSections = dict[str | None, dict[str, str]]
+
+
+def _parse_config_sections(conf_text: str) -> ConfigSections:
     """Parse config file into sections containing key-value mappings"""
-    sections = {}
+    sections: ConfigSections = {}
     current_section = None
     for raw_line in conf_text.splitlines():
         line = raw_line.strip()
@@ -216,7 +219,6 @@ FLATPAK_PERMISSION_CHECKS: list[PermissionCheck] = [
 
 ARBITRARY_PERMISSIONS_EXPECTED: list[str] = [
     "com.github.tchx84.Flatseal",
-    "io.github.flattool.Warehouse",
     "io.github.kolunmi.Bazaar",
 ]
 
@@ -345,15 +347,17 @@ def _handle_flatpak_buses(state: FlatpakPermissionsState, perms: Permissions) ->
             if is_session:
                 note = _("{0} can talk to {1} on the session bus.").format(state.name, bus_name)
                 first_line = _("The following flatpak app(s) can talk to {0} on the session bus:")
+                option = "no-talk-name"
             else:
                 note = _("{0} can talk to {1} on the system bus.").format(state.name, bus_name)
                 first_line = _("The following flatpak app(s) can talk to {0} on the system bus:")
+                option = "system-no-talk-name"
             rec_lines = (
                 first_line.format(bus_name),
                 Recommendation.NAMES_PLACEHOLDER,
                 _("This grants the ability to acquire arbitrary permissions."),
                 _("To remove this permission from an app, use Flatseal or run:"),
-                f"$ flatpak override -u --no-talk-name={bus_name} com.example.Example",
+                f"$ flatpak override -u --{option}={bus_name} com.example.Example",
                 _('(replacing "{0}" with the flatpak app ID)').format("com.example.Example"),
             )
             state.update(
@@ -462,7 +466,7 @@ def _check_overrides_access(
                 Recommendation.NAMES_PLACEHOLDER,
                 _("This grants the ability to acquire arbitrary permissions."),
                 _("To remove this permission from an app, use Flatseal or run:"),
-                "$ flatpak override -u --nofilesystem={override_path} com.example.Example",
+                f"$ flatpak override -u --nofilesystem={override_path} com.example.Example",
                 _('(replacing "{0}" with the flatpak app ID)').format("com.example.Example"),
             )
             rec = Recommendation("\n".join(rec_lines), mergeable_name=state.name)

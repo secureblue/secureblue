@@ -158,6 +158,9 @@ files_rw_generic_tmp_sockets(trivalent_domain)
 files_rw_tmp_file_leaks(trivalent_domain)
 files_map_generic_tmp_files(trivalent_domain)
 
+# copy/pasting to distrobox apps
+container_spc_rw_pipes(trivalent_domain)
+
 # memory pressure
 kernel_read_psi(trivalent_domain)
 kernel_read_kernel_sysctls(trivalent_domain)
@@ -181,6 +184,7 @@ fs_search_cgroup_dirs(trivalent_domain)
 fs_associate_proc(trivalent_domain)
 fs_unmount_tmpfs(trivalent_domain)
 fs_mount_tmpfs(trivalent_domain)
+fs_remount_tmpfs(trivalent_domain)
 fs_manage_tmpfs_symlinks(trivalent_domain)
 fs_all_mount_fs_perms_xattr_fs(trivalent_domain)
 fs_mounton_tmpfs(trivalent_domain)
@@ -339,6 +343,16 @@ optional_policy(`
 
 	trivalent_role_template(unconfined, unconfined_r, unconfined_t)
 ')
+
+optional_policy(`
+	gen_require(`
+		type flatpak_t;
+    type unconfined_trivalent_script_t;
+	')
+
+	domtrans_pattern(flatpak_t, trivalent_script_exec_t, unconfined_trivalent_script_t)
+')
+
 
 optional_policy(`
 	gen_require(`

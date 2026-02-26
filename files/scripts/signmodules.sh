@@ -5,7 +5,7 @@
 #
 # SPDX-License-Identifier: Apache-2.0
 
-set -oue pipefail
+set -euo pipefail
 
 MODULE_NAME="${1-}"
 if [ -z "$MODULE_NAME" ]; then

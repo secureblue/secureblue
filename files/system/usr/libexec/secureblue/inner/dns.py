@@ -11,7 +11,7 @@ import argparse
 import json
 import os
 import pwd
-import subprocess  # nosec
+import subprocess
 import sys
 import textwrap
 import time
@@ -29,8 +29,6 @@ RESOLVED_RESOLVCONF_PATH: Final[Path] = Path("/run/systemd/resolve/stub-resolv.c
 TRIVALENT_POLICY_PATH: Final[Path] = Path(
     "/etc/trivalent/policies/managed/10-securedns-browser.json"
 )
-
-
 
 
 class DNSResolver(Enum):

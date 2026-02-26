@@ -72,7 +72,9 @@ def return_status(silent: bool = False) -> str:
         with open(RAND_MAC_FILE, encoding="utf-8") as f:
             for line in f:
                 if line.startswith("wifi.cloned-mac-address="):
-                    status = line.split("=", 1)[1].strip()
+                    max_split = 1
+                    value_index = 1
+                    status = line.split("=", max_split)[value_index].strip()
                     if not silent:
                         print(f"The current status is: {status}")
                     return status

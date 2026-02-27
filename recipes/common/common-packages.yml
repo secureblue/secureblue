@@ -38,3 +38,6 @@ install:
     # provenance deps
     - crane
     - slsa-verifier
+
+    # tiny, pulls in sudo if locally layered
+    - arm-image-installer

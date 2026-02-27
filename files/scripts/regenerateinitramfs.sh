@@ -26,7 +26,7 @@ mv "${excluded_preload_file}" "${tmp_preload_file}"
 # version number (which changes daily).
 tmp_release_file=$(mktemp --tmpdir 'os-release-XXXXXXXXXX')
 cp /etc/os-release "${tmp_release_file}"
-sed -Ei -e '/^(OSTREE_)VERSION=/d' /etc/os-release
+sed -Ei -e '/^(OSTREE_)?VERSION=/d' /etc/os-release
 
 qualified_kernel=$(rpm -qa | grep -oP 'kernel-\K\d+\.\d+\.\d+.*')
 

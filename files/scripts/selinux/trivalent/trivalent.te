@@ -66,7 +66,10 @@ trivalent_filetrans_home_content(trivalent_domain)
 trivalent_filetrans_home_content(trivalent_script_domain)
 
 # internal
-allow trivalent_domain self:process { dyntransition transition execmem getcap getsched ptrace setcap setrlimit setsched sigkill signal signull };
+allow trivalent_domain self:process { dyntransition transition execmem getcap getsched setcap setrlimit setsched sigkill signal signull };
+tunable_policy(`deny_ptrace',`',`
+	allow trivalent_domain self:process ptrace;
+')
 allow trivalent_domain self:dir { manage_dir_perms };
 allow trivalent_domain self:file { manage_file_perms execute map };
 allow trivalent_domain self:lnk_file { manage_lnk_file_perms };
@@ -285,7 +288,10 @@ allow trivalent_script_domain self:dir { add_entry_dir_perms };
 allow trivalent_script_domain self:file { create };
 allow trivalent_script_domain self:user_namespace create;
 allow trivalent_script_domain self:cap_userns { sys_ptrace sys_admin setpcap };
-allow trivalent_script_domain self:process { ptrace setcap setsched };
+allow trivalent_script_domain self:process { setcap setsched };
+tunable_policy(`deny_ptrace',`',`
+	allow trivalent_script_domain self:process ptrace;
+')
 allow trivalent_script_domain user_home_t:dir { search };
 allow trivalent_script_domain cache_home_t:dir { mounton };
 allow trivalent_script_domain chrome_sandbox_home_t:dir { manage_dir_perms };

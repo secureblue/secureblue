@@ -66,7 +66,7 @@ trivalent_filetrans_home_content(trivalent_domain)
 trivalent_filetrans_home_content(trivalent_script_domain)
 
 # internal
-allow trivalent_domain self:process { dyntransition transition execmem getcap getsched setcap setrlimit setsched sigkill signal signull };
+allow trivalent_domain self:process { transition execmem getcap getsched setcap setrlimit setsched sigkill signal signull };
 tunable_policy(`deny_ptrace',`',`
 	allow trivalent_domain self:process ptrace;
 ')

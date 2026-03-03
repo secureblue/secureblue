@@ -93,6 +93,8 @@ image_name+="$additional_params-hardened"
 rebase_command="rpm-ostree rebase ostree-unverified-registry:ghcr.io/secureblue/$image_name:latest"
 
 if rpm-ostree status | grep -q '●.*ghcr\.io/secureblue/'; then
+    full_ref=$(crane digest --full-ref "ghcr.io/secureblue/${image_name}:latest")
+    slsa-verifier verify-image --source-uri "github.com/secureblue/secureblue" --source-branch "live" "${full_ref}"
     rebase_command="rpm-ostree rebase ostree-image-signed:docker://ghcr.io/secureblue/$image_name:latest"
 else
     echo "Note: Automatic rebasing to the equivalent signed image will occur on first run."

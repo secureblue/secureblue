@@ -3,5 +3,6 @@
 # SPDX-License-Identifier: Apache-2.0
 
 # Disable KDE Plasma splash screen, which is broken with Xwayland disabled.
-# The file is set to read-only to prevent KDE Plasma from overwriting it.
-f+ %h/.config/ksplashrc 0400 - - - [KSplash]\nEngine=none\nTheme=None\n
+[KSplash][$i]
+Engine=none
+Theme=None

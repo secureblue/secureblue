@@ -13,6 +13,7 @@ modules:
           - cosmic-player
       remove:
         packages:
+          - cosmic-store
           - fedora-flathub-remote
           - fedora-third-party
           - fedora-workstation-repositories

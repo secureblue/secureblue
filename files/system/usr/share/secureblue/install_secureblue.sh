@@ -11,8 +11,6 @@ then
 fi
 
 version=$(rpm-ostree --version | grep -oP "Version: '\K[^']+" )
-year=$(echo "$version" | cut -d '.' -f 1)
-subversion=$(echo "$version" | cut -d '.' -f 2)
 
 function is_yes {
     case $(echo "$1" | tr '[:upper:]' '[:lower:]') in

@@ -1,7 +1,9 @@
 enable flatpak-system-update.timer
 
-# Homebrew
-enable brew-setup.service
+# Homebrew setup migration
+# TODO: remove after enough time has passed that users should all be
+# migrated to the new Homebrew setup method based on tmpfiles.d
+enable brew-setup-migration.service
 
 # Disable NFS daemons
 disable gssproxy.service

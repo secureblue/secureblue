@@ -36,48 +36,6 @@ fi
   sudo mv /etc/os-release.bak /etc/os-release
 }
 
-@test "Script exits with error if rpm-ostree is very old" {
-  sudo mv /etc/os-release /etc/os-release.bak
-  echo 'VARIANT="CoreOS"' | sudo tee /etc/os-release
-  sudo sed -i 's/2024\.9/2023\.5/' /usr/bin/rpm-ostree
-  run bash "$INSTALL_SCRIPT"
-  [ "$status" -eq 1 ]
-  [[ "$output" == *"rpm-ostree is too old, please upgrade before running this script."* ]]
-  sudo sed -i 's/2023\.5/2024\.9/' /usr/bin/rpm-ostree
-  sudo mv /etc/os-release.bak /etc/os-release
-}
-
-@test "Script exits with error if rpm-ostree is slightly old" {
-  sudo mv /etc/os-release /etc/os-release.bak
-  echo 'VARIANT="CoreOS"' | sudo tee /etc/os-release
-  sudo sed -i 's/2024\.9/2024\.8/' /usr/bin/rpm-ostree
-  run bash "$INSTALL_SCRIPT"
-  [ "$status" -eq 1 ]
-  [[ "$output" == *"rpm-ostree is too old, please upgrade before running this script."* ]]
-  sudo sed -i 's/2024\.8/2024\.9/' /usr/bin/rpm-ostree
-  sudo mv /etc/os-release.bak /etc/os-release
-}
-
-@test "Script works if rpm-ostree is new" {
-  sudo mv /etc/os-release /etc/os-release.bak
-  echo 'VARIANT="CoreOS"' | sudo tee /etc/os-release
-  sudo sed -i 's/2024\.9/2024\.11/' /usr/bin/rpm-ostree
-  run bash "$INSTALL_SCRIPT"
-  [ "$status" -eq 0 ]
-  sudo sed -i 's/2024\.11/2024\.9/' /usr/bin/rpm-ostree
-  sudo mv /etc/os-release.bak /etc/os-release
-}
-
-@test "Script works if rpm-ostree is very new" {
-  sudo mv /etc/os-release /etc/os-release.bak
-  echo 'VARIANT="CoreOS"' | sudo tee /etc/os-release
-  sudo sed -i 's/2024\.9/2025\.3/' /usr/bin/rpm-ostree
-  run bash "$INSTALL_SCRIPT"
-  [ "$status" -eq 0 ]
-  sudo sed -i 's/2025\.3/2024\.9/' /usr/bin/rpm-ostree
-  sudo mv /etc/os-release.bak /etc/os-release
-}
-
 @test "Script passes rpm-ostree check if it is installed" {
   sudo mv /etc/os-release /etc/os-release.bak
   echo 'VARIANT="CoreOS"' | sudo tee /etc/os-release

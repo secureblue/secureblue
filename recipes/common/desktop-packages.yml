@@ -3,7 +3,7 @@
 # SPDX-License-Identifier: Apache-2.0
 
 type: dnf
-source: ghcr.io/blue-build/modules@sha256:8e92fcaaef385a1728b8d8224296484260b67126ac83f7ed85b4ae3dde4ad19d
+source: ghcr.io/blue-build/modules@sha256:23b9c9a2032ac653bf6a73a3b9372c12004211e004eea4269a8d3da9001c2301
 install:
   install-weak-deps: false
   packages:
@@ -18,6 +18,7 @@ install:
     - wl-clipboard
     - alsa-firmware
     - fzf
+    - bazaar
     - homebrew
 
     # yubikey enablement

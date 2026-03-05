@@ -21,9 +21,5 @@ if [[ "$IMAGE_REF_NAME" != *"kinoite"* ]]; then
     flatpak install --user -y --noninteractive flathub-verified com.github.tchx84.Flatseal
 fi
 
-if [[ "$IMAGE_REF_NAME" == *"silverblue"* ]]; then
-    flatpak install --user -y --noninteractive flathub-verified io.github.flattool.Warehouse
-fi
-
 notify-send -a 'secureblue' -i 'dialog-information' -u normal 'Flatpak provisioning completed.'
 rm -f "$in_progress_indicator"

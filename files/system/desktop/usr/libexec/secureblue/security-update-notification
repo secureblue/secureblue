@@ -7,8 +7,19 @@
 set -euo pipefail
 
 status="$(rpm-ostree status)"
+db_diff="$(rpm-ostree db diff 2>&1)"
+trivalent_updated="false"
+kernel_updated="false"
+if [[ "$db_diff" == *"pending deployment"* ]]; then
+  if [[ "$db_diff" == *"trivalent "* ]]; then
+    trivalent_updated="true"
+  fi
+  if [[ "$db_diff" == *"kernel "* ]]; then
+    kernel_updated="true"
+  fi
+fi
 
-if [[ "$status"  =~ SecAdvisories:.*(important|critical) ]]; then
+if [[ "$status" =~ SecAdvisories:.*(important|critical) ]] || [[ "$trivalent_updated" == "true" ]] || [[ "$kernel_updated" == "true" ]]; then
 	case "$(notify-send --urgency=critical \
 		--app-name="secureblue" \
 		--action="Reboot" \
@@ -19,7 +30,7 @@ if [[ "$status"  =~ SecAdvisories:.*(important|critical) ]]; then
 
 	esac
 
-elif [[ "$status"  =~ SecAdvisories:.*(unknown severity|low|moderate) ]]; then
+elif [[ "$status" =~ SecAdvisories:.*(unknown severity|low|moderate) ]]; then
 	case "$(notify-send --urgency=normal \
 		--expire-time=5000 \
 		--app-name="secureblue" \

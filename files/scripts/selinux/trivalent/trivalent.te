@@ -66,7 +66,10 @@ trivalent_filetrans_home_content(trivalent_domain)
 trivalent_filetrans_home_content(trivalent_script_domain)
 
 # internal
-allow trivalent_domain self:process { dyntransition transition execmem getcap getsched ptrace setcap setrlimit setsched sigkill signal signull };
+allow trivalent_domain self:process { dyntransition transition execmem getcap getsched setcap setrlimit setsched sigkill signal signull };
+tunable_policy(`deny_ptrace',`',`
+	allow trivalent_domain self:process ptrace;
+')
 allow trivalent_domain self:dir { manage_dir_perms };
 allow trivalent_domain self:file { manage_file_perms execute map };
 allow trivalent_domain self:lnk_file { manage_lnk_file_perms };
@@ -158,6 +161,9 @@ files_rw_generic_tmp_sockets(trivalent_domain)
 files_rw_tmp_file_leaks(trivalent_domain)
 files_map_generic_tmp_files(trivalent_domain)
 
+# copy/pasting to distrobox apps
+container_spc_rw_pipes(trivalent_domain)
+
 # memory pressure
 kernel_read_psi(trivalent_domain)
 kernel_read_kernel_sysctls(trivalent_domain)
@@ -181,6 +187,7 @@ fs_search_cgroup_dirs(trivalent_domain)
 fs_associate_proc(trivalent_domain)
 fs_unmount_tmpfs(trivalent_domain)
 fs_mount_tmpfs(trivalent_domain)
+fs_remount_tmpfs(trivalent_domain)
 fs_manage_tmpfs_symlinks(trivalent_domain)
 fs_all_mount_fs_perms_xattr_fs(trivalent_domain)
 fs_mounton_tmpfs(trivalent_domain)
@@ -281,7 +288,10 @@ allow trivalent_script_domain self:dir { add_entry_dir_perms };
 allow trivalent_script_domain self:file { create };
 allow trivalent_script_domain self:user_namespace create;
 allow trivalent_script_domain self:cap_userns { sys_ptrace sys_admin setpcap };
-allow trivalent_script_domain self:process { ptrace setcap setsched };
+allow trivalent_script_domain self:process { setcap setsched };
+tunable_policy(`deny_ptrace',`',`
+	allow trivalent_script_domain self:process ptrace;
+')
 allow trivalent_script_domain user_home_t:dir { search };
 allow trivalent_script_domain cache_home_t:dir { mounton };
 allow trivalent_script_domain chrome_sandbox_home_t:dir { manage_dir_perms };
@@ -339,6 +349,16 @@ optional_policy(`
 
 	trivalent_role_template(unconfined, unconfined_r, unconfined_t)
 ')
+
+optional_policy(`
+	gen_require(`
+		type flatpak_t;
+    type unconfined_trivalent_script_t;
+	')
+
+	domtrans_pattern(flatpak_t, trivalent_script_exec_t, unconfined_trivalent_script_t)
+')
+
 
 optional_policy(`
 	gen_require(`

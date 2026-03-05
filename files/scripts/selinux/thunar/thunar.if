@@ -42,7 +42,7 @@ interface(`thunar_domtrans',`
 interface(`thunar_run',`
 	gen_require(`
 		type thunar_t;
-        attribute_role thunar_roles;
+		attribute_role thunar_roles;
 	')
 
 	thunar_domtrans($1)

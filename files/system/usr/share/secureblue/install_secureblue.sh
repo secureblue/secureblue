@@ -14,14 +14,6 @@ version=$(rpm-ostree --version | grep -oP "Version: '\K[^']+" )
 year=$(echo "$version" | cut -d '.' -f 1)
 subversion=$(echo "$version" | cut -d '.' -f 2)
 
-
-if [[ "$year" -lt 2024 || ( "$year" -eq 2024 && "$subversion" -lt 9 ) ]]; then
-  echo "rpm-ostree is too old, please upgrade before running this script. Found version: $version"
-  exit 1
-else
-  echo "rpm-ostree is 2024.9 or later, proceeding..."
-fi
-
 function is_yes {
     case $(echo "$1" | tr '[:upper:]' '[:lower:]') in
         y|yes) return 0;;
@@ -93,6 +85,8 @@ image_name+="$additional_params-hardened"
 rebase_command="rpm-ostree rebase ostree-unverified-registry:ghcr.io/secureblue/$image_name:latest"
 
 if rpm-ostree status | grep -q '●.*ghcr\.io/secureblue/'; then
+    full_ref=$(crane digest --full-ref "ghcr.io/secureblue/${image_name}:latest")
+    slsa-verifier verify-image --source-uri "github.com/secureblue/secureblue" --source-branch "live" "${full_ref}"
     rebase_command="rpm-ostree rebase ostree-image-signed:docker://ghcr.io/secureblue/$image_name:latest"
 else
     echo "Note: Automatic rebasing to the equivalent signed image will occur on first run."

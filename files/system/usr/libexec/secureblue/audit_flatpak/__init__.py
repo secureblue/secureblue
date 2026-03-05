@@ -33,9 +33,12 @@ class Permissions:
     system_bus_own: list[str] = field(default_factory=list)
 
 
-def _parse_config_sections(conf_text: str) -> dict[str | None, dict[str, str]]:
+ConfigSections = dict[str | None, dict[str, str]]
+
+
+def _parse_config_sections(conf_text: str) -> ConfigSections:
     """Parse config file into sections containing key-value mappings"""
-    sections = {}
+    sections: ConfigSections = {}
     current_section = None
     for raw_line in conf_text.splitlines():
         line = raw_line.strip()
@@ -216,7 +219,6 @@ FLATPAK_PERMISSION_CHECKS: list[PermissionCheck] = [
 
 ARBITRARY_PERMISSIONS_EXPECTED: list[str] = [
     "com.github.tchx84.Flatseal",
-    "io.github.flattool.Warehouse",
     "io.github.kolunmi.Bazaar",
 ]
 

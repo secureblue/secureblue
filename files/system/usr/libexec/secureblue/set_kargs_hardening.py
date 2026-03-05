@@ -8,7 +8,7 @@
 
 # https://docs.kernel.org/admin-guide/kernel-parameters.html
 
-import subprocess  # nosec
+import subprocess
 from typing import Final
 
 from kargs_hardening_common import (
@@ -96,7 +96,7 @@ def main() -> None:
 
     # Check for secure boot support, required for some drivers. (e.g. WiFi on some
     # Macbooks, plus there would be no way to verify these anyways.)
-    sb_state = subprocess.run(["/usr/bin/mokutil", "--sb-state"], capture_output=True, check=False)  # nosec
+    sb_state = subprocess.run(["/usr/bin/mokutil", "--sb-state"], capture_output=True, check=False)
     secure_boot_supported = not (
         b"doesn't support Secure Boot" in sb_state.stderr
         or b"EFI variables are not supported" in sb_state.stderr

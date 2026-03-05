@@ -145,7 +145,7 @@ def main() -> int:
     try:
         mode = parse_basic_toggle_args(
             prompt="Would you like container-domain user namespace creation to be enabled?",
-            default="n"
+            default="no"
         )
     except CommandUsageError as e:
         print(f"Usage error: {e}. See usage with --help.")

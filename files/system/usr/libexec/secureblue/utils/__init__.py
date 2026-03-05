@@ -205,21 +205,17 @@ def interruptible_ask(prompt: str) -> str:
 def ask_yes_no(prompt: str, default: str | None = None) -> bool:
     """Returns the user's preference between yes/y (True) and no/n (False)."""
     ask = " [y/n] "
-    if default == "y":
+    if default == "yes":
         ask = " [Y/n] "
-    elif default == "n":
+    elif default == "no":
         ask = " [y/N] "
     while True:
-        match interruptible_ask(prompt + ask).casefold():
+        match interruptible_ask(prompt + ask).casefold() or default:
             case "y" | "yes":
                 return True
             case "n" | "no":
                 return False
             case _:
-                if default == "y":
-                    return True
-                elif default == "n":
-                    return False
                 print("Please enter y (yes) or n (no).")
 
 

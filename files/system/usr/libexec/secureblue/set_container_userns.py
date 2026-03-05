@@ -144,7 +144,8 @@ def main() -> int:
     """Handle the arguments and run the script."""
     try:
         mode = parse_basic_toggle_args(
-            prompt="Would you like container-domain user namespace creation to be enabled?"
+            prompt="Would you like container-domain user namespace creation to be enabled?",
+            default="n"
         )
     except CommandUsageError as e:
         print(f"Usage error: {e}. See usage with --help.")

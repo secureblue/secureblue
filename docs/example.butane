@@ -14,7 +14,7 @@ storage:
       contents:
         source: https://raw.githubusercontent.com/secureblue/secureblue/refs/heads/live/install/install_secureblue_coreos.sh
         verification:
-          hash: sha256-e8bf7b10ea5538af71b0453abec8c316c7e4593d730fa74234b3bb35438d2654
+          hash: sha256-16f5407b637ffa19515f1175841870847bb20a1e01671a24a87f754e8c2d0725
       mode: 0755
     - path: /opt/run_install_secureblue.sh
       contents:

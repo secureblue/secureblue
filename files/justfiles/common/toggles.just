@@ -117,6 +117,15 @@ toggle-anticheat-support:
     done
     # Set the ptrace_scope value we want in 61-ptrace-scope.conf
     if grep -q '^kernel.yama.ptrace_scope[[:blank:]]*=[[:blank:]]*1$' "$sysctl_ptrace_file" 2>/dev/null; then
+        if rpm -q dangerzone > /dev/null; then
+            echo "${bold}WARNING${unbold} Dangerzone (https://dangerzone.rocks) is installed on this system and requires ptrace_scope set to 2 or lower to work."
+            echo 'This script disables Anticheat and sets ptrace_scope to 3 which will break Dangerzone.'
+            echo 'If you still want Dangerzone to work you can keep Anticheat enabled or edit /etc/sysctl.d/61-ptrace-scope.conf.'
+            read -r -p "Are you sure you would like to break Dangerzone by setting ptrace_scope to 3? [y/N] " user_choice
+            if [[ "$user_choice" != [yY]* ]]; then
+                exit
+            fi
+        fi
         echo 'kernel.yama.ptrace_scope = 3' > "$sysctl_ptrace_file"
         echo 'Anticheat support disabled. ptrace_scope set back to 3. Reboot to take effect.'
     else

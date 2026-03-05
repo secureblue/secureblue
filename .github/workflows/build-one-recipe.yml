@@ -14,6 +14,10 @@ on:
         type: boolean
         required: false
         default: false
+      clear-plan:
+        type: boolean
+        required: false
+        default: false
     secrets:
       SIGNING_SECRET:
         required: true
@@ -38,7 +42,7 @@ jobs:
       id-token: write # Needed for token generation for signing
     steps:
       - name: Enable egress auditing
-        uses: step-security/harden-runner@5ef0c079ce82195b2a36a210272d6b661572d83e # v2.14.2
+        uses: step-security/harden-runner@a90bcbc6539c36a85cdfeb73f7e2f433735f215b # v2.15.0
         with:
           egress-policy: block
           allowed-endpoints: >
@@ -190,10 +194,13 @@ jobs:
         shell: bash
         env:
           rechunk: ${{ inputs.rechunk }}
+          input_clear_plan: ${{ inputs.clear-plan }}
           FULL_IMAGE_REF: ${{ steps.runner_setup.outputs.FULL_IMAGE_REF }}
         run: |
           clear_plan='false'
-          if [[ "$rechunk" == 'true' ]]; then
+          if [[ "$input_clear_plan" == 'true' ]]; then
+            clear_plan='true'
+          elif [[ "$rechunk" == 'true' ]]; then
             previous_build_created=$(skopeo inspect -n "docker://${FULL_IMAGE_REF}" 2>/dev/null | jq -cr '.Created' || echo "")
             if [[ -n "$previous_build_created" ]]; then
               # Clear previous layer plan only on the first build of each month.
@@ -211,7 +218,7 @@ jobs:
         env:
           KERNEL_PRIVKEY: ${{ secrets.KERNEL_PRIVKEY }}
         with:
-          cli_version: v0.9.30
+          cli_version: v0.9.32
           recipe: ${{ inputs.recipe }}
           cosign_private_key: ${{ secrets.SIGNING_SECRET }}
           registry_token: ${{ github.token }}

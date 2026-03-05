@@ -10,8 +10,6 @@ then
     exit 1
 fi
 
-version=$(rpm-ostree --version | grep -oP "Version: '\K[^']+" )
-
 function is_yes {
     case $(echo "$1" | tr '[:upper:]' '[:lower:]') in
         y|yes) return 0;;

@@ -31,7 +31,7 @@ class CommandUsageError(Exception):
     """Error in command-line arguments."""
 
 
-def parse_basic_toggle_args(*, prompt: str | None = None) -> ToggleMode:
+def parse_basic_toggle_args(*, prompt: str | None = None, default: str | None = None) -> ToggleMode:
     """
     Parse command-line arguments into a ToggleMode. Raises CommandUsageError on invalid arguments.
     """
@@ -40,7 +40,7 @@ def parse_basic_toggle_args(*, prompt: str | None = None) -> ToggleMode:
 
     if prompt is not None and len(sys.argv) == argc_interactive:
         # Ask interactively.
-        return ToggleMode.ON if ask_yes_no(prompt) else ToggleMode.OFF
+        return ToggleMode.ON if ask_yes_no(prompt, default) else ToggleMode.OFF
 
     if len(sys.argv) == argc_on_off:
         # Take mode from first argument, i.e. 'on' or 'off'.
@@ -199,15 +199,24 @@ def interruptible_ask(prompt: str) -> str:
         sys.exit(130)
 
 
-def ask_yes_no(prompt: str) -> bool:
+def ask_yes_no(prompt: str, default: str | None = None) -> bool:
     """Returns the user's preference between yes/y (True) and no/n (False)."""
+    ask = " [y/n] "
+    if default == "y":
+        ask = " [Y/n] "
+    elif default == "n":
+        ask = " [y/N] "
     while True:
-        match interruptible_ask(prompt + " [y/n] ").casefold():
+        match interruptible_ask(prompt + ask).casefold():
             case "y" | "yes":
                 return True
             case "n" | "no":
                 return False
             case _:
+                if default == "y":
+                    return True
+                elif default == "n":
+                    return False
                 print("Please enter y (yes) or n (no).")
 
 

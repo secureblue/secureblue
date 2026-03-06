@@ -36,7 +36,7 @@ install-steam:
     case "$method_selection" in
         1)
             echo "Flatpak method selected."
-            if [ "$(flatpak remotes | grep -c flathub)" -lt 2 ]; then
+            if [[ "$(flatpak remotes | grep -c flathub)" -lt 2 ]]; then
                 echo "The Steam flatpak is not verified by Valve and only distributed via the unfiltered Flathub repo."
                 read -rp "Would you like to enable the unfiltered Flathub repo now? [Y/n] " flathub_unfiltered
                 flathub_unfiltered=${flathub_unfiltered:-y}

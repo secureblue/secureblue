@@ -48,7 +48,6 @@ install-steam:
                     echo "The unfiltered Flathub repo is needed to install the Steam flatpak. Aborting."
                     exit 1
                 fi
-
             fi
             echo "Installing Steam flatpak."
             flatpak install -y flathub com.valvesoftware.Steam

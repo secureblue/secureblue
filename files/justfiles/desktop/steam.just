@@ -36,8 +36,10 @@ install-steam:
     case "$method_selection" in
         1)
             echo "Flatpak method selected."
-            echo "Enabling the unfiltered Flathub repo."
-            ujust enable-flathub-unfiltered
+            if ! flatpak remotes | grep unfiltered; then
+                echo "Enabling the unfiltered Flathub repo."
+                ujust enable-flathub-unfiltered
+            fi
             echo "Installing Steam flatpak."
             flatpak install -y flathub com.valvesoftware.Steam
             echo "Disabling hardened_malloc for Steam."

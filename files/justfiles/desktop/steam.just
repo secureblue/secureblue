@@ -36,9 +36,19 @@ install-steam:
     case "$method_selection" in
         1)
             echo "Flatpak method selected."
-            if ! flatpak remotes | grep unfiltered; then
-                echo "Enabling the unfiltered Flathub repo."
-                ujust enable-flathub-unfiltered
+            flatpakremotes="$(flatpak remotes)"
+            if [ "$(flatpak remotes | grep "flathub" | wc -l)" -lt 2 ]; then
+                echo "The Steam flatpak is not verified by Valve and only distributed via the unfiltered Flathub repo."
+                read -rp "Would you like to enable the unfiltered Flathub repo now? [Y/n] " flathub_unfiltered
+                flathub_unfiltered=${flathub_unfiltered:-y}
+                if [[ "$flathub_unfiltered" == [Yy]* ]]; then
+                    echo "Enabling the unfiltered Flathub repo."
+                    ujust enable-flathub-unfiltered
+                else
+                    echo "The unfiltered Flathub repo is needed to install the Steam flatpak. Aborting."
+                    exit 1
+                fi
+
             fi
             echo "Installing Steam flatpak."
             flatpak install -y flathub com.valvesoftware.Steam

@@ -16,6 +16,12 @@ on:
       - "**.md"
 
   workflow_dispatch: # allow manually triggering builds
+    inputs:
+      clear-plan:
+        description: 'Clear previous layer plan?'
+        type: boolean
+        required: true
+        default: false
 
 # Cancels running workflows if a new workflow run for
 # the same workflow is started
@@ -35,6 +41,7 @@ jobs:
     with:
       recipe: general/recipe-silverblue-main.yml
       rechunk: true
+      clear-plan: ${{ inputs.clear-plan || false }}
     secrets:
       SIGNING_SECRET: ${{ secrets.SIGNING_SECRET }}
       KERNEL_PRIVKEY: ${{ secrets.KERNEL_PRIVKEY }}
@@ -51,6 +58,7 @@ jobs:
     with:
       recipe: general/recipe-kinoite-main.yml
       rechunk: true
+      clear-plan: ${{ inputs.clear-plan || false }}
     secrets:
       SIGNING_SECRET: ${{ secrets.SIGNING_SECRET }}
       KERNEL_PRIVKEY: ${{ secrets.KERNEL_PRIVKEY }}
@@ -67,6 +75,7 @@ jobs:
     with:
       recipe: general/recipe-sericea-main.yml
       rechunk: true
+      clear-plan: ${{ inputs.clear-plan || false }}
     secrets:
       SIGNING_SECRET: ${{ secrets.SIGNING_SECRET }}
       KERNEL_PRIVKEY: ${{ secrets.KERNEL_PRIVKEY }}
@@ -83,6 +92,7 @@ jobs:
     with:
       recipe: general/recipe-cosmic-main.yml
       rechunk: true
+      clear-plan: ${{ inputs.clear-plan || false }}
     secrets:
       SIGNING_SECRET: ${{ secrets.SIGNING_SECRET }}
       KERNEL_PRIVKEY: ${{ secrets.KERNEL_PRIVKEY }}
@@ -187,6 +197,7 @@ jobs:
     with:
       recipe: securecore/recipe-securecore-main.yml
       rechunk: true
+      clear-plan: ${{ inputs.clear-plan || false }}
     secrets:
       SIGNING_SECRET: ${{ secrets.SIGNING_SECRET }}
       KERNEL_PRIVKEY: ${{ secrets.KERNEL_PRIVKEY }}
@@ -263,6 +274,7 @@ jobs:
     with:
       recipe: iot/recipe-iot-main.yml
       rechunk: true
+      clear-plan: ${{ inputs.clear-plan || false }}
     secrets:
       SIGNING_SECRET: ${{ secrets.SIGNING_SECRET }}
       KERNEL_PRIVKEY: ${{ secrets.KERNEL_PRIVKEY }}

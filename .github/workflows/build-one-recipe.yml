@@ -14,6 +14,10 @@ on:
         type: boolean
         required: false
         default: false
+      clear-plan:
+        type: boolean
+        required: false
+        default: false
     secrets:
       SIGNING_SECRET:
         required: true
@@ -190,10 +194,13 @@ jobs:
         shell: bash
         env:
           rechunk: ${{ inputs.rechunk }}
+          input_clear_plan: ${{ inputs.clear-plan }}
           FULL_IMAGE_REF: ${{ steps.runner_setup.outputs.FULL_IMAGE_REF }}
         run: |
           clear_plan='false'
-          if [[ "$rechunk" == 'true' ]]; then
+          if [[ "$input_clear_plan" == 'true' ]]; then
+            clear_plan='true'
+          elif [[ "$rechunk" == 'true' ]]; then
             previous_build_created=$(skopeo inspect -n "docker://${FULL_IMAGE_REF}" 2>/dev/null | jq -cr '.Created' || echo "")
             if [[ -n "$previous_build_created" ]]; then
               # Clear previous layer plan only on the first build of each month.

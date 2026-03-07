@@ -168,6 +168,18 @@ def is_rpm_package_installed(name: str) -> bool:
     return len(matches) > 0
 
 
+def logout():
+    match Image.from_image_ref(booted_image_ref()):
+        case Image.SERICEA:
+            subprocess.run(
+                ["swaymsg", "exit"], check=True
+            )
+        case _:
+            subprocess.run(
+                ["loginctl", "terminate-user", os.environ["USER"]], check=True
+            )
+
+
 def is_using_vpn() -> bool:
     """Returns whether an OpenVPN or Wireguard VPN is currently in use."""
 

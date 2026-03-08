@@ -174,6 +174,10 @@ def logout():
             subprocess.run(
                 ["swaymsg", "exit"], check=True
             )
+        case Image.KINOITE:
+            subprocess.run(
+                ["qdbus-qt6", "org.kde.Shutdown", "/ShutDown", "logout"], check=True
+            )
         case _:
             subprocess.run(
                 ["loginctl", "terminate-user", os.environ["USER"]], check=True

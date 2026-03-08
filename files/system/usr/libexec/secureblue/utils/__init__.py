@@ -176,7 +176,7 @@ def logout(user: str):
             )
         case Image.KINOITE:
             subprocess.run(
-                ["qdbus-qt6", "org.kde.Shutdown", "/ShutDown", "logout"], check=True
+                ["qdbus-qt6", "org.kde.Shutdown", "/Shutdown", "logout"], check=True
             )
         case _:
             subprocess.run(

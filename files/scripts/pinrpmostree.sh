@@ -4,7 +4,6 @@
 #
 # SPDX-License-Identifier: Apache-2.0
 
-
 set -oue pipefail
 
 RPM_OSTREE_VERSION="2025.12-1"

@@ -179,8 +179,10 @@ def logout():
                 ["qdbus-qt6", "org.kde.Shutdown", "/Shutdown", "logout"], check=True
             )
         case _:
+            result = subprocess.run(["whoami"], check=True, capture_output=True, text=True)
+            user = result.stdout.strip()
             subprocess.run(
-                ["loginctl", "terminate-user", os.environ["USER"]], check=True
+                ["loginctl", "terminate-user", user], check=True
             )
 
 

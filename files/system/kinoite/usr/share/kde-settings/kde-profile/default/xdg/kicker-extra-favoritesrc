@@ -1,0 +1,3 @@
+[General]
+Prepend=preferred://browser;systemsettings.desktop;org.kde.dolphin.desktop;org.kde.kwrite.desktop;org.kde.konsole.desktop;io.github.kolunmi.Bazaar.desktop
+IgnoreDefaults=true

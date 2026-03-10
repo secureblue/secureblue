@@ -43,4 +43,8 @@ blocklists:
       - net.codelogistics.webapps
       # Appears to only support flatpaked browsers
       - org.pvermeer.WebAppHub
-
+      # Uses modified Firefox
+      - io.github.gamingdoom.Datcord
+      # Functionality is generally unsafe
+      - dev.qwery.AddWater
+      - surf.deckr.deckr

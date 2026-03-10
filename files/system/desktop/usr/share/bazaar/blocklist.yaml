@@ -48,3 +48,4 @@ blocklists:
       # Functionality is generally unsafe
       - dev.qwery.AddWater
       - surf.deckr.deckr
+      - io.github.alyraffauf.Switchyard

@@ -11,7 +11,9 @@ modules:
         - httpsmirrors.sh
         - unprotectsudo.sh
         # comment/uncomment the line below to disable/enable kernel pinning
-        # - installpinnedkernel.sh
+        # - installpinnedkernel.sh 
+        # remove line below once rpm-ostree is fixed
+        - pinrpmostree.sh
     - from-file: common/common-packages.yml
     - type: files
       source: ghcr.io/blue-build/modules@sha256:23b9c9a2032ac653bf6a73a3b9372c12004211e004eea4269a8d3da9001c2301

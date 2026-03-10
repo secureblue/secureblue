@@ -78,7 +78,7 @@ allow trivalent_domain self:sem create_sem_perms;
 allow trivalent_domain self:netlink_kobject_uevent_socket client_stream_socket_perms;
 allow trivalent_domain self:user_namespace create;
 allow trivalent_domain self:unix_stream_socket { connectto rw_socket_perms };
-allow trivalent_domain self:cap_userns { sys_admin sys_chroot sys_ptrace };
+allow trivalent_domain self:cap_userns { sys_admin sys_chroot sys_ptrace net_admin };
 allow trivalent_domain self:fifo_file { manage_fifo_file_perms relabelfrom relabelto };
 allow trivalent_domain self:dir rw_dir_perms;
 allow trivalent_domain self:socket_class_set create_socket_perms;

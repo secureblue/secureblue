@@ -85,7 +85,6 @@ tunable_policy(`deny_ptrace',`',`
 	allow trivalent_domain self:process ptrace;
 ')
 allow trivalent_domain self:dir { manage_dir_perms };
-allow trivalent_domain self:file { manage_file_perms execute map };
 allow trivalent_domain self:lnk_file { manage_lnk_file_perms };
 allow trivalent_domain self:fifo_file rw_fifo_file_perms;
 allow trivalent_domain self:sem create_sem_perms;

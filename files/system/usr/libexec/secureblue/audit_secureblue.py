@@ -10,6 +10,7 @@ Auditing script for secureblue. See https://secureblue.dev/ for more info.
 
 import argparse
 import asyncio
+import configparser
 import filecmp
 import getpass
 import glob
@@ -509,27 +510,46 @@ def audit_mac_randomization():
 def audit_rpm_ostree_timer():
     """Ensure rpm-ostree automatic updates are enabled."""
     status = PASS
-    note = None
-    rec = None
+    notes = []
+    recs = []
+
     if not command_succeeds("systemctl", "is-enabled", "--quiet", "rpm-ostreed-automatic.timer"):
         status = FAIL
-        note = Note(_("{0} is disabled.").format("rpm-ostreed-automatic.timer"), FAIL)
+        note_text = _("{0} is disabled.").format("rpm-ostreed-automatic.timer")
+        notes.append(Note(note_text, FAIL))
         rec_lines = [
-            note.text,
+            note_text,
             _("To enable it, run:"),
             "$ systemctl enable --now rpm-ostreed-automatic.timer",
         ]
-        rec = "\n".join(rec_lines)
+        recs.append("\n".join(rec_lines))
     elif command_succeeds("systemctl", "is-failed", "--quiet", "rpm-ostreed-automatic.service"):
         status = status.downgrade_to(WARN)
-        note = Note(_("{0} has failed to run.").format("rpm-ostreed-automatic.service"), WARN)
+        notes.append(
+            Note(_("{0} has failed to run.").format("rpm-ostreed-automatic.service"), WARN)
+        )
 
-    yield Report(
-        _("Ensuring {0} is enabled").format("rpm-ostreed-automatic.timer"),
-        status,
-        notes=note,
-        recs=rec,
-    )
+    bad_rpm_ostreed_conf = False
+    try:
+        config = configparser.ConfigParser()
+        config.read("/etc/rpm-ostreed.conf")
+        if config["Daemon"].get("AutomaticUpdatePolicy") not in ("stage", "apply"):
+            bad_rpm_ostreed_conf = True
+    except (configparser.Error, KeyError):
+        bad_rpm_ostreed_conf = True
+
+    if bad_rpm_ostreed_conf:
+        status = FAIL
+        note_text = _("Automatic system updates are disabled in /etc/rpm-ostreed.conf")
+        notes.append(Note(note_text, FAIL))
+        rec_lines = [
+            note_text,
+            _("To fix this, run:"),
+            "$ run0 -i cp /usr/etc/rpm-ostreed.conf /etc/rpm-ostreed.conf",
+        ]
+        recs.append("\n".join(rec_lines))
+
+    yield Report(_("Ensuring automatic system updates are enabled"), status, notes=notes, recs=recs)
 
 
 @audit
@@ -709,7 +729,7 @@ def audit_groups():
     notes = []
     recs = []
     for group in user_groups:
-        remove_group_cmd = f"$ run0 sh -c 'usermod -rG {group} {username}'"
+        remove_group_cmd = f"$ run0 -i usermod -rG {group} {username}"
         if group in known_groups:
             continue
         elif group in dangerous_groups:
@@ -825,7 +845,7 @@ def audit_selinux():
         rec_lines = [
             _("SELinux is in Permissive mode."),
             _("To set it to Enforcing mode, run:"),
-            "$ run0 setenforce 1",
+            "$ run0 -i setenforce 1",
         ]
         rec = "\n".join(rec_lines)
     yield Report(_("Ensuring SELinux is in Enforcing mode"), status, recs=rec)
@@ -852,7 +872,7 @@ def audit_environment_file():
         rec_lines = [
             _("The file {0} has been modified.").format(env_file),
             _("To reset it, run:"),
-            f"$ run0 cp -p /usr{env_file} {env_file}",
+            f"$ run0 -i cp -p /usr{env_file} {env_file}",
         ]
         rec = "\n".join(rec_lines)
     yield Report(_("Ensuring no environment file overrides"), status, notes=note, recs=rec)
@@ -921,7 +941,7 @@ def audit_ld_preload():
         rec_lines = [
             _("The file {0} has been modified or deleted.").format(ld_so_preload),
             _("To reset it and enable hardened_malloc for system processes, run:"),
-            f"$ run0 cp -p /usr{ld_so_preload} {ld_so_preload}",
+            f"$ run0 -i cp -p /usr{ld_so_preload} {ld_so_preload}",
         ]
         rec = "\n".join(rec_lines)
     yield Report(

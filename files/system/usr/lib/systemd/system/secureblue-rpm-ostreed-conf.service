@@ -1,0 +1,20 @@
+# SPDX-FileCopyrightText: Copyright 2026 The Secureblue Authors
+#
+# SPDX-License-Identifier: Apache-2.0
+
+# Works around an upstream packaging bug that mangles rpm-ostreed.conf 
+# if the rpm-ostree rpm package is layered locally
+
+[Unit]
+Description=Secureblue rpm-ostreed conf service
+ConditionPathExists=/etc/rpm-ostreed.conf
+Wants=multi-user.target
+After=multi-user.target
+
+[Service]
+Type=oneshot
+ExecCondition=/bin/bash -c 'grep -Fq "Entries in this file show the compile time defaults." /etc/rpm-ostreed.conf'
+ExecStart=/usr/bin/cp /usr/etc/rpm-ostreed.conf /etc/rpm-ostreed.conf
+
+[Install]
+WantedBy=multi-user.target

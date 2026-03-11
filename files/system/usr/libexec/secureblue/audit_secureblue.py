@@ -1054,6 +1054,74 @@ def audit_bash_env_lockdown():
 
 
 @audit
+def audit_print_services():
+    """Check whether printing services are disabled."""
+    status = PASS
+    notes = []
+    recs = []
+    cups = "cups.service"
+    cups_browsed = "cups-browsed.service"
+    cups_status, cups_browsed_status = command_stdout(
+        "systemctl", "is-enabled", cups, cups_browsed, check=False
+    ).splitlines()
+
+    match cups_status:
+        case "enabled":
+            status = status.downgrade_to(WARN)
+            note = _("CUPS (the printing service) is enabled.")
+            notes.append(Note(note, WARN))
+            recs.append("\n".join([note, _("To fix this, run:"), "$ ujust toggle-cups"]))
+        case "disabled":
+            status = status.downgrade_to(INFO)
+            note = _("CUPS (the printing service) is disabled, but unmasked.")
+            notes.append(Note(note, INFO))
+            recs.append("\n".join([note, _("To fix this, run:"), "$ ujust toggle-cups"]))
+        case "masked":
+            pass
+        case _:
+            status = status.downgrade_to(WARN)
+            note = _("CUPS (the printing service) has unexpected status '{0}'.").format(cups_status)
+            notes.append(Note(note, WARN))
+
+    match cups_browsed_status:
+        case "enabled":
+            status = status.downgrade_to(FAIL)
+            note = _("{0} is enabled.").format(cups_browsed)
+            notes.append(Note(note, FAIL))
+            recs.append(
+                "\n".join(
+                    [
+                        note,
+                        _("To fix this, run:"),
+                        f"$ systemctl disable --now {cups_browsed}",
+                        f"$ systemctl mask {cups_browsed}",
+                    ]
+                )
+            )
+        case "disabled":
+            status = status.downgrade_to(WARN)
+            note = _("{0} is disabled, but unmasked.").format(cups_browsed)
+            notes.append(Note(note, WARN))
+            recs.append(
+                "\n".join(
+                    [
+                        note,
+                        _("To fix this, run:"),
+                        f"$ systemctl mask {cups_browsed}",
+                    ]
+                )
+            )
+        case "masked":
+            pass
+        case _:
+            status = status.downgrade_to(FAIL)
+            note = _("{0} has unexpected status '{1}'.").format(cups_browsed, cups_status)
+            notes.append(Note(note, FAIL))
+
+    yield Report(_("Ensuring printing services are disabled"), status, notes=notes, recs=recs)
+
+
+@audit
 def audit_webcam_module():
     """Ensure Webcam module is disabled."""
     webcam_mod_file = "/etc/modprobe.d/99-disable-webcam.conf"

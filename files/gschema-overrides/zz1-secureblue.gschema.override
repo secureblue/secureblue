@@ -13,7 +13,6 @@ enabled-extensions = []
 [org.gnome.desktop.interface]
 gtk-theme='adw-gtk3'
 font-antialiasing="rgba"
-monospace-font-name="Monospace 12"
 
 [org.gnome.desktop.background]
 picture-uri='file:///usr/share/backgrounds/secureblue/secureblue-blue.svg'

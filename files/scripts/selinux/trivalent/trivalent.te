@@ -19,6 +19,16 @@ policy_module(trivalent, 1.0.0)
 ## </desc>
 gen_tunable(trivalent_rwmap_video_dev, true)
 
+## <desc>
+## <p>
+## Allow chromium to execute flatpaks
+## </p>
+## <p>
+## Needed for extensions to be able to interact with certain flatpaks like keepassxc
+## </p>
+## </desc>
+gen_tunable(trivalent_exec_flatpaks, true)
+
 attribute_role trivalent_roles;
 
 attribute trivalent_domain;
@@ -131,7 +141,13 @@ optional_policy(`
 # 	flatpak_read_apps(trivalent_domain)
 # 	flatpak_exec_apps(trivalent_domain)
 # ')
-allow trivalent_domain data_home_t:file { execute execute_no_trans };
+tunable_policy(`trivalent_exec_flatpaks', `
+	gen_require(`
+		type data_home_t;
+	')
+	exec_files_pattern(trivalent_domain, data_home_t, data_home_t)
+	read_lnk_files_pattern(trivalent_domain, data_home_t, data_home_t)
+')
 
 # allow trivalent to own its mpris daemon
 dbus_connect_session_bus(trivalent_domain)
@@ -229,7 +245,6 @@ gnome_map_generic_cache_files(trivalent_domain)
 gnome_manage_home_config(trivalent_domain)
 gnome_exec_config_home_files(trivalent_domain)
 gnome_manage_home_config_dirs(trivalent_domain)
-gnome_manage_data(trivalent_domain)
 gnome_manage_generic_home_files(trivalent_domain)
 gnome_manage_generic_home_dirs(trivalent_domain)
 gnome_map_generic_data_home_files(trivalent_domain)

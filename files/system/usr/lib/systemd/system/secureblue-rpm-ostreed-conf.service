@@ -1,4 +1,4 @@
-# SPDX-FileCopyrightText: Copyright 2025-2026 The Secureblue Authors
+# SPDX-FileCopyrightText: Copyright 2026 The Secureblue Authors
 #
 # SPDX-License-Identifier: Apache-2.0
 
@@ -8,10 +8,12 @@
 [Unit]
 Description=Secureblue rpm-ostreed conf service
 ConditionPathExists=/etc/rpm-ostreed.conf
+Wants=multi-user.target
+After=multi-user.target
 
 [Service]
 Type=oneshot
-ExecStartPre=/bin/bash -c 'grep -q "Entries in this file show the compile time defaults." /etc/rpm-ostreed.conf'
+ExecCondition=/bin/bash -c 'grep -Fq "Entries in this file show the compile time defaults." /etc/rpm-ostreed.conf'
 ExecStart=/usr/bin/cp /usr/etc/rpm-ostreed.conf /etc/rpm-ostreed.conf
 
 [Install]

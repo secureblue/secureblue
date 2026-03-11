@@ -8,7 +8,6 @@ modules:
       install:
         install-weak-deps: false
         packages:
-          - firewall-config
           - gnome-disk-utility
           - adw-gtk3-theme
           - gnome-tweaks

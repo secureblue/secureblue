@@ -38,16 +38,17 @@ LOCALE: Final[str] = "en_US.UTF-8"
 # `msginit` requires this to be set to work properly.
 os.environ["LC_MESSAGES"] = LOCALE
 os.environ["LANG"] = LOCALE
-del os.environ["LANGUAGE"]
-del os.environ["LC_ALL"]
+os.environ.pop("LANGUAGE", None)
+os.environ.pop("LC_ALL", None)
 
 
 def command_stdout(*args: str) -> str:
     """Run a command in the shell and return the contents of stdout."""
-    return subprocess.run(args, check=True, capture_output=True, text=True).stdout.strip()
+    return subprocess.run(args, check=True, capture_output=True, text=True).stdout.rstrip("\n")
 
 
-os.chdir(os.path.dirname(sys.argv[0]))
+script_path = os.path.abspath(os.path.dirname(sys.argv[0]))
+os.chdir(script_path)
 git_root = command_stdout("git", "rev-parse", "--show-toplevel")
 os.chdir(git_root)
 

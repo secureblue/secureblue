@@ -1,4 +1,4 @@
-a*.yml linguist-detectable=true
+*.yml linguist-detectable=true
 *.yml linguist-language=YAML
 
 *.yaml linguist-detectable=true

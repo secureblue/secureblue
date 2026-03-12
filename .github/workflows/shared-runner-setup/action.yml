@@ -81,7 +81,7 @@ runs:
         tar -zxvf go-containerregistry.tar.gz -C /usr/local/bin/ crane
 
         DIGEST=$(crane digest "${BASE_IMAGE}:${BASE_IMAGE_VERSION}")
-        slsa-verifier verify-image --source-uri 'github.com/${GITHUB_REPOSITORY}' "${BASE_IMAGE}:${BASE_IMAGE_VERSION}@${DIGEST}"
+        slsa-verifier verify-image --source-uri "github.com/${GITHUB_REPOSITORY}" "${BASE_IMAGE}:${BASE_IMAGE_VERSION}@${DIGEST}"
 
     - name: Uninstall slsa-verifier
       shell: bash

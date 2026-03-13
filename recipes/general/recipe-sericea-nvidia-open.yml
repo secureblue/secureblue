@@ -8,7 +8,7 @@ description: "Sericea with nvidia-open, hardened"
 
 base-image: ghcr.io/secureblue/sericea-main-hardened
 
-image-version: latest
+image-version: br-next-44
 
 cosign-version: none
 nushell-version: none

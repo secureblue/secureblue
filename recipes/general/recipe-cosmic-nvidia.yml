@@ -8,7 +8,7 @@ description: "Cosmic with nvidia, hardened"
 
 base-image: ghcr.io/secureblue/cosmic-main-hardened
 
-image-version: latest
+image-version: br-next-44
 
 cosign-version: none
 nushell-version: none

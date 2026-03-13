@@ -8,7 +8,7 @@ description: "CoreOS with zfs, hardened"
 
 base-image: ghcr.io/secureblue/securecore-main-hardened
 
-image-version: latest
+image-version: br-next-44
 
 cosign-version: none
 nushell-version: none

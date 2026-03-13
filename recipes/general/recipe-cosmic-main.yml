@@ -8,7 +8,7 @@ description: "Cosmic, hardened"
 
 base-image: quay.io/fedora-ostree-desktops/cosmic-atomic
 
-image-version: 43
+image-version: 44
 
 cosign-version: none
 nushell-version: none

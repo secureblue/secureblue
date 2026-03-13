@@ -8,7 +8,7 @@ description: "CoreOS with nvidia-open and zfs, hardened"
 
 base-image: ghcr.io/secureblue/securecore-zfs-main-hardened
 
-image-version: latest
+image-version: br-next-44
 
 cosign-version: none
 nushell-version: none

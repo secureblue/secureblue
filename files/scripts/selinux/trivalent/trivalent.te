@@ -29,6 +29,14 @@ gen_tunable(trivalent_rwmap_video_dev, true)
 ## </desc>
 gen_tunable(trivalent_exec_flatpaks, true)
 
+## <desc>
+## <p>
+## Allow Trivalent to play DRM protected content
+## which implies executing writable files.
+## </p>
+## </desc>
+gen_tunable(trivalent_drm, true)
+
 attribute_role trivalent_roles;
 
 attribute trivalent_domain;
@@ -40,8 +48,9 @@ application_executable_file(trivalent_exec_t)
 type trivalent_home_t;
 userdom_user_home_content(trivalent_home_t)
 
-type trivalent_home_lib_t;
-userdom_user_home_content(trivalent_home_lib_t)
+# Widevine CDM library file (DRM)
+type trivalent_home_cdm_lib_t;
+userdom_user_home_content(trivalent_home_cdm_lib_t)
 
 type trivalent_script_exec_t;
 application_executable_file(trivalent_script_exec_t)
@@ -77,7 +86,6 @@ gen_require(`
 trivalent_filetrans_home_content(userdomain)
 trivalent_filetrans_home_content(trivalent_domain)
 trivalent_filetrans_home_content(trivalent_script_domain)
-mmap_exec_files_pattern(trivalent_domain, trivalent_home_t, trivalent_home_lib_t)
 
 # internal
 allow trivalent_domain self:process { execmem getcap getsched setcap setrlimit setsched sigkill signal signull };
@@ -104,6 +112,8 @@ allow trivalent_domain trivalent_home_t:dir { manage_dir_perms };
 allow trivalent_domain trivalent_home_t:file { manage_file_perms map };
 allow trivalent_domain trivalent_home_t:lnk_file { manage_lnk_file_perms };
 allow trivalent_domain self:netlink_route_socket { nlmsg_read nlmsg_write };
+manage_files_pattern(trivalent_domain, trivalent_home_t, trivalent_home_cdm_lib_t)
+
 
 # not covered by interfaces
 allow trivalent_domain fonts_cache_t:dir mounton;
@@ -150,6 +160,10 @@ tunable_policy(`trivalent_exec_flatpaks', `
 	')
 	exec_files_pattern(trivalent_domain, data_home_t, data_home_t)
 	read_lnk_files_pattern(trivalent_domain, data_home_t, data_home_t)
+')
+
+tunable_policy(`trivalent_drm', `
+	mmap_exec_files_pattern(trivalent_domain, trivalent_home_t, trivalent_home_cdm_lib_t)
 ')
 
 # allow trivalent to own its mpris daemon

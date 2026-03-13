@@ -10,4 +10,4 @@
 /usr/lib/trivalent/install_filter.sh				--	gen_context(system_u:object_r:trivalent_script_exec_t,s0)
 HOME_DIR/\.cache/trivalent(/.*)?		gen_context(system_u:object_r:trivalent_home_t,s0)
 HOME_DIR/\.config/trivalent(/.*)?	gen_context(system_u:object_r:trivalent_home_t,s0)
-HOME_DIR/\.config/trivalent(/.*)?\.so           --  gen_context(system_u:object_r:trivalent_home_lib_t,s0)
+HOME_DIR/\.config/trivalent/WidevineCdm(/.*)?\.so           --  gen_context(system_u:object_r:trivalent_home_cdm_lib_t,s0)

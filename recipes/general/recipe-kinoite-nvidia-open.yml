@@ -8,7 +8,7 @@ description: "Kinoite with nvidia-open, hardened"
 
 base-image: ghcr.io/secureblue/kinoite-main-hardened
 
-image-version: latest
+image-version: br-next-44
 
 cosign-version: none
 nushell-version: none

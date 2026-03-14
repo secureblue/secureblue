@@ -6,7 +6,7 @@ name: Cleanup Old Images
 permissions: {}
 on:
   schedule:
-    - cron: "15 0 * * 0" # 0015 UTC on Sundays
+    - cron: "15 0 * * 0" # 00:15 UTC on Sundays
   workflow_dispatch:
 
 concurrency:

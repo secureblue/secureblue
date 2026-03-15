@@ -39,6 +39,6 @@ wget "https://github.com/secureblue/Trivalent/releases/download/${trivalent_vers
 slsa-verifier verify-artifact "${trivalent_rpm}" --provenance-path "${provenance_file}" --source-uri github.com/secureblue/Trivalent --source-branch live
 
 # Forcing GPG check for a package installed outside of a repository
-dnf --setopt=localpkg_gpgcheck=True -y install "${trivalent_rpm}"
+dnf --setopt=localpkg_gpgcheck=True --setopt=install_weak_deps=False -y install "${trivalent_rpm}"
 
 sed -i 's/org\.mozilla\.firefox\.desktop/trivalent.desktop/' /usr/share/applications/mimeapps.list

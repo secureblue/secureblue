@@ -59,7 +59,6 @@ ignore = [
 mccabe.max-complexity = 8
 pycodestyle.max-line-length = 110
 pycodestyle.max-doc-length = 100
-pylint.max-statements = 40
 
 [tool.ruff.lint.per-file-ignores]
 # Don't require audit checks' function signatures to have type hints.

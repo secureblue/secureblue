@@ -56,16 +56,16 @@ runs:
           refs/pull/*) image_tag="pr-${PR_EVENT_NUMBER}-43" ;;
           *) image_tag="br-${GITHUB_REF_NAME}-43" ;;
         esac
-        FULL_IMAGE_REF="ghcr.io/secureblue/${IMAGE_NAME}:${image_tag}"
+        FULL_IMAGE_REF="ghcr.io/${GITHUB_REPOSITORY_OWNER}/${IMAGE_NAME}:${image_tag}"
         echo "FULL_IMAGE_REF=${FULL_IMAGE_REF}" >> "${GITHUB_OUTPUT}"
 
     - name: Install slsa-verifier
-      if: startsWith(steps.image_data.outputs.BASE_IMAGE, 'ghcr.io/secureblue/')
+      if: startsWith(steps.image_data.outputs.BASE_IMAGE, format('ghcr.io/{0}/', github.repository_owner))
       uses: slsa-framework/slsa-verifier/actions/installer@ea584f4502babc6f60d9bc799dbbb13c1caa9ee6 # v2.7.1
 
     - name: Verify base image provenance
       shell: bash
-      if: startsWith(steps.image_data.outputs.BASE_IMAGE, 'ghcr.io/secureblue/')
+      if: startsWith(steps.image_data.outputs.BASE_IMAGE, format('ghcr.io/{0}/', github.repository_owner))
       env:
         BASE_IMAGE_VERSION: ${{ steps.image_data.outputs.BASE_IMAGE_VERSION }}
         BASE_IMAGE: ${{ steps.image_data.outputs.BASE_IMAGE }}
@@ -81,11 +81,11 @@ runs:
         tar -zxvf go-containerregistry.tar.gz -C /usr/local/bin/ crane
 
         DIGEST=$(crane digest "${BASE_IMAGE}:${BASE_IMAGE_VERSION}")
-        slsa-verifier verify-image --source-uri 'github.com/secureblue/secureblue' "${BASE_IMAGE}:${BASE_IMAGE_VERSION}@${DIGEST}"
+        slsa-verifier verify-image --source-uri "github.com/${GITHUB_REPOSITORY}" "${BASE_IMAGE}:${BASE_IMAGE_VERSION}@${DIGEST}"
 
     - name: Uninstall slsa-verifier
       shell: bash
-      if: startsWith(steps.image_data.outputs.BASE_IMAGE, 'ghcr.io/secureblue/')
+      if: startsWith(steps.image_data.outputs.BASE_IMAGE, format('ghcr.io/{0}/', github.repository_owner))
       run: |
         # remove slsa-verifier so that it can be successfully reinstalled later by bluebuild
         rm -rf ~/.slsa/
@@ -104,7 +104,7 @@ runs:
         BASE_IMAGE: ${{ steps.image_data.outputs.BASE_IMAGE }}
       run: |
         UPSTREAM_CONTAINER="${BASE_IMAGE}:${BASE_IMAGE_VERSION}"
-        if [[ "$BASE_IMAGE" == ghcr.io/secureblue/* ]]; then
+        if [[ "$BASE_IMAGE" == "ghcr.io/${GITHUB_REPOSITORY_OWNER}/"* ]]; then
           UPSTREAM_PUBKEY='./cosign.pub'
         else
           UPSTREAM_PUBKEY='./files/system/etc/pki/containers/quay.io-fedora-ostree-desktops.pub'

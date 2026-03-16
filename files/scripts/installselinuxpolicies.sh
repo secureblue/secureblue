@@ -8,7 +8,7 @@ set -euo pipefail
 
 dnf install -y --setopt=install_weak_deps=False policycoreutils-devel
 
-policy_modules=(trivalent flatpakfull nautilus systemsettings thunar)
+policy_modules=(flatpakfull nautilus systemsettings thunar)
 
 cil_policy_modules=(
     './selinux/user_namespace/grant_fm_userns.cil'

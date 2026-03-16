@@ -35,7 +35,7 @@ jobs:
       - name: Run integration tests
         uses: secureblue/bootc-integration-test-action@2236e712456801cd0bd47626733e95a180e38675 # v0.0.10
         with:
-          registry: ghcr.io/secureblue
+          registry: ghcr.io/${{ github.repository_owner }}
           image: silverblue-main-hardened
           token: ${{ secrets.GITHUB_TOKEN }}
           tests: |

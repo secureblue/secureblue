@@ -319,7 +319,7 @@ msgstr "Pro opravu tohoto, spusť:"
 #: files/system/usr/libexec/secureblue/audit_secureblue.py:552
 #, fuzzy
 msgid "Ensuring automatic system updates are enabled"
-msgstr "Kontrolování zda randomizace MAC adres je povolena"
+msgstr "Kontrolování zda jsou zapnuté automatické aktualizace systému"
 
 #: files/system/usr/libexec/secureblue/audit_secureblue.py:575
 #: files/system/usr/libexec/secureblue/audit_secureblue.py:663
@@ -351,7 +351,7 @@ msgstr "Pro zapnutí toho, spusť:"
 #: files/system/usr/libexec/secureblue/audit_secureblue.py:700
 #, fuzzy
 msgid "Ensuring automatic Homebrew updates are enabled"
-msgstr "Kontrolování zda randomizace MAC adres je povolena"
+msgstr "Kontrolování zda jsou automatické aktualizace skrze Homebrew zapnuty"
 
 #: files/system/usr/libexec/secureblue/audit_secureblue.py:714
 msgid "The current user is in the wheel group."

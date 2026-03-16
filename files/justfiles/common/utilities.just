@@ -208,10 +208,8 @@ rebase-secureblue:
         read -rp "Do you want Nvidia's proprietary drivers with open source kernel modules? [Y/n]: " use_open
         use_open=${use_open:-y}
         [[ "$use_open" == [Yy]* ]] && image_name+="-open"
-        exec /usr/bin/python3 /usr/libexec/secureblue/set_kargs_nvidia.py
     else
         image_name+="-main"
-        exec /usr/bin/python3 /usr/libexec/secureblue/remove_kargs_nvidia.py
     fi
 
     image_name+="-hardened"

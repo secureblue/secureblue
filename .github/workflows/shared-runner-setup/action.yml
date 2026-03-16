@@ -56,7 +56,7 @@ runs:
           refs/pull/*) image_tag="pr-${PR_EVENT_NUMBER}-43" ;;
           *) image_tag="br-${GITHUB_REF_NAME}-43" ;;
         esac
-        FULL_IMAGE_REF="ghcr.io/${GITHUB_REPOSITORY_OWNER}/${IMAGE_NAME}:${image_tag}"
+        FULL_IMAGE_REF="ghcr.io/${GITHUB_REPOSITORY_OWNER,,}/${IMAGE_NAME}:${image_tag}"
         echo "FULL_IMAGE_REF=${FULL_IMAGE_REF}" >> "${GITHUB_OUTPUT}"
 
     - name: Install slsa-verifier

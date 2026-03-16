@@ -19,6 +19,7 @@ modules:
         - krfb-libs
         - plasma-browser-integration
         - plasma-discover
+        - plasma-discover-libs
         - fedora-workstation-repositories
         - fedora-third-party
   - type: dnf

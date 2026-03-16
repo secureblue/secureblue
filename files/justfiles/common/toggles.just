@@ -106,6 +106,7 @@ alias toggle-ptrace-scope := toggle-anticheat-support
 toggle-anticheat-support:
     #! /bin/run0 /bin/bash
     set -euo pipefail
+    source /usr/lib/ujust/libformatting.sh
     sysctl_ptrace_file='/etc/sysctl.d/61-ptrace-scope.conf'
     umask 022
     # Remove ptrace_scope = 3 from any lexicographically earlier sysctl conf files.

@@ -57,7 +57,7 @@ jobs:
         id: commits
         shell: bash
         env:
-          AUTH_HEADER: "Authorization: Bearer ${{ github.token }}"
+          AUTH_HEADER: "Authorization: Bearer ${{ secrets.token }}"
           COMMITS_SINCE: ${{ steps.metadata.outputs.prev_time_created }}
           COMMITS_UNTIL: ${{ steps.metadata.outputs.time_created }}
         run: |
@@ -125,3 +125,4 @@ jobs:
           sign-commits: true
           title: 'chore(deps): update BlueBuild modules'
           body-path: ${{ steps.pr_body.outputs.body_path }}
+          token: ${{ secrets.CREATE_PR_TOKEN }}

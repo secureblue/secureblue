@@ -46,6 +46,7 @@ jobs:
           branch: create-pull-request/update-po
           sign-commits: true
           title: 'chore(i18n): update PO files'
+          token: ${{ secrets.CREATE_PR_TOKEN }}
           body: |
             Automatically update POT and PO files by running the script `files/po/update_po.py`.
 

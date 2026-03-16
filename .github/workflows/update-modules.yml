@@ -57,7 +57,7 @@ jobs:
         id: commits
         shell: bash
         env:
-          AUTH_HEADER: "Authorization: Bearer ${{ secrets.token }}"
+          AUTH_HEADER: "Authorization: Bearer ${{ github.token }}"
           COMMITS_SINCE: ${{ steps.metadata.outputs.prev_time_created }}
           COMMITS_UNTIL: ${{ steps.metadata.outputs.time_created }}
         run: |

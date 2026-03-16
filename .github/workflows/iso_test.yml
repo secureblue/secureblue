@@ -65,7 +65,7 @@ jobs:
           IMAGE_NAME: ${{ matrix.image }}
         uses: ublue-os/titanoboa@main
         with:
-          image-ref: ghcr.io/your-org/your-image:latest 
+          image-ref: ghcr.io/secureblue/${IMAGE_NAME}:latest 
 
       - name: Rename ISO
         env:

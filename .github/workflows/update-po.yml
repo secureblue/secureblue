@@ -17,6 +17,7 @@ jobs:
   update-po:
     name: Update PO files
     runs-on: ubuntu-24.04
+    environment: Create_PR
     permissions:
       contents: write  # needed to create branch
       pull-requests: write  # needed to create pull request
@@ -46,6 +47,7 @@ jobs:
           branch: create-pull-request/update-po
           sign-commits: true
           title: 'chore(i18n): update PO files'
+          token: ${{ secrets.CREATE_PR_TOKEN }}
           body: |
             Automatically update POT and PO files by running the script `files/po/update_po.py`.
 

@@ -186,7 +186,7 @@ rebase-secureblue:
         )
         printf "%s\n" \
             "Select a desktop." \
-            "Silverblue images are recommended." \
+            "Silverblue and Kinoite images are recommended." \
             "Sericea images are recommended for tiling WM users." \
             "Cosmic images are considered experimental."
         PS3=$'Enter your desktop choice: '

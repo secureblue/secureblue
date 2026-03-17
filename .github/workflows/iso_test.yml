@@ -60,10 +60,10 @@ jobs:
         run: |
           curl -fLsS --retry 5 -o "${WORKSPACE}/secureblue.repo" "https://copr.fedorainfracloud.org/coprs/secureblue/packages/repo/fedora-43/secureblue-packages-fedora-43.repo"
 
-
       - name: Pull pubkeys
         shell: bash
         run: |
+          mkdir -p /usr/etc/pki/containers
           curl -o /usr/etc/pki/containers/secureblue-2025.pub https://raw.githubusercontent.com/secureblue/secureblue/refs/heads/live/files/system/etc/pki/containers/secureblue-2025.pub
           curl -o /usr/etc/pki/containers/secureblue.pub https://raw.githubusercontent.com/secureblue/secureblue/refs/heads/live/files/system/etc/pki/containers/secureblue.pub
 

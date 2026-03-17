@@ -60,18 +60,11 @@ jobs:
         run: |
           curl -fLsS --retry 5 -o "${WORKSPACE}/secureblue.repo" "https://copr.fedorainfracloud.org/coprs/secureblue/packages/repo/fedora-43/secureblue-packages-fedora-43.repo"
 
-      - name: Pull pubkeys
-        shell: bash
-        run: |
-          sudo mkdir -p /usr/etc/pki/containers
-          sudo curl -o /usr/etc/pki/containers/secureblue-2025.pub https://raw.githubusercontent.com/secureblue/secureblue/refs/heads/live/files/system/etc/pki/containers/secureblue-2025.pub
-          sudo curl -o /usr/etc/pki/containers/secureblue.pub https://raw.githubusercontent.com/secureblue/secureblue/refs/heads/live/files/system/etc/pki/containers/secureblue.pub
-
       - name: Build ISO        
         id: iso_build
         env:
           IMAGE_REF: ghcr.io/secureblue/${{ matrix.image }}:latest 
-        uses: ublue-os/titanoboa@main
+        uses: RoyalOughtness/titanoboa@main
         with:
           image-ref: ${{ env.IMAGE_REF }}
 

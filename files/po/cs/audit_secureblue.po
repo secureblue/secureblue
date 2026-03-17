@@ -837,7 +837,7 @@ msgstr "{0} může získat jakékoliv oprávnění."
 
 #: files/system/usr/libexec/secureblue/audit_flatpak/__init__.py:267
 msgid "However, this is required for its functionality."
-msgstr "Alevšak, toto je vyžadováno pro jeho funkčnost."
+msgstr "Je to však nezbytné pro správné fungování."
 
 #: files/system/usr/libexec/secureblue/audit_flatpak/__init__.py:284
 #: files/system/usr/libexec/secureblue/audit_flatpak/__init__.py:289

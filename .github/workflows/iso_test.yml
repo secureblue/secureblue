@@ -74,7 +74,6 @@ jobs:
         env:
           IMAGE_NAME: ${{ matrix.image }}
         run: |
-          mkdir -p output
           mv ${{ steps.iso_build.outputs.iso-dest }} "${IMAGE_NAME}.iso"
           sha256sum "${IMAGE_NAME}.iso" | tee "${IMAGE_NAME}.iso-CHECKSUM"
 
@@ -88,7 +87,7 @@ jobs:
           sudo chown $(whoami) "${IMAGE_NAME}.iso" "${IMAGE_NAME}.iso-CHECKSUM"
 
           TARGET_OUTPUT_DIRECTORY="$(pwd)/output"
-          mkdir "${TARGET_OUTPUT_DIRECTORY}"
+          mkdir -p "${TARGET_OUTPUT_DIRECTORY}"
           PREFIX="secureblue"
           DATE_SUFFIX="$(date +%Y%m%d)"
           ISO_NAME="${PREFIX}-${IMAGE_NAME}-${DATE_SUFFIX}.iso"

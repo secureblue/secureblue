@@ -234,7 +234,7 @@ msgstr "Ale pozor, používáš-li VPN, toto může způsobit úniky DNS."
 #: files/system/usr/libexec/secureblue/audit_secureblue.py:629
 #: files/system/usr/libexec/secureblue/audit_secureblue.py:654
 msgid "To enable it, run:"
-msgstr "Pro zapnutí toho, spusť:"
+msgstr "Pro zapnutí, spusť:"
 
 #: files/system/usr/libexec/secureblue/audit_secureblue.py:421
 msgid "Secure global DNS is not configured."

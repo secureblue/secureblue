@@ -205,7 +205,7 @@ msgstr "{0} není zapnuto."
 
 #: files/system/usr/libexec/secureblue/audit_secureblue.py:371
 msgid "To start and enable it, run:"
-msgstr "Pro spuštění a nastartování, spusť:"
+msgstr "Pro spuštění a aktivaci, spusť:"
 
 #: files/system/usr/libexec/secureblue/audit_secureblue.py:375
 msgid "Ensuring chronyd is active"

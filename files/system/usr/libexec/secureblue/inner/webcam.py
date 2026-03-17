@@ -26,13 +26,13 @@ def main() -> int:
     mode = sys.argv[1]
     match mode:
         case "on":
-            with open(WEBCAM_MOD_FILE, "w", encoding="utf8") as fd:
-                fd.write(WEBCAM_MOD_TEXT)
-            os.chmod(WEBCAM_MOD_FILE, 0o644)
+            os.remove(WEBCAM_MOD_FILE)
             print("Webcam has been enabled. Reboot for effect.")
             return 0
         case "off":
-            os.remove(WEBCAM_MOD_FILE)
+            with open(WEBCAM_MOD_FILE, "w", encoding="utf8") as fd:
+                fd.write(WEBCAM_MOD_TEXT)
+            os.chmod(WEBCAM_MOD_FILE, 0o644)
             print("Webcam has been disabled. Reboot for effect.")
             return 0
         case _:

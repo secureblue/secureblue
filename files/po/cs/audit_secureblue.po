@@ -161,7 +161,7 @@ msgstr ""
 
 #: files/system/usr/libexec/secureblue/audit_secureblue.py:323
 msgid "Container domain user namespace creation is permitted."
-msgstr "Tvorba uživatelských jmennćh prostor domén v kontejnerech je povolena."
+msgstr "Tvorba uživatelských jmenných prostor domén v kontejnerech je povolena."
 
 #: files/system/usr/libexec/secureblue/audit_secureblue.py:328
 msgid "Ensuring container user namespace creation disallowed"

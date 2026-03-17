@@ -820,7 +820,7 @@ msgstr "Toto umožňuje přístup ke sdílené paměti."
 
 #: files/system/usr/libexec/secureblue/audit_flatpak/__init__.py:213
 msgid "This grants raw USB device access."
-msgstr "Toto umožňuje přístup k syrovým zařízením USB."
+msgstr "Toto umožňuje přímý přístup k zařízením USB."
 
 #: files/system/usr/libexec/secureblue/audit_flatpak/__init__.py:216
 msgid "bluetooth access"

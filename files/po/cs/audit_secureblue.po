@@ -98,7 +98,7 @@ msgstr "Pro zakázání ptrace, spusť:"
 
 #: files/system/usr/libexec/secureblue/audit_secureblue.py:219
 msgid "To allow restricted ptrace, run the above command twice."
-msgstr "Pro povolení omezeného ptrace, spusť ten příkaz výše dvakrát."
+msgstr "Pro povolení omezeného ptrace, spusť výše uvedený příkaz dvakrát."
 
 #: files/system/usr/libexec/secureblue/audit_secureblue.py:225
 #, python-brace-format

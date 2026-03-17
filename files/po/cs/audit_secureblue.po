@@ -259,7 +259,7 @@ msgstr "Místní kontrola DNSSEC je vypnuta."
 #: files/system/usr/libexec/secureblue/audit_secureblue.py:451
 msgid "You should enable local DNSSEC validation to prevent DNS hijacking."
 msgstr ""
-"Místní kontrola DNSSEC by měla být zapnuta pro zabránění přepadnutí DNS."
+"Místní kontrola DNSSEC by měla být zapnuta pro zabránění únosu DNS."
 
 #: files/system/usr/libexec/secureblue/audit_secureblue.py:460
 msgid "Using a VPN alongside Unbound without Global DNS may cause DNS leaks."

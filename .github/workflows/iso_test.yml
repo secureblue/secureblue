@@ -37,9 +37,11 @@ jobs:
       packages: read # pull images for iso generation
       id-token: write # generate token for signing
 
-    steps:
-      - name: Maximize build space
-        uses: jlumbroso/free-disk-space@54081f138730dfa15788a46383842cd2f914a1be # v1.3.1
+    steps:    
+      - name: Free disk space
+        uses: hastd/free-disk-space@68572aeaadb7f76bd408246328e95926323402b5 # v0.1.2
+        with:
+          skip-if-available: "64G"
 
       - name: Install deps
         shell: bash

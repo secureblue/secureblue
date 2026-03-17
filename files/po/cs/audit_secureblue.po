@@ -271,7 +271,7 @@ msgstr "Používáš-li VPN, změn řešitele DNS na systemd-resolved:"
 
 #: files/system/usr/libexec/secureblue/audit_secureblue.py:475
 msgid "Ensuring system DNS resolution is secure"
-msgstr "Kontrolování zda systémové řešení DNS je bezpečné"
+msgstr "Kontrolování zabezpečení systémového překladu DNS"
 
 #: files/system/usr/libexec/secureblue/audit_secureblue.py:491
 #: files/system/usr/libexec/secureblue/audit_secureblue.py:1165

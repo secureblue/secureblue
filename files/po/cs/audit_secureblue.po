@@ -790,7 +790,7 @@ msgstr "Toto umožňuje přístup k audiu a mikrofonům."
 
 #: files/system/usr/libexec/secureblue/audit_flatpak/__init__.py:188
 msgid "access to the D-Bus system bus"
-msgstr "přístup k D-Bus sběrnici relace"
+msgstr "přístup k D-Bus systémové sběrnici"
 
 #: files/system/usr/libexec/secureblue/audit_flatpak/__init__.py:189
 msgid "access to the SSH agent"

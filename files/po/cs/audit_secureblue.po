@@ -141,7 +141,7 @@ msgid ""
 "Signature validation is disabled for containers at the following scopes:\n"
 "{0}"
 msgstr ""
-"Kontrola podpisů je vypnuta pro kontejnery z následujích záměrových skupin:\n"
+"Ověření podpisů je vypnuto pro kontejnery v následujících oblastech:\n"
 "{0}"
 
 #: files/system/usr/libexec/secureblue/audit_secureblue.py:305

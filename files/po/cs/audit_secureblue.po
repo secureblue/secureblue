@@ -267,7 +267,7 @@ msgstr "Užití VPN spolu s Unbound bez Globální DNS může způsobit úniky D
 
 #: files/system/usr/libexec/secureblue/audit_secureblue.py:465
 msgid "If you use a VPN, switch your DNS resolver to systemd-resolved:"
-msgstr "Používáš-li VPN, změn řešitele DNS na systemd-resolved:"
+msgstr "Pokud používáš VPN, přepni svůj DNS resolver na systemd-resolved:"
 
 #: files/system/usr/libexec/secureblue/audit_secureblue.py:475
 msgid "Ensuring system DNS resolution is secure"

@@ -242,7 +242,7 @@ msgstr "Bezpečné globální DNS není nastaveno."
 
 #: files/system/usr/libexec/secureblue/audit_secureblue.py:425
 msgid "Consider using secure global DNS."
-msgstr "Uvaž používání bezpečné globální DNS."
+msgstr "Zvaž použití zabezpečeného globálního DNS."
 
 #: files/system/usr/libexec/secureblue/audit_secureblue.py:434
 msgid "The secure DNS resolver is not in use, possibly for a VPN."

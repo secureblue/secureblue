@@ -35,11 +35,11 @@ msgstr "Chybějící argument jádra (nestabilní): {0}"
 
 #: files/system/usr/libexec/secureblue/audit_secureblue.py:104
 msgid "To set hardened kernel arguments, run:"
-msgstr "Pro nastavení zpevňujících argumentů jádra, spusť:"
+msgstr "Pro nastavení zabezpečujích argumentů jádra, spusť:"
 
 #: files/system/usr/libexec/secureblue/audit_secureblue.py:106
 msgid "Checking for hardened kernel arguments"
-msgstr "Hledání zpevňujících argumentů jádra"
+msgstr "Hledání zabezpečujích argumentů jádra"
 
 #: files/system/usr/libexec/secureblue/audit_secureblue.py:129
 #: files/system/usr/libexec/secureblue/audit_secureblue.py:140

@@ -217,7 +217,7 @@ msgstr "DNS přes HTTPS v Trivalentu je vypnuto."
 
 #: files/system/usr/libexec/secureblue/audit_secureblue.py:410
 msgid "Consider using DNS over HTTPS in Trivalent to hide queries."
-msgstr "Uvaž používání DNS přes HTTPS v Trivalentu pro skrytí dotazů."
+msgstr "Zvaž použití DNS přes HTTPS v Trivalentu pro skrytí dotazů."
 
 #: files/system/usr/libexec/secureblue/audit_secureblue.py:411
 #: files/system/usr/libexec/secureblue/audit_secureblue.py:426

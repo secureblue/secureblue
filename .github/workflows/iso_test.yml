@@ -69,6 +69,8 @@ jobs:
         uses: RoyalOughtness/titanoboa@main
         with:
           image-ref: ${{ env.IMAGE_REF }}
+          hook-post-rootfs: ./workflows/isos/allow_squashfs.sh
+          hook-pre-initramfs: ./workflows/isos/include_rlimit.sh
 
       - name: Rename ISO
         env:

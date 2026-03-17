@@ -246,7 +246,7 @@ msgstr "Zvaž použití zabezpečeného globálního DNS."
 
 #: files/system/usr/libexec/secureblue/audit_secureblue.py:434
 msgid "The secure DNS resolver is not in use, possibly for a VPN."
-msgstr "Bezpečný řešitel DNS není pužíván, možno pro VPN."
+msgstr "Zabezpečený DNS resolver není použit, možná kvůli VPN."
 
 #: files/system/usr/libexec/secureblue/audit_secureblue.py:438
 msgid "To view or reset your current DNS configuration, run:"

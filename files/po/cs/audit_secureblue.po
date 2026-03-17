@@ -812,7 +812,7 @@ msgstr "Toto umožňuje přístup ke vstupním zařízením."
 
 #: files/system/usr/libexec/secureblue/audit_flatpak/__init__.py:200
 msgid "This grants access to kernel-based virtualization."
-msgstr "Toto umožňuje přístup k virtualizaci založené na jádru."
+msgstr "Toto umožňuje přístup k virtualizaci na úrovni jádra."
 
 #: files/system/usr/libexec/secureblue/audit_flatpak/__init__.py:206
 msgid "This grants access to shared memory."

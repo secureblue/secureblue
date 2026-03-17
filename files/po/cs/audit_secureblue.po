@@ -281,7 +281,7 @@ msgstr "Selhalo čtení souboru {0}."
 
 #: files/system/usr/libexec/secureblue/audit_secureblue.py:499
 msgid "MAC randomization is not enabled."
-msgstr "Randomizace MAC adres nebyla zapnuta."
+msgstr "Randomizace MAC adres není zapnuta."
 
 #: files/system/usr/libexec/secureblue/audit_secureblue.py:506
 msgid "Ensuring MAC randomization is enabled"

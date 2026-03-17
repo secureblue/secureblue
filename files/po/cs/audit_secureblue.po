@@ -222,7 +222,7 @@ msgstr "Zvaž použití DNS přes HTTPS v Trivalentu pro skrytí dotazů."
 #: files/system/usr/libexec/secureblue/audit_secureblue.py:411
 #: files/system/usr/libexec/secureblue/audit_secureblue.py:426
 msgid "However, if you use a VPN, this may cause DNS leaks."
-msgstr "Ale pozor, používáš-li VPN, toto může způsobit úniky DNS."
+msgstr "Pokud však používáš VPN, může to způsobit úniky DNS."
 
 #: files/system/usr/libexec/secureblue/audit_secureblue.py:412
 #: files/system/usr/libexec/secureblue/audit_secureblue.py:427

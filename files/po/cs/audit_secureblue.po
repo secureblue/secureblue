@@ -331,7 +331,7 @@ msgstr "Kontrolování zda {0} je zapnuto"
 #: files/system/usr/libexec/secureblue/audit_secureblue.py:626
 #, python-brace-format
 msgid "{0} is not enabled globally."
-msgstr "{0} není zapnnuto globálně."
+msgstr "{0} není zapnuto globálně."
 
 #: files/system/usr/libexec/secureblue/audit_secureblue.py:607
 #: files/system/usr/libexec/secureblue/audit_secureblue.py:640

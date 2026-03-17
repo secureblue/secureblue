@@ -75,10 +75,8 @@ jobs:
           IMAGE_NAME: ${{ matrix.image }}
         run: |
           mkdir -p output
-          mv ${{ steps.iso_build.outputs.iso-dest }} "$(pwd)/output/${IMAGE_NAME}.iso"
-          cd output
+          mv ${{ steps.iso_build.outputs.iso-dest }} "${IMAGE_NAME}.iso"
           sha256sum "${IMAGE_NAME}.iso" | tee "${IMAGE_NAME}.iso-CHECKSUM"
-          cd -
 
       - name: Rename ISO and sign CHECKSUM
         id: rename

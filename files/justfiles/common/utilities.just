@@ -188,7 +188,7 @@ rebase-secureblue:
             "Select a desktop." \
             "Silverblue and Kinoite images are recommended." \
             "Sericea images are recommended for tiling WM users." \
-            "Cosmic images are considered experimental."
+            "Cosmic images are considered beta."
         PS3=$'Enter your desktop choice: '
         select image_name in "${desktop_image_types[@]}"; do
             if [[ -n "$image_name" ]]; then        
@@ -199,8 +199,7 @@ rebase-secureblue:
             fi
         done
     fi
-
-    echo "Nvidia's proprietary drivers provide superior performance on Nvidia hardware."
+    echo "Nvidia's proprietary drivers provide superior performance and official support on Nvidia hardware."
     read -rp "Do you want Nvidia proprietary drivers? [y/N]: " use_nvidia
     if [[ "$use_nvidia" == [Yy]* ]]; then
         image_name+="-nvidia"
@@ -211,20 +210,11 @@ rebase-secureblue:
     else
         image_name+="-main"
     fi
-
     image_name+="-hardened"
-
     full_ref=$(crane digest --full-ref "ghcr.io/secureblue/${image_name}:latest")
     slsa-verifier verify-image --source-uri "github.com/secureblue/secureblue" --source-branch "live" "${full_ref}"
-
-    if [[ "$current_image" == 'IOT' ]]; then
-        rebase_command="bootc switch ghcr.io/secureblue/$image_name:latest"
-    else
-        rebase_command="rpm-ostree rebase ostree-image-signed:docker://ghcr.io/secureblue/$image_name:latest"
-    fi
-
+    rebase_command="rpm-ostree rebase ostree-image-signed:docker://ghcr.io/secureblue/$image_name:latest"
     printf "Command to execute:\n%s\n\n" "$rebase_command"
-
     read -rp "Proceed? [y/N]: " rebase_proceed
     if [[ "$rebase_proceed" == [Yy]* ]]; then
         eval "$rebase_command"

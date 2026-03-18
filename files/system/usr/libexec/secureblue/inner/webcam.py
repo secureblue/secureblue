@@ -9,7 +9,6 @@ The sandboxed webcam toggle function
 """
 
 import os
-#import subprocess
 import sys
 from typing import Final
 

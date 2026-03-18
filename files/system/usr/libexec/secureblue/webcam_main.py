@@ -18,7 +18,7 @@ from utils import (
     is_module_loaded,
 )
 
-BLUE_HELP: Final[str] = """
+WEBCAM_HELP: Final[str] = """
 This python script toggles if webcam is enabled by creating or deleting a modprobe file at
 "/etc/modprobe.d/99-disable-webcam.conf" to disable or enable the kernel modules
 needed for webcam. Note this change only takes affect upon reboot.

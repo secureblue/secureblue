@@ -26,7 +26,7 @@ install-steam:
     method_selection=""
     echo "Please select a method to install Steam:"
     echo "    1) Flatpak - Install the Steam flatpak from flathub-unverified (Recommended for most users)"
-    echo "    2) Distrobox - Install Steam via the bazzite-arch distrobox image (Recommended for SteamVR users)"
+    echo "    2) Distrobox - Install Steam via the steambox (bazzite-arch) distrobox image (Recommended for SteamVR users)"
     while [[ "$valid_input" == "0" ]]; do
         read -rp "Selection [1-2]: " method_selection
         if [[ "$method_selection" == [12]* ]]; then
@@ -68,10 +68,10 @@ install-steam:
                     ujust set-container-userns on
                 fi
             fi
-            echo "Creating bazzite-arch distrobox."
-            distrobox-create --unshare-netns --nvidia --image ghcr.io/ublue-os/bazzite-arch --name bazzite-arch -Y
-            echo "Exporting Steam from bazzite-arch distrobox."
-            distrobox-enter -n bazzite-arch -- distrobox-export --app steam
+            echo "Creating steambox distrobox."
+            distrobox-create --unshare-netns --nvidia --image ghcr.io/ublue-os/steambox --name steambox -Y
+            echo "Exporting Steam from steambox distrobox."
+            distrobox-enter -n steambox -- distrobox-export --app steam
             ;;
     esac
 

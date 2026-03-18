@@ -23,13 +23,12 @@ install-steam:
     echo "Please select a method to install Steam:"
     echo "    1) Flatpak - Install the Steam flatpak from flathub-unverified (Recommended for most users)" | fold -s
     echo "    2) Distrobox - Install Steam via the bazzite-arch distrobox image (Recommended for SteamVR users)" | fold -s
-    while [[ "$valid_input" == "0" ]]; do
+    while true; do
         read -rp "Selection (1 or 2): " method_selection
-        if [[ "$method_selection" == "1" || "$method_selection" == "2" ]]; then
-            valid_input="1"
-        else
-            echo "That is not a valid selection."
-        fi
+        case "$method_selection" in
+            1|2) break ;;
+            *) echo "That is not a valid selection." ;;
+        esac
     done
 
     echo "" # blank space

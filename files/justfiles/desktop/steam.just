@@ -18,7 +18,6 @@ install-steam:
             need_reboot=true
         fi
     fi
-    valid_input="0"
     method_selection=""
     echo "Please select a method to install Steam:"
     echo "    1) Flatpak - Install the Steam flatpak from flathub-unverified (Recommended for most users)" | fold -s

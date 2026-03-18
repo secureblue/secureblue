@@ -102,7 +102,7 @@ install-steam:
         fi
     fi
 
-    if $need_reboot; then
+    if [[ "$need_reboot" == true ]]; then
         echo "One or more of the changes made necessitates a reboot."
         echo "Steam will not work until you reboot."
         reboot_now=""

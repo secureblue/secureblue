@@ -9,5 +9,5 @@ set -euo pipefail
 echo "Disabling systemd sshd vsock socket"
 
 # For more info, see https://blog.nsrun.io/2026/01/15/systemd-vsock-openssh-server/
-systemctl disable sshd-vsock.socket
-systemctl mask sshd-vsock.socket
+systemctl disable sshd-vsock.socket 2>/dev/null || true
+systemctl mask sshd-vsock.socket 2>/dev/null || true

@@ -42,7 +42,7 @@ interface(`nautilus_domtrans',`
 interface(`nautilus_run',`
 	gen_require(`
 		type nautilus_t;
-        attribute_role nautilus_roles;
+		attribute_role nautilus_roles;
 	')
 
 	nautilus_domtrans($1)

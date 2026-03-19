@@ -1,5 +1,9 @@
 #!/usr/bin/env python3
 
+# SPDX-FileCopyrightText: Copyright 2025-2026 The Secureblue Authors
+#
+# SPDX-License-Identifier: Apache-2.0
+
 """
 Run this script to update POT and PO files to reflect source code changes.
 """
@@ -7,17 +11,17 @@ Run this script to update POT and PO files to reflect source code changes.
 import glob
 import json
 import os
-import subprocess  # nosec
+import subprocess
 import sys
 from typing import Final
 
-COPYRIGHT_HEADER: Final[bytes] = b"""\
+COPYRIGHT_HEADER: Final[str] = """\
 # SPDX-FileCopyrightText: Copyright 2025-2026 The Secureblue Authors
 #
 # SPDX-License-Identifier: Apache-2.0
 """
 
-DEFAULT_COPYRIGHT_HEADER: Final[bytes] = b"""\
+DEFAULT_COPYRIGHT_HEADER: Final[str] = """\
 # SOME DESCRIPTIVE TITLE.
 # Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
 # This file is distributed under the same license as the PACKAGE package.
@@ -26,15 +30,25 @@ DEFAULT_COPYRIGHT_HEADER: Final[bytes] = b"""\
 
 SOURCE_FILES_PATH: Final[str] = "files/po/po-source-files.json"
 
+# This is the locale used for translatable strings in the repo.
+LOCALE: Final[str] = "en_US.UTF-8"
 
-def command_stdout(*args: str) -> bytes:
+# Reference for locale environment variables:
+# https://www.gnu.org/software/gettext/manual/html_node/Locale-Environment-Variables.html
+# `msginit` requires this to be set to work properly.
+os.environ["LC_MESSAGES"] = LOCALE
+os.environ["LANG"] = LOCALE
+os.environ.pop("LANGUAGE", None)
+os.environ.pop("LC_ALL", None)
+
+
+def command_stdout(*args: str) -> str:
     """Run a command in the shell and return the contents of stdout."""
-    # We only call this with trusted inputs and do not set shell=True.
-    # nosemgrep: dangerous-subprocess-use-audit
-    return subprocess.run(args, check=True, capture_output=True).stdout.strip()  # nosec
+    return subprocess.run(args, check=True, capture_output=True, text=True).stdout.rstrip("\n")
 
 
-os.chdir(os.path.dirname(sys.argv[0]))
+script_path = os.path.abspath(os.path.dirname(sys.argv[0]))
+os.chdir(script_path)
 git_root = command_stdout("git", "rev-parse", "--show-toplevel")
 os.chdir(git_root)
 
@@ -45,15 +59,15 @@ for domain, source_files in domain_map.items():
     pot_path = f"files/po/{domain}.pot"
     pot_contents = command_stdout("xgettext", "-d", domain, "-o", "-", *source_files)
     pot_contents = pot_contents.replace(DEFAULT_COPYRIGHT_HEADER, COPYRIGHT_HEADER, 1)
-    if not pot_contents.endswith(b"\n"):
-        pot_contents += b"\n"
-    with open(pot_path, "wb") as f:
+    if not pot_contents.endswith("\n"):
+        pot_contents += "\n"
+    with open(pot_path, "w", encoding="utf8") as f:
         f.write(pot_contents)
 
     for po_path in glob.iglob(f"files/po/*/{glob.escape(domain)}.po"):
         if po_path.startswith("files/po/en/"):
             subprocess.run(
                 ["msginit", "-i", pot_path, "-o", po_path, "--no-translator"], check=True
-            )  # nosec
+            )
         else:
-            subprocess.run(["msgmerge", "--backup=none", "--update", po_path, pot_path], check=True)  # nosec
+            subprocess.run(["msgmerge", "--backup=none", "--update", po_path, pot_path], check=True)

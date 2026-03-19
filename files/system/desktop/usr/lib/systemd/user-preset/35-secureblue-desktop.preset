@@ -1,5 +1,14 @@
+# SPDX-FileCopyrightText: Copyright 2025-2026 The Secureblue Authors
+#
+# SPDX-License-Identifier: Apache-2.0
+
 enable flatpak-user-update.timer
+enable secureblue-firmware-check.timer
 enable secureblue-flatpak-setup.timer
 enable secureblue-key-enrollment-verification.timer
 enable secureblue-update-verification.timer
 enable security-update-notification.path
+
+# Homebrew
+enable brew-update.timer
+enable brew-upgrade.timer

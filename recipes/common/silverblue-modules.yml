@@ -4,11 +4,10 @@
 
 modules:
     - type: dnf
-      source: ghcr.io/blue-build/modules@sha256:8e92fcaaef385a1728b8d8224296484260b67126ac83f7ed85b4ae3dde4ad19d
+      source: ghcr.io/blue-build/modules@sha256:23b9c9a2032ac653bf6a73a3b9372c12004211e004eea4269a8d3da9001c2301
       install:
         install-weak-deps: false
         packages:
-          - firewall-config
           - gnome-disk-utility
           - adw-gtk3-theme
           - gnome-tweaks
@@ -26,26 +25,27 @@ modules:
           - gnome-remote-desktop
           - libvncserver
           - fedora-chromium-config-gnome
-          - gnome-software-rpm-ostree
+          - gnome-software
+          - epiphany-runtime
           - totem-video-thumbnailer
           - fedora-flathub-remote
           - fedora-third-party
           - fedora-workstation-repositories
     - type: gschema-overrides
-      source: ghcr.io/blue-build/modules@sha256:8e92fcaaef385a1728b8d8224296484260b67126ac83f7ed85b4ae3dde4ad19d
+      source: ghcr.io/blue-build/modules@sha256:23b9c9a2032ac653bf6a73a3b9372c12004211e004eea4269a8d3da9001c2301
       include:
         - zz1-secureblue.gschema.override
     - type: script
-      source: ghcr.io/blue-build/modules@sha256:8e92fcaaef385a1728b8d8224296484260b67126ac83f7ed85b4ae3dde4ad19d
+      source: ghcr.io/blue-build/modules@sha256:23b9c9a2032ac653bf6a73a3b9372c12004211e004eea4269a8d3da9001c2301
       scripts:
         - removedkmshelper.sh
     - type: files
-      source: ghcr.io/blue-build/modules@sha256:8e92fcaaef385a1728b8d8224296484260b67126ac83f7ed85b4ae3dde4ad19d
+      source: ghcr.io/blue-build/modules@sha256:23b9c9a2032ac653bf6a73a3b9372c12004211e004eea4269a8d3da9001c2301
       files:
         - source: system/silverblue
           destination: /
     - type: justfiles
-      source: ghcr.io/blue-build/modules@sha256:8e92fcaaef385a1728b8d8224296484260b67126ac83f7ed85b4ae3dde4ad19d
+      source: ghcr.io/blue-build/modules@sha256:23b9c9a2032ac653bf6a73a3b9372c12004211e004eea4269a8d3da9001c2301
       validate: true
       include:
         - silverblue.just

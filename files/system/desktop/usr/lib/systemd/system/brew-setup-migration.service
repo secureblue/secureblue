@@ -1,0 +1,16 @@
+# SPDX-FileCopyrightText: Copyright 2026 The Secureblue Authors
+#
+# SPDX-License-Identifier: Apache-2.0
+
+[Unit]
+Description=Homebrew setup migration
+Wants=multi-user.target
+After=multi-user.target
+ConditionPathExists=/etc/.linuxbrew
+ConditionPathExists=/etc/tmpfiles.d/homebrew.conf
+
+[Service]
+ExecStart=rm -f /etc/tmpfiles.d/homebrew.conf /etc/.linuxbrew
+
+[Install]
+WantedBy=multi-user.target

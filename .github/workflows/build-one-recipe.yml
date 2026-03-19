@@ -14,6 +14,10 @@ on:
         type: boolean
         required: false
         default: false
+      clear-plan:
+        type: boolean
+        required: false
+        default: false
     secrets:
       SIGNING_SECRET:
         required: true
@@ -38,7 +42,7 @@ jobs:
       id-token: write # Needed for token generation for signing
     steps:
       - name: Enable egress auditing
-        uses: step-security/harden-runner@20cf305ff2072d973412fa9b1e3a4f227bda3c76 # v2.14.0
+        uses: step-security/harden-runner@58077d3c7e43986b6b15fba718e8ea69e387dfcc # v2.15.1
         with:
           egress-policy: block
           allowed-endpoints: >
@@ -110,60 +114,69 @@ jobs:
 
             # Fedora mirrors
             # https://mirrors.fedoraproject.org/mirrorlist?repo=fedora-43&arch=x86_64&protocol=https
-            mirrors.fedoraproject.org:443
-            download-cc-rdu01.fedoraproject.org:443
+            abqix.mm.fcix.net:443
+            cfhcable.mm.fcix.net:443
+            codingflyboy.mm.fcix.net:443
+            cofractal-ewr.mm.fcix.net:443
+            cofractal-sea.mm.fcix.net:443
+            coresite-atl.mm.fcix.net:443
+            coresite.mm.fcix.net:443
+            d2lzkl7pfhq30w.cloudfront.net:443
+            dfw.mirror.rackspace.com:443
             dl.fedoraproject.org:443
-            solidrock.mm.fcix.net:443
-            ftp-chi.osuosl.org:443
-            mirror.lstn.net:80
-            paducahix.mm.fcix.net:443
+            download-cc-rdu01.fedoraproject.org:443
+            download-ib01.fedoraproject.org:443
+            fedora-mirror-atl.gigsouth.com:443
             fedora.mirror.constant.com:443
-            volico.mm.fcix.net:443
-            ziply.mm.fcix.net:443
-            opencolo.mm.fcix.net:443
+            forksystems.mm.fcix.net:443
+            ftp2.osuosl.org:443
+            ftp-chi.osuosl.org:443
             ftp-nyc.osuosl.org:443
+            ftp-osl.osuosl.org:443
+            gigsouth.mm.fcix.net:443
+            iad.mirror.rackspace.com:443
+            insect.mm.fcix.net:443
+            irltoolkit.mm.fcix.net:443
+            ix-denver.mm.fcix.net:443
+            lesnet.mm.fcix.net:443
+            lolhost.mm.fcix.net:443
+            mirror.cpsc.ucalgary.ca:443
+            mirror.csclub.uwaterloo.ca:443
+            mirror.cs.princeton.edu:443
+            mirror.cs.siue.edu:443
+            mirror.dst.ca:443
+            mirror.fcix.net:443
+            mirror.lstn.net:443
+            mirror.math.princeton.edu:443
+            mirror.servaxnet.com:443
+            mirrors.fedoraproject.org:443
+            mirrors.mit.edu:443
+            mirrors.xmission.com:443
+            mirror.us.mirhosting.net:443
+            mirror.web-ster.com:443
+            mirror.xenyth.net:443
+            muug.ca:443
+            na.edge.kernel.org:443
+            nnenix.mm.fcix.net:443
             nocix.mm.fcix.net:443
             ohioix.mm.fcix.net:443
-            southfront.mm.fcix.net:443
-            forksystems.mm.fcix.net:443
-            ix-denver.mm.fcix.net:443
-            irltoolkit.mm.fcix.net:443
-            insect.mm.fcix.net:443
-            cofractal-sea.mm.fcix.net:443
-            mirror.fcix.net:443
-            gigsouth.mm.fcix.net:443
-            nnenix.mm.fcix.net:443
-            coresite-atl.mm.fcix.net:443
-            mirror.servaxnet.com:443
-            mirrors.mit.edu:443
-            mirror.us.mirhosting.net:443
-            cofractal-ewr.mm.fcix.net:443
-            download-ib01.fedoraproject.org:443
-            d2lzkl7pfhq30w.cloudfront.net:443
-            ftp-osl.osuosl.org:443
-            na.edge.kernel.org:443
-            codingflyboy.mm.fcix.net:443
-            mirror.web-ster.com:443
+            opencolo.mm.fcix.net:443
+            ord.mirror.rackspace.com:443
+            paducahix.mm.fcix.net:443
+            paducahix.mm.fcix.net:443
             pubmirror1.math.uh.edu:443
             pubmirror2.math.uh.edu:443
             pubmirror3.math.uh.edu:443
-            lolhost.mm.fcix.net:443
-            mirror.lstn.net:443
-            abqix.mm.fcix.net:443
-            mirror.cs.siue.edu:443
             ryamer.mm.fcix.net:443
-            coresite.mm.fcix.net:443
-            mirrors.xmission.com:443
-            fedora-mirror-atl.gigsouth.com:443
-            cfhcable.mm.fcix.net:443
-            ord.mirror.rackspace.com:443
-            mirror.dst.ca:443
             sjc.mirror.rackspace.com:443
-            dfw.mirror.rackspace.com:443
-            iad.mirror.rackspace.com:443
-            lesnet.mm.fcix.net:443
-            ftp2.osuosl.org:443
+            solidrock.mm.fcix.net:443
+            southfront.mm.fcix.net:443
+            stix.mm.fcix.net:443
             us.mirrors.cicku.me:443
+            volico.mm.fcix.net:443
+            yxeix.mm.fcix.net:443
+            yycix.mm.fcix.net:443
+            ziply.mm.fcix.net:443
 
       - name: Checkout repo
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
@@ -181,26 +194,31 @@ jobs:
         shell: bash
         env:
           rechunk: ${{ inputs.rechunk }}
+          input_clear_plan: ${{ inputs.clear-plan }}
           FULL_IMAGE_REF: ${{ steps.runner_setup.outputs.FULL_IMAGE_REF }}
         run: |
           clear_plan='false'
-          if [[ "$rechunk" == 'true' ]]; then
-            # Clear previous layer plan only on the first build of each month.
-            current_month=$(date -u '+%Y-%m')
-            previous_build_created=$(skopeo inspect -n "docker://${FULL_IMAGE_REF}" | jq -cr '.Created')
-            previous_build_month=$(date -u -d "$previous_build_created" '+%Y-%m')
-            if [[ "$previous_build_month" != "$current_month" ]]; then
-              clear_plan='true'
+          if [[ "$input_clear_plan" == 'true' ]]; then
+            clear_plan='true'
+          elif [[ "$rechunk" == 'true' ]]; then
+            previous_build_created=$(skopeo inspect -n "docker://${FULL_IMAGE_REF}" 2>/dev/null | jq -cr '.Created' || echo "")
+            if [[ -n "$previous_build_created" ]]; then
+              # Clear previous layer plan only on the first build of each month.
+              current_month=$(date -u '+%Y-%m')
+              previous_build_month=$(date -u -d "$previous_build_created" '+%Y-%m')
+              if [[ "$previous_build_month" != "$current_month" ]]; then
+                clear_plan='true'
+              fi
             fi
           fi
           echo "clear_plan=${clear_plan}" >> "${GITHUB_OUTPUT}"
 
       - name: Build secureblue
-        uses: blue-build/github-action@3cd0c2835e691b87a7eb19261a6aee77a56169e2 # v1.11.0
+        uses: blue-build/github-action@24d146df25adc2cf579e918efe2d9bff6adea408 # v1.11.1
         env:
           KERNEL_PRIVKEY: ${{ secrets.KERNEL_PRIVKEY }}
         with:
-          cli_version: v0.9.30
+          cli_version: v0.9.32
           recipe: ${{ inputs.recipe }}
           cosign_private_key: ${{ secrets.SIGNING_SECRET }}
           registry_token: ${{ github.token }}

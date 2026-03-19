@@ -16,35 +16,35 @@ concurrency:
 jobs:
   update-po:
     name: Update PO files
-    runs-on: ubuntu-slim
+    runs-on: ubuntu-24.04
+    environment: Create_PR
     permissions:
       contents: write  # needed to create branch
       pull-requests: write  # needed to create pull request
 
     steps:
-      - name: Optimize build times
-        shell: bash
-        run: |
-          echo 'set man-db/auto-update false' | sudo debconf-communicate
-          sudo dpkg-reconfigure man-db
-          sudo rm -f /var/lib/man-db/auto-update
-          sudo sed -i 's/^update_initramfs=.*/update_initramfs=no/' /etc/initramfs-tools/update-initramfs.conf
-
       - name: Install gettext
         shell: bash
         run: |
-          sudo apt-get install gettext
+          sudo apt update
+          sudo apt install gettext
 
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd  # v6.0.2
         with:
-          persist-credentials: true  # zizmor: ignore[artipacked]
+          persist-credentials: false
 
       - name: Update PO files
         shell: bash
         run: |
           python3 files/po/update_po.py
 
-      - uses: peter-evans/create-pull-request@98357b18bf14b5342f975ff684046ec3b2a07725  # v8.0.0
+      - uses: actions/create-github-app-token@f8d387b68d61c58ab83c6c016672934102569859 # v3.0.0
+        id: app-token
+        with:
+          app-id: ${{ vars.APP_ID }}
+          private-key: ${{ secrets.PRIVATE_KEY }}
+
+      - uses: peter-evans/create-pull-request@c0f553fe549906ede9cf27b5156039d195d2ece0  # v8.1.0
         with:
           add-paths: |
             files/po/*.pot
@@ -53,6 +53,7 @@ jobs:
           branch: create-pull-request/update-po
           sign-commits: true
           title: 'chore(i18n): update PO files'
+          token: ${{ steps.app-token.outputs.token }}
           body: |
             Automatically update POT and PO files by running the script `files/po/update_po.py`.
 

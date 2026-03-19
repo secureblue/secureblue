@@ -105,9 +105,8 @@ else
   echo "TPM2 already present in initramfs."
 fi
 
-## Now reboot
 echo
-echo "TPM2 LUKS unlock configured. Reboot now."
+echo "TPM2 LUKS unlock configured."
 
 
 # References:

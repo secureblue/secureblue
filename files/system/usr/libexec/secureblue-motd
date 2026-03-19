@@ -1,0 +1,69 @@
+#!/usr/bin/bash
+
+# SPDX-FileCopyrightText: Copyright 2025 Universal Blue
+# SPDX-FileCopyrightText: Copyright 2025-2026 The Secureblue Authors
+#
+# SPDX-License-Identifier: Apache-2.0
+
+set -euo pipefail
+
+rpm_ostree_status=$(rpm-ostree status --json --booted)
+full_image_ref=$(jq -cr '.deployments[0]."container-image-reference"' <<<"$rpm_ostree_status")
+image_ref_name=${full_image_ref##*/}
+if [[ "$image_ref_name" == *hardened:* ]]; then
+    image_tag=${image_ref_name##*:}
+else
+    image_tag=''
+fi
+
+image_date=$(jq -cr '.deployments[0].timestamp' <<<"$rpm_ostree_status")
+current_seconds=$(date +%s)
+difference=$((current_seconds - image_date))
+week=$((7 * 24 * 60 * 60))
+
+is_deprecated=$(jq -cr --arg 'image' "$image_ref_name" '.imageTypes | any(inside($image))' /usr/libexec/deprecated-images.json)
+
+reset=$'\e[0m'
+bold=$'\e[1m'
+slight_red=$'\e[48;2;48;48;48m\e[38;2;245;86;71m'
+link=$'\e[38;2;23;118;122m'
+header=$'\e[1;38;5;228m\e[48;5;63m'
+
+tip=''
+if [[ "$is_deprecated" == 'true' ]]; then
+    tip="${bold}You are on a deprecated image, rebase: ${reset}${link}https://github.com/secureblue/secureblue/blob/live/files/system/usr/libexec/deprecated-images.json.md${reset}"
+elif mokutil --list-enrolled --short >/dev/null 2>&1 && ! mokutil --list-enrolled --short | grep -Fq 'secureblue secureboot key'; then
+    tip="${bold}Secure Boot key is not enrolled! Run ${reset}${slight_red} ujust enroll-secureblue-secure-boot-key ${reset}${bold} to resolve this issue. More information: ${reset}${link}https://secureblue.dev/faq#new-key${reset}"
+elif [[ -z "$image_tag" ]]; then
+    tip="${bold}You are missing an image tag, which is unsupported by secureblue. Rebase to the ${reset}${slight_red} latest ${reset}${bold} tag to ensure you continue to receive updates.${reset}"
+elif [[ "$image_tag" != "latest" ]]; then
+    tip="${bold}You are on a specific tag, which is unsupported by secureblue. Rebase to the ${reset}${slight_red} latest ${reset}${bold} tag to ensure you continue to receive updates.${reset}"
+elif (( difference >= week )); then
+    tip="${bold}Your current image is over 1 week old, run ${reset}${slight_red} ujust update-system ${reset}${reset}"
+fi
+
+cat << EOF
+
+  ${header} Welcome to secureblue! ${reset}
+
+  Your image is: ${slight_red} ${image_ref_name} ${reset}
+
+   >. Command                    │ Description
+  ───────────────────────────────┼────────────────────────────────────────────
+   ${slight_red} ujust --choose ${reset}              │ List all available commands
+   ${slight_red} ujust toggle-user-motd ${reset}      │ Toggle this banner on/off
+   ${slight_red} brew help ${reset}                   │ Manage command line packages
+EOF
+if [[ -n "$tip" ]]; then
+    echo
+    echo -e "  ${tip}"
+fi
+cat << EOF
+
+  • ${bold}Release notifications:${reset} ${link}https://secureblue.dev/faq#release${reset}
+  • ${bold}Report an issue:${reset} ${link}https://github.com/secureblue/secureblue/issues${reset}
+  • ${bold}FAQ:${reset} ${link}https://secureblue.dev/faq${reset}
+  • ${bold}Donate:${reset} ${link}https://secureblue.dev/donate${reset}
+  • ${bold}Discord:${reset} ${link}https://discord.gg/qMTv5cKfbF${reset}
+
+EOF

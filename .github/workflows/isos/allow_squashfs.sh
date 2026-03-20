@@ -10,4 +10,6 @@ sed -i '/^install squashfs \/bin\/false$/d' /usr/lib/modprobe.d/secureblue.conf
 
 systemctl disable bootloader-update.service
 dnf remove -y google-noto-fonts-all
+dnf install -y fedora-logos secureblue-logos
 dnf install -y anaconda-live libblockdev-btrfs
+dnf reinstall -y polkit 

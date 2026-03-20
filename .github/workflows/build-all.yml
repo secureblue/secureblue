@@ -115,6 +115,8 @@ jobs:
     uses: ./.github/workflows/build-one-recipe.yml
     with:
       recipe: ${{ matrix.recipe }}
+      rechunk: true
+      clear-plan: ${{ inputs.clear-plan || false }}
     secrets:
       SIGNING_SECRET: ${{ secrets.SIGNING_SECRET }}
       KERNEL_PRIVKEY: ${{ secrets.KERNEL_PRIVKEY }}
@@ -137,6 +139,8 @@ jobs:
     uses: ./.github/workflows/build-one-recipe.yml
     with:
       recipe: ${{ matrix.recipe }}
+      rechunk: true
+      clear-plan: ${{ inputs.clear-plan || false }}
     secrets:
       SIGNING_SECRET: ${{ secrets.SIGNING_SECRET }}
       KERNEL_PRIVKEY: ${{ secrets.KERNEL_PRIVKEY }}
@@ -159,6 +163,8 @@ jobs:
     uses: ./.github/workflows/build-one-recipe.yml
     with:
       recipe: ${{ matrix.recipe }}
+      rechunk: true
+      clear-plan: ${{ inputs.clear-plan || false }}
     secrets:
       SIGNING_SECRET: ${{ secrets.SIGNING_SECRET }}
       KERNEL_PRIVKEY: ${{ secrets.KERNEL_PRIVKEY }}
@@ -181,6 +187,8 @@ jobs:
     uses: ./.github/workflows/build-one-recipe.yml
     with:
       recipe: ${{ matrix.recipe }}
+      rechunk: true
+      clear-plan: ${{ inputs.clear-plan || false }}
     secrets:
       SIGNING_SECRET: ${{ secrets.SIGNING_SECRET }}
       KERNEL_PRIVKEY: ${{ secrets.KERNEL_PRIVKEY }}
@@ -220,6 +228,8 @@ jobs:
     uses: ./.github/workflows/build-one-recipe.yml
     with:
       recipe: ${{ matrix.recipe }}
+      rechunk: true
+      clear-plan: ${{ inputs.clear-plan || false }}
     secrets:
       SIGNING_SECRET: ${{ secrets.SIGNING_SECRET }}
       KERNEL_PRIVKEY: ${{ secrets.KERNEL_PRIVKEY }}
@@ -236,6 +246,8 @@ jobs:
     uses: ./.github/workflows/build-one-recipe.yml
     with:
       recipe: securecore/recipe-securecore-zfs-main.yml
+      rechunk: true
+      clear-plan: ${{ inputs.clear-plan || false }}
     secrets:
       SIGNING_SECRET: ${{ secrets.SIGNING_SECRET }}
       KERNEL_PRIVKEY: ${{ secrets.KERNEL_PRIVKEY }}
@@ -258,6 +270,8 @@ jobs:
     uses: ./.github/workflows/build-one-recipe.yml
     with:
       recipe: ${{ matrix.recipe }}
+      rechunk: true
+      clear-plan: ${{ inputs.clear-plan || false }}
     secrets:
       SIGNING_SECRET: ${{ secrets.SIGNING_SECRET }}
       KERNEL_PRIVKEY: ${{ secrets.KERNEL_PRIVKEY }}
@@ -297,6 +311,8 @@ jobs:
     uses: ./.github/workflows/build-one-recipe.yml
     with:
       recipe: ${{ matrix.recipe }}
+      rechunk: true
+      clear-plan: ${{ inputs.clear-plan || false }}
     secrets:
       SIGNING_SECRET: ${{ secrets.SIGNING_SECRET }}
       KERNEL_PRIVKEY: ${{ secrets.KERNEL_PRIVKEY }}
@@ -313,6 +329,8 @@ jobs:
     uses: ./.github/workflows/build-one-recipe.yml
     with:
       recipe: iot/recipe-iot-zfs-main.yml
+      rechunk: true
+      clear-plan: ${{ inputs.clear-plan || false }}
     secrets:
       SIGNING_SECRET: ${{ secrets.SIGNING_SECRET }}
       KERNEL_PRIVKEY: ${{ secrets.KERNEL_PRIVKEY }}
@@ -327,7 +345,7 @@ jobs:
       packages: write # Needed to publish images
       id-token: write # Needed for token generation for signing
     strategy:
-      fail-fast: false 
+      fail-fast: false
       matrix:
         recipe:
           - iot/recipe-iot-zfs-nvidia.yml
@@ -335,6 +353,8 @@ jobs:
     uses: ./.github/workflows/build-one-recipe.yml
     with:
       recipe: ${{ matrix.recipe }}
+      rechunk: true
+      clear-plan: ${{ inputs.clear-plan || false }}
     secrets:
       SIGNING_SECRET: ${{ secrets.SIGNING_SECRET }}
       KERNEL_PRIVKEY: ${{ secrets.KERNEL_PRIVKEY }}

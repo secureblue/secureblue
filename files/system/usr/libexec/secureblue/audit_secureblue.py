@@ -52,7 +52,9 @@ from utils import (
     booted_image_ref,
     command_stdout,
     command_succeeds,
+    is_module_loaded,
     is_using_vpn,
+    loaded_kernel_modules,
     parse_config,
     print_err,
 )
@@ -177,11 +179,8 @@ def audit_modprobe(state):
             if words and words[0] in ("blacklist", "install"):
                 blocked_modules.append(words[1])
     unwanted_modules = []
-    with open("/proc/modules", encoding="utf-8") as f:
-        for line in f:
-            mod = line.split(maxsplit=1)[0]
-            if mod in blocked_modules:
-                unwanted_modules.append(mod)
+    loaded_modules = loaded_kernel_modules()
+    unwanted_modules = [mod for mod in blocked_modules if mod in loaded_modules]
     unwanted_modules.sort()
     status = PASS
     notes = []

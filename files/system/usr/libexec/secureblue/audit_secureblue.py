@@ -209,7 +209,7 @@ def audit_ptrace(state):
             status = PASS
             rec = None
         case 2:
-            status = WARN
+            status = INFO
             rec_lines = [
                 _("ptrace is allowed, but only for privileged users ({0}).").format(
                     f"ptrace_scope = {ptrace_scope}"

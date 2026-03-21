@@ -38,6 +38,12 @@ jobs:
         run: |
           python3 files/po/update_po.py
 
+      - uses: actions/create-github-app-token@f8d387b68d61c58ab83c6c016672934102569859 # v3.0.0
+        id: app-token
+        with:
+          app-id: ${{ vars.APP_ID }}
+          private-key: ${{ secrets.PRIVATE_KEY }}
+
       - uses: peter-evans/create-pull-request@c0f553fe549906ede9cf27b5156039d195d2ece0  # v8.1.0
         with:
           add-paths: |
@@ -47,7 +53,7 @@ jobs:
           branch: create-pull-request/update-po
           sign-commits: true
           title: 'chore(i18n): update PO files'
-          token: ${{ secrets.CREATE_PR_TOKEN }}
+          token: ${{ steps.app-token.outputs.token }}
           body: |
             Automatically update POT and PO files by running the script `files/po/update_po.py`.
 

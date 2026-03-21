@@ -1150,7 +1150,16 @@ def audit_webcam_module():
     try:
         with open(webcam_mod_file, encoding="utf-8") as f:
             if f.read().strip() == "install uvcvideo /bin/false":
-                status = PASS
+                if is_module_loaded("uvcvideo"):
+                    status = INFO
+                    rec_lines = [
+                        _("Webcam module is blacklisted in {0} but is still enabled.").format(
+                            webcam_mod_file
+                        ),
+                        _("To disable it, you must reboot."),
+                    ]
+                else:
+                    status = PASS
     except FileNotFoundError:
         status = INFO
         rec_lines = [
@@ -1158,10 +1167,12 @@ def audit_webcam_module():
             _("To disable it, run:"),
             "$ ujust set-webcam-modules off",
         ]
-        rec = "\n".join(rec_lines)
-        note = Note(_("Webcam module is enabled."), INFO)
     except PermissionError:
         note = Note(_("Unable to read file {0}.").format(webcam_mod_file), UNKNOWN)
+
+    if status == INFO:
+        rec = "\n".join(rec_lines)
+        note = Note(_("Webcam module is enabled."), INFO)
 
     yield Report(_("Checking whether webcam module is disabled"), status, notes=note, recs=rec)
 

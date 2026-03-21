@@ -1156,7 +1156,7 @@ def audit_webcam_module():
         rec_lines = [
             _("Webcam module is enabled."),
             _("To disable it, run:"),
-            "$ ujust disable-webcam",
+            "$ ujust set-webcam-modules off",
         ]
         rec = "\n".join(rec_lines)
         note = Note(_("Webcam module is enabled."), INFO)

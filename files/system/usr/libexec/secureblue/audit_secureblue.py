@@ -52,7 +52,9 @@ from utils import (
     booted_image_ref,
     command_stdout,
     command_succeeds,
+    is_module_loaded,
     is_using_vpn,
+    loaded_kernel_modules,
     parse_config,
     print_err,
 )
@@ -177,11 +179,8 @@ def audit_modprobe(state):
             if words and words[0] in ("blacklist", "install"):
                 blocked_modules.append(words[1])
     unwanted_modules = []
-    with open("/proc/modules", encoding="utf-8") as f:
-        for line in f:
-            mod = line.split(maxsplit=1)[0]
-            if mod in blocked_modules:
-                unwanted_modules.append(mod)
+    loaded_modules = loaded_kernel_modules()
+    unwanted_modules = [mod for mod in blocked_modules if mod in loaded_modules]
     unwanted_modules.sort()
     status = PASS
     notes = []
@@ -1151,18 +1150,29 @@ def audit_webcam_module():
     try:
         with open(webcam_mod_file, encoding="utf-8") as f:
             if f.read().strip() == "install uvcvideo /bin/false":
-                status = PASS
+                if is_module_loaded("uvcvideo"):
+                    status = INFO
+                    rec_lines = [
+                        _("Webcam module is blacklisted in {0} but is still enabled.").format(
+                            webcam_mod_file
+                        ),
+                        _("To disable it, you must reboot."),
+                    ]
+                else:
+                    status = PASS
     except FileNotFoundError:
         status = INFO
         rec_lines = [
             _("Webcam module is enabled."),
             _("To disable it, run:"),
-            "$ ujust disable-webcam",
+            "$ ujust set-webcam-modules off",
         ]
-        rec = "\n".join(rec_lines)
-        note = Note(_("Webcam module is enabled."), INFO)
     except PermissionError:
         note = Note(_("Unable to read file {0}.").format(webcam_mod_file), UNKNOWN)
+
+    if status == INFO:
+        rec = "\n".join(rec_lines)
+        note = Note(_("Webcam module is enabled."), INFO)
 
     yield Report(_("Checking whether webcam module is disabled"), status, notes=note, recs=rec)
 

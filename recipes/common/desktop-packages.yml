@@ -54,7 +54,6 @@ remove:
   packages:
     - firefox
     - firefox-langpacks
-    - fuse
     - passim
     - fedora-chromium-config
 replace:

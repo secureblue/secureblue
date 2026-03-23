@@ -28,7 +28,6 @@ password_policies =
         root (quality 100, length 15)
         user (quality 50, length 15)
         luks (quality 100, length 20)
-webui_web_engine = trivalent
 EOF
 
 sed -i 's/ DISPLAY=$DISPLAY//' /usr/libexec/anaconda/webui-desktop

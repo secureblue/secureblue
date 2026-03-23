@@ -44,7 +44,7 @@ def main() -> int:
             check=False
         )
         if result.returncode != 0:
-            print("couldn't delete administrator user.")
+            print("Failed to delete newly created user.")
 
         return 1
 

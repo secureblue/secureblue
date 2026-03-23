@@ -31,3 +31,4 @@ EOF
 
 sed -i 's/ DISPLAY=$DISPLAY//' /usr/libexec/anaconda/webui-desktop
 sed -i 's/pkexec/run0/g' /usr/libexec/anaconda/webui-desktop
+sed -i 's/pkexec/run0/g' /usr/bin/liveinst

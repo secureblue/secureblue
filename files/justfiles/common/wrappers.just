@@ -21,6 +21,12 @@ set-bluetooth-modules *args:
     #!/bin/sh
     exec /usr/bin/python3 /usr/libexec/secureblue/bluetooth_main.py "$@"
 
+# Sets webcam kernel modules on/off (requires reboot)
+[positional-arguments]
+set-webcam-modules *args:
+    #!/bin/sh
+    exec /usr/bin/python3 /usr/libexec/secureblue/webcam_main.py "$@"
+
 # Interactively select secure DNS servers
 [positional-arguments]
 dns-selector *args:

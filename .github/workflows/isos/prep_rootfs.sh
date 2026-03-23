@@ -12,8 +12,9 @@ systemctl disable bootloader-update.service
 systemctl disable rpm-ostree-countme.service
 
 dnf remove -y google-noto-fonts-all homebrew
-dnf install -y fedora-logos secureblue-logos
+dnf install -y secureblue-logos
 dnf install -y anaconda-live libblockdev-btrfs 
+dnf install -y firefox
 dnf reinstall -y polkit
 
 systemctl disable --global secureblue-flatpak-setup.service
@@ -31,3 +32,4 @@ webui_web_engine = trivalent
 EOF
 
 sed -i 's/ DISPLAY=$DISPLAY//' /usr/libexec/anaconda/webui-desktop
+rm /usr/share/applications/org.mozilla.Firefox.desktop

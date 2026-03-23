@@ -69,7 +69,7 @@ jobs:
         uses: RoyalOughtness/titanoboa@main
         with:
           image-ref: ${{ env.IMAGE_REF }}
-          hook-post-rootfs: ${{ github.workspace }}/.github/workflows/isos/allow_squashfs.sh
+          hook-post-rootfs: ${{ github.workspace }}/.github/workflows/isos/prep_rootfs.sh
           hook-pre-initramfs: ${{ github.workspace }}/.github/workflows/isos/prep_initramfs.sh
 
       - name: Rename ISO

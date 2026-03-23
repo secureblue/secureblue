@@ -13,7 +13,8 @@ systemctl disable rpm-ostree-countme.service
 
 dnf remove -y google-noto-fonts-all homebrew
 dnf install -y fedora-logos secureblue-logos
-dnf install -y anaconda-live libblockdev-btrfs
+dnf install -y anaconda-live libblockdev-btrfs 
+dnf reinstall -y polkit
 
 systemctl disable --global secureblue-flatpak-setup.service
 systemctl disable --global secureblue-flatpak-setup.timer
@@ -30,5 +31,3 @@ webui_web_engine = trivalent
 EOF
 
 sed -i 's/ DISPLAY=$DISPLAY//' /usr/libexec/anaconda/webui-desktop
-sed -i 's/pkexec/run0/g' /usr/libexec/anaconda/webui-desktop
-sed -i 's/pkexec/run0/g' /usr/bin/liveinst

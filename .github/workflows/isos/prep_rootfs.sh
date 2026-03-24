@@ -32,6 +32,7 @@ EOF
 
 sed -i 's/ DISPLAY=$DISPLAY//' /usr/libexec/anaconda/webui-desktop
 rm -f /usr/share/applications/org.mozilla.Firefox.desktop
+rm -f /usr/share/applications/org.mozilla.firefox.desktop
 rm -f /usr/share/applications/firefox.desktop
 rm -f /usr/share/applications/firefox-wayland.desktop
 rm -f /usr/share/applications/firefox-x11.desktop

@@ -46,7 +46,7 @@ else
     exit 1
 fi
 
-provenance_file="multiple.intoto.jsonl"
+provenance_file="multiple.${ARCH}.intoto.jsonl"
 curl -fLsS --retry 5 -O "https://github.com/secureblue/Trivalent/releases/download/${trivalent_version}/${provenance_file}"
 
 slsa-verifier verify-artifact \

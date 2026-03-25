@@ -28,6 +28,8 @@ password_policies =
         root (quality 100, length 15)
         user (quality 50, length 15)
         luks (quality 100, length 20)
+hidden_webui_pages =
+    root-password
 EOF
 
 sed -i 's/ DISPLAY=$DISPLAY//' /usr/libexec/anaconda/webui-desktop

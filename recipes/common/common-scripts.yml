@@ -15,7 +15,6 @@ scripts:
   - createmissingdirectories.sh
   - disablegeoclue.sh
   - disable-sshd-vsock.sh
-  - createjustcompletions.sh
   - removefedoraflatpakremoteservice.sh
   - localization.sh
   - installrar.sh

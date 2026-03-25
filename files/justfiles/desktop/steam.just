@@ -86,13 +86,13 @@ install-steam:
         echo "Reboot before running Steam."
         need_reboot=true
     fi
-    echo "Remember: Steam requires 32-bit support; do not set the 'ia32_emulation=0' kernel argument."
+    echo "Remember: Steam requires 32-bit support; do not set the 'ia32_emulation=0' kernel argument." | fold -s
     echo ""
 
     ptrace_scope=$(</proc/sys/kernel/yama/ptrace_scope)
     if (( "$ptrace_scope" > 1 )); then
-        echo "Games with strict anti-cheats, like Easy Anti-Cheat, require ptrace_scope set to 1."
-        echo "Your current ptrace_scope is ${ptrace_scope}, you can change this later by running 'ujust toggle-anticheat-support'."
+        echo "Games with strict anti-cheats, like Easy Anti-Cheat, require ptrace_scope set to 1." | fold -s
+        echo "Your current ptrace_scope is ${ptrace_scope}, you can change this later by running 'ujust toggle-anticheat-support'." | fold -s
         toggle_anticheat=""
         read -rp "Would you like to set ptrace_scope to 1 now? [y/N] " toggle_anticheat
         if [[ "$toggle_anticheat" == [Yy]* ]]; then
@@ -103,8 +103,8 @@ install-steam:
         fi
     elif (( "$method_selection" == 1 )); then
         # ptrace already 1, using flatpak
-        echo "Games with strict anti-cheats, like Easy Anti-Cheat, require Steam to have access to ptrace."
-        echo "Your ptrace_scope is ${ptrace_scope}, you can change this by running 'ujust toggle-anticheat-support'."
+        echo "Games with strict anti-cheats, like Easy Anti-Cheat, require Steam to have access to ptrace." | fold -s
+        echo "Your ptrace_scope is ${ptrace_scope}, you can change this by running 'ujust toggle-anticheat-support'." | fold -s
         read -rp "Would you like to give Steam access to ptrace now? [y/N] " toggle_anticheat
         if [[ "$toggle_anticheat" == [Yy]* ]]; then
             flatpak override --user --allow=devel com.valvesoftware.Steam

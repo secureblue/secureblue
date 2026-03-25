@@ -105,13 +105,19 @@ install-steam:
         # ptrace already 1, using flatpak
         echo "Games with strict anti-cheats, like Easy Anti-Cheat, require Steam to have access to ptrace." | fold -s
         echo "Your ptrace_scope is ${ptrace_scope}, you can change this by running 'ujust toggle-anticheat-support'." | fold -s
-        read -rp "Would you like to give Steam access to ptrace now? [y/N] " toggle_anticheat
+        read -rp "Would you like to grant Steam the 'allow=devel' permission? [Y/n] " toggle_anticheat
+        toggle_anticheat=${toggle_anticheat:-y}
         if [[ "$toggle_anticheat" == [Yy]* ]]; then
             flatpak override --user --allow=devel com.valvesoftware.Steam
         fi
+        if [[ "$toggle_anticheat" == [Nn]* ]]; then
+            flatpak override --user --disallow=devel com.valvesoftware.Steam
+        fi
+        echo "You can change this again later using Flatseal."
     fi
 
     if [[ "$need_reboot" == true ]]; then
+        echo ""
         echo "One or more of the changes made necessitates a reboot."
         echo "Steam will not work until you reboot."
         reboot_now=""

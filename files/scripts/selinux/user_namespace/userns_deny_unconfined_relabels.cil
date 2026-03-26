@@ -3,7 +3,27 @@
 ;; SPDX-License-Identifier: Apache-2.0 OR MIT
 
 (typeattribute userns_privileged_file_type)
-(typeattributeset userns_privileged_file_type (colord_exec_t container_runtime_exec_t devicekit_power_exec_t docker_exec_t file_manager_exec_type flatpak_exec_t kubelet_exec_t systemsettings_exec_t trivalent_exec_t trivalent_script_exec_t))
+(optional colord_userns_privileged_file_type
+    (typeattributeset userns_privileged_file_type (colord_exec_t))
+)
+(optional container_userns_privileged_file_type
+    (typeattributeset userns_privileged_file_type (container_runtime_exec_t docker_exec_t kubelet_exec_t))
+)
+(optional devicekit_power_userns_privileged_file_type
+    (typeattributeset userns_privileged_file_type (devicekit_power_exec_t))
+)
+(optional file_manager_userns_privileged_file_type
+    (typeattributeset userns_privileged_file_type (file_manager_exec_type))
+)
+(optional flatpak_userns_privileged_file_type
+    (typeattributeset userns_privileged_file_type (flatpak_exec_t))
+)
+(optional systemsettings_userns_privileged_file_type
+    (typeattributeset userns_privileged_file_type (systemsettings_exec_t))
+)
+(optional trivalent_userns_privileged_file_type
+    (typeattributeset userns_privileged_file_type (trivalent_exec_t trivalent_script_exec_t))
+)
 
 (typeattribute userns_relabel_allowed)
 (typeattributeset userns_relabel_allowed (init_t initrc_t install_t kernel_t))

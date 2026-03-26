@@ -67,7 +67,7 @@ jobs:
           IMAGE_NAME: ${{ matrix.image }}
         with:
           arch: x86_64
-          image_name: ${{ env.IMAGE_NAME}}
+          image_name: ${{ env.IMAGE_NAME }}
           image_repo: ghcr.io/secureblue
           image_tag: latest
           version: 43

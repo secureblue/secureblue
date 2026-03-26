@@ -60,12 +60,12 @@ jobs:
         env:
           WORKSPACE: ${{ github.workspace }}
         run: |
-          curl -fLsS --retry 5 -o "${WORKSPACE}/secureblue.repo" "https://copr.fedorainfracloud.org/coprs/secureblue/packages/repo/fedora-43/secureblue-packages-fedora-43.repo"
+          curl -fLsS --retry 5 -o "${WORKSPACE}/secureblue.repo" "https://copr.fedorainfracloud.org/coprs/secureblue/packages/repo/fedora-44/secureblue-packages-fedora-44.repo"
 
       - name: Build ISO        
         id: iso_build
         env:
-          IMAGE_REF: ghcr.io/secureblue/${{ matrix.image }}:latest 
+          IMAGE_REF: ghcr.io/secureblue/${{ matrix.image }}:br-next-44 
         uses: RoyalOughtness/titanoboa@main
         with:
           image-ref: ${{ env.IMAGE_REF }}

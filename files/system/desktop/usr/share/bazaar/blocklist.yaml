@@ -45,7 +45,3 @@ blocklists:
       - org.pvermeer.WebAppHub
       # Uses modified Firefox
       - io.github.gamingdoom.Datcord
-      # Functionality is generally unsafe
-      - dev.qwery.AddWater
-      - surf.deckr.deckr
-      - io.github.alyraffauf.Switchyard

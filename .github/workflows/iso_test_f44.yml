@@ -77,7 +77,6 @@ jobs:
           additional_templates: "/github/workspace/.github/workflows/config/lorax/remove_root_password_prompt.tmpl"
           iso_name: ${{ env.IMAGE_NAME }}.iso
           enrollment_password: "secureblue"
-          web_ui: "true"
           secure_boot_key_url: "https://github.com/secureblue/secureblue/raw/refs/heads/live/files/system/etc/pki/akmods/certs/akmods-secureblue.der"
           repos: "/github/workspace/secureblue.repo /etc/yum.repos.d/fedora.repo /etc/yum.repos.d/fedora-updates.repo"
 

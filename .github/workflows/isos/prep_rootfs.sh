@@ -35,7 +35,7 @@ rm -f /usr/share/applications/firefox-wayland.desktop
 rm -f /usr/share/applications/firefox-x11.desktop
 
 # add intaller to kickoff
-sed -i '2s/$/;liveinst.desktop/' /usr/share/kde-settings/kde-profile/default/xdg/kicker-extra-favoritesrc
+sed -i '2s/$/;liveinst.desktop/' /usr/share/kde-settings/kde-profile/default/xdg/kicker-extra-favoritesrc || true
 
 # Disable suspend/sleep during live environment and initial setup
 # This prevents the system from suspending during installation or first-boot user creation

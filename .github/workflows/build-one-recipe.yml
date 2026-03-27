@@ -218,7 +218,7 @@ jobs:
         env:
           KERNEL_PRIVKEY: ${{ secrets.KERNEL_PRIVKEY }}
         with:
-          cli_version: v0.9.32
+          cli_version: v0.9.33
           recipe: ${{ inputs.recipe }}
           cosign_private_key: ${{ secrets.SIGNING_SECRET }}
           registry_token: ${{ github.token }}

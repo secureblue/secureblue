@@ -190,7 +190,7 @@ jobs:
         env:
           KERNEL_PRIVKEY: ${{ steps.test_keys.outputs.kernel_privkey }}
         with:
-          cli_version: v0.9.32
+          cli_version: v0.9.33
           recipe: ${{ inputs.recipe }}
           push: false
           registry_token: ${{ github.token }}

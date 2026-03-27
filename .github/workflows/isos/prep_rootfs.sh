@@ -11,6 +11,7 @@ sed -i '/^install squashfs \/bin\/false$/d' /usr/lib/modprobe.d/secureblue.conf
 systemctl disable bootloader-update.service
 systemctl disable rpm-ostree-countme.service
 
+dnf upgrade -y
 dnf remove -y google-noto-fonts-all homebrew
 dnf install -y secureblue-logos
 dnf install -y anaconda-gui libblockdev-btrfs 

@@ -9,6 +9,7 @@ on:
     branches:
       - live
       - staging
+      - next
     paths-ignore:
       - "**.md"
   workflow_dispatch: # allow manually triggering

@@ -25,9 +25,6 @@ systemctl disable --global secureblue-flatpak-setup.service
 systemctl disable --global secureblue-flatpak-setup.timer
 systemctl disable --global podman-auto-update.timer
 systemctl disable --global flatpak-user-update.timer
-systemctl disable brew-upgrade.timer
-systemctl disable brew-update.timer
-systemctl disable brew-setup.service
 systemctl disable rpm-ostreed-automatic.timer
 systemctl disable rpm-ostree-countme.service
 

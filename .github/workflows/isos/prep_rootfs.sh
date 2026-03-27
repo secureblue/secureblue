@@ -19,6 +19,7 @@ systemctl disable rpm-ostree-countme.service
 
 dnf remove -y google-noto-fonts-all homebrew
 dnf install -y secureblue-logos
+dnf reinstall -y polkit
 dnf install -y anaconda-live firefox libblockdev-btrfs libblockdev-btrfs libblockdev-lvm libblockdev-dm
 
 systemctl disable --global secureblue-flatpak-setup.service

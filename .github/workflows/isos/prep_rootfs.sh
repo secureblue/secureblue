@@ -30,7 +30,6 @@ hidden_webui_pages =
     root-password
 EOF
 
-sed -i 's/ DISPLAY=$DISPLAY//' /usr/libexec/anaconda/webui-desktop
 rm -f /usr/share/applications/org.mozilla.Firefox.desktop
 rm -f /usr/share/applications/org.mozilla.firefox.desktop
 rm -f /usr/share/applications/firefox.desktop

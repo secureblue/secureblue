@@ -21,7 +21,7 @@ systemctl disable rpm-ostree-countme.service
 dnf remove -y google-noto-fonts-all homebrew
 dnf install -y secureblue-logos
 dnf reinstall -y polkit
-dnf install -y anaconda-live firefox libblockdev-btrfs libblockdev-btrfs libblockdev-lvm libblockdev-dm
+dnf install -y anaconda-live libblockdev-btrfs libblockdev-btrfs libblockdev-lvm libblockdev-dm
 
 systemctl disable --global secureblue-flatpak-setup.service
 systemctl disable --global secureblue-flatpak-setup.timer
@@ -38,6 +38,8 @@ rm -f /usr/share/applications/firefox-x11.desktop
 
 # add intaller to kickoff
 sed -i '2s/$/;liveinst.desktop/' /usr/share/kde-settings/kde-profile/default/xdg/kicker-extra-favoritesrc || true
+
+jq '.transports["containers-storage"][""][0].type = "insecureAcceptAnything"' /etc/containers/policy.json | tee /etc/containers/policy.json.tmp && mv /etc/containers/policy.json.tmp /etc/containers/policy.json
 
 # Disable suspend/sleep during live environment and initial setup
 # This prevents the system from suspending during installation or first-boot user creation
@@ -92,6 +94,7 @@ default_partitioning =
     /var  (btrfs)
 
 [User Interface]
+webui_web_engine = /usr/local/bin/trivalent-webui
 custom_stylesheet = /usr/share/anaconda/pixmaps/silverblue/fedora-silverblue.css
 hidden_spokes =
     NetworkSpoke
@@ -144,7 +147,6 @@ EOF
 tee -a /usr/share/anaconda/interactive-defaults.ks <<EOF
 ostreecontainer --url=$IMAGE_REF:$IMAGE_TAG --transport=containers-storage --no-signature-verification
 %include /usr/share/anaconda/post-scripts/install-configure-upgrade.ks
-%include /usr/share/anaconda/post-scripts/disable-fedora-flatpak.ks
 %include /usr/share/anaconda/post-scripts/secureboot-enroll-key.ks
 EOF
 
@@ -155,10 +157,9 @@ bootc switch --mutate-in-place --enforce-container-sigpolicy --transport registr
 %end
 EOF
 
-
-# Disable Fedora Flatpak
-tee /usr/share/anaconda/post-scripts/disable-fedora-flatpak.ks <<'EOF'
-%post --erroronfail
-systemctl disable flatpak-add-fedora-repos.service
-%end
+mkdir -p /usr/local/bin
+tee /usr/local/bin/trivalent-webui <<EOF
+#!/bin/bash
+exec /usr/bin/trivalent --app="$1" --user-data-dir=/tmp/anaconda-trivalent-profile  --disable-infobars --no-first-run --kiosk "$@"
 EOF
+chmod 755 /usr/local/bin/trivalent-webui

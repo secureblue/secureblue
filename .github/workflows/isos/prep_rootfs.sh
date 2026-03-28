@@ -157,7 +157,7 @@ bootc switch --mutate-in-place --enforce-container-sigpolicy --transport registr
 %end
 EOF
 
-tee /usr/local/bin/trivalent-webui <<EOF
+tee /usr/local/bin/trivalent-webui <<'EOF'
 #!/bin/bash
 exec /usr/bin/trivalent --app="$1" --user-data-dir=/tmp/anaconda-trivalent-profile  --disable-infobars --no-first-run --kiosk "$@"
 EOF

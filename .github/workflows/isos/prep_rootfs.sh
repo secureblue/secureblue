@@ -54,6 +54,7 @@ sleep-inactive-battery-timeout=0
 idle-delay=uint32 0
 EOF
 
+sed -i 's/^UMASK\t\t027/UMASK\t\t022/' /etc/login.defs
 
 # don't autostart gnome-software session service
 rm -f /etc/xdg/autostart/org.gnome.Software.desktop

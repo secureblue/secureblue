@@ -160,6 +160,6 @@ EOF
 mkdir -p "$(realpath -m /usr/local/bin)"
 tee "$(realpath -m /usr/local/bin)/trivalent-webui" <<'EOF'
 #!/bin/bash
-exec /usr/bin/trivalent --app="$1" --password-store=basic --user-data-dir=/tmp/anaconda-trivalent-profile  --disable-infobars --no-first-run --kiosk "$@"
+/usr/bin/trivalent --app="$1" --password-store=basic --user-data-dir=/tmp/anaconda-trivalent-profile  --disable-infobars --no-first-run --kiosk "$@"
 EOF
 chmod 755 /usr/local/bin/trivalent-webui

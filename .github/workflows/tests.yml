@@ -48,7 +48,6 @@ jobs:
       - name: Run tests
         shell: bash
         env:
-          INSTALL_SCRIPT: files/system/usr/share/secureblue/install_secureblue.sh
           BATS_LIB_PATH: "${{ github.workspace }}/.bats"
         run: |
           bats --timing --trace --verbose-run -r .github/workflows/tests

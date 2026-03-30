@@ -21,7 +21,7 @@ systemctl disable rpm-ostree-countme.service
 dnf remove -y google-noto-fonts-all homebrew
 dnf install -y secureblue-logos
 dnf reinstall -y polkit
-dnf install -y anaconda-live libblockdev-btrfs libblockdev-btrfs libblockdev-lvm libblockdev-dm
+dnf install -y anaconda-live firefox libblockdev-btrfs libblockdev-btrfs libblockdev-lvm libblockdev-dm
 
 systemctl disable --global secureblue-flatpak-setup.service
 systemctl disable --global secureblue-flatpak-setup.timer
@@ -95,7 +95,6 @@ default_partitioning =
     /var  (btrfs)
 
 [User Interface]
-webui_web_engine = /usr/local/bin/trivalent-webui
 custom_stylesheet = /usr/share/anaconda/pixmaps/silverblue/fedora-silverblue.css
 hidden_spokes =
     NetworkSpoke
@@ -157,10 +156,3 @@ tee /usr/share/anaconda/post-scripts/install-configure-upgrade.ks <<EOF
 bootc switch --mutate-in-place --enforce-container-sigpolicy --transport registry $IMAGE_REF:$IMAGE_TAG
 %end
 EOF
-
-mkdir -p "$(realpath -m /usr/local/bin)"
-tee "$(realpath -m /usr/local/bin)/trivalent-webui" <<'EOF'
-#!/bin/bash
-/usr/bin/trivalent --app="$1" --password-store=basic --user-data-dir=/tmp/anaconda-trivalent-profile  --disable-infobars --no-first-run --kiosk "$@"
-EOF
-chmod 755 /usr/local/bin/trivalent-webui

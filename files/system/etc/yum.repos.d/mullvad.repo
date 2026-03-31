@@ -4,4 +4,5 @@ baseurl=https://repository.mullvad.net/rpm/stable/$basearch
 type=rpm
 enabled=0
 gpgcheck=1
-gpgkey=https://repository.mullvad.net/rpm/mullvad-keyring.asc
+# gpgkey=https://repository.mullvad.net/rpm/mullvad-keyring.asc
+gpgkey=file:///usr/share/pki/rpm-gpg/mullvad-keyring.asc

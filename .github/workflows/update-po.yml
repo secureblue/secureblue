@@ -36,7 +36,7 @@ jobs:
       - name: Update PO files
         shell: bash
         run: |
-          python3 files/po/update_po.py
+          python3 tools/update_po.py
 
       - uses: actions/create-github-app-token@f8d387b68d61c58ab83c6c016672934102569859 # v3.0.0
         id: app-token
@@ -55,6 +55,6 @@ jobs:
           title: 'chore(i18n): update PO files'
           token: ${{ steps.app-token.outputs.token }}
           body: |
-            Automatically update POT and PO files by running the script `files/po/update_po.py`.
+            Automatically update POT and PO files by running the script `tools/update_po.py`.
 
             Translators may need to add new translations to the PO files.

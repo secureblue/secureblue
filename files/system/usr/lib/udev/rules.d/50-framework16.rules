@@ -1,3 +1,9 @@
+# Source: https://github.com/ublue-os/config/blob/5bf85e73c4a801a5eef5140fd1dfbf32585e680c/files/etc/udev/rules.d/50-framework16.rules
+#
+# SPDX-FileCopyrightText: Copyright 2024 Universal Blue
+#
+# SPDX-License-Identifier: Apache-2.0
+
 # Audio Expansion Card
 ACTION=="add", SUBSYSTEM=="usb", ATTR{idVendor}=="32ac", ATTR{idProduct}=="0010", ATTR{power/autosuspend}="10", ATTR{power/control}="auto", GOTO="rules_end"
 

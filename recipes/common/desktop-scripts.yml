@@ -7,7 +7,6 @@ source: ghcr.io/blue-build/modules@sha256:079ae754f5b57e8f2ca5850b33a633b3fe1c37
 scripts:
   - install-trivalent.sh
   - installsubresourcefilter.sh
-  - installandroidudev.sh
   - disablecups.sh
   - disablesshd.sh
   - disableavahidaemon.sh

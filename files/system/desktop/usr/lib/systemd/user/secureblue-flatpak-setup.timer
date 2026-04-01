@@ -1,9 +1,0 @@
-[Unit]
-Description=secureblue flatpak setup
-ConditionUser=!@system
-
-[Timer]
-OnStartupSec=5s
-
-[Install]
-WantedBy=timers.target

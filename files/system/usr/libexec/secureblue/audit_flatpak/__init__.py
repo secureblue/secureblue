@@ -116,6 +116,7 @@ FLATPAK_OVERRIDE_OPTIONS: Final[dict[str, tuple[str, str]]] = {
     "sockets": ("socket", "nosocket"),
     "devices": ("device", "nodevice"),
     "features": ("allow", "disallow"),
+    "filesystems": ("filesystem", "nofilesystem"),
 }
 
 
@@ -175,42 +176,66 @@ class DirectoryInfo:
 
 FLATPAK_PERMISSION_CHECKS: list[PermissionCheck] = [
     PermissionCheck("shared", "network", INFO, _("network access")),
-    PermissionCheck("shared", "ipc", INFO, _("inter-process communications access")),
-    PermissionCheck("sockets", "x11", FAIL, _("X11 access")),
-    PermissionCheck("sockets", "pulseaudio", WARN, _("access to the PulseAudio socket")),
+    PermissionCheck(
+        "shared",
+        "ipc",
+        INFO,
+        _("inter-process communications access"),
+        comment=_("This is only necessary for better X11 performance.")
+    ),
     PermissionCheck(
         "sockets",
-        "session-bus",
+        "x11",
         FAIL,
-        _("access to the D-Bus session bus"),
-        comment=_("This grants access to audio and microphones."),
+        _("X11 access"),
+        comment=_("This allows video capture of all other apps running in X11.")
     ),
+    PermissionCheck(
+        "sockets",
+        "pulseaudio",
+        WARN,
+        _("access to the PulseAudio socket"),
+        comment=_("This grants access to audio playback/capture, and microphones.")
+    ),
+    PermissionCheck(
+        "filesystems",
+        "xdg-run/pipewire-0",
+        WARN,
+        _("access to the PipeWire socket"),
+        comment=_("This grants access to all audio and video streams.")
+    ),
+    PermissionCheck("sockets", "session-bus", FAIL, _("access to the D-Bus session bus")),
     PermissionCheck("sockets", "system-bus", FAIL, _("access to the D-Bus system bus")),
     PermissionCheck("sockets", "ssh-auth", WARN, _("access to the SSH agent")),
     PermissionCheck(
         "devices",
         "all",
         FAIL,
-        comment=_("This grants access to input devices, GPUs, raw USB, and virtualization."),
+        _("access to all devices"),
+        comment=_("This includes input devices, GPUs, raw USB, and virtualization."),
         sandbox_escape=True,
         endnote=_("If GPU access is required, allow {0} instead.").format("device=dri"),
     ),
-    PermissionCheck("devices", "input", INFO, comment=_("This grants access to input devices.")),
     PermissionCheck(
-        "devices", "kvm", WARN, comment=_("This grants access to kernel-based virtualization.")
+        "devices",
+        "input",
+        INFO,
+        _("access to input devices"),
+        comment=_("This is required for game controllers.")
     ),
+    PermissionCheck("devices", "kvm", WARN, _("access to kernel-based virtualization")),
     PermissionCheck(
         "devices",
         "shm",
         FAIL,
-        comment=_("This grants access to shared memory."),
+        _("access to shared memory."),
         sandbox_escape=True,
     ),
     PermissionCheck(
         "devices",
         "usb",
         WARN,
-        comment=_("This grants raw USB device access."),
+        _("raw access to USB devices."),
         sandbox_escape=True,
     ),
     PermissionCheck("features", "bluetooth", WARN, _("bluetooth access")),
@@ -249,7 +274,7 @@ def check_flatpak_permissions(
     flatpak_permissions_state = FlatpakPermissionsState(name)
 
     _check_predefined_flatpak_permissions(
-        flatpak_permissions_state, perms, bluetooth_loaded, ptrace_allowed
+        flatpak_permissions_state, perms.permissions, bluetooth_loaded, ptrace_allowed
     )
     _check_fs_permissions(flatpak_permissions_state, perms)
     _handle_flatpak_buses(flatpak_permissions_state, perms)
@@ -366,31 +391,50 @@ def _handle_flatpak_buses(state: FlatpakPermissionsState, perms: Permissions) ->
             )
 
 
+def _filesystems_check_applies(
+    check: PermissionCheck,
+    perms_list: Permissions.permissions,
+) -> bool:
+    check_path, check_suffix, _, _ = parse_fs_permission(check.permission)
+    for perm in perms_list:
+        path, suffix, negated, _ = parse_fs_permission(perm)
+        if negated or (path != check_path):
+            continue
+        if not check_suffix:
+            return True
+        # nothing should have rw suffix, we're just checking for write access
+        if (check_suffix == "rw"):
+            return (suffix != "ro")
+        return (check_suffix == suffix)
+    return False
+
+
 def _predefined_check_applies(
     check: PermissionCheck,
-    existing_permissions: Permissions,
+    perms_list: Permissions.permissions,
     bluetooth_loaded: bool,
     ptrace_allowed: bool,
 ) -> bool:
-    is_irrelevant_permission = check.category == "features" and (
-        (check.permission == "bluetooth" and not bluetooth_loaded)
-        or (check.permission == "devel" and not ptrace_allowed)
-    )
-    return (
-        not is_irrelevant_permission
-        and check.category in existing_permissions.permissions
-        and check.permission in existing_permissions.permissions[check.category]
-    )
+    if check.category not in perms_list:
+        return False
+    if check.category == "features" and (
+        (check.permission == "bluetooth" and not bluetooth_loaded) or
+        (check.permission == "devel" and not ptrace_allowed)
+    ):
+        return False
+    if check.category == "filesystems":
+        return _filesystems_check_applies(check, perms_list["filesystems"])
+    return check.permission in perms_list[check.category]
 
 
 def _check_predefined_flatpak_permissions(
     state: FlatpakPermissionsState,
-    existing_permissions: Permissions,
+    perms_list: Permissions.permissions,
     bluetooth_loaded: bool,
     ptrace_allowed: bool,
 ) -> None:
     for check in FLATPAK_PERMISSION_CHECKS:
-        if _predefined_check_applies(check, existing_permissions, bluetooth_loaded, ptrace_allowed):
+        if _predefined_check_applies(check, perms_list, bluetooth_loaded, ptrace_allowed):
             state.update(note=check.note(state.name), rec=check.recommendation(state.name))
             state.arbitrary_permissions |= check.arbitrary_permissions
 

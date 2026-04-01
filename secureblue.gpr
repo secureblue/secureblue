@@ -1,0 +1,58 @@
+project Secureblue is
+   type Build_Mode_Type is ("debug", "release");
+   Build_Mode : Build_Mode_Type := External ("BUILD_MODE", "debug");
+
+   for Languages use ("Ada");
+
+   for Source_Dirs use ("source");
+
+   for Object_Dir use "target/obj";
+   for Exec_Dir use "target/bin";
+
+   for Main use ("secureblue.adb");
+
+   package Compiler is
+      --  TODO: should we set -fstack-check?
+      Common_Ada_Switches :=
+         ("-gnat2022",
+          "-gnaty",
+          "-gnatwae");
+
+      case Build_Mode is
+         when "debug" =>
+            for Switches ("Ada") use Common_Ada_Switches &
+               ("-g",
+                "-Og",
+                "-gnata",
+                "-gnateE");
+
+         when "release" =>
+            for Switches ("Ada") use Common_Ada_Switches &
+               ("-O3",
+                --  Palemoon means we don't need checks
+                "-gnatp");
+      end case;
+   end Compiler;
+
+   package Binder is
+      --  https://gcc.gnu.org/onlinedocs/gnat_ugn/Symbolic-Traceback.html
+      for Switches ("Ada") use ("-Es");
+   end Binder;
+
+   --  https://docs.adacore.com/spark2014-docs/html/ug/en/source/how_to_run_gnatprove.html
+   package Prove is
+      --  I'm not sure if this is supposed to be checked into tree, so let's
+      --  keep the proofs outside target/ for now.
+      for Proof_Dir use "proof";
+
+      --  https://docs.adacore.com/spark2014-docs/html/ug/en/source/how_to_run_gnatprove.html#running-gnatprove-from-the-command-line
+      for Proof_Switches ("Ada") use
+         ("--mode=gold",
+          "--level=4",
+          "-j0",
+          --  Use all cores. Is this a default for GNATprove?
+          "--checks-as-errors=on",
+          "--warnings=error",
+          "--counterexamples=on");
+   end Prove;
+end Secureblue;

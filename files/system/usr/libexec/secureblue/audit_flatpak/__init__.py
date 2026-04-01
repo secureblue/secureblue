@@ -180,14 +180,14 @@ FLATPAK_PERMISSION_CHECKS: list[PermissionCheck] = [
         "ipc",
         INFO,
         _("inter-process communications access"),
-        comment=_("This is only necessary for better X11 performance.")
+        comment=_("This is only necessary for better X11 performance."),
     ),
     PermissionCheck(
         "sockets",
         "x11",
         FAIL,
         _("X11 access"),
-        comment=_("X11 apps can monitor and modify each other's graphics and inputs.")
+        comment=_("X11 apps can monitor and modify each other's graphics and inputs."),
     ),
     PermissionCheck(
         "sockets",
@@ -195,9 +195,9 @@ FLATPAK_PERMISSION_CHECKS: list[PermissionCheck] = [
         WARN,
         _("access to the PulseAudio socket"),
         comment=_(
-            "This grants access to all audio input and output streams.\n" +
-            "However, this is necessary for most apps to play sound."
-        )
+            "This grants access to all audio input and output streams.\n"
+            + "However, this is necessary for most apps to play sound."
+        ),
     ),
     PermissionCheck("sockets", "session-bus", FAIL, _("access to the D-Bus session bus")),
     PermissionCheck("sockets", "system-bus", FAIL, _("access to the D-Bus system bus")),
@@ -216,7 +216,7 @@ FLATPAK_PERMISSION_CHECKS: list[PermissionCheck] = [
         "input",
         INFO,
         _("access to input devices"),
-        comment=_("This is required for game controllers.")
+        comment=_("This is required for game controllers."),
     ),
     PermissionCheck("devices", "kvm", WARN, _("access to kernel-based virtualization")),
     PermissionCheck(

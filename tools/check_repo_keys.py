@@ -13,6 +13,7 @@ import json
 import os
 import subprocess
 import sys
+from collections.abc import Generator
 from typing import Final
 
 REPO_DATA_PATH: Final[str] = "tools/rpm-repo-sources.json"
@@ -47,10 +48,18 @@ def local_key_matches_remote_key(key_path: str, key_url: str) -> bool:
     return local_key == remote_key
 
 
+def gpg_key_fingerprints(key_path: str) -> Generator[str]:
+    """Yield fingerprints of GPG key at given path."""
+    # Reference for GPG colon-listing format: https://github.com/gpg/gnupg/blob/master/doc/DETAILS
+    gpg_output = command_stdout("gpg", "--show-keys", "--with-colons", key_path)
+    for line in gpg_output.splitlines():
+        if line.startswith(("fpr:", "fp2:")):
+            yield line.split(":")[9]
+
+
 def local_key_has_fingerprint(key_path: str, fingerprint: str) -> bool:
     """Check whether local GPG key has the specified fingerprint."""
-    gpg_output = command_stdout("gpg", "--show-keys", key_path)
-    return fingerprint in gpg_output
+    return any(fingerprint == fpr for fpr in gpg_key_fingerprints(key_path))
 
 
 def verify_repo_data(repo_path: str, key_path: str, key_url: str, fingerprint: str) -> bool:

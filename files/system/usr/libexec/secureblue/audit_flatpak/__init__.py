@@ -202,7 +202,7 @@ FLATPAK_PERMISSION_CHECKS: list[PermissionCheck] = [
         "xdg-run/pipewire-0",
         WARN,
         _("access to the PipeWire socket"),
-        comment=_("This grants access to audio, microphones, and video capture.")
+        comment=_("This grants access to all audio and video streams.")
     ),
     PermissionCheck("sockets", "session-bus", FAIL, _("access to the D-Bus session bus")),
     PermissionCheck("sockets", "system-bus", FAIL, _("access to the D-Bus system bus")),

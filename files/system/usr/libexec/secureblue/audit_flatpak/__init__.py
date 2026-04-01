@@ -187,14 +187,17 @@ FLATPAK_PERMISSION_CHECKS: list[PermissionCheck] = [
         "x11",
         FAIL,
         _("X11 access"),
-        comment=_("This allows video capture of all other apps running in X11.")
+        comment=_("X11 apps can monitor and modify each other's graphics and inputs.")
     ),
     PermissionCheck(
         "sockets",
         "pulseaudio",
         WARN,
         _("access to the PulseAudio socket"),
-        comment=_("This grants access to audio playback/capture, and microphones.")
+        comment=_(
+            "This grants access to all audio input and output streams.\n" +
+            "However, this is necessary for apps to play any sound."
+        )
     ),
     PermissionCheck("sockets", "session-bus", FAIL, _("access to the D-Bus session bus")),
     PermissionCheck("sockets", "system-bus", FAIL, _("access to the D-Bus system bus")),

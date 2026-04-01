@@ -196,7 +196,7 @@ FLATPAK_PERMISSION_CHECKS: list[PermissionCheck] = [
         _("access to the PulseAudio socket"),
         comment=_(
             "This grants access to all audio input and output streams.\n" +
-            "However, this is necessary for apps to play any sound."
+            "However, this is necessary for most apps to play sound."
         )
     ),
     PermissionCheck("sockets", "session-bus", FAIL, _("access to the D-Bus session bus")),

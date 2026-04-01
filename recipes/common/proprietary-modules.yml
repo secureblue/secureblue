@@ -8,10 +8,15 @@ modules:
       install:
         install-weak-deps: false
         packages:
-          - libopenjph
-          - heif-pixbuf-loader
           - ffmpegthumbnailer
           - pipewire-libs-extra
+          - intel-gmmlib
+          - intel-mediasdk
+          - libvpl
+          - intel-vpl-gpu-rt
+          - gstreamer1-plugin-libav
+          - libheif
+          - libva
 
     - type: dnf
       source: ghcr.io/blue-build/modules@sha256:079ae754f5b57e8f2ca5850b33a633b3fe1c37f4be51e7b00e9250a997f4e334
@@ -19,19 +24,14 @@ modules:
         - from-repo: fedora-multimedia
           skip-unavailable: true
           packages:
-            - libheif
-            - libva
+            - libva-intel-media-driver
             - mesa-dri-drivers
-            - gstreamer1-plugin-libav
             - mesa-filesystem
             - mesa-libEGL
             - mesa-libGL
             - mesa-libgbm
             - mesa-va-drivers
             - mesa-vulkan-drivers
-            - libva-intel-media-driver
-            - intel-gmmlib
-            - intel-mediasdk
 
     - type: dnf
       source: ghcr.io/blue-build/modules@sha256:079ae754f5b57e8f2ca5850b33a633b3fe1c37f4be51e7b00e9250a997f4e334
@@ -41,10 +41,6 @@ modules:
           packages:
             - old: ffmpeg-free
               new: ffmpeg
-            - old: fdk-aac-free
-              new: libfdk-aac
-            - old: gstreamer1-plugins-ugly-free
-              new: gstreamer1-plugins-ugly
             - old: libavcodec-free
               new: libavcodec
             - old: libavdevice-free

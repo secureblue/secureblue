@@ -11,6 +11,6 @@
 [![Trivy](https://github.com/secureblue/secureblue/actions/workflows/trivy.yml/badge.svg)](https://github.com/secureblue/secureblue/actions/workflows/trivy.yml)
 [![OpenSSF Best Practices](https://www.bestpractices.dev/projects/11183/badge)](https://www.bestpractices.dev/projects/11183)
 [![OpenSSF Scorecard](https://api.scorecard.dev/projects/github.com/secureblue/secureblue/badge)](https://scorecard.dev/viewer/?uri=github.com/secureblue/secureblue)
-[![Discord](https://img.shields.io/discord/1202086019298500629?style=flat&logo=discord&logoColor=white&label=Discord&labelColor=%235F6AE9&color=%2333CB56)](https://discord.com/invite/qMTv5cKfbF)
+[![Discord](https://img.shields.io/discord/1202086019298500629?style=flat&logo=discord&logoColor=white&label=Discord&labelColor=%235F6AE9&colour=%2333CB56)](https://discord.com/invite/qMTv5cKfbF)
 
 secureblue is a a security-focused desktop and server Linux operating system. It is built using [BlueBuild](https://blue-build.org/) and shipped as a set of [OCI](https://opencontainers.org/) [bootable containers](https://github.com/bootc-dev/bootc), using [Fedora Atomic Desktop](https://fedoraproject.org/atomic-desktops/)'s [base images](https://pagure.io/workstation-ostree-config) as a starting point. For more information, visit [the secureblue website](https://secureblue.dev).

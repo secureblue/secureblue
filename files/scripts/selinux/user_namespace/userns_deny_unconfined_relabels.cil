@@ -3,8 +3,8 @@
 ;; SPDX-License-Identifier: Apache-2.0 OR MIT
 
 (typeattribute userns_privileged_file_type)
-(optional colord_userns_privileged_file_type
-    (typeattributeset userns_privileged_file_type (colord_exec_t))
+(optional colourd_userns_privileged_file_type
+    (typeattributeset userns_privileged_file_type (colourd_exec_t))
 )
 (optional container_userns_privileged_file_type
     (typeattributeset userns_privileged_file_type (container_runtime_exec_t docker_exec_t kubelet_exec_t))

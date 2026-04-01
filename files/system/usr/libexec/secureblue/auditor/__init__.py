@@ -54,20 +54,20 @@ class Status(enum.Enum):
             case _:
                 raise ValueError(f"Invalid enum value: {self}")
 
-    def to_str_in_color(self) -> str:
+    def to_str_in_colour(self) -> str:
         """Colored text representation of the status."""
         match self:
             case Status.PASS:
-                color_code = 32  # green
+                colour_code = 32  # green
             case Status.INFO:
-                color_code = 36  # cyan
+                colour_code = 36  # cyan
             case Status.WARN:
-                color_code = 33  # yellow
+                colour_code = 33  # yellow
             case Status.FAIL:
-                color_code = 31  # red
+                colour_code = 31  # red
             case Status.UNKNOWN:
-                color_code = 37  # white
-        return f"\x1b[{color_code}m{self.local_name()}\x1b[39m"
+                colour_code = 37  # white
+        return f"\x1b[{colour_code}m{self.local_name()}\x1b[39m"
 
     def icon(self) -> str:
         """Colored icon associated with status."""
@@ -161,11 +161,11 @@ class Report:
 
     def to_str(self, width: int = 80) -> str:
         """Represent the report as a string formatted to the given width."""
-        status_tag = f" [ {self.status.to_str_in_color()} ]"
+        status_tag = f" [ {self.status.to_str_in_colour()} ]"
         gray_start = "\x1b[38;5;241m"
         desc_width = width - self.status.width() - 5 + len(gray_start)
-        reset_color = "\x1b[39m"
-        desc_with_sep = f"{self.description} {gray_start}".ljust(desc_width, "…") + reset_color
+        reset_colour = "\x1b[39m"
+        desc_with_sep = f"{self.description} {gray_start}".ljust(desc_width, "…") + reset_colour
         report_str = desc_with_sep + status_tag
         for note in self.notes:
             note_lines = [line.strip() for line in note.text.splitlines() if line.strip()]

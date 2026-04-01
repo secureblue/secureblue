@@ -72,7 +72,7 @@ check-local-overrides:
     #!/usr/bin/bash
     diff -r \
       --suppress-common-lines \
-      --color="always" \
+      --colour="always" \
       --exclude "passwd*" \
       --exclude "group*" \
       --exclude="subgid*" \

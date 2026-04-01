@@ -2,7 +2,7 @@
 # shellcheck disable=SC2154
 ########
 ## Useful functions we use a lot, if you want to use them, source libjust.sh
-## As it depends on libformatting.sh and libcolors.sh
+## As it depends on libformatting.sh and libcolours.sh
 ## They are not imported here to avoid attempting to redeclare readonly vars.
 ########
 

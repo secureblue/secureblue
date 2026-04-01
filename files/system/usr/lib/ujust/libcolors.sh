@@ -4,9 +4,9 @@
 # shellcheck disable=SC2034,SC2155
 ########
 ### Basic Colors
-### the bg function allows flipping these to background colors
-### using the 90-97 colors is not supported by the bg function
-### add them as extended colors instead which uses
+### the bg function allows flipping these to background colours
+### using the 90-97 colours is not supported by the bg function
+### add them as extended colours instead which uses
 ### option 38 (foreground) which can be flipped to 48 (background)
 ########
 declare -r black=$'\033[30m'
@@ -22,7 +22,7 @@ declare -r lightgray="$lightgrey"
 
 ########
 ### Extended Colors
-### You can use cpick from https://github.com/ethanbaker/cpick to get the colors
+### You can use cpick from https://github.com/ethanbaker/cpick to get the colours
 ### cpick bash varname | sed -E 's/readonly/declare/'
 ########
 declare -r darkgrey=$'\033[38;2;168;168;168m'
@@ -38,10 +38,10 @@ declare -r white=$'\033[38;2;250;235;215m'
 declare -r lightpink=$'\033[38;2;255;181;192m'
 declare -r darkorange=$'\033[38;2;255;129;3m'
 
-## Function to generate background color from foreground color
-## NOTE: doublequote the color or future calls to bg will error out!
+## Function to generate background colour from foreground colour
+## NOTE: doublequote the colour or future calls to bg will error out!
 # bgblue=$(Bg "$blue")
-# echo "${bgblue}text now has blue background${normal} this text has no background color"
+# echo "${bgblue}text now has blue background${normal} this text has no background colour"
 function Bg (){
     COLOR="$1"
     

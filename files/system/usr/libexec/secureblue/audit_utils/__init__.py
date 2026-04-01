@@ -50,7 +50,7 @@ def get_width() -> int:
 
 def _format_legend_entry(status: Status, description: str, width: int = 80) -> str:
     """Format legend entry"""
-    key_str = f"[{status.to_str_in_color()}]: "
+    key_str = f"[{status.to_str_in_colour()}]: "
     key_str_width = len(status.name) + 4
     description = re.sub(r"\s+", " ", description.strip())
     lines = textwrap.wrap(description, width=width - key_str_width)

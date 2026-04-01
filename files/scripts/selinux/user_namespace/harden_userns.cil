@@ -4,8 +4,8 @@
 
 (typeattribute userns_privileged_domain)
 (typeattributeset userns_privileged_domain (init_t initrc_t install_t kernel_t))
-(optional colord_userns_privileged_domain
-    (typeattributeset userns_privileged_domain (colord_t))
+(optional colourd_userns_privileged_domain
+    (typeattributeset userns_privileged_domain (colourd_t))
 )
 (optional container_userns_privileged_domain
     (typeattributeset userns_privileged_domain (container_domain container_runtime_domain spc_t))

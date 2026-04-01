@@ -1,0 +1,5 @@
+#+TITLE: Funding
+
+Secureblue does not accept any monetary donations. If you wish to financially
+support Secureblue, we would kindly and humbly invite you to purchase for the
+project a [[https://www.adacore.com/gnatpro][GNAT Pro]] licence.

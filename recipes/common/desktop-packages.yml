@@ -18,7 +18,7 @@ install:
     - wl-clipboard
     - alsa-firmware
     - fzf
-    - bazaar
+#    - bazaar
     - homebrew
     - firewall-config
 

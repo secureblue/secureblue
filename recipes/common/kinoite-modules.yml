@@ -18,8 +18,8 @@ modules:
         - krfb
         - krfb-libs
         - plasma-browser-integration
-        - plasma-discover
-        - plasma-discover-libs
+#        - plasma-discover
+#        - plasma-discover-libs
         - fedora-workstation-repositories
         - fedora-third-party
   - type: dnf
@@ -27,7 +27,7 @@ modules:
     install:
       install-weak-deps: false
       packages:
-        - krunner-bazaar
+#        - krunner-bazaar
   - type: files
     source: ghcr.io/blue-build/modules@sha256:079ae754f5b57e8f2ca5850b33a633b3fe1c37f4be51e7b00e9250a997f4e334
     files:

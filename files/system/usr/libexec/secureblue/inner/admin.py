@@ -40,7 +40,7 @@ def main() -> int:
     if result.returncode != 0:
         print("passwd has failed, deleting the created user.")
         result = subprocess.run(
-            ["/usr/sbin/userdel", "-f", new_username],
+            ["/usr/sbin/userdel", new_username],
             check=False
         )
         if result.returncode != 0:

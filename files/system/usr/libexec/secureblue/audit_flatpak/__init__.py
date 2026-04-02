@@ -20,12 +20,14 @@ INFO: Final = Status.INFO
 WARN: Final = Status.WARN
 FAIL: Final = Status.FAIL
 
+PermList = dict[str, list[str]]
+
 
 @dataclass
 class Permissions:
     """Object representing permissions for a flatpak app."""
 
-    permissions: dict[str, list[str]] = field(default_factory=dict)
+    permissions: PermList = field(default_factory=dict)
     environment: dict[str, str] = field(default_factory=dict)
     session_bus_talk: list[str] = field(default_factory=list)
     session_bus_own: list[str] = field(default_factory=list)
@@ -269,7 +271,7 @@ def check_flatpak_permissions(
     flatpak_permissions_state = FlatpakPermissionsState(name)
 
     _check_predefined_flatpak_permissions(
-        flatpak_permissions_state, perms, bluetooth_loaded, ptrace_allowed
+        flatpak_permissions_state, perms.permissions, bluetooth_loaded, ptrace_allowed
     )
     _check_fs_permissions(flatpak_permissions_state, perms)
     _handle_flatpak_buses(flatpak_permissions_state, perms)
@@ -388,29 +390,28 @@ def _handle_flatpak_buses(state: FlatpakPermissionsState, perms: Permissions) ->
 
 def _predefined_check_applies(
     check: PermissionCheck,
-    existing_permissions: Permissions,
+    perms_list: PermList,
     bluetooth_loaded: bool,
     ptrace_allowed: bool,
 ) -> bool:
-    is_irrelevant_permission = check.category == "features" and (
+    if check.category not in perms_list:
+        return False
+    if check.category == "features" and (
         (check.permission == "bluetooth" and not bluetooth_loaded)
         or (check.permission == "devel" and not ptrace_allowed)
-    )
-    return (
-        not is_irrelevant_permission
-        and check.category in existing_permissions.permissions
-        and check.permission in existing_permissions.permissions[check.category]
-    )
+    ):
+        return False
+    return check.permission in perms_list[check.category]
 
 
 def _check_predefined_flatpak_permissions(
     state: FlatpakPermissionsState,
-    existing_permissions: Permissions,
+    perms_list: PermList,
     bluetooth_loaded: bool,
     ptrace_allowed: bool,
 ) -> None:
     for check in FLATPAK_PERMISSION_CHECKS:
-        if _predefined_check_applies(check, existing_permissions, bluetooth_loaded, ptrace_allowed):
+        if _predefined_check_applies(check, perms_list, bluetooth_loaded, ptrace_allowed):
             state.update(note=check.note(state.name), rec=check.recommendation(state.name))
             state.arbitrary_permissions |= check.arbitrary_permissions
 

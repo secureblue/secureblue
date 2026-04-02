@@ -175,42 +175,62 @@ class DirectoryInfo:
 
 FLATPAK_PERMISSION_CHECKS: list[PermissionCheck] = [
     PermissionCheck("shared", "network", INFO, _("network access")),
-    PermissionCheck("shared", "ipc", INFO, _("inter-process communications access")),
-    PermissionCheck("sockets", "x11", FAIL, _("X11 access")),
-    PermissionCheck("sockets", "pulseaudio", WARN, _("access to the PulseAudio socket")),
+    PermissionCheck(
+        "shared",
+        "ipc",
+        INFO,
+        _("inter-process communications access"),
+        comment=_("This is only necessary for better X11 performance."),
+    ),
     PermissionCheck(
         "sockets",
-        "session-bus",
+        "x11",
         FAIL,
-        _("access to the D-Bus session bus"),
-        comment=_("This grants access to audio and microphones."),
+        _("X11 access"),
+        comment=_("X11 apps can monitor and modify each other's graphics and inputs."),
     ),
+    PermissionCheck(
+        "sockets",
+        "pulseaudio",
+        WARN,
+        _("access to the PulseAudio socket"),
+        comment=_("""
+            This grants access to all audio input and output streams.
+            However, this is necessary for most apps to play sound.
+        """),
+    ),
+    PermissionCheck("sockets", "session-bus", FAIL, _("access to the D-Bus session bus")),
     PermissionCheck("sockets", "system-bus", FAIL, _("access to the D-Bus system bus")),
     PermissionCheck("sockets", "ssh-auth", WARN, _("access to the SSH agent")),
     PermissionCheck(
         "devices",
         "all",
         FAIL,
-        comment=_("This grants access to input devices, GPUs, raw USB, and virtualization."),
+        _("access to all devices"),
+        comment=_("This includes input devices, GPUs, raw USB, and virtualization."),
         sandbox_escape=True,
         endnote=_("If GPU access is required, allow {0} instead.").format("device=dri"),
     ),
-    PermissionCheck("devices", "input", INFO, comment=_("This grants access to input devices.")),
     PermissionCheck(
-        "devices", "kvm", WARN, comment=_("This grants access to kernel-based virtualization.")
+        "devices",
+        "input",
+        INFO,
+        _("access to input devices"),
+        comment=_("This is required for game controllers."),
     ),
+    PermissionCheck("devices", "kvm", WARN, _("access to kernel-based virtualization")),
     PermissionCheck(
         "devices",
         "shm",
         FAIL,
-        comment=_("This grants access to shared memory."),
+        _("access to shared memory."),
         sandbox_escape=True,
     ),
     PermissionCheck(
         "devices",
         "usb",
         WARN,
-        comment=_("This grants raw USB device access."),
+        _("raw access to USB devices."),
         sandbox_escape=True,
     ),
     PermissionCheck("features", "bluetooth", WARN, _("bluetooth access")),

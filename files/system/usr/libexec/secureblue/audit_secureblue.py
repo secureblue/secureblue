@@ -156,13 +156,20 @@ def audit_signed_image(state):
     state["image"] = Image.from_image_ref(image_ref)
     if image_ref.startswith("ostree-image-signed:"):
         status = PASS
-        recs = None
+        rec = None
     else:
         status = FAIL
-        recs = _("""The current image is not signed.
-            To rebase to a signed image, download and run or re-run {0}
-            from the secureblue GitHub repository.""").format("install_secureblue.sh")
-    yield Report(_("Ensuring a signed image is in use"), status, recs=recs)
+        image_ref_no_prefix = image_ref.removeprefix("ostree-unverified-registry:")
+        image_ref_no_prefix = image_ref_no_prefix.removeprefix("docker://")
+        signed_image_ref = f"ostree-image-signed:docker://{image_ref_no_prefix}"
+        rec = "\n".join(
+            [
+                _("The current image is not signed."),
+                _("To rebase to a signed image, run the following command:"),
+                f"$ rpm-ostree rebase {signed_image_ref}",
+            ]
+        )
+    yield Report(_("Ensuring a signed image is in use"), status, recs=rec)
 
 
 @audit

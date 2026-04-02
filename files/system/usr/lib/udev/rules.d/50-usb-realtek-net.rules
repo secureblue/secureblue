@@ -1,3 +1,9 @@
+# Source: https://github.com/wget/realtek-r8152-linux/blob/67fc21ca514c2a8e3555070001295397e0dbc84b/50-usb-realtek-net.rules
+#
+# SPDX-FileCopyrightText: Copyright 2018-2025 Hyacinthe Cartiaux
+#
+# SPDX-License-Identifier: GPL-2.0-or-later
+
 # This is used to change the default configuration of Realtek USB ethernet adapters
 
 ACTION!="add", GOTO="usb_realtek_net_end"
@@ -9,7 +15,7 @@ ENV{REALTEK_MODE1}="1"
 ENV{REALTEK_MODE2}="3"
 
 # Realtek
-ATTR{idVendor}=="0bda", ATTR{idProduct}=="815[2,3,5,6]", ATTR{bConfigurationValue}!="$env{REALTEK_MODE1}", ATTR{bConfigurationValue}="$env{REALTEK_MODE1}"
+ATTR{idVendor}=="0bda", ATTR{idProduct}=="815[2,3,5,6,7,a]", ATTR{bConfigurationValue}!="$env{REALTEK_MODE1}", ATTR{bConfigurationValue}="$env{REALTEK_MODE1}"
 ATTR{idVendor}=="0bda", ATTR{idProduct}=="8053", ATTR{bcdDevice}=="e???", ATTR{bConfigurationValue}!="$env{REALTEK_MODE2}", ATTR{bConfigurationValue}="$env{REALTEK_MODE2}"
 
 # Samsung
@@ -42,5 +48,8 @@ ATTR{idVendor}=="0955", ATTR{idProduct}=="09ff", ATTR{bConfigurationValue}!="$en
 
 # LINKSYS
 ATTR{idVendor}=="13b1", ATTR{idProduct}=="0041", ATTR{bConfigurationValue}!="$env{REALTEK_MODE1}", ATTR{bConfigurationValue}="$env{REALTEK_MODE1}"
+
+# ASUS
+ATTR{idVendor}=="0b05", ATTR{idProduct}=="1976", ATTR{bConfigurationValue}!="$env{REALTEK_MODE1}", ATTR{bConfigurationValue}="$env{REALTEK_MODE1}"
 
 LABEL="usb_realtek_net_end"

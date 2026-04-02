@@ -5,4 +5,5 @@ enabled=0
 type=rpm
 repo_gpgcheck=1
 gpgcheck=1
-gpgkey=https://pkgs.tailscale.com/stable/fedora/repo.gpg
+# gpgkey=https://pkgs.tailscale.com/stable/fedora/repo.gpg
+gpgkey=file:///usr/share/pki/rpm-gpg/tailscale-repo.gpg

@@ -151,21 +151,19 @@ toolbox-assemble CONTAINER="prompt" ACTION="create" FILE="/etc/toolbox/toolbox.i
     source /usr/lib/ujust/ujust.sh
     ToolboxAssembleList "{{ FILE }}" "{{ ACTION }}" "{{ CONTAINER }}"
 
-# Install the official docker packages
+# Install the official Docker packages
 install-docker:
-    #! /bin/run0 /bin/bash
+    #!/usr/bin/run0 /bin/bash
     set -euo pipefail
-    tempfile=$(mktemp)
-    curl -fLo "$tempfile" https://download.docker.com/linux/fedora/docker-ce.repo
-    mv "$tempfile" /etc/yum.repos.d/docker-ce.repo
+    sed -i -e '/^\[docker-ce-stable\]$/,/^\[/s/^enabled *= *0.*/enabled=1/' /etc/yum.repos.d/docker-ce.repo
     rpm-ostree refresh-md
     rpm-ostree install docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
 
-# Uninstall the official docker packages
+# Uninstall the official Docker packages
 uninstall-docker:
-    #! /bin/run0 /bin/bash
+    #!/usr/bin/run0 /bin/bash
     set -euo pipefail
-    rm /etc/yum.repos.d/docker-ce.repo
+    cp /usr/etc/yum.repos.d/docker-ce.repo /etc/yum.repos.d/docker-ce.repo
     rpm-ostree refresh-md
     rpm-ostree uninstall docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
 

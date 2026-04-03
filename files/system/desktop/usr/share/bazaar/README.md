@@ -56,18 +56,23 @@ While there are still security concerns with **web-based apps**, and we would en
 We also don't want to start excluding apps which are *related* to browsers. For example, `dev.qwery.AddWater` installs a theme for Firefox. This app does *not* have a **web engine** and does *not* access **arbitrary code** itself, despite being directly tied to a program which does. While you can't acquire Firefox through Bazaar, it could be installed another way if the user truly desires. That is up to the user to decide.
 
 ## Examples
+
 From unambiguously browsers, to unambiguously not browsers.
 
 ### `com.google.Chrome`
+
 Unambiguously a **web browser**. If anything, it's *the* web browser.
 
 ### `org.torproject.torbrowser-launcher`
+
 Unambiguously a **web browser**. While it serves a unique purpose, it still belongs on the list, as it is much more secure to install using another method.
 
 ### `net.codelogistics.webapps`
+
 Mostly unambiguous, but still a **web browser**. It isn't presented like a typical browser, instead acting more like a PWA installer. But it does still fit our definition of fetching **arbitrary data** from an **arbitrary website** and potentially executing **arbitrary code**.
 
 ### `org.mozilla.Thunderbird`
+
 Ambiguous. Thunderbird is based on the same **web engine** as Firefox, and it does load **arbitrary data** from **arbitrary sources**. And Thunderbird *is* capable of loading **arbitrary websites**, if you really try to force it to.
 
 However, Thunderbird's *primary purpose* is as an email client. And while emails are very adjacent to websites, as they *can* contain HTML, CSS, and images; they explicitly *cannot* contain JavaScript. Or at least, it would never be executed. Which means that generally speaking, Thunderbird should *not* execute **arbitrary code**.
@@ -77,12 +82,15 @@ Thunderbird is also careful with loading external sources embedded in an email, 
 As such, Thunderbird is considered **not** a web browser, and instead fits our definition of a **web-based app**. Even with it being technically possible to use as a web browser, you must go out of your way to, and any method to do so is likely considered a bug.
 
 ### `com.valvesoftware.Steam`
+
 Somewhat ambiguous, but **not** a web browser. The client itself would fit into the category of **web-based app**, only loading from **arranged sources**. There is an actual **web browser** in the in-game overlay, which would definitely be unsafe; but this is a small part of the application, and the user can completely avoid it. As such, it is not the *primary purpose* of Steam.
 
 ### `app.fluxer.Fluxer`
+
 Unambiguously **not** a web browser. It only loads one window containing [fluxer.app](https://fluxer.app), an **arranged source**, and any external links always open in the user's default browser. It is a **web-based app**.
 
 ### `org.gnome.Robots`
+
 Unambiguously **not** a web browser. Doesn't contain any web technology whatsoever, and doesn't even have internet permissions. The only risk here is being killed by robots.
 
 ## Edge cases

@@ -18,7 +18,7 @@ To help avoid unnecessary effort spent on deciding what belongs in here, this fi
 
 "**Web framework**" means code which utilizes the core functionality of a **web browser** to allow creation of a new application.
 
-"**Web-based app**" means an application based on a **web framework** which fetches **arranged data** from **arranged source**, and is ***not*** *expected* to execute **arbitrary JavaScript code**.
+"**Web-based app**" means an application based on a **web framework** which fetches **arranged data** from **arranged sources**, and is ***not*** *expected* to execute **arbitrary JavaScript code**.
 
 ### Example uses
 
@@ -32,7 +32,7 @@ The data received from an API request is considered **arranged data**, as the ap
 
 The primary goal of the blocklist is to block **web browsers**.
 
-This is partially to promote the usage of Trivalent, since it is already well integrated with secureblue; and usage of any other browser is almost certainly a security degredation, on top of adding massive attack surface from having multiple web browsers installed.
+This is partially to promote the usage of Trivalent, since it is already well integrated with secureblue. Usage of any other browser is almost certainly a security degradation, on top of adding massive attack surface from having multiple web browsers installed.
 
 However, the primary reason is that the majority of web browsers are *incompatible with Flatpak sandboxing*. Flatpak sandboxing is **application-level**, and is incapable of more granularity than that without manual intervention by the application itself.
 
@@ -84,7 +84,7 @@ As such, Thunderbird is considered **not** a web browser, and instead fits our d
 
 ### `com.valvesoftware.Steam`
 
-Somewhat ambiguous, but **not** a web browser. The client itself would fit into the category of **web-based app**, only loading from **arranged sources**. There is an actual **web browser** in the in-game overlay, which would definitely be unsafe; but this is a small part of the application, and the user can completely avoid it. As such, it is not the *primary purpose* of Steam.
+Somewhat ambiguous, but **not** a web browser. The majority of the client fits into the category of **web-based app**, only loading from [steampowered.com](https://store.steampowered.com) or [steamcommunity.com](https://steamcommunity.com), which are **arranged sources**. There is an actual **web browser** which would definitely be unsafe, accessible through the in-game overlay or niche actions that open it; but this is a small part of the application, and the user can completely avoid it. As such, it is not the *primary purpose* of Steam.
 
 ### `app.fluxer.Fluxer`
 

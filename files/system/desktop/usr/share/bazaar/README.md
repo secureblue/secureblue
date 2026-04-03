@@ -21,6 +21,7 @@ To help avoid unnecessary effort spent on deciding what belongs in here, this fi
 "**Web-based app**" means an application based on a **web framework** which fetches **arranged data** from **arranged source**, and is ***not*** *expected* to execute **arbitrary JavaScript code**.
 
 ### Example uses
+
 The **web engine** Blink is used by the **web browser** Chromium. Chromium then became the basis for many other **web browsers**, such as Google Chrome and Trivalent; as well as **web frameworks** like Electron, which allow development of **web-based apps**.
 
 The contents of an editable free-form text box are considered **arbitrary data**, as there is no way to predict what the user would enter in the box.

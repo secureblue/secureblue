@@ -17,6 +17,7 @@ modules:
         - from-repo: fedora-multimedia
           skip-unavailable: true
           packages:
+            - libva
             - libva-intel-media-driver
             - mesa-dri-drivers
             - mesa-filesystem

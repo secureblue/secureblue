@@ -53,3 +53,6 @@ disable cups.socket
 
 # Disable modem manager
 disable ModemManager.service
+
+# Enable upgrade-on-boot
+enable upgrade-on-boot.service

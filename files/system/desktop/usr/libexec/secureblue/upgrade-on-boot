@@ -1,7 +1,9 @@
 #!/bin/bash
+
+set -euo pipefail
+
 echo "Starting upgrade-on-boot service"
-rpm_ostree_status=$(rpm-ostree status --json --booted)
-image_date=$(jq -cr '.deployments[0].timestamp' <<<"$rpm_ostree_status")
+image_date=$(rpm-ostree status --json --booted | jq -cr '.deployments[0].timestamp')
 current_seconds=$(date +%s)
 difference=$((current_seconds - image_date))
 # week=$((7 * 24 * 60 * 60))
@@ -14,7 +16,7 @@ fi
 UPDATE_FAILURE_STRING="Update failed, booting existing deployment..."
 CANCEL_STRING="Press Q to cancel and boot the existing deployment."
 
-plymouth watch-keystroke --keys="q" --command "systemctl stop upgrade-on-boot.service" &
+plymouth watch-keystroke --keys="qQ" --command "systemctl stop upgrade-on-boot.service" &
 plymouth message --text="$CANCEL_STRING"
 BOOTC_UPGRADE_CHECK_OUTPUT="$(bootc upgrade --check 2>&1)"
 
@@ -30,7 +32,7 @@ if grep -q "local rpm-ostree modifications" <<< "$BOOTC_UPGRADE_CHECK_OUTPUT"; t
     plymouth message --text="Staging update... $CANCEL_STRING"
     rpm-ostree upgrade
     RPM_OSTREE_EXIT=$?
-    if [ $RPM_OSTREE_EXIT -ne 0 ]; then
+    if (( RPM_OSTREE_EXIT != 0 )); then
         echo "$UPDATE_FAILURE_STRING"
         plymouth message --text="$UPDATE_FAILURE_STRING"
         exit 1
@@ -58,9 +60,9 @@ else
             ProgressBytes)
                 bytes=$(echo "$line" | jq -r '.bytes')
                 bytes_total=$(echo "$line" | jq -r '.bytesTotal')
-                percent=$(echo "$bytes $bytes_total" | awk '{printf "%d", $1 / $2 * 100}')
+                percent=$(( 100 * bytes / bytes_total ))
                 echo "Percent: $percent"
-                if [ "$percent" -ge 100 ]; then
+                if (( percent >= 100 )); then
                     plymouth change-mode --boot-up
                     plymouth message --text="Deploying update... $CANCEL_STRING"
                 else
@@ -75,7 +77,7 @@ else
     echo "bootc exited with: $BOOTC_EXIT"
     rm -f "$BOOTC_OUTPUT"
 
-    if [ $BOOTC_EXIT -ne 0 ]; then
+    if (( BOOTC_EXIT != 0 )); then
         echo "$UPDATE_FAILURE_STRING"
         plymouth message --text="$UPDATE_FAILURE_STRING"
         exit 1

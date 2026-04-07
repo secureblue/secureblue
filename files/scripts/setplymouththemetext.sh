@@ -6,5 +6,7 @@
 
 set -euo pipefail
 
-sed -i 's/Do not turn off your computer/Press Q to boot existing deployment/' /usr/share/plymouth/themes/bgrt/bgrt.plymouth
-sed -i 's/Installing Updates/Downloading Updates/' /usr/share/plymouth/themes/bgrt/bgrt.plymouth
+sed -i \
+    -e 's/^Title=Installing Updates/Title=Downloading Updates/' \
+    -e 's/^SubTitle=Do not turn off your computer.*/SubTitle=Press Q to boot existing deployment/' \
+    /usr/share/plymouth/themes/bgrt/bgrt.plymouth

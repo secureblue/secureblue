@@ -15,3 +15,4 @@ scripts:
   - disablenfsdaemons.sh
   - disablesssd.sh
   - disableunconfinedrootfulservices.sh
+  - setplymouththemetext.sh

@@ -1,0 +1,15 @@
+[Unit]
+Description=First Boot Upgrade
+After=rpm-ostreed.service tuned.service network-online.target plymouth-start.service
+Wants=network-online.target
+Requires=plymouth-start.service
+Before=systemd-user-sessions.service plymouth-quit.service
+
+[Service]
+Type=oneshot
+RemainAfterExit=yes
+ExecStart=/usr/libexec/secureblue/upgrade-on-boot
+SELinuxContext=system_u:system_r:unconfined_t:s0
+
+[Install]
+WantedBy=multi-user.target

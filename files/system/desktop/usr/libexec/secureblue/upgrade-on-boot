@@ -1,0 +1,94 @@
+#!/bin/bash
+
+set -euo pipefail
+
+echo "Starting upgrade-on-boot service"
+image_date=$(rpm-ostree status --json --booted | jq -cr '.deployments[0].timestamp')
+current_seconds=$(date +%s)
+difference=$((current_seconds - image_date))
+# week=$((7 * 24 * 60 * 60))
+day=$((24 * 60 * 60))
+if (( difference < day )); then
+    echo "Image is less than a day old. Booting current deployment."
+    exit 0  
+fi
+
+UPDATE_FAILURE_STRING="Update failed, booting existing deployment..."
+CANCEL_STRING="Press Q to cancel and boot the existing deployment."
+
+plymouth watch-keystroke --keys="qQ" --command "systemctl stop upgrade-on-boot.service" &
+plymouth message --text="$CANCEL_STRING"
+BOOTC_UPGRADE_CHECK_OUTPUT="$(bootc upgrade --check 2>&1)"
+
+if grep -q "local rpm-ostree modifications" <<< "$BOOTC_UPGRADE_CHECK_OUTPUT"; then
+    echo "Using rpm-ostree"
+    # https://github.com/coreos/rpm-ostree/issues/1579#issuecomment-4141760891
+    # `rpm-ostree upgrade --check` is broken/unreliable. As such, this section *assumes*
+    # that an upgrade is available. This is a terrible experience during testing, 
+    # since if packages are layered then `rpm-ostree` will be used, and 
+    # `rpm-ostree` will run every specified interval regardless of whether an 
+    # upgrade is actually available. However, in production this script will only run
+    # at most weekly, after which time a new image will almost certainly be available.
+    plymouth message --text="Staging update... $CANCEL_STRING"
+    rpm-ostree upgrade
+    RPM_OSTREE_EXIT=$?
+    if (( RPM_OSTREE_EXIT != 0 )); then
+        echo "$UPDATE_FAILURE_STRING"
+        plymouth message --text="$UPDATE_FAILURE_STRING"
+        exit 1
+    fi
+else
+    echo "Using bootc"
+    if grep -q "No changes" <<< "$BOOTC_UPGRADE_CHECK_OUTPUT"; then
+        echo "No update available, booting current deployment"
+        exit 0
+    fi
+
+    echo "Update available, proceeding"
+    plymouth change-mode --updates
+    plymouth system-update --progress=0
+    echo "Plymouth initialized"
+
+    BOOTC_OUTPUT=$(mktemp -u /run/bootc-upgrade-XXXXXX)
+    mkfifo "$BOOTC_OUTPUT"
+
+    while IFS= read -r line; do
+        echo "Got line: $line"
+        type=$(echo "$line" | jq -r '.type // empty')
+        echo "Type: $type"
+        case "$type" in
+            ProgressBytes)
+                bytes=$(echo "$line" | jq -r '.bytes')
+                bytes_total=$(echo "$line" | jq -r '.bytesTotal')
+                percent=$(( 100 * bytes / bytes_total ))
+                echo "Percent: $percent"
+                if (( percent >= 100 )); then
+                    plymouth change-mode --boot-up
+                    plymouth message --text="Deploying update... $CANCEL_STRING"
+                else
+                    plymouth system-update --progress="$percent"
+                fi
+                ;;
+        esac
+    done < "$BOOTC_OUTPUT" &
+
+    bootc upgrade --quiet --progress-fd 3 3>"$BOOTC_OUTPUT"
+    BOOTC_EXIT=$?
+    echo "bootc exited with: $BOOTC_EXIT"
+    rm -f "$BOOTC_OUTPUT"
+
+    if (( BOOTC_EXIT != 0 )); then
+        echo "$UPDATE_FAILURE_STRING"
+        plymouth message --text="$UPDATE_FAILURE_STRING"
+        exit 1
+    fi
+fi
+
+if bootc status --json | jq -e '.status.staged != null' > /dev/null 2>&1; then
+    echo "New deployment staged, rebooting"
+    plymouth message --text="Update complete. Rebooting..."
+    systemctl reboot
+else
+    echo "No new deployment staged, booting existing deployment"
+    exit 0
+fi

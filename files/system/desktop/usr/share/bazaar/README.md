@@ -36,15 +36,15 @@ This is partially to promote the usage of Trivalent, since it is already well in
 
 However, the primary reason is that the majority of web browsers are *incompatible with Flatpak sandboxing*. Flatpak sandboxing is **application-level**, and is incapable of more granularity than that without manual intervention by the application itself.
 
-Browsers implement their own **process-level** sandboxing models, which isolate each loaded page from the system *and* from each other. However, the Flatpak sandbox fundamentally breaks the browser's own sandboxing, as it needs deeper integration with the OS than Flatpak allows.
+Browsers implement their own **process-level** sandboxing models, which isolate each loaded page from the system *and* from each other. However, the Flatpak sandbox fundamentally [breaks the browser's own sandboxing](https://github.com/containers/bubblewrap#limitations), as it needs deeper integration with the OS than Flatpak allows. Without directly changing how the browser operates, it can only use the **application-level** Flatpak sandbox.
 
-However, using only **application-level** sandboxing for a browser is a *major* security degradation. While it would be ideal to do both, **process-level** sandboxing is much more important, as this protects websites from *each other* as well. Additionally, it can be much more restrictive, as opposed to an application-level sandbox, which must have holes for functionality like accessing files and devices. Individual processes do not need these holes.
+Using only **application-level** sandboxing for a browser is a *major* security degradation. While it would be ideal to do both, **process-level** sandboxing is much more important, as this protects websites from *each other* as well. Additionally, it can be much more restrictive, as opposed to an application-level sandbox, which must have holes for functionality like accessing files and devices. Individual processes do not need these holes.
 
 Chromium-based flatpaks, both **web browsers** and **web-based apps** alike, utilize a workaround shim called [Zypak](https://github.com/refi64/zypak). This essentially tricks Chromium into using the Flatpak sandbox for process-level sandboxing rather than its own. However, this is not capable of implementing the same low-level security functionality as the official Chromium sandbox.
 
-Zypak is also a much more obscure project, maintained by one person, with no formal security auditing, and far less eyes watching it. This lack of scrutiny means it is less understood and less tested, and could be significantly weaker, perhaps even having major vulnerabilities which nobody has noticed because nobody has looked. Meanwhile, the Chromium sandbox is maintained by an entire team, and watched by the countless projects which rely on it.
+Zypak is also a much more obscure project, maintained by one person, with no formal security auditing, and far less eyes watching it. This lack of scrutiny means it is less understood and less tested, and could be significantly weaker, perhaps even having major vulnerabilities which nobody has noticed because nobody has looked. Meanwhile, the Chromium sandbox is maintained by an entire team, and watched by the countless projects which rely on it. And since Zypak is a workaround which Chromium has no idea is even happening, we're dealing with unintended behavior that the Chromium team isn't accounting for.
 
-Firefox-based flatpaks simply throw up their hands in defeat and disable much of the internal sandbox. The internal sandbox which is known to be weak as is. Comforting.
+Firefox-based flatpaks simply throw up their hands in defeat and [disable much of the Firefox internal sandbox](https://bugzilla.mozilla.org/show_bug.cgi?id=1756236). Technically, the Firefox codebase has a warning about this, however, [they intentionally disable the warning](https://hg-edge.mozilla.org/releases/mozilla-beta/rev/509d4746f2d6) in the official Flatpak. On top of all this, the Firefox internal sandbox itself is known to be weaker than Chromium's sandbox. While the following article is fairly old, and the situation has slightly improved, primarily by [switching to Wayland](https://www.firefox.com/en-US/firefox/121.0/releasenotes#note-789921) and implementing a [properly sandboxed audio service](https://github.com/mozilla/cubeb); much of the information within is still correct, and [Chromium has only continued to pull ahead](https://www.chromium.org/Home/chromium-security/quarterly-updates/), so it is still worth reading for more information: https://madaidans-insecurities.github.io/firefox-chromium.html
 
 ## Apps out of scope
 
@@ -92,7 +92,7 @@ Unambiguously **not** a web browser. It only loads one window containing [fluxer
 
 ### `org.gnome.Robots`
 
-Unambiguously **not** a web browser. Doesn't contain any web technology whatsoever, and doesn't even have internet permissions. The only risk here is being killed by robots.
+Unambiguously **not** a web browser. This video game doesn't contain any web technology whatsoever, and doesn't even have internet permissions. The only risk here is being killed by robots.
 
 ## Edge cases
 

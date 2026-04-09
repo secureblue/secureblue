@@ -20,7 +20,7 @@ from utils import (
 )
 
 XWAYLAND_OVERRIDE_FILES: Final[dict[Image, str]] = {
-    Image.SILVERBLUE: "/etc/systemd/user/org.gnome.Shell@wayland.service.d/override.conf",
+    Image.SILVERBLUE: "/etc/systemd/user/org.gnome.Shell@user.service.d/override.conf",
     Image.KINOITE: "/etc/systemd/user/plasma-kwin_wayland.service.d/override.conf",
     Image.SERICEA: "/etc/sway/config.d/99-noxwayland.conf",
 }

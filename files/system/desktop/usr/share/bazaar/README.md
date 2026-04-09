@@ -34,7 +34,9 @@ The primary goal of the blocklist is to block **web browsers**.
 
 This is partially to promote the usage of Trivalent, since it is already well integrated with secureblue. Usage of any other browser is almost certainly a security degradation, on top of adding massive attack surface from having multiple web browsers installed.
 
-However, the primary reason is that the majority of web browsers are *incompatible with Flatpak sandboxing*. Flatpak sandboxing is **application-level**, and is incapable of more granularity than that without manual intervention by the application itself.
+However, the primary reason is that the majority of web browsers are *incompatible with Flatpak sandboxing*. Flatpak sandboxing is **application-level**, and is incapable of more granularity than that without manual intervention by the application itself. There are partial mitigations to this problem, but nothing is able to completely resolve it. As such, we want to discourage installing browsers through Flatpak, and encourage much safer native installations.
+
+### Further justification
 
 Browsers implement their own **process-level** sandboxing models, which isolate each loaded page from the system *and* from each other. However, the Flatpak sandbox fundamentally [breaks the browser's own sandboxing](https://github.com/containers/bubblewrap#limitations), as it needs deeper integration with the OS than Flatpak allows. Without directly changing how the browser operates, it can only use the **application-level** Flatpak sandbox.
 

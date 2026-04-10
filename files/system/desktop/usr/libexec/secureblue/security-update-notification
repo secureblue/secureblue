@@ -6,7 +6,7 @@
 
 set -euo pipefail
 
-status="$(rpm-ostree status)"
+status="$(rpm-ostree status 2>/dev/null)"
 db_diff="$(rpm-ostree db diff 2>&1)"
 trivalent_updated="false"
 kernel_updated="false"
@@ -19,25 +19,29 @@ if [[ "$db_diff" == *"pending deployment"* ]]; then
   fi
 fi
 
-if [[ "$status" =~ SecAdvisories:.*(important|critical) ]] || [[ "$trivalent_updated" == "true" ]] || [[ "$kernel_updated" == "true" ]]; then
-	case "$(notify-send --urgency=critical \
-		--app-name="secureblue" \
-		--action="Reboot" \
-		"A major security vulnerability has been patched" \
-		"Please reboot to run the updated system")" in
-			"0")
-				systemctl reboot ;;
+notify_critical() {
+  notify-send --urgency=critical \
+    --app-name="secureblue" \
+    --action="Reboot" \
+    "A major security vulnerability has been patched" \
+    "Please reboot to run the updated system"
+}
 
-	esac
+notify_normal() {
+  notify-send --urgency=normal \
+    --expire-time=5000 \
+    --app-name="secureblue" \
+    --action="Reboot" \
+    "A security vulnerability has been patched" \
+    "Please reboot to run the updated system"
+}
 
-elif [[ "$status" =~ SecAdvisories:.*(unknown severity|low|moderate) ]]; then
-	case "$(notify-send --urgency=normal \
-		--expire-time=5000 \
-		--app-name="secureblue" \
-		--action="Reboot" \
-		"A security vulnerability has been patched" \
-		"Please reboot to run the updated system")" in
-			"0")
-				systemctl reboot ;;
-	esac
+if [[ "$trivalent_updated" == "true" || "$status" =~ SecAdvisories:.*critical ]]; then
+  if [[ "$(notify_critical)" == "0" ]]; then
+    systemctl reboot
+  fi
+elif [[ "$kernel_updated" == "true" || "$status" =~ SecAdvisories:.*(important|unknown severity) ]]; then
+  if [[ "$(notify_normal)" == "0" ]]; then
+    systemctl reboot
+  fi
 fi

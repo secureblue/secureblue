@@ -1,0 +1,18 @@
+#!/usr/bin/bash
+
+# SPDX-FileCopyrightText: Copyright 2025-2026 The Secureblue Authors
+#
+# SPDX-License-Identifier: Apache-2.0
+
+set -euo pipefail
+
+# Add brewadmin group to /etc/group if not already present.
+# This is a workaround for the issue documented here:
+# https://docs.fedoraproject.org/en-US/atomic-desktops/troubleshooting/#_unable_to_add_user_to_group
+flock /etc/group -c 'grep -q "^brewadmin:" /etc/group || getent group brewadmin >> /etc/group || groupadd -r brewadmin'
+
+# Add user with UID 1000 (if it exists) to brewadmin group. This means that the
+# user who was previously the owner of the Homebrew installation will be allowed
+# to run brew maintenance commands via brew-proxy without authentication.
+user="$(getent passwd 1000 | cut -d: -f1)" || exit 0
+gpasswd -a "${user}" brewadmin

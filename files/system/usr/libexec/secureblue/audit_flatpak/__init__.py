@@ -8,7 +8,7 @@
 Flatpak permissions checks for secureblue auditing script.
 """
 
-from dataclasses import dataclass, field
+from dataclasses import KW_ONLY, dataclass, field
 from typing import Final
 
 from auditor import Note, Recommendation, Status, gettext_marker
@@ -120,6 +120,39 @@ FLATPAK_OVERRIDE_OPTIONS: Final[dict[str, tuple[str, str]]] = {
 
 
 @dataclass(frozen=True)
+class PermRecommendation:
+    description: str
+    category: str
+    permission: str
+    comment: str | None = None
+    _: KW_ONLY
+    endnote: str | None = None
+
+    def make(self, name: str) -> Recommendation:
+        description = _("The following flatpak app(s) have {0}:").format(self.description)
+
+        instruction = _("To remove this permission from an app, use Flatseal or run:")
+
+        option = FLATPAK_OVERRIDE_OPTIONS[self.category][1]
+        command = f"$ flatpak override -u --{option}={self.permission} com.example.Example"
+
+        rec_lines: list[str | None] = [
+            description,
+            Recommendation.NAMES_PLACEHOLDER,
+            self.comment,
+            instruction,
+            command,
+            _('(replacing "{0}" with the flatpak app ID)').format("com.example.Example"),
+            self.endnote,
+        ]
+
+        return Recommendation(
+            rec="\n".join(filter(None, rec_lines)),
+            mergeable_name=name,
+        )
+
+
+@dataclass(frozen=True)
 class PermissionCheck:
     """A flatpak permission to be checked, and how it's reported if present."""
 
@@ -144,24 +177,17 @@ class PermissionCheck:
 
     def recommendation(self, name: str) -> Recommendation:
         """Give the recommendation for if the check fails."""
+        comments = [self.comment]
         if self.sandbox_escape:
-            sandbox_escape_note = _("This may also be used as a sandbox escape vector.")
-        else:
-            sandbox_escape_note = ""
-        option = FLATPAK_OVERRIDE_OPTIONS[self.category][1]
-        description = self.description or self.default_description()
-        rec_lines = (
-            _("The following flatpak app(s) have {0}:").format(description),
-            Recommendation.NAMES_PLACEHOLDER,
-            self.comment or "",
-            sandbox_escape_note,
-            _("To remove this permission from an app, use Flatseal or run:"),
-            f"$ flatpak override -u --{option}={self.permission} com.example.Example",
-            _('(replacing "{0}" with the flatpak app ID)').format("com.example.Example"),
-            self.endnote or "",
-        )
-        rec = "\n".join(line.strip() for line in rec_lines if line.strip())
-        return Recommendation(rec, mergeable_name=name)
+            comments.append(_("This may also be used as a sandbox escape vector."))
+        final_comment = "\n".join(filter(None, comments))
+        return PermRecommendation(
+            self.description or self.default_description(),
+            self.category,
+            self.permission,
+            final_comment,
+            endnote=self.endnote,
+        ).make(name)
 
 
 @dataclass(frozen=True)

@@ -130,6 +130,7 @@ class PermRecommendation:
     _: KW_ONLY
     instruction: str | None = None
     endnote: str | None = None
+    remove_perm: bool = True
 
     def make(self, name: str) -> Recommendation:
         if self.description.startswith(("can", "are", "is")):
@@ -140,11 +141,12 @@ class PermRecommendation:
 
         instruction = self.instruction
         if not instruction:
-            instruction = _("To remove this permission from an app, use Flatseal or run:")
+            verb = _("remove") if self.remove_perm else _("add")
+            instruction = _("To {0} this permission from an app, use Flatseal or run:").format(verb)
 
         command = self.category_or_command
         if self.permission:
-            option = FLATPAK_OVERRIDE_OPTIONS[command][1]
+            option = FLATPAK_OVERRIDE_OPTIONS[command][int(self.remove_perm)]
             command = f"$ flatpak override -u --{option}={self.permission} com.example.Example"
 
         rec_lines: list[str | None] = [
@@ -179,7 +181,8 @@ class PermissionCheck:
     def default_description(self) -> str:
         """Default description if other description isn't provided."""
         perm_type = FLATPAK_OVERRIDE_OPTIONS[self.category][0]
-        return f"{perm_type}={self.permission} " + _("permission")
+        perm_string = f"{perm_type}={self.permission}"
+        return _("the permission {0}").format(perm_string)
 
     def note(self, name: str) -> Note:
         """Generate the note for if the check fails."""
@@ -485,17 +488,15 @@ def _check_hardened_malloc_access(
 ) -> None:
     if filesystems is None or ("host-os" not in filesystems_ro and "host-os" not in filesystems_rw):
         note = Note(
-            _("{0} is missing {1} permission").format(state.name, "host-os:ro"), status=WARN
+            _("{0} is missing the permission {1}").format(state.name, "host-os:ro"), status=WARN
         )
-        rec_lines = (
-            _("The following flatpak app(s) are missing {0} permission:").format("host-os:ro"),
-            Recommendation.NAMES_PLACEHOLDER,
+        rec = PermRecommendation(
+            _("are missing the permission {0}:").format("host-os:ro"),
+            "filesystems",
+            "host-os:ro",
             _("This is required to load hardened_malloc."),
-            _("To add this permission to an app, use Flatseal or run:"),
-            "$ flatpak override -u --filesystem=host-os:ro com.example.Example",
-            _('(replacing "{0}" with the flatpak app ID)').format("com.example.Example"),
-        )
-        rec = Recommendation("\n".join(rec_lines), mergeable_name=state.name)
+            remove_perm=False,
+        ).make(state.name)
         state.update(note=note, rec=rec)
 
 

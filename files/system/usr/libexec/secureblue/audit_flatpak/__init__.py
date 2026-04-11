@@ -129,7 +129,11 @@ class PermRecommendation:
     endnote: str | None = None
 
     def make(self, name: str) -> Recommendation:
-        description = _("The following flatpak app(s) have {0}:").format(self.description)
+        if self.description.startswith(("can", "are", "is")):
+            description = _("The following flatpak app(s) {0}:")
+        else:
+            description = _("The following flatpak app(s) have {0}:")
+        description = description.format(self.description)
 
         instruction = _("To remove this permission from an app, use Flatseal or run:")
 
@@ -507,15 +511,12 @@ def _check_overrides_access(
             override_path = override_path.replace("xdg-data", ALIASES["xdg-data"], 1)
         if state.name not in ARBITRARY_PERMISSIONS_EXPECTED:
             note = Note(_("{0} can modify flatpak permissions.").format(state.name), status=FAIL)
-            rec_lines = (
-                _("The following flatpak app(s) can modify flatpak permissions:"),
-                Recommendation.NAMES_PLACEHOLDER,
+            rec = PermRecommendation(
+                _("can modify flatpak permissions"),
+                "filesystems",
+                override_path,
                 _("This grants the ability to acquire arbitrary permissions."),
-                _("To remove this permission from an app, use Flatseal or run:"),
-                f"$ flatpak override -u --nofilesystem={override_path} com.example.Example",
-                _('(replacing "{0}" with the flatpak app ID)').format("com.example.Example"),
-            )
-            rec = Recommendation("\n".join(rec_lines), mergeable_name=state.name)
+            ).make(state.name)
             state.update(note=note, rec=rec)
 
 

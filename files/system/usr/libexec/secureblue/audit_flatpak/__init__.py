@@ -114,6 +114,8 @@ def parse_fs_permission(perm: str) -> tuple[str, bool, bool, bool]:
 FLATPAK_OVERRIDE_OPTIONS: Final[dict[str, tuple[str, str]]] = {
     "shared": ("share", "unshare"),
     "sockets": ("socket", "nosocket"),
+    "talk": ("talk-name", "no-talk-name"),
+    "system-talk": ("system-talk-name", "system-no-talk-name"),
     "devices": ("device", "nodevice"),
     "features": ("allow", "disallow"),
 }
@@ -396,24 +398,19 @@ def _handle_flatpak_buses(state: FlatpakPermissionsState, perms: Permissions) ->
         if state.name not in ARBITRARY_PERMISSIONS_EXPECTED:
             if is_session:
                 note = _("{0} can talk to {1} on the session bus.").format(state.name, bus_name)
-                first_line = _("The following flatpak app(s) can talk to {0} on the session bus:")
-                option = "no-talk-name"
+                first_line = _("can talk to {0} on the session bus")
+                option = "talk"
             else:
                 note = _("{0} can talk to {1} on the system bus.").format(state.name, bus_name)
-                first_line = _("The following flatpak app(s) can talk to {0} on the system bus:")
-                option = "system-no-talk-name"
-            rec_lines = (
+                first_line = _("can talk to {0} on the system bus")
+                option = "system-talk"
+            rec = PermRecommendation(
                 first_line.format(bus_name),
-                Recommendation.NAMES_PLACEHOLDER,
+                option,
+                bus_name,
                 _("This grants the ability to acquire arbitrary permissions."),
-                _("To remove this permission from an app, use Flatseal or run:"),
-                f"$ flatpak override -u --{option}={bus_name} com.example.Example",
-                _('(replacing "{0}" with the flatpak app ID)').format("com.example.Example"),
-            )
-            state.update(
-                note=Note(note, status=FAIL),
-                rec=Recommendation("\n".join(rec_lines), mergeable_name=state.name),
-            )
+            ).make(state.name)
+            state.update(note=Note(note, status=FAIL), rec=rec)
 
 
 def _predefined_check_applies(

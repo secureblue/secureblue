@@ -124,10 +124,11 @@ FLATPAK_OVERRIDE_OPTIONS: Final[dict[str, tuple[str, str]]] = {
 @dataclass(frozen=True)
 class PermRecommendation:
     description: str
-    category: str
-    permission: str
+    category_or_command: str
+    permission: str | None = None
     comment: str | None = None
     _: KW_ONLY
+    instruction: str | None = None
     endnote: str | None = None
 
     def make(self, name: str) -> Recommendation:
@@ -137,10 +138,14 @@ class PermRecommendation:
             description = _("The following flatpak app(s) have {0}:")
         description = description.format(self.description)
 
-        instruction = _("To remove this permission from an app, use Flatseal or run:")
+        instruction = self.instruction
+        if not instruction:
+            instruction = _("To remove this permission from an app, use Flatseal or run:")
 
-        option = FLATPAK_OVERRIDE_OPTIONS[self.category][1]
-        command = f"$ flatpak override -u --{option}={self.permission} com.example.Example"
+        command = self.category_or_command
+        if self.permission:
+            option = FLATPAK_OVERRIDE_OPTIONS[command][1]
+            command = f"$ flatpak override -u --{option}={self.permission} com.example.Example"
 
         rec_lines: list[str | None] = [
             description,
@@ -345,14 +350,11 @@ def _check_ld_preload(state: FlatpakPermissionsState, perms: Permissions) -> Non
         extra_note = None
 
     note = Note(_("{0} is not requesting {1}").format(state.name, "hardened_malloc"), status=status)
-    rec_lines = (
-        _("The following flatpak app(s) are not requesting {0}:").format("hardened_malloc"),
-        Recommendation.NAMES_PLACEHOLDER,
-        _("To enable it for an app, run:"),
+    rec = PermRecommendation(
+        _("are not requesting {0}").format("hardened_malloc"),
         "$ ujust harden-flatpak com.example.Example",
-        _('(replacing "{0}" with the flatpak app ID)').format("com.example.Example"),
-    )
-    rec = Recommendation("\n".join(rec_lines), mergeable_name=state.name)
+        instruction=_("To enable it for an app, run:"),
+    ).make(state.name)
     state.update(note=note, rec=rec)
     if extra_note is not None:
         state.update(extra_note)

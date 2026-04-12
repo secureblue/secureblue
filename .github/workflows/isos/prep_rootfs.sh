@@ -72,11 +72,9 @@ tee /etc/anaconda/profile.d/secureblue.conf <<'EOF'
 # Anaconda configuration file for secureblue
 
 [Profile]
-# Define the profile.
 profile_id = secureblue
 
 [Profile Detection]
-# Match os-release values
 os_id = secureblue
 
 [Network]
@@ -156,3 +154,6 @@ tee /usr/share/anaconda/post-scripts/install-configure-upgrade.ks <<EOF
 bootc switch --mutate-in-place --enforce-container-sigpolicy --transport registry $IMAGE_REF:$IMAGE_TAG
 %end
 EOF
+
+sed -i 's/^SELINUX=.*/SELINUX=enforcing/' /etc/selinux/config
+sed -i 's/^SELINUXTYPE=.*/SELINUXTYPE=targeted/' /etc/selinux/config

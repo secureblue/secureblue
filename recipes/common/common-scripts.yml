@@ -5,13 +5,13 @@
 type: script
 source: ghcr.io/blue-build/modules@sha256:079ae754f5b57e8f2ca5850b33a633b3fe1c37f4be51e7b00e9250a997f4e334
 scripts:
+  - set-ld-preload.sh
   - manuallyinstalljust.sh
   - hardenlogindefs.sh
   - hardened_malloc-pam.sh
   - disableresolved.sh
   - setup-dnsconfd.sh
   - authselect.sh
-  - setfilepermissions.sh
   - createmissingdirectories.sh
   - disablegeoclue.sh
   - disable-sshd-vsock.sh

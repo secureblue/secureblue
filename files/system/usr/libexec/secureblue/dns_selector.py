@@ -35,7 +35,7 @@ dns_function = sandbox.SandboxedFunction(
     "dns.py",
     read_write_paths=["/etc"],
     capabilities=["CAP_SYS_ADMIN", "CAP_DAC_OVERRIDE", "CAP_CHOWN", "CAP_FOWNER"],
-    additional_sandbox_properties=["--property=SystemCallFilter=@chown", "--background="],
+    allowed_syscalls=["@chown"],
 )
 
 

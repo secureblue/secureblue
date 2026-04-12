@@ -6,15 +6,14 @@ modules:
     - type: script
       source: ghcr.io/blue-build/modules@sha256:079ae754f5b57e8f2ca5850b33a633b3fe1c37f4be51e7b00e9250a997f4e334
       scripts:
-        - addrepos.sh
-        - createautostartdir.sh
+        - removeunusedrepos.sh
         - httpsmirrors.sh
         - unprotectsudo.sh
         # comment/uncomment the line below to disable/enable kernel pinning
         # - installpinnedkernel.sh
         # remove line below once rpm-ostree has been updated to fixed version on all images
         - check-rpm-ostree-version.sh
-    - from-file: common/common-packages.yml
+
     - type: files
       source: ghcr.io/blue-build/modules@sha256:079ae754f5b57e8f2ca5850b33a633b3fe1c37f4be51e7b00e9250a997f4e334
       files:
@@ -22,12 +21,17 @@ modules:
           destination: /usr
         - source: system/etc
           destination: /etc
+
+    - from-file: common/common-packages.yml
+
     - from-file: common/common-scripts.yml
+
     - type: justfiles
       source: ghcr.io/blue-build/modules@sha256:079ae754f5b57e8f2ca5850b33a633b3fe1c37f4be51e7b00e9250a997f4e334
       validate: true
       include:
         - common
+
     - type: script
       source: ghcr.io/blue-build/modules@sha256:079ae754f5b57e8f2ca5850b33a633b3fe1c37f4be51e7b00e9250a997f4e334
       scripts:
@@ -38,5 +42,6 @@ modules:
           mount:
             type: file
             destination: /tmp/certs/private_key.priv
+
     - type: secureblue-signing
       source: local

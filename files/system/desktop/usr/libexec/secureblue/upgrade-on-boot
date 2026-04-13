@@ -1,6 +1,6 @@
 #!/bin/bash
 
-set -euo pipefail
+set -euox pipefail
 
 echo "Starting upgrade-on-boot service"
 image_date=$(rpm-ostree status --json --booted | jq -cr '.deployments[0].timestamp')

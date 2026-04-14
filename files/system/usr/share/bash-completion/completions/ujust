@@ -1,0 +1,24 @@
+#!/usr/bin/bash
+
+# SPDX-FileCopyrightText: Copyright 2026 The Secureblue Authors
+#
+# SPDX-License-Identifier: Apache-2.0
+
+_comp_ujust() {
+    local IFS=$' \t\n'
+    local cur prev words cword comp_args
+    _comp_initialize -- "$@" || return
+    if [[ "${words[1]-}" == 'with-standard-malloc' ]] && (( cword >= 2 )); then
+        # `ujust with-standard-malloc` wraps an arbitrary command, so generate
+        # completions for that command.
+        _comp_command_offset 2
+    elif [[ "$cur" == -* ]]; then
+        # Completions for options
+        compgen -V COMPREPLY -W '--choose --dump -l --list -s --show --summary --usage' -- "$cur"
+    else
+        # Completions for ujust recipes
+        compgen -V COMPREPLY -W "$(ujust --summary)" -- "$cur"
+    fi
+}
+
+complete -F _comp_ujust ujust

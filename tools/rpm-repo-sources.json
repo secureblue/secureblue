@@ -1,0 +1,86 @@
+[
+    {
+        "localRepo": "files/system/etc/yum.repos.d/dangerzone.repo",
+        "repoSource": "https://packages.freedom.press/yum-tools-prod/dangerzone/dangerzone.repo",
+        "localGpgKey": "files/system/usr/share/pki/rpm-gpg/fpf-yum-tools-archive-keyring.gpg",
+        "remoteGpgKey": "https://packages.freedom.press/yum-tools-prod/dangerzone/fpf-yum-tools-archive-keyring.gpg",
+        "gpgFingerprint": "DE28AB241FA48260FAC9B8BAA7C9B38522604281"
+    },
+    {
+        "localRepo": "files/system/etc/yum.repos.d/docker-ce.repo",
+        "repoSource": "https://download.docker.com/linux/fedora/docker-ce.repo",
+        "localGpgKey": "files/system/usr/share/pki/rpm-gpg/docker-ce.gpg",
+        "remoteGpgKey": "https://download.docker.com/linux/fedora/gpg",
+        "gpgFingerprint": "060A61C51B558A7F742B77AAC52FEB6B621E9F35"
+    },
+    {
+        "localRepo": "files/system/etc/yum.repos.d/fedora-multimedia.repo",
+        "repoSource": "https://negativo17.org/repos/fedora-multimedia.repo",
+        "localGpgKey": "files/system/usr/share/pki/rpm-gpg/RPM-GPG-KEY-slaanesh.gpg",
+        "remoteGpgKey": "https://negativo17.org/repos/RPM-GPG-KEY-slaanesh",
+        "gpgFingerprint": "0C5D0F470484AE2FC40A9B6597F3008993E8909B"
+    },
+    {
+        "localRepo": "files/system/etc/yum.repos.d/ivpn.repo",
+        "repoSource": "https://repo.ivpn.net/stable/fedora/generic/ivpn.repo",
+        "localGpgKey": "files/system/usr/share/pki/rpm-gpg/ivpn-repo.gpg",
+        "remoteGpgKey": "https://repo.ivpn.net/stable/fedora/generic/repo.gpg",
+        "gpgFingerprint": "F52691AB05F2FCDF67CD6516D437F3E150DB096C"
+    },
+    {
+        "localRepo": "files/system/etc/yum.repos.d/mullvad.repo",
+        "repoSource": "https://repository.mullvad.net/rpm/stable/mullvad.repo",
+        "localGpgKey": "files/system/usr/share/pki/rpm-gpg/mullvad-keyring.asc",
+        "remoteGpgKey": "https://repository.mullvad.net/rpm/mullvad-keyring.asc",
+        "gpgFingerprint": "A1198702FC3E0A09A9AE5B75D5A1D4F266DE8DDF"
+    },
+    {
+        "localRepo": "files/system/etc/yum.repos.d/protonvpn-stable.repo",
+        "repoSource": "https://repo.protonvpn.com/fedora-43-stable/protonvpn-stable-release/protonvpn-stable-release-1.0.3-1.noarch.rpm",
+        "localGpgKey": "files/system/usr/share/pki/rpm-gpg/protonvpn_public_key.asc",
+        "remoteGpgKey": "https://repo.protonvpn.com/fedora-43-stable/public_key.asc",
+        "gpgFingerprint": "7BB2808996C47DC9EECDA475F7EB64B08C03490D"
+    },
+    {
+        "localRepo": "files/system/etc/yum.repos.d/secureblue-packages-fedora.repo",
+        "repoSource": "https://copr.fedorainfracloud.org/coprs/secureblue/packages/repo/fedora-43/secureblue-packages-fedora-43.repo",
+        "localGpgKey": "files/system/usr/share/pki/rpm-gpg/secureblue-copr-pubkey.gpg",
+        "remoteGpgKey": "https://download.copr.fedorainfracloud.org/results/secureblue/packages/pubkey.gpg",
+        "gpgFingerprint": "FEE4CA50D94042B7D9C42B8D33CC2522E09126A6"
+    },
+    {
+        "localRepo": "files/system/etc/yum.repos.d/tailscale.repo",
+        "repoSource": "https://pkgs.tailscale.com/stable/fedora/tailscale.repo",
+        "localGpgKey": "files/system/usr/share/pki/rpm-gpg/tailscale-repo.gpg",
+        "remoteGpgKey": "https://pkgs.tailscale.com/stable/fedora/repo.gpg",
+        "gpgFingerprint": "2596A99EAAB33821893C0A79458CA832957F5868"
+    },
+    {
+        "localRepo": "files/system/desktop/etc/yum.repos.d/repo.secureblue.dev.secureblue.repo",
+        "repoSource": "https://repo.secureblue.dev/secureblue.repo",
+        "localGpgKey": "files/system/desktop/usr/share/pki/rpm-gpg/secureblue.gpg",
+        "remoteGpgKey": "https://repo.secureblue.dev/secureblue.gpg",
+        "gpgFingerprint": "26B4463ED8F313BC7E3FBDF9D9223AF0F47B3E41"
+    },
+    {
+        "localRepo": "files/system/nvidia/etc/yum.repos.d/fedora-nvidia-580.repo",
+        "repoSource": "https://negativo17.org/repos/fedora-nvidia-580.repo",
+        "localGpgKey": "files/system/usr/share/pki/rpm-gpg/RPM-GPG-KEY-slaanesh.gpg",
+        "remoteGpgKey": "https://negativo17.org/repos/RPM-GPG-KEY-slaanesh",
+        "gpgFingerprint": "0C5D0F470484AE2FC40A9B6597F3008993E8909B"
+    },
+    {
+        "localRepo": "files/system/nvidia/etc/yum.repos.d/negativo17-fedora-nvidia.repo",
+        "repoSource": "https://negativo17.org/repos/fedora-nvidia.repo",
+        "localGpgKey": "files/system/usr/share/pki/rpm-gpg/RPM-GPG-KEY-slaanesh.gpg",
+        "remoteGpgKey": "https://negativo17.org/repos/RPM-GPG-KEY-slaanesh",
+        "gpgFingerprint": "0C5D0F470484AE2FC40A9B6597F3008993E8909B"
+    },
+    {
+        "localRepo": "files/system/nvidia/etc/yum.repos.d/nvidia-container-toolkit.repo",
+        "repoSource": "https://nvidia.github.io/libnvidia-container/stable/rpm/nvidia-container-toolkit.repo",
+        "localGpgKey": "files/system/nvidia/usr/share/pki/rpm-gpg/nvidia-container-gpgkey.gpg",
+        "remoteGpgKey": "https://nvidia.github.io/libnvidia-container/gpgkey",
+        "gpgFingerprint": "C95B321B61E88C1809C4F759DDCAE044F796ECB0"
+    }
+]

@@ -151,28 +151,72 @@ toolbox-assemble CONTAINER="prompt" ACTION="create" FILE="/etc/toolbox/toolbox.i
     source /usr/lib/ujust/ujust.sh
     ToolboxAssembleList "{{ FILE }}" "{{ ACTION }}" "{{ CONTAINER }}"
 
-# Install the official docker packages
+# Install the official Docker packages
 install-docker:
-    #! /bin/run0 /bin/bash
+    #!/usr/bin/run0 /bin/bash
     set -euo pipefail
-    tempfile=$(mktemp)
-    curl -fLo "$tempfile" https://download.docker.com/linux/fedora/docker-ce.repo
-    mv "$tempfile" /etc/yum.repos.d/docker-ce.repo
+    sed -i -e '/^\[docker-ce-stable\]$/,/^\[/s/^enabled *= *0.*/enabled=1/' /etc/yum.repos.d/docker-ce.repo
     rpm-ostree refresh-md
     rpm-ostree install docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
 
-# Uninstall the official docker packages
+# Uninstall the official Docker packages
 uninstall-docker:
-    #! /bin/run0 /bin/bash
+    #!/usr/bin/run0 /bin/bash
     set -euo pipefail
-    rm /etc/yum.repos.d/docker-ce.repo
+    cp /usr/etc/yum.repos.d/docker-ce.repo /etc/yum.repos.d/docker-ce.repo
     rpm-ostree refresh-md
     rpm-ostree uninstall docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
 
 # Rebase to a different secureblue Desktop Environment/Atomic Desktop
 rebase-secureblue:
     #!/usr/bin/bash
-    /usr/bin/bash /usr/share/secureblue/install_secureblue.sh
+    current_image=$(grep VARIANT= /etc/os-release | cut -d'"' -f2)
+    if [[ "$current_image" == 'CoreOS' ]] || [[ "$current_image" == 'IOT' ]]; then
+        image_name=$(grep VARIANT_ID= /etc/os-release | cut -d'=' -f2 | cut -d'-' -f1)
+        read -rp "Do you need ZFS support? [y/N]: " use_zfs
+        [[ "$use_zfs" == [Yy]* ]] && image_name+="-zfs"
+    else
+        desktop_image_types=(
+            "silverblue"
+            "kinoite"
+            "sericea"
+            "cosmic"
+        )
+        printf "%s\n" \
+            "Select a desktop." \
+            "Silverblue and Kinoite images are recommended." \
+            "Sericea images are recommended for tiling WM users." \
+            "Cosmic images are considered beta."
+        PS3=$'Enter your desktop choice: '
+        select image_name in "${desktop_image_types[@]}"; do
+            if [[ -n "$image_name" ]]; then        
+                echo "Selected desktop: $image_name"
+                break
+            else
+                echo "Invalid option, please select a valid number."
+            fi
+        done
+    fi
+    echo "Nvidia's proprietary drivers provide superior performance and official support on Nvidia hardware."
+    read -rp "Do you want Nvidia proprietary drivers? [y/N]: " use_nvidia
+    if [[ "$use_nvidia" == [Yy]* ]]; then
+        image_name+="-nvidia"
+        echo "Nvidia's proprietary drivers with open source kernel modules are recommended for Turing or newer cards (GTX 16XX+)."
+        read -rp "Do you want Nvidia's proprietary drivers with open source kernel modules? [Y/n]: " use_open
+        use_open=${use_open:-y}
+        [[ "$use_open" == [Yy]* ]] && image_name+="-open"
+    else
+        image_name+="-main"
+    fi
+    image_name+="-hardened"
+    full_ref=$(crane digest --full-ref "ghcr.io/secureblue/${image_name}:latest")
+    slsa-verifier verify-image --source-uri "github.com/secureblue/secureblue" --source-branch "live" "${full_ref}"
+    rebase_command="rpm-ostree rebase ostree-image-signed:docker://ghcr.io/secureblue/$image_name:latest"
+    printf "Command to execute:\n%s\n\n" "$rebase_command"
+    read -rp "Proceed? [y/N]: " rebase_proceed
+    if [[ "$rebase_proceed" == [Yy]* ]]; then
+        eval "$rebase_command"
+    fi
 
 # Apply SELinux type "user_home_t" on external drives to allow access from Trivalent
 label-external-drives:
@@ -233,7 +277,7 @@ install-vpn:
     # supported VPN providers and the security features they need disabled, separated by spaces
     declare -A vpn_providers=(
         ["ivpn"]="gui_needs_unconfined_userns gui_needs_xwayland"
-        ["mullvad"]="gui_needs_unconfined_userns gui_needs_xwayland"
+        ["mullvad"]="gui_needs_unconfined_userns"
         ["proton"]=""
         ["tailscale"]=""
     )

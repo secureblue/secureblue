@@ -9,6 +9,7 @@ on:
     branches:
       - live
       - staging
+      - next
     paths:
       - "**.just"
 

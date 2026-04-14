@@ -13,6 +13,7 @@ blocklists:
       - com.google.ChromeDev
       - com.microsoft.Edge
       - com.opera.Opera
+      - com.opera.opera-gx
       - com.vivaldi.Vivaldi
       - org.chromium.Chromium
 

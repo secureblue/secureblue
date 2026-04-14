@@ -10,34 +10,61 @@ passwd:
         - ssh-ed25519 <key>
 storage:
   files:
-    - path: /opt/install_secureblue.sh
+    - path: /etc/pki/containers/secureblue-2025.pub
+      mode: 0644
       contents:
-        source: https://raw.githubusercontent.com/secureblue/secureblue/refs/heads/live/files/system/usr/share/secureblue/install_secureblue.sh
-        verification:
-          hash: sha256-5854bdffb805e4dab054ff37c8b2740e4e0dfc1d41b4a11dee9093177e84e14c
+        inline: |
+          -----BEGIN PUBLIC KEY-----
+          MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEdruKsOhUkgdd0lNDHNBymE2Wyb/p
+          GVnx59QbNoGFbImqZLRVt6uQnO9MfiHU9IZiJl9aNetfAqDsgsltAUQnXQ==
+          -----END PUBLIC KEY-----
+    - path: /etc/containers/policy.json
+      mode: 0644
+      overwrite: true
+      contents:
+        inline: |
+          {
+            "default": [{"type": "reject"}],
+            "transports": {
+              "docker": {
+                "ghcr.io/secureblue": [
+                  {
+                    "type": "sigstoreSigned",
+                    "keyPath": "/etc/pki/containers/secureblue-2025.pub",
+                    "signedIdentity": {"type": "matchRepository"}
+                  }
+                ]
+              }
+            }
+          }
+    - path: /opt/install_secureblue.sh
       mode: 0755
-    - path: /opt/run_install_secureblue.sh
       contents:
         inline: |
           sudo systemctl disable --now zincati.service 2>/dev/null
           sudo systemctl stop rpm-ostreed-automatic.timer rpm-ostreed-automatic.service 2>/dev/null
-          if [ ! -f /opt/install_secureblue.sh ]; then
-            echo "Error: install_secureblue.sh was not downloaded."
+
+          echo 'Rebasing to securecore (secureblue CoreOS image)...'
+
+          # If you want Nvidia or ZFS support, replace 'securecore-main-hardened' below with
+          # the name of the image you want. See here for a list of securecore images:
+          # https://secureblue.dev/images#coreos
+          sudo rpm-ostree rebase ostree-image-signed:docker://ghcr.io/secureblue/securecore-main-hardened:latest
+          status=$?
+
+          if [ "$status" -ne 0 ]; then
+            echo "Error: Secureblue installation failed." >&2
+            exit "$status"
           else
-            sudo /opt/install_secureblue.sh
-            if [ $? != 0 ]; then
-              echo "Error: Secureblue installer failed."
-            else
-              sed -i '/\/opt\/run_install_secureblue.sh/d' /var/home/core/.bash_profile
-              sudo rm -f /opt/*install_secureblue.sh
-              echo "Automatically rebooting in 5 seconds..."
-              sleep 5
-              sudo systemctl reboot
-            fi
+            sudo cp /usr/etc/containers/policy.json /etc/containers/policy.json
+            sed -i -e '/\/opt\/install_secureblue.sh/d' /var/home/core/.bash_profile
+            sudo rm -f /opt/install_secureblue.sh /etc/pki/containers/secureblue-2025.pub
+            echo "Automatically rebooting in 5 seconds..."
+            sleep 5
+            sudo systemctl reboot
           fi
-      mode: 0755
     - path: /var/home/core/.bash_profile
       overwrite: false
       append:
       - inline: |
-          /opt/run_install_secureblue.sh
+          /opt/install_secureblue.sh

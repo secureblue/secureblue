@@ -4,11 +4,11 @@ blocklists:
       # Verified Chromium-based browsers.
       - com.brave.Browser
       - com.jiosphere.JioSphere
+      - com.opera.opera-gx
       - io.github.ungoogled_software.ungoogled_chromium
+      - org.ecosia.Browser
       - org.kde.falkon
       - ru.yandex.Browser
-      - com.opera.opera-gx
-      - org.ecosia.Browser
 
       # Unverified Chromium-based browsers.
       - com.google.Chrome

@@ -17,7 +17,7 @@ UPDATE_FAILURE_STRING="Update failed, booting existing deployment..."
 CANCEL_STRING="Press Q to cancel and boot the existing deployment."
 
 plymouth watch-keystroke --keys="qQ" --command "systemctl stop upgrade-on-boot.service" &
-BOOTC_UPGRADE_CHECK_OUTPUT="$(bootc upgrade --check 2>&1)"
+BOOTC_UPGRADE_CHECK_OUTPUT="$(bootc upgrade --check 2>&1)" || true
 
 if grep -q "local rpm-ostree modifications" <<< "$BOOTC_UPGRADE_CHECK_OUTPUT"; then
     echo "Using rpm-ostree"

@@ -6,6 +6,7 @@
 install-steam:
     #!/usr/bin/bash
     need_reboot=false
+    ptrace_scope=$(</proc/sys/kernel/yama/ptrace_scope)
     if [ -z "$(pgrep Xwayland)" ] && [ -z "$(pgrep Xorg)" ] ; then
         echo "Steam requires X or Xwayland, which your variant of secureblue has disabled by default." | fold -s
         echo "Please run 'ujust set-xwayland on' to re-enable it."
@@ -57,6 +58,20 @@ install-steam:
             echo "Note that to use controllers, you must additionally grant device=input if it is globally denied." | fold -s
             flatpak override --user --share=network --share=ipc --socket=x11 --socket=pulseaudio --allow=multiarch --allow=per-app-dev-shm com.valvesoftware.Steam
             echo ""
+
+            if (( "$ptrace_scope" <= 1 )); then
+                echo "Games with strict anti-cheats, like Easy Anti-Cheat, require Steam to have access to ptrace." | fold -s
+                echo "Your ptrace_scope is ${ptrace_scope}, you can change this by running 'ujust toggle-anticheat-support'." | fold -s
+                read -rp "Would you like to grant Steam the 'allow=devel' permission? [Y/n] " toggle_anticheat
+                toggle_anticheat=${toggle_anticheat:-y}
+                if [[ "$toggle_anticheat" == [Yy]* ]]; then
+                    flatpak override --user --allow=devel com.valvesoftware.Steam
+                fi
+                if [[ "$toggle_anticheat" == [Nn]* ]]; then
+                    flatpak override --user --disallow=devel com.valvesoftware.Steam
+                fi
+                echo "You can change this again later using Flatseal."
+            fi
             ;;
         2)
             echo "Distrobox method selected."
@@ -89,31 +104,17 @@ install-steam:
     echo "Remember: Steam requires 32-bit support; do not set the 'ia32_emulation=0' kernel argument." | fold -s
     echo ""
 
-    ptrace_scope=$(</proc/sys/kernel/yama/ptrace_scope)
     if (( "$ptrace_scope" > 1 )); then
         echo "Games with strict anti-cheats, like Easy Anti-Cheat, require ptrace_scope set to 1." | fold -s
-        echo "Your current ptrace_scope is ${ptrace_scope}, you can change this later by running 'ujust toggle-anticheat-support'." | fold -s
+        echo "Your current ptrace_scope is ${ptrace_scope}, you can change this by running 'ujust toggle-anticheat-support'." | fold -s
         toggle_anticheat=""
         read -rp "Would you like to set ptrace_scope to 1 now? [y/N] " toggle_anticheat
         if [[ "$toggle_anticheat" == [Yy]* ]]; then
             ujust toggle-anticheat-support
             need_reboot=true
-            # assume the user wants steam to have access, cause why else would they say yes
+            # assume the user wants the steam flatpak to have access, cause why else would they say yes
             (( "$method_selection" == 1 )) && flatpak override --user --allow=devel com.valvesoftware.Steam
         fi
-    elif (( "$method_selection" == 1 )); then
-        # ptrace already 1, using flatpak
-        echo "Games with strict anti-cheats, like Easy Anti-Cheat, require Steam to have access to ptrace." | fold -s
-        echo "Your ptrace_scope is ${ptrace_scope}, you can change this by running 'ujust toggle-anticheat-support'." | fold -s
-        read -rp "Would you like to grant Steam the 'allow=devel' permission? [Y/n] " toggle_anticheat
-        toggle_anticheat=${toggle_anticheat:-y}
-        if [[ "$toggle_anticheat" == [Yy]* ]]; then
-            flatpak override --user --allow=devel com.valvesoftware.Steam
-        fi
-        if [[ "$toggle_anticheat" == [Nn]* ]]; then
-            flatpak override --user --disallow=devel com.valvesoftware.Steam
-        fi
-        echo "You can change this again later using Flatseal."
     fi
 
     if [[ "$need_reboot" == true ]]; then

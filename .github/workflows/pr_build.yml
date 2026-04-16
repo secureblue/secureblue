@@ -144,6 +144,7 @@ jobs:
             na.edge.kernel.org:443
             nnenix.mm.fcix.net:443
             nocix.mm.fcix.net:443
+            nullroute.mm.fcix.net:443
             ohioix.mm.fcix.net:443
             opencolo.mm.fcix.net:443
             ord.mirror.rackspace.com:443
@@ -158,6 +159,7 @@ jobs:
             southfront.mm.fcix.net:443
             stix.mm.fcix.net:443
             us.mirrors.cicku.me:443
+            veronanetworks.mm.fcix.net:443
             volico.mm.fcix.net:443
             yxeix.mm.fcix.net:443
             yycix.mm.fcix.net:443

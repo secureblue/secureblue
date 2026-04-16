@@ -58,7 +58,7 @@
 		},
 		{
 			"providerName": "Mullvad",
-			"providerDescription": "has content filtering, anycast",
+			"providerDescription": "has content filtering, anycast\n   ⚠️  Mullvad filtering may block secureblue updates.",
 			"servers": [
 				{
 					"serverDescription": "No filtering",

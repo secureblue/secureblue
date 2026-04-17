@@ -65,7 +65,7 @@ jobs:
       - name: Build ISO        
         id: iso_build
         env:
-          IMAGE_REF: ghcr.io/secureblue/${{ matrix.image }}:br-next-44 
+          IMAGE_REF: ghcr.io/secureblue/${{ matrix.image }}:latest
         uses: RoyalOughtness/titanoboa@3d19fdfa8bff13542c0bb92620ed7826f1bbe82c # main
         with:
           image-ref: ${{ env.IMAGE_REF }}

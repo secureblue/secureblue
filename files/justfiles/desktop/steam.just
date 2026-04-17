@@ -61,7 +61,7 @@ install-steam:
 
             if (( "$ptrace_scope" <= 1 )); then
                 echo "Games with strict anti-cheats, like Easy Anti-Cheat, require Steam to have access to ptrace." | fold -s
-                echo "Your ptrace_scope is ${ptrace_scope}, you can change this by running 'ujust toggle-anticheat-support'." | fold -s
+                echo "Your ptrace_scope is already ${ptrace_scope}, you can change this by running 'ujust toggle-anticheat-support'." | fold -s
                 read -rp "Would you like to grant Steam the 'allow=devel' permission? [Y/n] " toggle_anticheat
                 toggle_anticheat=${toggle_anticheat:-y}
                 if [[ "$toggle_anticheat" == [Yy]* ]]; then

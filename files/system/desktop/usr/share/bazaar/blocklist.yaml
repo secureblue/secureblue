@@ -4,7 +4,9 @@ blocklists:
       # Verified Chromium-based browsers.
       - com.brave.Browser
       - com.jiosphere.JioSphere
+      - com.opera.opera-gx
       - io.github.ungoogled_software.ungoogled_chromium
+      - org.ecosia.Browser
       - org.kde.falkon
       - ru.yandex.Browser
 

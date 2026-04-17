@@ -27,7 +27,7 @@ jobs:
 
     steps:
       - name: Enable egress auditing
-        uses: step-security/harden-runner@fe104658747b27e96e4f7e80cd0a94068e53901d # v2.16.1
+        uses: step-security/harden-runner@6c3c2f2c1c457b00c10c4848d6f5491db3b629df # v2.18.0
         with:
           egress-policy: block
           allowed-endpoints: >
@@ -144,6 +144,7 @@ jobs:
             na.edge.kernel.org:443
             nnenix.mm.fcix.net:443
             nocix.mm.fcix.net:443
+            nullroute.mm.fcix.net:443
             ohioix.mm.fcix.net:443
             opencolo.mm.fcix.net:443
             ord.mirror.rackspace.com:443
@@ -158,6 +159,7 @@ jobs:
             southfront.mm.fcix.net:443
             stix.mm.fcix.net:443
             us.mirrors.cicku.me:443
+            veronanetworks.mm.fcix.net:443
             volico.mm.fcix.net:443
             yxeix.mm.fcix.net:443
             yycix.mm.fcix.net:443

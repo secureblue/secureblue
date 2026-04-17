@@ -7,8 +7,7 @@
 
 set -euo pipefail
 
-
-IMAGE_TAG="br-next-44"
+IMAGE_TAG="latest"
 IMAGE_VARIANT_ID=$(grep '^VARIANT_ID=' /etc/os-release | cut -d= -f2)
 IMAGE_REF="ostree-image-signed:docker://ghcr.io/secureblue/$IMAGE_VARIANT_ID"
 IMAGE_REF="${IMAGE_REF##*://}"

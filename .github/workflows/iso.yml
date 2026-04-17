@@ -100,16 +100,16 @@ jobs:
           mv "${CHECKSUM_NAME}" "$TARGET_OUTPUT_DIRECTORY"
           cd "$TARGET_OUTPUT_DIRECTORY"
 
-          HASH=$(cat "${CHECKSUM_NAME}" | cut -d ' ' -f1)	
-          ISO_SIZE=$(stat -c %s "${ISO_NAME}")	
-          ISO_FILE_NAME="${ISO_NAME}"	
-          {	
-            echo "# $ISO_FILE_NAME: $ISO_SIZE bytes"	
-            echo "SHA256 ($ISO_FILE_NAME) = $HASH"	
-          } > "${CHECKSUM_NAME}"	
+          HASH=$(cat "${CHECKSUM_NAME}" | cut -d ' ' -f1)
+          ISO_SIZE=$(stat -c %s "${ISO_NAME}")
+          ISO_FILE_NAME="${ISO_NAME}"
+          {
+            echo "# $ISO_FILE_NAME: $ISO_SIZE bytes"
+            echo "SHA256 ($ISO_FILE_NAME) = $HASH"
+          } > "${CHECKSUM_NAME}"
 
-          echo "CHECKSUM contents"	
-          cat "${CHECKSUM_NAME}"	
+          echo "CHECKSUM contents"
+          cat "${CHECKSUM_NAME}"
           echo
 
           echo "${ISO_SIGNING_KEY}" | gpg --import

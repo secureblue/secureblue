@@ -113,29 +113,29 @@ jobs:
 
           echo "${ISO_SIGNING_KEY}" | gpg --import
 
-          echo "Signing the ISO"	
-          gpg --clearsign -u 26B4463ED8F313BC7E3FBDF9D9223AF0F47B3E41 "${CHECKSUM_NAME}"	
+          echo "Signing the ISO"
+          gpg --clearsign -u 26B4463ED8F313BC7E3FBDF9D9223AF0F47B3E41 "${CHECKSUM_NAME}"
           mv "${CHECKSUM_NAME}.asc" "${CHECKSUM_NAME}"
 
-          echo "Signed CHECKSUM contents"	
-          cat "${CHECKSUM_NAME}"	
+          echo "Signed CHECKSUM contents"
+          cat "${CHECKSUM_NAME}"
           echo
 
-          # validate signature	
-          curl -fLsS --retry 5 -O "https://repo.secureblue.dev/secureblue.gpg"	
-          gpg --no-default-keyring --keyring ./secureblue-keyring.gpg --import secureblue.gpg	
+          # validate signature
+          curl -fLsS --retry 5 -O "https://repo.secureblue.dev/secureblue.gpg"
+          gpg --no-default-keyring --keyring ./secureblue-keyring.gpg --import secureblue.gpg
 
-          if ! gpgv --keyring ./secureblue-keyring.gpg "${CHECKSUM_NAME}"; then	
-              echo "CHECKSUM signature verification FAILED! Exiting..."	
-              exit 1	
+          if ! gpgv --keyring ./secureblue-keyring.gpg "${CHECKSUM_NAME}"; then
+              echo "CHECKSUM signature verification FAILED! Exiting..."
+              exit 1
           fi
 
-          if ! sha256sum --ignore-missing -c "${CHECKSUM_NAME}"; then	
-              echo "CHECKSUM verification FAILED! Exiting..."	
-              exit 1	
+          if ! sha256sum --ignore-missing -c "${CHECKSUM_NAME}"; then
+              echo "CHECKSUM verification FAILED! Exiting..."
+              exit 1
           fi
 
-          rm ./secureblue-keyring.gpg~	
+          rm ./secureblue-keyring.gpg~
           rm secureblue.gpg
 
           echo "output-directory=${TARGET_OUTPUT_DIRECTORY}" >> ${GITHUB_OUTPUT}

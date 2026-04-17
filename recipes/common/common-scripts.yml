@@ -12,7 +12,6 @@ scripts:
   - disableresolved.sh
   - setup-dnsconfd.sh
   - authselect.sh
-  - createmissingdirectories.sh
   - disablegeoclue.sh
   - disable-sshd-vsock.sh
   - removefedoraflatpakremoteservice.sh

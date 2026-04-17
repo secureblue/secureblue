@@ -158,4 +158,4 @@ EOF
 # enable xwayland
 rm -f /etc/systemd/user/org.gnome.Shell@user.service.d/override.conf
 rm -f /etc/systemd/user/plasma-kwin_wayland.service.d/override.conf
-rm /etc/sway/config.d/99-noxwayland.conf
+rm -f /etc/sway/config.d/99-noxwayland.conf

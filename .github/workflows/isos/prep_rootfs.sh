@@ -155,5 +155,7 @@ bootc switch --mutate-in-place --enforce-container-sigpolicy --transport registr
 %end
 EOF
 
-sed -i 's/^SELINUX=.*/SELINUX=enforcing/' /etc/selinux/config
-sed -i 's/^SELINUXTYPE=.*/SELINUXTYPE=targeted/' /etc/selinux/config
+# enable xwayland
+rm -f /etc/systemd/user/org.gnome.Shell@user.service.d/override.conf
+rm -f /etc/systemd/user/plasma-kwin_wayland.service.d/override.conf
+rm /etc/sway/config.d/99-noxwayland.conf

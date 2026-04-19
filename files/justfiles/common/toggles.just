@@ -191,16 +191,18 @@ toggle-bash-environment-lockdown skip_approval="false" apply_for_all_users="prom
         echo "Applying for user: $user"
         user_home="$(getent passwd "$user" | awk -F':' '{ print $6}')"
         [ -d "$user_home" ] || { echo "Variable \$user_home for $user is somehow empty (check your getent passwd entries)"; echo "safely exiting."; exit 1; }
+        xdg_config="$(run0 -i --user="$user" printenv XDG_CONFIG_HOME)"
+        user_config=${xdg_config:-"$user_home/.config"}
 
         BASH_ENV_FILES=(
             "$user_home/.bashrc"
             "$user_home/.bash_profile"
-            "$user_home/.config/bash_completion"
             "$user_home/.profile"
             "$user_home/.bash_logout"
             "$user_home/.bash_login"
             "$user_home/.bashrc.d/"
-            "$user_home/.config/environment.d/"
+            "$user_config/bash_completion"
+            "$user_config/environment.d/"
         )
 
         # Purpose of the below block is to actually lock or unlock the current selected user

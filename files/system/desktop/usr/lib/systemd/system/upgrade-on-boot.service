@@ -8,6 +8,7 @@ Before=systemd-user-sessions.service plymouth-quit.service
 [Service]
 Type=oneshot
 RemainAfterExit=yes
+ExecStartPre=/bin/sh -c 'systemctl is-active systemd-resolved.service || (systemctl is-active dnsconfd.service && systemctl is-active unbound.service)'
 ExecStart=/usr/libexec/secureblue/upgrade-on-boot
 SELinuxContext=system_u:system_r:unconfined_t:s0
 

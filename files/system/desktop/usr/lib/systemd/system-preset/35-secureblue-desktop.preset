@@ -56,5 +56,3 @@ disable ModemManager.service
 
 # Enable upgrade-on-boot
 enable upgrade-on-boot.service
-enable upgrade-on-boot.target
-

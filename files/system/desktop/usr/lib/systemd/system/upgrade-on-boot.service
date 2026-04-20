@@ -1,5 +1,5 @@
 [Unit]
-Description=First Boot Upgrade
+Description=Upgrade On Boot
 After=rpm-ostreed.service tuned.service network-online.target nss-lookup.target plymouth-start.service
 Wants=network-online.target
 Requires=plymouth-start.service

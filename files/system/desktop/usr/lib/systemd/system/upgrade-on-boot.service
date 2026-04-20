@@ -8,6 +8,7 @@ Before=systemd-user-sessions.service plymouth-quit.service
 [Service]
 Type=oneshot
 RemainAfterExit=yes
+ExecCondition=bash -c '/usr/libexec/secureblue/securebluecheckoutofdate || test -f /var/lib/secureblue/always-upgrade-on-boot.stamp'
 ExecStart=/usr/libexec/secureblue/upgrade-on-boot
 SELinuxContext=system_u:system_r:unconfined_t:s0
 

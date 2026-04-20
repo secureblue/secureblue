@@ -3,15 +3,6 @@
 set -euox pipefail
 
 echo "Starting upgrade-on-boot service"
-image_date=$(rpm-ostree status --json --booted | jq -cr '.deployments[0].timestamp')
-current_seconds=$(date +%s)
-difference=$((current_seconds - image_date))
-# week=$((7 * 24 * 60 * 60))
-day=$((24 * 60 * 60))
-if (( difference < day )); then
-    echo "Image is less than a day old. Booting current deployment."
-    exit 0  
-fi
 
 UPDATE_FAILURE_STRING="Update failed, booting existing deployment..."
 CANCEL_STRING="Press Q to cancel and boot the existing deployment."

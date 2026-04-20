@@ -1,14 +1,13 @@
 [Unit]
 Description=First Boot Upgrade
-After=upgrade-on-boot.target
-Requires=upgrade-on-boot.target
-WantedBy=upgrade-on-boot.target
+After=rpm-ostreed.service tuned.service network-online.target nss-lookup.target plymouth-start.service
+Wants=network-online.target
+Requires=plymouth-start.service
 Before=systemd-user-sessions.service plymouth-quit.service
 
 [Service]
 Type=oneshot
 RemainAfterExit=yes
-ExecCondition=bash -c '/usr/libexec/secureblue/securebluecheckoutofdate || test -f /var/lib/secureblue/always-upgrade-on-boot.stamp'
 ExecStart=/usr/libexec/secureblue/upgrade-on-boot
 SELinuxContext=system_u:system_r:unconfined_t:s0
 

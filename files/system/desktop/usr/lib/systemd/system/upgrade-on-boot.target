@@ -1,8 +1,0 @@
-[Unit]
-Description=First Boot Upgrade Target
-After=rpm-ostreed.service tuned.service network-online.target plymouth-start.service
-Wants=network-online.target
-Requires=plymouth-start.service
-
-[Install]
-WantedBy=multi-user.target

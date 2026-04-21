@@ -8,7 +8,7 @@ The primary goal of the blocklist is to block **web browsers**. For clarity, thi
 
 This is because the majority of web browsers have *much weaker sandboxing* as flatpaks. There are partial mitigations to this problem, but nothing is able to completely resolve it. As such, we want to discourage installing browsers through Flatpak, and encourage much safer native installations.
 
-Although, if a browser officially implements process-level sandboxing within Flatpak, as an intentional method they expect you to use, and it's not a significant security degradation relative to other methods; the browser can be permitted. The only known example of this is `org.gnome.Epiphany`.
+As an exception, if a browser's internal sandboxing is designed to work within Flatpak, and it's not a significant security degradation relative to other methods, the browser can be permitted. The only known example of this is `org.gnome.Epiphany`.
 
 ## Apps not in scope
 
@@ -19,10 +19,6 @@ We also don't want to start excluding apps which are *related* to browsers. For 
 ## Examples
 
 From unambiguously browsers, to unambiguously not browsers.
-
-### `com.google.Chrome`
-
-Unambiguously a **web browser**. If anything, it's *the* web browser.
 
 ### `org.torproject.torbrowser-launcher`
 
@@ -45,7 +41,3 @@ Somewhat ambiguous, but **not** a web browser. The majority of the client fits i
 ### `app.fluxer.Fluxer`
 
 Unambiguously **not** a web browser. It only loads one window containing [fluxer.app](https://fluxer.app), and any external links always open in the user's default browser, making it a web-based app.
-
-### `org.gnome.Robots`
-
-Unambiguously **not** a web browser. This video game doesn't contain any web technology whatsoever, and doesn't even have internet permissions. The only risk here is being killed by robots.

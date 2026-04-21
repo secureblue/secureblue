@@ -12,7 +12,7 @@ As an exception, if a browser's internal sandboxing is designed to work within F
 
 ## Apps not in scope
 
-We do *not* want to exclude every app based on web technologies. Most of these are **web-based apps**, executing code which should be trusted by the developer. This makes the weakened sandbox much less concerning, especially if you keep the Flatpak permissions strict. That said, we still encourage using PWA alternatives in Trivalent whenever possible, as they can be much more strictly sandboxed.
+We do *not* want to exclude every app based on web technologies. Most of these are **web-based apps**, executing code which should be trusted by the developer. This makes the weakened sandbox less concerning, especially if you keep the Flatpak permissions strict. That said, we still encourage using PWA alternatives in Trivalent whenever possible, as they benefit from Trivalent's hardening and confinement.
 
 We also don't want to start excluding apps which are *related* to browsers. For example, `dev.qwery.AddWater` installs a theme for Firefox. This app does *not* have a web engine, despite being directly tied to a program which does. While you can't acquire Firefox through Bazaar, it could be installed another way if the user truly desires. That is up to the user to decide.
 

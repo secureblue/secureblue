@@ -6,19 +6,17 @@ echo "Starting upgrade-on-boot service"
 
 UPDATE_FAILURE_STRING="Update failed, booting existing deployment..."
 CANCEL_STRING="Press Q to cancel and boot the existing deployment."
+NO_UPDATE_STRING="No update available, booting current deployment"
 
 plymouth watch-keystroke --keys="qQ" --command "systemctl stop upgrade-on-boot.service" &
 BOOTC_UPGRADE_CHECK_OUTPUT="$(bootc upgrade --check 2>&1)" || true
 
 if grep -q "local rpm-ostree modifications" <<< "$BOOTC_UPGRADE_CHECK_OUTPUT"; then
     echo "Using rpm-ostree"
-    # https://github.com/coreos/rpm-ostree/issues/1579#issuecomment-4141760891
-    # `rpm-ostree upgrade --check` is broken/unreliable. As such, this section *assumes*
-    # that an upgrade is available. This is a terrible experience during testing, 
-    # since if packages are layered then `rpm-ostree` will be used, and 
-    # `rpm-ostree` will run every specified interval regardless of whether an 
-    # upgrade is actually available. However, in production this script will only run
-    # at most weekly, after which time a new image will almost certainly be available.
+    if ! /usr/libexec/secureblue/system-update-available; then
+        echo "$NO_UPDATE_STRING"
+        exit 0
+    fi
     plymouth message --text="Staging update... $CANCEL_STRING"
     rpm-ostree upgrade
     RPM_OSTREE_EXIT=$?
@@ -30,7 +28,7 @@ if grep -q "local rpm-ostree modifications" <<< "$BOOTC_UPGRADE_CHECK_OUTPUT"; t
 else
     echo "Using bootc"
     if grep -q "No changes" <<< "$BOOTC_UPGRADE_CHECK_OUTPUT"; then
-        echo "No update available, booting current deployment"
+        echo "$NO_UPDATE_STRING"
         exit 0
     fi
 

@@ -30,7 +30,7 @@ jq '.transports["containers-storage"][""][0].type = "insecureAcceptAnything"' /e
 
 # Disable suspend/sleep during live environment and initial setup
 # This prevents the system from suspending during installation or first-boot user creation
-echo '
+tee /usr/share/glib-2.0/schemas/zz3-secureblue-installer-power.gschema.override <<'EOF'
 [org.gnome.settings-daemon.plugins.power]
 sleep-inactive-ac-type='nothing'
 sleep-inactive-battery-type='nothing'
@@ -39,7 +39,7 @@ sleep-inactive-battery-timeout=0
 
 [org.gnome.desktop.session]
 idle-delay=uint32 0
-' > /usr/share/glib-2.0/schemas/zz3-secureblue-installer-power.gschema.override
+EOF
 
 sed -i '/^UMASK[[:blank:]]/s/027/022/' /etc/login.defs
 

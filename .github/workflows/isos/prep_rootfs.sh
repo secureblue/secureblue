@@ -13,16 +13,13 @@ IMAGE_REF="ghcr.io/secureblue/$IMAGE_VARIANT_ID"
 
 sed -i '/^install squashfs /d' /usr/lib/modprobe.d/secureblue.conf
 
-systemctl disable bootloader-update.service
-systemctl disable rpm-ostree-countme.service
-
 dnf remove -y google-noto-fonts-all homebrew
 dnf install -y secureblue-logos
 dnf reinstall -y polkit
 dnf install -y anaconda-live firefox libblockdev-btrfs libblockdev-btrfs libblockdev-lvm libblockdev-dm
 
 systemctl disable --global secureblue-flatpak-setup.service secureblue-flatpak-setup.timer podman-auto-update.timer flatpak-user-update.timer
-systemctl disable rpm-ostreed-automatic.timer rpm-ostree-countme.service
+systemctl disable rpm-ostreed-automatic.timer rpm-ostree-countme.service bootloader-update.service 
 
 rm -f /usr/share/applications/org.mozilla.Firefox.desktop /usr/share/applications/org.mozilla.firefox.desktop /usr/share/applications/firefox.desktop /usr/share/applications/firefox-wayland.desktop /usr/share/applications/firefox-x11.desktop
 
@@ -33,7 +30,7 @@ jq '.transports["containers-storage"][""][0].type = "insecureAcceptAnything"' /e
 
 # Disable suspend/sleep during live environment and initial setup
 # This prevents the system from suspending during installation or first-boot user creation
-tee /usr/share/glib-2.0/schemas/zz3-secureblue-installer-power.gschema.override <<'EOF'
+echo '
 [org.gnome.settings-daemon.plugins.power]
 sleep-inactive-ac-type='nothing'
 sleep-inactive-battery-type='nothing'
@@ -42,7 +39,7 @@ sleep-inactive-battery-timeout=0
 
 [org.gnome.desktop.session]
 idle-delay=uint32 0
-EOF
+' > /usr/share/glib-2.0/schemas/zz3-secureblue-installer-power.gschema.override
 
 sed -i '/^UMASK[[:blank:]]/s/027/022/' /etc/login.defs
 
@@ -50,15 +47,15 @@ sed -i '/^UMASK[[:blank:]]/s/027/022/' /etc/login.defs
 rm -f /etc/xdg/autostart/org.gnome.Software.desktop
 
 # disable the gnome-software shell search provider
-tee /usr/share/gnome-shell/search-providers/org.gnome.Software-search-provider.ini <<EOF
+echo '
 DefaultDisabled=true
-EOF
+' > /usr/share/gnome-shell/search-providers/org.gnome.Software-search-provider.ini
 
 
 sed -i -e 's/ Fedora/ secureblue/' /usr/share/anaconda/gnome/fedora-welcome || true
 sed -i -e 's/Fedora/secureblue/g' /usr/share/anaconda/gnome/org.fedoraproject.welcome-screen.desktop
 
-cat "
+cat '
 # Anaconda configuration file for secureblue
 
 [Profile]
@@ -94,12 +91,11 @@ password_policies =
         root (quality 100, length 15)
         user (quality 50, length 15)
         luks (quality 100, length 20)
-EOF
-
+' > /etc/anaconda/profile.d/secureblue.conf 
 
 # Fetch the Secureboot Public Key
 sbkey='https://github.com/secureblue/secureblue/raw/0d8f58d7c6482e97a620a336643fadff55dcd352/files/system/etc/pki/akmods/certs/akmods-secureblue.der'
-curl --retry 15 -Lo /etc/sb_pubkey.der "$sbkey"
+curl --retry 15 -Lo /etc/sb_pubkey.der $sbkey
 
 # Enroll Secureboot Key
 tee /usr/share/anaconda/post-scripts/secureboot-enroll-key.ks <<'EOF'
@@ -127,8 +123,7 @@ fi
 mokutil --timeout -1 || true
 echo -e "$ENROLLMENT_PASSWORD\n$ENROLLMENT_PASSWORD" | mokutil --import "$SECUREBOOT_KEY" || true
 %end
-" > /etc/anaconda/profile.d/secureblue.conf 
-
+EOF
 
 # Interactive Kickstart
 tee -a /usr/share/anaconda/interactive-defaults.ks <<EOF
@@ -145,6 +140,4 @@ bootc switch --mutate-in-place --enforce-container-sigpolicy --transport registr
 EOF
 
 # enable xwayland
-rm -f /etc/systemd/user/org.gnome.Shell@user.service.d/override.conf
-rm -f /etc/systemd/user/plasma-kwin_wayland.service.d/override.conf
-rm -f /etc/sway/config.d/99-noxwayland.conf
+rm -f /etc/sway/config.d/99-noxwayland.conf /etc/systemd/user/org.gnome.Shell@user.service.d/override.conf /etc/systemd/user/plasma-kwin_wayland.service.d/override.conf

@@ -31,12 +31,8 @@ if ! [ -d $ETC_CONTAINER_DIR/registries.d ]; then
    mkdir -p "$ETC_CONTAINER_DIR/registries.d"
 fi
 
-if ! [ -d "/usr/etc/pki/containers" ]; then
-    mkdir -p "/usr/etc/pki/containers"
-fi
-
-if ! [ -d "/etc/pki/containers" ]; then
-    mkdir -p "/etc/pki/containers"
+if ! [ -d "/usr/share/pki/containers" ]; then
+    mkdir -p "/usr/share/pki/containers"
 fi
 
 cp "$MODULE_DIRECTORY/secureblue-signing/policy.json" "$CONTAINER_DIR/policy.json"
@@ -51,8 +47,8 @@ jq --arg image_registry "${IMAGE_REGISTRY}" \
         {
             "type": "sigstoreSigned",
             "keyPaths": [
-              ("/usr/etc/pki/containers/" + $image_registry_title + ".pub"),
-              ("/usr/etc/pki/containers/" + $image_registry_title + "-2025.pub")
+              ("/usr/share/pki/containers/" + $image_registry_title + ".pub"),
+              ("/usr/share/pki/containers/" + $image_registry_title + "-2025.pub")
             ],
             "signedIdentity": {
                 "type": "matchRepository"
@@ -60,7 +56,6 @@ jq --arg image_registry "${IMAGE_REGISTRY}" \
         }
     ] } + .' "${POLICY_FILE}" > POLICY.tmp
 
-# covering our bases here since /usr/etc is technically unsupported, reevaluate once bootc is the primary deployment tool
 cp POLICY.tmp /usr/etc/containers/policy.json
 cp POLICY.tmp /etc/containers/policy.json
 rm POLICY.tmp

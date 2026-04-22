@@ -5,7 +5,7 @@
 # SPDX-License-Identifier: Apache-2.0
 
 """
-Disables MAC randomisation
+Disables MAC randomisation.
 """
 
 import os
@@ -13,7 +13,7 @@ import sys
 
 
 def disable_randomization() -> int:
-    """Disables MAC address randomisation"""
+    """Disables MAC address randomisation."""
     try:
         os.remove("/etc/NetworkManager/conf.d/rand_mac.conf")
     except FileNotFoundError:

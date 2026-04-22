@@ -226,6 +226,22 @@ def parse_config(
     return config
 
 
+def is_module_loaded(module_name: str) -> bool:
+    """Check whether the passed module name is currently loaded"""
+
+    try:
+        with open("/proc/modules", encoding="utf8") as fd:
+            return any(line.startswith(module_name + " ") for line in fd)
+    except OSError:
+        return False
+
+
+def loaded_kernel_modules() -> frozenset[str]:
+    """Get the set of currently loaded kernel modules."""
+    with open("/proc/modules", encoding="utf8") as f:
+        return frozenset(line.split(maxsplit=1)[0] for line in f)
+
+
 def is_rpm_package_installed(name: str) -> bool:
     """Checks if the given RPM package is installed."""
     ts = rpm.TransactionSet()

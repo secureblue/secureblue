@@ -3,11 +3,28 @@
 ;; SPDX-License-Identifier: Apache-2.0 OR MIT
 
 (typeattribute userns_privileged_domain)
-(typeattributeset userns_privileged_domain (
-    colord_t container_domain container_runtime_domain devicekit_power_t
-    file_manager_type flatpak_t init_t initrc_t install_t kernel_t spc_t
-    systemsettings_t trivalent_domain trivalent_script_domain
-))
+(typeattributeset userns_privileged_domain (init_t initrc_t install_t kernel_t))
+(optional colord_userns_privileged_domain
+    (typeattributeset userns_privileged_domain (colord_t))
+)
+(optional container_userns_privileged_domain
+    (typeattributeset userns_privileged_domain (container_domain container_runtime_domain spc_t))
+)
+(optional devicekit_power_userns_privileged_domain
+    (typeattributeset userns_privileged_domain (devicekit_power_t))
+)
+(optional file_manager_userns_privileged_domain
+    (typeattributeset userns_privileged_domain (file_manager_type))
+)
+(optional flatpak_userns_privileged_domain
+    (typeattributeset userns_privileged_domain (flatpak_t))
+)
+(optional systemsettings_userns_privileged_domain
+    (typeattributeset userns_privileged_domain (systemsettings_t))
+)
+(optional trivalent_userns_privileged_domain
+    (typeattributeset userns_privileged_domain (trivalent_domain trivalent_script_domain))
+)
 
 (typeattribute userns_restricted_domain)
 (typeattributeset userns_restricted_domain (and (domain) (not (userns_privileged_domain))))

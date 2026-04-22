@@ -61,25 +61,6 @@ override-reset-module mod_name:
       echo "No override found for $MOD_NAME module."
     fi
 
-# disable the webcam kernel module
-disable-webcam:
-    #! /bin/run0 /bin/bash
-    WEBCAM_MOD_FILE="/etc/modprobe.d/99-disable-webcam.conf"
-    if [ -e "$WEBCAM_MOD_FILE" ]; then
-      echo "Webcam module is already disabled."
-    else
-      echo "install uvcvideo /bin/false" > "$WEBCAM_MOD_FILE"
-      chmod 644 "$WEBCAM_MOD_FILE"
-      echo "Override created to disable the webcam module. Reboot to take effect."
-    fi
-
-# reset the webcam kernel module
-reset-webcam:
-    #! /bin/run0 /bin/bash
-    WEBCAM_MOD_FILE="/etc/modprobe.d/99-disable-webcam.conf"
-    rm -f "$WEBCAM_MOD_FILE"
-    echo "Webcam module reset."
-
 # Toggle debug mode (requires restart)
 toggle-debug-mode:
     #! /bin/run0 /bin/bash
@@ -106,6 +87,7 @@ alias toggle-ptrace-scope := toggle-anticheat-support
 toggle-anticheat-support:
     #! /bin/run0 /bin/bash
     set -euo pipefail
+    source /usr/lib/ujust/libformatting.sh
     sysctl_ptrace_file='/etc/sysctl.d/61-ptrace-scope.conf'
     umask 022
     # Remove ptrace_scope = 3 from any lexicographically earlier sysctl conf files.

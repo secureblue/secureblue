@@ -8,7 +8,7 @@ set -euo pipefail
 
 dnf install -y --setopt=install_weak_deps=False policycoreutils-devel
 
-policy_modules=(trivalent flatpakfull nautilus systemsettings thunar)
+policy_modules=(flatpakfull nautilus systemsettings thunar)
 
 cil_policy_modules=(
     './selinux/user_namespace/grant_fm_userns.cil'
@@ -25,6 +25,9 @@ for module in "${policy_modules[@]}"; do
     cd ../..
 done
 
-semodule -v -i ./selinux/*/*.pp "${cil_policy_modules[@]}"
+# Install at priority 300 to be higher-priority than policies from RPM packages
+# (which are conventionally priority 200) but lower-priority than custom
+# policies set by a local administrator (which default to priority 400).
+semodule -v -X 300 -i ./selinux/*/*.pp "${cil_policy_modules[@]}"
 
 restorecon -FRv /usr

@@ -30,7 +30,7 @@ jq '.transports["containers-storage"][""][0].type = "insecureAcceptAnything"' /e
 
 # Disable suspend/sleep during live environment and initial setup
 # This prevents the system from suspending during installation or first-boot user creation
-tee /usr/share/glib-2.0/schemas/zz3-secureblue-installer-power.gschema.override <<'EOF'
+cat > /usr/share/glib-2.0/schemas/zz3-secureblue-installer-power.gschema.override <<'EOF'
 [org.gnome.settings-daemon.plugins.power]
 sleep-inactive-ac-type='nothing'
 sleep-inactive-battery-type='nothing'
@@ -55,7 +55,7 @@ DefaultDisabled=true
 sed -i -e 's/ Fedora/ secureblue/' /usr/share/anaconda/gnome/fedora-welcome || true
 sed -i -e 's/Fedora/secureblue/g' /usr/share/anaconda/gnome/org.fedoraproject.welcome-screen.desktop
 
-cat '
+cat > /etc/anaconda/profile.d/secureblue.conf <<'EOF'
 # Anaconda configuration file for secureblue
 
 [Profile]
@@ -91,7 +91,7 @@ password_policies =
         root (quality 100, length 15)
         user (quality 50, length 15)
         luks (quality 100, length 20)
-' > /etc/anaconda/profile.d/secureblue.conf 
+EOF
 
 # Fetch the Secureboot Public Key
 sbkey='https://github.com/secureblue/secureblue/raw/0d8f58d7c6482e97a620a336643fadff55dcd352/files/system/etc/pki/akmods/certs/akmods-secureblue.der'

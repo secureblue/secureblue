@@ -9,10 +9,9 @@ set -euo pipefail
 
 IMAGE_TAG="latest"
 IMAGE_VARIANT_ID=$(grep '^VARIANT_ID=' /etc/os-release | cut -d= -f2)
-IMAGE_REF="ostree-image-signed:docker://ghcr.io/secureblue/$IMAGE_VARIANT_ID"
-IMAGE_REF="${IMAGE_REF##*://}"
+IMAGE_REF="ghcr.io/secureblue/$IMAGE_VARIANT_ID"
 
-sed -i '/^install squashfs \/bin\/false$/d' /usr/lib/modprobe.d/secureblue.conf
+sed -i '/^install squashfs /d' /usr/lib/modprobe.d/secureblue.conf
 
 systemctl disable bootloader-update.service
 systemctl disable rpm-ostree-countme.service
@@ -22,27 +21,19 @@ dnf install -y secureblue-logos
 dnf reinstall -y polkit
 dnf install -y anaconda-live firefox libblockdev-btrfs libblockdev-btrfs libblockdev-lvm libblockdev-dm
 
-systemctl disable --global secureblue-flatpak-setup.service
-systemctl disable --global secureblue-flatpak-setup.timer
-systemctl disable --global podman-auto-update.timer
-systemctl disable --global flatpak-user-update.timer
-systemctl disable rpm-ostreed-automatic.timer
-systemctl disable rpm-ostree-countme.service
+systemctl disable --global secureblue-flatpak-setup.service secureblue-flatpak-setup.timer podman-auto-update.timer flatpak-user-update.timer
+systemctl disable rpm-ostreed-automatic.timer rpm-ostree-countme.service
 
-rm -f /usr/share/applications/org.mozilla.Firefox.desktop
-rm -f /usr/share/applications/org.mozilla.firefox.desktop
-rm -f /usr/share/applications/firefox.desktop
-rm -f /usr/share/applications/firefox-wayland.desktop
-rm -f /usr/share/applications/firefox-x11.desktop
+rm -f /usr/share/applications/org.mozilla.Firefox.desktop /usr/share/applications/org.mozilla.firefox.desktop /usr/share/applications/firefox.desktop /usr/share/applications/firefox-wayland.desktop /usr/share/applications/firefox-x11.desktop
 
-# add intaller to kickoff
-sed -i '2s/$/;liveinst.desktop/' /usr/share/kde-settings/kde-profile/default/xdg/kicker-extra-favoritesrc || true
+# add installer to kickoff
+sed -i '/^Prepend=/s/$/;liveinst.desktop/' /usr/share/kde-settings/kde-profile/default/xdg/kicker-extra-favoritesrc || true
 
 jq '.transports["containers-storage"][""][0].type = "insecureAcceptAnything"' /etc/containers/policy.json | tee /etc/containers/policy.json.tmp && mv /etc/containers/policy.json.tmp /etc/containers/policy.json
 
 # Disable suspend/sleep during live environment and initial setup
 # This prevents the system from suspending during installation or first-boot user creation
-tee /usr/share/glib-2.0/schemas/zz3-secureblue-installer-power.gschema.override <<EOF
+tee /usr/share/glib-2.0/schemas/zz3-secureblue-installer-power.gschema.override <<'EOF'
 [org.gnome.settings-daemon.plugins.power]
 sleep-inactive-ac-type='nothing'
 sleep-inactive-battery-type='nothing'
@@ -53,7 +44,7 @@ sleep-inactive-battery-timeout=0
 idle-delay=uint32 0
 EOF
 
-sed -i 's/^UMASK\t\t027/UMASK\t\t022/' /etc/login.defs
+sed -i '/^UMASK[[:blank:]]/s/027/022/' /etc/login.defs
 
 # don't autostart gnome-software session service
 rm -f /etc/xdg/autostart/org.gnome.Software.desktop
@@ -64,10 +55,10 @@ DefaultDisabled=true
 EOF
 
 
-sed -i 's| Fedora| secureblue|' /usr/share/anaconda/gnome/fedora-welcome || true
-sed -i -e "s/Fedora/secureblue/g" /usr/share/anaconda/gnome/org.fedoraproject.welcome-screen.desktop
+sed -i -e 's/ Fedora/ secureblue/' /usr/share/anaconda/gnome/fedora-welcome || true
+sed -i -e 's/Fedora/secureblue/g' /usr/share/anaconda/gnome/org.fedoraproject.welcome-screen.desktop
 
-tee /etc/anaconda/profile.d/secureblue.conf <<'EOF'
+cat "
 # Anaconda configuration file for secureblue
 
 [Profile]
@@ -107,7 +98,7 @@ EOF
 
 
 # Fetch the Secureboot Public Key
-sbkey='https://github.com/secureblue/secureblue/raw/refs/heads/live/files/system/etc/pki/akmods/certs/akmods-secureblue.der'
+sbkey='https://github.com/secureblue/secureblue/raw/0d8f58d7c6482e97a620a336643fadff55dcd352/files/system/etc/pki/akmods/certs/akmods-secureblue.der'
 curl --retry 15 -Lo /etc/sb_pubkey.der "$sbkey"
 
 # Enroll Secureboot Key
@@ -128,16 +119,15 @@ if [[ ! -f "$SECUREBOOT_KEY" ]]; then
     exit 0
 fi
 
-SYS_ID="$(cat /sys/devices/virtual/dmi/id/product_name)"
-if [[ ":Jupiter:Galileo:" =~ ":$SYS_ID:" ]]; then
+if grep -Eq 'Jupiter|Galileo' /sys/devices/virtual/dmi/id/product_name; then
     echo "Steam Deck hardware detected. Skipping key enrollment."
     exit 0
 fi
 
-mokutil --timeout -1 || :
-echo -e "$ENROLLMENT_PASSWORD\n$ENROLLMENT_PASSWORD" | mokutil --import "$SECUREBOOT_KEY" || :
+mokutil --timeout -1 || true
+echo -e "$ENROLLMENT_PASSWORD\n$ENROLLMENT_PASSWORD" | mokutil --import "$SECUREBOOT_KEY" || true
 %end
-EOF
+" > /etc/anaconda/profile.d/secureblue.conf 
 
 
 # Interactive Kickstart

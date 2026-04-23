@@ -82,7 +82,7 @@ def disable_always_upgrade_on_boot(currently_enabled: bool) -> int:
     return exit_code
 
 
-def run(mode: ToggleMode, *) -> int:
+def run(mode: ToggleMode) -> int:
     """Run the logic for enabling or disabling always-upgrade-on-boot."""
     if mode == ToggleMode.HELP:
         print(HELP_MESSAGE)

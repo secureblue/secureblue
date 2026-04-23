@@ -6,7 +6,6 @@
 
 """Enable, disable, or check status of always-upgrade-on-boot."""
 
-import subprocess
 import sys
 from typing import Final
 
@@ -58,7 +57,8 @@ def enable_always_upgrade_on_boot(currently_enabled: bool) -> int:
         print("always-upgrade-on-boot is already enabled.")
         return 0
     print_wrapped(f"""
-        always-upgrade-on-boot is currently disabled. Enabling it now by creating file '{ALWAYS_UPGRADE_ON_BOOT_STAMPFILE}'.
+        always-upgrade-on-boot is currently disabled. 
+        Enabling it now by creating file '{ALWAYS_UPGRADE_ON_BOOT_STAMPFILE}'.
     """)
     exit_code = sandbox.run(stampfile_function, "create", ALWAYS_UPGRADE_ON_BOOT_STAMPFILE)
     if exit_code == 0:
@@ -72,7 +72,8 @@ def disable_always_upgrade_on_boot(currently_enabled: bool, *, prompt: bool = Tr
         print("always-upgrade-on-boot is already disabled.")
         return 0
     print_wrapped(f"""
-        always-upgrade-on-boot is currently enabled. Disabling it now by creating file '{ALWAYS_UPGRADE_ON_BOOT_STAMPFILE}'.
+        always-upgrade-on-boot is currently enabled. 
+        Disabling it now by creating file '{ALWAYS_UPGRADE_ON_BOOT_STAMPFILE}'.
     """)
     exit_code = sandbox.run(stampfile_function, "delete", ALWAYS_UPGRADE_ON_BOOT_STAMPFILE)
     if exit_code == 0:

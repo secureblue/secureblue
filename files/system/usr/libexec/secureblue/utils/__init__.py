@@ -127,6 +127,11 @@ def print_wrapped(text: str, *, width: int = 70) -> None:
     print(textwrap.fill(" ".join(text.split()), width=width))
 
 
+def print_dedent(text: str) -> None:
+    """Print text to stdout, wrapped to the given width."""
+    print(textwrap.dedent(text).strip())
+
+
 def print_err(text: str) -> None:
     """Print text to stderr in bold and red."""
     print(BOLD + RED + text + RESET, file=sys.stderr)

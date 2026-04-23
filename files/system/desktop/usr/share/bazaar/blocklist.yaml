@@ -1,6 +1,10 @@
 blocklists:
   - priority: 0
     block:
+      # This list generally serves a specific purpose, and we're avoiding scope creep.
+      # In short: We're targeting web browsers, not web engines.
+      # Please read the adjacent README.md before submitting any changes!
+
       # Verified Chromium-based browsers.
       - com.brave.Browser
       - com.jiosphere.JioSphere

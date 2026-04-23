@@ -67,7 +67,7 @@ def enable_always_upgrade_on_boot(currently_enabled: bool) -> int:
     return exit_code
 
 
-def disable_always_upgrade_on_boot(currently_enabled: bool, *) -> int:
+def disable_always_upgrade_on_boot(currently_enabled: bool) -> int:
     """Disable always-upgrade-on-boot."""
     if not currently_enabled:
         print("always-upgrade-on-boot is already disabled.")

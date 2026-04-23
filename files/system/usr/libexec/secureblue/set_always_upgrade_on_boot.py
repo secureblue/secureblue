@@ -8,6 +8,7 @@
 
 import sys
 from typing import Final
+from pathlib import Path
 
 import sandbox
 from utils import (
@@ -57,7 +58,7 @@ def enable_always_upgrade_on_boot(currently_enabled: bool) -> int:
         print("always-upgrade-on-boot is already enabled.")
         return 0
     print_wrapped(f"""
-        always-upgrade-on-boot is currently disabled. 
+        always-upgrade-on-boot is currently disabled.
         Enabling it now by creating file '{ALWAYS_UPGRADE_ON_BOOT_STAMPFILE}'.
     """)
     exit_code = sandbox.run(stampfile_function, "create", ALWAYS_UPGRADE_ON_BOOT_STAMPFILE)
@@ -66,13 +67,13 @@ def enable_always_upgrade_on_boot(currently_enabled: bool) -> int:
     return exit_code
 
 
-def disable_always_upgrade_on_boot(currently_enabled: bool, *, prompt: bool = True) -> int:
+def disable_always_upgrade_on_boot(currently_enabled: bool, *) -> int:
     """Disable always-upgrade-on-boot."""
     if not currently_enabled:
         print("always-upgrade-on-boot is already disabled.")
         return 0
     print_wrapped(f"""
-        always-upgrade-on-boot is currently enabled. 
+        always-upgrade-on-boot is currently enabled
         Disabling it now by creating file '{ALWAYS_UPGRADE_ON_BOOT_STAMPFILE}'.
     """)
     exit_code = sandbox.run(stampfile_function, "delete", ALWAYS_UPGRADE_ON_BOOT_STAMPFILE)
@@ -81,7 +82,7 @@ def disable_always_upgrade_on_boot(currently_enabled: bool, *, prompt: bool = Tr
     return exit_code
 
 
-def run(mode: ToggleMode, *, prompt: bool = True) -> int:
+def run(mode: ToggleMode, *) -> int:
     """Run the logic for enabling or disabling always-upgrade-on-boot."""
     if mode == ToggleMode.HELP:
         print(HELP_MESSAGE)
@@ -94,7 +95,7 @@ def run(mode: ToggleMode, *, prompt: bool = True) -> int:
         case ToggleMode.ON:
             return enable_always_upgrade_on_boot(auob_enabled)
         case ToggleMode.OFF:
-            return disable_always_upgrade_on_boot(auob_enabled, prompt=prompt)
+            return disable_always_upgrade_on_boot(auob_enabled)
         case _:
             raise ValueError(f"Invalid mode value: {mode}")
 

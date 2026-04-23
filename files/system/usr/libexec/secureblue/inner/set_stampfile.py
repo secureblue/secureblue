@@ -4,9 +4,7 @@
 #
 # SPDX-License-Identifier: Apache-2.0
 
-"""
-Create or delete a stampfile.
-"""
+"""Create or delete a stampfile."""
 
 import enum
 import sys

@@ -41,6 +41,15 @@ ujust set-always-upgrade-on-boot --help
 ALWAYS_UPGRADE_ON_BOOT_STAMPFILE: Final[str] = "/var/lib/secureblue/always-upgrade-on-boot.stamp"
 
 
+WARNING_MESSAGE: Final[str] = """
+Warning: Enabling this can cause your rollback deployment to be overwritten. Since upgrades will 
+be attempted on every boot, this can mean upgrading while booting into an already newer version
+than the previous boot (e.g.: You are on deployment A with deployment B staged, and reboot into
+deployment B, but upgrade C is available, which gets staged and booted into, clearing deployment A).
+Please understand the implications of this feature before enabling it, and ensure you take precautionary
+measures (like frequently pinning deployments).
+"""
+
 def always_upgrade_on_boot_enabled() -> bool:
     """Return whether always-upgrade-on-boot is enabled."""
     return Path(ALWAYS_UPGRADE_ON_BOOT_STAMPFILE).exists()
@@ -102,6 +111,7 @@ def run(mode: ToggleMode) -> int:
 
 def main() -> int:
     """Handle the arguments and run the script."""
+    print_wrapped(WARNING_MESSAGE)
     try:
         mode = parse_basic_toggle_args(
             prompt="Would you like always-upgrade-on-boot to be enabled?"

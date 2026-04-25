@@ -7,6 +7,6 @@
 set -euo pipefail
 
 ldconfig
-sed -i '/^install squashfs \/bin\/false$/d' /usr/lib/modprobe.d/secureblue.conf
+sed -i '/^install squashfs /d' /usr/lib/modprobe.d/secureblue.conf
 echo 'install squashfs /sbin/modprobe --ignore-install squashfs' > /etc/modprobe.d/zz-squashfs-override.conf
 echo 'install_items+=" /usr/lib64/libno_rlimit_as.so /etc/ld.so.cache /etc/modprobe.d/zz-squashfs-override.conf "' > /etc/dracut.conf.d/libs.conf

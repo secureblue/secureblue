@@ -174,15 +174,19 @@ class DirectoryInfo(PermissionCheck):
     description: str | None = field(kw_only=True, default=None)
     path: str = field(init=False)
 
+    _comment_already_prefixed: bool = field(init=False)
+
     def __post_init__(self) -> None:
         """Set the "path" alias field, and generate a comment."""
         object.__setattr__(self, "path", self.permission)
-        if hasattr(self, "comment") and self.comment is not None:
-            prefix = _("This grants access to")
-            comment_already_prefixed: bool = self.comment.startswith(prefix)
-            if not comment_already_prefixed:
-                template = _(f"{prefix} {self.comment}.")
-                object.__setattr__(self, "comment", template)
+
+        has_comment = hasattr(self, "comment") and self.comment is not None
+        if not has_comment:
+            return
+        if not self._comment_already_prefixed:
+            template = _("This grants access to {0}.").format(self.comment)
+            object.__setattr__(self, "comment", template)
+            object.__setattr__(self, "_comment_already_prefixed", True)
 
 
 FLATPAK_PERMISSION_CHECKS: list[PermissionCheck] = [
@@ -446,7 +450,9 @@ def _check_dangerous_dirs(
         aliased_path = filesystems_rw_aliasmap[canon_path]
         if aliased_path:
             dir_to_check = dataclass_replace(dir_to_check, permission=aliased_path)
-        state.update(note=dir_to_check.note(state.name), rec=dir_to_check.recommendation(state.name))
+        state.update(
+            note=dir_to_check.note(state.name), rec=dir_to_check.recommendation(state.name)
+        )
 
 
 def _check_hardened_malloc_access(

@@ -171,12 +171,13 @@ class DirectoryInfo(PermissionCheck):
     """Info about a directory to check."""
 
     _: KW_ONLY
-    description: str | None = field(default=None)
+    # showing the exact perm prevents grouping aliases into one recommendation
+    description: str | None = None
     # internally set only
     category: str = field(init=False, default="filesystems")
     path: str = field(init=False)
 
-    _comment_already_prefixed: bool = field(default=False)
+    _comment_already_prefixed: bool = False
 
     def __post_init__(self) -> None:
         """Set the "path" alias field, and generate a comment."""

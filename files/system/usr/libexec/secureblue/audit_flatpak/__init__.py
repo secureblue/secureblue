@@ -439,14 +439,14 @@ def _check_dangerous_dirs(
     ]
 
     for directory in dangerous_dirs:
-        check = directory
-        canon_dir = check.path
-        if canon_dir not in filesystems_rw_aliasmap:
+        dir_to_check = directory
+        canon_path = dir_to_check.path
+        if canon_path not in filesystems_rw_aliasmap:
             continue
-        aliased_dir = filesystems_rw_aliasmap[canon_dir]
-        if aliased_dir:
-            check = dataclass_replace(check, permission=aliased_dir)
-        state.update(note=check.note(state.name), rec=check.recommendation(state.name))
+        aliased_path = filesystems_rw_aliasmap[canon_path]
+        if aliased_path:
+            dir_to_check = dataclass_replace(dir_to_check, permission=aliased_path)
+        state.update(note=dir_to_check.note(state.name), rec=dir_to_check.recommendation(state.name))
 
 
 def _check_hardened_malloc_access(

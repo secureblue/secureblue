@@ -427,7 +427,9 @@ def _check_predefined_flatpak_permissions(
             state.arbitrary_permissions |= check.arbitrary_permissions
 
 
-def _check_dangerous_dirs(state: FlatpakPermissionsState, filesystems_rw: dict[str, str]) -> None:
+def _check_dangerous_dirs(
+    state: FlatpakPermissionsState, filesystems_rw_aliasmap: dict[str, str]
+) -> None:
     dangerous_dirs: list[DirectoryInfo] = [
         DirectoryInfo("host", FAIL, _("all system files")),
         DirectoryInfo("home", FAIL, _("all user files")),
@@ -439,9 +441,9 @@ def _check_dangerous_dirs(state: FlatpakPermissionsState, filesystems_rw: dict[s
     for directory in dangerous_dirs:
         check = directory
         canon_dir = check.path
-        if canon_dir not in filesystems_rw:
+        if canon_dir not in filesystems_rw_aliasmap:
             continue
-        aliased_dir = filesystems_rw[canon_dir]
+        aliased_dir = filesystems_rw_aliasmap[canon_dir]
         if aliased_dir:
             check = dataclass_replace(check, permission=aliased_dir)
         state.update(note=check.note(state.name), rec=check.recommendation(state.name))
@@ -450,10 +452,12 @@ def _check_dangerous_dirs(state: FlatpakPermissionsState, filesystems_rw: dict[s
 def _check_hardened_malloc_access(
     state: FlatpakPermissionsState,
     filesystems: list[str] | None,
-    filesystems_rw: dict[str, str],
-    filesystems_ro: dict[str, str],
+    filesystems_rw_aliasmap: dict[str, str],
+    filesystems_ro_aliasmap: dict[str, str],
 ) -> None:
-    if filesystems is None or ("host-os" not in filesystems_ro and "host-os" not in filesystems_rw):
+    if filesystems is None or (
+        "host-os" not in filesystems_ro_aliasmap and "host-os" not in filesystems_rw_aliasmap
+    ):
         note = Note(
             _("{0} is missing {1} permission").format(state.name, "host-os:ro"), status=WARN
         )
@@ -469,11 +473,13 @@ def _check_hardened_malloc_access(
         state.update(note=note, rec=rec)
 
 
-def _check_overrides_access(state: FlatpakPermissionsState, filesystems_rw: dict[str, str]) -> None:
+def _check_overrides_access(
+    state: FlatpakPermissionsState, filesystems_rw_aliasmap: dict[str, str]
+) -> None:
     override_path = "xdg-data/flatpak/overrides"
-    if override_path in filesystems_rw:
+    if override_path in filesystems_rw_aliasmap:
         state.arbitrary_permissions = True
-        override_path = filesystems_rw[override_path]
+        override_path = filesystems_rw_aliasmap[override_path]
         if state.name not in ARBITRARY_PERMISSIONS_EXPECTED:
             note = Note(_("{0} can modify flatpak permissions.").format(state.name), status=FAIL)
             rec_lines = (
@@ -490,17 +496,19 @@ def _check_overrides_access(state: FlatpakPermissionsState, filesystems_rw: dict
 
 def _check_fs_permissions(state: FlatpakPermissionsState, perms: Permissions) -> None:
     filesystems = perms.permissions.get("filesystems")
-    filesystems_ro = {}
-    filesystems_rw = {}
+    filesystems_ro_aliasmap = {}
+    filesystems_rw_aliasmap = {}
     if filesystems is not None:
         for perm in filesystems:
             path, readonly, negated, aliased_path = parse_fs_permission(perm)
             if negated:
                 continue
             if readonly:
-                filesystems_ro[path] = aliased_path
+                filesystems_ro_aliasmap[path] = aliased_path
             else:
-                filesystems_rw[path] = aliased_path
-        _check_dangerous_dirs(state, filesystems_rw)
-        _check_overrides_access(state, filesystems_rw)
-    _check_hardened_malloc_access(state, filesystems, filesystems_rw, filesystems_ro)
+                filesystems_rw_aliasmap[path] = aliased_path
+        _check_dangerous_dirs(state, filesystems_rw_aliasmap)
+        _check_overrides_access(state, filesystems_rw_aliasmap)
+    _check_hardened_malloc_access(
+        state, filesystems, filesystems_rw_aliasmap, filesystems_ro_aliasmap
+    )

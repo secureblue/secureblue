@@ -177,10 +177,11 @@ class DirectoryInfo(PermissionCheck):
         """Set the "path" alias field, and generate a comment."""
         object.__setattr__(self, "path", self.permission)
         if hasattr(self, "comment") and self.comment is not None:
-            prefix = _("This grants access to {0}.")
-            comment_already_prefixed: bool = self.comment.startswith(prefix[:-5])
+            prefix = _("This grants access to")
+            comment_already_prefixed: bool = self.comment.startswith(prefix)
             if not comment_already_prefixed:
-                object.__setattr__(self, "comment", prefix.format(self.comment))
+                template = _(f"{prefix} {self.comment}.")
+                object.__setattr__(self, "comment", template)
 
 
 FLATPAK_PERMISSION_CHECKS: list[PermissionCheck] = [

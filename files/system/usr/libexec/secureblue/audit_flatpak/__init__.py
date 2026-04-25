@@ -8,7 +8,8 @@
 Flatpak permissions checks for secureblue auditing script.
 """
 
-from dataclasses import dataclass, field, replace
+from dataclasses import dataclass, field
+from dataclasses import replace as dataclass_replace
 from typing import Final
 
 from auditor import Note, Recommendation, Status, gettext_marker
@@ -89,7 +90,7 @@ ALIASES: dict[str, str] = {
 }
 
 
-def parse_fs_permission(perm: str) -> tuple[str, bool, bool, bool]:
+def parse_fs_permission(perm: str) -> tuple[str, bool, bool, str]:
     """Parse flatpak filesystem permission string."""
     readonly = perm.endswith(":ro")
     negated = perm.startswith("!")
@@ -102,13 +103,13 @@ def parse_fs_permission(perm: str) -> tuple[str, bool, bool, bool]:
     else:
         path = perm
     path = path.removeprefix("!").rstrip("/")
-    is_alias = False
+    aliased_path = ""
     for name, alias in ALIASES.items():
         if path.startswith(alias):
+            aliased_path = path
             path = path.replace(alias, name, 1)
-            is_alias = True
             break
-    return path, readonly, negated, is_alias
+    return path, readonly, negated, aliased_path
 
 
 FLATPAK_OVERRIDE_OPTIONS: Final[dict[str, tuple[str, str]]] = {
@@ -435,22 +436,17 @@ def _check_dangerous_dirs(state: FlatpakPermissionsState, filesystems_rw: dict[s
         DirectoryInfo("xdg-data", FAIL, _("other applications' data files")),
     ]
 
-    alias_dirs: dict[str, DirectoryInfo] = {}
     for directory in dangerous_dirs:
-        path_start = directory.path.split("/", 1)[0]
-        if path_start in ALIASES:
-            aliased_dir = directory.path.replace(path_start, ALIASES[path_start], 1)
-            alias_dirs[directory.path] = replace(directory, permission=aliased_dir)
-
-    for directory in dangerous_dirs:
-        if directory.path in filesystems_rw:
-            aliased_path = directory
-            is_alias = filesystems_rw[directory.path]
-            if is_alias:
-                aliased_path = alias_dirs[directory.path]
-            state.update(
-                note=aliased_path.note(state.name), rec=aliased_path.recommendation(state.name)
-            )
+        check = directory
+        canon_dir = check.path
+        if canon_dir not in filesystems_rw:
+            continue
+        aliased_dir = filesystems_rw[canon_dir]
+        if aliased_dir:
+            check = dataclass_replace(check, permission=aliased_dir)
+        state.update(
+            note=check.note(state.name), rec=check.recommendation(state.name)
+        )
 
 
 def _check_hardened_malloc_access(
@@ -481,9 +477,7 @@ def _check_overrides_access(
     override_path = "xdg-data/flatpak/overrides"
     if override_path in filesystems_rw:
         state.arbitrary_permissions = True
-        is_alias = filesystems_rw[override_path]
-        if is_alias:
-            override_path = override_path.replace("xdg-data", ALIASES["xdg-data"], 1)
+        override_path = filesystems_rw[override_path]
         if state.name not in ARBITRARY_PERMISSIONS_EXPECTED:
             note = Note(_("{0} can modify flatpak permissions.").format(state.name), status=FAIL)
             rec_lines = (
@@ -504,13 +498,13 @@ def _check_fs_permissions(state: FlatpakPermissionsState, perms: Permissions) ->
     filesystems_rw = {}
     if filesystems is not None:
         for perm in filesystems:
-            path, readonly, negated, is_alias = parse_fs_permission(perm)
+            path, readonly, negated, aliased_path = parse_fs_permission(perm)
             if negated:
                 continue
             if readonly:
-                filesystems_ro[path] = is_alias
+                filesystems_ro[path] = aliased_path
             else:
-                filesystems_rw[path] = is_alias
+                filesystems_rw[path] = aliased_path
         _check_dangerous_dirs(state, filesystems_rw)
         _check_overrides_access(state, filesystems_rw)
     _check_hardened_malloc_access(state, filesystems, filesystems_rw, filesystems_ro)

@@ -171,8 +171,9 @@ class DirectoryInfo(PermissionCheck):
     """Info about a directory to check."""
 
     _: KW_ONLY
-    category: str = field(init=False, default="filesystems")
     description: str | None = field(default=None)
+    # internally set only
+    category: str = field(init=False, default="filesystems")
     path: str = field(init=False)
 
     _comment_already_prefixed: bool = field(default=False)

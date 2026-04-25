@@ -8,7 +8,7 @@
 Flatpak permissions checks for secureblue auditing script.
 """
 
-from dataclasses import dataclass, field
+from dataclasses import KW_ONLY, dataclass, field
 from dataclasses import replace as dataclass_replace
 from typing import Final
 
@@ -170,11 +170,12 @@ class PermissionCheck:
 class DirectoryInfo(PermissionCheck):
     """Info about a directory to check."""
 
+    _: KW_ONLY
     category: str = field(init=False, default="filesystems")
-    description: str | None = field(kw_only=True, default=None)
+    description: str | None = field(default=None)
     path: str = field(init=False)
 
-    _comment_already_prefixed: bool = field(init=False)
+    _comment_already_prefixed: bool = field(default=False)
 
     def __post_init__(self) -> None:
         """Set the "path" alias field, and generate a comment."""

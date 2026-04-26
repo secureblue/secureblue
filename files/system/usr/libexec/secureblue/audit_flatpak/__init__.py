@@ -90,7 +90,7 @@ ALIASES: dict[str, str] = {
 }
 
 
-def parse_fs_permission(perm: str) -> tuple[str, bool, bool, str]:
+def parse_fs_permission(perm: str) -> tuple[str, bool, bool, str | None]:
     """Parse flatpak filesystem permission string."""
     readonly = perm.endswith(":ro")
     negated = perm.startswith("!")
@@ -103,7 +103,7 @@ def parse_fs_permission(perm: str) -> tuple[str, bool, bool, str]:
     else:
         path = perm
     path = path.removeprefix("!").rstrip("/")
-    aliased_path = ""
+    aliased_path = None
     for name, alias in ALIASES.items():
         if path.startswith(alias):
             aliased_path = path
@@ -451,7 +451,7 @@ def _check_dangerous_dirs(
         if canon_path not in filesystems_rw_aliasmap:
             continue
         aliased_path = filesystems_rw_aliasmap[canon_path]
-        if aliased_path:
+        if aliased_path is not None:
             dir_to_check = dataclass_replace(dir_to_check, permission=aliased_path)
         state.update(
             note=dir_to_check.note(state.name), rec=dir_to_check.recommendation(state.name)

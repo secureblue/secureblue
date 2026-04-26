@@ -9,7 +9,7 @@ Flatpak permissions checks for secureblue auditing script.
 """
 
 from dataclasses import dataclass, field
-from typing import Final
+from typing import Final, Literal
 
 from auditor import Note, Recommendation, Status, gettext_marker
 
@@ -88,19 +88,16 @@ ALIASES: dict[str, str] = {
     "home": "~",  # "~" must be the last entry in the dict
 }
 
+FILESYSTEM_SUFFIXES: Final = Literal["rw", "ro", "create"]
+
 
 def parse_fs_permission(perm: str) -> tuple[str, bool, bool, bool]:
     """Parse flatpak filesystem permission string."""
-    readonly = perm.endswith(":ro")
+    [path, _, suffix] = perm.rpartition(":")
+    if suffix not in FILESYSTEM_SUFFIXES:
+        path = perm # path actually has :
+    readonly = suffix == "ro"
     negated = perm.startswith("!")
-    if perm.endswith(":ro"):
-        path = perm.removesuffix(":ro")
-    elif perm.endswith(":rw"):
-        path = perm.removesuffix(":rw")
-    elif perm.endswith(":create"):
-        path = perm.removesuffix(":create")
-    else:
-        path = perm
     path = path.removeprefix("!").rstrip("/")
     is_alias = False
     for name, alias in ALIASES.items():

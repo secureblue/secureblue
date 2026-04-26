@@ -8,7 +8,7 @@
 Flatpak permissions checks for secureblue auditing script.
 """
 
-from dataclasses import dataclass, field
+from dataclasses import KW_ONLY, dataclass, field
 from typing import Final
 
 from auditor import Note, Recommendation, Status, gettext_marker
@@ -114,9 +114,55 @@ def parse_fs_permission(perm: str) -> tuple[str, bool, bool, bool]:
 FLATPAK_OVERRIDE_OPTIONS: Final[dict[str, tuple[str, str]]] = {
     "shared": ("share", "unshare"),
     "sockets": ("socket", "nosocket"),
+    "talk": ("talk-name", "no-talk-name"),
+    "system-talk": ("system-talk-name", "system-no-talk-name"),
     "devices": ("device", "nodevice"),
     "features": ("allow", "disallow"),
 }
+
+
+@dataclass(frozen=True)
+class PermRecommendation:
+    description: str
+    category_or_command: str
+    permission: str | None = None
+    comment: str | None = None
+    _: KW_ONLY
+    instruction: str | None = None
+    endnote: str | None = None
+    remove_perm: bool = True
+
+    def make(self, name: str) -> Recommendation:
+        if self.description.startswith(("can", "are", "is")):
+            description = _("The following flatpak app(s) {0}:")
+        else:
+            description = _("The following flatpak app(s) have {0}:")
+        description = description.format(self.description)
+
+        instruction = self.instruction
+        if not instruction:
+            verb = _("remove") if self.remove_perm else _("add")
+            instruction = _("To {0} this permission from an app, use Flatseal or run:").format(verb)
+
+        command = self.category_or_command
+        if self.permission:
+            option = FLATPAK_OVERRIDE_OPTIONS[command][int(self.remove_perm)]
+            command = f"$ flatpak override -u --{option}={self.permission} com.example.Example"
+
+        rec_lines: list[str | None] = [
+            description,
+            Recommendation.NAMES_PLACEHOLDER,
+            self.comment,
+            instruction,
+            command,
+            _('(replacing "{0}" with the flatpak app ID)').format("com.example.Example"),
+            self.endnote,
+        ]
+
+        return Recommendation(
+            rec="\n".join(filter(None, rec_lines)),
+            mergeable_name=name,
+        )
 
 
 @dataclass(frozen=True)
@@ -135,7 +181,8 @@ class PermissionCheck:
     def default_description(self) -> str:
         """Default description if other description isn't provided."""
         perm_type = FLATPAK_OVERRIDE_OPTIONS[self.category][0]
-        return f"{perm_type}={self.permission} " + _("permission")
+        perm_string = f"{perm_type}={self.permission}"
+        return _("the permission {0}").format(perm_string)
 
     def note(self, name: str) -> Note:
         """Generate the note for if the check fails."""
@@ -144,24 +191,17 @@ class PermissionCheck:
 
     def recommendation(self, name: str) -> Recommendation:
         """Give the recommendation for if the check fails."""
+        comments = [self.comment]
         if self.sandbox_escape:
-            sandbox_escape_note = _("This may also be used as a sandbox escape vector.")
-        else:
-            sandbox_escape_note = ""
-        option = FLATPAK_OVERRIDE_OPTIONS[self.category][1]
-        description = self.description or self.default_description()
-        rec_lines = (
-            _("The following flatpak app(s) have {0}:").format(description),
-            Recommendation.NAMES_PLACEHOLDER,
-            self.comment or "",
-            sandbox_escape_note,
-            _("To remove this permission from an app, use Flatseal or run:"),
-            f"$ flatpak override -u --{option}={self.permission} com.example.Example",
-            _('(replacing "{0}" with the flatpak app ID)').format("com.example.Example"),
-            self.endnote or "",
-        )
-        rec = "\n".join(line.strip() for line in rec_lines if line.strip())
-        return Recommendation(rec, mergeable_name=name)
+            comments.append(_("This may also be used as a sandbox escape vector."))
+        final_comment = "\n".join(filter(None, comments))
+        return PermRecommendation(
+            self.description or self.default_description(),
+            self.category,
+            self.permission,
+            final_comment,
+            endnote=self.endnote,
+        ).make(name)
 
 
 @dataclass(frozen=True)
@@ -313,14 +353,11 @@ def _check_ld_preload(state: FlatpakPermissionsState, perms: Permissions) -> Non
         extra_note = None
 
     note = Note(_("{0} is not requesting {1}").format(state.name, "hardened_malloc"), status=status)
-    rec_lines = (
-        _("The following flatpak app(s) are not requesting {0}:").format("hardened_malloc"),
-        Recommendation.NAMES_PLACEHOLDER,
-        _("To enable it for an app, run:"),
+    rec = PermRecommendation(
+        _("are not requesting {0}").format("hardened_malloc"),
         "$ ujust harden-flatpak com.example.Example",
-        _('(replacing "{0}" with the flatpak app ID)').format("com.example.Example"),
-    )
-    rec = Recommendation("\n".join(rec_lines), mergeable_name=state.name)
+        instruction=_("To enable it for an app, run:"),
+    ).make(state.name)
     state.update(note=note, rec=rec)
     if extra_note is not None:
         state.update(extra_note)
@@ -366,24 +403,19 @@ def _handle_flatpak_buses(state: FlatpakPermissionsState, perms: Permissions) ->
         if state.name not in ARBITRARY_PERMISSIONS_EXPECTED:
             if is_session:
                 note = _("{0} can talk to {1} on the session bus.").format(state.name, bus_name)
-                first_line = _("The following flatpak app(s) can talk to {0} on the session bus:")
-                option = "no-talk-name"
+                first_line = _("can talk to {0} on the session bus")
+                option = "talk"
             else:
                 note = _("{0} can talk to {1} on the system bus.").format(state.name, bus_name)
-                first_line = _("The following flatpak app(s) can talk to {0} on the system bus:")
-                option = "system-no-talk-name"
-            rec_lines = (
+                first_line = _("can talk to {0} on the system bus")
+                option = "system-talk"
+            rec = PermRecommendation(
                 first_line.format(bus_name),
-                Recommendation.NAMES_PLACEHOLDER,
+                option,
+                bus_name,
                 _("This grants the ability to acquire arbitrary permissions."),
-                _("To remove this permission from an app, use Flatseal or run:"),
-                f"$ flatpak override -u --{option}={bus_name} com.example.Example",
-                _('(replacing "{0}" with the flatpak app ID)').format("com.example.Example"),
-            )
-            state.update(
-                note=Note(note, status=FAIL),
-                rec=Recommendation("\n".join(rec_lines), mergeable_name=state.name),
-            )
+            ).make(state.name)
+            state.update(note=Note(note, status=FAIL), rec=rec)
 
 
 def _predefined_check_applies(
@@ -456,17 +488,15 @@ def _check_hardened_malloc_access(
 ) -> None:
     if filesystems is None or ("host-os" not in filesystems_ro and "host-os" not in filesystems_rw):
         note = Note(
-            _("{0} is missing {1} permission").format(state.name, "host-os:ro"), status=WARN
+            _("{0} is missing the permission {1}").format(state.name, "host-os:ro"), status=WARN
         )
-        rec_lines = (
-            _("The following flatpak app(s) are missing {0} permission:").format("host-os:ro"),
-            Recommendation.NAMES_PLACEHOLDER,
+        rec = PermRecommendation(
+            _("are missing the permission {0}:").format("host-os:ro"),
+            "filesystems",
+            "host-os:ro",
             _("This is required to load hardened_malloc."),
-            _("To add this permission to an app, use Flatseal or run:"),
-            "$ flatpak override -u --filesystem=host-os:ro com.example.Example",
-            _('(replacing "{0}" with the flatpak app ID)').format("com.example.Example"),
-        )
-        rec = Recommendation("\n".join(rec_lines), mergeable_name=state.name)
+            remove_perm=False,
+        ).make(state.name)
         state.update(note=note, rec=rec)
 
 
@@ -481,15 +511,12 @@ def _check_overrides_access(
             override_path = override_path.replace("xdg-data", ALIASES["xdg-data"], 1)
         if state.name not in ARBITRARY_PERMISSIONS_EXPECTED:
             note = Note(_("{0} can modify flatpak permissions.").format(state.name), status=FAIL)
-            rec_lines = (
-                _("The following flatpak app(s) can modify flatpak permissions:"),
-                Recommendation.NAMES_PLACEHOLDER,
+            rec = PermRecommendation(
+                _("can modify flatpak permissions"),
+                "filesystems",
+                override_path,
                 _("This grants the ability to acquire arbitrary permissions."),
-                _("To remove this permission from an app, use Flatseal or run:"),
-                f"$ flatpak override -u --nofilesystem={override_path} com.example.Example",
-                _('(replacing "{0}" with the flatpak app ID)').format("com.example.Example"),
-            )
-            rec = Recommendation("\n".join(rec_lines), mergeable_name=state.name)
+            ).make(state.name)
             state.update(note=note, rec=rec)
 
 

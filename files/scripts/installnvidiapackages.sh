@@ -46,7 +46,6 @@ if [[ "$kmod_version" != "$negativo_version" ]]; then
     exit 1
 fi
 
-curl -fLsS --retry 5 https://raw.githubusercontent.com/NVIDIA/dgx-selinux/b988ea65e7b43009a705eb5e5d7e94048f916734/bin/RHEL9/nvidia-container.pp \
-    -o nvidia-container.pp
-semodule -i nvidia-container.pp
-rm -f nvidia-container.pp
+cd ./selinux/nvidia-container
+make -f /usr/share/selinux/devel/Makefile nvidia-container.pp
+semodule -v -X 300 -i nvidia-container.pp

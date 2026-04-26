@@ -46,6 +46,10 @@ install:
     - virt-manager
     - virt-viewer
 
+    # ensure MTP support parity
+    - libmtp
+    - gvfs-mtp
+
 remove:
   packages:
     - firefox

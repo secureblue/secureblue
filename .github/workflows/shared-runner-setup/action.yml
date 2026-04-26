@@ -27,9 +27,10 @@ runs:
         sudo rm -f /var/lib/man-db/auto-update
         sudo sed -i 's/^update_initramfs=.*/update_initramfs=no/' /etc/initramfs-tools/update-initramfs.conf
 
-    - name: Drop Ubuntu HTTP mirrors
+    - name: Drop Ubuntu HTTP mirrors and chrome repo
       shell: bash
       run: |
+        sudo rm -f /etc/apt/sources.list.d/google-chrome*
         sudo sed -i '/^http:\/\//d' /etc/apt/apt-mirrors.txt
         sudo apt-get update
 

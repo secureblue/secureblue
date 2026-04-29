@@ -26,7 +26,11 @@
 )
 
 (typeattribute userns_relabel_allowed)
-(typeattributeset userns_relabel_allowed (init_t initrc_t install_t kernel_t))
+(typeattributeset userns_relabel_allowed (init_t kernel_t))
+(optional install_userns_relabel_allowed
+    (typeattributeset userns_privileged_file_type (install_exec_t))
+    (typeattributeset userns_relabel_allowed (install_t))
+)
 
 (typeattribute userns_relabel_restricted)
 (typeattributeset userns_relabel_restricted (and (domain) (not (userns_relabel_allowed))))

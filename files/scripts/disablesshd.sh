@@ -14,8 +14,8 @@ systemctl mask sshd.service
 systemctl disable sshd.socket
 systemctl mask sshd.socket
 
-systemctl disable sshd-unix-local.socket
-systemctl mask sshd-unix-local.socket
+systemctl disable sshd-unix-local.socket 2>/dev/null || true
+systemctl mask sshd-unix-local.socket 2>/dev/null || true
 
-systemctl disable sshd-keygen.target
-systemctl mask sshd-keygen.target
+systemctl disable sshd-keygen.target 2>/dev/null || true
+systemctl mask sshd-keygen.target 2>/dev/null || true

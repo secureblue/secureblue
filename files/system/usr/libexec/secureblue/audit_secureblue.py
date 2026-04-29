@@ -789,7 +789,7 @@ def audit_xwayland(state):
     match state["image"]:
         case Image.SILVERBLUE:
             de = _("GNOME")
-            path = "/etc/systemd/user/org.gnome.Shell@wayland.service.d/override.conf"
+            path = "/etc/systemd/user/org.gnome.Shell@user.service.d/override.conf"
         case Image.KINOITE:
             de = _("KDE Plasma")
             path = "/etc/systemd/user/plasma-kwin_wayland.service.d/override.conf"

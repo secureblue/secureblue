@@ -7,7 +7,7 @@ enabled=0
 # gpgkey=https://nvidia.github.io/libnvidia-container/gpgkey
 gpgkey=file:///usr/share/pki/rpm-gpg/nvidia-container-gpgkey.gpg
 sslverify=1
-sslcacert=/etc/pki/tls/certs/ca-bundle.crt
+sslcacert=/etc/pki/ca-trust/extracted/pem/tls-ca-bundle.pem
 
 [nvidia-container-toolkit-experimental]
 name=nvidia-container-toolkit-experimental
@@ -18,4 +18,4 @@ enabled=0
 # gpgkey=https://nvidia.github.io/libnvidia-container/gpgkey
 gpgkey=file:///usr/share/pki/rpm-gpg/nvidia-container-gpgkey.gpg
 sslverify=1
-sslcacert=/etc/pki/tls/certs/ca-bundle.crt
+sslcacert=/etc/pki/ca-trust/extracted/pem/tls-ca-bundle.pem

@@ -7,7 +7,7 @@
 set -euo pipefail
 
 SELINUX_POLICY_VERSION="$(rpm -q 'selinux-policy' --queryformat '%{VERSION}-%{RELEASE}')"
-dnf install -y --from-repo=updates-archive --setopt=install_weak_deps=False "selinux-policy-devel-${SELINUX_POLICY_VERSION}"
+dnf install -y --setopt=install_weak_deps=False "selinux-policy-devel-${SELINUX_POLICY_VERSION}"
 dnf install -y --setopt=install_weak_deps=False policycoreutils-devel
 
 policy_modules=(flatpakfull nautilus systemsettings thunar)

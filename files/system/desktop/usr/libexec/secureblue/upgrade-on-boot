@@ -11,6 +11,11 @@ NO_UPDATE_STRING="No update available, booting current deployment"
 plymouth watch-keystroke --keys="qQ" --command "systemctl stop upgrade-on-boot.service" &
 BOOTC_UPGRADE_CHECK_OUTPUT="$(bootc upgrade --check 2>&1)" || true
 
+if grep -q "failed to invoke method OpenImage" <<< "$BOOTC_UPGRADE_CHECK_OUTPUT"; then
+    echo "Failed to check for updates"
+    exit 1
+fi
+
 if grep -q "local rpm-ostree modifications" <<< "$BOOTC_UPGRADE_CHECK_OUTPUT"; then
     echo "Using rpm-ostree"
     if ! /usr/libexec/secureblue/system-update-available; then

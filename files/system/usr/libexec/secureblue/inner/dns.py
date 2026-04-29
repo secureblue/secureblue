@@ -20,6 +20,7 @@ from enum import Enum
 from functools import partialmethod
 from pathlib import Path
 from typing import Final
+from .utils import SystemdService
 
 DNSCONFD_CONF_PATH: Final[Path] = Path("/etc/dnsconfd.conf")
 DNSCONFD_MANAGER_PATH: Final[Path] = Path("/etc/NetworkManager/conf.d/dnsconfd.conf")

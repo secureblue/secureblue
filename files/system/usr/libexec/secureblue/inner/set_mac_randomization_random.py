@@ -4,9 +4,7 @@
 #
 # SPDX-License-Identifier: Apache-2.0
 
-"""
-Sets MAC randomization to per-connection.
-"""
+"""Sets MAC randomization to per-connection."""
 
 import os
 import sys
@@ -22,7 +20,6 @@ wifi.cloned-mac-address=random
 
 def set_stable() -> int:
     """Sets MAC address randomisation to occur on a per-network basis."""
-
     with open("/etc/NetworkManager/conf.d/rand_mac.conf", "w", encoding="utf-8") as f:
         f.write(CONFIG_STRING)
 

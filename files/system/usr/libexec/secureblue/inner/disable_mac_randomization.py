@@ -4,9 +4,7 @@
 #
 # SPDX-License-Identifier: Apache-2.0
 
-"""
-Disables MAC randomisation.
-"""
+"""Disables MAC randomisation."""
 
 import os
 import sys

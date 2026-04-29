@@ -44,7 +44,7 @@ status_string_off = "Off"
 
 
 class Mode(StrEnum):
-    """Predefine randomisation selection enums"""
+    """Predefine randomization selection enums."""
 
     HELP = "HELP"
     INTERACTIVE = "INTERACTIVE"
@@ -98,7 +98,7 @@ set_mac_randomization_random = sandbox.SandboxedFunction(
 )
 
 
-def set_randomization_state(state: Mode) -> int:
+def set_randomization_state(state: Mode) -> int: #pylint: ignore=C901
     """Sets the mac randomization state (stable, random, off), running the sandboxed functions."""
     sandboxed_function_exitcode = 0
 
@@ -142,12 +142,14 @@ def set_randomization_state(state: Mode) -> int:
         return 1
 
     restart_success = run_restart_networkmanager()
+
     if restart_success != 0:  # 0 == success, not 0 == failure
         print_wrapped(
             "Failed to restart NetworkManager. "
             + "Restart it or this computer for changes to take effect."
         )
         return restart_success  # return the error code
+
 
     print(f"MAC randomization set to {state} successfully.")
     return 0

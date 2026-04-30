@@ -89,8 +89,8 @@ hidden_webui_pages =
     network
 password_policies = 
         root (quality 100, length 15)
-        user (quality 50, length 15)
-        luks (quality 100, length 20)
+        user (quality 50, length 8)
+        luks (quality 100, length 15)
 EOF
 
 # Fetch the Secureboot Public Key
@@ -149,5 +149,30 @@ cat >> /usr/share/cockpit/branding/fedora/branding.css << 'EOF'
         /* Hide the whole section with "Enable root account". Might be not as reliable as it seems to be */
         display: none;
     }
+}
+EOF
+
+# disable password strength labels
+cat >> /usr/share/cockpit/branding/fedora/branding.css << 'EOF'
+.anaconda {
+    #disk-encryption-password-strength-label {
+        display: none;
+    }
+
+    #anaconda-screen-accounts-create-account-password-strength-label {
+        display: none;
+    }
+}
+EOF
+
+# Disable "ask an AI chatbot" in the context menu
+mkdir -p /etc/firefox/policies
+cat >> /etc/firefox/policies/policies.json << 'EOF'
+{
+  "policies": {
+    "Preferences": {
+      "browser.ml.chat.menu": { "Value": false, "Status": "locked" }
+    }
+  }
 }
 EOF

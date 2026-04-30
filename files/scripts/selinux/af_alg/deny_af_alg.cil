@@ -1,0 +1,14 @@
+; SPDX-FileCopyrightText: Copyright 2026 The Secureblue Authors
+;
+; SPDX-License-Identifier: Apache-2.0 OR MIT
+
+; Denies all userspace processes access to AF_ALG sockets, which are the
+; userspace interface to the kernel crypto API:
+; https://www.kernel.org/doc/html/latest/crypto/userspace-if.html
+; This API is largely unnecessary given modern userspace cryptographic libraries
+; and exposes a lot of attack surface. In particular, it was responsible for
+; CVE-2026-31431 ("Copy Fail"), a major privilege escalation vulnerability.
+
+(typeattribute af_alg_restricted)
+(typeattributeset af_alg_restricted (not (kernel_t)))
+(deny af_alg_restricted domain (alg_socket (not (getattr))))

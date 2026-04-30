@@ -171,7 +171,8 @@ cat >> /etc/firefox/policies/policies.json << 'EOF'
 {
   "policies": {
     "Preferences": {
-      "browser.ml.chat.menu": { "Value": false, "Status": "locked" }
+      "browser.ml.chat.menu": { "Value": false, "Status": "locked" },
+      "browser.ml.enable": { "Value": false, "Status": "locked" }
     }
   }
 }

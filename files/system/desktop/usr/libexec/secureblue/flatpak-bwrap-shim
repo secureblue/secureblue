@@ -1,0 +1,147 @@
+#!/usr/bin/env bash
+# shellcheck disable=SC2053 # deliberate glob matching
+# shellcheck disable=SC1090,SC1091 # sourcing location refuses to work?
+
+# SPDX-FileCopyrightText: Copyright 2026 Commenter25
+#
+# SPDX-License-Identifier: Apache-2.0
+
+export LD_PRELOAD='libhardened_malloc.so libno_rlimit_as.so'
+
+set -euo pipefail
+shopt -s nullglob
+declare -r args=("$@")
+
+declare -r name="BWRAP-SHIM"
+declare -r bwrap="/usr/bin/bwrap"
+declare -r debug=true # TODO: change to false
+
+scripts_dir="$(dirname "$0")/bwrap-shim-scripts"
+declare -r scripts_dir
+
+source "${scripts_dir}/initialize-shared-variables.sh"
+
+
+basic_checks() {
+	local -i check_count=0
+	local -i check_fail_count=0
+	for script in "${scripts_dir}"/check/*; do
+		[[ -x "${script}" ]] || continue
+		source "${script}"
+		check_count+=1
+	done
+
+	if (( check_count == check_fail_count )); then
+		exec "${bwrap}" "${args[@]}"
+	fi
+}
+basic_checks
+
+
+declare bwrap_args child_args
+find_split() {
+	# find the split between bwrap args and child process, and break there
+	local -i i
+	local current_arg next_arg
+	local -r is_option="-"
+	local last_arg_was_option=true
+	for i in "${!args[@]}"; do
+		current_arg="${args[i]}"
+
+		[[ "${current_arg}" != "--" ]] || break
+
+		if [[ "${current_arg:0:1}" = "${is_option}" ]]; then
+			last_arg_was_option=true
+			continue
+		fi
+
+		[[ "${last_arg_was_option}" = true ]] || break
+
+		i+=1
+		next_arg="${args[i]}"
+		[[ "${next_arg:0:1}" = "${is_option}" ]] || break
+
+		last_arg_was_option=false
+	done
+
+	bwrap_args=( "${args[@]:0:i}" )
+	child_args=( "${args[@]:i}" )
+	if [[ "${debug}" = true ]]; then
+		echo
+		echo "${args[@]}"
+		echo "was split into"
+		echo "${bwrap_args[@]}"
+		echo "${child_args[@]}"
+		echo
+		ls -l /proc/self/fd/
+		echo
+	fi
+}
+find_split
+declare -r bwrap_args child_args
+
+
+declare flatpak_name
+find_flatpak_name() {
+	local -i i
+	local fd path
+	local -r runtime_folder="*/flatpak/runtime/*"
+	local -r metadata_file="*/.flatpak/*/info"
+	local -r app_folder="*/flatpak/app/*/files"
+	for fd in /proc/self/fd/*; do
+		# skip stdio and bash tty
+		i=$(basename "${fd}")
+		(( i > 3 && i != 255 )) || continue
+
+		path=$(readlink -f "${fd}")
+
+		if [[ "${debug}" = true ]]; then
+			echo
+			echo "##### File Descriptor: ${i}"
+			echo "##### True Path: ${path}"
+		fi
+
+		[[ "${path}" != ${runtime_folder} ]] || continue
+
+		if [[ "${debug}" = true ]]; then
+			[[ -d ${fd} ]] && ls -l "${path}"
+			[[ -f ${fd} ]] && timeout 0.5s cat "${fd}" || true
+			echo -e "\n##########"
+		fi
+
+		if [[ "${path}" = ${metadata_file} ]]; then
+			flatpak_name=$(grep "name=" "${path}")
+			flatpak_name=${flatpak_name#*=}
+			break
+		fi
+		if [[ "${path}" = ${app_folder} ]]; then
+			flatpak_name=$(jq --raw-output ".id" "${path}/manifest.json")
+			break
+		fi
+	done
+
+	if [[ -v flatpak_name && -n "${flatpak_name}" ]]; then
+		[[ "${debug}" = true ]] && echo "${name}: App name is ${flatpak_name}"
+	else
+		echo "${name}: Couldn't find Flatpak ID, defaulting to restrictive behavior"
+		flatpak_name=""
+	fi
+}
+find_flatpak_name
+declare -r flatpak_name
+
+
+extra_bwrap_args=()
+for script in "${scripts_dir}"/execute/*; do
+	[[ -x "${script}" ]] || continue
+	source "${script}"
+done
+declare -r extra_bwrap_args
+
+
+declare -r flatpak_bwrap_shim_final_command=(
+	"${bwrap}" "${bwrap_args[@]}" "${extra_bwrap_args[@]}" "${child_args[@]}"
+)
+[[ "${debug}" = true ]] && echo "${name}: Executing ${flatpak_bwrap_shim_final_command[*]}"
+
+exec "${flatpak_bwrap_shim_final_command[@]}"

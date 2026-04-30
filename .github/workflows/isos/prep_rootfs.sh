@@ -141,3 +141,13 @@ EOF
 
 # enable xwayland
 rm -f /etc/sway/config.d/99-noxwayland.conf /etc/systemd/user/org.gnome.Shell@user.service.d/override.conf /etc/systemd/user/plasma-kwin_wayland.service.d/override.conf
+
+# hide root account creation in cockpit
+cat >> /usr/share/cockpit/branding/fedora/branding.css << 'EOF'
+.anaconda {
+    .pf-v6-c-form__section:has(#anaconda-screen-accounts-root-account-enable-root-account) {
+        /* Hide the whole section with "Enable root account". Might be not as reliable as it seems to be */
+        display: none;
+    }
+}
+EOF

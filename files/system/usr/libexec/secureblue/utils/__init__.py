@@ -14,8 +14,13 @@ import subprocess
 import sys
 import textwrap
 from collections.abc import Iterable, Sequence
+from typing import Final
 
 import rpm
+
+RESET: Final[str] = "\033[0m"
+BOLD: Final[str] = "\033[1m"
+RED: Final[str] = "\033[31m"
 
 
 class ToggleMode(enum.StrEnum):
@@ -124,7 +129,7 @@ def print_wrapped(text: str, *, width: int = 70) -> None:
 
 def print_err(text: str) -> None:
     """Print text to stderr in bold and red."""
-    print(f"\x1b[1m\x1b[31m{text}\x1b[0m", file=sys.stderr)
+    print(BOLD + RED + text + RESET, file=sys.stderr)
 
 
 def command_stdout(*args: str, check: bool = True) -> str:

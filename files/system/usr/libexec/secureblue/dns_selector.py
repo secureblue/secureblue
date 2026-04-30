@@ -19,10 +19,8 @@ from typing import Final
 from urllib.parse import urlparse
 
 import sandbox
-from utils import ask_option, ask_yes_no, interruptible_ask
+from utils import BOLD, RESET, ask_option, ask_yes_no, interruptible_ask
 
-RESET: Final[str] = "\033[0m"
-BOLD: Final[str] = "\033[1m"
 DNSCONFD_CONF_PATH: Final[Path] = Path("/etc/dnsconfd.conf")
 NM_GLOBALDNS_CONF_PATH: Final[Path] = Path("/etc/NetworkManager/conf.d/global-dns.conf")
 RESOLVCONF_PATH: Final[Path] = Path("/etc/resolv.conf")

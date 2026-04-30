@@ -12,7 +12,7 @@ import subprocess
 import sys
 from typing import Final
 
-from flatpak_utils import flatpak_override, installed_app_list, resolve_app_id
+from flatpak_utils import flatpak_override, resolve_app_id
 from utils import command_stdout, print_wrapped
 
 DESCRIPTION: Final[str] = """
@@ -140,8 +140,7 @@ def main() -> int:
         )
         return 0
 
-    installed_app_ids = installed_app_list()
-    app_id = resolve_app_id(args.app_id, installed_app_ids)
+    app_id = resolve_app_id(args.app_id)
     if app_id is None:
         print("No matching app IDs found; exiting.")
         return 1

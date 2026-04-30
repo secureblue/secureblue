@@ -4,9 +4,7 @@
 #
 # SPDX-License-Identifier: Apache-2.0
 
-"""
-Various utility functions used in secureblue flatpak scripts.
-"""
+"""Various utility functions used in secureblue flatpak scripts."""
 
 import subprocess
 
@@ -24,8 +22,13 @@ def installed_app_list() -> list[str]:
     return command_stdout("/usr/bin/flatpak", "list", "--columns=application", "--app").splitlines()
 
 
-def resolve_app_id(provided: str, installed_app_ids: list[str]) -> str | None:
+def resolve_app_id(provided: str | None) -> str | None:
     """Determine app ID intended by user."""
+    if provided is None:
+        return None
+
+    installed_app_ids = installed_app_list()
+
     # First, return exact match if found.
     if provided in installed_app_ids:
         return provided

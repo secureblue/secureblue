@@ -1,6 +1,4 @@
 #!/usr/bin/env bash
-# shellcheck disable=SC2053 # deliberate glob matching
-# shellcheck disable=SC1090,SC1091 # sourcing location refuses to work?
 
 # SPDX-FileCopyrightText: Copyright 2026 Commenter25
 #
@@ -19,6 +17,7 @@ declare -r debug=true # TODO: change to false
 scripts_dir="$(dirname "$0")/bwrap-shim-scripts"
 declare -r scripts_dir
 
+# shellcheck disable=SC1091 # sourcing location refuses to work?
 source "${scripts_dir}/initialize-shared-variables.sh"
 
 
@@ -26,7 +25,7 @@ basic_checks() {
 	local -i check_count=0
 	local -i check_fail_count=0
 	for script in "${scripts_dir}"/check/*; do
-		[[ -x "${script}" ]] || continue
+		# shellcheck disable=SC1090 # can't find a way to satisfy it
 		source "${script}"
 		check_count+=1
 	done
@@ -82,12 +81,14 @@ declare -r bwrap_args child_args
 
 
 declare flatpak_name
+# made accessible for scripts to use, but which is available is up in the air
+declare metadata_file="" app_folder=""
 find_flatpak_name() {
 	local -i i
 	local fd path
-	local -r runtime_folder="*/flatpak/runtime/*"
-	local -r metadata_file="*/.flatpak/*/info"
-	local -r app_folder="*/flatpak/app/*/files"
+	local -r runtime_folder_glob="*/flatpak/runtime/*"
+	local -r metadata_file_glob="*/.flatpak/*/info"
+	local -r app_folder_glob="*/flatpak/app/*/files"
 	for fd in /proc/self/fd/*; do
 		# skip stdio and bash tty
 		i=$(basename "${fd}")
@@ -101,7 +102,8 @@ find_flatpak_name() {
 			echo "##### True Path: ${path}"
 		fi
 
-		[[ "${path}" != ${runtime_folder} ]] || continue
+		# shellcheck disable=SC2053 # deliberate glob matching
+		[[ "${path}" != ${runtime_folder_glob} ]] || continue
 
 		if [[ "${debug}" = true ]]; then
 			[[ -d ${fd} ]] && ls -l "${path}"
@@ -109,12 +111,16 @@ find_flatpak_name() {
 			echo -e "\n##########"
 		fi
 
-		if [[ "${path}" = ${metadata_file} ]]; then
+		# shellcheck disable=SC2053
+		if [[ "${path}" = ${metadata_file_glob} ]]; then
+			metadata_file="${path}"
 			flatpak_name=$(grep "name=" "${path}")
 			flatpak_name=${flatpak_name#*=}
 			break
 		fi
-		if [[ "${path}" = ${app_folder} ]]; then
+		# shellcheck disable=SC2053
+		if [[ "${path}" = ${app_folder_glob} ]]; then
+			app_folder="${path}"
 			flatpak_name=$(jq --raw-output ".id" "${path}/manifest.json")
 			break
 		fi
@@ -128,12 +134,12 @@ find_flatpak_name() {
 	fi
 }
 find_flatpak_name
-declare -r flatpak_name
+declare -r flatpak_name metadata_file app_folder
 
 
-extra_bwrap_args=()
+declare -a extra_bwrap_args=()
 for script in "${scripts_dir}"/execute/*; do
-	[[ -x "${script}" ]] || continue
+	# shellcheck disable=SC1090 # can't find a way to satisfy it
 	source "${script}"
 done
 declare -r extra_bwrap_args

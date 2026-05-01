@@ -46,7 +46,9 @@ find_split() {
 	for i in "${!args[@]}"; do
 		current_arg="${args[i]}"
 
-		[[ "${current_arg}" != "--" ]] || break # explicit end of arguments
+		if [[ "${current_arg}" == "--" ]]; then
+			break # explicit end of arguments
+		fi
 
 		if [[ "${current_arg:0:1}" = "${is_option}" ]]; then
 			last_arg_was_option=true

@@ -35,6 +35,7 @@ basic_checks() {
 	fi
 }
 basic_checks
+unset -f basic_checks
 
 
 declare bwrap_args child_args
@@ -77,6 +78,7 @@ find_split() {
 	fi
 }
 find_split
+unset -f find_split
 declare -r bwrap_args child_args
 
 
@@ -87,8 +89,9 @@ find_flatpak_name() {
 	local -i i
 	local fd path
 	local -r runtime_folder_glob="*/flatpak/runtime/*"
-	local -r metadata_file_glob="*/.flatpak/*/info"
 	local -r app_folder_glob="*/flatpak/app/*/files"
+	local -r metadata_file_glob="*/.flatpak/*/info"
+	local -r name_property="name="
 	for fd in /proc/self/fd/*; do
 		# skip stdio and bash tty
 		i=$(basename "${fd}")
@@ -114,14 +117,14 @@ find_flatpak_name() {
 		# shellcheck disable=SC2053
 		if [[ "${path}" = ${metadata_file_glob} ]]; then
 			metadata_file="${path}"
-			flatpak_name=$(grep "name=" "${path}")
-			flatpak_name=${flatpak_name#*=} # get only text after =
+			flatpak_name=$(grep "${name_property}" "${path}")
+			flatpak_name=${flatpak_name#"${name_property}"} # removes prefix
 			break
 		fi
 		# shellcheck disable=SC2053
 		if [[ "${path}" = ${app_folder_glob} ]]; then
 			app_folder="${path}"
-			flatpak_name=$(jq --raw-output ".id" "${path}/manifest.json")
+			flatpak_name=$(jq --raw-output '.id' "${path}/manifest.json")
 			break
 		fi
 	done
@@ -134,6 +137,7 @@ find_flatpak_name() {
 	fi
 }
 find_flatpak_name
+unset -f find_flatpak_name
 # shellcheck disable=SC2034 # vars for use by sourced scripts
 declare -r flatpak_name metadata_file app_folder
 

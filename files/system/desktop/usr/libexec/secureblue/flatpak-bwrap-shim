@@ -17,7 +17,7 @@ declare -r debug=true # TODO: change to false
 scripts_dir="$(dirname "$0")/bwrap-shim-scripts"
 declare -r scripts_dir
 
-# shellcheck disable=SC1091 # sourcing location refuses to work?
+# shellcheck source=SCRIPTDIR/bwrap-shim-scripts/initialize-shared-variables.sh
 source "${scripts_dir}/initialize-shared-variables.sh"
 
 
@@ -25,7 +25,7 @@ basic_checks() {
 	local -i check_count=0
 	local -i check_fail_count=0
 	for script in "${scripts_dir}"/check/*; do
-		# shellcheck disable=SC1090 # can't find a way to satisfy it
+		# shellcheck source=/dev/null # doesn't seem to be a way to declare any name
 		source "${script}"
 		check_count+=1
 	done
@@ -42,7 +42,7 @@ find_split() {
 	# find the split between bwrap args and child process, and break there
 	local -i i
 	local current_arg next_arg
-	local -r is_option="-"
+	local -r is_option="-" # options always start with -
 	local last_arg_was_option=true
 	for i in "${!args[@]}"; do
 		current_arg="${args[i]}"
@@ -115,7 +115,7 @@ find_flatpak_name() {
 		if [[ "${path}" = ${metadata_file_glob} ]]; then
 			metadata_file="${path}"
 			flatpak_name=$(grep "name=" "${path}")
-			flatpak_name=${flatpak_name#*=}
+			flatpak_name=${flatpak_name#*=} # get only text after =
 			break
 		fi
 		# shellcheck disable=SC2053
@@ -134,12 +134,13 @@ find_flatpak_name() {
 	fi
 }
 find_flatpak_name
+# shellcheck disable=SC2034 # vars for use by sourced scripts
 declare -r flatpak_name metadata_file app_folder
 
 
 declare -a extra_bwrap_args=()
 for script in "${scripts_dir}"/execute/*; do
-	# shellcheck disable=SC1090 # can't find a way to satisfy it
+	# shellcheck source=/dev/null # doesn't seem to be a way to declare any name
 	source "${script}"
 done
 declare -r extra_bwrap_args

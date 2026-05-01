@@ -12,6 +12,7 @@ if [[ -v HOME ]]; then
 	user_home="${HOME}"
 else
 	user_home="$(getent passwd "${user_id}")"
+	# always 7 fields, x:x:x:x:x:/home/username:x
 	user_home="${user_home%:*}" # remove last field
 	user_home="${user_home##*:}" # remove all but last field
 fi

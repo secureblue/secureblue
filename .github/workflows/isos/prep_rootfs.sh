@@ -181,6 +181,6 @@ EOF
 if [[ $IMAGE_VARIANT_ID == *"silverblue"* ]]; then
     # pin installer to gnome dash
     sed -i "s/'io.github.kolunmi.Bazaar.desktop'\]/'io.github.kolunmi.Bazaar.desktop', 'org.fedoraproject.welcome-screen.desktop'\]/" /usr/share/glib-2.0/schemas/zz1-secureblue.gschema.override 
-    sed -i "s/NoDisplay=false/NoDisplay=true/" /usr/share/applications/org.fedoraproject.welcome-screen.desktop 
+    sed -i "s/NoDisplay=true/NoDisplay=false/" /usr/share/applications/org.fedoraproject.welcome-screen.desktop 
     glib-compile-schemas /usr/share/glib-2.0/schemas
 fi

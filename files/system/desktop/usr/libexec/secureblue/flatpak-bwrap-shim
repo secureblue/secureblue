@@ -4,7 +4,7 @@
 #
 # SPDX-License-Identifier: Apache-2.0
 
-export LD_PRELOAD='libhardened_malloc.so libno_rlimit_as.so'
+export LD_PRELOAD='libhardened_malloc.so'
 
 set -euo pipefail
 shopt -s nullglob
@@ -38,34 +38,30 @@ basic_checks
 unset -f basic_checks
 
 
-declare bwrap_args child_args
+declare -a bwrap_args child_args
 find_split() {
-	# find the split between bwrap args and child process, and break there
-	local -i i
-	local current_arg next_arg
 	local -r is_option="-" # options always start with -
-	local last_arg_was_option=true
+	local last_arg_was_option=true current_arg
+	# break this loop when current_arg should be arguments for the child process
 	for i in "${!args[@]}"; do
 		current_arg="${args[i]}"
 
-		[[ "${current_arg}" != "--" ]] || break
+		[[ "${current_arg}" != "--" ]] || break # explicit end of arguments
 
 		if [[ "${current_arg:0:1}" = "${is_option}" ]]; then
 			last_arg_was_option=true
-			continue
+			continue # if next option is not an option, assume it's a value
 		fi
 
-		[[ "${last_arg_was_option}" = true ]] || break
-
-		i+=1
-		next_arg="${args[i]}"
-		[[ "${next_arg:0:1}" = "${is_option}" ]] || break
+		if [[ "${last_arg_was_option}" == false ]]; then
+			break # two non-options in a row, assume this one is a command
+		fi
 
 		last_arg_was_option=false
 	done
 
-	bwrap_args=( "${args[@]:0:i}" )
-	child_args=( "${args[@]:i}" )
+	bwrap_args=( "${args[@]:0:i}" ) # start at beginning, return length of i
+	child_args=( "${args[@]:i}" ) # start at i, return from there to the end
 	if [[ "${debug}" = true ]]; then
 		echo
 		echo "${args[@]}"

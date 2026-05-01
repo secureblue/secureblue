@@ -115,16 +115,16 @@ find_flatpak_name() {
 		fi
 
 		# shellcheck disable=SC2053
+		if [[ "${path}" = ${app_folder_glob} ]]; then
+			app_folder="${path}"
+			flatpak_name=$(jq --raw-output '.id' "${path}/manifest.json")
+			break
+		fi
+		# shellcheck disable=SC2053
 		if [[ "${path}" = ${metadata_file_glob} ]]; then
 			metadata_file="${path}"
 			flatpak_name=$(grep "${name_property}" "${path}")
 			flatpak_name=${flatpak_name#"${name_property}"} # removes prefix
-			break
-		fi
-		# shellcheck disable=SC2053
-		if [[ "${path}" = ${app_folder_glob} ]]; then
-			app_folder="${path}"
-			flatpak_name=$(jq --raw-output '.id' "${path}/manifest.json")
 			break
 		fi
 	done

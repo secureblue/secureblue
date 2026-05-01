@@ -18,6 +18,12 @@ harden-flatpak *args:
     #!/usr/bin/sh
     exec /usr/bin/python3 /usr/libexec/secureblue/harden_flatpak.py "$@"
 
+# Prevent flatpaks from recording audio streams. When called with a flatpak application ID as an argument, applies the overrides to that application instead of globally.
+[positional-arguments]
+block-record *args:
+    #!/usr/bin/sh
+    exec /usr/bin/python3 /usr/libexec/secureblue/block_record.py "$@"
+
 # Harden Flatpaks further by disabling all permissions by default and rejecting known arbitrary DBus names, applies only to the current user
 flatpak-permissions-lockdown:
     #!/usr/bin/bash

@@ -8,7 +8,7 @@
 set -euo pipefail
 
 IMAGE_TAG="latest"
-IMAGE_VARIANT_ID=$(grep '^VARIANT_ID=' /etc/os-release | cut -d= -f2)
+IMAGE_VARIANT_ID=$(grep '^VARIANT_ID=' /usr/lib/os-release | cut -d= -f2)
 IMAGE_REF="ghcr.io/secureblue/$IMAGE_VARIANT_ID"
 
 sed -i '/^install squashfs /d' /usr/lib/modprobe.d/secureblue.conf

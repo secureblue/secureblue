@@ -36,14 +36,14 @@
     },
     {
         "localRepo": "files/system/etc/yum.repos.d/protonvpn-stable.repo",
-        "repoSource": "https://repo.protonvpn.com/fedora-43-stable/protonvpn-stable-release/protonvpn-stable-release-1.0.3-1.noarch.rpm",
+        "repoSource": "https://repo.protonvpn.com/fedora-44-stable/protonvpn-stable-release/protonvpn-stable-release-1.0.3-1.noarch.rpm",
         "localGpgKey": "files/system/usr/share/pki/rpm-gpg/protonvpn_public_key.asc",
-        "remoteGpgKey": "https://repo.protonvpn.com/fedora-43-stable/public_key.asc",
-        "gpgFingerprint": "7BB2808996C47DC9EECDA475F7EB64B08C03490D"
+        "remoteGpgKey": "https://repo.protonvpn.com/fedora-44-stable/public_key.asc",
+        "gpgFingerprint": "6929133BDE1CE1CFA9EDB286D84176F6844830D4"
     },
     {
         "localRepo": "files/system/etc/yum.repos.d/secureblue-packages-fedora.repo",
-        "repoSource": "https://copr.fedorainfracloud.org/coprs/secureblue/packages/repo/fedora-43/secureblue-packages-fedora-43.repo",
+        "repoSource": "https://copr.fedorainfracloud.org/coprs/secureblue/packages/repo/fedora-44/secureblue-packages-fedora-44.repo",
         "localGpgKey": "files/system/usr/share/pki/rpm-gpg/secureblue-copr-pubkey.gpg",
         "remoteGpgKey": "https://download.copr.fedorainfracloud.org/results/secureblue/packages/pubkey.gpg",
         "gpgFingerprint": "FEE4CA50D94042B7D9C42B8D33CC2522E09126A6"

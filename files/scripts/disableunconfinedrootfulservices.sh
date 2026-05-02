@@ -11,8 +11,8 @@ systemctl mask uresourced.service
 
 systemctl mask --user uresourced.service
 
-systemctl disable low-memory-monitor.service
-systemctl mask low-memory-monitor.service
+systemctl disable low-memory-monitor.service 2>/dev/null || true
+systemctl mask low-memory-monitor.service 2>/dev/null || true
 
-systemctl disable thermald.service
-systemctl mask thermald.service
+systemctl disable thermald.service 2>/dev/null || true
+systemctl mask thermald.service 2>/dev/null || true

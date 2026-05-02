@@ -8,7 +8,8 @@
 Flatpak permissions checks for secureblue auditing script.
 """
 
-from dataclasses import dataclass, field
+from dataclasses import KW_ONLY, dataclass, field
+from dataclasses import replace as dataclass_replace
 from typing import Final
 
 from auditor import Note, Recommendation, Status, gettext_marker
@@ -89,7 +90,7 @@ ALIASES: dict[str, str] = {
 }
 
 
-def parse_fs_permission(perm: str) -> tuple[str, bool, bool, bool]:
+def parse_fs_permission(perm: str) -> tuple[str, bool, bool, str | None]:
     """Parse flatpak filesystem permission string."""
     readonly = perm.endswith(":ro")
     negated = perm.startswith("!")
@@ -102,13 +103,13 @@ def parse_fs_permission(perm: str) -> tuple[str, bool, bool, bool]:
     else:
         path = perm
     path = path.removeprefix("!").rstrip("/")
-    is_alias = False
+    aliased_path = None
     for name, alias in ALIASES.items():
         if path.startswith(alias):
+            aliased_path = path
             path = path.replace(alias, name, 1)
-            is_alias = True
             break
-    return path, readonly, negated, is_alias
+    return path, readonly, negated, aliased_path
 
 
 FLATPAK_OVERRIDE_OPTIONS: Final[dict[str, tuple[str, str]]] = {
@@ -116,6 +117,7 @@ FLATPAK_OVERRIDE_OPTIONS: Final[dict[str, tuple[str, str]]] = {
     "sockets": ("socket", "nosocket"),
     "devices": ("device", "nodevice"),
     "features": ("allow", "disallow"),
+    "filesystems": ("filesystem", "nofilesystem"),
 }
 
 
@@ -165,12 +167,29 @@ class PermissionCheck:
 
 
 @dataclass(frozen=True)
-class DirectoryInfo:
+class DirectoryInfo(PermissionCheck):
     """Info about a directory to check."""
 
-    path: str
-    description: str
-    status: Status
+    _: KW_ONLY
+    # showing the exact perm prevents grouping aliases into one recommendation
+    description: str | None = None
+    # internally set only
+    category: str = field(init=False, default="filesystems")
+    path: str = field(init=False)
+
+    _comment_already_prefixed: bool = False
+
+    def __post_init__(self) -> None:
+        """Set the "path" alias field, and generate a comment."""
+        object.__setattr__(self, "path", self.permission)
+
+        has_comment = hasattr(self, "comment") and self.comment is not None
+        if not has_comment:
+            return
+        if not self._comment_already_prefixed:
+            template = _("This grants access to {0}.").format(self.comment)
+            object.__setattr__(self, "comment", template)
+            object.__setattr__(self, "_comment_already_prefixed", True)
 
 
 FLATPAK_PERMISSION_CHECKS: list[PermissionCheck] = [
@@ -415,46 +434,39 @@ def _check_predefined_flatpak_permissions(
             state.arbitrary_permissions |= check.arbitrary_permissions
 
 
-def _check_dangerous_dirs(state: FlatpakPermissionsState, filesystems_rw: dict[str, bool]) -> None:
+def _check_dangerous_dirs(
+    state: FlatpakPermissionsState, filesystems_rw_aliasmap: dict[str, str | None]
+) -> None:
     dangerous_dirs: list[DirectoryInfo] = [
-        DirectoryInfo("host", _("all system files"), FAIL),
-        DirectoryInfo("home", _("all user files"), FAIL),
-        DirectoryInfo("xdg-config", _("other applications' configuration files"), FAIL),
-        DirectoryInfo("xdg-cache", _("other applications' cache files"), FAIL),
-        DirectoryInfo("xdg-data", _("other applications' data files"), FAIL),
+        DirectoryInfo("host", FAIL, _("all system files")),
+        DirectoryInfo("home", FAIL, _("all user files")),
+        DirectoryInfo("xdg-config", FAIL, _("other applications' configuration files")),
+        DirectoryInfo("xdg-cache", FAIL, _("other applications' cache files")),
+        DirectoryInfo("xdg-data", FAIL, _("other applications' data files")),
     ]
 
     for directory in dangerous_dirs:
-        if directory.path in filesystems_rw:
-            aliased_path = directory.path
-            is_alias = filesystems_rw[directory.path]
-            if is_alias:
-                aliased_path = directory.path.replace(directory.path, ALIASES[directory.path], 1)
-            note = Note(
-                _("{0} has {1} permission").format(state.name, f"filesystem={directory.path}"),
-                status=directory.status,
-            )
-            rec_lines = (
-                _("The following flatpak app(s) have {0} permission:").format(
-                    f"filesystem={aliased_path}"
-                ),
-                Recommendation.NAMES_PLACEHOLDER,
-                _("This grants access to {0}.").format(directory.description),
-                _("To remove this permission from an app, use Flatseal or run:"),
-                f"$ flatpak override -u --nofilesystem={aliased_path} com.example.Example",
-                _('(replacing "{0}" with the flatpak app ID)').format("com.example.Example"),
-            )
-            rec = Recommendation("\n".join(rec_lines), mergeable_name=state.name)
-            state.update(note=note, rec=rec)
+        dir_to_check = directory
+        canon_path = dir_to_check.path
+        if canon_path not in filesystems_rw_aliasmap:
+            continue
+        aliased_path = filesystems_rw_aliasmap[canon_path]
+        if aliased_path is not None:
+            dir_to_check = dataclass_replace(dir_to_check, permission=aliased_path)
+        state.update(
+            note=dir_to_check.note(state.name), rec=dir_to_check.recommendation(state.name)
+        )
 
 
 def _check_hardened_malloc_access(
     state: FlatpakPermissionsState,
     filesystems: list[str] | None,
-    filesystems_rw: dict[str, bool],
-    filesystems_ro: dict[str, bool],
+    filesystems_rw_aliasmap: dict[str, str | None],
+    filesystems_ro_aliasmap: dict[str, str | None],
 ) -> None:
-    if filesystems is None or ("host-os" not in filesystems_ro and "host-os" not in filesystems_rw):
+    if filesystems is None or (
+        "host-os" not in filesystems_ro_aliasmap and "host-os" not in filesystems_rw_aliasmap
+    ):
         note = Note(
             _("{0} is missing {1} permission").format(state.name, "host-os:ro"), status=WARN
         )
@@ -471,14 +483,12 @@ def _check_hardened_malloc_access(
 
 
 def _check_overrides_access(
-    state: FlatpakPermissionsState, filesystems_rw: dict[str, bool]
+    state: FlatpakPermissionsState, filesystems_rw_aliasmap: dict[str, str | None]
 ) -> None:
     override_path = "xdg-data/flatpak/overrides"
-    if override_path in filesystems_rw:
+    if override_path in filesystems_rw_aliasmap:
         state.arbitrary_permissions = True
-        is_alias = filesystems_rw[override_path]
-        if is_alias:
-            override_path = override_path.replace("xdg-data", ALIASES["xdg-data"], 1)
+        override_path = filesystems_rw_aliasmap[override_path] or override_path
         if state.name not in ARBITRARY_PERMISSIONS_EXPECTED:
             note = Note(_("{0} can modify flatpak permissions.").format(state.name), status=FAIL)
             rec_lines = (
@@ -495,17 +505,19 @@ def _check_overrides_access(
 
 def _check_fs_permissions(state: FlatpakPermissionsState, perms: Permissions) -> None:
     filesystems = perms.permissions.get("filesystems")
-    filesystems_ro = {}
-    filesystems_rw = {}
+    filesystems_ro_aliasmap = {}
+    filesystems_rw_aliasmap = {}
     if filesystems is not None:
         for perm in filesystems:
-            path, readonly, negated, is_alias = parse_fs_permission(perm)
+            path, readonly, negated, aliased_path = parse_fs_permission(perm)
             if negated:
                 continue
             if readonly:
-                filesystems_ro[path] = is_alias
+                filesystems_ro_aliasmap[path] = aliased_path
             else:
-                filesystems_rw[path] = is_alias
-        _check_dangerous_dirs(state, filesystems_rw)
-        _check_overrides_access(state, filesystems_rw)
-    _check_hardened_malloc_access(state, filesystems, filesystems_rw, filesystems_ro)
+                filesystems_rw_aliasmap[path] = aliased_path
+        _check_dangerous_dirs(state, filesystems_rw_aliasmap)
+        _check_overrides_access(state, filesystems_rw_aliasmap)
+    _check_hardened_malloc_access(
+        state, filesystems, filesystems_rw_aliasmap, filesystems_ro_aliasmap
+    )

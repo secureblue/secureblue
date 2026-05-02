@@ -6,16 +6,19 @@
 
 set -euo pipefail
 
-dnf install -y --setopt=install_weak_deps=False policycoreutils-devel
+selinux_policy_version="$(rpm -q --qf '%{version}-%{release}' selinux-policy)"
+dnf install -y --setopt=install_weak_deps=False --enable-repo=updates-archive \
+    "selinux-policy-devel-${selinux_policy_version}"
 
 policy_modules=(flatpakfull nautilus systemsettings thunar)
 
 cil_policy_modules=(
+    './selinux/af_alg/deny_af_alg.cil'
+    './selinux/flatpakfull/grant_systemd_flatpak_exec.cil'
     './selinux/user_namespace/grant_fm_userns.cil'
     './selinux/user_namespace/grant_userns.cil'
-    './selinux/user_namespace/harden_userns.cil'
     './selinux/user_namespace/harden_container_userns.cil'
-    './selinux/flatpakfull/grant_systemd_flatpak_exec.cil'
+    './selinux/user_namespace/harden_userns.cil'
     './selinux/user_namespace/userns_deny_unconfined_relabels.cil'
 )
 

@@ -3,7 +3,7 @@
 ;; SPDX-License-Identifier: Apache-2.0 OR MIT
 
 (typeattribute userns_privileged_domain)
-(typeattributeset userns_privileged_domain (init_t initrc_t install_t kernel_t))
+(typeattributeset userns_privileged_domain (init_t install_t kernel_t))
 (optional colord_userns_privileged_domain
     (typeattributeset userns_privileged_domain (colord_t))
 )

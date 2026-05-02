@@ -7,60 +7,50 @@
 				{
 					"serverDescription": "No filtering",
 					"ipv4": [
-						"dns+tls://76.76.2.0#p0.freedns.controld.com",
-						"dns+tls://76.76.10.0#p0.freedns.controld.com"
+						"dns+tls://76.76.2.11#p0.freedns.controld.com"
 					],
 					"ipv6": [
-						"dns+tls://[2606:1a40::]#p0.freedns.controld.com",
-						"dns+tls://[2606:1a40:1::]#p0.freedns.controld.com"
+						"dns+tls://[2606:1a40::11]#p0.freedns.controld.com"
 					],
 					"https": "https://freedns.controld.com/p0"
 				},
 				{
 					"serverDescription": "Blocks: Malware",
 					"ipv4": [
-						"dns+tls://76.76.2.1#p1.freedns.controld.com",
-						"dns+tls://76.76.10.1#p1.freedns.controld.com"
+						"dns+tls://76.76.2.11#p1.freedns.controld.com"
 					],
 					"ipv6": [
-						"dns+tls://[2606:1a40::1]#p1.freedns.controld.com",
-						"dns+tls://[2606:1a40:1::1]#p1.freedns.controld.com"
+						"dns+tls://[2606:1a40::11]#p1.freedns.controld.com"
 					],
 					"https": "https://freedns.controld.com/p1"
 				},
 				{
 					"serverDescription": "Blocks: Malware + Ads & Tracking",
 					"ipv4": [
-						"dns+tls://76.76.2.2#p2.freedns.controld.com",
-						"dns+tls://76.76.10.2#p2.freedns.controld.com"
+						"dns+tls://76.76.2.11#p2.freedns.controld.com"
 					],
 					"ipv6": [
-						"dns+tls://[2606:1a40::2]#p2.freedns.controld.com",
-						"dns+tls://[2606:1a40:1::2]#p2.freedns.controld.com"
+						"dns+tls://[2606:1a40::11]#p2.freedns.controld.com"
 					],
 					"https": "https://freedns.controld.com/p2"
 				},
 				{
 					"serverDescription": "Blocks: Malware + Ads & Tracking + Social Networks",
 					"ipv4": [
-						"dns+tls://76.76.2.3#p3.freedns.controld.com",
-						"dns+tls://76.76.10.3#p3.freedns.controld.com"
+						"dns+tls://76.76.2.11#p3.freedns.controld.com"
 					],
 					"ipv6": [
-						"dns+tls://[2606:1a40::3]#p3.freedns.controld.com",
-						"dns+tls://[2606:1a40:1::3]#p3.freedns.controld.com"
+						"dns+tls://[2606:1a40::11]#p3.freedns.controld.com"
 					],
 					"https": "https://freedns.controld.com/p3"
 				},
 				{
 					"serverDescription": "Blocks: Malware + Ads & Tracking + Social Networks + Adult Content",
 					"ipv4": [
-						"dns+tls://76.76.2.4#family.freedns.controld.com",
-						"dns+tls://76.76.10.4#family.freedns.controld.com"
+						"dns+tls://76.76.2.11#family.freedns.controld.com"
 					],
 					"ipv6": [
-						"dns+tls://[2606:1a40::4]#family.freedns.controld.com",
-						"dns+tls://[2606:1a40:1::4]#family.freedns.controld.com"
+						"dns+tls://[2606:1a40::11]#family.freedns.controld.com"
 					],
 					"https": "https://freedns.controld.com/family"
 				}

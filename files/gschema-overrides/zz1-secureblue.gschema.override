@@ -2,18 +2,6 @@
 #
 # SPDX-License-Identifier: Apache-2.0
 
-# Disable GNOME user extensions installation & usage
-# Only GNOME system extensions are trusted if installed
-
-[org.gnome.shell]
-allow-extension-installation=false
-favorite-apps = ['trivalent.desktop', 'org.gnome.Nautilus.desktop', 'org.gnome.Ptyxis.desktop', 'com.github.tchx84.Flatseal.desktop', 'io.github.kolunmi.Bazaar.desktop']
-enabled-extensions = []
-
 [org.gnome.desktop.interface]
 gtk-theme='adw-gtk3'
-font-antialiasing="rgba"
-
-[org.gnome.desktop.background]
-picture-uri='file:///usr/share/backgrounds/secureblue/secureblue-blue.svg'
-picture-uri-dark='file:///usr/share/backgrounds/secureblue/secureblue-black.svg'
+font-antialiasing='rgba'

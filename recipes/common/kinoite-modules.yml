@@ -44,3 +44,7 @@ modules:
       - setdefaultkdewallpapers.sh
       - systemsettings-standard-malloc.sh
       - removekrunnerappstream.sh
+  - type: gschema-overrides
+    source: ghcr.io/blue-build/modules@sha256:079ae754f5b57e8f2ca5850b33a633b3fe1c37f4be51e7b00e9250a997f4e334
+    include:
+      - zz1-kinoite.gschema.override

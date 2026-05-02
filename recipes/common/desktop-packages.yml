@@ -21,6 +21,7 @@ install:
     - bazaar
     - homebrew
     - firewall-config
+    - adw-gtk3-theme
 
     # yubikey enablement
     - pam-u2f

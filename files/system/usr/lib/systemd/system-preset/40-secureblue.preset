@@ -14,3 +14,4 @@ disable flatpak-add-fedora-repos.service
 disable geoclue.service
 disable sshd-vsock.socket
 disable systemd-resolved.service
+disable rpm-ostree-countme.timer

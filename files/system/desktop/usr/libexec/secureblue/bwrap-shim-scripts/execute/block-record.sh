@@ -33,7 +33,9 @@ execute() {
 		extra_bwrap_args+=( "--tmpfs" "/dev/snd" )
 	fi
 
-	[[ "${debug}" = true ]] && echo "${subname}: Value returned was ${permission}"
+	if [[ "${debug}" = true ]]; then
+		echo "${subname}: Value returned was ${permission}";
+	fi
 
 }
 execute

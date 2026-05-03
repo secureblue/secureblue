@@ -107,8 +107,11 @@ find_flatpak_name() {
 		[[ "${path}" != ${runtime_folder_glob} ]] || continue
 
 		if [[ "${debug}" = true ]]; then
-			[[ -d ${fd} ]] && ls -l "${path}"
-			[[ -f ${fd} ]] && timeout 0.5s cat "${fd}" || true
+			if [[ -d ${fd} ]]; then
+				ls -l "${path}"
+			elif [[ -f ${fd} ]]; then
+				timeout 0.5s cat "${fd}" || true
+			fi
 			echo -e "\n##########"
 		fi
 
@@ -127,11 +130,11 @@ find_flatpak_name() {
 		fi
 	done
 
-	if [[ -v flatpak_name && -n "${flatpak_name}" ]]; then
-		[[ "${debug}" = true ]] && echo "${name}: App name is ${flatpak_name}"
-	else
+	if [[ -z "${flatpak_name-}" ]]; then
 		echo "${name}: Couldn't find Flatpak ID, defaulting to restrictive behavior"
 		flatpak_name=""
+	elif [[ "${debug}" = true ]]; then
+		echo "${name}: App name is ${flatpak_name}"
 	fi
 }
 find_flatpak_name
@@ -151,6 +154,7 @@ declare -r extra_bwrap_args
 declare -r flatpak_bwrap_shim_final_command=(
 	"${bwrap}" "${bwrap_args[@]}" "${extra_bwrap_args[@]}" "${child_args[@]}"
 )
-[[ "${debug}" = true ]] && echo "${name}: Executing ${flatpak_bwrap_shim_final_command[*]}"
-
+if [[ "${debug}" = true ]]; then
+	echo "${name}: Executing ${flatpak_bwrap_shim_final_command[*]}"
+fi
 exec "${flatpak_bwrap_shim_final_command[@]}"

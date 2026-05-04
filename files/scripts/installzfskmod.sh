@@ -25,10 +25,28 @@ curl -fLsS --retry 5 \
     -O "https://github.com/openzfs/zfs/releases/download/zfs-${ZFS_VERSION}/zfs-${ZFS_VERSION}.tar.gz.asc" \
     -O "https://github.com/openzfs/zfs/releases/download/zfs-${ZFS_VERSION}/zfs-${ZFS_VERSION}.sha256.asc"
 
-echo "Import key"
+echo "Importing ZFS signing keys"
 # https://openzfs.github.io/openzfs-docs/Project%20and%20Community/Signing%20Keys.html
-curl -fLsS --retry 5 "https://keyserver.ubuntu.com/pks/lookup?op=get&search=0xD4598027"| gpg --yes --import
-curl -fLsS --retry 5 "https://keyserver.ubuntu.com/pks/lookup?op=get&search=0xC6AF658B"| gpg --yes --import
+zfs_keys=(
+    '4F3BA9AB6D1F8D683DC2DFB56AD860EED4598027'
+    'C33DF142657ED1F7C328A2960AB9E991C6AF658B'
+)
+for key in "${zfs_keys[@]}"; do
+    curl -fLsS --retry 5 -o "${key}.asc" "https://keyserver.ubuntu.com/pks/lookup?op=get&search=0x${key}"
+    # Verify that the downloaded GPG key has the expected fingerprint before importing it.
+    # Reference for GPG colon-listing format: https://github.com/gpg/gnupg/blob/master/doc/DETAILS
+    if ! gpg --show-keys --with-colons "${key}.asc" \
+        | awk -F: '$1 == "fpr" || $1 == "fp2" { print $10 }' \
+        | grep -Fq "${key}"
+    then
+        echo "FATAL: Downloaded GPG key ${key}.asc does not have expected fingerprint!"
+        echo "Dumping keyfile contents:"
+        cat "${key}.asc"
+        exit 1
+    fi
+    gpg --yes --import "${key}.asc"
+    rm "${key}.asc"
+done
 
 echo "Verifying tar.gz signature"
 if ! gpg --verify "zfs-${ZFS_VERSION}.tar.gz.asc" "zfs-${ZFS_VERSION}.tar.gz"

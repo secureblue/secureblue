@@ -151,21 +151,19 @@ toolbox-assemble CONTAINER="prompt" ACTION="create" FILE="/etc/toolbox/toolbox.i
     source /usr/lib/ujust/ujust.sh
     ToolboxAssembleList "{{ FILE }}" "{{ ACTION }}" "{{ CONTAINER }}"
 
-# Install the official docker packages
+# Install the official Docker packages
 install-docker:
-    #! /bin/run0 /bin/bash
+    #!/usr/bin/run0 /bin/bash
     set -euo pipefail
-    tempfile=$(mktemp)
-    curl -fLo "$tempfile" https://download.docker.com/linux/fedora/docker-ce.repo
-    mv "$tempfile" /etc/yum.repos.d/docker-ce.repo
+    sed -i -e '/^\[docker-ce-stable\]$/,/^\[/s/^enabled *= *0.*/enabled=1/' /etc/yum.repos.d/docker-ce.repo
     rpm-ostree refresh-md
     rpm-ostree install docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
 
-# Uninstall the official docker packages
+# Uninstall the official Docker packages
 uninstall-docker:
-    #! /bin/run0 /bin/bash
+    #!/usr/bin/run0 /bin/bash
     set -euo pipefail
-    rm /etc/yum.repos.d/docker-ce.repo
+    cp /usr/etc/yum.repos.d/docker-ce.repo /etc/yum.repos.d/docker-ce.repo
     rpm-ostree refresh-md
     rpm-ostree uninstall docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
 
@@ -279,7 +277,7 @@ install-vpn:
     # supported VPN providers and the security features they need disabled, separated by spaces
     declare -A vpn_providers=(
         ["ivpn"]="gui_needs_unconfined_userns gui_needs_xwayland"
-        ["mullvad"]="gui_needs_unconfined_userns gui_needs_xwayland"
+        ["mullvad"]="gui_needs_unconfined_userns"
         ["proton"]=""
         ["tailscale"]=""
     )
@@ -444,7 +442,7 @@ install-vpn:
 
         xwayland_enabled="0"
         if [[ "$DE" == "gnome" ]]; then
-            if ! test -e "/etc/systemd/user/org.gnome.Shell@wayland.service.d/override.conf"; then
+            if ! test -e "/etc/systemd/user/org.gnome.Shell@user.service.d/override.conf"; then
                 xwayland_enabled="1"
             fi
         elif [[ "$DE" == "plasma" ]]; then

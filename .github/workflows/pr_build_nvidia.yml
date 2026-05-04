@@ -11,6 +11,7 @@ on:
     branches:
       - live
       - staging
+      - next
     paths:
       - '**nvidia**'
       - '!**.md'

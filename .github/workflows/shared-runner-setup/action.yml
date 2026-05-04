@@ -27,9 +27,10 @@ runs:
         sudo rm -f /var/lib/man-db/auto-update
         sudo sed -i 's/^update_initramfs=.*/update_initramfs=no/' /etc/initramfs-tools/update-initramfs.conf
 
-    - name: Drop Ubuntu HTTP mirrors
+    - name: Drop Ubuntu HTTP mirrors and chrome repo
       shell: bash
       run: |
+        sudo rm -f /etc/apt/sources.list.d/google-chrome*
         sudo sed -i '/^http:\/\//d' /etc/apt/apt-mirrors.txt
         sudo apt-get update
 
@@ -53,8 +54,8 @@ runs:
 
         case "$GITHUB_REF" in
           refs/heads/"$DEFAULT_BRANCH") image_tag='latest' ;;
-          refs/pull/*) image_tag="pr-${PR_EVENT_NUMBER}-43" ;;
-          *) image_tag="br-${GITHUB_REF_NAME}-43" ;;
+          refs/pull/*) image_tag="pr-${PR_EVENT_NUMBER}-44" ;;
+          *) image_tag="br-${GITHUB_REF_NAME}-44" ;;
         esac
         FULL_IMAGE_REF="ghcr.io/${GITHUB_REPOSITORY_OWNER,,}/${IMAGE_NAME}:${image_tag}"
         echo "FULL_IMAGE_REF=${FULL_IMAGE_REF}" >> "${GITHUB_OUTPUT}"

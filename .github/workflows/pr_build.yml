@@ -180,7 +180,7 @@ jobs:
         id: test_keys
         shell: bash
         run: |
-          cp ./.github/workflows/public_key.der.test ./files/system/etc/pki/akmods/certs/akmods-secureblue.der
+          cp ./.github/workflows/public_key.der.test ./files/system/usr/share/pki/akmods/certs/akmods-secureblue.der
           {
             echo 'kernel_privkey<<EOF'
             cat ./.github/workflows/private_key.priv.test

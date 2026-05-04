@@ -52,8 +52,10 @@ cat << EOF
   ───────────────────────────────┼────────────────────────────────────────────
    ${slight_red} ujust --choose ${reset}              │ List all available commands
    ${slight_red} ujust toggle-user-motd ${reset}      │ Toggle this banner on/off
-   ${slight_red} brew help ${reset}                   │ Manage command line packages
 EOF
+if command -v brew >/dev/null 2>&1; then
+    echo "   ${slight_red} brew help ${reset}                   │ Manage command line packages"
+fi
 if [[ -n "$tip" ]]; then
     echo
     echo -e "  ${tip}"

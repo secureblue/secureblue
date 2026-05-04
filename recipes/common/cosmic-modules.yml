@@ -10,10 +10,10 @@ modules:
         packages:
           - NetworkManager-tui
           - NetworkManager-openvpn
-          - cosmic-player
       remove:
         packages:
           - cosmic-store
+          - cosmic-player
           - fedora-flathub-remote
           - fedora-third-party
           - fedora-workstation-repositories

@@ -6,16 +6,19 @@
 
 set -euo pipefail
 
-dnf install -y --setopt=install_weak_deps=False policycoreutils-devel
+selinux_policy_version="$(rpm -q --qf '%{version}-%{release}' selinux-policy)"
+dnf install -y --setopt=install_weak_deps=False --enable-repo=updates-archive \
+    "selinux-policy-devel-${selinux_policy_version}"
 
 policy_modules=(flatpakfull nautilus systemsettings thunar)
 
 cil_policy_modules=(
+    './selinux/af_alg/deny_af_alg.cil'
+    './selinux/flatpakfull/grant_systemd_flatpak_exec.cil'
     './selinux/user_namespace/grant_fm_userns.cil'
     './selinux/user_namespace/grant_userns.cil'
-    './selinux/user_namespace/harden_userns.cil'
     './selinux/user_namespace/harden_container_userns.cil'
-    './selinux/flatpakfull/grant_systemd_flatpak_exec.cil'
+    './selinux/user_namespace/harden_userns.cil'
     './selinux/user_namespace/userns_deny_unconfined_relabels.cil'
 )
 
@@ -25,6 +28,9 @@ for module in "${policy_modules[@]}"; do
     cd ../..
 done
 
-semodule -v -i ./selinux/*/*.pp "${cil_policy_modules[@]}"
+# Install at priority 300 to be higher-priority than policies from RPM packages
+# (which are conventionally priority 200) but lower-priority than custom
+# policies set by a local administrator (which default to priority 400).
+semodule -v -X 300 -i ./selinux/*/*.pp "${cil_policy_modules[@]}"
 
 restorecon -FRv /usr

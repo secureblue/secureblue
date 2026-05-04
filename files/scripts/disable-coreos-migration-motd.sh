@@ -6,4 +6,4 @@
 
 set -euo pipefail
 
-systemctl disable coreos-container-signing-migration-motd.service
+systemctl disable coreos-container-signing-migration-motd.service 2>/dev/null || true

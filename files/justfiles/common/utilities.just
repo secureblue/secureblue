@@ -442,7 +442,7 @@ install-vpn:
 
         xwayland_enabled="0"
         if [[ "$DE" == "gnome" ]]; then
-            if ! test -e "/etc/systemd/user/org.gnome.Shell@wayland.service.d/override.conf"; then
+            if ! test -e "/etc/systemd/user/org.gnome.Shell@user.service.d/override.conf"; then
                 xwayland_enabled="1"
             fi
         elif [[ "$DE" == "plasma" ]]; then

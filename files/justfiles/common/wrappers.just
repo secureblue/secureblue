@@ -77,3 +77,9 @@ toggle-user-motd:
 set-dhcp-hostname-sending *args:
     #!/bin/sh
     exec /usr/bin/python3 /usr/libexec/secureblue/dhcp_hostname_sending_main.py "$@"
+
+# Enable the default container policy
+[positional-arguments]
+default-container-policy *args:
+    #!/bin/sh
+    exec /usr/bin/python3 /usr/libexec/secureblue/default_container_policy.py "$@"

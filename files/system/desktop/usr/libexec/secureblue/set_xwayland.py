@@ -68,7 +68,10 @@ def run(mode: ToggleMode) -> int:
 
     override_file = XWAYLAND_OVERRIDE_FILES[image]
     de_name = DE_NAMES[image]
-    logout_prompt=f"Xwayland for {de_name} has been enabled. Would you like to logout now for this to take effect?"
+    logout_prompt = (
+            f"Xwayland for {de_name} has been enabled. " 
+            "Would you like to logout now for this to take effect?"
+    )
     enabled = not os.path.exists(override_file)
 
     match mode:

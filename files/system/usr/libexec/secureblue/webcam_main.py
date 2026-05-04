@@ -66,7 +66,7 @@ def main() -> int:
 
     if len(sys.argv) == argc_interactive:
         # Ask interactively.
-        mode = "on" if ask_yes_no("Would you like to load the Webcam modules?") else "off"
+        mode = "on" if ask_yes_no("On boot, do you want the Webcam modules to load?") else "off"
     elif len(sys.argv) == argc_on_off:
         # Take mode from first argument, i.e. 'on' or 'off'.
         mode = sys.argv[1].casefold()

@@ -100,6 +100,20 @@ install-steam:
         fi
     fi
 
+    # Optional: Enable ntsync kernel module
+    if [ ! -f /etc/modules-load.d/ntsync.conf ]; then
+        echo "Optional: Enable ntsync kernel module for improved Wine/Proton synchronization performance."
+        enable_ntsync=""
+        read -rp "Would you like to enable ntsync now? [y/N] " enable_ntsync
+        if [[ "$enable_ntsync" == [Yy]* ]]; then
+            echo "Enabling ntsync module."
+            echo "ntsync" | run0 -i tee /etc/modules-load.d/ntsync.conf >/dev/null
+            need_reboot=true
+        fi
+    else
+        echo "ntsync module is already configured."
+    fi
+
     if [[ "$need_reboot" == true ]]; then
         echo "One or more of the changes made necessitates a reboot."
         echo "Steam will not work until you reboot."

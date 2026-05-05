@@ -9,6 +9,9 @@
 ; and exposes a lot of attack surface. In particular, it was responsible for
 ; CVE-2026-31431 ("Copy Fail"), a major privilege escalation vulnerability.
 
-(typeattribute af_alg_restricted)
-(typeattributeset af_alg_restricted (not (kernel_t)))
-(deny af_alg_restricted domain (alg_socket (not (getattr))))
+(typeattribute non_kernel_types)
+(typeattributeset non_kernel_types (not (kernel_t)))
+(typeattribute all_types)
+(typeattributeset all_types (all))
+(deny non_kernel_types all_types (alg_socket (all)))
+(neverallow non_kernel_types all_types (alg_socket (all)))

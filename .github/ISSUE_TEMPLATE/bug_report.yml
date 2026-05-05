@@ -73,5 +73,5 @@ body:
           required: true
         - label: I declare that this is not a request for alternative community messaging or social platforms.
           required: true
-        - label: I declare that I have read the [bug report guidelines](https://secureblue.dev/contributing#reporting-bugs) and my bug report is actionable.
+        - label: I declare that I have read the [bug report guidelines](https://secureblue.dev/contributing#reporting-bugs) and that my bug report is actionable.
           required: true

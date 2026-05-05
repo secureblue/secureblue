@@ -10,7 +10,7 @@ Various utility functions used in secureblue scripts.
 
 import enum
 import json
-import subprocess  # nosec
+import subprocess
 import sys
 import textwrap
 from collections.abc import Iterable, Sequence
@@ -111,7 +111,10 @@ class Image(enum.Enum):
 def booted_image_ref() -> str:
     """Get the image reference of the booted deployment."""
     ostree_status = command_stdout("/usr/bin/rpm-ostree", "status", "--json")
-    return json.loads(ostree_status)["deployments"][0]["container-image-reference"]
+    image_ref = json.loads(ostree_status)["deployments"][0]["container-image-reference"]
+    if not isinstance(image_ref, str):
+        raise ValueError("container-image-reference should be a JSON string")
+    return image_ref
 
 
 def print_wrapped(text: str, *, width: int = 70) -> None:
@@ -128,7 +131,7 @@ def command_stdout(*args: str, check: bool = True) -> str:
     """Run a command in the shell and return the contents of stdout."""
     # We only call this with trusted inputs and do not set shell=True.
     # nosemgrep: dangerous-subprocess-use-audit
-    return subprocess.run(args, capture_output=True, check=check, text=True).stdout.strip()  # nosec
+    return subprocess.run(args, capture_output=True, check=check, text=True).stdout.strip()
 
 
 def command_succeeds(*args: str) -> bool:
@@ -137,7 +140,7 @@ def command_succeeds(*args: str) -> bool:
     # nosemgrep: dangerous-subprocess-use-audit
     ret_code = subprocess.run(
         args, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, check=False
-    ).returncode  # nosec
+    ).returncode
     return ret_code == 0
 
 
@@ -156,6 +159,22 @@ def parse_config(
         key, value = line.split(sep, maxsplit=1)
         config[key.strip()] = value.strip()
     return config
+
+
+def is_module_loaded(module_name: str) -> bool:
+    """Check whether the passed module name is currently loaded"""
+
+    try:
+        with open("/proc/modules", encoding="utf8") as fd:
+            return any(line.startswith(module_name + " ") for line in fd)
+    except OSError:
+        return False
+
+
+def loaded_kernel_modules() -> frozenset[str]:
+    """Get the set of currently loaded kernel modules."""
+    with open("/proc/modules", encoding="utf8") as f:
+        return frozenset(line.split(maxsplit=1)[0] for line in f)
 
 
 def is_rpm_package_installed(name: str) -> bool:

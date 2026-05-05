@@ -1,0 +1,47 @@
+# SPDX-FileCopyrightText: Copyright (c) 2019 Red Hat, Inc.
+# SPDX-FileCopyrightText: Copyright (c) 2019 NVIDIA Corporation
+#
+# SPDX-License-Identifier: MIT
+#
+# Source: https://github.com/NVIDIA/dgx-selinux/blob/b988ea65e7b43009a705eb5e5d7e94048f916734/src/nvidia-container-selinux/nvidia-container.te
+
+# /usr/share/selinux/devel/include
+
+policy_module(nvidia-container, 0.1)
+
+gen_require(`
+        type container_runtime_tmpfs_t;
+        type container_file_t;
+        type xserver_exec_t;
+	type xserver_misc_device_t;
+
+	attribute sandbox_net_domain;
+	attribute sandbox_caps_domain;
+	attribute svirt_sandbox_domain;
+	attribute kernel_system_state_reader;
+	attribute container_net_domain;
+	attribute syslog_client_type;
+')
+
+container_domain_template(nvidia_container, container)
+
+typeattribute nvidia_container_t sandbox_net_domain;
+typeattribute nvidia_container_t sandbox_caps_domain;
+typeattribute nvidia_container_t svirt_sandbox_domain;
+typeattribute nvidia_container_t kernel_system_state_reader;
+typeattribute nvidia_container_t container_net_domain;
+typeattribute nvidia_container_t syslog_client_type;
+
+# --- podman/docker
+getattr_dirs_pattern(nvidia_container_t, container_runtime_tmpfs_t, container_runtime_tmpfs_t)
+list_dirs_pattern(nvidia_container_t, container_runtime_tmpfs_t, container_runtime_tmpfs_t)
+read_files_pattern(nvidia_container_t, container_runtime_tmpfs_t, container_runtime_tmpfs_t)
+
+# --- running nvidia-smi
+allow nvidia_container_t xserver_exec_t:file { entrypoint execute getattr open read execute_no_trans };
+# --- alloc mem, ... /dev/nvidia*
+dev_rw_xserver_misc(nvidia_container_t)
+
+
+# --- send audit messages
+logging_send_audit_msgs(nvidia_container_t)

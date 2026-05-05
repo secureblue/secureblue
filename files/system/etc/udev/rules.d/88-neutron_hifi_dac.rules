@@ -1,4 +1,0 @@
-# udev rule for Neutron HiFi DAC V1
-# https://neutronhifi.com/devices/dac/v1
-
-SUBSYSTEM=="usb", ATTRS{idVendor}=="1fc9", ATTRS{idProduct}=="82f9", MODE="0666"

@@ -19,7 +19,6 @@ from typing import Final
 from urllib.parse import urlparse
 
 import sandbox
-from sandbox import SandboxedFunction
 from utils import ask_option, ask_yes_no, interruptible_ask
 
 RESET: Final[str] = "\033[0m"
@@ -32,11 +31,11 @@ TRIVALENT_POLICY_PATH: Final[Path] = Path(
 )
 SERVERS_JSON_PATH: Final[Path] = Path("/usr/share/secureblue/secure-dns-providers.json")
 
-dns_function = SandboxedFunction(
+dns_function = sandbox.SandboxedFunction(
     "dns.py",
     read_write_paths=["/etc"],
     capabilities=["CAP_SYS_ADMIN", "CAP_DAC_OVERRIDE", "CAP_CHOWN", "CAP_FOWNER"],
-    additional_sandbox_properties=["--property=SystemCallFilter=@chown", "--background="],
+    allowed_syscalls=["@chown"],
 )
 
 
@@ -268,7 +267,7 @@ def run_interactive() -> int:
             # Trivalent DoH.
             use_doh = ask_should_use_doh()
             server = ask_servers(https_only=True).https_endpoint if use_doh else ""
-            exit_code = sandbox.run(dns_function, "set-trivalent-doh", server)
+            exit_code = sandbox.run(dns_function, "set-trivalent-doh", server or "")
 
         case 3:
             # Configure DNSSEC.
@@ -287,7 +286,7 @@ def run_interactive() -> int:
             exit_code = sandbox.run(
                 dns_function,
                 "set-global",
-                servers.servers_csv,
+                servers.servers_csv or "",
                 should_validate_dnssec,
                 https_endpoint,
             )
@@ -345,6 +344,13 @@ def print_dnssec_status() -> None:
         print("DNSSEC: unable to open and parse configuration", file=sys.stderr)
 
 
+class CaseSensitiveConfigParser(configparser.ConfigParser):
+    """Config parser with case-sensitive keys"""
+
+    def optionxform(self, optionstr: str) -> str:
+        return optionstr
+
+
 def print_nm_globaldns_status() -> None:
     """
     Print global DNS enablement status and indented server list to STDOUT.
@@ -360,8 +366,7 @@ def print_nm_globaldns_status() -> None:
         print("Global DNS: unavailable")
         return
 
-    nm_parser = configparser.ConfigParser(strict=False, delimiters=("=",))
-    nm_parser.optionxform = str
+    nm_parser = CaseSensitiveConfigParser(strict=False, delimiters=("=",))
     nm_parser.read(NM_GLOBALDNS_CONF_PATH.as_posix())
 
     if not nm_parser.has_section("global-dns"):

@@ -13,8 +13,10 @@ from pathlib import Path
 from typing import Final
 
 import sandbox
-from sandbox import SandboxedFunction
-from utils import ask_yes_no
+from utils import (
+    ask_yes_no,
+    is_module_loaded,
+)
 
 BLUE_HELP: Final[str] = """
 This python script toggles if bluetooth is enabled by creating or deleting a modprobe file at
@@ -40,16 +42,6 @@ ujust set-bluetooth-modules --help
 
 BLUE_MOD_DIR: Final[str] = "/etc/modprobe.d"
 BLUE_MOD_FILE: Final[str] = f"{BLUE_MOD_DIR}/99-bluetooth.conf"
-
-
-def is_module_loaded(module_name: str) -> bool:
-    """Check whether the passed module name is currently loaded"""
-
-    try:
-        with open("/proc/modules", encoding="utf8") as fd:
-            return any(line.startswith(module_name + " ") for line in fd)
-    except OSError:
-        return False
 
 
 def print_status(enabled_by_file: bool) -> None:
@@ -83,7 +75,7 @@ def main() -> int:
         return 1
 
     enabled_by_file = Path(BLUE_MOD_FILE).exists()
-    bluetooth_function = SandboxedFunction("bluetooth.py", read_write_paths=[BLUE_MOD_DIR])
+    bluetooth_function = sandbox.SandboxedFunction("bluetooth.py", read_write_paths=[BLUE_MOD_DIR])
     match mode:
         case "on" | "off":
             target_state_enabled = mode == "on"

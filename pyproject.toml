@@ -1,0 +1,68 @@
+[project]
+name = "secureblue"
+requires-python = ">= 3.10"
+maintainers = [{name = "RoyalOughtness"}]
+description = "secureblue is a a security-focused desktop and server Linux operating system."
+readme = "docs/README.md"
+license-files = ["LICENSES/*.txt"]
+
+[project.urls]
+Repository = "https://github.com/secureblue/secureblue"
+Issues = "https://github.com/secureblue/secureblue/issues"
+
+[tool.mypy]
+strict = true
+ignore_missing_imports = true
+
+[[tool.mypy.overrides]]
+module = "audit_secureblue"
+disallow_untyped_defs = false
+
+[tool.ruff]
+line-length = 100
+
+[tool.ruff.lint]
+select = [
+    "ANN", # flake8-annotations
+    "S", # flake8-bandit
+    "B", # flake8-bugbear
+    "A", # flake8-builtins
+    "C4", # flake8-comprehensions
+    "FIX", # flake8-fixme
+    "ICN", # flake8-import-conventions
+    "PIE", # flake8-pie
+    "Q", # flake8-quotes
+    "RSE", # flake8-raise
+    "RET", # flake8-return
+    "SLF", # flake8-self
+    "SIM", # flake8-simplify
+    "TC", # flake8-type-checking
+    "ARG", # flake8-unused-arguments
+    "I", # isort
+    "C90", # mccabe
+    "N", # pep8-naming
+    "E", # pycodestyle error
+    "W", # pycodestyle warning
+    "F", # pyflakes
+    "PL", # pylint
+    "UP", # pyupgrade
+    "FURB", # refurb
+    "RUF", # Ruff-specific rules
+]
+
+ignore = [
+    "ANN204", # missing-return-type-special-method
+    "ANN401", # any-type
+    "S603", # subprocess-without-shell-equals-true
+]
+
+mccabe.max-complexity = 8
+pycodestyle.max-line-length = 110
+pycodestyle.max-doc-length = 100
+
+[tool.ruff.lint.per-file-ignores]
+# Don't require audit checks' function signatures to have type hints.
+"files/system/usr/libexec/secureblue/audit_secureblue.py" = ["ANN"]
+
+# Allow partial executable paths in subprocess invocations in this script.
+"tools/update_po.py" = ["S607"]

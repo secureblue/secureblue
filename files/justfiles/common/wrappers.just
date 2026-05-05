@@ -21,6 +21,12 @@ set-bluetooth-modules *args:
     #!/bin/sh
     exec /usr/bin/python3 /usr/libexec/secureblue/bluetooth_main.py "$@"
 
+# Sets webcam kernel modules on/off (requires reboot)
+[positional-arguments]
+set-webcam-modules *args:
+    #!/bin/sh
+    exec /usr/bin/python3 /usr/libexec/secureblue/webcam_main.py "$@"
+
 # Interactively select secure DNS servers
 [positional-arguments]
 dns-selector *args:
@@ -36,12 +42,6 @@ set-kargs-hardening:
 remove-kargs-hardening:
     #!/bin/sh
     exec /usr/bin/python3 /usr/libexec/secureblue/remove_kargs_hardening.py
-
-# Sets Brew enabled/disabled
-[positional-arguments]
-set-brew *args:
-    #!/bin/sh
-    exec /usr/bin/python3 /usr/libexec/secureblue/brew_main.py "$@"
 
 # Create the admin user and remove wheel from the normal user
 [positional-arguments]
@@ -66,3 +66,14 @@ set-container-userns *args:
 install-dangerzone:
     #!/bin/sh
     exec /usr/bin/python3 /usr/libexec/secureblue/install_dangerzone.py "$@"
+
+# Toggle display of the user-motd in terminal
+toggle-user-motd:
+    #!/bin/sh
+    exec /usr/bin/python3 /usr/libexec/secureblue/toggle_user_motd.py
+
+# Toggle DHCP hostname sending.
+[positional-arguments]
+set-dhcp-hostname-sending *args:
+    #!/bin/sh
+    exec /usr/bin/python3 /usr/libexec/secureblue/dhcp_hostname_sending_main.py "$@"

@@ -14,7 +14,6 @@ import sys
 from typing import Final
 
 import sandbox
-from sandbox import SandboxedFunction
 
 # Note this script calls the new user admin in userfacing contexts,
 # and wheel internally for clarity.
@@ -70,7 +69,7 @@ def main() -> int:
         print("New administrator user must not already exist.")
         return 1
     except KeyError:
-        admin_function = SandboxedFunction(
+        admin_function = sandbox.SandboxedFunction(
             "admin.py",
             subprocess_interactive=True,
             read_write_paths=["/etc"],

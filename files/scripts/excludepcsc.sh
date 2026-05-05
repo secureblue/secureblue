@@ -4,6 +4,6 @@
 #
 # SPDX-License-Identifier: Apache-2.0
 
-set -oue pipefail
+set -euo pipefail
 
 sed -i '/^add_dracutmodules+=" .* "/s/ pcsc / /' /usr/lib/dracut/dracut.conf.d/90-ublue-luks.conf

@@ -16,28 +16,22 @@ concurrency:
 jobs:
   update-modules:
     name: Update BlueBuild modules
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-slim
+    environment: Create_PR
     permissions:
       contents: write  # needed to create branch
       pull-requests: write  # needed to create pull request
 
     steps:
-      - name: Optimize build times
-        shell: bash
-        run: |
-          echo 'set man-db/auto-update false' | sudo debconf-communicate
-          sudo dpkg-reconfigure man-db
-          sudo rm -f /var/lib/man-db/auto-update
-          sudo sed -i -e 's/^update_initramfs=.*/update_initramfs=no/' /etc/initramfs-tools/update-initramfs.conf
-
       - name: Install dependencies
         shell: bash
         run: |
+          sudo apt update
           sudo apt install jq skopeo
 
-      - uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8  # v6.0.1
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd  # v6.0.2
         with:
-          persist-credentials: true  # zizmor: ignore[artipacked]
+          persist-credentials: false
 
       - name: Get image metadata
         id: metadata
@@ -122,7 +116,13 @@ jobs:
           EOF
           echo "body_path=${body_path}" >> "${GITHUB_OUTPUT}"
 
-      - uses: peter-evans/create-pull-request@98357b18bf14b5342f975ff684046ec3b2a07725  # v8.0.0
+      - uses: actions/create-github-app-token@1b10c78c7865c340bc4f6099eb2f838309f1e8c3 # v3.1.1
+        id: app-token
+        with:
+          client-id: ${{ vars.CLIENT_ID }}
+          private-key: ${{ secrets.PRIVATE_KEY }}
+
+      - uses: peter-evans/create-pull-request@5f6978faf089d4d20b00c7766989d076bb2fc7f1  # v8.1.1
         if: steps.check_commits.conclusion == 'success'
         with:
           add-paths: |
@@ -132,3 +132,4 @@ jobs:
           sign-commits: true
           title: 'chore(deps): update BlueBuild modules'
           body-path: ${{ steps.pr_body.outputs.body_path }}
+          token: ${{ steps.app-token.outputs.token }}

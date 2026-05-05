@@ -4,8 +4,13 @@
 #
 # SPDX-License-Identifier: Apache-2.0
 
-set -oue pipefail
+set -euo pipefail
 
 echo "Disabling the location service"
-systemctl disable geoclue.service
-systemctl mask geoclue.service
+
+# Systemd service
+systemctl disable geoclue.service 2>/dev/null || true
+systemctl mask geoclue.service 2>/dev/null || true
+
+# Append "Hidden=true" to prevent GeoClue Demo Agent from auto-starting
+echo "Hidden=true" >> /etc/xdg/autostart/geoclue-demo-agent.desktop

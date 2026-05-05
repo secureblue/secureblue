@@ -7,7 +7,7 @@
 """Enable or disable Xwayland."""
 
 import os
-import subprocess  # nosec
+import subprocess
 import sys
 from typing import Final
 
@@ -20,7 +20,7 @@ from utils import (
 )
 
 XWAYLAND_OVERRIDE_FILES: Final[dict[Image, str]] = {
-    Image.SILVERBLUE: "/etc/systemd/user/org.gnome.Shell@wayland.service.d/override.conf",
+    Image.SILVERBLUE: "/etc/systemd/user/org.gnome.Shell@user.service.d/override.conf",
     Image.KINOITE: "/etc/systemd/user/plasma-kwin_wayland.service.d/override.conf",
     Image.SERICEA: "/etc/sway/config.d/99-noxwayland.conf",
 }
@@ -77,7 +77,7 @@ def run(mode: ToggleMode) -> int:
             else:
                 subprocess.run(
                     ["/usr/bin/run0", "/usr/bin/rm", "-f", "--", override_file], check=True
-                )  # nosec
+                )
                 print(f"Xwayland for {de_name} has been enabled. Reboot to take effect.")
         case ToggleMode.OFF:
             if enabled:
@@ -91,7 +91,7 @@ def run(mode: ToggleMode) -> int:
                         override_file,
                     ],
                     check=True,
-                )  # nosec
+                )
                 print(f"Xwayland for {de_name} has been disabled. Reboot to take effect.")
             else:
                 print(f"Xwayland for {de_name} is already disabled.")

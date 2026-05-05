@@ -4,21 +4,26 @@
 
 modules:
     - type: dnf
-      source: ghcr.io/blue-build/modules@sha256:8e92fcaaef385a1728b8d8224296484260b67126ac83f7ed85b4ae3dde4ad19d
+      source: ghcr.io/blue-build/modules@sha256:079ae754f5b57e8f2ca5850b33a633b3fe1c37f4be51e7b00e9250a997f4e334
       install:
         install-weak-deps: false
         packages:
           - NetworkManager-tui
           - NetworkManager-openvpn
-          - cosmic-store
-          - cosmic-player
       remove:
         packages:
+          - cosmic-store
+          - cosmic-player
           - fedora-flathub-remote
           - fedora-third-party
           - fedora-workstation-repositories
     - type: systemd
-      source: ghcr.io/blue-build/modules@sha256:8e92fcaaef385a1728b8d8224296484260b67126ac83f7ed85b4ae3dde4ad19d
+      source: ghcr.io/blue-build/modules@sha256:079ae754f5b57e8f2ca5850b33a633b3fe1c37f4be51e7b00e9250a997f4e334
       system:
         enabled:
           - cosmic-greeter
+    - type: files
+      source: ghcr.io/blue-build/modules@sha256:079ae754f5b57e8f2ca5850b33a633b3fe1c37f4be51e7b00e9250a997f4e334
+      files:
+        - source: system/cosmic
+          destination: /

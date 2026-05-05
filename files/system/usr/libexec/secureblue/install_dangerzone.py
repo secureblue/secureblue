@@ -8,7 +8,7 @@
 Install Dangerzone (sandboxed PDF sanitizer): https://dangerzone.rocks/
 """
 
-import subprocess  # nosec
+import subprocess
 import sys
 from typing import Final
 
@@ -17,9 +17,9 @@ from utils import ask_yes_no, print_wrapped
 
 WARNING_MESSAGE: Final[str] = """
 Warning: Dangerzone (https://dangerzone.rocks/) requires enabling both container-domain
-user namespace creation and (restricted) ptrace. This is a security tradeoff, as other
-programs on your system will also be able to use container tools such as podman and to
-use ptrace to inspect child processes.
+user namespace creation and (admin-only attach) ptrace. This is a security tradeoff, as
+other programs on your system will also be able to use container tools such as podman
+and to use ptrace to inspect child processes.
 """
 
 
@@ -43,11 +43,11 @@ def main() -> int:
     if exit_code != 0:
         return exit_code
     print("Enabling container-domain user namespace creation...")
-    proc = subprocess.run(["/usr/bin/ujust", "set-container-userns", "on"], check=False)  # nosec
+    proc = subprocess.run(["/usr/bin/ujust", "set-container-userns", "on"], check=False)
     if proc.returncode != 0:
         return proc.returncode
     print("Installing Dangerzone as layered package...")
-    proc = subprocess.run(["/usr/bin/rpm-ostree", "install", "dangerzone"], check=False)  # nosec
+    proc = subprocess.run(["/usr/bin/rpm-ostree", "install", "dangerzone"], check=False)
     if proc.returncode != 0:
         return proc.returncode
     print("Reboot to complete the installation.")

@@ -3,7 +3,7 @@
 # SPDX-License-Identifier: Apache-2.0
 
 type: dnf
-source: ghcr.io/blue-build/modules@sha256:8e92fcaaef385a1728b8d8224296484260b67126ac83f7ed85b4ae3dde4ad19d
+source: ghcr.io/blue-build/modules@sha256:079ae754f5b57e8f2ca5850b33a633b3fe1c37f4be51e7b00e9250a997f4e334
 install:
   install-weak-deps: false
   packages:
@@ -18,6 +18,9 @@ install:
     - wl-clipboard
     - alsa-firmware
     - fzf
+    - bazaar
+    - homebrew
+    - firewall-config
 
     # yubikey enablement
     - pam-u2f
@@ -43,6 +46,10 @@ install:
     - virt-manager
     - virt-viewer
 
+    # ensure MTP support parity
+    - libmtp
+    - gvfs-mtp
+
 remove:
   packages:
     - firefox
@@ -51,7 +58,7 @@ remove:
     - passim
     - fedora-chromium-config
 replace:
-  - from-repo: copr:copr.fedorainfracloud.org:secureblue:branding
+  - from-repo: copr:copr.fedorainfracloud.org:secureblue:packages
     packages:
       - old: fedora-logos
         new: secureblue-logos

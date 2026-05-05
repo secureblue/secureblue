@@ -13,12 +13,14 @@ import os
 import re
 
 # All subprocess calls we make have trusted inputs and do not use shell=True.
-import subprocess  # nosec
+import subprocess
 import textwrap
 from typing import Final
 
 from auditor import AuditError, Status, gettext_marker
 from utils import print_err
+
+from .containers import ContainersPolicyAudit
 
 PASS: Final = Status.PASS
 INFO: Final = Status.INFO
@@ -122,14 +124,35 @@ async def get_flatpak_permissions(name: str, version: str) -> str:
     return await async_command_stdout("flatpak", "info", "--show-permissions", name, version)
 
 
+def normalize_sysctl(sysctl: str) -> str:
+    """Normalize a sysctl value."""
+    result = re.sub(r"\s+", " ", sysctl.strip())
+    replacements = {"disabled": "0", "enabled": "1"}
+    return replacements.get(result, result)
+
+
 def validate_sysctl(sysctl: str, actual: str, expected: str) -> bool:
     """Validate a sysctl value against an expected value."""
-    actual = re.sub(r"\s+", " ", actual.strip())
-    replace = {"disabled": "0", "enabled": "1"}.get(actual)
-    if replace is not None:
-        actual = replace
     if sysctl == "kernel.sysrq":
         # Both 0 and 4 are secure values for this setting. For details, see:
         # https://www.kernel.org/doc/html/latest/admin-guide/sysrq.html
         return actual in (expected, "0", "4")
     return actual == expected
+
+
+def analyze_active_container_policy() -> tuple[ContainersPolicyAudit, str]:
+    """
+    Analyze active containers policy. Returns the results of the analysis and
+    the path of the policy file.
+    """
+    system_policy_file = "/etc/containers/policy.json"
+    local_override = "~/.config/containers/policy.json"
+    local_override_file = os.path.expanduser(local_override)
+    if os.path.exists(local_override_file):
+        policy_file = local_override_file
+        path_str = local_override
+    else:
+        policy_file = system_policy_file
+        path_str = system_policy_file
+
+    return ContainersPolicyAudit.from_file(policy_file), path_str

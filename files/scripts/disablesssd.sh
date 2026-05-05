@@ -4,7 +4,7 @@
 #
 # SPDX-License-Identifier: Apache-2.0
 
-set -oue pipefail
+set -euo pipefail
 
 echo "Disabling the sssd daemons"
 systemctl disable sssd.service

@@ -10,9 +10,9 @@ set -euo pipefail
 
 whitelist=(
     # Required for nvidia closed driver images
+    # https://github.com/NVIDIA/nvidia-modprobe/issues/12
     "/usr/bin/nvidia-modprobe"
-    # https://gitlab.freedesktop.org/polkit/polkit/-/issues/168
-    "/usr/lib/polkit-1/polkit-agent-helper-1"
+    
     # https://github.com/secureblue/secureblue/issues/119
     # Required for hardened_malloc to be used by suid-root processes
     "/usr/lib64/libhardened_malloc-light.so"
@@ -32,6 +32,11 @@ whitelist=(
     "/usr/lib64/glibc-hwcaps/x86-64-v4/libhardened_malloc.so"
     "/usr/lib64/libno_rlimit_as.so"
 )
+
+# https://github.com/pop-os/cosmic-osd/pull/193
+if [[ "$IMAGE_NAME" == *cosmic* ]]; then
+    whitelist+=("/usr/lib/polkit-1/polkit-agent-helper-1")
+fi
 
 
 is_in_whitelist() {

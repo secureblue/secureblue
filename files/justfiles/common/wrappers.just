@@ -80,6 +80,6 @@ set-dhcp-hostname-sending *args:
 
 # Revert to the system default container policy, as well as deactivate any user overrides
 [positional-arguments]
-reset-container-policy *args:
+reset-container-policy:
     #!/bin/sh
     exec /usr/bin/python3 /usr/libexec/secureblue/reset_container_policy.py

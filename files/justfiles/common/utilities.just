@@ -56,11 +56,10 @@ update-firmware:
     fwupdmgr get-updates
     fwupdmgr update
 
-# Clean up old up unused podman images, volumes, flatpak packages and rpm-ostree content
+# Clean up old up unused podman images, flatpak packages and rpm-ostree content
 clean-system:
     #!/usr/bin/bash
     podman image prune -af
-    podman volume prune -f
     if command -v flatpak &> /dev/null
     then
         flatpak uninstall --unused

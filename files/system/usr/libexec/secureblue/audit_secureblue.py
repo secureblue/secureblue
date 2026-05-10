@@ -214,6 +214,19 @@ def audit_ptrace(state):
         case 3:
             status = PASS
             rec = None
+        case 2:
+            status = INFO
+            rec_lines = [
+                _("ptrace is allowed, but only for privileged users ({0}).").format(
+                    f"ptrace_scope = {ptrace_scope}"
+                ),
+                _("For more info on what this means, see:"),
+                "https://www.kernel.org/doc/html/latest/admin-guide/LSM/Yama.html",
+                _("To allow restricted ptrace, run:"),
+                "$ ujust toggle-ptrace-scope",
+                _("To forbid ptrace, run the above command twice."),
+            ]
+            rec = "\n".join(rec_lines)
         case 0:
             status = FAIL
             rec_lines = [

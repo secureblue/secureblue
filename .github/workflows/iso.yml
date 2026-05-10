@@ -77,7 +77,7 @@ jobs:
           IMAGE_NAME: ${{ matrix.image }}
           ISO_DEST: ${{ steps.iso_build.outputs.iso-dest }}
         run: |
-          mv "${ISO_DEST}.iso" "${IMAGE_NAME}.iso"
+          mv "${ISO_DEST}" "${IMAGE_NAME}.iso"
           sha256sum "${IMAGE_NAME}.iso" | tee "${IMAGE_NAME}.iso-CHECKSUM"
 
       - name: Rename ISO and sign CHECKSUM

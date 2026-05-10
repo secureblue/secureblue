@@ -8,12 +8,13 @@
 set -euo pipefail
 
 IMAGE_TAG="latest"
-IMAGE_VARIANT_ID=$(grep '^VARIANT_ID=' /etc/os-release | cut -d= -f2)
+IMAGE_VARIANT_ID=$(grep '^VARIANT_ID=' /usr/lib/os-release | cut -d= -f2)
 IMAGE_REF="ghcr.io/secureblue/$IMAGE_VARIANT_ID"
 
 sed -i '/^install squashfs /d' /usr/lib/modprobe.d/secureblue.conf
 
-dnf remove -y google-noto-fonts-all homebrew
+# https://github.com/ublue-os/bazzite/issues/4126#issuecomment-3980175243
+dnf remove -y google-noto-fonts-all homebrew bazaar
 dnf install -y secureblue-logos
 dnf reinstall -y polkit
 dnf install -y anaconda-live firefox libblockdev-btrfs libblockdev-btrfs libblockdev-lvm libblockdev-dm
@@ -89,8 +90,8 @@ hidden_webui_pages =
     network
 password_policies = 
         root (quality 100, length 15)
-        user (quality 50, length 15)
-        luks (quality 100, length 20)
+        user (quality 50, length 8)
+        luks (quality 100, length 15)
 EOF
 
 # Fetch the Secureboot Public Key
@@ -141,3 +142,39 @@ EOF
 
 # enable xwayland
 rm -f /etc/sway/config.d/99-noxwayland.conf /etc/systemd/user/org.gnome.Shell@user.service.d/override.conf /etc/systemd/user/plasma-kwin_wayland.service.d/override.conf
+
+# hide root account creation in cockpit
+cat >> /usr/share/cockpit/branding/fedora/branding.css << 'EOF'
+.anaconda {
+    .pf-v6-c-form__section:has(#anaconda-screen-accounts-root-account-enable-root-account) {
+        /* Hide the whole section with "Enable root account". Might be not as reliable as it seems to be */
+        display: none;
+    }
+}
+EOF
+
+# disable password strength labels
+cat >> /usr/share/cockpit/branding/fedora/branding.css << 'EOF'
+.anaconda {
+    #disk-encryption-password-strength-label {
+        display: none;
+    }
+
+    #anaconda-screen-accounts-create-account-password-strength-label {
+        display: none;
+    }
+}
+EOF
+
+# Disable "ask an AI chatbot" in the context menu
+mkdir -p /etc/firefox/policies
+cat >> /etc/firefox/policies/policies.json << 'EOF'
+{
+  "policies": {
+    "Preferences": {
+      "browser.ml.chat.menu": { "Value": false, "Status": "locked" },
+      "browser.ml.enable": { "Value": false, "Status": "locked" }
+    }
+  }
+}
+EOF

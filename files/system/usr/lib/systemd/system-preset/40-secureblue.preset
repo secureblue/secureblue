@@ -8,9 +8,9 @@ enable fwupd-refresh.timer
 enable podman-auto-update.timer
 enable rpm-ostreed-automatic.timer
 enable secureblue-unbound-key.service
-enable secureblue-rpm-ostreed-conf.service
 
 disable flatpak-add-fedora-repos.service
 disable geoclue.service
 disable sshd-vsock.socket
 disable systemd-resolved.service
+disable rpm-ostree-countme.timer

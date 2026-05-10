@@ -25,11 +25,6 @@ def main() -> int:
         print_err("Invalid args count for sandboxed container policy script.")
         raise CommandUsageError
 
-    valid_arguments = ["normal", "multi-save"]
-    if argv[1] not in valid_arguments:
-        print_err(f"Invalid argument, expected: {valid_arguments}")
-        raise CommandUsageError
-
     match argv[1]:
         case "normal":
             os.rename(SYSTEM_POLICY_FILE, f"{SYSTEM_POLICY_FILE}.old")
@@ -46,6 +41,9 @@ def main() -> int:
                 return 1
             os.rename(SYSTEM_POLICY_FILE, f"{SYSTEM_POLICY_FILE}.old.{i}")
             shutil.copy2(f"/usr{SYSTEM_POLICY_FILE}", SYSTEM_POLICY_FILE)
+        case _:
+            print_err("Invalid argument for inner script.")
+            raise CommandUsageError
 
     return 0
 

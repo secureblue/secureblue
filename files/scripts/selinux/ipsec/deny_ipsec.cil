@@ -1,0 +1,25 @@
+; SPDX-FileCopyrightText: Copyright 2026 The Secureblue Authors
+;
+; SPDX-License-Identifier: Apache-2.0 OR MIT
+
+; Denies all userspace processes access to IPSec-related sockets, the userspace
+; interface to IPSec kernel functionality, which is not needed on most desktop
+; systems and was recently responsible for several major privilege escalation
+; exploits.
+
+(typeattribute allow_ipsec_sockets)
+(typeattributeset allow_ipsec_sockets (kernel_t))
+
+(typeattribute deny_ipsec_sockets)
+(typeattributeset deny_ipsec_sockets (not (allow_ipsec_sockets)))
+
+(typeattribute all_types)
+(typeattributeset all_types (all))
+
+; Deny userspace access to NETLINK_XFRM sockets
+(deny deny_ipsec_sockets all_types (netlink_xfrm_socket (all)))
+(neverallow deny_ipsec_sockets all_types (netlink_xfrm_socket (all)))
+
+; Deny userspace access to PF_KEY sockets, used for IPSec key management
+(deny deny_ipsec_sockets all_types (key_socket (all)))
+(neverallow deny_ipsec_sockets all_types (key_socket (all)))

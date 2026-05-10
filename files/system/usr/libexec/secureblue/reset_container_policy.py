@@ -22,7 +22,7 @@ MAX_POLICY_CONFIGS: Final[int] = 50
 def main() -> int:
     """Main script entrypoint"""
 
-    conatiner_function = sandbox.SandboxedFunction(
+    container_function = sandbox.SandboxedFunction(
         "container_policy.py",
         read_write_paths=["/etc/containers", "/usr/etc/containers"],
         capabilities=["CAP_DAC_OVERRIDE"]
@@ -32,10 +32,10 @@ def main() -> int:
     if not filecmp.cmp(f"/usr{SYSTEM_POLICY_FILE}", SYSTEM_POLICY_FILE):
         if not os.path.exists(f"{SYSTEM_POLICY_FILE}.old"):
             # all requirements met
-            sandbox.run(conatiner_function, "normal")
+            sandbox.run(container_function, "normal")
         else:
             # An old config is already present
-            sandbox.run(conatiner_function, "multi-save")
+            sandbox.run(container_function, "multi-save")
 
     # replace user override
     if os.path.exists(USER_POLICY_FILE):

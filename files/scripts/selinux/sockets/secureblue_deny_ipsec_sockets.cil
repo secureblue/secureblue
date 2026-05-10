@@ -1,0 +1,13 @@
+; SPDX-FileCopyrightText: Copyright 2026 The Secureblue Authors
+;
+; SPDX-License-Identifier: Apache-2.0 OR MIT
+
+; Denies all userspace processes access to IPSec-related sockets, the userspace
+; interface to IPSec kernel functionality, which is not needed on most desktop
+; systems and was recently responsible for several major privilege escalation
+; exploits.
+;
+; See `secureblue_socket_utils.cil` for macro definitions.
+
+(call secureblue.deny_userspace (key_socket))
+(call secureblue.deny_userspace (netlink_xfrm_socket))

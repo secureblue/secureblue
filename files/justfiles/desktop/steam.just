@@ -101,7 +101,7 @@ install-steam:
     fi
 
     # Optional: Enable ntsync kernel module
-    if [ ! -f /etc/modules-load.d/ntsync.conf ]; then
+    if ! lsmod | grep -q ntsync; then
         echo "Optional: Enable ntsync kernel module for improved Wine/Proton synchronization performance."
         enable_ntsync=""
         read -rp "Would you like to enable ntsync now? [y/N] " enable_ntsync

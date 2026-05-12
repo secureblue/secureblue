@@ -1,0 +1,52 @@
+; SPDX-FileCopyrightText: Copyright 2026 The Secureblue Authors
+;
+; SPDX-License-Identifier: Apache-2.0 OR MIT
+
+; Utilities for secureblue policy for socket restrictions.
+;
+; Reference for SELinux object classes:
+; https://github.com/SELinuxProject/selinux-notebook/blob/main/src/object_classes_permissions.md
+
+(block secureblue
+  (typeattribute all_types)
+  (typeattributeset all_types (all))
+
+  (typeattribute non_kernel_types)
+  (typeattributeset non_kernel_types (not (.kernel_t)))
+
+  (typeattribute bluetooth_types)
+  (typeattributeset bluetooth_types (.kernel_t))
+  (optional bluetooth_type_defined
+            (typeattributeset bluetooth_types (.bluetooth_t)))
+
+  (typeattribute non_bluetooth_types)
+  (typeattributeset non_bluetooth_types (not (bluetooth_types)))
+
+  (boolean audit_sockets false)
+
+  (macro audit_socket ((class SOCK_CLASS))
+         (booleanif audit_sockets
+                    (true
+                      (auditallow all_types all_types (SOCK_CLASS (all))))))
+
+  (macro audit_socket_ioctl ((class SOCK_CLASS))
+         (booleanif audit_sockets
+                    (true
+                      (auditallow all_types all_types (SOCK_CLASS (ioctl))))))
+
+  (macro audit_bluetooth_socket_ioctl ((class SOCK_CLASS))
+         (booleanif audit_sockets
+                    (true
+                      (auditallow non_bluetooth_types all_types (SOCK_CLASS (ioctl))))))
+
+  (macro deny_userspace ((class SOCK_CLASS))
+         (deny non_kernel_types all_types (SOCK_CLASS (all)))
+         (neverallow non_kernel_types all_types (SOCK_CLASS (all))))
+
+  (macro deny_userspace_ioctl ((class SOCK_CLASS))
+         (deny non_kernel_types all_types (SOCK_CLASS (ioctl)))
+         (neverallow non_kernel_types all_types (SOCK_CLASS (ioctl))))
+
+  (macro deny_non_bluetooth ((class SOCK_CLASS))
+         (deny non_bluetooth_types all_types (SOCK_CLASS (all)))
+         (neverallow non_bluetooth_types all_types (SOCK_CLASS (all)))))

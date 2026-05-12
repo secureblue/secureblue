@@ -50,6 +50,9 @@ install:
     - libmtp
     - gvfs-mtp
 
+    # ensure adb availability
+    - android-tools
+
 remove:
   packages:
     - firefox

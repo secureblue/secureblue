@@ -13,6 +13,7 @@ import sys
 from pathlib import Path
 from typing import assert_never
 
+
 class Mode(enum.StrEnum):
     """Enum representing 'create' or 'delete'."""
 
@@ -50,6 +51,7 @@ def main() -> int:
     stampfile_path = sys.argv[2]
     set_stampfile(mode, stampfile_path)
     return 0
+
 
 if __name__ == "__main__":
     sys.exit(main())

@@ -50,6 +50,7 @@ Please understand the implications of this feature before enabling it, and ensur
 measures (like frequently pinning deployments).
 """
 
+
 def always_upgrade_on_boot_enabled() -> bool:
     """Return whether always-upgrade-on-boot is enabled."""
     return Path(ALWAYS_UPGRADE_ON_BOOT_STAMPFILE).exists()

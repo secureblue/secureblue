@@ -1,6 +1,6 @@
 #!/usr/bin/python3
 
-# SPDX-FileCopyrightText: Copyright 2025-2026 The Secureblue Authors
+# SPDX-FileCopyrightText: Copyright 2026 The Secureblue Authors
 #
 # SPDX-License-Identifier: Apache-2.0
 
@@ -11,7 +11,7 @@ Create or delete a stampfile.
 import enum
 import sys
 from pathlib import Path
-
+from typing import assert_never
 
 class Mode(enum.StrEnum):
     """Enum representing 'create' or 'delete'."""
@@ -20,8 +20,8 @@ class Mode(enum.StrEnum):
     DELETE = "delete"
 
 
-def set_stampfile(mode: Mode, stampfile_path: str) -> int:
-    """Enable or disable an SELinux module."""
+def set_stampfile(mode: Mode, stampfile_path: str) -> None:
+    """Create or delete a stampfile"""
     match mode:
         case Mode.CREATE:
             stampfile = Path(stampfile_path)
@@ -30,10 +30,8 @@ def set_stampfile(mode: Mode, stampfile_path: str) -> int:
             Path(stampfile_path).touch()
         case Mode.DELETE:
             Path(stampfile_path).unlink(missing_ok=True)
-        case _:
-            print(f"No such mode: {mode}")
-            return 1
-    return 0
+        case _ as unreachable:
+            assert_never(unreachable)
 
 
 def main() -> int:
@@ -50,8 +48,8 @@ def main() -> int:
         return 2
 
     stampfile_path = sys.argv[2]
-    return set_stampfile(mode, stampfile_path)
-
+    set_stampfile(mode, stampfile_path)
+    return 0
 
 if __name__ == "__main__":
     sys.exit(main())

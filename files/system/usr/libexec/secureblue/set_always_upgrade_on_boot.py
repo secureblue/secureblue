@@ -42,7 +42,7 @@ ALWAYS_UPGRADE_ON_BOOT_STAMPFILE: Final[str] = "/var/lib/secureblue/always-upgra
 
 
 WARNING_MESSAGE: Final[str] = """
-Warning: Enabling this can cause your rollback deployment to be overwritten. Since upgrades will 
+Warning: Enabling this can cause your rollback deployment to be overwritten. Since upgrades will
 be attempted on every boot, this can mean upgrading while booting into an already newer version
 than the previous boot (e.g.: You are on deployment A with deployment B staged, and reboot into
 deployment B, but upgrade C is available, which gets staged and booted into, clearing deployment A).

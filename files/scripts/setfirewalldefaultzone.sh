@@ -6,4 +6,4 @@
 
 set -euo pipefail
 
-sed -i 's/^DefaultZone=public/DefaultZone=FedoraWorkstation/' /etc/firewalld/firewalld.conf
+sed -i 's/^DefaultZone=.*/DefaultZone=FedoraWorkstation/' /etc/firewalld/firewalld.conf

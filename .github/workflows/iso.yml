@@ -37,9 +37,11 @@ jobs:
       packages: read # pull images for iso generation
       id-token: write # generate token for signing
 
-    steps:
-      - name: Maximize build space
-        uses: jlumbroso/free-disk-space@54081f138730dfa15788a46383842cd2f914a1be # v1.3.1
+    steps:    
+      - name: Free disk space
+        uses: hastd/free-disk-space@68572aeaadb7f76bd408246328e95926323402b5 # v0.1.2
+        with:
+          skip-if-available: "64G"
 
       - name: Install deps
         shell: bash
@@ -58,25 +60,25 @@ jobs:
         env:
           WORKSPACE: ${{ github.workspace }}
         run: |
-          curl -fLsS --retry 5 -o "${WORKSPACE}/secureblue.repo" "https://copr.fedorainfracloud.org/coprs/secureblue/packages/repo/fedora-43/secureblue-packages-fedora-43.repo"
+          curl -fLsS --retry 5 -o "${WORKSPACE}/secureblue.repo" "https://copr.fedorainfracloud.org/coprs/secureblue/packages/repo/fedora-44/secureblue-packages-fedora-44.repo"
 
-      - name: Build ISO
-        uses: jasonn3/build-container-installer@c9ef3de33236e66781ec37bd0485e8009eaefe24 # v1.4.0
+      - name: Build ISO        
         id: iso_build
         env:
-          IMAGE_NAME: ${{ matrix.image }}
+          IMAGE_REF: ghcr.io/secureblue/${{ matrix.image }}:latest
+        uses: RoyalOughtness/titanoboa@3d19fdfa8bff13542c0bb92620ed7826f1bbe82c # main
         with:
-          arch: x86_64
-          image_name: ${{ env.IMAGE_NAME }}
-          image_repo: ghcr.io/secureblue
-          image_tag: latest
-          version: 43
-          variant: "Kinoite"
-          additional_templates: "/github/workspace/.github/workflows/config/lorax/remove_root_password_prompt.tmpl"
-          iso_name: ${{ env.IMAGE_NAME }}.iso
-          enrollment_password: "secureblue"
-          secure_boot_key_url: "https://github.com/secureblue/secureblue/raw/refs/heads/live/files/system/etc/pki/akmods/certs/akmods-secureblue.der"
-          repos: "/github/workspace/secureblue.repo /etc/yum.repos.d/fedora.repo /etc/yum.repos.d/fedora-updates.repo"
+          image-ref: ${{ env.IMAGE_REF }}
+          hook-post-rootfs: ${{ github.workspace }}/.github/workflows/isos/prep_rootfs.sh
+          hook-pre-initramfs: ${{ github.workspace }}/.github/workflows/isos/prep_initramfs.sh
+
+      - name: Rename ISO
+        env:
+          IMAGE_NAME: ${{ matrix.image }}
+          ISO_DEST: ${{ steps.iso_build.outputs.iso-dest }}
+        run: |
+          mv "${ISO_DEST}.iso" "${IMAGE_NAME}.iso"
+          sha256sum "${IMAGE_NAME}.iso" | tee "${IMAGE_NAME}.iso-CHECKSUM"
 
       - name: Rename ISO and sign CHECKSUM
         id: rename
@@ -88,7 +90,7 @@ jobs:
           sudo chown $(whoami) "${IMAGE_NAME}.iso" "${IMAGE_NAME}.iso-CHECKSUM"
 
           TARGET_OUTPUT_DIRECTORY="$(pwd)/output"
-          mkdir "${TARGET_OUTPUT_DIRECTORY}"
+          mkdir -p "${TARGET_OUTPUT_DIRECTORY}"
           PREFIX="secureblue"
           DATE_SUFFIX="$(date +%Y%m%d)"
           ISO_NAME="${PREFIX}-${IMAGE_NAME}-${DATE_SUFFIX}.iso"
@@ -141,7 +143,7 @@ jobs:
           echo "output-directory=${TARGET_OUTPUT_DIRECTORY}" >> ${GITHUB_OUTPUT}
 
       - name: Upload ISO and Checksum to Job Artifacts
-        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f # v7.0.0
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
           path: ${{ steps.rename.outputs.output-directory }}
           name: ${{ matrix.image }}

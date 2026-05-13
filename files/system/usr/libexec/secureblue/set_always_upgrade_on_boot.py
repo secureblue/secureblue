@@ -7,8 +7,8 @@
 """Enable, disable, or check status of always-upgrade-on-boot."""
 
 import sys
-from typing import Final
 from pathlib import Path
+from typing import Final
 
 import sandbox
 from utils import (

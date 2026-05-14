@@ -13,9 +13,11 @@ dnf install -y --setopt=install_weak_deps=False --enable-repo=updates-archive \
 policy_modules=(flatpakfull nautilus systemsettings thunar)
 
 cil_policy_modules=(
-    './selinux/af_alg/deny_af_alg.cil'
     './selinux/flatpakfull/grant_systemd_flatpak_exec.cil'
-    './selinux/ipsec/deny_ipsec.cil'
+    './selinux/sockets/secureblue_audit_sockets.cil'
+    './selinux/sockets/secureblue_deny_alg_sockets.cil'
+    './selinux/sockets/secureblue_deny_ipsec_sockets.cil'
+    './selinux/sockets/secureblue_socket_utils.cil'
     './selinux/user_namespace/grant_fm_userns.cil'
     './selinux/user_namespace/grant_userns.cil'
     './selinux/user_namespace/harden_container_userns.cil'

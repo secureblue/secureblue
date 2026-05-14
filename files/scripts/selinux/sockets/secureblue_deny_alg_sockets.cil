@@ -8,21 +8,10 @@
 ; This API is largely unnecessary given modern userspace cryptographic libraries
 ; and exposes a lot of attack surface. In particular, it was responsible for
 ; CVE-2026-31431 ("Copy Fail"), a major privilege escalation vulnerability.
-
-(typeattribute allow_alg_socket)
-(typeattributeset allow_alg_socket (kernel_t))
-
+;
 ; bluetooth_t is allowed since BlueZ relies on the kernel crypto API and denying
 ; it access breaks some Bluetooth functionality.
-(optional bluetooth_allow_alg_socket
-    (typeattributeset allow_alg_socket (bluetooth_t))
-)
+;
+; See `secureblue_socket_utils.cil` for macro definitions.
 
-(typeattribute deny_alg_socket)
-(typeattributeset deny_alg_socket (not (allow_alg_socket)))
-
-(typeattribute all_types)
-(typeattributeset all_types (all))
-
-(deny deny_alg_socket all_types (alg_socket (all)))
-(neverallow deny_alg_socket all_types (alg_socket (all)))
+(call secureblue.deny_non_bluetooth (alg_socket))

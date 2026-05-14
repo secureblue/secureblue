@@ -32,11 +32,6 @@ whitelist=(
     "/usr/lib64/libno_rlimit_as.so"
 )
 
-# https://github.com/pop-os/cosmic-osd/pull/193
-if [[ "$IMAGE_NAME" == *cosmic* ]]; then
-    whitelist+=("/usr/lib/polkit-1/polkit-agent-helper-1")
-fi
-
 is_in_whitelist() {
     local binary="$1"
     for allowed_binary in "${whitelist[@]}"; do

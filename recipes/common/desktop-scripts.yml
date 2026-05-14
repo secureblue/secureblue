@@ -16,3 +16,4 @@ scripts:
   - disablesssd.sh
   - disableunconfinedrootfulservices.sh
   - setplymouththemetext.sh
+  - setfirewalldefaultzone.sh

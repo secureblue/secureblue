@@ -60,7 +60,7 @@ update-firmware:
 clean-system:
     #!/usr/bin/bash
     podman image prune -af
-    podman volume prune -f
+    podman volume prune
     if command -v flatpak &> /dev/null
     then
         flatpak uninstall --unused

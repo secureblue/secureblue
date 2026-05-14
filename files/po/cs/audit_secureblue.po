@@ -1,0 +1,1039 @@
+# SPDX-FileCopyrightText: Copyright 2025-2026 The Secureblue Authors
+#
+# SPDX-License-Identifier: Apache-2.0
+#
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-03-12 01:14+0100\n"
+"PO-Revision-Date: 2026-01-26 00:06+0000\n"
+"Last-Translator: netkv <61617356+netkv@users.noreply.github.com>\n"
+"Language-Team: none\n"
+"Language: cs\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: files/system/usr/libexec/secureblue/audit_secureblue.py:81
+#, python-brace-format
+msgid "Missing kernel argument: {0}"
+msgstr "Chybějící argument jádra: {0}"
+
+#: files/system/usr/libexec/secureblue/audit_secureblue.py:87
+#, python-brace-format
+msgid "Missing kernel argument: {0} (32-bit support)"
+msgstr "Chybějící argument jádra: {0} (podpora 32-bitové architektury)"
+
+#: files/system/usr/libexec/secureblue/audit_secureblue.py:94
+#, python-brace-format
+msgid "Missing kernel argument: {0} (force-disable SMT)"
+msgstr "Chybějící argument jádra: {0} (vynucené vypnutí SMT)"
+
+#: files/system/usr/libexec/secureblue/audit_secureblue.py:101
+#, python-brace-format
+msgid "Missing kernel argument (unstable): {0}"
+msgstr "Chybějící argument jádra (nestabilní): {0}"
+
+#: files/system/usr/libexec/secureblue/audit_secureblue.py:104
+msgid "To set hardened kernel arguments, run:"
+msgstr "Pro nastavení zabezpečujích argumentů jádra, spusť:"
+
+#: files/system/usr/libexec/secureblue/audit_secureblue.py:106
+msgid "Checking for hardened kernel arguments"
+msgstr "Hledání zabezpečujích argumentů jádra"
+
+#: files/system/usr/libexec/secureblue/audit_secureblue.py:129
+#: files/system/usr/libexec/secureblue/audit_secureblue.py:140
+#, python-brace-format
+msgid "{0} should be {1}, but is actually {2}."
+msgstr "{0} by mělo být {1}, ale je to {2}"
+
+#: files/system/usr/libexec/secureblue/audit_secureblue.py:130
+#, python-brace-format
+msgid "This is likely due to a kernel fault, as documented in `{0}`."
+msgstr "Toto je pravděpodobně způsobené chybou jádra, jak je to zdokumentováno v `{0}`."
+
+#: files/system/usr/libexec/secureblue/audit_secureblue.py:147
+msgid "Ensuring no sysctl overrides"
+msgstr "Kontrolování zda sysctl není přepsáno"
+
+#: files/system/usr/libexec/secureblue/audit_secureblue.py:160
+#, python-brace-format
+msgid ""
+"The current image is not signed.\n"
+"            To rebase to a signed image, download and run or re-run {0}\n"
+"            from the secureblue GitHub repository."
+msgstr ""
+"Tento současný obraz disku není podepsán.\n"
+"            Pro změnu na podepsaný obraz, stáhni a spusť nebo znovu spusť "
+"{0}\n"
+"            z GitHub repozitáře secureblue."
+
+#: files/system/usr/libexec/secureblue/audit_secureblue.py:163
+msgid "Ensuring a signed image is in use"
+msgstr "Kontrolování zda současný obraz disku je podepsán"
+
+#: files/system/usr/libexec/secureblue/audit_secureblue.py:192
+#, python-brace-format
+msgid "The module {0} is blocked in {1}, but has been loaded anyway."
+msgstr "Modul {0} je blokován v {1}, ale byl i přes to načten."
+
+#: files/system/usr/libexec/secureblue/audit_secureblue.py:199
+msgid "Ensuring no modprobe overrides"
+msgstr "Kontrolování zda modprobe není přepsáno"
+
+#: files/system/usr/libexec/secureblue/audit_secureblue.py:214
+#, python-brace-format
+msgid "ptrace is allowed and **unrestricted** ({0})!"
+msgstr "ptrace je povoleno a **neomezeno** ({0})!"
+
+#: files/system/usr/libexec/secureblue/audit_secureblue.py:215
+#: files/system/usr/libexec/secureblue/audit_secureblue.py:228
+msgid "For more info on what this means, see:"
+msgstr "Pro více informací o tom co toto znamená, viz:"
+
+#: files/system/usr/libexec/secureblue/audit_secureblue.py:217
+#: files/system/usr/libexec/secureblue/audit_secureblue.py:230
+msgid "To forbid ptrace, run:"
+msgstr "Pro zakázání ptrace, spusť:"
+
+#: files/system/usr/libexec/secureblue/audit_secureblue.py:219
+msgid "To allow restricted ptrace, run the above command twice."
+msgstr "Pro povolení omezeného ptrace, spusť výše uvedený příkaz dvakrát."
+
+#: files/system/usr/libexec/secureblue/audit_secureblue.py:225
+#, python-brace-format
+msgid "ptrace is allowed, but restricted ({0})."
+msgstr "ptrace je povoleno, ale omezeno ({0})."
+
+#: files/system/usr/libexec/secureblue/audit_secureblue.py:235
+msgid "Ensuring ptrace is forbidden"
+msgstr "Kontrolování zda ptrace je zakázáno"
+
+#: files/system/usr/libexec/secureblue/audit_secureblue.py:246
+#: files/system/usr/libexec/secureblue/audit_secureblue.py:864
+#: files/system/usr/libexec/secureblue/audit_secureblue.py:873
+#, python-brace-format
+msgid "The file {0} has been modified."
+msgstr "Soubor {0} byl změněn."
+
+#: files/system/usr/libexec/secureblue/audit_secureblue.py:253
+#, python-brace-format
+msgid "Container policy has a local override at {0}."
+msgstr "Pravidla kontejnerů má místní přepsání v {0}."
+
+#: files/system/usr/libexec/secureblue/audit_secureblue.py:257
+#: files/system/usr/libexec/secureblue/audit_secureblue.py:293
+msgid "Analyzing container policy"
+msgstr "Analyzování pravidel kontejnerů"
+
+#: files/system/usr/libexec/secureblue/audit_secureblue.py:262
+msgid "The default container policy is insecure."
+msgstr "Výchozí pravidla kontejnerů nejsou zabezpečená."
+
+#: files/system/usr/libexec/secureblue/audit_secureblue.py:271
+#, python-brace-format
+msgid "The default container policy for transport '{0}' is insecure."
+msgstr "Výchozí pravidla kontejnerů pro transport '{0}' nejsou zabezpečená."
+
+#: files/system/usr/libexec/secureblue/audit_secureblue.py:287
+#, python-brace-format
+msgid ""
+"Signature validation is disabled for containers at the following scopes:\n"
+"{0}"
+msgstr ""
+"Ověření podpisů je vypnuto pro kontejnery v následujících oblastech:\n"
+"{0}"
+
+#: files/system/usr/libexec/secureblue/audit_secureblue.py:305
+msgid "Unconfined domain user namespace creation is permitted."
+msgstr "Neomezená tvorba uživatelských jmenných prostor domén je povoleno."
+
+#: files/system/usr/libexec/secureblue/audit_secureblue.py:306
+#: files/system/usr/libexec/secureblue/audit_secureblue.py:324
+msgid "To disallow it, run:"
+msgstr "Pro vypnutí, spusť:"
+
+#: files/system/usr/libexec/secureblue/audit_secureblue.py:310
+msgid "Ensuring unconfined user namespace creation disallowed"
+msgstr ""
+"Kontrolování zda neomezená tvorba uživatelských jmenných prostor domén je "
+"zakázána."
+
+#: files/system/usr/libexec/secureblue/audit_secureblue.py:323
+msgid "Container domain user namespace creation is permitted."
+msgstr "Tvorba uživatelských jmenných prostor domén v kontejnerech je povolena."
+
+#: files/system/usr/libexec/secureblue/audit_secureblue.py:328
+msgid "Ensuring container user namespace creation disallowed"
+msgstr ""
+"Kontrolování, že tvorba uživatelských jmenných prostor domén v kontejnerech "
+"je zakázána."
+
+#: files/system/usr/libexec/secureblue/audit_secureblue.py:340
+msgid "USBGuard is enabled but has failed to run."
+msgstr "USBGuard je zapnut ale selhal při spuštění."
+
+#: files/system/usr/libexec/secureblue/audit_secureblue.py:343
+msgid "USBGuard is not enabled."
+msgstr "USBGuard není zapnut."
+
+#: files/system/usr/libexec/secureblue/audit_secureblue.py:346
+msgid "To set up USBGuard, run:"
+msgstr "Pro nastavení USBGuardu, spusť:"
+
+#: files/system/usr/libexec/secureblue/audit_secureblue.py:349
+msgid ""
+"Caution: if you have already set up USBGuard, this will overwrite the "
+"existing policy."
+msgstr "Pozor: máš-li již nastaven USBGuard, toto přepíše existující pravidla."
+
+#: files/system/usr/libexec/secureblue/audit_secureblue.py:353
+msgid "Ensuring USBGuard is active"
+msgstr "Kontrolování zda USBGuard je aktivní"
+
+#: files/system/usr/libexec/secureblue/audit_secureblue.py:365
+#, python-brace-format
+msgid "{0} is enabled but has failed to run."
+msgstr "{0} je zapnuto ale selhalo při spuštění."
+
+#: files/system/usr/libexec/secureblue/audit_secureblue.py:368
+#: files/system/usr/libexec/secureblue/audit_secureblue.py:651
+#: files/system/usr/libexec/secureblue/audit_secureblue.py:685
+#, python-brace-format
+msgid "{0} is not enabled."
+msgstr "{0} není zapnuto."
+
+#: files/system/usr/libexec/secureblue/audit_secureblue.py:371
+msgid "To start and enable it, run:"
+msgstr "Pro spuštění a aktivaci, spusť:"
+
+#: files/system/usr/libexec/secureblue/audit_secureblue.py:375
+msgid "Ensuring chronyd is active"
+msgstr "Kontrolování zda chronyd je aktivní"
+
+#: files/system/usr/libexec/secureblue/audit_secureblue.py:406
+msgid "DNS over HTTPS in Trivalent is disabled."
+msgstr "DNS přes HTTPS v Trivalentu je vypnuto."
+
+#: files/system/usr/libexec/secureblue/audit_secureblue.py:410
+msgid "Consider using DNS over HTTPS in Trivalent to hide queries."
+msgstr "Zvaž použití DNS přes HTTPS v Trivalentu pro skrytí dotazů."
+
+#: files/system/usr/libexec/secureblue/audit_secureblue.py:411
+#: files/system/usr/libexec/secureblue/audit_secureblue.py:426
+msgid "However, if you use a VPN, this may cause DNS leaks."
+msgstr "Pokud však používáš VPN, může to způsobit úniky DNS."
+
+#: files/system/usr/libexec/secureblue/audit_secureblue.py:412
+#: files/system/usr/libexec/secureblue/audit_secureblue.py:427
+#: files/system/usr/libexec/secureblue/audit_secureblue.py:452
+#: files/system/usr/libexec/secureblue/audit_secureblue.py:500
+#: files/system/usr/libexec/secureblue/audit_secureblue.py:522
+#: files/system/usr/libexec/secureblue/audit_secureblue.py:566
+#: files/system/usr/libexec/secureblue/audit_secureblue.py:596
+#: files/system/usr/libexec/secureblue/audit_secureblue.py:629
+#: files/system/usr/libexec/secureblue/audit_secureblue.py:654
+msgid "To enable it, run:"
+msgstr "Pro zapnutí, spusť:"
+
+#: files/system/usr/libexec/secureblue/audit_secureblue.py:421
+msgid "Secure global DNS is not configured."
+msgstr "Bezpečné globální DNS není nastaveno."
+
+#: files/system/usr/libexec/secureblue/audit_secureblue.py:425
+msgid "Consider using secure global DNS."
+msgstr "Zvaž použití zabezpečeného globálního DNS."
+
+#: files/system/usr/libexec/secureblue/audit_secureblue.py:434
+msgid "The secure DNS resolver is not in use, possibly for a VPN."
+msgstr "Zabezpečený DNS resolver není použit, možná kvůli VPN."
+
+#: files/system/usr/libexec/secureblue/audit_secureblue.py:438
+msgid "To view or reset your current DNS configuration, run:"
+msgstr "Pro zobrazení či resetování současné DNS konfigurace, spusť:"
+
+#: files/system/usr/libexec/secureblue/audit_secureblue.py:447
+msgid "Local DNSSEC validation is disabled."
+msgstr "Místní kontrola DNSSEC je vypnuta."
+
+#: files/system/usr/libexec/secureblue/audit_secureblue.py:451
+msgid "You should enable local DNSSEC validation to prevent DNS hijacking."
+msgstr ""
+"Místní kontrola DNSSEC by měla být zapnuta pro zabránění únosu DNS."
+
+#: files/system/usr/libexec/secureblue/audit_secureblue.py:460
+msgid "Using a VPN alongside Unbound without Global DNS may cause DNS leaks."
+msgstr "Užití VPN spolu s Unbound bez Globální DNS může způsobit úniky DNS."
+
+#: files/system/usr/libexec/secureblue/audit_secureblue.py:465
+msgid "If you use a VPN, switch your DNS resolver to systemd-resolved:"
+msgstr "Pokud používáš VPN, přepni svůj DNS resolver na systemd-resolved:"
+
+#: files/system/usr/libexec/secureblue/audit_secureblue.py:475
+msgid "Ensuring system DNS resolution is secure"
+msgstr "Kontrolování zabezpečení systémového překladu DNS"
+
+#: files/system/usr/libexec/secureblue/audit_secureblue.py:491
+#: files/system/usr/libexec/secureblue/audit_secureblue.py:1165
+#, python-brace-format
+msgid "Unable to read file {0}."
+msgstr "Selhalo čtení souboru {0}."
+
+#: files/system/usr/libexec/secureblue/audit_secureblue.py:499
+msgid "MAC randomization is not enabled."
+msgstr "Randomizace MAC adres není zapnuta."
+
+#: files/system/usr/libexec/secureblue/audit_secureblue.py:506
+msgid "Ensuring MAC randomization is enabled"
+msgstr "Kontrolování zda randomizace MAC adres je povolena"
+
+#: files/system/usr/libexec/secureblue/audit_secureblue.py:518
+#: files/system/usr/libexec/secureblue/audit_secureblue.py:563
+#, python-brace-format
+msgid "{0} is disabled."
+msgstr "{0} je vypnuto."
+
+#: files/system/usr/libexec/secureblue/audit_secureblue.py:529
+#: files/system/usr/libexec/secureblue/audit_secureblue.py:572
+#: files/system/usr/libexec/secureblue/audit_secureblue.py:604
+#: files/system/usr/libexec/secureblue/audit_secureblue.py:637
+#: files/system/usr/libexec/secureblue/audit_secureblue.py:660
+#: files/system/usr/libexec/secureblue/audit_secureblue.py:688
+#, fuzzy, python-brace-format
+msgid "{0} has failed to run."
+msgstr "{0} je zapnuto ale selhalo při spuštění."
+
+#: files/system/usr/libexec/secureblue/audit_secureblue.py:543
+msgid "Automatic system updates are disabled in /etc/rpm-ostreed.conf"
+msgstr "Automatické aktualizace systému jsou vypnuté v /etc/rpm-ostreed.conf"
+
+#: files/system/usr/libexec/secureblue/audit_secureblue.py:547
+#: files/system/usr/libexec/secureblue/audit_secureblue.py:1066
+#: files/system/usr/libexec/secureblue/audit_secureblue.py:1093
+#: files/system/usr/libexec/secureblue/audit_secureblue.py:1098
+#: files/system/usr/libexec/secureblue/audit_secureblue.py:1115
+#: files/system/usr/libexec/secureblue/audit_secureblue.py:1129
+msgid "To fix this, run:"
+msgstr "Pro opravu tohoto, spusť:"
+
+#: files/system/usr/libexec/secureblue/audit_secureblue.py:552
+#, fuzzy
+msgid "Ensuring automatic system updates are enabled"
+msgstr "Kontrolování zda jsou zapnuté automatické aktualizace systému"
+
+#: files/system/usr/libexec/secureblue/audit_secureblue.py:575
+#: files/system/usr/libexec/secureblue/audit_secureblue.py:663
+#, python-brace-format
+msgid "Ensuring {0} is enabled"
+msgstr "Kontrolování zda {0} je zapnuto"
+
+#: files/system/usr/libexec/secureblue/audit_secureblue.py:593
+#: files/system/usr/libexec/secureblue/audit_secureblue.py:626
+#, python-brace-format
+msgid "{0} is not enabled globally."
+msgstr "{0} není zapnuto globálně."
+
+#: files/system/usr/libexec/secureblue/audit_secureblue.py:607
+#: files/system/usr/libexec/secureblue/audit_secureblue.py:640
+#, python-brace-format
+msgid "Ensuring {0} is enabled globally"
+msgstr "Kontrolování zda {0} je zapnuto globálně"
+
+#: files/system/usr/libexec/secureblue/audit_secureblue.py:693
+msgid "Automatic updates for Homebrew are not enabled."
+msgstr "Automatické aktualizace pro Homebrew nejsou zapnuty"
+
+#: files/system/usr/libexec/secureblue/audit_secureblue.py:694
+#, fuzzy
+msgid "To enable them, run:"
+msgstr "Pro zapnutí toho, spusť:"
+
+#: files/system/usr/libexec/secureblue/audit_secureblue.py:700
+#, fuzzy
+msgid "Ensuring automatic Homebrew updates are enabled"
+msgstr "Kontrolování zda jsou automatické aktualizace skrze Homebrew zapnuty"
+
+#: files/system/usr/libexec/secureblue/audit_secureblue.py:714
+msgid "The current user is in the wheel group."
+msgstr "Současný uživatel je člen skupiny wheel."
+
+#: files/system/usr/libexec/secureblue/audit_secureblue.py:715
+msgid "To set up a separate wheel account, run:"
+msgstr "Pro nastavení odděleného účtu pro wheel, spusť:"
+
+#: files/system/usr/libexec/secureblue/audit_secureblue.py:723
+msgid "Ensuring user is not a member of the wheel group"
+msgstr "Kontrolování zda uživatel není člen skupiny wheel"
+
+#: files/system/usr/libexec/secureblue/audit_secureblue.py:737
+#: files/system/usr/libexec/secureblue/audit_secureblue.py:748
+#, python-brace-format
+msgid "The current user is in the group '{0}'."
+msgstr "Současný uživatel je člen skupiny '{0}'."
+
+#: files/system/usr/libexec/secureblue/audit_secureblue.py:741
+msgid "This allows privilege escalation to root."
+msgstr "Toto umožňuje získání privilegií roota."
+
+#: files/system/usr/libexec/secureblue/audit_secureblue.py:742
+#: files/system/usr/libexec/secureblue/audit_secureblue.py:754
+msgid "To remove the user from this group, run:"
+msgstr "Pro odstranění uživatele z této skupiny, spusť:"
+
+#: files/system/usr/libexec/secureblue/audit_secureblue.py:752
+msgid "This group allows the user to read system and kernel logs."
+msgstr "Tato skupina umožňuje uživateli čtení systémových a jaderných záznamů."
+
+#: files/system/usr/libexec/secureblue/audit_secureblue.py:753
+msgid "This might make it easier to exploit kernel vulnerabilities."
+msgstr "Toto může usnadnit zneužití zranitelností jádra."
+
+#: files/system/usr/libexec/secureblue/audit_secureblue.py:761
+#, python-brace-format
+msgid "The current user is in the unrecognized group '{0}'."
+msgstr "Současný uživatel je v neznámé skupině '{0}'."
+
+#: files/system/usr/libexec/secureblue/audit_secureblue.py:766
+msgid ""
+"Group memberships can grant additional privileges and may pose security "
+"risks."
+msgstr ""
+"Členství ve skupinách může dát uživatelovi více privilegií a "
+"způsobitbezpečnostní rizika."
+
+#: files/system/usr/libexec/secureblue/audit_secureblue.py:767
+msgid "You may want to consider removing the user from this group:"
+msgstr "Uvaž zda by nebyl dobrý nápad odstranit uživatele z této skupiny:"
+
+#: files/system/usr/libexec/secureblue/audit_secureblue.py:772
+msgid "Checking if user is in groups with security implications"
+msgstr "Kontrolování zda uživatel je ve skupinách ovlivňující bezpečnost"
+
+#: files/system/usr/libexec/secureblue/audit_secureblue.py:785
+msgid "GNOME"
+msgstr "GNOME"
+
+#: files/system/usr/libexec/secureblue/audit_secureblue.py:788
+msgid "KDE Plasma"
+msgstr "KDE Plasma"
+
+#: files/system/usr/libexec/secureblue/audit_secureblue.py:791
+msgid "Sway"
+msgstr "Sway"
+
+#: files/system/usr/libexec/secureblue/audit_secureblue.py:801
+#, python-brace-format
+msgid "Xwayland is enabled for {0}."
+msgstr "Xwayland je zapnut pro {0}."
+
+#: files/system/usr/libexec/secureblue/audit_secureblue.py:802
+#: files/system/usr/libexec/secureblue/audit_secureblue.py:903
+#: files/system/usr/libexec/secureblue/audit_secureblue.py:1159
+msgid "To disable it, run:"
+msgstr "Pro vypnutí, spusť:"
+
+#: files/system/usr/libexec/secureblue/audit_secureblue.py:806
+#, python-brace-format
+msgid "Ensuring {0} is disabled for {1}"
+msgstr "Kontrolování zda {0} je vypnuto pro {1}"
+
+#: files/system/usr/libexec/secureblue/audit_secureblue.py:829
+msgid "GNOME user extensions are enabled."
+msgstr "Uživatelská rozšíření GNOME jsou zapnuta."
+
+#: files/system/usr/libexec/secureblue/audit_secureblue.py:830
+msgid "To disable this, run:"
+msgstr "Pro vypnutí tohoto, spusť:"
+
+#: files/system/usr/libexec/secureblue/audit_secureblue.py:834
+msgid "Ensuring GNOME user extensions are disabled"
+msgstr "Kontrolování zda uživatelská rozšíření pro GNOME jsou vypnuta"
+
+#: files/system/usr/libexec/secureblue/audit_secureblue.py:846
+msgid "SELinux is in Permissive mode."
+msgstr "SELinux je v režimu Povolování."
+
+#: files/system/usr/libexec/secureblue/audit_secureblue.py:847
+msgid "To set it to Enforcing mode, run:"
+msgstr "Pro nastavení jej do režimu Vymáhání, spusť:"
+
+#: files/system/usr/libexec/secureblue/audit_secureblue.py:851
+msgid "Ensuring SELinux is in Enforcing mode"
+msgstr "Kontrolování zda SELinux je v režimu Vymáhání"
+
+#: files/system/usr/libexec/secureblue/audit_secureblue.py:867
+#, python-brace-format
+msgid "The file {0} has been deleted."
+msgstr "Soubor {0} byl smazán."
+
+#: files/system/usr/libexec/secureblue/audit_secureblue.py:870
+#, python-brace-format
+msgid "The file {0} cannot be read."
+msgstr "Soubor {0} nebyl možný přečíst."
+
+#: files/system/usr/libexec/secureblue/audit_secureblue.py:874
+msgid "To reset it, run:"
+msgstr "Pro reset, spusť:"
+
+#: files/system/usr/libexec/secureblue/audit_secureblue.py:878
+msgid "Ensuring no environment file overrides"
+msgstr "Kontrolování zda nejsou žádná přepsání souborů prostředí"
+
+#: files/system/usr/libexec/secureblue/audit_secureblue.py:895
+#, python-brace-format
+msgid "The file {0} was not found or inaccessible."
+msgstr "Soubor {0} nebyl nalezen či není přístupný."
+
+#: files/system/usr/libexec/secureblue/audit_secureblue.py:902
+msgid "KDE GNHS is enabled."
+msgstr "KDE GHNS je zapnuto."
+
+#: files/system/usr/libexec/secureblue/audit_secureblue.py:909
+msgid "Ensuring KDE GHNS is disabled"
+msgstr "Kontrolování zda KDE GHNS je vypnuto"
+
+#: files/system/usr/libexec/secureblue/audit_secureblue.py:923
+#, python-brace-format
+msgid "The file {0} was not found."
+msgstr "Soubor {0} nebyl nalezen."
+
+#: files/system/usr/libexec/secureblue/audit_secureblue.py:931
+#, python-brace-format
+msgid "{0} has mode {1:o} (expected {2:o})"
+msgstr "{0} má režim {1:o} (očekáváno {2:0})"
+
+#: files/system/usr/libexec/secureblue/audit_secureblue.py:939
+#, python-brace-format
+msgid "{0} is owned by a non-root user!"
+msgstr "{0} je vlastněn uživatelem jenž není root!"
+
+#: files/system/usr/libexec/secureblue/audit_secureblue.py:942
+#, python-brace-format
+msgid "The file {0} has been modified or deleted."
+msgstr "Soubor {0} byl modifikován či smazán."
+
+#: files/system/usr/libexec/secureblue/audit_secureblue.py:943
+msgid "To reset it and enable hardened_malloc for system processes, run:"
+msgstr "Pro reset a zapnutí hardened_malloc pro systémové processy, spusť:"
+
+#: files/system/usr/libexec/secureblue/audit_secureblue.py:948
+#, python-brace-format
+msgid "Ensuring {0} has expected permissions"
+msgstr "Kontrolování zda {0} má očekávané oprávnění"
+
+#: files/system/usr/libexec/secureblue/audit_secureblue.py:968
+#, python-brace-format
+msgid "{0} is set, but {1} has been modified."
+msgstr "{0} je nastaveno, ale {1} bylo změněno."
+
+#: files/system/usr/libexec/secureblue/audit_secureblue.py:974
+#: files/system/usr/libexec/secureblue/audit_secureblue.py:979
+#, python-brace-format
+msgid "The '{0}' variant of {1} has been set."
+msgstr "'{0}', varianta {1}, bylo nastaveno."
+
+#: files/system/usr/libexec/secureblue/audit_secureblue.py:983
+#, python-brace-format
+msgid "{0} has not been set."
+msgstr "{0} nebylo nastaveno."
+
+#: files/system/usr/libexec/secureblue/audit_secureblue.py:986
+#, python-brace-format
+msgid ""
+"The environment variable {0} has been modified or is unset.\n"
+"                Check that {1} has not been overridden in\n"
+"                {2} or related configuration files."
+msgstr ""
+"Proměnná prostředí {0} byla změněna či neexistuje.\n"
+"                Zkontroluj zda {1} nebyla přepsána\n"
+"                v {2} či relevantních souborech konfigurace."
+
+#: files/system/usr/libexec/secureblue/audit_secureblue.py:992
+msgid "Ensuring hardened_malloc is set to be preloaded"
+msgstr "Kontrolování zda hardened_malloc je nastaven tak aby byl přednačten"
+
+#: files/system/usr/libexec/secureblue/audit_secureblue.py:1019
+msgid "Your hardware does not support secure boot."
+msgstr "Tvůj hardware nepodporuje bezpečné spuštění."
+
+#: files/system/usr/libexec/secureblue/audit_secureblue.py:1024
+msgid ""
+"The system will be unable to verify that kernel modules are signed or the "
+"boot process."
+msgstr ""
+"Systém nebude schopen zkontrolovat zda moduly jádra či proces spouštěnní "
+"byly podepsané."
+
+#: files/system/usr/libexec/secureblue/audit_secureblue.py:1030
+msgid "Ensuring secure boot is enabled"
+msgstr "Kontrolování zda bezpečné spuštění zapnuto"
+
+#: files/system/usr/libexec/secureblue/audit_secureblue.py:1063
+msgid "Bash environment is not locked down."
+msgstr "Prostředí Bashe není uzamčeno."
+
+#: files/system/usr/libexec/secureblue/audit_secureblue.py:1064
+msgid "The following files do not appear to be immutable or do not exist:"
+msgstr "Následující soubory vypadají že nejsou neměnné nebo že neexistují:"
+
+#: files/system/usr/libexec/secureblue/audit_secureblue.py:1073
+msgid "Ensuring current user's bash environment is locked down"
+msgstr "Kontrolování zda uživatelovo prostředí Bashe je uzamčeno"
+
+#: files/system/usr/libexec/secureblue/audit_secureblue.py:1091
+msgid "CUPS (the printing service) is enabled."
+msgstr "CUPS (služba pro tisk) je zapnuta."
+
+#: files/system/usr/libexec/secureblue/audit_secureblue.py:1096
+msgid "CUPS (the printing service) is disabled, but unmasked."
+msgstr "CUPS (služba pro tisk) je vypnuta, ale nezamaskována."
+
+#: files/system/usr/libexec/secureblue/audit_secureblue.py:1103
+#, python-brace-format
+msgid "CUPS (the printing service) has unexpected status '{0}'."
+msgstr "CUPS (služba pro tisk) je v neočekávaném stavu '{0}'."
+
+#: files/system/usr/libexec/secureblue/audit_secureblue.py:1109
+#, fuzzy, python-brace-format
+msgid "{0} is enabled."
+msgstr "{0} není zapnuto."
+
+#: files/system/usr/libexec/secureblue/audit_secureblue.py:1123
+#, fuzzy, python-brace-format
+msgid "{0} is disabled, but unmasked."
+msgstr "{0} je vypnuto, ale nezamaskováno."
+
+#: files/system/usr/libexec/secureblue/audit_secureblue.py:1138
+#, python-brace-format
+msgid "{0} has unexpected status '{1}'."
+msgstr "{0} je v neočekávaném stavu '{1}'."
+
+#: files/system/usr/libexec/secureblue/audit_secureblue.py:1141
+#, fuzzy
+msgid "Ensuring printing services are disabled"
+msgstr "Kontrolování zda služby tisku jsou vypnuty"
+
+#: files/system/usr/libexec/secureblue/audit_secureblue.py:1158
+#: files/system/usr/libexec/secureblue/audit_secureblue.py:1163
+msgid "Webcam module is enabled."
+msgstr "Modul webkamery je zapnut."
+
+#: files/system/usr/libexec/secureblue/audit_secureblue.py:1167
+msgid "Checking whether webcam module is disabled"
+msgstr "Kontolování zda modul webkamey je vypnut"
+
+#: files/system/usr/libexec/secureblue/audit_secureblue.py:1188
+#, python-brace-format
+msgid "{0} is configured with an unknown URL."
+msgstr "{0} je nastaveno na neznámou URL."
+
+#: files/system/usr/libexec/secureblue/audit_secureblue.py:1191
+#, python-brace-format
+msgid "{0} is not a verified flatpak repository."
+msgstr "{0} není ověřený flatpak repozitář."
+
+#: files/system/usr/libexec/secureblue/audit_secureblue.py:1194
+#, python-brace-format
+msgid "Auditing flatpak remote {0}"
+msgstr "Auditování flatpak repozitáře {0}"
+
+#: files/system/usr/libexec/secureblue/audit_secureblue.py:1227
+#, python-brace-format
+msgid "Auditing {0}"
+msgstr "Auditování {0}"
+
+#: files/system/usr/libexec/secureblue/audit_secureblue.py:1243
+msgid "[Audit process interrupted. Exiting.]"
+msgstr "[Proces auditu byl přerušen. Ukončuji.]"
+
+#: files/system/usr/libexec/secureblue/audit_secureblue.py:1256
+msgid "Audit secureblue configuration for security"
+msgstr "Nech auditovat secureblue pro bezpečnost"
+
+#: files/system/usr/libexec/secureblue/audit_secureblue.py:1261
+msgid "usage: "
+msgstr "použití: "
+
+#: files/system/usr/libexec/secureblue/audit_secureblue.py:1262
+msgid "options"
+msgstr "možnosti"
+
+#: files/system/usr/libexec/secureblue/audit_secureblue.py:1263
+msgid "show this help message and exit"
+msgstr "zobraz tuto zprávu pomoci a ukonči"
+
+#: files/system/usr/libexec/secureblue/audit_secureblue.py:1266
+msgid "skip categories"
+msgstr "přeskoč kategorie"
+
+#: files/system/usr/libexec/secureblue/audit_secureblue.py:1267
+msgid "display output as JSON"
+msgstr "zobraz výstup jako JSON"
+
+#: files/system/usr/libexec/secureblue/audit_secureblue.py:1271
+#, python-brace-format
+msgid "Valid arguments to {0} are: {1}"
+msgstr "Možné argumenty pro {0} jsou: {1}"
+
+#: files/system/usr/libexec/secureblue/audit_secureblue.py:1279
+#, python-brace-format
+msgid "*** Error in check '{0}' ***"
+msgstr "*** Chyba v kontrole '{0}' ***"
+
+#: files/system/usr/libexec/secureblue/audit_secureblue.py:1281
+msgid "*** Continuing... ***"
+msgstr "*** Pokračování... ***"
+
+#: files/system/usr/libexec/secureblue/audit_secureblue.py:1284
+#, python-brace-format
+msgid "Use option '{0}' to skip flatpak recommendations."
+msgstr "Využij možnosti '{0}' pro přeskočení doporučení flatpaku."
+
+#: files/system/usr/libexec/secureblue/audit_secureblue.py:1287
+msgid "*** WARNING: Unexpected error occurred. ***"
+msgstr "*** POZOR: Nastala neočekávaná chyba. ***"
+
+#: files/system/usr/libexec/secureblue/auditor/__init__.py:45
+msgid "PASS"
+msgstr "PROŠLO"
+
+#: files/system/usr/libexec/secureblue/auditor/__init__.py:47
+msgid "INFO"
+msgstr "INFO"
+
+#: files/system/usr/libexec/secureblue/auditor/__init__.py:49
+msgid "WARN"
+msgstr "VAROVÁNÍ"
+
+#: files/system/usr/libexec/secureblue/auditor/__init__.py:51
+msgid "FAIL"
+msgstr "SELHALO"
+
+#: files/system/usr/libexec/secureblue/auditor/__init__.py:53
+msgid "UNKNOWN"
+msgstr "NEZNÁMÉ"
+
+#: files/system/usr/libexec/secureblue/auditor/__init__.py:242
+msgid "Recommendations"
+msgstr "Doporučení"
+
+#: files/system/usr/libexec/secureblue/auditor/__init__.py:283
+msgid "Audit"
+msgstr "Audit"
+
+#: files/system/usr/libexec/secureblue/auditor/__init__.py:287
+msgid "Skipping checks in the following category:"
+msgstr "Přeskakuji kontroly v následující kategorii:"
+
+#: files/system/usr/libexec/secureblue/auditor/__init__.py:289
+msgid "Skipping checks in the following categories:"
+msgstr "Přeskakuji kontroly v následujících kategoriích:"
+
+#: files/system/usr/libexec/secureblue/audit_flatpak/__init__.py:138
+msgid "permission"
+msgstr "oprávnění"
+
+#: files/system/usr/libexec/secureblue/audit_flatpak/__init__.py:143
+#, python-brace-format
+msgid "{0} has {1}"
+msgstr "{0} má {1}"
+
+#: files/system/usr/libexec/secureblue/audit_flatpak/__init__.py:148
+msgid "This may also be used as a sandbox escape vector."
+msgstr "Toto může být využito též jako způsob úniku z pískoviště."
+
+#: files/system/usr/libexec/secureblue/audit_flatpak/__init__.py:154
+#, python-brace-format
+msgid "The following flatpak app(s) have {0}:"
+msgstr "Následující flatpak aplikace mají {0}:"
+
+#: files/system/usr/libexec/secureblue/audit_flatpak/__init__.py:158
+#: files/system/usr/libexec/secureblue/audit_flatpak/__init__.py:359
+#: files/system/usr/libexec/secureblue/audit_flatpak/__init__.py:423
+#: files/system/usr/libexec/secureblue/audit_flatpak/__init__.py:468
+msgid "To remove this permission from an app, use Flatseal or run:"
+msgstr "Pro odstranění tohoto oprávnění z aplikace, použij Flatseal či spusť:"
+
+#: files/system/usr/libexec/secureblue/audit_flatpak/__init__.py:160
+#: files/system/usr/libexec/secureblue/audit_flatpak/__init__.py:301
+#: files/system/usr/libexec/secureblue/audit_flatpak/__init__.py:361
+#: files/system/usr/libexec/secureblue/audit_flatpak/__init__.py:425
+#: files/system/usr/libexec/secureblue/audit_flatpak/__init__.py:447
+#: files/system/usr/libexec/secureblue/audit_flatpak/__init__.py:470
+#, python-brace-format
+msgid "(replacing \"{0}\" with the flatpak app ID)"
+msgstr "(nahrazování \"{0}\" daným ID flatpak aplikace)"
+
+#: files/system/usr/libexec/secureblue/audit_flatpak/__init__.py:177
+msgid "network access"
+msgstr "přístup k síti"
+
+#: files/system/usr/libexec/secureblue/audit_flatpak/__init__.py:178
+msgid "inter-process communications access"
+msgstr "přístup k meziprocesové komunikaci"
+
+#: files/system/usr/libexec/secureblue/audit_flatpak/__init__.py:179
+msgid "X11 access"
+msgstr "přístup k X11"
+
+#: files/system/usr/libexec/secureblue/audit_flatpak/__init__.py:180
+msgid "access to the PulseAudio socket"
+msgstr "přístup k soketě PulseAudio"
+
+#: files/system/usr/libexec/secureblue/audit_flatpak/__init__.py:185
+msgid "access to the D-Bus session bus"
+msgstr "přístup k D-Bus sběrnici relace"
+
+#: files/system/usr/libexec/secureblue/audit_flatpak/__init__.py:186
+msgid "This grants access to audio and microphones."
+msgstr "Toto umožňuje přístup k audiu a mikrofonům."
+
+#: files/system/usr/libexec/secureblue/audit_flatpak/__init__.py:188
+msgid "access to the D-Bus system bus"
+msgstr "přístup k D-Bus systémové sběrnici"
+
+#: files/system/usr/libexec/secureblue/audit_flatpak/__init__.py:189
+msgid "access to the SSH agent"
+msgstr "přístup k agentu SSH"
+
+#: files/system/usr/libexec/secureblue/audit_flatpak/__init__.py:194
+msgid "This grants access to input devices, GPUs, raw USB, and virtualization."
+msgstr ""
+"Toto umožňuje přístup ke vstupním zařízením, GPU, syrovým USB a virtualizaci."
+
+#: files/system/usr/libexec/secureblue/audit_flatpak/__init__.py:196
+#, python-brace-format
+msgid "If GPU access is required, allow {0} instead."
+msgstr "Je-li přístup k GPU vyžadován, místo toho povol {0}."
+
+#: files/system/usr/libexec/secureblue/audit_flatpak/__init__.py:198
+msgid "This grants access to input devices."
+msgstr "Toto umožňuje přístup ke vstupním zařízením."
+
+#: files/system/usr/libexec/secureblue/audit_flatpak/__init__.py:200
+msgid "This grants access to kernel-based virtualization."
+msgstr "Toto umožňuje přístup k virtualizaci na úrovni jádra."
+
+#: files/system/usr/libexec/secureblue/audit_flatpak/__init__.py:206
+msgid "This grants access to shared memory."
+msgstr "Toto umožňuje přístup ke sdílené paměti."
+
+#: files/system/usr/libexec/secureblue/audit_flatpak/__init__.py:213
+msgid "This grants raw USB device access."
+msgstr "Toto umožňuje přímý přístup k zařízením USB."
+
+#: files/system/usr/libexec/secureblue/audit_flatpak/__init__.py:216
+msgid "bluetooth access"
+msgstr "přístup k bluetooth"
+
+#: files/system/usr/libexec/secureblue/audit_flatpak/__init__.py:217
+msgid "ptrace access"
+msgstr "přístup k ptrace"
+
+#: files/system/usr/libexec/secureblue/audit_flatpak/__init__.py:264
+#, python-brace-format
+msgid "{0} can acquire arbitrary permissions."
+msgstr "{0} může získat jakékoliv oprávnění."
+
+#: files/system/usr/libexec/secureblue/audit_flatpak/__init__.py:267
+msgid "However, this is required for its functionality."
+msgstr "Je to však nezbytné pro správné fungování."
+
+#: files/system/usr/libexec/secureblue/audit_flatpak/__init__.py:284
+#: files/system/usr/libexec/secureblue/audit_flatpak/__init__.py:289
+#, python-brace-format
+msgid "{0} is requesting {1}"
+msgstr "{0} žádá o {1}"
+
+#: files/system/usr/libexec/secureblue/audit_flatpak/__init__.py:295
+#, python-brace-format
+msgid "{0} is not requesting {1}"
+msgstr "{0} nežádá o {1}"
+
+#: files/system/usr/libexec/secureblue/audit_flatpak/__init__.py:297
+#, python-brace-format
+msgid "The following flatpak app(s) are not requesting {0}:"
+msgstr "Následující flatpak aplikace nežádají o {0}:"
+
+#: files/system/usr/libexec/secureblue/audit_flatpak/__init__.py:299
+msgid "To enable it for an app, run:"
+msgstr "Pro povolení toho pro aplikaci, spusť:"
+
+#: files/system/usr/libexec/secureblue/audit_flatpak/__init__.py:348
+#, python-brace-format
+msgid "{0} can talk to {1} on the session bus."
+msgstr "{0} může mluvit k {1} na sběrnici relace."
+
+#: files/system/usr/libexec/secureblue/audit_flatpak/__init__.py:349
+#, python-brace-format
+msgid "The following flatpak app(s) can talk to {0} on the session bus:"
+msgstr "Následující flatpak aplikace mohou mluvit k {0} na sběrnici relace:"
+
+#: files/system/usr/libexec/secureblue/audit_flatpak/__init__.py:352
+#, python-brace-format
+msgid "{0} can talk to {1} on the system bus."
+msgstr "{0} může mluvit k {1} na systémové sběrnici."
+
+#: files/system/usr/libexec/secureblue/audit_flatpak/__init__.py:353
+#, python-brace-format
+msgid "The following flatpak app(s) can talk to {0} on the system bus:"
+msgstr "Následující flatpak aplikace mohou mluvit k {0} na systémové sběrnici:"
+
+#: files/system/usr/libexec/secureblue/audit_flatpak/__init__.py:358
+#: files/system/usr/libexec/secureblue/audit_flatpak/__init__.py:467
+msgid "This grants the ability to acquire arbitrary permissions."
+msgstr "Toto dává schopnost získat jakékoliv oprávnění."
+
+#: files/system/usr/libexec/secureblue/audit_flatpak/__init__.py:400
+msgid "all system files"
+msgstr "všechny systémové soubory"
+
+#: files/system/usr/libexec/secureblue/audit_flatpak/__init__.py:401
+msgid "all user files"
+msgstr "všechny uživatelské soubory"
+
+#: files/system/usr/libexec/secureblue/audit_flatpak/__init__.py:402
+msgid "other applications' configuration files"
+msgstr "konfigurační soubory jiných aplikací"
+
+#: files/system/usr/libexec/secureblue/audit_flatpak/__init__.py:403
+msgid "other applications' cache files"
+msgstr "dočasné soubory jíných aplikací"
+
+#: files/system/usr/libexec/secureblue/audit_flatpak/__init__.py:404
+msgid "other applications' data files"
+msgstr "soubory dat jiných aplikací"
+
+#: files/system/usr/libexec/secureblue/audit_flatpak/__init__.py:414
+#, python-brace-format
+msgid "{0} has {1} permission"
+msgstr "{0} má oprávnění {1}"
+
+#: files/system/usr/libexec/secureblue/audit_flatpak/__init__.py:418
+#, python-brace-format
+msgid "The following flatpak app(s) have {0} permission:"
+msgstr "Následující flatpak aplikace mají {0} oprávnění:"
+
+#: files/system/usr/libexec/secureblue/audit_flatpak/__init__.py:422
+#, python-brace-format
+msgid "This grants access to {0}."
+msgstr "Toto umožňuje přístup k {0}."
+
+#: files/system/usr/libexec/secureblue/audit_flatpak/__init__.py:439
+#, python-brace-format
+msgid "{0} is missing {1} permission"
+msgstr "{0} chybí oprávnění {1}"
+
+#: files/system/usr/libexec/secureblue/audit_flatpak/__init__.py:442
+#, python-brace-format
+msgid "The following flatpak app(s) are missing {0} permission:"
+msgstr "Těmto flatpak aplikacím chybí {0} oprávnění:"
+
+#: files/system/usr/libexec/secureblue/audit_flatpak/__init__.py:444
+msgid "This is required to load hardened_malloc."
+msgstr "Toto je vyžadováno pro načtení hardened_malloc."
+
+#: files/system/usr/libexec/secureblue/audit_flatpak/__init__.py:445
+msgid "To add this permission to an app, use Flatseal or run:"
+msgstr "Pro přidání oprávnění aplikaci, použij Flatseal či spusť:"
+
+#: files/system/usr/libexec/secureblue/audit_flatpak/__init__.py:463
+#, python-brace-format
+msgid "{0} can modify flatpak permissions."
+msgstr "{0} může změnit oprávnění flatpaku."
+
+#: files/system/usr/libexec/secureblue/audit_flatpak/__init__.py:465
+msgid "The following flatpak app(s) can modify flatpak permissions:"
+msgstr "Následující flatpak aplikace mohou změnit oprávnění flatpaku:"
+
+#: files/system/usr/libexec/secureblue/audit_utils/__init__.py:38
+msgid "*** WARNING: Running audit script as root is not recommended. ***"
+msgstr "*** POZOR: Spouštění skriptu pro audit jako root není doporučeno. ***"
+
+#: files/system/usr/libexec/secureblue/audit_utils/__init__.py:39
+msgid "*** Some results may be misleading or incomplete. ***"
+msgstr "*** Některé výsledky mohou být zavádějící či nekompletní. ***"
+
+#: files/system/usr/libexec/secureblue/audit_utils/__init__.py:67
+msgid ""
+"The following status indicators accompany checks run by the audit script:"
+msgstr ""
+"Následující indikátory stavu provází kontroly spouštěné audit skriptem:"
+
+#: files/system/usr/libexec/secureblue/audit_utils/__init__.py:70
+msgid "check failed - the configuration may be less secure."
+msgstr "kontroly selhaly - konfigurace může být méně bezpečná."
+
+#: files/system/usr/libexec/secureblue/audit_utils/__init__.py:71
+msgid "partial failure, or less significant issue detected."
+msgstr "částečné selhání či méně závažná chyba detekována."
+
+#: files/system/usr/libexec/secureblue/audit_utils/__init__.py:72
+msgid "check passed - no problems detected."
+msgstr "Kontrola prošla - žádný problém nenalezen."
+
+#: files/system/usr/libexec/secureblue/audit_utils/__init__.py:73
+msgid "unable to perform check (usually due to a file permission issue)."
+msgstr ""
+"nemožno provést kontrolu (většinou kvůli problému z oprávněním souboru)."
+
+#: files/system/usr/libexec/secureblue/audit_utils/__init__.py:78
+msgid "For flatpak checks, the status indicators have more specific meanings:"
+msgstr "Pro kontroly flatpaku, stavové indikátory mají specifičtější významy:"
+
+#: files/system/usr/libexec/secureblue/audit_utils/__init__.py:81
+msgid ""
+"app has permissions that can be used as sandbox escapes, allow it to modify\n"
+"            its own permissions, or otherwise grant very broad access to the "
+"system (e.g. access\n"
+"            to certain directories, direct D-Bus access, X11)."
+msgstr ""
+"aplikace má oprávnění která mohou být využita k únikům z pískoviště,\n"
+"            modifikování vlastních oprávnění, nebo jakkoli jinak získat "
+"široký přístup k systému (např. přístup k\n"
+"            některým složkám, přímo k D-Busu, X11)."
+
+#: files/system/usr/libexec/secureblue/audit_utils/__init__.py:84
+msgid ""
+"app has permissions that have some sandbox escape potential or otherwise\n"
+"            weaken security (e.g. PulseAudio, Bluetooth, not using "
+"hardened_malloc)."
+msgstr ""
+"aplikace má oprávnění která mají nějaký risk být využita k úniku z "
+"pískoviště,\n"
+"            či jinak oslabovat bezpečnost (např. PulseAudio, Bluetooth, či "
+"nepoužití hardened malloc)."
+
+#: files/system/usr/libexec/secureblue/audit_utils/__init__.py:86
+msgid ""
+"no potential sandbox escapes detected but some permissions could increase\n"
+"            attack surface or have privacy implications (e.g. network "
+"access)."
+msgstr ""
+"žádné potenciální úniky z pískoviště detekovány ale některé oprávnění mohou\n"
+"            zvýšit riziko útoku či mají rizika spjatá se soukromím (např. "
+"přístup k síti)."
+
+#: files/system/usr/libexec/secureblue/audit_utils/__init__.py:88
+msgid "no app permissions flagged (however, not all permissions are audited)."
+msgstr ""
+"aplikace nemá nalezena žádná riskantní oprávnění (avšak né všechna oprávnění "
+"jsou auditována)."
+
+#: files/system/usr/libexec/secureblue/audit_utils/__init__.py:94
+msgid ""
+"            Note that some flatpak apps require broad permissions to "
+"function. Permissions being\n"
+"            flagged by the audit script do not necessarily mean that action "
+"should be taken.\n"
+"            "
+msgstr ""
+"            Upozorňujeme, že některé flatpak aplikace vyžadují mnoho oprávnění "
+"aby fungovaly. Oprávnění zachycena\n"
+"            auditem nutně neznamenají že by kvůli ním mělo být něco "
+"uděláno.\n"
+"            "
+
+#, python-brace-format
+#~ msgid "{0} is enabled globally but has failed to run."
+#~ msgstr "{0} je zapnuto globálně avšak selhalo při spuštění."

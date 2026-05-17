@@ -22,16 +22,14 @@ source "${scripts_dir}/initialize-shared-variables.sh"
 
 
 basic_checks() {
-	local -i check_count=0
-	local -i check_fail_count=0
+	local -i check_success_count=0
 	for script in "${scripts_dir}"/check/*; do
 		# shellcheck source=/dev/null # doesn't seem to be a way to declare any name
 		source "${script}"
-		check_count+=1
 	done
 
-	if (( check_count == check_fail_count )); then
-		exec "${bwrap}" "${args[@]}"
+	if (( check_success_count == 0 )); then
+		exec "${bwrap}" "${args[@]}" || exit 1
 	fi
 }
 basic_checks
@@ -118,7 +116,7 @@ find_flatpak_name() {
 		# shellcheck disable=SC2053
 		if [[ "${path}" = ${app_folder_glob} ]]; then
 			app_folder="${path}"
-			flatpak_name=$(jq --raw-output '.id' "${path}/manifest.json")
+			flatpak_name=$(jq --raw-output -- '.id' "${path}/manifest.json")
 			break
 		fi
 		# shellcheck disable=SC2053

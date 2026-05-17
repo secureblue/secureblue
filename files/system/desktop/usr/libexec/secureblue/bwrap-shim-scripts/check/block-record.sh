@@ -9,9 +9,7 @@ check() {
 	local -r config="${user_config}/secureblue/ujust-block-record.json"
 	if [[ -e "${config}" ]]; then
 		should_execute+=( ["block-record"]="${config}" )
-	else
-		should_execute+=( ["block-record"]="" )
-		(( check_fail_count += 1 ))
+		(( check_success_count += 1 ))
 	fi
 }
 check

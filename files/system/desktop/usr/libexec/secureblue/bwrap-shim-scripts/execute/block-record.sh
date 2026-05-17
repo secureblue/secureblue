@@ -4,39 +4,28 @@
 #
 # SPDX-License-Identifier: Apache-2.0
 
-declare name debug should_execute
+declare name debug should_execute flatpak_name
 
 execute() {
-	declare -r config_path=${should_execute["block-record"]}
+	declare -r config_path=${should_execute["block-record"]:-}
 	[[ "${config_path}" != "" ]] || return
 
-	subname="${name}: BLOCK-RECORD"
-
+	# shellcheck disable=SC2016 # jq varaibles
 	local -r jq_filter='
 	if .block_by_default then
-		if (.allowed | index("'"${flatpak_name}"'") != null)
-		then "allow" else "block" end
+		.allowed | index("$flatpak")
 	else
-		if (.blocked | index("'"${flatpak_name}"'") != null)
-		then "block" else "allow" end
+		.blocked | index("$flatpak") | not
 	end
 	'
 
-	local -l permission="block"
-	if [[ -n ${flatpak_name} ]]; then
-		permission=$(jq --raw-output "${jq_filter}" "${config_path}")
-	fi
-	local -r permission
-
-	# we know the user has a config, so we want to block by default for their safety
-	if [[ "${permission}" != "allow" ]]; then
+	# if jq fails for any reason, block by default to be safe; only succeeds if app is known allowed
+	if ! jq --exit-status --arg flatpak "${flatpak_name}" -- "${jq_filter}" "${config_path}" &> /dev/null; then
 		extra_bwrap_args+=( "--tmpfs" "/dev/snd" )
+		if [[ "${debug}" = true ]]; then
+			echo "${name}: BLOCK-RECORD: Blocking ALSA access"
+		fi
 	fi
-
-	if [[ "${debug}" = true ]]; then
-		echo "${subname}: Value returned was ${permission}";
-	fi
-
 }
 execute
 unset -f execute

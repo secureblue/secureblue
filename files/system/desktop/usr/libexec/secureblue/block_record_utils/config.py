@@ -11,9 +11,11 @@ from dataclasses import asdict, dataclass, field
 from json import JSONDecodeError
 from json import dump as write_json
 from json import load as load_json
-from typing import Any, Final, get_type_hints
+from typing import Final, TypeAlias, get_type_hints
 
 from . import SCRIPT_CONFIG_PATH, ask_yes_no, is_tty, print_err
+
+JSON: TypeAlias = dict[str, "JSON"] | list["JSON"] | str | int | float | bool | None
 
 
 @dataclass(slots=True)
@@ -55,7 +57,7 @@ class _ScriptConfig:
             return self._create()
         sys.exit(1)
 
-    def _validate_json(self, loaded_file: dict[str, Any]) -> None:
+    def _validate_json(self, loaded_file: dict[str, JSON]) -> None:
         """Ensures the structure of the config file is correct."""
         hints = get_type_hints(type(self))
         unknown_keys = loaded_file.keys() - hints.keys()

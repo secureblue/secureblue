@@ -40,20 +40,22 @@ ALIASES: dict[str, str] = {
 
 
 @dataclass(frozen=True)
-class DirectoryInfo(PermissionCheck):
-    """Info about a directory to check."""
+class DirectoryCheck(PermissionCheck):
+    """Variant of PermissionCheck specific to filesystem permissions."""
 
-    _: KW_ONLY
+    _: KW_ONLY  # Avoids interfering with PermissionCheck positional arguments
     # showing the exact perm prevents grouping aliases into one recommendation
     description: str | None = None
-    # internally set only
+
     category: str = field(init=False, default="filesystems")
+
     path: str = field(init=False)
+    """Less ambiguous alias for "permission", which could be mistaken for rwx permissions."""
 
     _comment_already_prefixed: bool = False
 
     def __post_init__(self) -> None:
-        """Set the "path" alias field, and generate a comment."""
+        """Sets derived fields."""
         object.__setattr__(self, "path", self.permission)
 
         has_comment = hasattr(self, "comment") and self.comment is not None
@@ -65,12 +67,12 @@ class DirectoryInfo(PermissionCheck):
             object.__setattr__(self, "_comment_already_prefixed", True)
 
 
-DANGEROUS_DIRECTORY_CHECKS: list[DirectoryInfo] = [
-    DirectoryInfo("host", FAIL, _("all system files")),
-    DirectoryInfo("home", FAIL, _("all user files")),
-    DirectoryInfo("xdg-config", FAIL, _("other applications' configuration files")),
-    DirectoryInfo("xdg-cache", FAIL, _("other applications' cache files")),
-    DirectoryInfo("xdg-data", FAIL, _("other applications' data files")),
+DANGEROUS_DIRECTORY_CHECKS: list[DirectoryCheck] = [
+    DirectoryCheck("host", FAIL, _("all system files")),
+    DirectoryCheck("home", FAIL, _("all user files")),
+    DirectoryCheck("xdg-config", FAIL, _("other applications' configuration files")),
+    DirectoryCheck("xdg-cache", FAIL, _("other applications' cache files")),
+    DirectoryCheck("xdg-data", FAIL, _("other applications' data files")),
 ]
 
 

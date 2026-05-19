@@ -44,13 +44,14 @@ class DirectoryCheck(PermissionCheck):
     """Variant of PermissionCheck specific to filesystem permissions."""
 
     _: KW_ONLY  # Avoids interfering with PermissionCheck positional arguments
-    # showing the exact perm prevents grouping aliases into one recommendation
-    description: str | None = None
 
     category: str = field(init=False, default="filesystems")
 
     path: str = field(init=False)
     """Less ambiguous alias for "permission", which could be mistaken for rwx permissions."""
+
+    description: str | None = None
+    """None shows the exact path, preventing grouping aliases into one recommendation."""
 
     _comment_already_prefixed: bool = False
 
@@ -101,27 +102,27 @@ def _parse_fs_permission(perm: str) -> tuple[str, bool, bool, str | None]:
 def _check_dangerous_dirs(
     state: FlatpakPermissionsState, filesystems_rw_aliasmap: dict[str, str | None]
 ) -> None:
-    for directory in DANGEROUS_DIRECTORY_CHECKS:
-        dir_to_check = directory
-        canon_path = dir_to_check.path
+    for d in DANGEROUS_DIRECTORY_CHECKS:
+        dir_check = d  # avoids reassigning loop variable
+        canon_path = dir_check.path
         if canon_path not in filesystems_rw_aliasmap:
             continue
         aliased_path = filesystems_rw_aliasmap[canon_path]
         if aliased_path is not None:
-            dir_to_check = dataclass_replace(dir_to_check, permission=aliased_path)
+            dir_check = dataclass_replace(dir_check, permission=aliased_path)
         state.update(
-            note=dir_to_check.note(state.name), rec=dir_to_check.recommendation(state.name)
+            note=dir_check.note(state.name), rec=dir_check.recommendation(state.name)
         )
 
 
 def _check_hardened_malloc_access(
     state: FlatpakPermissionsState,
     filesystems: list[str] | None,
-    filesystems_rw_aliasmap: dict[str, str | None],
-    filesystems_ro_aliasmap: dict[str, str | None],
+    filesystem_perms: dict[str, str | None],
+
 ) -> None:
     if filesystems is None or (
-        "host-os" not in filesystems_ro_aliasmap and "host-os" not in filesystems_rw_aliasmap
+        "host-os" not in filesystem_perms
     ):
         note = Note(
             _("{0} is missing {1} permission").format(state.name, "host-os:ro"), status=WARN
@@ -162,22 +163,22 @@ def _check_overrides_access(
 
 
 def check_fs_permissions(state: FlatpakPermissionsState, perms: Permissions) -> None:
-    filesystems = perms.permissions.get("filesystems")
-    filesystems_ro_aliasmap = {}
-    filesystems_rw_aliasmap = {}
-    if filesystems is None:
-        _check_hardened_malloc_access(state, filesystems, filesystems_rw_aliasmap, filesystems_ro_aliasmap)
+    perm_strings = perms.permissions.get("filesystems")
+    filesystem_perms = {}
+
+    if perm_strings is None:
+        _check_hardened_malloc_access(state, filesystem_perms)
         return
-    for perm in filesystems:
-        path, readonly, negated, aliased_path = _parse_fs_permission(perm)
+    for perm_string in perm_strings:
+        path, readonly, negated, aliased_path = _parse_fs_permission(perm_string)
         if negated:
             continue
         if readonly:
-            filesystems_ro_aliasmap[path] = aliased_path
+            filesystem_perms[path] = aliased_path
         else:
-            filesystems_rw_aliasmap[path] = aliased_path
-    _check_dangerous_dirs(state, filesystems_rw_aliasmap)
-    _check_overrides_access(state, filesystems_rw_aliasmap)
+            filesystem_perms[path] = aliased_path
+    _check_dangerous_dirs(state, filesystem_perms)
+    _check_overrides_access(state, filesystem_perms)
     _check_hardened_malloc_access(
-        state, filesystems, filesystems_rw_aliasmap, filesystems_ro_aliasmap
+        state, perm_strings, filesystem_perms
     )

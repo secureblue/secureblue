@@ -77,7 +77,7 @@ DANGEROUS_DIRECTORY_CHECKS: list[DirectoryCheck] = [
 ]
 
 
-@dataclass
+@dataclass(frozen=True)
 class Filesystem:
     """A fully parsed filesystem permission."""
 
@@ -98,8 +98,8 @@ class Filesystem:
         This should effectively match Flatpak parsing:
         https://github.com/flatpak/flatpak/blob/1.17.7/common/flatpak-context.c#L1648
         """
-        self.readonly = perm.endswith(":ro")
-        self.negated = perm.startswith("!")
+        object.__setattr__(self, "readonly", perm.endswith(":ro"))
+        object.__setattr__(self, "negated", perm.startswith("!"))
         if perm.endswith(":ro"):
             path = perm.removesuffix(":ro")
         elif perm.endswith(":rw"):
@@ -110,14 +110,14 @@ class Filesystem:
             path = perm
 
         path = path.removeprefix("!").rstrip("/")
-        self.aliased_path = path
+        object.__setattr__(self, "aliased_path", path)
 
         for name, alias in ALIASES.items():
             if path.startswith(alias):
                 path = path.replace(alias, name, 1)
-                self.is_aliased = True
+                object.__setattr__(self, "is_aliased", True)
                 break
-        self.canon_path = path
+        object.__setattr__(self, "canon_path", path)
 
 
 FilesystemPerms = dict[str, Filesystem]
@@ -134,26 +134,21 @@ def _check_dangerous_dirs(
 ) -> None:
     for d in DANGEROUS_DIRECTORY_CHECKS:
         dir_check = d  # avoids reassigning loop variable
+
         canon_path = dir_check.path
         if canon_path not in filesystem_perms:
             continue
         perm = filesystem_perms[canon_path]
+
         if perm.is_aliased:
             dir_check = dataclass_replace(dir_check, permission=perm.aliased_path)
-        state.update(
-            note=dir_check.note(state.name), rec=dir_check.recommendation(state.name)
-        )
+        state.update(note=dir_check.note(state.name), rec=dir_check.recommendation(state.name))
 
 
 def _check_hardened_malloc_access(
-    state: FlatpakPermissionsState,
-
-    filesystem_perms: FilesystemPerms
-
+    state: FlatpakPermissionsState, filesystem_perms: FilesystemPerms
 ) -> None:
-    if not filesystem_perms or (
-        "host-os" not in filesystem_perms
-    ):
+    if not filesystem_perms or "host-os" not in filesystem_perms:
         note = Note(
             _("{0} is missing {1} permission").format(state.name, "host-os:ro"), status=WARN
         )
@@ -198,9 +193,9 @@ def _check_overrides_access(
 
 
 def check_fs_permissions(state: FlatpakPermissionsState, perms: Permissions) -> None:
-    perm_strings = perms.permissions.get("filesystems")
     filesystem_perms: FilesystemPerms = {}
 
+    perm_strings = perms.permissions.get("filesystems")
     if perm_strings is None:
         _check_hardened_malloc_access(state, filesystem_perms)
         return
@@ -213,6 +208,4 @@ def check_fs_permissions(state: FlatpakPermissionsState, perms: Permissions) -> 
 
     _check_dangerous_dirs(state, filesystem_perms)
     _check_overrides_access(state, filesystem_perms)
-    _check_hardened_malloc_access(
-        state, filesystem_perms
-    )
+    _check_hardened_malloc_access(state, filesystem_perms)

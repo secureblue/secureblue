@@ -8,7 +8,7 @@
 Filesystem-specific Flatpak permissions checks for secureblue auditing script.
 """
 
-from dataclasses import KW_ONLY, dataclass, field
+from dataclasses import KW_ONLY, InitVar, dataclass, field
 from dataclasses import replace as dataclass_replace
 from typing import Final
 
@@ -77,39 +77,69 @@ DANGEROUS_DIRECTORY_CHECKS: list[DirectoryCheck] = [
 ]
 
 
-def _parse_fs_permission(perm: str) -> tuple[str, bool, bool, str | None]:
-    """Parse flatpak filesystem permission string."""
-    readonly = perm.endswith(":ro")
-    negated = perm.startswith("!")
-    if perm.endswith(":ro"):
-        path = perm.removesuffix(":ro")
-    elif perm.endswith(":rw"):
-        path = perm.removesuffix(":rw")
-    elif perm.endswith(":create"):
-        path = perm.removesuffix(":create")
-    else:
-        path = perm
-    path = path.removeprefix("!").rstrip("/")
-    aliased_path = None
-    for name, alias in ALIASES.items():
-        if path.startswith(alias):
-            aliased_path = path
-            path = path.replace(alias, name, 1)
-            break
-    return path, readonly, negated, aliased_path
+@dataclass
+class Filesystem:
+    """A fully parsed filesystem permission."""
+
+    perm: InitVar[str]
+    # perm string should be only constructor argument
+
+    canon_path: str = field(init=False)
+    aliased_path: str = field(init=False)
+    is_aliased: bool = field(init=False, default=False)
+
+    negated: bool = field(init=False)
+    readonly: bool = field(init=False)
+
+    def __post_init__(self, perm: str) -> None:
+        """
+        Parse filesystem permission string.
+
+        This should effectively match Flatpak parsing:
+        https://github.com/flatpak/flatpak/blob/1.17.7/common/flatpak-context.c#L1648
+        """
+        self.readonly = perm.endswith(":ro")
+        self.negated = perm.startswith("!")
+        if perm.endswith(":ro"):
+            path = perm.removesuffix(":ro")
+        elif perm.endswith(":rw"):
+            path = perm.removesuffix(":rw")
+        elif perm.endswith(":create"):
+            path = perm.removesuffix(":create")
+        else:
+            path = perm
+
+        path = path.removeprefix("!").rstrip("/")
+        self.aliased_path = path
+
+        for name, alias in ALIASES.items():
+            if path.startswith(alias):
+                path = path.replace(alias, name, 1)
+                self.is_aliased = True
+                break
+        self.canon_path = path
+
+
+FilesystemPerms = dict[str, Filesystem]
+"""
+Mapping of filesystem permission information, accessed using their canonical path.
+
+For example, to check if "host-os" exists at all in the permissions list,
+one can simply do ("host-os" in FilesystemPerms), avoiding iteration.
+"""
 
 
 def _check_dangerous_dirs(
-    state: FlatpakPermissionsState, filesystems_rw_aliasmap: dict[str, str | None]
+    state: FlatpakPermissionsState, filesystem_perms: FilesystemPerms
 ) -> None:
     for d in DANGEROUS_DIRECTORY_CHECKS:
         dir_check = d  # avoids reassigning loop variable
         canon_path = dir_check.path
-        if canon_path not in filesystems_rw_aliasmap:
+        if canon_path not in filesystem_perms:
             continue
-        aliased_path = filesystems_rw_aliasmap[canon_path]
-        if aliased_path is not None:
-            dir_check = dataclass_replace(dir_check, permission=aliased_path)
+        perm = filesystem_perms[canon_path]
+        if perm.is_aliased:
+            dir_check = dataclass_replace(dir_check, permission=perm.aliased_path)
         state.update(
             note=dir_check.note(state.name), rec=dir_check.recommendation(state.name)
         )
@@ -117,11 +147,11 @@ def _check_dangerous_dirs(
 
 def _check_hardened_malloc_access(
     state: FlatpakPermissionsState,
-    filesystems: list[str] | None,
-    filesystem_perms: dict[str, str | None],
+
+    filesystem_perms: FilesystemPerms
 
 ) -> None:
-    if filesystems is None or (
+    if not filesystem_perms or (
         "host-os" not in filesystem_perms
     ):
         note = Note(
@@ -140,22 +170,27 @@ def _check_hardened_malloc_access(
 
 
 def _check_overrides_access(
-    state: FlatpakPermissionsState, filesystems_rw_aliasmap: dict[str, str | None]
+    state: FlatpakPermissionsState, filesystem_perms: FilesystemPerms
 ) -> None:
     if state.name in ARBITRARY_PERMISSIONS_EXPECTED:
         return
+
     override_path = "xdg-data/flatpak/overrides"
-    if override_path not in filesystems_rw_aliasmap:
+    if override_path not in filesystem_perms:
         return
+
+    set_permission = filesystem_perms[override_path]
+    if set_permission.readonly:
+        return
+
     state.arbitrary_permissions = True
-    override_path = filesystems_rw_aliasmap[override_path] or override_path
     note = Note(_("{0} can modify flatpak permissions.").format(state.name), status=FAIL)
     rec_lines = (
         _("The following flatpak app(s) can modify flatpak permissions:"),
         Recommendation.NAMES_PLACEHOLDER,
         _("This grants the ability to acquire arbitrary permissions."),
         _("To remove this permission from an app, use Flatseal or run:"),
-        f"$ flatpak override -u --nofilesystem={override_path} com.example.Example",
+        f"$ flatpak override -u --nofilesystem={set_permission.aliased_path} com.example.Example",
         _('(replacing "{0}" with the flatpak app ID)').format("com.example.Example"),
     )
     rec = Recommendation("\n".join(rec_lines), mergeable_name=state.name)
@@ -164,21 +199,20 @@ def _check_overrides_access(
 
 def check_fs_permissions(state: FlatpakPermissionsState, perms: Permissions) -> None:
     perm_strings = perms.permissions.get("filesystems")
-    filesystem_perms = {}
+    filesystem_perms: FilesystemPerms = {}
 
     if perm_strings is None:
         _check_hardened_malloc_access(state, filesystem_perms)
         return
+
     for perm_string in perm_strings:
-        path, readonly, negated, aliased_path = _parse_fs_permission(perm_string)
-        if negated:
+        perm = Filesystem(perm_string)
+        if perm.negated:
             continue
-        if readonly:
-            filesystem_perms[path] = aliased_path
-        else:
-            filesystem_perms[path] = aliased_path
+        filesystem_perms[perm.canon_path] = perm
+
     _check_dangerous_dirs(state, filesystem_perms)
     _check_overrides_access(state, filesystem_perms)
     _check_hardened_malloc_access(
-        state, perm_strings, filesystem_perms
+        state, filesystem_perms
     )

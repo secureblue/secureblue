@@ -65,6 +65,15 @@ class DirectoryInfo(PermissionCheck):
             object.__setattr__(self, "_comment_already_prefixed", True)
 
 
+DANGEROUS_DIRECTORY_CHECKS: list[DirectoryInfo] = [
+    DirectoryInfo("host", FAIL, _("all system files")),
+    DirectoryInfo("home", FAIL, _("all user files")),
+    DirectoryInfo("xdg-config", FAIL, _("other applications' configuration files")),
+    DirectoryInfo("xdg-cache", FAIL, _("other applications' cache files")),
+    DirectoryInfo("xdg-data", FAIL, _("other applications' data files")),
+]
+
+
 def _parse_fs_permission(perm: str) -> tuple[str, bool, bool, str | None]:
     """Parse flatpak filesystem permission string."""
     readonly = perm.endswith(":ro")
@@ -90,15 +99,7 @@ def _parse_fs_permission(perm: str) -> tuple[str, bool, bool, str | None]:
 def _check_dangerous_dirs(
     state: FlatpakPermissionsState, filesystems_rw_aliasmap: dict[str, str | None]
 ) -> None:
-    dangerous_dirs: list[DirectoryInfo] = [
-        DirectoryInfo("host", FAIL, _("all system files")),
-        DirectoryInfo("home", FAIL, _("all user files")),
-        DirectoryInfo("xdg-config", FAIL, _("other applications' configuration files")),
-        DirectoryInfo("xdg-cache", FAIL, _("other applications' cache files")),
-        DirectoryInfo("xdg-data", FAIL, _("other applications' data files")),
-    ]
-
-    for directory in dangerous_dirs:
+    for directory in DANGEROUS_DIRECTORY_CHECKS:
         dir_to_check = directory
         canon_path = dir_to_check.path
         if canon_path not in filesystems_rw_aliasmap:
@@ -138,39 +139,43 @@ def _check_hardened_malloc_access(
 def _check_overrides_access(
     state: FlatpakPermissionsState, filesystems_rw_aliasmap: dict[str, str | None]
 ) -> None:
+    if state.name in ARBITRARY_PERMISSIONS_EXPECTED:
+        return
     override_path = "xdg-data/flatpak/overrides"
-    if override_path in filesystems_rw_aliasmap:
-        state.arbitrary_permissions = True
-        override_path = filesystems_rw_aliasmap[override_path] or override_path
-        if state.name not in ARBITRARY_PERMISSIONS_EXPECTED:
-            note = Note(_("{0} can modify flatpak permissions.").format(state.name), status=FAIL)
-            rec_lines = (
-                _("The following flatpak app(s) can modify flatpak permissions:"),
-                Recommendation.NAMES_PLACEHOLDER,
-                _("This grants the ability to acquire arbitrary permissions."),
-                _("To remove this permission from an app, use Flatseal or run:"),
-                f"$ flatpak override -u --nofilesystem={override_path} com.example.Example",
-                _('(replacing "{0}" with the flatpak app ID)').format("com.example.Example"),
-            )
-            rec = Recommendation("\n".join(rec_lines), mergeable_name=state.name)
-            state.update(note=note, rec=rec)
+    if override_path not in filesystems_rw_aliasmap:
+        return
+    state.arbitrary_permissions = True
+    override_path = filesystems_rw_aliasmap[override_path] or override_path
+    note = Note(_("{0} can modify flatpak permissions.").format(state.name), status=FAIL)
+    rec_lines = (
+        _("The following flatpak app(s) can modify flatpak permissions:"),
+        Recommendation.NAMES_PLACEHOLDER,
+        _("This grants the ability to acquire arbitrary permissions."),
+        _("To remove this permission from an app, use Flatseal or run:"),
+        f"$ flatpak override -u --nofilesystem={override_path} com.example.Example",
+        _('(replacing "{0}" with the flatpak app ID)').format("com.example.Example"),
+    )
+    rec = Recommendation("\n".join(rec_lines), mergeable_name=state.name)
+    state.update(note=note, rec=rec)
 
 
 def check_fs_permissions(state: FlatpakPermissionsState, perms: Permissions) -> None:
     filesystems = perms.permissions.get("filesystems")
     filesystems_ro_aliasmap = {}
     filesystems_rw_aliasmap = {}
-    if filesystems is not None:
-        for perm in filesystems:
-            path, readonly, negated, aliased_path = _parse_fs_permission(perm)
-            if negated:
-                continue
-            if readonly:
-                filesystems_ro_aliasmap[path] = aliased_path
-            else:
-                filesystems_rw_aliasmap[path] = aliased_path
-        _check_dangerous_dirs(state, filesystems_rw_aliasmap)
-        _check_overrides_access(state, filesystems_rw_aliasmap)
+    if filesystems is None:
+        _check_hardened_malloc_access(state, filesystems, filesystems_rw_aliasmap, filesystems_ro_aliasmap)
+        return
+    for perm in filesystems:
+        path, readonly, negated, aliased_path = _parse_fs_permission(perm)
+        if negated:
+            continue
+        if readonly:
+            filesystems_ro_aliasmap[path] = aliased_path
+        else:
+            filesystems_rw_aliasmap[path] = aliased_path
+    _check_dangerous_dirs(state, filesystems_rw_aliasmap)
+    _check_overrides_access(state, filesystems_rw_aliasmap)
     _check_hardened_malloc_access(
         state, filesystems, filesystems_rw_aliasmap, filesystems_ro_aliasmap
     )

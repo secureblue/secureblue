@@ -74,7 +74,7 @@ def disable_always_upgrade_on_boot(currently_enabled: bool) -> int:
         return 0
     print_wrapped(f"""
         always-upgrade-on-boot is currently enabled.
-        Disabling it now by creating file '{ALWAYS_UPGRADE_ON_BOOT_STAMPFILE}'.
+        Disabling it now by deleting file '{ALWAYS_UPGRADE_ON_BOOT_STAMPFILE}'.
     """)
     exit_code = sandbox.run(stampfile_function, "delete", ALWAYS_UPGRADE_ON_BOOT_STAMPFILE)
     if exit_code == 0:

@@ -9,7 +9,7 @@
       "ghcr.io/blue-build/cli": [
         {
           "type": "sigstoreSigned",
-          "keyPath": "/usr/etc/pki/containers/bluebuild-cli.pub",
+          "keyPath": "/usr/share/pki/containers/bluebuild-cli.pub",
           "signedIdentity": {
             "type": "matchRepository"
           }
@@ -18,7 +18,7 @@
       "ghcr.io/blue-build/modules": [
         {
           "type": "sigstoreSigned",
-          "keyPath": "/usr/etc/pki/containers/bluebuild-modules.pub",
+          "keyPath": "/usr/share/pki/containers/bluebuild-modules.pub",
           "signedIdentity": {
             "type": "matchRepository"
           }
@@ -27,7 +27,7 @@
       "ghcr.io/sigstore/cosign": [
         {
           "type": "sigstoreSigned",
-          "keyPath": "/usr/etc/pki/containers/cosign-release.pub",
+          "keyPath": "/usr/share/pki/containers/cosign-release.pub",
           "signedIdentity": {
             "type": "exactRepository",
             "dockerRepository": "gcr.io/projectsigstore/cosign"
@@ -37,7 +37,7 @@
       "gcr.io/projectsigstore": [
         {
           "type": "sigstoreSigned",
-          "keyPath": "/usr/etc/pki/containers/cosign-release.pub",
+          "keyPath": "/usr/share/pki/containers/cosign-release.pub",
           "signedIdentity": {
             "type": "matchRepository"
           }
@@ -46,7 +46,7 @@
       "ghcr.io/wayblueorg": [
         {
           "type": "sigstoreSigned",
-          "keyPath": "/usr/etc/pki/containers/wayblueorg.pub",
+          "keyPath": "/usr/share/pki/containers/wayblueorg.pub",
           "signedIdentity": {
             "type": "matchRepository"
           }
@@ -55,7 +55,7 @@
       "ghcr.io/zelikos": [
         {
           "type": "sigstoreSigned",
-          "keyPath": "/usr/etc/pki/containers/davincibox.pub",
+          "keyPath": "/usr/share/pki/containers/davincibox.pub",
           "signedIdentity": {
             "type": "matchRepository"
           }
@@ -64,7 +64,7 @@
       "ghcr.io/jasonn3": [
         {
           "type": "sigstoreSigned",
-          "keyPath": "/usr/etc/pki/containers/build-container-installer.pub",
+          "keyPath": "/usr/share/pki/containers/build-container-installer.pub",
           "signedIdentity": {
             "type": "matchRepository"
           }
@@ -74,20 +74,20 @@
         {
           "type": "signedBy",
           "keyType": "GPGKeys",
-          "keyPath": "/usr/etc/pki/rpm-gpg/RPM-GPG-KEY-redhat-release"
+          "keyPath": "/etc/pki/rpm-gpg/RPM-GPG-KEY-redhat-release"
         }
       ],
       "registry.redhat.io": [
         {
           "type": "signedBy",
           "keyType": "GPGKeys",
-          "keyPath": "/usr/etc/pki/rpm-gpg/RPM-GPG-KEY-redhat-release"
+          "keyPath": "/etc/pki/rpm-gpg/RPM-GPG-KEY-redhat-release"
         }
       ],
       "quay.io/toolbx-images": [
         {
           "type": "sigstoreSigned",
-          "keyPath": "/usr/etc/pki/containers/quay.io-toolbx-images.pub",
+          "keyPath": "/usr/share/pki/containers/quay.io-toolbx-images.pub",
           "signedIdentity": {
             "type": "matchRepository"
           }
@@ -96,7 +96,7 @@
       "quay.io/fedora-ostree-desktops": [
         {
           "type": "sigstoreSigned",
-          "keyPath": "/usr/etc/pki/containers/quay.io-fedora-ostree-desktops.pub",
+          "keyPath": "/usr/share/pki/containers/quay.io-fedora-ostree-desktops.pub",
           "signedIdentity": {
             "type": "matchRepository"
           }
@@ -105,7 +105,7 @@
       "ghcr.io/ublue-os": [
         {
           "type": "sigstoreSigned",
-          "keyPath": "/usr/etc/pki/containers/ublue-os.pub",
+          "keyPath": "/usr/share/pki/containers/ublue-os.pub",
           "signedIdentity": {
             "type": "matchRepository"
           }
@@ -114,7 +114,7 @@
       "ghcr.io/freedomofpress/dangerzone": [
         {
           "type": "sigstoreSigned",
-          "keyPath": "/usr/etc/pki/containers/freedomofpress-dangerzone.pub",
+          "keyPath": "/usr/share/pki/containers/freedomofpress-dangerzone.pub",
           "signedIdentity": {
             "type": "matchRepository"
           }

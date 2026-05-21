@@ -67,7 +67,11 @@ body:
       options:
         - label: I agree to follow this project's [Code of Conduct](https://secureblue.dev/code-of-conduct).
           required: true
-        - label: I declare that this is not a request for alternate community messaging or social platforms.
+        - label: I agree to follow this project's [AI Content Policy](https://secureblue.dev/contributing#ai-content).
           required: true
-        - label: I declare that I have read the [secureblue website](https://secureblue.dev/#about) and my feature request is in-scope.
+        - label: I agree to comply with this project's [Legal Notice](https://secureblue.dev/contributing#legal-notice).
+          required: true
+        - label: I declare that this is not a request for alternative community messaging or social platforms.
+          required: true
+        - label: I declare that I have read the [bug report guidelines](https://secureblue.dev/contributing#reporting-bugs) and that my bug report is actionable.
           required: true

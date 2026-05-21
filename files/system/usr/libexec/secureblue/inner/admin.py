@@ -38,7 +38,11 @@ def main() -> int:
         stderr=sys.stderr,
     )
     if result.returncode != 0:
-        print("passwd has failed.")
+        print("passwd has failed, deleting the created user.")
+        result = subprocess.run(["/usr/sbin/userdel", new_username], check=False)
+        if result.returncode != 0:
+            print("Failed to delete newly created user.")
+
         return 1
 
     sudo_user = str(os.environ.get("SUDO_USER"))

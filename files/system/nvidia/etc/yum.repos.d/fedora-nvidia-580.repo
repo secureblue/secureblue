@@ -1,0 +1,39 @@
+[fedora-nvidia-580]
+name=negativo17 - Nvidia
+baseurl=https://negativo17.org/repos/nvidia-580/fedora-$releasever/$basearch/
+enabled=0
+priority=90
+skip_if_unavailable=1
+gpgcheck=1
+# gpgkey=https://negativo17.org/repos/RPM-GPG-KEY-slaanesh
+gpgkey=file:///usr/share/pki/rpm-gpg/RPM-GPG-KEY-slaanesh.gpg
+enabled_metadata=1
+metadata_expire=6h
+type=rpm-md
+repo_gpgcheck=0
+
+[fedora-nvidia-580-source]
+name=negativo17 - Nvidia - Source
+baseurl=https://negativo17.org/repos/nvidia-580/fedora-$releasever/SRPMS
+enabled=0
+skip_if_unavailable=1
+gpgcheck=1
+# gpgkey=https://negativo17.org/repos/RPM-GPG-KEY-slaanesh
+gpgkey=file:///usr/share/pki/rpm-gpg/RPM-GPG-KEY-slaanesh.gpg
+enabled_metadata=1
+metadata_expire=6h
+type=rpm-md
+repo_gpgcheck=0
+
+[fedora-nvidia-580-debug]
+name=negativo17 - Nvidia - Debug
+baseurl=https://negativo17.org/repos/nvidia-580/fedora-$releasever/$basearch.debug/
+enabled=0
+skip_if_unavailable=1
+gpgcheck=1
+# gpgkey=https://negativo17.org/repos/RPM-GPG-KEY-slaanesh
+gpgkey=file:///usr/share/pki/rpm-gpg/RPM-GPG-KEY-slaanesh.gpg
+enabled_metadata=1
+metadata_expire=6h
+type=rpm-md
+repo_gpgcheck=0

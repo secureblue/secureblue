@@ -39,6 +39,8 @@ BREW_TOGGLE_FUNCTION: Final[sandbox.SandboxedFunction] = sandbox.SandboxedFuncti
     "brew.py",
     read_write_paths=["/home/linuxbrew", "/etc/tmpfiles.d", "/etc/profile.d"],
     capabilities=["CAP_CHOWN", "CAP_DAC_OVERRIDE"],
+    allowed_syscalls=["@chown"],
+    remove_sandbox_arguments=["--property=ProcSubset="],  # needed for systemd-tmpfiles
 )
 
 

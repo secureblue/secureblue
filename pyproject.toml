@@ -65,4 +65,4 @@ pycodestyle.max-doc-length = 100
 "files/system/usr/libexec/secureblue/audit_secureblue.py" = ["ANN"]
 
 # Allow partial executable paths in subprocess invocations in this script.
-"files/po/update_po.py" = ["S607"]
+"tools/update_po.py" = ["S607"]

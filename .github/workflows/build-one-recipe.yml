@@ -42,7 +42,7 @@ jobs:
       id-token: write # Needed for token generation for signing
     steps:
       - name: Enable egress auditing
-        uses: step-security/harden-runner@58077d3c7e43986b6b15fba718e8ea69e387dfcc # v2.15.1
+        uses: step-security/harden-runner@a5ad31d6a139d249332a2605b85202e8c0b78450 # v2.19.1
         with:
           egress-policy: block
           allowed-endpoints: >
@@ -159,6 +159,7 @@ jobs:
             na.edge.kernel.org:443
             nnenix.mm.fcix.net:443
             nocix.mm.fcix.net:443
+            nullroute.mm.fcix.net:443
             ohioix.mm.fcix.net:443
             opencolo.mm.fcix.net:443
             ord.mirror.rackspace.com:443
@@ -173,6 +174,7 @@ jobs:
             southfront.mm.fcix.net:443
             stix.mm.fcix.net:443
             us.mirrors.cicku.me:443
+            veronanetworks.mm.fcix.net:443
             volico.mm.fcix.net:443
             yxeix.mm.fcix.net:443
             yycix.mm.fcix.net:443
@@ -218,7 +220,7 @@ jobs:
         env:
           KERNEL_PRIVKEY: ${{ secrets.KERNEL_PRIVKEY }}
         with:
-          cli_version: v0.9.32
+          cli_version: v0.9.33
           recipe: ${{ inputs.recipe }}
           cosign_private_key: ${{ secrets.SIGNING_SECRET }}
           registry_token: ${{ github.token }}

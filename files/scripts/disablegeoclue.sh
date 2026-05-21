@@ -9,8 +9,8 @@ set -euo pipefail
 echo "Disabling the location service"
 
 # Systemd service
-systemctl disable geoclue.service
-systemctl mask geoclue.service
+systemctl disable geoclue.service 2>/dev/null || true
+systemctl mask geoclue.service 2>/dev/null || true
 
 # Append "Hidden=true" to prevent GeoClue Demo Agent from auto-starting
 echo "Hidden=true" >> /etc/xdg/autostart/geoclue-demo-agent.desktop

@@ -9,6 +9,7 @@ on:
     branches:
       - live
       - staging
+      - next
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
@@ -31,6 +32,7 @@ jobs:
           executable_paths=(
             "files/system/usr/libexec/*.sh"
             "files/system/usr/libexec/secureblue/*"
+            "files/system/usr/libexec/secureblue/inner/*"
             "files/system/usr/bin/*"
             "files/system/kinoite/usr/libexec/secureblue/*"
             "files/system/desktop/usr/libexec/secureblue/*"

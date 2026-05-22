@@ -20,9 +20,8 @@ def main() -> int:
         print("MOTD enabled.")
 
     except FileNotFoundError:
-        if not (Path.home() / ".config").is_dir():
-            os.mkdir(Path.home() / ".config")
-        (Path.home() / ".config" / "no-show-user-motd").touch(exist_ok=False)
+        (Path.home() / ".config").mkdir(parents=True, exist_ok=True)
+        (Path.home() / ".config" / "no-show-user-motd").touch(exist_ok=True)
         print("MOTD disabled.")
 
     except OSError as e:

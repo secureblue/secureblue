@@ -1,0 +1,33 @@
+repos:
+  - repo: https://github.com/astral-sh/ruff-pre-commit
+    rev: 0c7b6c989466a93942def1f84baf36ddfcd60c83 # v0.15.14
+    hooks:
+      - id: ruff-check
+      - id: ruff-format
+
+  - repo: https://github.com/zizmorcore/zizmor-pre-commit
+    rev: 9257c6050c0261b8c57e712f632dc4a8010109a9 # v1.25.2
+    hooks:
+      - id: zizmor
+
+  - repo: local
+    hooks:
+      # ty doesn't have an official pre-commit hook yet, so we use a local hook.
+      - id: ty
+        name: ty check
+        description: "Python type checker: https://docs.astral.sh/ty/"
+        entry: ty check
+        language: system
+        types: [python]
+        pass_filenames: false
+
+      # We use a local hook rather than the official ShellCheck pre-commit hook
+      # because the official hook runs as a container image, which won't run on
+      # secureblue in the default system configuration.
+      - id: shellcheck
+        name: ShellCheck
+        description: "Shell script linter: https://www.shellcheck.net/"
+        entry: shellcheck
+        language: system
+        types: [text]
+        types_or: [bash, bats, shell]

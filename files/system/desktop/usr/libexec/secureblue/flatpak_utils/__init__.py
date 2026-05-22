@@ -10,7 +10,6 @@ Various utility functions used in secureblue flatpak scripts.
 
 import subprocess
 
-import inquirer
 from utils import command_stdout, print_wrapped
 
 
@@ -45,6 +44,9 @@ def resolve_app_id(provided: str, installed_app_ids: list[str]) -> str | None:
 
     if not matches:
         return None
+
+    # very slow import, so only load once needed
+    import inquirer  # noqa: PLC0415
 
     question = inquirer.List(
         "app_id", message="Did you mean one of the following? (Ctrl+C to cancel)", choices=matches

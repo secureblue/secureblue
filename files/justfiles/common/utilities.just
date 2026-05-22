@@ -34,7 +34,7 @@ enroll-secureblue-secure-boot-key:
     #! /bin/run0 /bin/bash
     mokutil --timeout -1
     echo 'The next line will prompt for a MOK password. Input "secureblue".'
-    mokutil --import /etc/pki/akmods/certs/akmods-secureblue.der
+    mokutil --import /usr/share/pki/akmods/certs/akmods-secureblue.der
     echo 'At next reboot, the mokutil UEFI menu UI will be displayed (*QWERTY* keyboard input and navigation).'
     echo 'Then, select "Enroll MOK", and input "secureblue" as the password.'
 
@@ -60,7 +60,7 @@ update-firmware:
 clean-system:
     #!/usr/bin/bash
     podman image prune -af
-    podman volume prune -f
+    podman volume prune
     if command -v flatpak &> /dev/null
     then
         flatpak uninstall --unused
@@ -442,7 +442,7 @@ install-vpn:
 
         xwayland_enabled="0"
         if [[ "$DE" == "gnome" ]]; then
-            if ! test -e "/etc/systemd/user/org.gnome.Shell@wayland.service.d/override.conf"; then
+            if ! test -e "/etc/systemd/user/org.gnome.Shell@user.service.d/override.conf"; then
                 xwayland_enabled="1"
             fi
         elif [[ "$DE" == "plasma" ]]; then

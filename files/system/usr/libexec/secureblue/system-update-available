@@ -1,0 +1,25 @@
+#!/usr/bin/bash
+
+# SPDX-FileCopyrightText: Copyright 2026 The Secureblue Authors
+#
+# SPDX-License-Identifier: Apache-2.0
+
+# Check if a system update is available. Exits with code 0 if an update is
+# available and 1 otherwise.
+
+# We use skopeo for this because `rpm-ostree upgrade --check` is unreliable:
+# https://github.com/coreos/rpm-ostree/issues/1579#issuecomment-4141760891
+
+set -euo pipefail
+
+deployment=$(rpm-ostree status --json | jq -cr '.deployments[0]')
+image_ref=$(jq -cr '."container-image-reference"' <<<"$deployment")
+image_ref="${image_ref#*:}"
+# Unsigned images don't have the "docker://" prefix, so we strip it here and add
+# it back in the `skopeo` command so this works for both signed and unsigned.
+image_ref="${image_ref#docker://}"
+digest=$(jq -cr '."container-image-reference-digest"' <<<"$deployment")
+
+# If the current digest is not equal to any of the digests in the latest
+# manifest list for the image ref, then an update is available.
+skopeo inspect --raw "docker://${image_ref}" | jq -e --arg digest "$digest" 'all(.manifests[]; .digest != $digest)' > /dev/null

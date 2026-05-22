@@ -10,7 +10,6 @@ modules:
         packages:
           - NetworkManager-tui
           - NetworkManager-openvpn
-          - cosmic-player
       remove:
         packages:
           - cosmic-store

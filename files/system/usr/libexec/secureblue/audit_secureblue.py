@@ -215,6 +215,19 @@ def audit_ptrace(state):
         case 3:
             status = PASS
             rec = None
+        case 2:
+            status = INFO
+            rec_lines = [
+                _("ptrace is allowed, but only for privileged users ({0}).").format(
+                    f"ptrace_scope = {ptrace_scope}"
+                ),
+                _("For more info on what this means, see:"),
+                "https://www.kernel.org/doc/html/latest/admin-guide/LSM/Yama.html",
+                _("To allow restricted ptrace, run:"),
+                "$ ujust toggle-ptrace-scope",
+                _("To forbid ptrace, run the above command twice."),
+            ]
+            rec = "\n".join(rec_lines)
         case 0:
             status = FAIL
             rec_lines = [
@@ -790,7 +803,7 @@ def audit_xwayland(state):
     match state["image"]:
         case Image.SILVERBLUE:
             de = _("GNOME")
-            path = "/etc/systemd/user/org.gnome.Shell@wayland.service.d/override.conf"
+            path = "/etc/systemd/user/org.gnome.Shell@user.service.d/override.conf"
         case Image.KINOITE:
             de = _("KDE Plasma")
             path = "/etc/systemd/user/plasma-kwin_wayland.service.d/override.conf"

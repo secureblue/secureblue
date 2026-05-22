@@ -17,8 +17,6 @@ import textwrap
 from collections.abc import Iterable, Sequence
 from pathlib import Path
 
-import rpm
-
 
 class ToggleMode(enum.StrEnum):
     """Valid mode for toggle script: 'on', 'off', 'status', or 'help'."""
@@ -197,6 +195,9 @@ def loaded_kernel_modules() -> frozenset[str]:
 
 def is_rpm_package_installed(name: str) -> bool:
     """Checks if the given RPM package is installed."""
+    # slow to import and causes CI issues, so only import here
+    import rpm  # noqa: PLC0415
+
     ts = rpm.TransactionSet()
     matches = ts.dbMatch("name", name)
     return len(matches) > 0

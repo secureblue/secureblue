@@ -11,7 +11,6 @@ import configparser
 import ipaddress
 import json
 import sys
-import textwrap
 from dataclasses import dataclass
 from enum import Enum, auto
 from pathlib import Path
@@ -19,10 +18,8 @@ from typing import Final
 from urllib.parse import urlparse
 
 import sandbox
-from utils import ask_option, ask_yes_no, interruptible_ask
+from utils import BOLD, RESET, ask_option, ask_yes_no, interruptible_ask, print_dedent
 
-RESET: Final[str] = "\033[0m"
-BOLD: Final[str] = "\033[1m"
 DNSCONFD_CONF_PATH: Final[Path] = Path("/etc/dnsconfd.conf")
 NM_GLOBALDNS_CONF_PATH: Final[Path] = Path("/etc/NetworkManager/conf.d/global-dns.conf")
 RESOLVCONF_PATH: Final[Path] = Path("/etc/resolv.conf")
@@ -41,15 +38,11 @@ dns_function = sandbox.SandboxedFunction(
 
 def ask_should_use_doh() -> bool:
     """Returns the user's preference for Trivalent DoH enforcement (yes = True, no = False)."""
-    print(
-        textwrap.dedent(
-            f"""
-            Would you like to enable DNS over HTTPS (DoH) in the Trivalent browser?
-            {BOLD}1. Enable:{RESET}  Send Trivalent's DNS queries to your chosen HTTPS endpoint.
-            {BOLD}2. Disable:{RESET} Use the same encrypted DNS as the rest of the system.
-            """
-        ).strip()
-    )
+    print_dedent(f"""
+        Would you like to enable DNS over HTTPS (DoH) in the Trivalent browser?
+        {BOLD}1. Enable:{RESET}  Send Trivalent's DNS queries to your chosen HTTPS endpoint.
+        {BOLD}2. Disable:{RESET} Use the same encrypted DNS as the rest of the system.
+    """)
     option = ask_option(2)
     return option == 1
 
@@ -57,17 +50,13 @@ def ask_should_use_doh() -> bool:
 def ask_should_validate_dnssec() -> bool:
     """Returns the user's preference for local DNSSEC validation (yes = True, no = False)."""
 
-    print(
-        textwrap.dedent(
-            f"""
-            Would you like to enable local DNSSEC validation?
-            {BOLD}1. Enable:{RESET}  Validate your chosen server's responses for all signed domains.
-               Uses the Internet's "root trust anchors" for zero-trust lookups.
-            {BOLD}2. Disable:{RESET} Trust your chosen nameserver to validate DNSSEC for you.
-               Our suggested servers validate DNSSEC, but custom providers may not.
-            """
-        ).strip()
-    )
+    print_dedent(f"""
+        Would you like to enable local DNSSEC validation?
+        {BOLD}1. Enable:{RESET}  Validate your chosen server's responses for all signed domains.
+            Uses the Internet's "root trust anchors" for zero-trust lookups.
+        {BOLD}2. Disable:{RESET} Trust your chosen nameserver to validate DNSSEC for you.
+            Our suggested servers validate DNSSEC, but custom providers may not.
+    """)
     option = ask_option(2)
     return option == 1
 
@@ -206,17 +195,13 @@ class DNSResolver(Enum):
 
 def ask_resolver() -> DNSResolver:
     """Asks for the user's choice of resolver."""
-    print(
-        textwrap.dedent(
-            f"""
-            Which DNS resolver would you like to use?
-            {BOLD}1. Unbound:{RESET}  Cache and prefetch DNS records for performance.
-               Typically more reliable and supports local DNSSEC validation.
-            {BOLD}2. resolved:{RESET} Use the Fedora default, systemd-resolved.
-               Better compatibility with some VPNs.
-            """
-        ).strip()
-    )
+    print_dedent(f"""
+        Which DNS resolver would you like to use?
+        {BOLD}1. Unbound:{RESET}  Cache and prefetch DNS records for performance.
+            Typically more reliable and supports local DNSSEC validation.
+        {BOLD}2. resolved:{RESET} Use the Fedora default, systemd-resolved.
+            Better compatibility with some VPNs.
+    """)
     option = ask_option(2)
     return DNSResolver.UNBOUND if option == 1 else DNSResolver.RESOLVED
 
@@ -227,34 +212,26 @@ def run_interactive() -> int:
     print_all_status()
     print()
 
-    print(
-        textwrap.dedent(
-            f"""
-            What DNS settings would you like to modify?
-            Press Ctrl+C to exit the script at any stage.
-            {BOLD}1. Reset to defaults.{RESET}
-               Uses the Unbound resolver with DNSSEC disabled.
-            {BOLD}2. Configure DNS over HTTPS in Trivalent.{RESET}
-               Masks your DNS queries as regular HTTPS requests when web browsing.
-            """
-        ).strip()
-    )
+    print_dedent(f"""
+        What DNS settings would you like to modify?
+        Press Ctrl+C to exit the script at any stage.
+        {BOLD}1. Reset to defaults.{RESET}
+            Uses the Unbound resolver with DNSSEC disabled.
+        {BOLD}2. Configure DNS over HTTPS in Trivalent.{RESET}
+            Masks your DNS queries as regular HTTPS requests when web browsing.
+    """)
     if DNSResolver.detect() != DNSResolver.UNBOUND:
         mode = ask_option(2)
     else:
-        print(
-            textwrap.dedent(
-                f"""
-                {BOLD}3. Configure DNSSEC.{RESET}
-                   Toggle local validation, to allow/block spoofed responses.
-                {BOLD}4. Configure global DNS.{RESET}
-                   Enforce secure DNS for all connections, including VPNs.
-                {BOLD}5. Change the resolver.{RESET}
-                   Switch from Unbound (usually more reliable, supports DNSSEC) to
-                   systemd-resolved for better compatibility with some VPNs.
-                """
-            ).strip()
-        )
+        print_dedent(f"""
+            {BOLD}3. Configure DNSSEC.{RESET}
+                Toggle local validation, to allow/block spoofed responses.
+            {BOLD}4. Configure global DNS.{RESET}
+                Enforce secure DNS for all connections, including VPNs.
+            {BOLD}5. Change the resolver.{RESET}
+                Switch from Unbound (usually more reliable, supports DNSSEC) to
+                systemd-resolved for better compatibility with some VPNs.
+        """)
         mode = ask_option(5)
 
     exit_code = 1

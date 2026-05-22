@@ -1,0 +1,158 @@
+#!/usr/bin/env bash
+
+# SPDX-FileCopyrightText: Copyright 2026 Commenter25
+#
+# SPDX-License-Identifier: Apache-2.0
+
+export LD_PRELOAD='libhardened_malloc.so'
+
+set -euo pipefail
+shopt -s nullglob
+declare -r args=("$@")
+
+declare -r name="BWRAP-SHIM"
+declare -r bwrap="/usr/bin/bwrap"
+declare -r debug=true # TODO: change to false
+
+scripts_dir="$(dirname "$0")/bwrap-shim-scripts"
+declare -r scripts_dir
+
+# shellcheck source=SCRIPTDIR/bwrap-shim-scripts/initialize-shared-variables.sh
+source "${scripts_dir}/initialize-shared-variables.sh"
+
+
+basic_checks() {
+	local -i check_success_count=0
+	for script in "${scripts_dir}"/check/*; do
+		# shellcheck source=/dev/null # doesn't seem to be a way to declare any name
+		source "${script}"
+	done
+
+	if (( check_success_count == 0 )); then
+		exec "${bwrap}" "${args[@]}" || exit 1
+	fi
+}
+basic_checks
+unset -f basic_checks
+
+
+declare -a bwrap_args child_args
+find_split() {
+	local -r is_option="-" # options always start with -
+	local last_arg_was_option=true current_arg
+	# break this loop when current_arg should be arguments for the child process
+	for i in "${!args[@]}"; do
+		current_arg="${args[i]}"
+
+		if [[ "${current_arg}" == "--" ]]; then
+			break # explicit end of arguments
+		fi
+
+		if [[ "${current_arg:0:1}" = "${is_option}" ]]; then
+			last_arg_was_option=true
+			continue # if next option is not an option, assume it's a value
+		fi
+
+		if [[ "${last_arg_was_option}" == false ]]; then
+			break # two non-options in a row, assume this one is a command
+		fi
+
+		last_arg_was_option=false
+	done
+
+	bwrap_args=( "${args[@]:0:i}" ) # start at beginning, return length of i
+	child_args=( "${args[@]:i}" ) # start at i, return from there to the end
+	if [[ "${debug}" = true ]]; then
+		echo
+		echo "${args[@]}"
+		echo "was split into"
+		echo "${bwrap_args[@]}"
+		echo "${child_args[@]}"
+		echo
+		ls -l /proc/self/fd/
+		echo
+	fi
+}
+find_split
+unset -f find_split
+declare -r bwrap_args child_args
+
+
+declare flatpak_name
+# made accessible for scripts to use, but which is available is up in the air
+declare metadata_file="" app_folder=""
+find_flatpak_name() {
+	local -i i
+	local fd path
+	local -r runtime_folder_glob="*/flatpak/runtime/*"
+	local -r app_folder_glob="*/flatpak/app/*/files"
+	local -r metadata_file_glob="*/.flatpak/*/info"
+	local -r name_property="name="
+	for fd in /proc/self/fd/*; do
+		# skip stdio and bash tty
+		i=$(basename "${fd}")
+		(( i > 3 && i != 255 )) || continue
+
+		path=$(readlink -f "${fd}")
+
+		if [[ "${debug}" = true ]]; then
+			echo
+			echo "##### File Descriptor: ${i}"
+			echo "##### True Path: ${path}"
+		fi
+
+		# shellcheck disable=SC2053 # deliberate glob matching
+		[[ "${path}" != ${runtime_folder_glob} ]] || continue
+
+		if [[ "${debug}" = true ]]; then
+			if [[ -d ${fd} ]]; then
+				ls -l "${path}"
+			elif [[ -f ${fd} ]]; then
+				timeout 0.5s cat "${fd}" || true
+			fi
+			echo -e "\n##########"
+		fi
+
+		# shellcheck disable=SC2053
+		if [[ "${path}" = ${app_folder_glob} ]]; then
+			app_folder="${path}"
+			flatpak_name=$(jq --raw-output -- '.id' "${path}/manifest.json")
+			break
+		fi
+		# shellcheck disable=SC2053
+		if [[ "${path}" = ${metadata_file_glob} ]]; then
+			metadata_file="${path}"
+			flatpak_name=$(grep "${name_property}" "${path}")
+			flatpak_name=${flatpak_name#"${name_property}"} # removes prefix
+			break
+		fi
+	done
+
+	if [[ -z "${flatpak_name-}" ]]; then
+		echo "${name}: Couldn't find Flatpak ID, defaulting to restrictive behavior"
+		flatpak_name=""
+	elif [[ "${debug}" = true ]]; then
+		echo "${name}: App name is ${flatpak_name}"
+	fi
+}
+find_flatpak_name
+unset -f find_flatpak_name
+# shellcheck disable=SC2034 # vars for use by sourced scripts
+declare -r flatpak_name metadata_file app_folder
+
+
+declare -a extra_bwrap_args=()
+for script in "${scripts_dir}"/execute/*; do
+	# shellcheck source=/dev/null # doesn't seem to be a way to declare any name
+	source "${script}"
+done
+declare -r extra_bwrap_args
+
+
+declare -r flatpak_bwrap_shim_final_command=(
+	"${bwrap}" "${bwrap_args[@]}" "${extra_bwrap_args[@]}" "${child_args[@]}"
+)
+if [[ "${debug}" = true ]]; then
+	echo "${name}: Executing ${flatpak_bwrap_shim_final_command[*]}"
+fi
+exec "${flatpak_bwrap_shim_final_command[@]}"

@@ -183,7 +183,7 @@ toggle-bash-environment-lockdown skip_approval="false" apply_for_all_users="prom
     elif [[ "{{ apply_for_all_users }}" == "true" ]]; then
         user_list_lookup
     else
-        echo 'Invalid apply_for_all_users arguement, only "true", "false", or empty allowed.'
+        echo 'Invalid apply_for_all_users argument, only "true", "false", or empty allowed.'
         exit
     fi
 
@@ -191,8 +191,8 @@ toggle-bash-environment-lockdown skip_approval="false" apply_for_all_users="prom
         echo "Applying for user: $user"
         user_home="$(getent passwd "$user" | awk -F':' '{ print $6}')"
         [ -d "$user_home" ] || { echo "Variable \$user_home for $user is somehow empty (check your getent passwd entries)"; echo "safely exiting."; exit 1; }
-        xdg_config="$(run0 -i --user="$user" printenv XDG_CONFIG_HOME)"
-        user_config=${xdg_config:-"$user_home/.config"}
+        xdg_config="$(run0 -i --user="${user}" printenv XDG_CONFIG_HOME || true)"
+        user_config="${xdg_config:-"${user_home}/.config"}"
 
         BASH_ENV_FILES=(
             "$user_home/.bashrc"

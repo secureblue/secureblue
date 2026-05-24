@@ -184,7 +184,9 @@ def is_rpm_package_installed(name: str) -> bool:
     return len(matches) > 0
 
 
-def logout() -> None:
+def logout(prompt: str | None = None) -> None:
+    if prompt is not None and ask_yes_no(prompt) is False:
+        return
     match Image.from_image_ref(booted_image_ref()):
         case Image.SERICEA:
             subprocess.run(

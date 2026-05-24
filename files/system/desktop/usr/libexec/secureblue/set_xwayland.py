@@ -14,10 +14,9 @@ from typing import Final
 from utils import (
     CommandUsageError,
     Image,
-    logout,
-    ask_yes_no,
     ToggleMode,
     booted_image_ref,
+    logout,
     parse_basic_toggle_args,
 )
 
@@ -85,8 +84,7 @@ def run(mode: ToggleMode) -> int:
                 subprocess.run(
                     ["/usr/bin/run0", "/usr/bin/rm", "-f", "--", override_file], check=True
                 )
-                if ask_yes_no(prompt=logout_prompt):
-                    logout()
+                logout(prompt=logout_prompt)
         case ToggleMode.OFF:
             if enabled:
                 subprocess.run(
@@ -100,8 +98,7 @@ def run(mode: ToggleMode) -> int:
                     ],
                     check=True,
                 )
-                if ask_yes_no(prompt=logout_prompt):
-                    logout()
+                logout(prompt=logout_prompt)
             else:
                 print(f"Xwayland for {de_name} is already disabled.")
 

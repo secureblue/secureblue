@@ -10,19 +10,21 @@ Toggle display of the user-motd in terminal
 
 import os
 import sys
-from pathlib import Path
+
+from utils import get_config_dir
 
 
 # Extra parentheses added so python doesn't check the individual string instead of the path
 def main() -> int:
+    config_dir = get_config_dir()
+    no_show_path = config_dir / "no-show-user-motd"
+
     try:
-        os.remove(Path.home() / ".config" / "no-show-user-motd")
+        os.remove(no_show_path)
         print("MOTD enabled.")
 
     except FileNotFoundError:
-        if not (Path.home() / ".config").is_dir():
-            os.mkdir(Path.home() / ".config")
-        (Path.home() / ".config" / "no-show-user-motd").touch(exist_ok=False)
+        no_show_path.touch(exist_ok=False)
         print("MOTD disabled.")
 
     except OSError as e:

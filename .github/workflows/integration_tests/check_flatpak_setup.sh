@@ -39,7 +39,8 @@ sleep 20
 
 state=$(systemctl --user show "${service_name}" --property=ActiveState | sed 's/^ActiveState=//')
 
-if [ -e "$HOME/.config/secureblue/secureblue-flatpak-setup.stamp" ]; then
+config_dir=${XDG_CONFIG_HOME:-"$HOME/.config"}
+if [ -e "$config_dir/secureblue/secureblue-flatpak-setup.stamp" ]; then
     echo "${service_name} has successfully completed."
     check-flatpak-remotes
     check-installed-flatpaks

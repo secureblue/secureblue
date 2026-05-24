@@ -9,15 +9,18 @@
 import os
 import subprocess
 import sys
-from typing import Final
+from typing import TYPE_CHECKING, Final
 
-from utils import (
-    CommandUsageError,
-    Image,
-    ToggleMode,
-    booted_image_ref,
-    parse_basic_toggle_args,
-)
+if TYPE_CHECKING:
+    from files.system.usr.libexec.secureblue import utils
+else:
+    import utils
+
+CommandUsageError: Final = utils.CommandUsageError
+Image: Final = utils.Image
+ToggleMode: Final = utils.ToggleMode
+booted_image_ref: Final = utils.booted_image_ref
+parse_basic_toggle_args: Final = utils.parse_basic_toggle_args
 
 XWAYLAND_OVERRIDE_FILES: Final[dict[Image, str]] = {
     Image.SILVERBLUE: "/etc/systemd/user/org.gnome.Shell@user.service.d/override.conf",

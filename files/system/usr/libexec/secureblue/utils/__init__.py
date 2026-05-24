@@ -127,7 +127,7 @@ def print_err(text: str) -> None:
     print(f"\x1b[1m\x1b[31m{text}\x1b[0m", file=sys.stderr)
 
 
-def command_stdout(*args: str, check: bool = True) -> str:
+def command_stdout(*args: str | Path, check: bool = True) -> str:
     """Run a command in the shell and return the contents of stdout."""
     # We only call this with trusted inputs and do not set shell=True.
     # nosemgrep: dangerous-subprocess-use-audit
@@ -198,7 +198,7 @@ def is_rpm_package_installed(name: str) -> bool:
     # slow to import and causes CI issues, so only import here
     import rpm  # noqa: PLC0415
 
-    ts = rpm.TransactionSet()
+    ts = rpm.TransactionSet()  # ty: ignore[unresolved-attribute]
     matches = ts.dbMatch("name", name)
     return len(matches) > 0
 

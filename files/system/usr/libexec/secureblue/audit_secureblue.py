@@ -15,7 +15,6 @@ import filecmp
 import getpass
 import glob
 import os
-import os.path
 import signal
 import stat
 
@@ -23,6 +22,7 @@ import stat
 import subprocess
 import sys
 import traceback
+from pathlib import Path
 from typing import Final
 
 import kargs_hardening_common
@@ -803,16 +803,16 @@ def audit_xwayland(state):
     match state["image"]:
         case Image.SILVERBLUE:
             de = _("GNOME")
-            path = "/etc/systemd/user/org.gnome.Shell@user.service.d/override.conf"
+            override_path = Path("/etc/systemd/user/org.gnome.Shell@user.service.d/override.conf")
         case Image.KINOITE:
             de = _("KDE Plasma")
-            path = "/etc/systemd/user/plasma-kwin_wayland.service.d/override.conf"
+            override_path = Path("/etc/systemd/user/plasma-kwin_wayland.service.d/override.conf")
         case Image.SERICEA:
             de = _("Sway")
-            path = "/etc/sway/config.d/99-noxwayland.conf"
+            override_path = Path("/etc/sway/config.d/99-noxwayland.conf")
         case _:
             return
-    if os.path.isfile(path):
+    if override_path.is_file():
         status = PASS
         rec = None
     else:
@@ -1053,23 +1053,21 @@ def audit_secureboot():
 @audit
 def audit_bash_env_lockdown():
     """Ensure the current user's bash environment is locked down."""
+    home_dir = Path.home()
+    config_dir = get_config_dir()
     bash_env_paths = [
-        "~/.bashrc",
-        "~/.bash_profile",
-        "~/.profile",
-        "~/.bash_logout",
-        "~/.bash_login",
-        "~/.bashrc.d/",
-        "xdg-config/bash_completion",
-        "xdg-config/environment.d/",
+        home_dir / ".bashrc",
+        home_dir / ".bash_profile",
+        home_dir / ".profile",
+        home_dir / ".bash_logout",
+        home_dir / ".bash_login",
+        home_dir / ".bashrc.d",
+        config_dir / "bash_completion",
+        config_dir / "environment.d",
     ]
-    config_dir = str(get_config_dir())
-    bash_env_paths = [p.replace("xdg-config", config_dir) for p in bash_env_paths]
-    bash_env_paths_map = map(os.path.expanduser, bash_env_paths)
-
     unlocked_files = []
-    for path in bash_env_paths_map:
-        if not os.path.exists(path) or (not os.path.isfile(path) and not os.path.isdir(path)):
+    for path in bash_env_paths:
+        if not path.exists() or (not path.is_file() and not path.is_dir()):
             unlocked_files.append(path)
         else:
             try:
@@ -1083,7 +1081,7 @@ def audit_bash_env_lockdown():
         rec_lines = [
             _("Bash environment is not locked down."),
             _("The following files do not appear to be immutable or do not exist:"),
-            *unlocked_files,
+            *(str(path) for path in unlocked_files),
             _("To fix this, run:"),
             "$ ujust toggle-bash-environment-lockdown",
         ]
@@ -1174,26 +1172,29 @@ def audit_webcam_module():
             if f.read().strip() == "install uvcvideo /bin/false":
                 if is_module_loaded("uvcvideo"):
                     status = INFO
-                    rec_lines = [
-                        _("Webcam module is blacklisted in {0} but is still enabled.").format(
-                            webcam_mod_file
-                        ),
-                        _("To disable it, you must reboot."),
-                    ]
+                    rec = "\n".join(
+                        [
+                            _("Webcam module is blacklisted in {0} but is still enabled.").format(
+                                webcam_mod_file
+                            ),
+                            _("To disable it, you must reboot."),
+                        ]
+                    )
                 else:
                     status = PASS
     except FileNotFoundError:
         status = INFO
-        rec_lines = [
-            _("Webcam module is enabled."),
-            _("To disable it, run:"),
-            "$ ujust set-webcam-modules off",
-        ]
+        rec = "\n".join(
+            [
+                _("Webcam module is enabled."),
+                _("To disable it, run:"),
+                "$ ujust set-webcam-modules off",
+            ]
+        )
     except PermissionError:
         note = Note(_("Unable to read file {0}.").format(webcam_mod_file), UNKNOWN)
 
     if status == INFO:
-        rec = "\n".join(rec_lines)
         note = Note(_("Webcam module is enabled."), INFO)
 
     yield Report(_("Checking whether webcam module is disabled"), status, notes=note, recs=rec)

@@ -18,7 +18,7 @@ import textwrap
 from typing import Final
 
 from auditor import AuditError, Status, gettext_marker
-from utils import print_err
+from utils import get_config_dir, print_err
 
 from .containers import ContainersPolicyAudit
 
@@ -145,14 +145,9 @@ def analyze_active_container_policy() -> tuple[ContainersPolicyAudit, str]:
     Analyze active containers policy. Returns the results of the analysis and
     the path of the policy file.
     """
-    system_policy_file = "/etc/containers/policy.json"
-    local_override = "~/.config/containers/policy.json"
-    local_override_file = os.path.expanduser(local_override)
-    if os.path.exists(local_override_file):
-        policy_file = local_override_file
-        path_str = local_override
-    else:
-        policy_file = system_policy_file
-        path_str = system_policy_file
+    policy_file = "/etc/containers/policy.json"
+    local_override_file = get_config_dir() / "containers/policy.json"
+    if local_override_file.exists():
+        policy_file = str(local_override_file)
 
-    return ContainersPolicyAudit.from_file(policy_file), path_str
+    return ContainersPolicyAudit.from_file(policy_file), policy_file

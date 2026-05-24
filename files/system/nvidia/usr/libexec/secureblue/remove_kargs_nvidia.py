@@ -7,8 +7,15 @@
 """Remove Nvidia-specific kernel arguments."""
 
 import sys
+from typing import TYPE_CHECKING, Final
 
-from kargs_hardening_common import IMAGE_NVIDIA_KARGS, apply_kargs
+if TYPE_CHECKING:
+    from files.system.usr.libexec.secureblue import kargs_hardening_common
+else:
+    import kargs_hardening_common
+
+IMAGE_NVIDIA_KARGS: Final = kargs_hardening_common.IMAGE_NVIDIA_KARGS
+apply_kargs: Final = kargs_hardening_common.apply_kargs
 
 
 def main() -> int:

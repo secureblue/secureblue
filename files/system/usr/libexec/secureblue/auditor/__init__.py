@@ -14,7 +14,7 @@ import gettext
 import inspect
 import json
 from collections.abc import AsyncGenerator, Callable, Generator, Sequence
-from typing import Any, ClassVar, Final, Self
+from typing import Any, ClassVar, Final, Self, assert_never
 
 
 def gettext_marker() -> Callable[[str], str]:
@@ -51,8 +51,8 @@ class Status(enum.Enum):
                 return _("FAIL")
             case Status.UNKNOWN:
                 return _("UNKNOWN")
-            case _:
-                raise ValueError(f"Invalid enum value: {self}")
+            case _ as unreachable:
+                assert_never(unreachable)
 
     def to_str_in_color(self) -> str:
         """Colored text representation of the status."""
@@ -340,7 +340,7 @@ def make_check(
         return f
     stateful = bool(len(inspect.signature(f).parameters))
     if inspect.isasyncgenfunction(f):
-        return Check(name=f.__name__, callback=f, stateful=stateful)
+        return Check(name=getattr(f, "__name__", "<anonymous>"), callback=f, stateful=stateful)
 
     if inspect.isgeneratorfunction(f):
 
@@ -348,7 +348,9 @@ def make_check(
             for item in f(*args, **kwargs):
                 yield item
 
-        return Check(name=f.__name__, callback=f_async, stateful=stateful)
+        return Check(
+            name=getattr(f, "__name__", "<anonymous>"), callback=f_async, stateful=stateful
+        )
 
     raise TypeError("invalid input to make_check")
 

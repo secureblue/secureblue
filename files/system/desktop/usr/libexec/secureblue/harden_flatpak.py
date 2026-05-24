@@ -10,10 +10,17 @@ import os
 import re
 import subprocess
 import sys
-from typing import Final
+from typing import TYPE_CHECKING, Final
 
 import inquirer
-from utils import command_stdout, print_wrapped
+
+if TYPE_CHECKING:
+    from files.system.usr.libexec.secureblue import utils
+else:
+    import utils
+
+command_stdout: Final = utils.command_stdout
+print_wrapped: Final = utils.print_wrapped
 
 DESCRIPTION: Final[str] = """
 Harden flatpaks by preloading hardened_malloc, using the highest supported

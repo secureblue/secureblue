@@ -52,6 +52,7 @@ from utils import (
     booted_image_ref,
     command_stdout,
     command_succeeds,
+    get_config_dir,
     is_module_loaded,
     is_using_vpn,
     loaded_kernel_modules,
@@ -1052,21 +1053,22 @@ def audit_secureboot():
 @audit
 def audit_bash_env_lockdown():
     """Ensure the current user's bash environment is locked down."""
-    bash_env_paths = map(
-        os.path.expanduser,
-        [
-            "~/.bashrc",
-            "~/.bash_profile",
-            "~/.config/bash_completion",
-            "~/.profile",
-            "~/.bash_logout",
-            "~/.bash_login",
-            "~/.bashrc.d/",
-            "~/.config/environment.d/",
-        ],
-    )
+    bash_env_paths = [
+        "~/.bashrc",
+        "~/.bash_profile",
+        "~/.profile",
+        "~/.bash_logout",
+        "~/.bash_login",
+        "~/.bashrc.d/",
+        "xdg-config/bash_completion",
+        "xdg-config/environment.d/",
+    ]
+    config_dir = str(get_config_dir())
+    bash_env_paths = [p.replace("xdg-config", config_dir) for p in bash_env_paths]
+    bash_env_paths_map = map(os.path.expanduser, bash_env_paths)
+
     unlocked_files = []
-    for path in bash_env_paths:
+    for path in bash_env_paths_map:
         if not os.path.exists(path) or (not os.path.isfile(path) and not os.path.isdir(path)):
             unlocked_files.append(path)
         else:

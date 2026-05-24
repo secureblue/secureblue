@@ -15,5 +15,6 @@ scripts:
   - disablenfsdaemons.sh
   - disablesssd.sh
   - disableunconfinedrootfulservices.sh
+  - disableiscsidaemons.sh
   - setplymouththemetext.sh
   - setfirewalldefaultzone.sh

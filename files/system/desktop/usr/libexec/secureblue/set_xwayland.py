@@ -79,7 +79,7 @@ def run(mode: ToggleMode) -> int:
 
     match mode:
         case ToggleMode.STATUS:
-            print("enabled" if enabled else "disabled")
+            print("enabled" if current_mode_enabled else "disabled")
         case ToggleMode.ON:
             if current_mode_enabled:
                 print(f"Xwayland for {de_name} is already enabled.")

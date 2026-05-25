@@ -208,9 +208,7 @@ def logout(prompt: str | None = None) -> None:
         return
     match Image.from_image_ref(booted_image_ref()):
         case Image.SERICEA:
-            subprocess.run(
-                ["/usr/sbin/swaymsg", "exit"], check=True
-            )
+            subprocess.run(["/usr/sbin/swaymsg", "exit"], check=True)
         case Image.KINOITE:
             subprocess.run(
                 ["/usr/bin/qdbus-qt6", "org.kde.Shutdown", "/Shutdown", "logout"], check=True
@@ -218,9 +216,7 @@ def logout(prompt: str | None = None) -> None:
         case _:
             result = subprocess.run(["/usr/bin/whoami"], check=True, capture_output=True, text=True)
             user = result.stdout.strip()
-            subprocess.run(
-                ["/usr/bin/loginctl", "terminate-user", user], check=True
-            )
+            subprocess.run(["/usr/bin/loginctl", "terminate-user", user], check=True)
 
 
 def is_using_vpn() -> bool:

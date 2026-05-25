@@ -73,8 +73,8 @@ def run(mode: ToggleMode) -> int:
     enabled = not os.path.exists(override_file)
     mode_changed = "disabled" if enabled else "enabled"
     logout_prompt = (
-            f"Xwayland for {de_name} has been {mode_changed}. "
-            "Would you like to logout now for this to take effect?"
+        f"Xwayland for {de_name} has been {mode_changed}. "
+        "Would you like to logout now for this to take effect?"
     )
 
     match mode:

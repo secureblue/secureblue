@@ -70,10 +70,10 @@ def run(mode: ToggleMode) -> int:
 
     override_file = XWAYLAND_OVERRIDE_FILES[image]
     de_name = DE_NAMES[image]
-    enabled = not os.path.exists(override_file)
-    mode_changed = "disabled" if enabled else "enabled"
+    current_mode_enabled = not os.path.exists(override_file)
+    new_mode = "disabled" if current_mode_enabled else "enabled"
     logout_prompt = (
-        f"Xwayland for {de_name} has been {mode_changed}. "
+        f"Xwayland for {de_name} has been {new_mode}. "
         "Would you like to logout now for this to take effect?"
     )
 
@@ -81,7 +81,7 @@ def run(mode: ToggleMode) -> int:
         case ToggleMode.STATUS:
             print("enabled" if enabled else "disabled")
         case ToggleMode.ON:
-            if enabled:
+            if current_mode_enabled:
                 print(f"Xwayland for {de_name} is already enabled.")
             else:
                 subprocess.run(
@@ -89,7 +89,7 @@ def run(mode: ToggleMode) -> int:
                 )
                 logout(prompt=logout_prompt)
         case ToggleMode.OFF:
-            if enabled:
+            if current_mode_enabled:
                 subprocess.run(
                     [
                         "/usr/bin/run0",

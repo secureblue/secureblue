@@ -61,11 +61,11 @@ msgstr "Asegurando que no hayan sobreescrituras de sysctl"
 #: files/system/usr/libexec/secureblue/audit_secureblue.py:167
 #, fuzzy
 msgid "The current image is not signed."
-msgstr "El usuario actual está en el grupo wheel."
+msgstr "La imagen actual no esta firmada"
 
 #: files/system/usr/libexec/secureblue/audit_secureblue.py:168
 msgid "To rebase to a signed image, run the following command:"
-msgstr ""
+msgstr "Para cambiar su base a una imagen firmada, ejectute el siguiente comando:"
 
 #: files/system/usr/libexec/secureblue/audit_secureblue.py:172
 msgid "Ensuring a signed image is in use"
@@ -83,7 +83,7 @@ msgstr "Asegurando que no hayan sobreescrituras de modprobe"
 #: files/system/usr/libexec/secureblue/audit_secureblue.py:220
 #, fuzzy, python-brace-format
 msgid "ptrace is allowed, but only for privileged users ({0})."
-msgstr "ptrace está permitido, pero de forma restringida ({0})."
+msgstr "ptrace está permitido, pero solo para usuarios privilegiados ({0})."
 
 #: files/system/usr/libexec/secureblue/audit_secureblue.py:223
 #: files/system/usr/libexec/secureblue/audit_secureblue.py:234
@@ -99,8 +99,8 @@ msgstr "Para prohibir ptrace, ejecute:"
 #: files/system/usr/libexec/secureblue/audit_secureblue.py:227
 #, fuzzy
 msgid "To forbid ptrace, run the above command twice."
-msgstr ""
-"Para permitir ptrace restringido, ejecute el comando de arriba doble vez."
+msgstr "Para prohibir ptrace, ejecute el comando de arriba dos veces."
+
 
 #: files/system/usr/libexec/secureblue/audit_secureblue.py:233
 #, python-brace-format
@@ -115,7 +115,7 @@ msgstr "Para prohibir ptrace, ejecute:"
 #: files/system/usr/libexec/secureblue/audit_secureblue.py:238
 msgid "To allow restricted ptrace, run the above command twice."
 msgstr ""
-"Para permitir ptrace restringido, ejecute el comando de arriba doble vez."
+"Para permitir ptrace restringido, ejecute el comando de arriba dos veces."
 
 #: files/system/usr/libexec/secureblue/audit_secureblue.py:244
 #, python-brace-format
@@ -136,7 +136,7 @@ msgstr "El archivo {0} ha sido modificado."
 #: files/system/usr/libexec/secureblue/audit_secureblue.py:272
 #, python-brace-format
 msgid "Container policy has a local override at {0}."
-msgstr ""
+msgstr "La política de contenedores tiene una sobreescritura en {0}"
 
 #: files/system/usr/libexec/secureblue/audit_secureblue.py:276
 #: files/system/usr/libexec/secureblue/audit_secureblue.py:312
@@ -146,12 +146,12 @@ msgstr "Asegurando que no hayan sobreescrituras de políticas de contenedores"
 
 #: files/system/usr/libexec/secureblue/audit_secureblue.py:281
 msgid "The default container policy is insecure."
-msgstr ""
+msgstr "La política de contenedores por defecto is insegura."
 
 #: files/system/usr/libexec/secureblue/audit_secureblue.py:290
 #, python-brace-format
 msgid "The default container policy for transport '{0}' is insecure."
-msgstr ""
+msgstr "La política de contenedores para transporte '{0}' es insegura."
 
 #: files/system/usr/libexec/secureblue/audit_secureblue.py:306
 #, python-brace-format
@@ -206,7 +206,7 @@ msgid ""
 "Caution: if you have already set up USBGuard, this will overwrite the "
 "existing policy."
 msgstr ""
-"Precaución: si ya tiene activado USBGuard, esto sobreescribirá la política "
+"Precaución: si ya tiene USBGuard activado, esto sobreescribirá la política "
 "existente."
 
 #: files/system/usr/libexec/secureblue/audit_secureblue.py:372
@@ -270,7 +270,7 @@ msgstr "Considere usar la conexión global DNS segura."
 
 #: files/system/usr/libexec/secureblue/audit_secureblue.py:453
 msgid "The secure DNS resolver is not in use, possibly for a VPN."
-msgstr ""
+msgstr "El resolvedor de DNS seguro no esta en uso, posible por un VPN"
 
 #: files/system/usr/libexec/secureblue/audit_secureblue.py:457
 msgid "To view or reset your current DNS configuration, run:"
@@ -288,11 +288,11 @@ msgstr ""
 
 #: files/system/usr/libexec/secureblue/audit_secureblue.py:479
 msgid "Using a VPN alongside Unbound without Global DNS may cause DNS leaks."
-msgstr ""
+msgstr 
 
 #: files/system/usr/libexec/secureblue/audit_secureblue.py:484
 msgid "If you use a VPN, switch your DNS resolver to systemd-resolved:"
-msgstr ""
+msgstr "Si usa un VPN, cambie su resolvedor de DNS a systemd-resolved:"
 
 #: files/system/usr/libexec/secureblue/audit_secureblue.py:494
 msgid "Ensuring system DNS resolution is secure"

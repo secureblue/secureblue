@@ -844,7 +844,7 @@ def audit_thumbnailing(state):
             )
         case Image.KINOITE:
             de = _("KDE Plasma")
-            dolphinrc_file = Path.home() / ".config/dolphinrc" 
+            dolphinrc_file = Path.home() / ".config/dolphinrc"
             if dolphinrc_file.exists():
                 config = configparser.ConfigParser()
                 config.read(dolphinrc_file)

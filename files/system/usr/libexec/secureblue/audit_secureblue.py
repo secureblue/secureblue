@@ -852,7 +852,7 @@ def audit_thumbnailing(state):
                 thumbnailing_disabled = thumbnail_plugins == ""
         case Image.SERICEA:
             de = _("Sway")
-            if command_succeeds("systemctl", "is-enabled", "--quiet", "--user", "tumblerd.service"):
+            if not command_succeeds("systemctl", "is-enabled", "--quiet", "--user", "tumblerd.service"):
                 thumbnailing_disabled = True
         case Image.COSMIC:
             de = _("COSMIC")

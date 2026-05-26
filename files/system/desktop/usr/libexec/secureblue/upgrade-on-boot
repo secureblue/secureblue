@@ -28,7 +28,7 @@ if grep -q "local rpm-ostree modifications" <<< "$BOOTC_UPGRADE_CHECK_OUTPUT"; t
     plymouth message --text="Staging update... $CANCEL_STRING"
     if ! /usr/libexec/secureblue/verify-provenance.sh; 
         echo "$PROVENANCE_FAILURE_STRING"
-        exit 0
+        exit 1
     fi
 
     rpm-ostree upgrade
@@ -47,7 +47,7 @@ else
 
     if ! /usr/libexec/secureblue/verify-provenance.sh; 
         echo "$PROVENANCE_FAILURE_STRING"
-        exit 0
+        exit 1
     fi
 
     echo "Update available, proceeding"

@@ -13,7 +13,6 @@ ExecStart=/usr/bin/sh -c '/usr/bin/flatpak --system uninstall --unused -y --noni
 RestartSec=1h
 Restart=on-failure
 
-AmbientCapabilities=
 CapabilityBoundingSet=
 DevicePolicy=closed
 # 'ExecCondition' requires access to /run/dbus/

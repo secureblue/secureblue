@@ -3,15 +3,15 @@
 # SPDX-License-Identifier: Apache-2.0
 
 modules:
-    - type: files
-      source: ghcr.io/blue-build/modules@sha256:d0e85328fcfa4182c33d3920854001d0b7efbbd341ed6f45bc1ec26c0751889d
-      files:
-        - source: system/desktop
-          destination: /
-    - from-file: common/desktop-packages.yml
-    - from-file: common/desktop-scripts.yml
-    - type: justfiles
-      source: ghcr.io/blue-build/modules@sha256:d0e85328fcfa4182c33d3920854001d0b7efbbd341ed6f45bc1ec26c0751889d
-      validate: true
-      include:
-        - desktop
+  - type: files
+    source: ghcr.io/blue-build/modules@sha256:d0e85328fcfa4182c33d3920854001d0b7efbbd341ed6f45bc1ec26c0751889d
+    files:
+      - source: system/desktop
+        destination: /
+  - from-file: common/desktop-packages.yml
+  - from-file: common/desktop-scripts.yml
+  - type: justfiles
+    source: ghcr.io/blue-build/modules@sha256:d0e85328fcfa4182c33d3920854001d0b7efbbd341ed6f45bc1ec26c0751889d
+    validate: true
+    include:
+      - desktop

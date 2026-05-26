@@ -3,51 +3,51 @@
 # SPDX-License-Identifier: Apache-2.0
 
 modules:
-    - type: dnf
-      source: ghcr.io/blue-build/modules@sha256:d0e85328fcfa4182c33d3920854001d0b7efbbd341ed6f45bc1ec26c0751889d
-      install:
-        install-weak-deps: false
+  - type: dnf
+    source: ghcr.io/blue-build/modules@sha256:d0e85328fcfa4182c33d3920854001d0b7efbbd341ed6f45bc1ec26c0751889d
+    install:
+      install-weak-deps: false
+      packages:
+        - ffmpegthumbnailer
+        - pipewire-libs-extra
+
+  - type: dnf
+    source: ghcr.io/blue-build/modules@sha256:d0e85328fcfa4182c33d3920854001d0b7efbbd341ed6f45bc1ec26c0751889d
+    replace:
+      - from-repo: fedora-multimedia
+        skip-unavailable: true
         packages:
-          - ffmpegthumbnailer
-          - pipewire-libs-extra
+          - libva
+          - libva-intel-media-driver
+          - mesa-dri-drivers
+          - mesa-filesystem
+          - mesa-libEGL
+          - mesa-libGL
+          - mesa-libgbm
+          - mesa-va-drivers
+          - mesa-vulkan-drivers
 
-    - type: dnf
-      source: ghcr.io/blue-build/modules@sha256:d0e85328fcfa4182c33d3920854001d0b7efbbd341ed6f45bc1ec26c0751889d
-      replace:
-        - from-repo: fedora-multimedia
-          skip-unavailable: true
-          packages:
-            - libva
-            - libva-intel-media-driver
-            - mesa-dri-drivers
-            - mesa-filesystem
-            - mesa-libEGL
-            - mesa-libGL
-            - mesa-libgbm
-            - mesa-va-drivers
-            - mesa-vulkan-drivers
-
-    - type: dnf
-      source: ghcr.io/blue-build/modules@sha256:d0e85328fcfa4182c33d3920854001d0b7efbbd341ed6f45bc1ec26c0751889d
-      replace:
-        - from-repo: fedora-multimedia
-          skip-unavailable: true
-          packages:
-            - old: ffmpeg-free
-              new: ffmpeg
-            - old: libavcodec-free
-              new: libavcodec
-            - old: libavdevice-free
-              new: libavdevice
-            - old: libavfilter-free
-              new: libavfilter
-            - old: libavformat-free
-              new: libavformat
-            - old: libavutil-free
-              new: libavutil
-            - old: libpostproc-free
-              new: libpostproc
-            - old: libswresample-free
-              new: libswresample
-            - old: libswscale-free
-              new: libswscale
+  - type: dnf
+    source: ghcr.io/blue-build/modules@sha256:d0e85328fcfa4182c33d3920854001d0b7efbbd341ed6f45bc1ec26c0751889d
+    replace:
+      - from-repo: fedora-multimedia
+        skip-unavailable: true
+        packages:
+          - old: ffmpeg-free
+            new: ffmpeg
+          - old: libavcodec-free
+            new: libavcodec
+          - old: libavdevice-free
+            new: libavdevice
+          - old: libavfilter-free
+            new: libavfilter
+          - old: libavformat-free
+            new: libavformat
+          - old: libavutil-free
+            new: libavutil
+          - old: libpostproc-free
+            new: libpostproc
+          - old: libswresample-free
+            new: libswresample
+          - old: libswscale-free
+            new: libswscale

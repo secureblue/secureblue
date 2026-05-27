@@ -23,3 +23,6 @@ trim_trailing_whitespace = false
 [*.{fc,if,te}]
 indent_style = tab
 indent_size = 8
+
+[*.cil]
+indent_size = 2

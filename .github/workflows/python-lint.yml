@@ -8,7 +8,7 @@ on:
   pull_request:
     paths:
       - '**.py'
-      - 'ruff.toml'
+      - 'pyproject.toml'
       - '.github/workflows/python-lint.yml'
 
 concurrency:
@@ -20,8 +20,8 @@ defaults:
     shell: bash
 
 jobs:
-  ruff:
-    name: Ruff (Python linter)
+  linters:
+    name: Python linters
     runs-on: ubuntu-slim
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd  # v6.0.2
@@ -36,57 +36,41 @@ jobs:
       - name: Install dependencies
         run: |
           tmpfile=$(mktemp)
-          cat <<'EOF' > "$tmpfile"
-          pip==26.0.1 \
-            --hash=sha256:bdb1b08f4274833d62c1aa29e20907365a2ceb950410df15fc9521bad440122b
+          cat <<'EOF' > "${tmpfile}"
+          pip==26.1.1 \
+            --hash=sha256:99cb1c2899893b075ff56e4ed0af55669a955b49ad7fb8d8603ecdaf4ed653fb
 
-          ruff==0.15.2 \
-            --hash=sha256:b7a672c82b5f9887576087d97be5ce439f04bbaf548ee987b92d3a7dede41d3a
+          blessed==1.42.0 \
+            --hash=sha256:f96c4a6dc664b48e0b832fa732acc16df67abd30f0ec35babf99025982f21852
+          editor==1.8.0 \
+            --hash=sha256:7d47ff88ae6c5f6c43d28c30b6f7fd59a24741175a1771ab06c969d946d7dfd0
+          inquirer==3.4.1 \
+            --hash=sha256:717bf146d547b595d2495e7285fd55545cff85e5ce01decc7487d2ec6a605412
+          jinxed==2.0.0 \
+            --hash=sha256:b3df1be5262a37145ef42875a8bbf918f1a563fbd035359650dd9fc0bb2b9294
+          readchar==4.2.2 \
+            --hash=sha256:92daf7e42c52b0787e6c75d01ecfb9a94f4ceff3764958b570c1dddedd47b200
+          rpm==0.4.0 \
+            --hash=sha256:0ef697cb5fb73bf9300a13d423529d7ec215239bf95c5ecb145e6610645f6067
+          ruff==0.15.14 \
+            --hash=sha256:715c543cf450c4888251f91c52f1942a800541d9bddd7ac060aa4e6b77ae7cba
+          runs==1.3.0 \
+            --hash=sha256:e71a551cfa8da9ef882cac1d5a108bda78c9edee5b8d87e37c1003da5b6a7bed
+          ty==0.0.38 \
+            --hash=sha256:375d3a964c6b4aea2e9237fdb5eb9ed03dc43088986a94209a28a4ea3b62001c
+          wcwidth==0.7.0 \
+            --hash=sha256:5d69154c429a82910e241c738cd0e2976fac8a2dd47a1a805f4afed1c0f136f2
+          xmod==1.10.0 \
+            --hash=sha256:bebf8493b7ac63097401590a329c9ed20da224de0583a522e7ccb634af122f5a
           EOF
 
-          python -m pip install --require-hashes -r "$tmpfile"
+          python -m pip install --require-hashes -r "${tmpfile}"
 
-      - name: Run Ruff
-        run: ruff check --output-format=github .
+      - name: Run Ruff (linter)
+        run: ruff check --output-format=github
 
       - name: Check code formatting
         run: ruff format --diff
 
-  mypy:
-    name: Mypy type-checker
-    runs-on: ubuntu-slim
-    steps:
-      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
-        with:
-          persist-credentials: false
-
-      - name: Set up Python
-        uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405 # v6.2.0
-        with:
-          python-version: "3.14"
-
-      - name: Install dependencies
-        run: |
-          tmpfile=$(mktemp)
-          cat <<'EOF' > "$tmpfile"
-          pip==26.0.1 \
-            --hash=sha256:bdb1b08f4274833d62c1aa29e20907365a2ceb950410df15fc9521bad440122b
-
-          librt==0.8.1 \
-            --hash=sha256:6b1977c4ea97ce5eb7755a78fae68d87e4102e4aaf54985e8b56806849cc06a3
-          mypy==1.19.1 \
-            --hash=sha256:28902ee51f12e0f19e1e16fbe2f8f06b6637f482c459dd393efddd0ec7f82045
-          mypy_extensions==1.1.0 \
-            --hash=sha256:1be4cccdb0f2482337c4743e60421de3a356cd97508abadd57d47403e94f5505
-          pathspec==1.0.4 \
-            --hash=sha256:fb6ae2fd4e7c921a165808a552060e722767cfa526f99ca5156ed2ce45a5c723
-          typing_extensions==4.15.0 \
-            --hash=sha256:f0fa19c6845758ab08074a0cfa8b7aecb71c999ca73d62883bc25cc018c4e548
-          EOF
-
-          python -m pip install --require-hashes -r "$tmpfile"
-
-      - name: Run Mypy
-        run: |
-          PATH="$HOME/.local/bin:$PATH"
-          mypy .
+      - name: Run Ty (type-checker)
+        run: ty check --output-format=github

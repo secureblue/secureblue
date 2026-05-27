@@ -11,12 +11,12 @@ shell := `grep :$(id -u): /etc/passwd | cut -d: -f7`
 bios:
     #!/usr/bin/bash
     if [ -d /sys/firmware/efi ]; then
-      read -rp 'The system will reboot into UEFI firmware settings. Proceed? (y/N) ' proceed
-      if [[ "$proceed" == [Yy]* ]]; then
-        systemctl reboot --firmware-setup
-      fi
+        read -rp 'The system will reboot into UEFI firmware settings. Proceed? (y/N) ' proceed
+        if [[ "$proceed" == [Yy]* ]]; then
+            systemctl reboot --firmware-setup
+        fi
     else
-      echo "Rebooting to legacy BIOS from OS is not supported."
+        echo "Rebooting to legacy BIOS from OS is not supported."
     fi
 
 # Show all messages from this boot
@@ -71,34 +71,34 @@ clean-system:
 check-local-overrides:
     #!/usr/bin/bash
     diff -r \
-      --suppress-common-lines \
-      --color="always" \
-      --exclude "passwd*" \
-      --exclude "group*" \
-      --exclude="subgid*" \
-      --exclude="subuid*" \
-      --exclude="machine-id" \
-      --exclude="adjtime" \
-      --exclude="fstab" \
-      --exclude="system-connections" \
-      --exclude="shadow*" \
-      --exclude="gshadow*" \
-      --exclude="ssh_host*" \
-      --exclude="cmdline" \
-      --exclude="crypttab" \
-      --exclude="hostname" \
-      --exclude="localtime" \
-      --exclude="locale*" \
-      --exclude="*lock" \
-      --exclude=".updated" \
-      --exclude="*LOCK" \
-      --exclude="vconsole*" \
-      --exclude="00-keyboard.conf" \
-      --exclude="grub" \
-      --exclude="system.control*" \
-      --exclude="cdi" \
-      --exclude="default.target" \
-      /usr/etc /etc 2>/dev/null | sed '/Binary\ files\ /d'
+        --suppress-common-lines \
+        --color="always" \
+        --exclude "passwd*" \
+        --exclude "group*" \
+        --exclude="subgid*" \
+        --exclude="subuid*" \
+        --exclude="machine-id" \
+        --exclude="adjtime" \
+        --exclude="fstab" \
+        --exclude="system-connections" \
+        --exclude="shadow*" \
+        --exclude="gshadow*" \
+        --exclude="ssh_host*" \
+        --exclude="cmdline" \
+        --exclude="crypttab" \
+        --exclude="hostname" \
+        --exclude="localtime" \
+        --exclude="locale*" \
+        --exclude="*lock" \
+        --exclude=".updated" \
+        --exclude="*LOCK" \
+        --exclude="vconsole*" \
+        --exclude="00-keyboard.conf" \
+        --exclude="grub" \
+        --exclude="system.control*" \
+        --exclude="cdi" \
+        --exclude="default.target" \
+        /usr/etc /etc 2>/dev/null | sed '/Binary\ files\ /d'
 
 # Debug dump pastebin for issue reporting
 debug-info:
@@ -189,7 +189,7 @@ rebase-secureblue:
             "Cosmic images are considered beta."
         PS3=$'Enter your desktop choice: '
         select image_name in "${desktop_image_types[@]}"; do
-            if [[ -n "$image_name" ]]; then        
+            if [[ -n "$image_name" ]]; then
                 echo "Selected desktop: $image_name"
                 break
             else

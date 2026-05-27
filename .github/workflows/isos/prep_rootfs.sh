@@ -20,7 +20,7 @@ dnf reinstall -y polkit
 dnf install -y anaconda-live firefox libblockdev-btrfs libblockdev-btrfs libblockdev-lvm libblockdev-dm
 
 systemctl disable --global secureblue-flatpak-setup.service secureblue-flatpak-setup.timer podman-auto-update.timer flatpak-user-update.timer
-systemctl disable rpm-ostreed-automatic.timer rpm-ostree-countme.service bootloader-update.service 
+systemctl disable rpm-ostreed-automatic.timer rpm-ostree-countme.service bootloader-update.service
 
 rm -f /usr/share/applications/org.mozilla.Firefox.desktop /usr/share/applications/org.mozilla.firefox.desktop /usr/share/applications/firefox.desktop /usr/share/applications/firefox-wayland.desktop /usr/share/applications/firefox-x11.desktop
 
@@ -88,7 +88,7 @@ hidden_spokes =
 hidden_webui_pages =
     root-password
     network
-password_policies = 
+password_policies =
         root (quality 100, length 15)
         user (quality 50, length 8)
         luks (quality 100, length 15)

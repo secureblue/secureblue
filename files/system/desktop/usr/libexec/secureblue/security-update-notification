@@ -6,18 +6,36 @@
 
 set -euo pipefail
 
-status="$(rpm-ostree status 2>/dev/null)"
-db_diff="$(rpm-ostree db diff 2>&1)"
-trivalent_updated="false"
-kernel_updated="false"
-if [[ "$db_diff" == *"pending deployment"* ]]; then
-  if [[ "$db_diff" == *"trivalent "* ]]; then
-    trivalent_updated="true"
-  fi
-  if [[ "$db_diff" == *"kernel "* ]]; then
-    kernel_updated="true"
-  fi
+cached_update_json="$(rpm-ostree status --json | jq -c '."cached-update"')"
+if [[ "${cached_update_json}" == 'null' ]]; then
+  exit 0
 fi
+
+readarray -t upgraded_packages < <(jq -cr '."rpm-diff".upgraded[][1]' <<<"${cached_update_json}")
+kernel_updated='false'
+trivalent_updated='false'
+for package in "${upgraded_packages[@]}"; do
+  case "${package}" in
+    kernel) kernel_updated='true' ;;
+    trivalent) trivalent_updated='true' ;;
+    *) ;;
+  esac
+done
+
+# Convert numerical advisory severity indices to strings. Reference for the format:
+# https://github.com/coreos/rpm-ostree/blob/721fccd3459ee50b600c88193f1e9f8dd69569dc/src/libpriv/rpmostree-rpm-util.h#L177
+# https://github.com/coreos/rpm-ostree/blob/721fccd3459ee50b600c88193f1e9f8dd69569dc/src/libpriv/rpmostree-types.h#L40
+# For each advisory:
+# * Field 1 is the DNF advisory kind; for security advisories, this is 1.
+# * Field 2 is an integer representing the severity.
+case "$(jq -c '[.advisories[]? | select(.[1] == 1) | .[2]] | max' <<<"${cached_update_json}")" in
+  null) max_advisory_severity='none' ;;
+  1) max_advisory_severity='low' ;;
+  2) max_advisory_severity='moderate' ;;
+  3) max_advisory_severity='important' ;;
+  4) max_advisory_severity='critical' ;;
+  *) max_advisory_severity='unknown' ;;
+esac
 
 notify_critical() {
   notify-send --urgency=critical \
@@ -36,12 +54,12 @@ notify_normal() {
     "Please reboot to run the updated system"
 }
 
-if [[ "$trivalent_updated" == "true" || "$status" =~ SecAdvisories:.*critical ]]; then
-  if [[ "$(notify_critical)" == "0" ]]; then
+if [[ "${trivalent_updated}" == 'true' || "${max_advisory_severity}" == 'critical' ]]; then
+  if [[ "$(notify_critical)" == '0' ]]; then
     systemctl reboot
   fi
-elif [[ "$kernel_updated" == "true" || "$status" =~ SecAdvisories:.*(important|unknown severity) ]]; then
-  if [[ "$(notify_normal)" == "0" ]]; then
+elif [[ "${kernel_updated}" == 'true' || "${max_advisory_severity}" == 'important' || "${max_advisory_severity}" == 'unknown' ]]; then
+  if [[ "$(notify_normal)" == '0' ]]; then
     systemctl reboot
   fi
 fi

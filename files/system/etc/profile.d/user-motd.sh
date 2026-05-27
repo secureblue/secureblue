@@ -8,8 +8,7 @@
 # Prevent doublesourcing
 if [ -z "${USERMOTDSOURCED-}" ]; then
   USERMOTDSOURCED='Y'
-  config_dir=${XDG_CONFIG_HOME:-"$HOME/.config"}
-  if [ -d "$config_dir" ] && ! [ -e "$config_dir/no-show-user-motd" ] && [ -x '/usr/libexec/secureblue-motd' ]; then
+  if [ -d "$HOME" ] && ! [ -e "${XDG_CONFIG_HOME:-"$HOME/.config"}/no-show-user-motd" ] && [ -x '/usr/libexec/secureblue-motd' ]; then
     /usr/libexec/secureblue-motd
   fi
 fi

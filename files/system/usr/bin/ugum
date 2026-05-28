@@ -6,7 +6,7 @@
 
 
 ##################################################################
-# This is a helper script to provide a basic fallback replacement 
+# This is a helper script to provide a basic fallback replacement
 # for just commands and bash scripts that want to use gum in uBlue
 ##################################################################
 
@@ -38,7 +38,7 @@ fi
 # Logic for what to do if gum is not installed
 function noGum () {
     if [[ -z "$1" ]]; then
-        # If no arguments are provided then error with 
+        # If no arguments are provided then error with
         echo "ugum supports only choose or confirm as the first argument!"
         echo "Usage:"
         echo '    ugum choose option1 option2 \"option 3\"'
@@ -97,7 +97,7 @@ function choose_Generic () {
                 break
                 ;;
         esac
-    done 
+    done
 }
 
 # Implements a choice dialog using fzf
@@ -130,7 +130,7 @@ function confirm_Generic () {
     # Set default prompt
     PROMPT="Are you sure?"
 
-    # Parse the arguments for the ones we support and care about 
+    # Parse the arguments for the ones we support and care about
     for arg in "$@"
     do
         if [[ ! $arg =~ ^- ]]; then
@@ -157,7 +157,7 @@ function confirm_getPrompt () {
     # Set default prompt
     PROMPT="Are you sure?"
 
-    # Parse the arguments for the ones we support and care about 
+    # Parse the arguments for the ones we support and care about
     for arg in "$@"
     do
         if [[ ! $arg =~ ^- ]]; then

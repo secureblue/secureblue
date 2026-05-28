@@ -9,6 +9,9 @@ enable podman-auto-update.timer
 enable rpm-ostreed-automatic.timer
 enable secureblue-unbound-key.service
 
+# https://github.com/polkit-org/polkit/commit/c007940054392b67b84b6044dda8a215040d8eb5
+enable polkit-agent-helper.socket
+
 disable flatpak-add-fedora-repos.service
 disable geoclue.service
 disable sshd-vsock.socket

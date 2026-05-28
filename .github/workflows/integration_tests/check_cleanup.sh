@@ -8,7 +8,7 @@ SERVICE_NAME="securebluecleanup.service"
 if ! systemctl is-enabled --quiet "$SERVICE_NAME"; then
     echo "Error: $SERVICE_NAME is in a disabled state."
     exit 1
-else 
+else
     echo "$SERVICE_NAME is enabled."
 fi
 

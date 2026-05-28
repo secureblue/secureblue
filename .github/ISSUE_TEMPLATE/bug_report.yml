@@ -7,7 +7,7 @@ assignees: []
 body:
   - type: textarea
     id: description
-    attributes:      
+    attributes:
       label: Description
       description: Describe the bug
       placeholder: A clear and concise description of what the bug is.
@@ -16,7 +16,7 @@ body:
 
   - type: textarea
     id: reproduce
-    attributes:      
+    attributes:
       label: Reproduce
       description: Steps to reproduce
       placeholder: Steps to reproduce the behavior.
@@ -25,16 +25,16 @@ body:
 
   - type: textarea
     id: expected
-    attributes:      
+    attributes:
       label: Expected
       description: Expected behavior
       placeholder: A clear and concise description of what you expected to happen.
     validations:
       required: true
-      
+
   - type: textarea
     id: actual
-    attributes:      
+    attributes:
       label: Actual
       description: Actual behavior
       placeholder: A clear and concise description of what actually happened
@@ -43,7 +43,7 @@ body:
 
   - type: input
     id: image
-    attributes:      
+    attributes:
       label: Image
       description: Your current image
       placeholder: 'rpm-ostree status'
@@ -53,7 +53,7 @@ body:
 
   - type: input
     id: upstream
-    attributes:      
+    attributes:
       label: Upstream
       description: Upstream confirmation
       placeholder: Confirmation that you cannot repro on a quay.io/fedora-ostree-desktops base image
@@ -67,7 +67,11 @@ body:
       options:
         - label: I agree to follow this project's [Code of Conduct](https://secureblue.dev/code-of-conduct).
           required: true
-        - label: I declare that this is not a request for alternate community messaging or social platforms.
+        - label: I agree to follow this project's [AI Content Policy](https://secureblue.dev/contributing#ai-content).
           required: true
-        - label: I declare that I have read the [secureblue website](https://secureblue.dev/#about) and my feature request is in-scope.
+        - label: I agree to comply with this project's [Legal Notice](https://secureblue.dev/contributing#legal-notice).
+          required: true
+        - label: I declare that this is not a request for alternative community messaging or social platforms.
+          required: true
+        - label: I declare that I have read the [bug report guidelines](https://secureblue.dev/contributing#reporting-bugs) and that my bug report is actionable.
           required: true

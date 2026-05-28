@@ -8,10 +8,17 @@
 
 import os
 import sys
-from typing import Final
+from typing import TYPE_CHECKING, Final
 
-import sandbox
-from utils import CommandUsageError, ToggleMode, parse_basic_toggle_args
+if TYPE_CHECKING:
+    from files.system.usr.libexec.secureblue import sandbox, utils
+else:
+    import sandbox
+    import utils
+
+CommandUsageError: Final = utils.CommandUsageError
+ToggleMode: Final = utils.ToggleMode
+parse_basic_toggle_args: Final = utils.parse_basic_toggle_args
 
 BREW_HELP: Final[str] = """
 This python script toggles if Homebrew is enabled by enabling or

@@ -10,11 +10,11 @@ set -euo pipefail
 nvidia_packages_list=('libva-nvidia-driver' 'nvidia-container-toolkit')
 
 is_desktop="false"
-[[ "$IMAGE_NAME" != *"securecore"* && "$IMAGE_NAME" != *"iot"* ]] && is_desktop="true"
+[[ "${IMAGE_NAME}" != *"securecore"* && "${IMAGE_NAME}" != *"iot"* ]] && is_desktop="true"
 nvidia_packages_list+=(
     'nvidia-driver-cuda'
 )
-if [[ "$is_desktop" == "true" ]]; then
+if [[ "${is_desktop}" == "true" ]]; then
     nvidia_packages_list+=(
         'libnvidia-fbc'
         'nvidia-driver'
@@ -24,7 +24,7 @@ if [[ "$is_desktop" == "true" ]]; then
     )
 fi
 
-if [[ "$IMAGE_NAME" == *open* ]]; then
+if [[ "${IMAGE_NAME}" == *open* ]]; then
     nvidia_repo='fedora-nvidia'
 else
     nvidia_repo='fedora-nvidia-580'
@@ -41,7 +41,7 @@ negativo_version=$(rpm -qa | grep nvidia-modprobe | awk -F':' '{print $(NF)}' | 
 
 echo "kmod_version: ${kmod_version}"
 echo "negativo_version: ${negativo_version}"
-if [[ "$kmod_version" != "$negativo_version" ]]; then
+if [[ "${kmod_version}" != "${negativo_version}" ]]; then
     echo "Version mismatch!"
     exit 1
 fi

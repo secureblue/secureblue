@@ -8,7 +8,7 @@ set -euo pipefail
 
 
 
-if [[ "$IMAGE_NAME" != *"securecore"* ]]; then
+if [[ "${IMAGE_NAME}" != *"securecore"* ]]; then
     KERNEL_VERSION="6.17.12-300"
     KERNEL_HEADERS_VERSION="6.17.4-300"
 

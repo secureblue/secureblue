@@ -37,18 +37,18 @@ for module in "/usr/lib/modules/${KERNEL_VERSION}/extra/${MODULE_NAME}"/*.ko*; d
     module_basename="${module%.*}"
     module_suffix=".${module##*.}"
     case "${module_suffix}" in
-    .xz)
-        xz --decompress "${module}"
-        sign_module "${module_basename}"
-        xz -C crc32 -f "${module_basename}"
-        ;;
-    .gz)
-        gzip -d "${module}"
-        sign_module "${module_basename}"
-        gzip -9f "${module_basename}"
-        ;;
-    *)
-        sign_module "${module}"
-        ;;
+        .xz)
+            xz --decompress "${module}"
+            sign_module "${module_basename}"
+            xz -C crc32 -f "${module_basename}"
+            ;;
+        .gz)
+            gzip -d "${module}"
+            sign_module "${module_basename}"
+            gzip -9f "${module_basename}"
+            ;;
+        *)
+            sign_module "${module}"
+            ;;
     esac
 done

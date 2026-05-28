@@ -23,7 +23,7 @@ function Toolbox (){
         ACTION="create"
 
         # Remove old image before continuing
-        toolbox rm --force "${@:3}" 
+        toolbox rm --force "${@:3}"
     fi
 
     # Check if $IMAGE is an image registry url
@@ -35,7 +35,7 @@ function Toolbox (){
         # shellcheck disable=SC2206
         DISTRORELEASE=(${IMAGE//:/ })
         # Create toolbox with distro and release args
-        toolbox "$ACTION" --distro "${DISTRORELEASE[0]}" --release "${DISTRORELEASE[1]}" "${@:3}" 
+        toolbox "$ACTION" --distro "${DISTRORELEASE[0]}" --release "${DISTRORELEASE[1]}" "${@:3}"
     fi
 }
 
@@ -86,7 +86,7 @@ function ToolboxAssemble (){
         fi
         # Get all the containers
         CONTAINERS=$(grep -P "\[.+\]" "$FILE" | sed -E 's/\[(.+)\]/\1/')
-        
+
         # Run the toolbox assemble command
         #toolbox assemble "$ACTION" --file "$FILE" --replace
         for CONTAINER in $CONTAINERS
@@ -102,7 +102,7 @@ function ToolboxAssemble (){
         # Set toolbox name to provided name
         NAME="$3"
     fi
-    
+
     # If we do not want confirmations
     if [[ ! "$1" =~ ^noconfirm ]]; then
         # Ask the user if they really want to replace $NAME container
@@ -142,7 +142,7 @@ function ToolboxAssembleList (){
         # Replace default action
         ACTION="$2"
     fi
-    
+
     # If a CHOICE is predefined
     if [ -n "$3" ]; then
         # Replace default choice

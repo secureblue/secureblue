@@ -39,4 +39,3 @@ fi
 IMAGE_REF_NAME=${IMAGE_BASE_STRING##*/}
 echo "Rebasing to $IMAGE_REF_NAME"
 rpm-ostree rebase "ostree-image-signed:docker://ghcr.io/secureblue/$IMAGE_REF_NAME"
-

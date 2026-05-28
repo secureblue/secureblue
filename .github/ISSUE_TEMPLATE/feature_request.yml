@@ -7,16 +7,16 @@ assignees: []
 body:
   - type: textarea
     id: benefit
-    attributes:      
+    attributes:
       label: Benefit
       description: Describe the benefit this feature would provide to the project
-      placeholder: A clear and concise description of the benefit. 
+      placeholder: A clear and concise description of the benefit.
     validations:
       required: true
 
   - type: textarea
     id: solution
-    attributes:      
+    attributes:
       label: Solution
       description: Describe the solution you'd like
       placeholder: A clear and concise description of what specific change you would like.
@@ -25,7 +25,7 @@ body:
 
   - type: textarea
     id: alternatives
-    attributes:      
+    attributes:
       label: Alternatives
       description: Describe alternatives you've considered
       placeholder: A clear and concise description of any alternative solutions or features you've considered.

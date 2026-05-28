@@ -8,18 +8,18 @@ set -euo pipefail
 
 cached_update_json="$(rpm-ostree status --json | jq -c '."cached-update"')"
 if [[ "${cached_update_json}" == 'null' ]]; then
-  exit 0
+    exit 0
 fi
 
 readarray -t upgraded_packages < <(jq -cr '."rpm-diff".upgraded[][1]' <<<"${cached_update_json}")
 kernel_updated='false'
 trivalent_updated='false'
 for package in "${upgraded_packages[@]}"; do
-  case "${package}" in
-    kernel) kernel_updated='true' ;;
-    trivalent) trivalent_updated='true' ;;
-    *) ;;
-  esac
+    case "${package}" in
+        kernel) kernel_updated='true' ;;
+        trivalent) trivalent_updated='true' ;;
+        *) ;;
+    esac
 done
 
 # Convert numerical advisory severity indices to strings. Reference for the format:
@@ -29,37 +29,37 @@ done
 # * Field 1 is the DNF advisory kind; for security advisories, this is 1.
 # * Field 2 is an integer representing the severity.
 case "$(jq -c '[.advisories[]? | select(.[1] == 1) | .[2]] | max' <<<"${cached_update_json}")" in
-  null) max_advisory_severity='none' ;;
-  1) max_advisory_severity='low' ;;
-  2) max_advisory_severity='moderate' ;;
-  3) max_advisory_severity='important' ;;
-  4) max_advisory_severity='critical' ;;
-  *) max_advisory_severity='unknown' ;;
+    null) max_advisory_severity='none' ;;
+    1) max_advisory_severity='low' ;;
+    2) max_advisory_severity='moderate' ;;
+    3) max_advisory_severity='important' ;;
+    4) max_advisory_severity='critical' ;;
+    *) max_advisory_severity='unknown' ;;
 esac
 
 notify_critical() {
-  notify-send --urgency=critical \
-    --app-name="secureblue" \
-    --action="Reboot" \
-    "A major security vulnerability has been patched" \
-    "Please reboot to run the updated system"
+    notify-send --urgency=critical \
+        --app-name="secureblue" \
+        --action="Reboot" \
+        "A major security vulnerability has been patched" \
+        "Please reboot to run the updated system"
 }
 
 notify_normal() {
-  notify-send --urgency=normal \
-    --expire-time=5000 \
-    --app-name="secureblue" \
-    --action="Reboot" \
-    "A security vulnerability has been patched" \
-    "Please reboot to run the updated system"
+    notify-send --urgency=normal \
+        --expire-time=5000 \
+        --app-name="secureblue" \
+        --action="Reboot" \
+        "A security vulnerability has been patched" \
+        "Please reboot to run the updated system"
 }
 
 if [[ "${trivalent_updated}" == 'true' || "${max_advisory_severity}" == 'critical' ]]; then
-  if [[ "$(notify_critical)" == '0' ]]; then
-    systemctl reboot
-  fi
+    if [[ "$(notify_critical)" == '0' ]]; then
+        systemctl reboot
+    fi
 elif [[ "${kernel_updated}" == 'true' || "${max_advisory_severity}" == 'important' || "${max_advisory_severity}" == 'unknown' ]]; then
-  if [[ "$(notify_normal)" == '0' ]]; then
-    systemctl reboot
-  fi
+    if [[ "$(notify_normal)" == '0' ]]; then
+        systemctl reboot
+    fi
 fi

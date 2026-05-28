@@ -6,34 +6,34 @@
 toggle-cups:
     #! /bin/run0 /bin/bash
     if systemctl is-enabled --quiet cups; then
-      firewall-cmd --permanent --remove-port=631/tcp
-      firewall-cmd --permanent --remove-port=631/udp
-      firewall-cmd --reload
-      systemctl disable --now cups.socket
-      systemctl mask cups.socket
-      systemctl disable --now cups.service
-      systemctl mask cups.service
-      systemctl mask --now avahi-daemon.socket
-      systemctl mask --now avahi-daemon.service
-      systemctl daemon-reload
-      echo "CUPS & avahi-daemon disabled"
+        firewall-cmd --permanent --remove-port=631/tcp
+        firewall-cmd --permanent --remove-port=631/udp
+        firewall-cmd --reload
+        systemctl disable --now cups.socket
+        systemctl mask cups.socket
+        systemctl disable --now cups.service
+        systemctl mask cups.service
+        systemctl mask --now avahi-daemon.socket
+        systemctl mask --now avahi-daemon.service
+        systemctl daemon-reload
+        echo "CUPS & avahi-daemon disabled"
     else
-      firewall-cmd --permanent --add-port=631/tcp
-      firewall-cmd --permanent --add-port=631/udp
-      firewall-cmd --reload
-      systemctl unmask cups.socket
-      systemctl unmask cups.service
-      systemctl enable --now cups.socket
-      systemctl enable --now cups.service
-      systemctl unmask avahi-daemon.service
-      systemctl unmask avahi-daemon.socket
-      systemctl daemon-reload
-      echo "CUPS enabled."
-      echo "avahi-daemon is unmasked & will be started as needed on an on-demand basis."
-      echo "Note: cups-browsed, the printer discovery service, is still disabled for"
-      echo "    security reasons. New network printers will need to be added manually."
-      echo "    If you absolutely need network discovery, you can enable the cups-browsed"
-      echo "    service at your own risk. Secureblue strongly recommends against this."
+        firewall-cmd --permanent --add-port=631/tcp
+        firewall-cmd --permanent --add-port=631/udp
+        firewall-cmd --reload
+        systemctl unmask cups.socket
+        systemctl unmask cups.service
+        systemctl enable --now cups.socket
+        systemctl enable --now cups.service
+        systemctl unmask avahi-daemon.service
+        systemctl unmask avahi-daemon.socket
+        systemctl daemon-reload
+        echo "CUPS enabled."
+        echo "avahi-daemon is unmasked & will be started as needed on an on-demand basis."
+        echo "Note: cups-browsed, the printer discovery service, is still disabled for"
+        echo "    security reasons. New network printers will need to be added manually."
+        echo "    If you absolutely need network discovery, you can enable the cups-browsed"
+        echo "    service at your own risk. Secureblue strongly recommends against this."
     fi
 
 # enable a kernel module that is disabled by modprobe.d (requires restart)
@@ -42,11 +42,11 @@ override-enable-module mod_name:
     MOD_NAME="{{ mod_name }}"
     MOD_FILE="/etc/modprobe.d/99-$MOD_NAME.conf"
     if [ -e "$MOD_FILE" ]; then
-      echo "$MOD_NAME module is already enabled."
+        echo "$MOD_NAME module is already enabled."
     else
-      sh -c 'echo "install $1 /sbin/modprobe --ignore-install $1" >> "$2"' _ "$MOD_NAME" "$MOD_FILE"
-      chmod 644 "$MOD_FILE"
-      echo "Override created to enable $MOD_NAME module. Reboot to take effect."
+        sh -c 'echo "install $1 /sbin/modprobe --ignore-install $1" >> "$2"' _ "$MOD_NAME" "$MOD_FILE"
+        chmod 644 "$MOD_FILE"
+        echo "Override created to enable $MOD_NAME module. Reboot to take effect."
     fi
 
 # reset the override by `just override-enable-module`, i.e. disable the module again (requires restart)
@@ -55,10 +55,10 @@ override-reset-module mod_name:
     MOD_NAME="{{ mod_name }}"
     MOD_FILE="/etc/modprobe.d/99-$MOD_NAME.conf"
     if [ -e "$MOD_FILE" ]; then
-      rm -f "$MOD_FILE"
-      echo "The override for $MOD_NAME module has been reset. Reboot to take effect."
+        rm -f "$MOD_FILE"
+        echo "The override for $MOD_NAME module has been reset. Reboot to take effect."
     else
-      echo "No override found for $MOD_NAME module."
+        echo "No override found for $MOD_NAME module."
     fi
 
 # Toggle debug mode (requires restart)

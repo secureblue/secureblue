@@ -3,45 +3,45 @@
 # SPDX-License-Identifier: Apache-2.0
 
 modules:
-    - type: script
-      source: ghcr.io/blue-build/modules@sha256:d0e85328fcfa4182c33d3920854001d0b7efbbd341ed6f45bc1ec26c0751889d
-      scripts:
-        - removeunusedrepos.sh
-        - httpsmirrors.sh
-        - unprotectsudo.sh
-        # comment/uncomment the line below to disable/enable kernel pinning
-        # - installpinnedkernel.sh
-        # remove line below once rpm-ostree has been updated to fixed version on all images
-        - check-rpm-ostree-version.sh
+  - type: script
+    source: ghcr.io/blue-build/modules@sha256:d0e85328fcfa4182c33d3920854001d0b7efbbd341ed6f45bc1ec26c0751889d
+    scripts:
+      - removeunusedrepos.sh
+      - httpsmirrors.sh
+      - unprotectsudo.sh
+      # comment/uncomment the line below to disable/enable kernel pinning
+      # - installpinnedkernel.sh
+      # remove line below once rpm-ostree has been updated to fixed version on all images
+      - check-rpm-ostree-version.sh
 
-    - type: files
-      source: ghcr.io/blue-build/modules@sha256:d0e85328fcfa4182c33d3920854001d0b7efbbd341ed6f45bc1ec26c0751889d
-      files:
-        - source: system/usr
-          destination: /usr
-        - source: system/etc
-          destination: /etc
+  - type: files
+    source: ghcr.io/blue-build/modules@sha256:d0e85328fcfa4182c33d3920854001d0b7efbbd341ed6f45bc1ec26c0751889d
+    files:
+      - source: system/usr
+        destination: /usr
+      - source: system/etc
+        destination: /etc
 
-    - from-file: common/common-packages.yml
+  - from-file: common/common-packages.yml
 
-    - from-file: common/common-scripts.yml
+  - from-file: common/common-scripts.yml
 
-    - type: justfiles
-      source: ghcr.io/blue-build/modules@sha256:d0e85328fcfa4182c33d3920854001d0b7efbbd341ed6f45bc1ec26c0751889d
-      validate: true
-      include:
-        - common
+  - type: justfiles
+    source: ghcr.io/blue-build/modules@sha256:d0e85328fcfa4182c33d3920854001d0b7efbbd341ed6f45bc1ec26c0751889d
+    validate: true
+    include:
+      - common
 
-    - type: script
-      source: ghcr.io/blue-build/modules@sha256:d0e85328fcfa4182c33d3920854001d0b7efbbd341ed6f45bc1ec26c0751889d
-      scripts:
-        - signkernel.sh
-      secrets:
-        - type: env
-          name: KERNEL_PRIVKEY
-          mount:
-            type: file
-            destination: /tmp/certs/private_key.priv
+  - type: script
+    source: ghcr.io/blue-build/modules@sha256:d0e85328fcfa4182c33d3920854001d0b7efbbd341ed6f45bc1ec26c0751889d
+    scripts:
+      - signkernel.sh
+    secrets:
+      - type: env
+        name: KERNEL_PRIVKEY
+        mount:
+          type: file
+          destination: /tmp/certs/private_key.priv
 
-    - type: secureblue-signing
-      source: local
+  - type: secureblue-signing
+    source: local

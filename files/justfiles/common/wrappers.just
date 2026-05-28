@@ -83,3 +83,8 @@ set-dhcp-hostname-sending *args:
 set-always-upgrade-on-boot *args:
     #!/bin/sh
     exec /usr/bin/python3 /usr/libexec/secureblue/set_always_upgrade_on_boot.py "$@"
+
+# Revert to the system default container policy, as well as deactivate any user overrides.
+reset-container-policy:
+    #!/bin/sh
+    exec /usr/bin/python3 /usr/libexec/secureblue/reset_container_policy.py

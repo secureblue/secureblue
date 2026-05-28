@@ -79,7 +79,7 @@ function Assemble(){
         # Set distrobox name to provided name
         NAME="$3"
     fi
-    
+
     # If we do not want confirmations
     if [[ ! "$1" =~ ^noconfirm ]]; then
         # Ask the user if they really want to replace $NAME container
@@ -113,7 +113,7 @@ function AssembleList (){
         # Replace default action
         ACTION="$2"
     fi
-    
+
     # If a CHOICE is predefined
     if [ -n "$3" ]; then
         # Replace default choice

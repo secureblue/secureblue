@@ -4,33 +4,25 @@
 
 (typeattribute userns_privileged_file_type)
 (optional colord_userns_privileged_file_type
-    (typeattributeset userns_privileged_file_type (colord_exec_t))
-)
+          (typeattributeset userns_privileged_file_type (colord_exec_t)))
 (optional container_userns_privileged_file_type
-    (typeattributeset userns_privileged_file_type (container_runtime_exec_t docker_exec_t kubelet_exec_t))
-)
+          (typeattributeset userns_privileged_file_type (container_runtime_exec_t docker_exec_t kubelet_exec_t)))
 (optional devicekit_power_userns_privileged_file_type
-    (typeattributeset userns_privileged_file_type (devicekit_power_exec_t))
-)
+          (typeattributeset userns_privileged_file_type (devicekit_power_exec_t)))
 (optional file_manager_userns_privileged_file_type
-    (typeattributeset userns_privileged_file_type (file_manager_exec_type))
-)
+          (typeattributeset userns_privileged_file_type (file_manager_exec_type)))
 (optional flatpak_userns_privileged_file_type
-    (typeattributeset userns_privileged_file_type (flatpak_exec_t))
-)
+          (typeattributeset userns_privileged_file_type (flatpak_exec_t)))
 (optional systemsettings_userns_privileged_file_type
-    (typeattributeset userns_privileged_file_type (systemsettings_exec_t))
-)
+          (typeattributeset userns_privileged_file_type (systemsettings_exec_t)))
 (optional trivalent_userns_privileged_file_type
-    (typeattributeset userns_privileged_file_type (trivalent_exec_t trivalent_script_exec_t))
-)
+          (typeattributeset userns_privileged_file_type (trivalent_exec_t trivalent_script_exec_t)))
 
 (typeattribute userns_relabel_allowed)
 (typeattributeset userns_relabel_allowed (init_t kernel_t))
 (optional install_userns_relabel_allowed
     (typeattributeset userns_privileged_file_type (install_exec_t))
-    (typeattributeset userns_relabel_allowed (install_t))
-)
+    (typeattributeset userns_relabel_allowed (install_t)))
 
 (typeattribute userns_relabel_restricted)
 (typeattributeset userns_relabel_restricted (and (domain) (not (userns_relabel_allowed))))

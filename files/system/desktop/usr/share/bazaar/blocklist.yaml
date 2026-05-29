@@ -38,6 +38,7 @@ blocklists:
       # Other browsers.
       ## org.gnome.Epiphany uses WebKitGTK and flatpak-spawn for process-level sandboxing.
       ## Nyxt seems to use WebKitGTK, but without clear sandboxing.
+      - jp.nonbili.nora
       - engineer.atlas.Nyxt
       - org.catacombing.kumo
       - org.netsurf_browser.NetSurf

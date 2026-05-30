@@ -30,14 +30,9 @@
 
 ; Miscellaneous socket classes
 (call secureblue.audit_bluetooth_socket_ioctl (bluetooth_socket))
-(call secureblue.audit_socket (can_socket))
 (call secureblue.audit_socket_ioctl (icmp_socket))
-(call secureblue.audit_socket (ieee802154_socket))
 (call secureblue.audit_socket (nfc_socket))
 (call secureblue.audit_socket (phonet_socket))
 (call secureblue.audit_socket (qipcrtr_socket))
-(call secureblue.audit_socket (rxrpc_socket))
-(call secureblue.audit_socket (sctp_socket))
-(call secureblue.audit_socket (tipc_socket))
 (call secureblue.audit_socket (vsock_socket))
 (call secureblue.audit_socket (xdp_socket))

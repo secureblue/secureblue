@@ -1,14 +1,22 @@
 repos:
-  - repo: https://github.com/astral-sh/ruff-pre-commit
-    rev: 0c7b6c989466a93942def1f84baf36ddfcd60c83 # v0.15.14
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: 3e8a8703264a2f4a69428a0aa4dcb512790b2c8c # v6.0.0
     hooks:
-      - id: ruff-check
-      - id: ruff-format
+      - id: end-of-file-fixer
+      - id: trailing-whitespace
+        args: ['--markdown-linebreak-ext=md,patch']
 
   - repo: https://github.com/zizmorcore/zizmor-pre-commit
     rev: 9257c6050c0261b8c57e712f632dc4a8010109a9 # v1.25.2
     hooks:
       - id: zizmor
+        exclude: "^\\.github/workflows/config/linkspector\\.yml$"
+
+  - repo: https://github.com/astral-sh/ruff-pre-commit
+    rev: 0c7b6c989466a93942def1f84baf36ddfcd60c83 # v0.15.14
+    hooks:
+      - id: ruff-check
+      - id: ruff-format
 
   - repo: local
     hooks:

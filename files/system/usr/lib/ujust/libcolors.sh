@@ -44,7 +44,7 @@ declare -r darkorange=$'\033[38;2;255;129;3m'
 # echo "${bgblue}text now has blue background${normal} this text has no background color"
 function Bg (){
     COLOR="$1"
-    
+
     # Flip foreground to background
     echo "$COLOR" | sed -E 's/\[3([0-8]{1,1})/\[4\1/'
 }

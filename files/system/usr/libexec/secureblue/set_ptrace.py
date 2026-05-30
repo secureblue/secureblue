@@ -94,12 +94,12 @@ def check_ptrace_scope() -> None:
         case 2:
             print("Additional ptrace restrictions are configured (possibly in /etc/sysctl.d):")
             print("kernel.yama.ptrace_scope is set to 2.")
-            print("This restricts the use of ptrace to administrative users only.")
+            print("NOTE: This restricts the use of ptrace to administrative users only.")
             print(YAMA_DOC_URL)
         case 3:
             print("Additional ptrace restrictions are configured (possibly in /etc/sysctl.d):")
             print("kernel.yama.ptrace_scope is set to 3.")
-            print("This completely forbids the use of ptrace system-wide.")
+            print("NOTE: This completely forbids the use of ptrace system-wide.")
             print(YAMA_DOC_URL)
         case _:
             raise ValueError(f"invalid value '{ptrace_scope}' for ptrace_scope")
@@ -110,7 +110,7 @@ def enable_ptrace() -> int:
     check_ptrace_scope()
 
     if SEBOOL_DENY_PTRACE not in get_selinux_booleans(SEBOOL_DENY_PTRACE):
-        print("(Restricted) ptrace is already enabled.")
+        print("ptrace is already allowed by SELinux.")
         return 0
 
     return set_selinux_booleans({SEBOOL_DENY_PTRACE: False}, permanent=True)

@@ -204,7 +204,7 @@ def is_rpm_package_installed(name: str) -> bool:
 
 
 def logout(prompt: str | None = None) -> None:
-    if prompt is not None and ask_yes_no(prompt) is False:
+    if prompt is not None and not ask_yes_no(prompt):
         return
     match Image.from_image_ref(booted_image_ref()):
         case Image.SERICEA:
@@ -214,8 +214,7 @@ def logout(prompt: str | None = None) -> None:
                 ["/usr/bin/qdbus-qt6", "org.kde.Shutdown", "/Shutdown", "logout"], check=True
             )
         case _:
-            result = subprocess.run(["/usr/bin/whoami"], check=True, capture_output=True, text=True)
-            user = result.stdout.strip()
+            user = command_stdout("/usr/bin/whoami")
             subprocess.run(["/usr/bin/loginctl", "terminate-user", user], check=True)
 
 

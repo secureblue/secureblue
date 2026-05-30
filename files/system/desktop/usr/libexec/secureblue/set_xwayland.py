@@ -74,7 +74,7 @@ def run(mode: ToggleMode) -> int:
     new_mode = "disabled" if current_mode_enabled else "enabled"
     logout_prompt = (
         f"Xwayland for {de_name} has been {new_mode}. "
-        "Would you like to logout now for this to take effect?"
+        "Would you like to log out now for this to take effect?"
     )
 
     match mode:

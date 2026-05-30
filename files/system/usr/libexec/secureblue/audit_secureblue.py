@@ -323,7 +323,9 @@ def audit_ptrace(state):
             rec = "\n".join(rec_lines)
         case PtraceStatus.RESTRICTED:
             status = WARN
-            note_text = _("ptrace is allowed, but restricted.")
+            note_text = _("ptrace is allowed, but restricted to child processes ({0}).").format(
+                "ptrace_scope = 1"
+            )
             note = Note(note_text, WARN)
             rec_lines = [
                 note_text,
@@ -335,7 +337,9 @@ def audit_ptrace(state):
             rec = "\n".join(rec_lines)
         case PtraceStatus.ADMIN_ONLY:
             status = INFO
-            note_text = _("ptrace access is restricted to administrative users.")
+            note_text = _("ptrace access is restricted to administrative users ({0}).").format(
+                "ptrace_scope = 2"
+            )
             note = Note(note_text, INFO)
             rec_lines = [
                 note_text,
@@ -347,12 +351,12 @@ def audit_ptrace(state):
             rec = "\n".join(rec_lines)
         case PtraceStatus.CONTAINER_ONLY:
             status = WARN if state["container_userns_enabled"] else INFO
-            note_text = _("Restricted ptrace access is allowed inside containers.")
+            note_text = _("ptrace on child processes ({0}) is allowed inside containers.").format(
+                "ptrace_scope = 1"
+            )
             note = Note(note_text, status)
             rec_lines = [
                 note_text,
-                _("For more info on what this means, see:"),
-                YAMA_DOC_URL,
                 _("To forbid ptrace, run:"),
                 "$ ujust set-ptrace off",
             ]

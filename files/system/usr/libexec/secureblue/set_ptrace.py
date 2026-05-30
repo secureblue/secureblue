@@ -53,7 +53,7 @@ def show_status() -> None:
             print("Restricted ptrace is enabled")
         case PtraceStatus.UNRESTRICTED:
             print("WARNING: Unrestricted ptrace is enabled!")
-        case unreachable:
+        case _ as unreachable:
             assert_never(unreachable)
 
 
@@ -113,7 +113,7 @@ def enable_ptrace() -> int:
         print("(Restricted) ptrace is already enabled.")
         return 0
 
-    return set_selinux_booleans({SEBOOL_DENY_PTRACE: False}, perm=True)
+    return set_selinux_booleans({SEBOOL_DENY_PTRACE: False}, permanent=True)
 
 
 def set_container_ptrace() -> int:
@@ -147,23 +147,25 @@ def main() -> int:
         match mode:
             case "help" | "-h" | "--help":
                 print(HELP_MESSAGE)
+                exit_code = 0
             case "status":
                 show_status()
+                exit_code = 0
             case "on":
-                return enable_ptrace()
+                exit_code = enable_ptrace()
             case "container":
-                return set_container_ptrace()
+                exit_code = set_container_ptrace()
             case "off":
-                return disable_ptrace()
+                exit_code = disable_ptrace()
             case None:
-                pass
+                exit_code = 130  # SIGINT
             case _:
                 print("Invalid argument. See usage with --help.", file=sys.stderr)
-                return 2
+                exit_code = 2
     except subprocess.CalledProcessError:
-        return 1
+        exit_code = 1
 
-    return 0
+    return exit_code
 
 
 if __name__ == "__main__":

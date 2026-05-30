@@ -269,10 +269,10 @@ def get_selinux_booleans(*booleans: str) -> frozenset[str]:
     return frozenset(key for key, value in split_lines if value == "on")
 
 
-def set_selinux_booleans(sebools: dict[str, bool], *, perm: bool = True) -> int:
+def set_selinux_booleans(sebools: dict[str, bool], *, permanent: bool = True) -> int:
     """Set SELinux booleans"""
     args = ["run0", "-i", "setsebool"]
-    if perm:
+    if permanent:
         args.append("-P")
     for key, value in sebools.items():
         args.append(f"{key}={'on' if value else 'off'}")

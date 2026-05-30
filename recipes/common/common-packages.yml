@@ -25,6 +25,7 @@ install:
     - gettext
     - rsync
     - steam-devices
+    - lm_sensors
 
     # signing deps
     - sbsigntools

@@ -18,6 +18,8 @@ cil_policy_modules=(
     './selinux/sockets/secureblue_audit_sockets.cil'
     './selinux/sockets/secureblue_deny_alg_sockets.cil'
     './selinux/sockets/secureblue_deny_ipsec_sockets.cil'
+    './selinux/sockets/secureblue_deny_obscure_sockets.cil'
+    './selinux/sockets/secureblue_deny_packet_radio_sockets.cil'
     './selinux/sockets/secureblue_socket_utils.cil'
     './selinux/user_namespace/grant_fm_userns.cil'
     './selinux/user_namespace/grant_userns.cil'

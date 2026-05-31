@@ -5,6 +5,8 @@ set -euox pipefail
 echo "Starting upgrade-on-boot service"
 
 UPDATE_FAILURE_STRING="Update failed, booting existing deployment..."
+
+PROVENANCE_FAILURE_STRING="Provenance verification failed, booting existing deployment..."
 CANCEL_STRING="Press Q to cancel and boot the existing deployment."
 NO_UPDATE_STRING="No update available, booting current deployment"
 
@@ -22,7 +24,13 @@ if grep -q "local rpm-ostree modifications" <<< "$BOOTC_UPGRADE_CHECK_OUTPUT"; t
         echo "$NO_UPDATE_STRING"
         exit 0
     fi
+    
     plymouth message --text="Staging update... $CANCEL_STRING"
+    if ! /usr/libexec/secureblue/verify-provenance.sh; then
+        echo "$PROVENANCE_FAILURE_STRING"
+        exit 1
+    fi
+
     rpm-ostree upgrade
     RPM_OSTREE_EXIT=$?
     if (( RPM_OSTREE_EXIT != 0 )); then
@@ -35,6 +43,11 @@ else
     if grep -q "No changes" <<< "$BOOTC_UPGRADE_CHECK_OUTPUT"; then
         echo "$NO_UPDATE_STRING"
         exit 0
+    fi
+
+    if ! /usr/libexec/secureblue/verify-provenance.sh; then
+        echo "$PROVENANCE_FAILURE_STRING"
+        exit 1
     fi
 
     echo "Update available, proceeding"

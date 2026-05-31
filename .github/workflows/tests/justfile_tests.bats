@@ -27,10 +27,11 @@ setup() {
 }
 
 @test "Ensure motd toggle functions properly" {
+    config_dir=${XDG_CONFIG_HOME:-"$HOME/.config"}
     run ujust toggle-user-motd
     [ "$status" -eq 0 ]
-    [ -f "${HOME}/.config/no-show-user-motd" ]
+    [ -f "${config_dir}/no-show-user-motd" ]
     run ujust toggle-user-motd
     [ "$status" -eq 0 ]
-    [ ! -f "${HOME}/.config/no-show-user-motd" ]
+    [ ! -f "${config_dir}/no-show-user-motd" ]
 }

@@ -246,7 +246,7 @@ msgstr ""
 #: files/system/usr/libexec/secureblue/audit_secureblue.py:430
 #: files/system/usr/libexec/secureblue/audit_secureblue.py:445
 msgid "However, if you use a VPN, this may cause DNS leaks."
-msgstr "Sin embargo, si usa un VPN, esto puede causar fugas de DNS."
+msgstr "Sin embargo, si usa una VPN, esto puede causar fugas de DNS."
 
 #: files/system/usr/libexec/secureblue/audit_secureblue.py:431
 #: files/system/usr/libexec/secureblue/audit_secureblue.py:446
@@ -270,7 +270,7 @@ msgstr "Considere usar la conexión global DNS segura."
 
 #: files/system/usr/libexec/secureblue/audit_secureblue.py:453
 msgid "The secure DNS resolver is not in use, possibly for a VPN."
-msgstr "El resolvedor de DNS seguro no esta en uso, posiblemente por un VPN"
+msgstr "El solucionador de DNS seguro no esta en uso, posiblemente por una VPN"
 
 #: files/system/usr/libexec/secureblue/audit_secureblue.py:457
 msgid "To view or reset your current DNS configuration, run:"
@@ -292,7 +292,7 @@ msgstr ""
 
 #: files/system/usr/libexec/secureblue/audit_secureblue.py:484
 msgid "If you use a VPN, switch your DNS resolver to systemd-resolved:"
-msgstr "Si usa un VPN, cambie su resolvedor de DNS a systemd-resolved:"
+msgstr "Si usa una VPN, cambie su solucionador de DNS a systemd-resolved:"
 
 #: files/system/usr/libexec/secureblue/audit_secureblue.py:494
 msgid "Ensuring system DNS resolution is secure"

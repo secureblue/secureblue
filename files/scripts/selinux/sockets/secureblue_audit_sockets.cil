@@ -10,29 +10,30 @@
 ;
 ; See `secureblue_socket_utils.cil` for macro definitions.
 
-; Sockets that are not part of another specific SELinux object class
-(call secureblue.audit_socket (socket))
+(in secureblue
+    ; Sockets that are not part of another specific SELinux object class
+    (call audit_socket (socket))
 
-; Netlink socket classes
-(call secureblue.audit_socket_ioctl (netlink_connector_socket))
-(call secureblue.audit_socket (netlink_crypto_socket))
-(call secureblue.audit_socket (netlink_fib_lookup_socket))
-(call secureblue.audit_socket (netlink_firewall_socket))
-(call secureblue.audit_socket (netlink_ip6fw_socket))
-(call secureblue.audit_socket_ioctl (netlink_netfilter_socket))
-(call secureblue.audit_socket (netlink_nflog_socket))
-(call secureblue.audit_socket_ioctl (netlink_rdma_socket))
-(call secureblue.audit_socket_ioctl (netlink_route_socket))
-(call secureblue.audit_socket (netlink_scsitransport_socket))
-(call secureblue.audit_socket_ioctl (netlink_selinux_socket))
-(call secureblue.audit_socket (netlink_socket))
-(call secureblue.audit_socket_ioctl (netlink_tcpdiag_socket))
+    ; Netlink socket classes
+    (call audit_socket_ioctl (netlink_connector_socket))
+    (call audit_socket (netlink_crypto_socket))
+    (call audit_socket (netlink_fib_lookup_socket))
+    (call audit_socket (netlink_firewall_socket))
+    (call audit_socket (netlink_ip6fw_socket))
+    (call audit_socket_ioctl (netlink_netfilter_socket))
+    (call audit_socket (netlink_nflog_socket))
+    (call audit_socket_ioctl (netlink_rdma_socket))
+    (call audit_socket_ioctl (netlink_route_socket))
+    (call audit_socket (netlink_scsitransport_socket))
+    (call audit_socket_ioctl (netlink_selinux_socket))
+    (call audit_socket (netlink_socket))
+    (call audit_socket_ioctl (netlink_tcpdiag_socket))
 
-; Miscellaneous socket classes
-(call secureblue.audit_bluetooth_socket_ioctl (bluetooth_socket))
-(call secureblue.audit_socket_ioctl (icmp_socket))
-(call secureblue.audit_socket (nfc_socket))
-(call secureblue.audit_socket (phonet_socket))
-(call secureblue.audit_socket (qipcrtr_socket))
-(call secureblue.audit_socket (vsock_socket))
-(call secureblue.audit_socket (xdp_socket))
+    ; Miscellaneous socket classes
+    (call audit_bluetooth_socket_ioctl (bluetooth_socket))
+    (call audit_socket_ioctl (icmp_socket))
+    (call audit_socket (nfc_socket))
+    (call audit_socket (phonet_socket))
+    (call audit_socket (qipcrtr_socket))
+    (call audit_socket (vsock_socket))
+    (call audit_socket (xdp_socket)))

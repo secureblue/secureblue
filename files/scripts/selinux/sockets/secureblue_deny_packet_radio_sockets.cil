@@ -9,7 +9,8 @@
 ;
 ; See `secureblue_socket_utils.cil` for macro definitions.
 
-(call secureblue.deny_userspace (ax25_socket))
-(call secureblue.deny_userspace (netrom_socket))
-(call secureblue.deny_userspace (rose_socket))
-(call secureblue.deny_userspace (x25_socket))
+(in secureblue
+    (call deny_userspace (ax25_socket))
+    (call deny_userspace (netrom_socket))
+    (call deny_userspace (rose_socket))
+    (call deny_userspace (x25_socket)))

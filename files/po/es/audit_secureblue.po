@@ -65,7 +65,7 @@ msgstr "La imagen actual no esta firmada"
 
 #: files/system/usr/libexec/secureblue/audit_secureblue.py:168
 msgid "To rebase to a signed image, run the following command:"
-msgstr "Para cambiar su base a una imagen firmada, ejectute el siguiente comando:"
+msgstr "Para cambiar su base a una imagen firmada, ejecute el siguiente comando:"
 
 #: files/system/usr/libexec/secureblue/audit_secureblue.py:172
 msgid "Ensuring a signed image is in use"
@@ -114,8 +114,8 @@ msgstr "Para prohibir ptrace, ejecute:"
 
 #: files/system/usr/libexec/secureblue/audit_secureblue.py:238
 msgid "To allow restricted ptrace, run the above command twice."
-msgstr ""
-"Para permitir ptrace restringido, ejecute el comando de arriba dos veces."
+msgstr "Para permitir ptrace restringido, ejecute el comando de arriba dos veces."
+
 
 #: files/system/usr/libexec/secureblue/audit_secureblue.py:244
 #, python-brace-format
@@ -270,7 +270,7 @@ msgstr "Considere usar la conexión global DNS segura."
 
 #: files/system/usr/libexec/secureblue/audit_secureblue.py:453
 msgid "The secure DNS resolver is not in use, possibly for a VPN."
-msgstr "El resolvedor de DNS seguro no esta en uso, posible por un VPN"
+msgstr "El resolvedor de DNS seguro no esta en uso, posiblemente por un VPN"
 
 #: files/system/usr/libexec/secureblue/audit_secureblue.py:457
 msgid "To view or reset your current DNS configuration, run:"
@@ -288,7 +288,7 @@ msgstr ""
 
 #: files/system/usr/libexec/secureblue/audit_secureblue.py:479
 msgid "Using a VPN alongside Unbound without Global DNS may cause DNS leaks."
-msgstr 
+msgstr ""
 
 #: files/system/usr/libexec/secureblue/audit_secureblue.py:484
 msgid "If you use a VPN, switch your DNS resolver to systemd-resolved:"

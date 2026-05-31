@@ -9,5 +9,6 @@
 ;
 ; See `secureblue_socket_utils.cil` for macro definitions.
 
-(call secureblue.deny_userspace (key_socket))
-(call secureblue.deny_userspace (netlink_xfrm_socket))
+(in secureblue
+    (call deny_userspace (key_socket))
+    (call deny_userspace (netlink_xfrm_socket)))

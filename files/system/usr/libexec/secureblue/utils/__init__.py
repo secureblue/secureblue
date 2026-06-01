@@ -203,6 +203,21 @@ def is_rpm_package_installed(name: str) -> bool:
     return len(matches) > 0
 
 
+def logout(prompt: str | None = None) -> None:
+    if prompt is not None and not ask_yes_no(prompt):
+        return
+    match Image.from_image_ref(booted_image_ref()):
+        case Image.SERICEA:
+            subprocess.run(["/usr/sbin/swaymsg", "exit"], check=True)
+        case Image.KINOITE:
+            subprocess.run(
+                ["/usr/bin/qdbus-qt6", "org.kde.Shutdown", "/Shutdown", "logout"], check=True
+            )
+        case _:
+            user = command_stdout("/usr/bin/whoami")
+            subprocess.run(["/usr/bin/loginctl", "terminate-user", user], check=True)
+
+
 def is_using_vpn() -> bool:
     """Returns whether an OpenVPN or Wireguard VPN is currently in use."""
 
@@ -260,3 +275,20 @@ def ask_option(options_count: int) -> int:
                 print()
                 return option
         print(f"Please enter a number between 1 and {options_count}.")
+
+
+def get_selinux_booleans(*booleans: str) -> frozenset[str]:
+    """Get list of SELinux booleans and return the set of all of them that are true/on."""
+    output = command_stdout("/usr/bin/getsebool", *booleans)
+    split_lines = (line.split(" --> ", maxsplit=1) for line in output.splitlines())
+    return frozenset(key for key, value in split_lines if value == "on")
+
+
+def set_selinux_booleans(sebools: dict[str, bool], *, permanent: bool = True) -> int:
+    """Set SELinux booleans"""
+    args = ["run0", "-i", "setsebool"]
+    if permanent:
+        args.append("-P")
+    for key, value in sebools.items():
+        args.append(f"{key}={'on' if value else 'off'}")
+    return subprocess.run(args, check=False).returncode

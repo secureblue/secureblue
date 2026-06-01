@@ -1,0 +1,32 @@
+; SPDX-FileCopyrightText: Copyright 2026 The Secureblue Authors
+;
+; SPDX-License-Identifier: Apache-2.0 OR MIT
+
+; Denies all userspace processes access to miscellaneous obscure socket classes
+; to reduce attack surface.
+;
+; See `secureblue_socket_utils.cil` for macro definitions.
+
+(in secureblue
+    (call deny_userspace (appletalk_socket))
+    (call deny_userspace (atmpvc_socket))
+    (call deny_userspace (atmsvc_socket))
+    (call deny_userspace (caif_socket))
+    (call deny_userspace (can_socket))
+    (call deny_userspace (dccp_socket))
+    (call deny_userspace (decnet_socket))
+    (call deny_userspace (ieee802154_socket))
+    (call deny_userspace (ipx_socket))
+    (call deny_userspace (irda_socket))
+    (call deny_userspace (isdn_socket))
+    (call deny_userspace (iucv_socket))
+    (call deny_userspace (kcm_socket))
+    (call deny_userspace (llc_socket))
+    (call deny_userspace (netlink_dnrt_socket))
+    (call deny_userspace (netlink_iscsi_socket))
+    (call deny_userspace (pppox_socket))
+    (call deny_userspace (rds_socket))
+    (call deny_userspace (rxrpc_socket))
+    (call deny_userspace (sctp_socket))
+    (call deny_userspace (smc_socket))
+    (call deny_userspace (tipc_socket)))

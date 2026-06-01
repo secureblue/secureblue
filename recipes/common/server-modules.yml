@@ -26,3 +26,4 @@ modules:
       - setserverdefaultzone.sh
       - disable-coreos-migration-motd.sh
       - remove-dns-greenboot-check.sh
+      - disablenfsdaemons.sh

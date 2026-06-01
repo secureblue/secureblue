@@ -1,0 +1,98 @@
+#!/usr/bin/python3
+
+# SPDX-FileCopyrightText: Copyright 2025-2026 The Secureblue Authors
+#
+# SPDX-License-Identifier: Apache-2.0
+
+"""
+The networking toggle implementation for ujust
+"""
+
+import sys
+from pathlib import Path
+from typing import Final
+
+import sandbox
+from utils import (
+    ask_yes_no,
+    is_module_loaded,
+)
+
+BLUE_HELP: Final[str] = """
+This python script toggles if networking is enabled by creating or deleting a modprobe file at
+"/etc/modprobe.d/99-networking.conf" to disable or enable the kernel modules
+needed for networking. Note this change only takes affect upon reboot.
+
+usage:
+ujust set-networking
+    Turns networking on or off interactively based on the user's preference.
+
+ujust set-networking on
+    Turns networking on, does nothing if already on.
+
+ujust set-networking off
+    Turns networking off, does nothing if already off.
+
+ujust set-networking status
+    Reports if networking is set on or off.
+
+ujust set-networking --help
+    Prints this message.
+"""
+
+BLUE_MOD_DIR: Final[str] = "/etc/modprobe.d"
+BLUE_MOD_FILE: Final[str] = f"{BLUE_MOD_DIR}/99-networking.conf"
+
+
+def print_status(enabled_by_file: bool) -> None:
+    """Print the current file and runtime status"""
+
+    networking_currently_enabled = is_module_loaded("nfs") or is_module_loaded("cifs")
+    file_matches_sys = "still " if enabled_by_file == networking_currently_enabled else ""
+    cur_status = "enabled" if networking_currently_enabled else "disabled"
+    file_status = "enabled" if enabled_by_file else "disabled"
+
+    print(
+        f"Networking is currently {cur_status}, and after a reboot will",
+        f"{file_matches_sys}be {file_status}",
+    )
+
+
+def main() -> int:
+    """Handle the arguments and execute the networking toggle"""
+
+    argc_interactive = 1
+    argc_on_off = 2
+
+    if len(sys.argv) == argc_interactive:
+        # Ask interactively.
+        mode = "on" if ask_yes_no("Would you like to load the networking modules?") else "off"
+    elif len(sys.argv) == argc_on_off:
+        # Take mode from first argument, i.e. 'on' or 'off'.
+        mode = sys.argv[1].casefold()
+    else:
+        print("Too many options specified, see usage with --help.", file=sys.stderr)
+        return 1
+
+    enabled_by_file = Path(BLUE_MOD_FILE).exists()
+    networking_function = sandbox.SandboxedFunction("networking.py", read_write_paths=[BLUE_MOD_DIR])
+    match mode:
+        case "on" | "off":
+            target_state_enabled = mode == "on"
+            state_already_set = target_state_enabled == enabled_by_file
+            if state_already_set:
+                print_status(enabled_by_file)
+            else:
+                return sandbox.run(networking_function, mode)
+        case "status":
+            print_status(enabled_by_file)
+        case "--help":
+            print(BLUE_HELP)
+        case _:
+            print("Invalid option selected. Try --help.")
+            return 1
+    return 0
+
+
+if __name__ == "__main__":
+    sys.exit(main())

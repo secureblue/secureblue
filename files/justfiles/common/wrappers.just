@@ -27,6 +27,12 @@ set-webcam-modules *args:
     #!/bin/sh
     exec /usr/bin/python3 /usr/libexec/secureblue/webcam_main.py "$@"
 
+# Sets networking support on/off (requires reboot)
+[positional-arguments]
+set-networking *args:
+    #!/bin/sh
+    exec /usr/bin/python3 /usr/libexec/secureblue/networking_main.py "$@"
+
 # Interactively select secure DNS servers
 [positional-arguments]
 dns-selector *args:

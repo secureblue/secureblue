@@ -21,7 +21,7 @@ set-bluetooth-modules *args:
     #!/bin/sh
     exec /usr/bin/python3 /usr/libexec/secureblue/bluetooth_main.py "$@"
 
-# Sets networking support on/off (requires reboot)
+# Sets networking kernel modules on/off (requires reboot)
 [positional-arguments]
 set-networking-modules *args:
     #!/bin/sh

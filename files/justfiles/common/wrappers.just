@@ -84,6 +84,12 @@ set-always-upgrade-on-boot *args:
     #!/bin/sh
     exec /usr/bin/python3 /usr/libexec/secureblue/set_always_upgrade_on_boot.py "$@"
 
+# Enable, disable, or check status of SSH password authentication
+[positional-arguments]
+set-ssh-password-auth *args:
+    #!/bin/sh
+    exec /usr/bin/python3 /usr/libexec/secureblue/set_ssh_password_auth.py "$@"
+
 # Configure ptrace support (for anticheat, debugging tools, etc.)
 [positional-arguments]
 set-ptrace *args:

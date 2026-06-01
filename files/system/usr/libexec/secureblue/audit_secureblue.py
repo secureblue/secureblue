@@ -173,6 +173,32 @@ def audit_signed_image(state):
 
 
 @audit
+@depends_on("audit_signed_image")
+def audit_ssh_password_auth(state):
+    """Ensure SSH password authentication is disabled on server images."""
+    image = state["image"]
+    if image is None or not image.is_server():
+        return
+
+    ssh_password_auth_enabled = (
+        command_stdout("ujust", "set-ssh-password-auth", "status") != "disabled"
+    )
+    if ssh_password_auth_enabled:
+        status = FAIL
+        rec_lines = [
+            _("SSH password authentication is enabled."),
+            _("To disable it, run:"),
+            "$ ujust set-ssh-password-auth off",
+        ]
+        rec = "\n".join(rec_lines)
+    else:
+        status = PASS
+        rec = None
+
+    yield Report(_("Ensuring SSH password authentication is disabled"), status, recs=rec)
+
+
+@audit
 def audit_modprobe(state):
     """Check for modprobe overrides."""
     modprobe_dir = "/usr/lib/modprobe.d"

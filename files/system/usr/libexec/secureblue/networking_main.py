@@ -24,19 +24,19 @@ This python script toggles if networking is enabled by creating or deleting a mo
 needed for networking. Note this change only takes affect upon reboot.
 
 usage:
-ujust set-networking
+ujust set-networking-modules
     Turns networking on or off interactively based on the user's preference.
 
-ujust set-networking on
+ujust set-networking-modules on
     Turns networking on, does nothing if already on.
 
-ujust set-networking off
+ujust set-networking-modules off
     Turns networking off, does nothing if already off.
 
-ujust set-networking status
+ujust set-networking-modules status
     Reports if networking is set on or off.
 
-ujust set-networking --help
+ujust set-networking-modules --help
     Prints this message.
 """
 

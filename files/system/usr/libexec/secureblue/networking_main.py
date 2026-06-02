@@ -21,20 +21,20 @@ from utils import (
 BLUE_HELP: Final[str] = """
 This python script toggles if network filesystems is enabled by creating or deleting a modprobe file at
 "/etc/modprobe.d/99-networking.conf" to disable or enable the kernel modules
-needed for networking. Note this change only takes affect upon reboot.
+needed for network filesystems. Note this change only takes affect upon reboot.
 
 usage:
 ujust set-network-filesystem-modules
-    Turns networking on or off interactively based on the user's preference.
+    Turns network filesystems on or off interactively based on the user's preference.
 
 ujust set-network-filesystem-modules on
-    Turns networking on, does nothing if already on.
+    Turns network filesystems on, does nothing if already on.
 
 ujust set-network-filesystem-modules off
-    Turns networking off, does nothing if already off.
+    Turns network filesystems off, does nothing if already off.
 
 ujust set-network-filesystem-modules status
-    Reports if networking is set on or off.
+    Reports if network filesystems is set on or off.
 
 ujust set-network-filesystem-modules --help
     Prints this message.
@@ -53,20 +53,20 @@ def print_status(enabled_by_file: bool) -> None:
     file_status = "enabled" if enabled_by_file else "disabled"
 
     print(
-        f"Networking is currently {cur_status}, and after a reboot will",
+        f"Network filesystems is currently {cur_status}, and after a reboot will",
         f"{file_matches_sys}be {file_status}",
     )
 
 
 def main() -> int:
-    """Handle the arguments and execute the networking toggle"""
+    """Handle the arguments and execute the network filesystem toggle"""
 
     argc_interactive = 1
     argc_on_off = 2
 
     if len(sys.argv) == argc_interactive:
         # Ask interactively.
-        mode = "on" if ask_yes_no("Would you like to load the networking modules?") else "off"
+        mode = "on" if ask_yes_no("Would you like to load the network filesystem modules?") else "off"
     elif len(sys.argv) == argc_on_off:
         # Take mode from first argument, i.e. 'on' or 'off'.
         mode = sys.argv[1].casefold()

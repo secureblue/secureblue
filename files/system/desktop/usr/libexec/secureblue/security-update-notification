@@ -54,7 +54,21 @@ notify_normal() {
         "Please reboot to run the updated system"
 }
 
+prompt_reboot() {
+    container_image_reference="$(rpm-ostree status --booted --jsonpath='.deployments..container-image-reference')"
+    # Extracts the first 7 characters of the package name as defined
+    # at https://github.com/orgs/secureblue/packages?repo_name=secureblue
+    secureblue_variant_in_use=${container_image_reference:53:7}
+
+    case "${secureblue_variant_in_use}" in
+        "silverb") gnome-session-quit --reboot ;;
+        "kinoite") qdbus org.kde.LogoutPrompt /LogoutPrompt promptReboot ;;
+        *) systemctl reboot ;;
+    esac
+}
+
 if [[ "${trivalent_updated}" == 'true' || "${max_advisory_severity}" == 'critical' ]]; then
+<<<<<<< Updated upstream
     if [[ "$(notify_critical)" == '0' ]]; then
         systemctl reboot
     fi
@@ -62,4 +76,13 @@ elif [[ "${kernel_updated}" == 'true' || "${max_advisory_severity}" == 'importan
     if [[ "$(notify_normal)" == '0' ]]; then
         systemctl reboot
     fi
+=======
+  if [[ "$(notify_critical)" == '0' ]]; then
+    prompt_reboot
+  fi
+elif [[ "${kernel_updated}" == 'true' || "${max_advisory_severity}" == 'important' || "${max_advisory_severity}" == 'unknown' ]]; then
+  if [[ "$(notify_normal)" == '0' ]]; then
+    prompt_reboot
+  fi
+>>>>>>> Stashed changes
 fi

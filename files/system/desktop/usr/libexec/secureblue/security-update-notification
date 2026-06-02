@@ -68,21 +68,11 @@ prompt_reboot() {
 }
 
 if [[ "${trivalent_updated}" == 'true' || "${max_advisory_severity}" == 'critical' ]]; then
-<<<<<<< Updated upstream
     if [[ "$(notify_critical)" == '0' ]]; then
-        systemctl reboot
+        prompt_reboot
     fi
 elif [[ "${kernel_updated}" == 'true' || "${max_advisory_severity}" == 'important' || "${max_advisory_severity}" == 'unknown' ]]; then
     if [[ "$(notify_normal)" == '0' ]]; then
-        systemctl reboot
+        prompt_reboot
     fi
-=======
-  if [[ "$(notify_critical)" == '0' ]]; then
-    prompt_reboot
-  fi
-elif [[ "${kernel_updated}" == 'true' || "${max_advisory_severity}" == 'important' || "${max_advisory_severity}" == 'unknown' ]]; then
-  if [[ "$(notify_normal)" == '0' ]]; then
-    prompt_reboot
-  fi
->>>>>>> Stashed changes
 fi

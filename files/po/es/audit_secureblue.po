@@ -72,9 +72,9 @@ msgid "Ensuring a signed image is in use"
 msgstr "Asegurando que una imagen firmada está en uso"
 
 #: files/system/usr/libexec/secureblue/audit_secureblue.py:198
-#, fuzzy, python-brace-format
+#, python-brace-format
 msgid "The module {0} is blocked in {1}, but has been loaded anyway."
-msgstr "El módulo {0} está en {1}, pero ya está cargado."
+msgstr "El módulo {0} está bloqueado en {1}, pero ya está cargado."
 
 #: files/system/usr/libexec/secureblue/audit_secureblue.py:205
 msgid "Ensuring no modprobe overrides"
@@ -92,9 +92,8 @@ msgid "For more info on what this means, see:"
 msgstr "Para más información sobre lo que esto significa, vea:"
 
 #: files/system/usr/libexec/secureblue/audit_secureblue.py:225
-#, fuzzy
 msgid "To allow restricted ptrace, run:"
-msgstr "Para prohibir ptrace, ejecute:"
+msgstr "Para permitir ptrace restringido, ejecute:"
 
 #: files/system/usr/libexec/secureblue/audit_secureblue.py:227
 #, fuzzy
@@ -140,9 +139,8 @@ msgstr "La política de contenedores tiene una sobreescritura en {0}"
 
 #: files/system/usr/libexec/secureblue/audit_secureblue.py:276
 #: files/system/usr/libexec/secureblue/audit_secureblue.py:312
-#, fuzzy
 msgid "Analyzing container policy"
-msgstr "Asegurando que no hayan sobreescrituras de políticas de contenedores"
+msgstr "Analizando política de contenedores"
 
 #: files/system/usr/libexec/secureblue/audit_secureblue.py:281
 msgid "The default container policy is insecure."
@@ -324,13 +322,13 @@ msgstr "{0} está deshabilitado."
 #: files/system/usr/libexec/secureblue/audit_secureblue.py:656
 #: files/system/usr/libexec/secureblue/audit_secureblue.py:679
 #: files/system/usr/libexec/secureblue/audit_secureblue.py:707
-#, fuzzy, python-brace-format
+#, python-brace-format
 msgid "{0} has failed to run."
-msgstr "{0} está habilitado pero ha fallado la ejecución."
+msgstr "{0} ha fallado en ejecutar."
 
 #: files/system/usr/libexec/secureblue/audit_secureblue.py:562
 msgid "Automatic system updates are disabled in /etc/rpm-ostreed.conf"
-msgstr ""
+msgstr "Las actualizaciones automáticas del sistema están desactivadas en /etc/rpm-ostreed.conf"
 
 #: files/system/usr/libexec/secureblue/audit_secureblue.py:566
 #: files/system/usr/libexec/secureblue/audit_secureblue.py:1085
@@ -342,9 +340,8 @@ msgid "To fix this, run:"
 msgstr "Para solucionar esto, ejecute:"
 
 #: files/system/usr/libexec/secureblue/audit_secureblue.py:571
-#, fuzzy
 msgid "Ensuring automatic system updates are enabled"
-msgstr "Asegurando que la aleatorización de MAC está habilitada"
+msgstr "Asegurando que las actualizaciones automáticas del sistema estén habilitadas."
 
 #: files/system/usr/libexec/secureblue/audit_secureblue.py:594
 #: files/system/usr/libexec/secureblue/audit_secureblue.py:682
@@ -366,7 +363,7 @@ msgstr "Asegurando que {0} está habilitado globalmente"
 
 #: files/system/usr/libexec/secureblue/audit_secureblue.py:712
 msgid "Automatic updates for Homebrew are not enabled."
-msgstr ""
+msgstr "Las actualizaciones automáticas para Homebrew no estan habilitadas"
 
 #: files/system/usr/libexec/secureblue/audit_secureblue.py:713
 #, fuzzy
@@ -374,9 +371,8 @@ msgid "To enable them, run:"
 msgstr "Para habilitarlo, ejecute:"
 
 #: files/system/usr/libexec/secureblue/audit_secureblue.py:719
-#, fuzzy
 msgid "Ensuring automatic Homebrew updates are enabled"
-msgstr "Asegurando que la aleatorización de MAC está habilitada"
+msgstr "Asegurando que las actualizaciones automáticas de Homebrew estén habilitadas."
 
 #: files/system/usr/libexec/secureblue/audit_secureblue.py:733
 msgid "The current user is in the wheel group."
@@ -393,32 +389,31 @@ msgstr "Asegurando que el usuario no sea miembro del grupo wheel"
 
 #: files/system/usr/libexec/secureblue/audit_secureblue.py:756
 #: files/system/usr/libexec/secureblue/audit_secureblue.py:767
-#, fuzzy, python-brace-format
+#, python-brace-format
 msgid "The current user is in the group '{0}'."
-msgstr "El usuario actual está en el grupo wheel."
+msgstr "El usuario actual está en el grupo '{0}'."
 
 #: files/system/usr/libexec/secureblue/audit_secureblue.py:760
 msgid "This allows privilege escalation to root."
-msgstr ""
+msgstr "Esto permite la escalación de privilegios a root."
 
 #: files/system/usr/libexec/secureblue/audit_secureblue.py:761
 #: files/system/usr/libexec/secureblue/audit_secureblue.py:773
-#, fuzzy
 msgid "To remove the user from this group, run:"
-msgstr "Para eliminar este permiso de una aplicación, use Flatseal o ejecute:"
+msgstr "Para eliminar un usuario de este grupo, ejecute:"
 
 #: files/system/usr/libexec/secureblue/audit_secureblue.py:771
 msgid "This group allows the user to read system and kernel logs."
-msgstr ""
+msgstr "Esto permite que el usuario pueda leer la bitácora del sistema y del kernel."
 
 #: files/system/usr/libexec/secureblue/audit_secureblue.py:772
 msgid "This might make it easier to exploit kernel vulnerabilities."
-msgstr ""
+msgstr "Esto puede facilitar la explotación de vulnerabilidades en el kernel."
 
 #: files/system/usr/libexec/secureblue/audit_secureblue.py:780
-#, fuzzy, python-brace-format
+#, python-brace-format
 msgid "The current user is in the unrecognized group '{0}'."
-msgstr "El usuario actual está en el grupo wheel."
+msgstr "El usuario actual esta en el grupo desconocido '{0}'."
 
 #: files/system/usr/libexec/secureblue/audit_secureblue.py:785
 msgid ""
@@ -428,11 +423,11 @@ msgstr ""
 
 #: files/system/usr/libexec/secureblue/audit_secureblue.py:786
 msgid "You may want to consider removing the user from this group:"
-msgstr ""
+msgstr "Debería considerar remover a este usuario de este grupo:"
 
 #: files/system/usr/libexec/secureblue/audit_secureblue.py:791
 msgid "Checking if user is in groups with security implications"
-msgstr ""
+msgstr "Verificando si el usuario está en grupos con implicaciones de seguridad."
 
 #: files/system/usr/libexec/secureblue/audit_secureblue.py:804
 msgid "GNOME"
@@ -622,9 +617,9 @@ msgid "CUPS (the printing service) has unexpected status '{0}'."
 msgstr ""
 
 #: files/system/usr/libexec/secureblue/audit_secureblue.py:1128
-#, fuzzy, python-brace-format
+#, python-brace-format
 msgid "{0} is enabled."
-msgstr "{0} no está habilitado."
+msgstr "{0} está habilitado."
 
 #: files/system/usr/libexec/secureblue/audit_secureblue.py:1142
 #, fuzzy, python-brace-format
@@ -634,7 +629,7 @@ msgstr "{0} está deshabilitado."
 #: files/system/usr/libexec/secureblue/audit_secureblue.py:1157
 #, python-brace-format
 msgid "{0} has unexpected status '{1}'."
-msgstr ""
+msgstr "{0} tiene un estado inesperado '{1}'."
 
 #: files/system/usr/libexec/secureblue/audit_secureblue.py:1160
 #, fuzzy
@@ -650,7 +645,7 @@ msgstr "El módulo {0} está en {1}, pero ya está cargado."
 #: files/system/usr/libexec/secureblue/audit_secureblue.py:1179
 #, fuzzy
 msgid "To disable it, you must reboot."
-msgstr "Para deshabilitarlo, ejecute:"
+msgstr "Para deshabilitarlo, debe reiniciar."
 
 #: files/system/usr/libexec/secureblue/audit_secureblue.py:1186
 #: files/system/usr/libexec/secureblue/audit_secureblue.py:1195
@@ -691,15 +686,15 @@ msgstr "Verificando la configuración de secureblue para seguridad"
 
 #: files/system/usr/libexec/secureblue/audit_secureblue.py:1291
 msgid "usage: "
-msgstr ""
+msgstr "uso: "
 
 #: files/system/usr/libexec/secureblue/audit_secureblue.py:1292
 msgid "options"
-msgstr ""
+msgstr "opciones"
 
 #: files/system/usr/libexec/secureblue/audit_secureblue.py:1293
 msgid "show this help message and exit"
-msgstr ""
+msgstr "mostar este mensaje de ayuda y salir"
 
 #: files/system/usr/libexec/secureblue/audit_secureblue.py:1296
 msgid "skip categories"
@@ -817,7 +812,7 @@ msgstr "acceso a la comunicación entre procesos"
 
 #: files/system/usr/libexec/secureblue/audit_flatpak/__init__.py:202
 msgid "This is only necessary for better X11 performance."
-msgstr ""
+msgstr "Esto solo es necesario para mejor rendimiento de X11."
 
 #: files/system/usr/libexec/secureblue/audit_flatpak/__init__.py:208
 msgid "X11 access"
@@ -825,7 +820,7 @@ msgstr "acceso a X11"
 
 #: files/system/usr/libexec/secureblue/audit_flatpak/__init__.py:209
 msgid "X11 apps can monitor and modify each other's graphics and inputs."
-msgstr ""
+msgstr "Aplicaciones que utilizan X11 pueden modificar las gráficas y las entradas de otras aplicaciones."
 
 #: files/system/usr/libexec/secureblue/audit_flatpak/__init__.py:215
 msgid "access to the PulseAudio socket"
@@ -852,9 +847,8 @@ msgid "access to the SSH agent"
 msgstr "acceso al protocolo SSH agent"
 
 #: files/system/usr/libexec/secureblue/audit_flatpak/__init__.py:228
-#, fuzzy
 msgid "access to all devices"
-msgstr "Esto otorga acceso a periféricos."
+msgstr "acceso a todos los dispositivos"
 
 #: files/system/usr/libexec/secureblue/audit_flatpak/__init__.py:229
 #, fuzzy
@@ -867,14 +861,12 @@ msgid "If GPU access is required, allow {0} instead."
 msgstr "Si se requiere acceso a la GPU, permita {0} en su lugar."
 
 #: files/system/usr/libexec/secureblue/audit_flatpak/__init__.py:237
-#, fuzzy
 msgid "access to input devices"
-msgstr "Esto otorga acceso a periféricos."
+msgstr "acceso a todos los dispositivos de entrada"
 
 #: files/system/usr/libexec/secureblue/audit_flatpak/__init__.py:238
-#, fuzzy
 msgid "This is required for game controllers."
-msgstr "Esto se requiere para cargar hardened_malloc."
+msgstr "Esto se requiere para controles de juego."
 
 #: files/system/usr/libexec/secureblue/audit_flatpak/__init__.py:240
 #, fuzzy
@@ -884,12 +876,12 @@ msgstr "Esto otorga acceso a virtualización basada en el kernel."
 #: files/system/usr/libexec/secureblue/audit_flatpak/__init__.py:245
 #, fuzzy
 msgid "access to shared memory."
-msgstr "Esto otorga acceso a memoria compartida."
+msgstr "acceso a memoria compartida."
 
 #: files/system/usr/libexec/secureblue/audit_flatpak/__init__.py:252
 #, fuzzy
 msgid "raw access to USB devices."
-msgstr "Esto otorga acceso a periféricos."
+msgstr "acceso directo a dispositivos USB."
 
 #: files/system/usr/libexec/secureblue/audit_flatpak/__init__.py:255
 msgid "bluetooth access"
@@ -996,9 +988,9 @@ msgid "To add this permission to an app, use Flatseal or run:"
 msgstr "Para añadir este permiso a una aplicación, use Flatseal o ejecute:"
 
 #: files/system/usr/libexec/secureblue/audit_flatpak/__init__.py:493
-#, fuzzy, python-brace-format
+#, python-brace-format
 msgid "{0} can modify flatpak permissions."
-msgstr "{0} puede adquirir permisos arbitrarios."
+msgstr "{0} puede modificar permisos de flatpaks."
 
 #: files/system/usr/libexec/secureblue/audit_flatpak/__init__.py:495
 #, fuzzy

@@ -5,7 +5,7 @@
 # SPDX-License-Identifier: Apache-2.0
 
 """
-The sandboxed networking toggle function
+The sandboxed network filesystem toggle function
 """
 
 import os

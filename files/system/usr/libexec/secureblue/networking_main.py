@@ -5,7 +5,7 @@
 # SPDX-License-Identifier: Apache-2.0
 
 """
-The networking toggle implementation for ujust
+The network filesystem toggle implementation for ujust
 """
 
 import sys

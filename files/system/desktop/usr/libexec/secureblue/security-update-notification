@@ -55,13 +55,10 @@ notify_normal() {
 }
 
 prompt_reboot() {
-    container_image_reference="$(rpm-ostree status --booted --jsonpath='.deployments..container-image-reference')"
-    # Extracts the first 7 characters of the package name as defined
-    # at https://github.com/orgs/secureblue/packages?repo_name=secureblue
-    secureblue_variant_in_use=${container_image_reference:53:7}
+    secureblue_variant_in_use="$(grep -oP '^VARIANT_ID=\K\w+' /usr/lib/os-release)"
 
     case "${secureblue_variant_in_use}" in
-        "silverb") gnome-session-quit --reboot ;;
+        "silverblue") gnome-session-quit --reboot ;;
         "kinoite") qdbus org.kde.LogoutPrompt /LogoutPrompt promptReboot ;;
         *) systemctl reboot ;;
     esac

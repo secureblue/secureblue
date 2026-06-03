@@ -15,10 +15,10 @@ declare -r green=$'\033[32m'
 declare -r yellow=$'\033[33m'
 declare -r blue=$'\033[34m'
 declare -r magenta=$'\033[35m'
-declare -r purple="$magenta"
+declare -r purple="${magenta}"
 declare -r cyan=$'\033[36m'
 declare -r lightgrey=$'\033[37m'
-declare -r lightgray="$lightgrey"
+declare -r lightgray="${lightgrey}"
 
 ########
 ### Extended Colors
@@ -26,13 +26,13 @@ declare -r lightgray="$lightgrey"
 ### cpick bash varname | sed -E 's/readonly/declare/'
 ########
 declare -r darkgrey=$'\033[38;2;168;168;168m'
-declare -r darkgray="$darkgrey"
+declare -r darkgray="${darkgrey}"
 declare -r lightred=$'\033[38;2;255;114;118m'
 declare -r lightgreen=$'\033[38;2;146;240;146m'
 declare -r lightyellow=$'\033[38;2;255;255;224m'
 declare -r lightblue=$'\033[38;2;172;215;230m'
 declare -r pink=$'\033[38;2;255;20;146m'
-declare -r lightmagenta="$pink"
+declare -r lightmagenta="${pink}"
 declare -r lightcyan=$'\033[38;2;224;255;255m'
 declare -r white=$'\033[38;2;250;235;215m'
 declare -r lightpink=$'\033[38;2;255;181;192m'
@@ -46,5 +46,5 @@ function Bg (){
     COLOR="$1"
 
     # Flip foreground to background
-    echo "$COLOR" | sed -E 's/\[3([0-8]{1,1})/\[4\1/'
+    echo "${COLOR}" | sed -E 's/\[3([0-8]{1,1})/\[4\1/'
 }

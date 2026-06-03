@@ -9,7 +9,7 @@ set -euo pipefail
 
 IMAGE_TAG="latest"
 IMAGE_VARIANT_ID=$(grep '^VARIANT_ID=' /usr/lib/os-release | cut -d= -f2)
-IMAGE_REF="ghcr.io/secureblue/$IMAGE_VARIANT_ID"
+IMAGE_REF="ghcr.io/secureblue/${IMAGE_VARIANT_ID}"
 
 sed -i '/^install squashfs /d' /usr/lib/modprobe.d/secureblue.conf
 
@@ -96,7 +96,7 @@ EOF
 
 # Fetch the Secureboot Public Key
 sbkey='https://github.com/secureblue/secureblue/raw/0d8f58d7c6482e97a620a336643fadff55dcd352/files/system/etc/pki/akmods/certs/akmods-secureblue.der'
-curl --retry 15 -Lo /etc/sb_pubkey.der $sbkey
+curl --retry 15 -Lo /etc/sb_pubkey.der "${sbkey}"
 
 # Enroll Secureboot Key
 tee /usr/share/anaconda/post-scripts/secureboot-enroll-key.ks <<'EOF'
@@ -128,7 +128,7 @@ EOF
 
 # Interactive Kickstart
 tee -a /usr/share/anaconda/interactive-defaults.ks <<EOF
-ostreecontainer --url=$IMAGE_REF:$IMAGE_TAG --transport=containers-storage --no-signature-verification
+ostreecontainer --url=${IMAGE_REF}:${IMAGE_TAG} --transport=containers-storage --no-signature-verification
 %include /usr/share/anaconda/post-scripts/install-configure-upgrade.ks
 %include /usr/share/anaconda/post-scripts/secureboot-enroll-key.ks
 EOF
@@ -136,7 +136,7 @@ EOF
 # Signed Images
 tee /usr/share/anaconda/post-scripts/install-configure-upgrade.ks <<EOF
 %post --erroronfail
-bootc switch --mutate-in-place --enforce-container-sigpolicy --transport registry $IMAGE_REF:$IMAGE_TAG
+bootc switch --mutate-in-place --enforce-container-sigpolicy --transport registry ${IMAGE_REF}:${IMAGE_TAG}
 %end
 EOF
 

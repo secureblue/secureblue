@@ -18,7 +18,7 @@ function Toolbox (){
     local DISTRORELEASE
 
     # If the ACTION is "replace"
-    if [ "$1" == "replace" ]; then
+    if [[ "$1" == "replace" ]]; then
         # Set ACTION to create
         ACTION="create"
 
@@ -27,15 +27,15 @@ function Toolbox (){
     fi
 
     # Check if $IMAGE is an image registry url
-    if [[ "$IMAGE" =~ / ]]; then
+    if [[ "${IMAGE}" =~ / ]]; then
         # Create toolbox based on image from registry
-        toolbox "$ACTION" --image "$IMAGE" "${@:3}"
+        toolbox "${ACTION}" --image "${IMAGE}" "${@:3}"
     else
         # Split IMAGE string into an array
         # shellcheck disable=SC2206
         DISTRORELEASE=(${IMAGE//:/ })
         # Create toolbox with distro and release args
-        toolbox "$ACTION" --distro "${DISTRORELEASE[0]}" --release "${DISTRORELEASE[1]}" "${@:3}"
+        toolbox "${ACTION}" --distro "${DISTRORELEASE[0]}" --release "${DISTRORELEASE[1]}" "${@:3}"
     fi
 }
 
@@ -61,41 +61,41 @@ function ToolboxAssemble (){
     local CONFIRM
 
     # If an action is provided
-    if [ -n "$1" ]; then
+    if [[ -n "$1" ]]; then
         # Set ACTION to the action specified
         # and remove "noconfirm" from $1 when assigning it to ACTION
         ACTION="${1/noconfirm/}"
     fi
 
     # If a filename is provided
-    if [ -n "$2" ]; then
+    if [[ -n "$2" ]]; then
         # Set FILE to the provided filename
         FILE="$2"
     fi
 
     # If container name is ALL
-    if [ "$3" == "ALL" ] || [ -z "$3" ]; then
+    if [[ "$3" == "ALL" ]] || [[ -z "$3" ]]; then
         if [[ ! "$1" =~ ^noconfirm ]]; then
             # Ask user if they REALLY want to assemble all the containers
-            echo -e "${b}WARNING${n}: This will assemble and ${u}replace${n}\nALL containers defined in ${b}$FILE${n}."
+            echo -e "${b}WARNING${n}: This will assemble and ${u}replace${n}\nALL containers defined in ${b}${FILE}${n}."
             CONFIRM=$(Confirm "Are you sure you want to do this?")
-            if [ "$CONFIRM" == "1" ]; then
+            if [[ "${CONFIRM}" == "1" ]]; then
                 echo "Aborting..."
                 return 1
             fi
         fi
         # Get all the containers
-        CONTAINERS=$(grep -P "\[.+\]" "$FILE" | sed -E 's/\[(.+)\]/\1/')
+        CONTAINERS=$(grep -P "\[.+\]" "${FILE}" | sed -E 's/\[(.+)\]/\1/')
 
         # Run the toolbox assemble command
         #toolbox assemble "$ACTION" --file "$FILE" --replace
-        for CONTAINER in $CONTAINERS
+        for CONTAINER in ${CONTAINERS}
         do
             # Get the image for the container
-            IMAGE=$(grep -A1 -P "\[$CONTAINER\]" "$FILE" | grep "image" | sed 's/image=//')
+            IMAGE=$(grep -A1 -P "\[${CONTAINER}\]" "${FILE}" | grep "image" | sed 's/image=//')
 
             # Replace the container
-            Toolbox replace "$IMAGE" "$CONTAINER"
+            Toolbox replace "${IMAGE}" "${CONTAINER}"
         done
         return $?
     else
@@ -106,19 +106,19 @@ function ToolboxAssemble (){
     # If we do not want confirmations
     if [[ ! "$1" =~ ^noconfirm ]]; then
         # Ask the user if they really want to replace $NAME container
-        echo -e "${b}WARNING${n}: This will assemble and ${u}replace${n} the container ${b}$NAME${n}\nwith the one defined in ${b}$FILE${n}."
+        echo -e "${b}WARNING${n}: This will assemble and ${u}replace${n} the container ${b}${NAME}${n}\nwith the one defined in ${b}${FILE}${n}."
         CONFIRM=$(Confirm "Are you sure you want to do this?")
-        if [ "$CONFIRM" == "1" ]; then
+        if [[ "${CONFIRM}" == "1" ]]; then
             echo "Aborting..."
             return 1
         fi
     fi
 
     # Get the image for the container
-    IMAGE=$(grep -A1 -P "\[$NAME\]" "$FILE" | grep "image" | sed 's/image=//')
+    IMAGE=$(grep -A1 -P "\[${NAME}\]" "${FILE}" | grep "image" | sed 's/image=//')
 
     # Replace the toolbox container
-    Toolbox replace "$IMAGE" "$NAME"
+    Toolbox replace "${IMAGE}" "${NAME}"
 }
 
 ########
@@ -138,34 +138,34 @@ function ToolboxAssembleList (){
     local CONTAINERS
 
     # If an ACTION is supplied
-    if [ -n "$2" ]; then
+    if [[ -n "$2" ]]; then
         # Replace default action
         ACTION="$2"
     fi
 
     # If a CHOICE is predefined
-    if [ -n "$3" ]; then
+    if [[ -n "$3" ]]; then
         # Replace default choice
         CHOICE="$3"
     fi
 
     # If the choice is "prompt" then ask user what container they want
-    if [ "$CHOICE" == "prompt" ]; then
-        CONTAINERS=$(grep -P "\[.+\]" "$FILE" | sed -E 's/\[(.+)\]/\1/')
+    if [[ "${CHOICE}" == "prompt" ]]; then
+        CONTAINERS=$(grep -P "\[.+\]" "${FILE}" | sed -E 's/\[(.+)\]/\1/')
         echo "${b}Pre-defined Containers${n}"
         echo "Please select a container to create"
         # Disable an irrelevant shellscheck for next line as we want word splitting
         # shellcheck disable=SC2086
-        CHOICE=$(Choose ALL $CONTAINERS)
+        CHOICE=$(Choose ALL ${CONTAINERS})
     fi
 
     # If choice is not empty by now (will be empty if escaped from Choice function)
-    if [ -n "$CHOICE" ]; then
+    if [[ -n "${CHOICE}" ]]; then
         # If ACTION is create
-        if [ "$ACTION" == "create" ]; then
+        if [[ "${ACTION}" == "create" ]]; then
             ACTION="replace"
         fi
         # Assemble the selected container
-        ToolboxAssemble "$ACTION" "$FILE" "$CHOICE"
+        ToolboxAssemble "${ACTION}" "${FILE}" "${CHOICE}"
     fi
 }

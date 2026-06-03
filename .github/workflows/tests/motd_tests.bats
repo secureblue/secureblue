@@ -16,7 +16,7 @@ setup() {
 
 teardown() {
     PATH="${PATH#*:}"
-    rm -rf "$TEMP_TEST_DIR"
+    rm -rf "${TEMP_TEST_DIR}"
 }
 
 mock_rpm_ostree_status() {
@@ -42,70 +42,70 @@ EOF
 
 @test "MOTD runs correctly with up-to-date image" {
     test_image_name='kinoite-main-hardened:latest'
-    mock_rpm_ostree_status "$test_image_name" "$(date +%s)"
+    mock_rpm_ostree_status "${test_image_name}" "$(date +%s)"
     mock_mokutil 'secureblue secureboot key' 0
     run secureblue-motd
     (( status == 0 ))
-    [[ "$output" == *"Welcome to secureblue!"*"Your image is:"*"$test_image_name"* ]]
-    [[ ! "$output" =~ 'deprecated image'|'not enrolled'|'unsupported'|'over 1 week old' ]]
+    [[ "${output}" == *"Welcome to secureblue!"*"Your image is:"*"${test_image_name}"* ]]
+    [[ ! "${output}" =~ 'deprecated image'|'not enrolled'|'unsupported'|'over 1 week old' ]]
 }
 
 @test "MOTD warns about deprecated image" {
     test_image_name='kinoite-main-userns-hardened:latest'
-    mock_rpm_ostree_status "$test_image_name" "$(date +%s)"
+    mock_rpm_ostree_status "${test_image_name}" "$(date +%s)"
     mock_mokutil 'secureblue secureboot key' 0
     run secureblue-motd
     (( status == 0 ))
-    [[ "$output" == *"Welcome to secureblue!"*"Your image is:"*"$test_image_name"* ]]
-    [[ $output == *"You are on a deprecated image"* ]]
+    [[ "${output}" == *"Welcome to secureblue!"*"Your image is:"*"${test_image_name}"* ]]
+    [[ ${output} == *"You are on a deprecated image"* ]]
 }
 
 @test "MOTD does not warn about Secure Boot if mokutil fails" {
     test_image_name='kinoite-main-hardened:latest'
-    mock_rpm_ostree_status "$test_image_name" "$(date +%s)"
+    mock_rpm_ostree_status "${test_image_name}" "$(date +%s)"
     mock_mokutil '' 1
     run secureblue-motd
     (( status == 0 ))
-    [[ "$output" == *"Welcome to secureblue!"*"Your image is:"*"$test_image_name"* ]]
-    [[ ! "$output" =~ 'deprecated image'|'not enrolled'|'unsupported'|'over 1 week old' ]]
+    [[ "${output}" == *"Welcome to secureblue!"*"Your image is:"*"${test_image_name}"* ]]
+    [[ ! "${output}" =~ 'deprecated image'|'not enrolled'|'unsupported'|'over 1 week old' ]]
 }
 
 @test "MOTD warns about missing Secure Boot key" {
     test_image_name='kinoite-main-hardened:latest'
-    mock_rpm_ostree_status "$test_image_name" "$(date +%s)"
+    mock_rpm_ostree_status "${test_image_name}" "$(date +%s)"
     mock_mokutil 'fedoraca' 0
     run secureblue-motd
     (( status == 0 ))
-    [[ "$output" == *"Welcome to secureblue!"*"Your image is:"*"$test_image_name"* ]]
-    [[ $output == *"Secure Boot key is not enrolled"* ]]
+    [[ "${output}" == *"Welcome to secureblue!"*"Your image is:"*"${test_image_name}"* ]]
+    [[ ${output} == *"Secure Boot key is not enrolled"* ]]
 }
 
 @test "MOTD warns about missing image tag" {
     test_image_name='kinoite-main-hardened'
-    mock_rpm_ostree_status "$test_image_name" "$(date +%s)"
+    mock_rpm_ostree_status "${test_image_name}" "$(date +%s)"
     mock_mokutil 'secureblue secureboot key' 0
     run secureblue-motd
     (( status == 0 ))
-    [[ "$output" == *"Welcome to secureblue!"*"Your image is:"*"$test_image_name"* ]]
-    [[ $output == *"You are missing an image tag, which is unsupported by secureblue."* ]]
+    [[ "${output}" == *"Welcome to secureblue!"*"Your image is:"*"${test_image_name}"* ]]
+    [[ ${output} == *"You are missing an image tag, which is unsupported by secureblue."* ]]
 }
 
 @test "MOTD warns about non-latest image tag" {
     test_image_name='kinoite-main-hardened:some-other-tag'
-    mock_rpm_ostree_status "$test_image_name" "$(date +%s)"
+    mock_rpm_ostree_status "${test_image_name}" "$(date +%s)"
     mock_mokutil 'secureblue secureboot key' 0
     run secureblue-motd
     (( status == 0 ))
-    [[ "$output" == *"Welcome to secureblue!"*"Your image is:"*"$test_image_name"* ]]
-    [[ $output == *"You are on a specific tag, which is unsupported by secureblue."* ]]
+    [[ "${output}" == *"Welcome to secureblue!"*"Your image is:"*"${test_image_name}"* ]]
+    [[ ${output} == *"You are on a specific tag, which is unsupported by secureblue."* ]]
 }
 
 @test "MOTD warns about outdated image" {
     test_image_name='kinoite-main-hardened:latest'
-    mock_rpm_ostree_status "$test_image_name" "$(date -d '2 weeks ago' +%s)"
+    mock_rpm_ostree_status "${test_image_name}" "$(date -d '2 weeks ago' +%s)"
     mock_mokutil 'secureblue secureboot key' 0
     run secureblue-motd
     (( status == 0 ))
-    [[ "$output" == *"Welcome to secureblue!"*"Your image is:"*"$test_image_name"* ]]
-    [[ $output == *"Your current image is over 1 week old"*"ujust update-system"* ]]
+    [[ "${output}" == *"Welcome to secureblue!"*"Your image is:"*"${test_image_name}"* ]]
+    [[ ${output} == *"Your current image is over 1 week old"*"ujust update-system"* ]]
 }

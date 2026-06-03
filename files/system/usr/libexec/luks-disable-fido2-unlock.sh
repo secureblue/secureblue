@@ -7,7 +7,7 @@
 
 set -eou pipefail
 
-[ "$UID" -eq 0 ] || { echo "This script must be run as root."; exit 1;}
+[[ "${UID}" -eq 0 ]] || { echo "This script must be run as root."; exit 1;}
 
 echo "WARNING this script will remove ALL currently configured fido2 luks unlock slots."
 echo ""
@@ -19,7 +19,7 @@ echo "INFO if no other nonfido2 slot is currently configured, script will fail. 
 echo "WARNING if you have not added an additional method, the recovery key will be the only avaliable unlock method after this script is run"
 read -p "Are you sure are good with this and want to disable fido2 unlock? (y/N): " -n 1 -r
 echo
-if [[ ! $REPLY =~ ^[Yy]$ ]]; then
+if [[ ! ${REPLY} =~ ^[Yy]$ ]]; then
     [[ "$0" = "${BASH_SOURCE[0]}" ]] && exit 1 || return 1 # handle exits from shell or function but don't exit interactive shell
 fi
 
@@ -43,8 +43,8 @@ fi
 
 # Cut off the luks-
 LUKS_PREFIX="luks-"
-if grep -q ^${LUKS_PREFIX} <<< "${RD_LUKS_UUID}"; then
-    DISK_UUID=${RD_LUKS_UUID#"$LUKS_PREFIX"}
+if grep -q ^"${LUKS_PREFIX}" <<< "${RD_LUKS_UUID}"; then
+    DISK_UUID=${RD_LUKS_UUID#"${LUKS_PREFIX}"}
 else
     echo "LUKS UUID format mismatch."
     echo "Exiting..."
@@ -52,10 +52,10 @@ else
 fi
 
 # Specify Crypt Disk by-uuid
-CRYPT_DISK="/dev/disk/by-uuid/$DISK_UUID"
+CRYPT_DISK="/dev/disk/by-uuid/${DISK_UUID}"
 
 # Check to make sure crypt disk exists
-if [[ ! -L "$CRYPT_DISK" ]]; then
+if [[ ! -L "${CRYPT_DISK}" ]]; then
     printf "LUKS device not listed in block devices.\n"
     printf "Exiting...\n"
     exit 1
@@ -63,15 +63,15 @@ fi
 
 ## Restore the crypttab
 cp -a /etc/crypttab /etc/crypttab.working-before-disable-fido2
-if [ -f /etc/crypttab.known-good ]; then
+if [[ -f /etc/crypttab.known-good ]]; then
     echo "Restoring /etc/crypttab.known-good to original /etc/crypttab"
     mv /etc/crypttab.known-good /etc/crypttab
 fi
 
 ## Wipe luks slot
-if cryptsetup luksDump "$CRYPT_DISK" | grep systemd-fido2 > /dev/null; then
-    echo "Wiping systemd-fido2 from LUKS on $CRYPT_DISK"
-    systemd-cryptenroll --wipe-slot=fido2 "$CRYPT_DISK"
+if cryptsetup luksDump "${CRYPT_DISK}" | grep systemd-fido2 > /dev/null; then
+    echo "Wiping systemd-fido2 from LUKS on ${CRYPT_DISK}"
+    systemd-cryptenroll --wipe-slot=fido2 "${CRYPT_DISK}"
 else
     echo "No systemd-fido2 found in LUKS to wipe"
 fi

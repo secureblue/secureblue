@@ -21,11 +21,11 @@ set-bluetooth-modules *args:
     #!/bin/sh
     exec /usr/bin/python3 /usr/libexec/secureblue/bluetooth_main.py "$@"
 
-# Sets network filesystem support on/off (requires reboot)
+# Sets network filesystem kernel modules on/off (requires reboot)
 [positional-arguments]
 set-network-filesystem-modules *args:
     #!/bin/sh
-    exec /usr/bin/python3 /usr/libexec/secureblue/networking_main.py "$@"
+    exec /usr/bin/python3 /usr/libexec/secureblue/network_filesystems_main.py "$@"
 
 # Sets webcam kernel modules on/off (requires reboot)
 [positional-arguments]

@@ -20,7 +20,7 @@ from utils import (
 
 BLUE_HELP: Final[str] = """
 This python script toggles if network filesystems is enabled by creating or deleting a modprobe file at
-"/etc/modprobe.d/99-networking.conf" to disable or enable the kernel modules
+"/etc/modprobe.d/99-network-filesystems.conf" to disable or enable the kernel modules
 needed for network filesystems. Note this change only takes affect upon reboot.
 
 usage:
@@ -41,15 +41,15 @@ ujust set-network-filesystem-modules --help
 """
 
 BLUE_MOD_DIR: Final[str] = "/etc/modprobe.d"
-BLUE_MOD_FILE: Final[str] = f"{BLUE_MOD_DIR}/99-networking.conf"
+BLUE_MOD_FILE: Final[str] = f"{BLUE_MOD_DIR}/99-network-filesystems.conf"
 
 
 def print_status(enabled_by_file: bool) -> None:
     """Print the current file and runtime status"""
 
-    networking_currently_enabled = is_module_loaded("nfs") or is_module_loaded("cifs")
-    file_matches_sys = "still " if enabled_by_file == networking_currently_enabled else ""
-    cur_status = "enabled" if networking_currently_enabled else "disabled"
+    network_filesystems_currently_enabled = is_module_loaded("nfs") or is_module_loaded("cifs")
+    file_matches_sys = "still " if enabled_by_file == network_filesystems_currently_enabled else ""
+    cur_status = "enabled" if network_filesystems_currently_enabled else "disabled"
     file_status = "enabled" if enabled_by_file else "disabled"
 
     print(
@@ -75,7 +75,7 @@ def main() -> int:
         return 1
 
     enabled_by_file = Path(BLUE_MOD_FILE).exists()
-    networking_function = sandbox.SandboxedFunction("networking.py", read_write_paths=[BLUE_MOD_DIR])
+    network_filesystems_function = sandbox.SandboxedFunction("network_filesystems.py", read_write_paths=[BLUE_MOD_DIR])
     match mode:
         case "on" | "off":
             target_state_enabled = mode == "on"
@@ -83,7 +83,7 @@ def main() -> int:
             if state_already_set:
                 print_status(enabled_by_file)
             else:
-                return sandbox.run(networking_function, mode)
+                return sandbox.run(network_filesystems_function, mode)
         case "status":
             print_status(enabled_by_file)
         case "--help":

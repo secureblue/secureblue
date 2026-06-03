@@ -5,14 +5,14 @@
 # SPDX-License-Identifier: Apache-2.0
 
 """
-The sandboxed network filesystem toggle function
+The sandboxed network filesystems toggle function
 """
 
 import os
 import sys
 from typing import Final
 
-BLUE_MOD_FILE: Final[str] = "/etc/modprobe.d/99-networking.conf"
+BLUE_MOD_FILE: Final[str] = "/etc/modprobe.d/99-network-filesystems.conf"
 BLUE_MOD_TEXT: Final[str] = """install nfs /sbin/modprobe --ignore-install nfs
 install nfsv4 /sbin/modprobe --ignore-install nfsv4
 install nfs_acl /sbin/modprobe --ignore-install nfs_acl

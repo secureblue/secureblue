@@ -59,7 +59,7 @@ prompt_reboot() {
 
     case "${secureblue_variant_in_use}" in
         "silverblue") gnome-session-quit --reboot ;;
-        "kinoite") qdbus org.kde.LogoutPrompt /LogoutPrompt promptReboot ;;
+        "kinoite") qdbus-qt6 org.kde.LogoutPrompt /LogoutPrompt promptReboot ;;
         *) systemctl reboot ;;
     esac
 }

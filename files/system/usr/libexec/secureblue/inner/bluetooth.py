@@ -34,16 +34,12 @@ def main() -> int:
             os.chmod(BLUE_MOD_FILE, 0o644)
             bluetooth_service.unmask()
             bluetooth_service.enable_now()
-            obex_service.unmask()
-            obex_service.enable_now()
             print("Bluetooth has been enabled. Reboot for effect.")
             return 0
         case "off":
             os.remove(BLUE_MOD_FILE)
             bluetooth_service.mask()
             bluetooth_service.disable_now()
-            obex_service.mask()
-            obex_service.disable_now()
             print("Bluetooth has been disabled. Reboot for effect.")
             return 0
         case _:

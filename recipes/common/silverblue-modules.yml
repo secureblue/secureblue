@@ -31,6 +31,11 @@ modules:
         - fedora-flathub-remote
         - fedora-third-party
         - fedora-workstation-repositories
+        - qadwaitadecorations-qt5
+        - qt5-qtbase
+        - qt5-qtbase-gui
+        - qt5-qtdeclarative
+        - qt5-qtxmlpatterns
   - type: gschema-overrides
     source: ghcr.io/blue-build/modules@sha256:d0e85328fcfa4182c33d3920854001d0b7efbbd341ed6f45bc1ec26c0751889d
     include:

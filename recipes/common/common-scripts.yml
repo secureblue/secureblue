@@ -19,3 +19,4 @@ scripts:
   - installrar.sh
   - setchronysysconfig.sh
   - container-pubkey-symlinks.sh
+  - removevarlibalternatives.sh

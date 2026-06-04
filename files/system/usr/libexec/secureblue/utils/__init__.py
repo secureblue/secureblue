@@ -11,7 +11,6 @@ Various utility functions used in secureblue scripts.
 import enum
 import json
 import os
-import rpm
 import subprocess
 import sys
 import textwrap

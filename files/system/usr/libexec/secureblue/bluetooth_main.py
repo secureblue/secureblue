@@ -83,6 +83,14 @@ def main() -> int:
             if state_already_set:
                 print_status(enabled_by_file)
             else:
+
+                obex_service = SystemdService("obex.service", is_user=True)
+                if target_state_enabled:
+                    obex_service.unmask()
+                    obex_service.enable_now()
+                else:
+                    obex_service.disable_now()
+                    obex_service.mask()
                 return sandbox.run(bluetooth_function, mode)
         case "status":
             print_status(enabled_by_file)

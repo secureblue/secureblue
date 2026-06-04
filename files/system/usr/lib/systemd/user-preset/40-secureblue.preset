@@ -1,1 +1,2 @@
 enable podman-auto-update.timer
+disable obex.service

@@ -26,7 +26,6 @@ def main() -> int:
     if len(sys.argv) != required_args_count:
         return 1
     bluetooth_service = SystemdService("bluetooth.service")
-    obex_service = SystemdService("obex.service", is_user=True)
     mode = sys.argv[1]
     match mode:
         case "on":

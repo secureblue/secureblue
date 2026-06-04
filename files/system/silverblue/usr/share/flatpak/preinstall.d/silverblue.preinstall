@@ -1,0 +1,7 @@
+[Flatpak Preinstall org.gnome.TextEditor]
+Branch=stable
+IsRuntime=false
+
+[Flatpak Preinstall org.gnome.Loupe]
+Branch=stable
+IsRuntime=false

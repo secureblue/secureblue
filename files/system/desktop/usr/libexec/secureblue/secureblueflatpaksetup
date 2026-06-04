@@ -15,10 +15,7 @@ touch "$in_progress_indicator"
 flatpak remote-add --if-not-exists --user --subset=verified --title='Flathub Verified' flathub-verified https://dl.flathub.org/repo/flathub.flatpakrepo
 ujust harden-flatpak
 
-image_name=$(awk -F= '$1 == "VARIANT_ID" { print $2; exit }' /etc/os-release)
-if [[ "$image_name" != *"kinoite"* ]]; then
-    flatpak install --user -y --noninteractive flathub-verified com.github.tchx84.Flatseal
-fi
+flatpak preinstall --user --noninteractive
 
 notify-send -a 'secureblue' -i 'dialog-information' -u normal 'Flatpak provisioning completed.'
 rm -f "$in_progress_indicator"

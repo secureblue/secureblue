@@ -1,0 +1,3 @@
+[Flatpak Preinstall org.gnome.Loupe]
+Branch=stable
+IsRuntime=false

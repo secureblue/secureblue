@@ -15,8 +15,7 @@ from typing import Final
 import sandbox
 from utils import (
     ask_yes_no,
-    is_module_loaded,
-    SystemdService
+    is_module_loaded
 )
 
 BLUE_HELP: Final[str] = """

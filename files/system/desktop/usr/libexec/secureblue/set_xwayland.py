@@ -1,36 +1,30 @@
 #!/usr/bin/python3
 
-# Copyright 2025 The Secureblue Authors
+# SPDX-FileCopyrightText: Copyright 2025-2026 The Secureblue Authors
 #
-# Licensed under the Apache License, Version 2.0 (the "License");
-# you may not use this file except in compliance with the License.
-# You may obtain a copy of the License at
-#
-#     http://www.apache.org/licenses/LICENSE-2.0
-#
-# Unless required by applicable law or agreed to in writing, software
-# distributed under the License is distributed on an "AS IS" BASIS,
-# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-# See the License for the specific language governing permissions and
-# limitations under the License.
+# SPDX-License-Identifier: Apache-2.0
 
 """Enable or disable Xwayland."""
 
 import os
-import subprocess  # nosec
+import subprocess
 import sys
-from typing import Final
+from typing import TYPE_CHECKING, Final
 
-from utils import (
-    CommandUsageError,
-    Image,
-    ToggleMode,
-    booted_image_ref,
-    parse_basic_toggle_args,
-)
+if TYPE_CHECKING:
+    from files.system.usr.libexec.secureblue import utils
+else:
+    import utils
+
+CommandUsageError: Final = utils.CommandUsageError
+Image: Final = utils.Image
+ToggleMode: Final = utils.ToggleMode
+booted_image_ref: Final = utils.booted_image_ref
+logout: Final = utils.logout
+parse_basic_toggle_args: Final = utils.parse_basic_toggle_args
 
 XWAYLAND_OVERRIDE_FILES: Final[dict[Image, str]] = {
-    Image.SILVERBLUE: "/etc/systemd/user/org.gnome.Shell@wayland.service.d/override.conf",
+    Image.SILVERBLUE: "/etc/systemd/user/org.gnome.Shell@user.service.d/override.conf",
     Image.KINOITE: "/etc/systemd/user/plasma-kwin_wayland.service.d/override.conf",
     Image.SERICEA: "/etc/sway/config.d/99-noxwayland.conf",
 }
@@ -76,21 +70,26 @@ def run(mode: ToggleMode) -> int:
 
     override_file = XWAYLAND_OVERRIDE_FILES[image]
     de_name = DE_NAMES[image]
-    enabled = not os.path.exists(override_file)
+    current_mode_enabled = not os.path.exists(override_file)
+    new_mode = "disabled" if current_mode_enabled else "enabled"
+    logout_prompt = (
+        f"Xwayland for {de_name} has been {new_mode}. "
+        "Would you like to log out now for this to take effect?"
+    )
 
     match mode:
         case ToggleMode.STATUS:
-            print("enabled" if enabled else "disabled")
+            print("enabled" if current_mode_enabled else "disabled")
         case ToggleMode.ON:
-            if enabled:
+            if current_mode_enabled:
                 print(f"Xwayland for {de_name} is already enabled.")
             else:
                 subprocess.run(
                     ["/usr/bin/run0", "/usr/bin/rm", "-f", "--", override_file], check=True
-                )  # nosec
-                print(f"Xwayland for {de_name} has been enabled. Reboot to take effect.")
+                )
+                logout(prompt=logout_prompt)
         case ToggleMode.OFF:
-            if enabled:
+            if current_mode_enabled:
                 subprocess.run(
                     [
                         "/usr/bin/run0",
@@ -101,8 +100,8 @@ def run(mode: ToggleMode) -> int:
                         override_file,
                     ],
                     check=True,
-                )  # nosec
-                print(f"Xwayland for {de_name} has been disabled. Reboot to take effect.")
+                )
+                logout(prompt=logout_prompt)
             else:
                 print(f"Xwayland for {de_name} is already disabled.")
 

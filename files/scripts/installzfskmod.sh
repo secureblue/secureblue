@@ -1,26 +1,18 @@
 #!/usr/bin/env bash
 
-# Copyright 2025 Universal Blue
-# Copyright 2025 The Secureblue Authors
+# SPDX-FileCopyrightText: Copyright 2025 Universal Blue
+# SPDX-FileCopyrightText: Copyright 2025-2026 The Secureblue Authors
 #
-# Licensed under the Apache License, Version 2.0 (the "License");
-# you may not use this file except in compliance with the License.
-# You may obtain a copy of the License at
-#
-#     http://www.apache.org/licenses/LICENSE-2.0
-#
-# Unless required by applicable law or agreed to in writing, software distributed under the License is
-# distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-# See the License for the specific language governing permissions and limitations under the License.
+# SPDX-License-Identifier: Apache-2.0
 
-set -oue pipefail
+set -euo pipefail
 
 KERNEL_VERSION="$(rpm -q "kernel" --queryformat '%{VERSION}-%{RELEASE}.%{ARCH}')"
 ZFS_MINOR_VERSION="2.4"
 
 curl -fLsS --retry 5 -o data.json "https://api.github.com/repos/openzfs/zfs/releases"
 ZFS_VERSION=$(jq -r --arg ZMV "zfs-${ZFS_MINOR_VERSION}" '[ .[] | select(.prerelease==false and .draft==false) | select(.tag_name | startswith($ZMV))][0].tag_name' data.json|cut -f2- -d-)
-echo "ZFS_VERSION==$ZFS_VERSION"
+echo "ZFS_VERSION==${ZFS_VERSION}"
 
 dnf install -y --setopt=install_weak_deps=False "kernel-devel-matched-$(rpm -q 'kernel' --queryformat '%{VERSION}')"
 dnf install -y --setopt=install_weak_deps=False autoconf automake gcc pv akmods mock libunwind-devel pam-devel libatomic libtirpc-devel libblkid-devel libuuid-devel libudev-devel openssl-devel libaio-devel libattr-devel elfutils-libelf-devel python3-devel python3-cffi libffi-devel libcurl-devel ncompress python3-setuptools
@@ -33,10 +25,28 @@ curl -fLsS --retry 5 \
     -O "https://github.com/openzfs/zfs/releases/download/zfs-${ZFS_VERSION}/zfs-${ZFS_VERSION}.tar.gz.asc" \
     -O "https://github.com/openzfs/zfs/releases/download/zfs-${ZFS_VERSION}/zfs-${ZFS_VERSION}.sha256.asc"
 
-echo "Import key"
+echo "Importing ZFS signing keys"
 # https://openzfs.github.io/openzfs-docs/Project%20and%20Community/Signing%20Keys.html
-gpg --yes --keyserver keyserver.ubuntu.com --recv D4598027
-gpg --yes --keyserver keyserver.ubuntu.com --recv C6AF658B
+zfs_keys=(
+    '4F3BA9AB6D1F8D683DC2DFB56AD860EED4598027'
+    'C33DF142657ED1F7C328A2960AB9E991C6AF658B'
+)
+for key in "${zfs_keys[@]}"; do
+    curl -fLsS --retry 5 -o "${key}.asc" "https://keyserver.ubuntu.com/pks/lookup?op=get&search=0x${key}"
+    # Verify that the downloaded GPG key has the expected fingerprint before importing it.
+    # Reference for GPG colon-listing format: https://github.com/gpg/gnupg/blob/master/doc/DETAILS
+    if ! gpg --show-keys --with-colons "${key}.asc" \
+        | awk -F: '$1 == "fpr" || $1 == "fp2" { print $10 }' \
+        | grep -Fq "${key}"
+    then
+        echo "FATAL: Downloaded GPG key ${key}.asc does not have expected fingerprint!"
+        echo "Dumping keyfile contents:"
+        cat "${key}.asc"
+        exit 1
+    fi
+    gpg --yes --import "${key}.asc"
+    rm "${key}.asc"
+done
 
 echo "Verifying tar.gz signature"
 if ! gpg --verify "zfs-${ZFS_VERSION}.tar.gz.asc" "zfs-${ZFS_VERSION}.tar.gz"

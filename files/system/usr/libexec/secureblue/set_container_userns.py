@@ -1,22 +1,12 @@
 #!/usr/bin/python3
 
-# Copyright 2025 The Secureblue Authors
+# SPDX-FileCopyrightText: Copyright 2025-2026 The Secureblue Authors
 #
-# Licensed under the Apache License, Version 2.0 (the "License");
-# you may not use this file except in compliance with the License.
-# You may obtain a copy of the License at
-#
-#     http://www.apache.org/licenses/LICENSE-2.0
-#
-# Unless required by applicable law or agreed to in writing, software
-# distributed under the License is distributed on an "AS IS" BASIS,
-# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-# See the License for the specific language governing permissions and
-# limitations under the License.
+# SPDX-License-Identifier: Apache-2.0
 
 """Enable, disable, or check status of container-domain user namespace creation."""
 
-import subprocess  # nosec
+import subprocess
 import sys
 from typing import Final
 
@@ -58,7 +48,7 @@ def container_userns_enabled() -> bool:
     # First try to read the list of enabled SELinux modules directly.
     semodule_proc = subprocess.run(
         ["/usr/bin/semodule", "-l"], check=False, capture_output=True, text=True
-    )  # nosec
+    )
     if semodule_proc.returncode == 0:
         return CONTAINER_USERNS_MODULE not in semodule_proc.stdout.splitlines()
 
@@ -77,8 +67,8 @@ def stop_containers(*, prompt: bool = True) -> bool:
         if not ask_yes_no("Are you sure you want to do this?"):
             return False
     print("Stopping all containers and shutting down podman...")
-    subprocess.run(["/usr/bin/podman", "stop", "--all"], check=True)  # nosec
-    subprocess.run(["/usr/bin/killall", "catatonit"], check=False)  # nosec
+    subprocess.run(["/usr/bin/podman", "stop", "--all"], check=True)
+    subprocess.run(["/usr/bin/killall", "catatonit"], check=False)
     if command_succeeds("/usr/bin/pgrep", "catatonit"):
         print_wrapped("""
             Warning: Catatonit running as another user detected.
@@ -100,7 +90,7 @@ def enable_container_userns(currently_enabled: bool) -> int:
         print("Container-domain user namespace creation is already enabled.")
         return 0
     print_wrapped(f"""
-        Container-domain user namespace creation (e.g. for distrobox) is currently
+        Container-domain user namespace creation (e.g. for podman or distrobox) is currently
         disabled. Enabling it now by disabling SELinux module '{CONTAINER_USERNS_MODULE}'.
     """)
     exit_code = sandbox.run(semodule_function, "disable", CONTAINER_USERNS_MODULE)
@@ -115,7 +105,7 @@ def disable_container_userns(currently_enabled: bool, *, prompt: bool = True) ->
         print("Container-domain user namespace creation is already disabled.")
         return 0
     print_wrapped(f"""
-        Container-domain user namespace creation (e.g. for bubblejail) is currently
+        Container-domain user namespace creation (e.g. for podman or distrobox) is currently
         enabled. Disabling it now by enabling SELinux module '{CONTAINER_USERNS_MODULE}'.
     """)
     try:
@@ -146,6 +136,8 @@ def run(mode: ToggleMode, *, prompt: bool = True) -> int:
             return enable_container_userns(userns_enabled)
         case ToggleMode.OFF:
             return disable_container_userns(userns_enabled, prompt=prompt)
+        case _:
+            raise ValueError(f"Invalid mode value: {mode}")
 
 
 def main() -> int:

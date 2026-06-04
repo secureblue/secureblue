@@ -1,24 +1,14 @@
 #!/usr/bin/python3
 
-# Copyright 2025 The Secureblue Authors
+# SPDX-FileCopyrightText: Copyright 2025-2026 The Secureblue Authors
 #
-# Licensed under the Apache License, Version 2.0 (the "License");
-# you may not use this file except in compliance with the License.
-# You may obtain a copy of the License at
-#
-#     http://www.apache.org/licenses/LICENSE-2.0
-#
-# Unless required by applicable law or agreed to in writing, software
-# distributed under the License is distributed on an "AS IS" BASIS,
-# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-# See the License for the specific language governing permissions and
-# limitations under the License.
+# SPDX-License-Identifier: Apache-2.0
 
 """Add additional kernel arguments for hardening."""
 
 # https://docs.kernel.org/admin-guide/kernel-parameters.html
 
-import subprocess  # nosec
+import subprocess
 from typing import Final
 
 from kargs_hardening_common import (
@@ -106,7 +96,7 @@ def main() -> None:
 
     # Check for secure boot support, required for some drivers. (e.g. WiFi on some
     # Macbooks, plus there would be no way to verify these anyways.)
-    sb_state = subprocess.run(["/usr/bin/mokutil", "--sb-state"], capture_output=True, check=False)  # nosec
+    sb_state = subprocess.run(["/usr/bin/mokutil", "--sb-state"], capture_output=True, check=False)
     secure_boot_supported = not (
         b"doesn't support Secure Boot" in sb_state.stderr
         or b"EFI variables are not supported" in sb_state.stderr

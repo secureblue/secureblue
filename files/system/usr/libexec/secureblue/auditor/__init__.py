@@ -1,18 +1,8 @@
 #!/usr/bin/python3
 
-# Copyright 2025 The Secureblue Authors
+# SPDX-FileCopyrightText: Copyright 2025-2026 The Secureblue Authors
 #
-# Licensed under the Apache License, Version 2.0 (the "License");
-# you may not use this file except in compliance with the License.
-# You may obtain a copy of the License at
-#
-#     http://www.apache.org/licenses/LICENSE-2.0
-#
-# Unless required by applicable law or agreed to in writing, software
-# distributed under the License is distributed on an "AS IS" BASIS,
-# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-# See the License for the specific language governing permissions and
-# limitations under the License.
+# SPDX-License-Identifier: Apache-2.0
 
 """
 Framework for system auditing.
@@ -24,7 +14,7 @@ import gettext
 import inspect
 import json
 from collections.abc import AsyncGenerator, Callable, Generator, Sequence
-from typing import Any, ClassVar, Final, Self
+from typing import Any, ClassVar, Final, Self, assert_never
 
 
 def gettext_marker() -> Callable[[str], str]:
@@ -61,6 +51,8 @@ class Status(enum.Enum):
                 return _("FAIL")
             case Status.UNKNOWN:
                 return _("UNKNOWN")
+            case _ as unreachable:
+                assert_never(unreachable)
 
     def to_str_in_color(self) -> str:
         """Colored text representation of the status."""
@@ -96,7 +88,7 @@ class Status(enum.Enum):
         """Printable width of status."""
         return len(self.local_name())
 
-    def downgrade_to(self, other: Self) -> Self:
+    def downgrade_to(self, other: "Status") -> "Status":
         """Returns the more severe of the two statuses."""
         return max(self, other, key=lambda status: status.value)
 
@@ -264,7 +256,7 @@ def _print_recs(recs: list[Recommendation], width: int = 80) -> None:
 class Audit:
     """A system audit."""
 
-    def __init__(self):
+    def __init__(self) -> None:
         self.checks: list[Check] = []
         self.state: dict[str, Any] = {}
         self.recs: list[Recommendation] = []
@@ -348,15 +340,17 @@ def make_check(
         return f
     stateful = bool(len(inspect.signature(f).parameters))
     if inspect.isasyncgenfunction(f):
-        return Check(name=f.__name__, callback=f, stateful=stateful)
+        return Check(name=getattr(f, "__name__", "<anonymous>"), callback=f, stateful=stateful)
 
     if inspect.isgeneratorfunction(f):
 
-        async def f_async(*args: Any, **kwargs: Any) -> AsyncGenerator:
+        async def f_async(*args: Any, **kwargs: Any) -> AsyncGenerator[Report]:
             for item in f(*args, **kwargs):
                 yield item
 
-        return Check(name=f.__name__, callback=f_async, stateful=stateful)
+        return Check(
+            name=getattr(f, "__name__", "<anonymous>"), callback=f_async, stateful=stateful
+        )
 
     raise TypeError("invalid input to make_check")
 
@@ -373,7 +367,9 @@ def audit(
 def depends_on(*dependencies: str) -> Callable[..., Check]:
     """Add a dependency to a check."""
 
-    def add_dependencies(f: Check | Callable) -> Check:
+    def add_dependencies(
+        f: Check | Callable[..., AsyncGenerator[Report]] | Callable[..., Generator[Report]],
+    ) -> Check:
         check = make_check(f)
         check.dependencies += list(dependencies)
         return check
@@ -384,7 +380,9 @@ def depends_on(*dependencies: str) -> Callable[..., Check]:
 def categorize(cat: str) -> Callable[..., Check]:
     """Mark a check as belonging to a given category."""
 
-    def add_category(f: Check | Callable) -> Check:
+    def add_category(
+        f: Check | Callable[..., AsyncGenerator[Report]] | Callable[..., Generator[Report]],
+    ) -> Check:
         check = make_check(f)
         check.category = cat
         return check

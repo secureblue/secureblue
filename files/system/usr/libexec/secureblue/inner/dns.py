@@ -2,19 +2,9 @@
 
 """Sets DNS configuration. Should be run as root."""
 
-# Copyright 2025 The Secureblue Authors
+# SPDX-FileCopyrightText: Copyright 2025-2026 The Secureblue Authors
 #
-# Licensed under the Apache License, Version 2.0 (the "License");
-# you may not use this file except in compliance with the License.
-# You may obtain a copy of the License at
-#
-#     http://www.apache.org/licenses/LICENSE-2.0
-#
-# Unless required by applicable law or agreed to in writing, software
-# distributed under the License is distributed on an "AS IS" BASIS,
-# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-# See the License for the specific language governing permissions and
-# limitations under the License.
+# SPDX-License-Identifier: Apache-2.0
 
 # We only make fixed subprocess calls to /usr/bin/systemctl.
 import argparse
@@ -35,10 +25,67 @@ DNSCONFD_MANAGER_PATH: Final[Path] = Path("/etc/NetworkManager/conf.d/dnsconfd.c
 NM_GLOBALDNS_CONF_PATH: Final[Path] = Path("/etc/NetworkManager/conf.d/global-dns.conf")
 RESOLVCONF_PATH: Final[Path] = Path("/etc/resolv.conf")
 RESOLVED_RESOLVCONF_PATH: Final[Path] = Path("/run/systemd/resolve/stub-resolv.conf")
-RESOLVED_SECUREDNS_PATH: Final[Path] = Path("/etc/systemd/resolved.conf.d/10-securedns.conf")
 TRIVALENT_POLICY_PATH: Final[Path] = Path(
     "/etc/trivalent/policies/managed/10-securedns-browser.json"
 )
+
+
+@dataclass(frozen=True)
+class SystemdService:
+    """
+    A systemd service.
+
+    Attributes:
+        name (str): The unit name, e.g. "dnsconfd.service".
+    """
+
+    name: str
+
+    def _do_systemctl_action(self, *actions: str) -> None:
+        """
+        Perform an action on a systemd service. Retry and eventually log on failure.
+
+        Args:
+            action (str): systemctl action (e.g. "start")
+        """
+        # nosemgrep: dangerous-subprocess-use-audit
+        systemctl = subprocess.run(
+            ["/usr/bin/systemctl", *actions, self.name], check=False, capture_output=True
+        )
+
+        if not systemctl.returncode:
+            # All good.
+            return
+
+        # Error, so wait a few seconds and try again.
+        time.sleep(3)
+        # nosemgrep: dangerous-subprocess-use-audit
+        systemctl = subprocess.run(
+            ["/usr/bin/systemctl", *actions, self.name], check=False, stdout=subprocess.PIPE
+        )
+
+        if systemctl.returncode:
+            print(f"Failed to {' '.join(actions)} {self.name}.", file=sys.stderr)
+            sys.exit(systemctl.returncode)
+
+    disable = partialmethod(_do_systemctl_action, "disable")
+    disable_now = partialmethod(_do_systemctl_action, "disable", "--now")
+    enable = partialmethod(_do_systemctl_action, "enable")
+    enable_now = partialmethod(_do_systemctl_action, "enable", "--now")
+    stop = partialmethod(_do_systemctl_action, "stop")
+    start = partialmethod(_do_systemctl_action, "start")
+    mask = partialmethod(_do_systemctl_action, "mask")
+    unmask = partialmethod(_do_systemctl_action, "unmask")
+
+    def is_enabled(self) -> bool:
+        """Returns whether the systemd service is enabled."""
+        # nosemgrep: dangerous-subprocess-use-audit
+        systemctl = subprocess.run(
+            ["/usr/bin/systemctl", "is-enabled", "--quiet", self.name],
+            check=False,
+            capture_output=True,
+        )
+        return not systemctl.returncode
 
 
 class DNSResolver(Enum):

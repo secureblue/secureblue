@@ -1,30 +1,27 @@
 #!/usr/bin/env bash
 
-# Copyright 2025 The Secureblue Authors
+# SPDX-FileCopyrightText: Copyright 2025-2026 The Secureblue Authors
 #
-# Licensed under the Apache License, Version 2.0 (the "License");
-# you may not use this file except in compliance with the License.
-# You may obtain a copy of the License at
-#
-#     http://www.apache.org/licenses/LICENSE-2.0
-#
-# Unless required by applicable law or agreed to in writing, software distributed under the License is
-# distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-# See the License for the specific language governing permissions and limitations under the License.
+# SPDX-License-Identifier: Apache-2.0
 
-echo '
-[copr:copr.fedorainfracloud.org:secureblue:trivalent]
+set -euo pipefail
+
+# This is a noarch package that we only build on x86_64, for both arches. As such, this is
+# hardcoded to x86_64 deliberately.
+cat <<'EOF' > /etc/yum.repos.d/secureblue-packages-x86_64-fedora-43.repo
+[copr:copr.fedorainfracloud.org:secureblue:packages-x86_64]
 name=Copr repo for trivalent owned by secureblue
-baseurl=https://download.copr.fedorainfracloud.org/results/secureblue/trivalent/fedora-$releasever-x86_64/
+baseurl=https://download.copr.fedorainfracloud.org/results/secureblue/packages/fedora-$releasever-x86_64/
 type=rpm-md
 skip_if_unavailable=True
 gpgcheck=1
-gpgkey=https://download.copr.fedorainfracloud.org/results/secureblue/trivalent/pubkey.gpg
+gpgkey=file:///usr/share/pki/rpm-gpg/secureblue-copr-pubkey.gpg
 repo_gpgcheck=0
 enabled=1
 enabled_metadata=1
-' > /etc/yum.repos.d/secureblue-trivalent-fedora-43.repo
+priority=1
+EOF
 
-dnf install -y --setopt=install_weak_deps=False trivalent-subresource-filter
+dnf install -y --setopt=install_weak_deps=False --repo=copr:copr.fedorainfracloud.org:secureblue:packages-x86_64 trivalent-subresource-filter
 
-rm -f /etc/yum.repos.d/secureblue-trivalent-fedora-43.repo
+rm -f /etc/yum.repos.d/secureblue-packages-x86_64-fedora-43.repo

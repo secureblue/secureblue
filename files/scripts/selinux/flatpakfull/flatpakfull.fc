@@ -1,4 +1,4 @@
-# SPDX-FileCopyrightText 2025 The Secureblue Authors
+# SPDX-FileCopyrightText: Copyright 2025-2026 The Secureblue Authors
 #
 # SPDX-License-Identifier: Apache-2.0 OR MIT
 
@@ -10,3 +10,4 @@
 /usr/libexec/flatpak-session-helper	--	gen_context(system_u:object_r:flatpak_exec_t,s0)
 /usr/libexec/flatpak-validate-icon	--	gen_context(system_u:object_r:flatpak_exec_t,s0)
 /usr/libexec/revokefs-fuse	--	gen_context(system_u:object_r:flatpak_exec_t,s0)
+/usr/bin/bazaar  --  gen_context(system_u:object_r:flatpak_exec_t,s0)

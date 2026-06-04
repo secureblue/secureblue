@@ -1,14 +1,6 @@
-# Copyright 2025 The Secureblue Authors
+# SPDX-FileCopyrightText: Copyright 2025-2026 The Secureblue Authors
 #
-# Licensed under the Apache License, Version 2.0 (the "License");
-# you may not use this file except in compliance with the License.
-# You may obtain a copy of the License at
-#
-#     http://www.apache.org/licenses/LICENSE-2.0
-#
-# Unless required by applicable law or agreed to in writing, software distributed under the License is
-# distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-# See the License for the specific language governing permissions and limitations under the License.
+# SPDX-License-Identifier: Apache-2.0
 
 name: build
 permissions: {}
@@ -24,6 +16,12 @@ on:
       - "**.md"
 
   workflow_dispatch: # allow manually triggering builds
+    inputs:
+      clear-plan:
+        description: 'Clear previous layer plan?'
+        type: boolean
+        required: true
+        default: false
 
 # Cancels running workflows if a new workflow run for
 # the same workflow is started
@@ -43,6 +41,7 @@ jobs:
     with:
       recipe: general/recipe-silverblue-main.yml
       rechunk: true
+      clear-plan: ${{ inputs.clear-plan || false }}
     secrets:
       SIGNING_SECRET: ${{ secrets.SIGNING_SECRET }}
       KERNEL_PRIVKEY: ${{ secrets.KERNEL_PRIVKEY }}
@@ -59,6 +58,7 @@ jobs:
     with:
       recipe: general/recipe-kinoite-main.yml
       rechunk: true
+      clear-plan: ${{ inputs.clear-plan || false }}
     secrets:
       SIGNING_SECRET: ${{ secrets.SIGNING_SECRET }}
       KERNEL_PRIVKEY: ${{ secrets.KERNEL_PRIVKEY }}
@@ -75,6 +75,7 @@ jobs:
     with:
       recipe: general/recipe-sericea-main.yml
       rechunk: true
+      clear-plan: ${{ inputs.clear-plan || false }}
     secrets:
       SIGNING_SECRET: ${{ secrets.SIGNING_SECRET }}
       KERNEL_PRIVKEY: ${{ secrets.KERNEL_PRIVKEY }}
@@ -91,6 +92,7 @@ jobs:
     with:
       recipe: general/recipe-cosmic-main.yml
       rechunk: true
+      clear-plan: ${{ inputs.clear-plan || false }}
     secrets:
       SIGNING_SECRET: ${{ secrets.SIGNING_SECRET }}
       KERNEL_PRIVKEY: ${{ secrets.KERNEL_PRIVKEY }}
@@ -113,6 +115,8 @@ jobs:
     uses: ./.github/workflows/build-one-recipe.yml
     with:
       recipe: ${{ matrix.recipe }}
+      rechunk: true
+      clear-plan: ${{ inputs.clear-plan || false }}
     secrets:
       SIGNING_SECRET: ${{ secrets.SIGNING_SECRET }}
       KERNEL_PRIVKEY: ${{ secrets.KERNEL_PRIVKEY }}
@@ -135,6 +139,8 @@ jobs:
     uses: ./.github/workflows/build-one-recipe.yml
     with:
       recipe: ${{ matrix.recipe }}
+      rechunk: true
+      clear-plan: ${{ inputs.clear-plan || false }}
     secrets:
       SIGNING_SECRET: ${{ secrets.SIGNING_SECRET }}
       KERNEL_PRIVKEY: ${{ secrets.KERNEL_PRIVKEY }}
@@ -157,6 +163,8 @@ jobs:
     uses: ./.github/workflows/build-one-recipe.yml
     with:
       recipe: ${{ matrix.recipe }}
+      rechunk: true
+      clear-plan: ${{ inputs.clear-plan || false }}
     secrets:
       SIGNING_SECRET: ${{ secrets.SIGNING_SECRET }}
       KERNEL_PRIVKEY: ${{ secrets.KERNEL_PRIVKEY }}
@@ -179,6 +187,8 @@ jobs:
     uses: ./.github/workflows/build-one-recipe.yml
     with:
       recipe: ${{ matrix.recipe }}
+      rechunk: true
+      clear-plan: ${{ inputs.clear-plan || false }}
     secrets:
       SIGNING_SECRET: ${{ secrets.SIGNING_SECRET }}
       KERNEL_PRIVKEY: ${{ secrets.KERNEL_PRIVKEY }}
@@ -195,6 +205,7 @@ jobs:
     with:
       recipe: securecore/recipe-securecore-main.yml
       rechunk: true
+      clear-plan: ${{ inputs.clear-plan || false }}
     secrets:
       SIGNING_SECRET: ${{ secrets.SIGNING_SECRET }}
       KERNEL_PRIVKEY: ${{ secrets.KERNEL_PRIVKEY }}
@@ -217,6 +228,8 @@ jobs:
     uses: ./.github/workflows/build-one-recipe.yml
     with:
       recipe: ${{ matrix.recipe }}
+      rechunk: true
+      clear-plan: ${{ inputs.clear-plan || false }}
     secrets:
       SIGNING_SECRET: ${{ secrets.SIGNING_SECRET }}
       KERNEL_PRIVKEY: ${{ secrets.KERNEL_PRIVKEY }}
@@ -233,6 +246,8 @@ jobs:
     uses: ./.github/workflows/build-one-recipe.yml
     with:
       recipe: securecore/recipe-securecore-zfs-main.yml
+      rechunk: true
+      clear-plan: ${{ inputs.clear-plan || false }}
     secrets:
       SIGNING_SECRET: ${{ secrets.SIGNING_SECRET }}
       KERNEL_PRIVKEY: ${{ secrets.KERNEL_PRIVKEY }}
@@ -255,6 +270,8 @@ jobs:
     uses: ./.github/workflows/build-one-recipe.yml
     with:
       recipe: ${{ matrix.recipe }}
+      rechunk: true
+      clear-plan: ${{ inputs.clear-plan || false }}
     secrets:
       SIGNING_SECRET: ${{ secrets.SIGNING_SECRET }}
       KERNEL_PRIVKEY: ${{ secrets.KERNEL_PRIVKEY }}
@@ -271,6 +288,7 @@ jobs:
     with:
       recipe: iot/recipe-iot-main.yml
       rechunk: true
+      clear-plan: ${{ inputs.clear-plan || false }}
     secrets:
       SIGNING_SECRET: ${{ secrets.SIGNING_SECRET }}
       KERNEL_PRIVKEY: ${{ secrets.KERNEL_PRIVKEY }}
@@ -293,6 +311,8 @@ jobs:
     uses: ./.github/workflows/build-one-recipe.yml
     with:
       recipe: ${{ matrix.recipe }}
+      rechunk: true
+      clear-plan: ${{ inputs.clear-plan || false }}
     secrets:
       SIGNING_SECRET: ${{ secrets.SIGNING_SECRET }}
       KERNEL_PRIVKEY: ${{ secrets.KERNEL_PRIVKEY }}
@@ -309,6 +329,8 @@ jobs:
     uses: ./.github/workflows/build-one-recipe.yml
     with:
       recipe: iot/recipe-iot-zfs-main.yml
+      rechunk: true
+      clear-plan: ${{ inputs.clear-plan || false }}
     secrets:
       SIGNING_SECRET: ${{ secrets.SIGNING_SECRET }}
       KERNEL_PRIVKEY: ${{ secrets.KERNEL_PRIVKEY }}
@@ -323,7 +345,7 @@ jobs:
       packages: write # Needed to publish images
       id-token: write # Needed for token generation for signing
     strategy:
-      fail-fast: false 
+      fail-fast: false
       matrix:
         recipe:
           - iot/recipe-iot-zfs-nvidia.yml
@@ -331,6 +353,8 @@ jobs:
     uses: ./.github/workflows/build-one-recipe.yml
     with:
       recipe: ${{ matrix.recipe }}
+      rechunk: true
+      clear-plan: ${{ inputs.clear-plan || false }}
     secrets:
       SIGNING_SECRET: ${{ secrets.SIGNING_SECRET }}
       KERNEL_PRIVKEY: ${{ secrets.KERNEL_PRIVKEY }}

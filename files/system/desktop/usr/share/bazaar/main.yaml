@@ -1,0 +1,4 @@
+yaml-blocklist-paths:
+  - /usr/share/bazaar/blocklist.yaml
+curated-config-paths:
+  - /usr/share/bazaar/curated.yaml

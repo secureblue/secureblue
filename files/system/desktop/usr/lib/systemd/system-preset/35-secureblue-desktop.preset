@@ -1,5 +1,4 @@
 enable flatpak-system-update.timer
-enable securebluecleanup.service
 
 # Disable NFS daemons
 disable gssproxy.service
@@ -49,3 +48,12 @@ disable cups.socket
 
 # Disable modem manager
 disable ModemManager.service
+
+# Disable iSCSI daemons
+disable iscsid.service
+disable iscsid.socket
+disable iscsiuio.service
+disable iscsiuio.socket
+
+# Enable upgrade-on-boot
+enable upgrade-on-boot.service

@@ -1,22 +1,14 @@
 #!/usr/bin/env bash
 
-set -oue pipefail
+set -euo pipefail
 
-# Copyright 2025 fiftydinar
-# Copyright 2025 The Secureblue Authors
+# SPDX-FileCopyrightText: Copyright 2025 fiftydinar
+# SPDX-FileCopyrightText: Copyright 2025-2026 The Secureblue Authors
 #
-# Licensed under the Apache License, Version 2.0 (the "License");
-# you may not use this file except in compliance with the License.
-# You may obtain a copy of the License at
-#
-#     http://www.apache.org/licenses/LICENSE-2.0
-#
-# Unless required by applicable law or agreed to in writing, software distributed under the License is
-# distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-# See the License for the specific language governing permissions and limitations under the License.
+# SPDX-License-Identifier: Apache-2.0
 
 latest_url=$(curl -fLsS --retry 5 -o /dev/null -w '%{url_effective}' https://github.com/casey/just/releases/latest)
-ver=$(basename "$latest_url")
+ver=$(basename "${latest_url}")
 temp_dir=$(mktemp -d)
 curl -fLsS --retry 5 --create-dirs \
     "https://github.com/casey/just/releases/download/${ver}/just-${ver}-${OS_ARCH}-unknown-linux-musl.tar.gz" -o "${temp_dir}/just-${ver}-${OS_ARCH}-unknown-linux-musl.tar.gz" \

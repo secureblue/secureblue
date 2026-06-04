@@ -1,16 +1,6 @@
-# Copyright 2025 The Secureblue Authors
+# SPDX-FileCopyrightText: Copyright 2025-2026 The Secureblue Authors
 #
-# Licensed under the Apache License, Version 2.0 (the "License");
-# you may not use this file except in compliance with the License.
-# You may obtain a copy of the License at
-#
-#     http://www.apache.org/licenses/LICENSE-2.0
-#
-# Unless required by applicable law or agreed to in writing, software
-# distributed under the License is distributed on an "AS IS" BASIS,
-# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-# See the License for the specific language governing permissions and
-# limitations under the License.
+# SPDX-License-Identifier: Apache-2.0
 
 # Sometimes /var/lib/unbound/root.key goes missing on CoreOS systems.
 # In that case, unbound-checkconf fails in anticipation of unbound-anchor
@@ -23,12 +13,13 @@ ConditionPathExists=!/var/lib/unbound/root.key
 After=local-fs.target
 Before=unbound.service unbound-anchor.service
 RequiresMountsFor=/var/lib
-RequiresMountsFor=/usr/etc
+RequiresMountsFor=/etc
 
 [Service]
 Type=oneshot
+ExecCondition=/usr/bin/test ! -e /var/lib/unbound/root.key
 ExecStartPre=/usr/bin/mkdir -p /var/lib/unbound
-ExecStart=/usr/bin/cp /usr/etc/unbound/dnssec-root.key /var/lib/unbound/root.key
+ExecStart=/usr/bin/cp /etc/unbound/dnssec-root.key /var/lib/unbound/root.key
 ExecStartPost=/usr/bin/chown -R unbound:unbound /var/lib/unbound
 ExecStartPost=/usr/bin/chmod 0644 /var/lib/unbound/root.key
 ExecStartPost=/usr/bin/restorecon -R /var/lib/unbound

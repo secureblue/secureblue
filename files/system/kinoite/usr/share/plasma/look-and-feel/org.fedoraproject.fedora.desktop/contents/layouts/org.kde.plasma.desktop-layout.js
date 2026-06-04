@@ -1,33 +1,46 @@
 /*
+ * SPDX-FileCopyrightText: Copyright Fedora Project Authors.
+ * SPDX-FileCopyrightText: Copyright 2025-2026 The Secureblue Authors
  *
- * Copyright Fedora Project Authors.
- * Copyright 2025 The Secureblue Authors
- * 
- * Permission is hereby granted, free of charge, to any person obtaining a copy
- * of this software and associated documentation files (the "Software"), to deal
- * in the Software without restriction, including without limitation the rights
- * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- * copies of the Software, and to permit persons to whom the Software is
- * furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
- * SOFTWARE.
+ * SPDX-License-Identifier: MIT
  */
 
+/* global loadTemplate, desktopsForActivity, currentActivity, panels */
 
 loadTemplate("org.kde.plasma.desktop.defaultPanel");
 
 const desktopsArray = desktopsForActivity(currentActivity());
-desktopsArray.forEach(desktop => {
-    desktop.wallpaperPlugin = 'org.kde.image';
+desktopsArray.forEach((desktop) => {
+    desktop.wallpaperPlugin = "org.kde.image";
     desktop.currentConfigGroup = ["Wallpaper", "org.kde.image", "General"];
     desktop.writeConfig("Image", "file:///usr/share/backgrounds/default.png");
+});
+
+// Sets default launchers in KDE Plasma taskbar.
+// For documentation on this scripting mechanism, see:
+// https://develop.kde.org/docs/plasma/scripting/
+
+panels().forEach((panel) => {
+    panel.widgets().forEach((widget) => {
+        if (
+            widget.type === "org.kde.plasma.icontasks" ||
+            widget.type === "org.kde.plasma.taskmanager"
+        ) {
+            widget.currentConfigGroup = ["General"];
+
+            // Read the current launchers value
+            const currentLaunchers = widget.readConfig("launchers", "");
+
+            // Only set our default if launchers is empty
+            if (!currentLaunchers || currentLaunchers.trim() === "") {
+                widget.writeConfig("launchers", [
+                    "applications:systemsettings.desktop",
+                    "applications:io.github.kolunmi.Bazaar.desktop",
+                    "preferred://filemanager",
+                    "preferred://browser",
+                ]);
+                widget.reloadConfig();
+            }
+        }
+    });
 });

@@ -1,18 +1,8 @@
 #!/usr/bin/python3
 
-# Copyright 2025 The Secureblue Authors
+# SPDX-FileCopyrightText: Copyright 2025-2026 The Secureblue Authors
 #
-# Licensed under the Apache License, Version 2.0 (the "License");
-# you may not use this file except in compliance with the License.
-# You may obtain a copy of the License at
-#
-#     http://www.apache.org/licenses/LICENSE-2.0
-#
-# Unless required by applicable law or agreed to in writing, software
-# distributed under the License is distributed on an "AS IS" BASIS,
-# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-# See the License for the specific language governing permissions and
-# limitations under the License.
+# SPDX-License-Identifier: Apache-2.0
 
 """
 Various utility functions used in secureblue scripts.
@@ -20,15 +10,16 @@ Various utility functions used in secureblue scripts.
 
 import enum
 import json
-import subprocess  # nosec
+import os
+import rpm
+import subprocess
 import sys
 import textwrap
 import time
 from collections.abc import Iterable, Sequence
 from dataclasses import dataclass
 from functools import partialmethod
-
-import rpm
+from pathlib import Path
 
 
 class ToggleMode(enum.StrEnum):
@@ -124,7 +115,10 @@ class Image(enum.Enum):
 def booted_image_ref() -> str:
     """Get the image reference of the booted deployment."""
     ostree_status = command_stdout("/usr/bin/rpm-ostree", "status", "--json")
-    return json.loads(ostree_status)["deployments"][0]["container-image-reference"]
+    image_ref = json.loads(ostree_status)["deployments"][0]["container-image-reference"]
+    if not isinstance(image_ref, str):
+        raise ValueError("container-image-reference should be a JSON string")
+    return image_ref
 
 
 def print_wrapped(text: str, *, width: int = 70) -> None:
@@ -137,11 +131,11 @@ def print_err(text: str) -> None:
     print(f"\x1b[1m\x1b[31m{text}\x1b[0m", file=sys.stderr)
 
 
-def command_stdout(*args: str, check: bool = True) -> str:
+def command_stdout(*args: str | Path, check: bool = True) -> str:
     """Run a command in the shell and return the contents of stdout."""
     # We only call this with trusted inputs and do not set shell=True.
     # nosemgrep: dangerous-subprocess-use-audit
-    return subprocess.run(args, capture_output=True, check=check, text=True).stdout.strip()  # nosec
+    return subprocess.run(args, capture_output=True, check=check, text=True).stdout.strip()
 
 
 def command_succeeds(*args: str) -> bool:
@@ -150,8 +144,24 @@ def command_succeeds(*args: str) -> bool:
     # nosemgrep: dangerous-subprocess-use-audit
     ret_code = subprocess.run(
         args, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, check=False
-    ).returncode  # nosec
+    ).returncode
     return ret_code == 0
+
+
+def get_config_dir() -> Path:
+    """Return the directory stored in XDG_CONFIG_HOME, or ~/.config if unset."""
+    default = Path.home() / ".config"
+    xdg_config = Path(os.environ.get("XDG_CONFIG_HOME", default))
+    # All paths set in these environment variables must be absolute.
+    # If an implementation encounters a relative path in any of these variables,
+    # it should consider the path invalid and ignore it.
+    if not xdg_config or not xdg_config.is_absolute():
+        xdg_config = default
+    # If, when attempting to write a file, the destination directory is non-existent
+    # an attempt should be made to create it with permission 0700.
+    if not xdg_config.is_dir():
+        os.mkdir(xdg_config, 0o700)
+    return xdg_config
 
 
 def parse_config(
@@ -171,11 +181,45 @@ def parse_config(
     return config
 
 
+def is_module_loaded(module_name: str) -> bool:
+    """Check whether the passed module name is currently loaded"""
+
+    try:
+        with open("/proc/modules", encoding="utf8") as fd:
+            return any(line.startswith(module_name + " ") for line in fd)
+    except OSError:
+        return False
+
+
+def loaded_kernel_modules() -> frozenset[str]:
+    """Get the set of currently loaded kernel modules."""
+    with open("/proc/modules", encoding="utf8") as f:
+        return frozenset(line.split(maxsplit=1)[0] for line in f)
+
+
 def is_rpm_package_installed(name: str) -> bool:
     """Checks if the given RPM package is installed."""
-    ts = rpm.TransactionSet()
+    # slow to import and causes CI issues, so only import here
+    import rpm  # noqa: PLC0415
+
+    ts = rpm.TransactionSet()  # ty: ignore[unresolved-attribute]
     matches = ts.dbMatch("name", name)
     return len(matches) > 0
+
+
+def logout(prompt: str | None = None) -> None:
+    if prompt is not None and not ask_yes_no(prompt):
+        return
+    match Image.from_image_ref(booted_image_ref()):
+        case Image.SERICEA:
+            subprocess.run(["/usr/sbin/swaymsg", "exit"], check=True)
+        case Image.KINOITE:
+            subprocess.run(
+                ["/usr/bin/qdbus-qt6", "org.kde.Shutdown", "/Shutdown", "logout"], check=True
+            )
+        case _:
+            user = command_stdout("/usr/bin/whoami")
+            subprocess.run(["/usr/bin/loginctl", "terminate-user", user], check=True)
 
 
 def is_using_vpn() -> bool:
@@ -204,7 +248,7 @@ def is_using_vpn() -> bool:
 def interruptible_ask(prompt: str) -> str:
     """Ask for a string input, strip whitespace, and exit gracefully if interrupted."""
     prompt = " ".join(prompt.split())
-    prompt = "\n" + textwrap.fill(prompt) + " "
+    prompt = textwrap.fill(prompt) + " "
     try:
         return input(prompt).strip()
     except (KeyboardInterrupt, EOFError):
@@ -235,7 +279,22 @@ def ask_option(options_count: int) -> int:
                 print()
                 return option
         print(f"Please enter a number between 1 and {options_count}.")
+        
+def get_selinux_booleans(*booleans: str) -> frozenset[str]:
+    """Get list of SELinux booleans and return the set of all of them that are true/on."""
+    output = command_stdout("/usr/bin/getsebool", *booleans)
+    split_lines = (line.split(" --> ", maxsplit=1) for line in output.splitlines())
+    return frozenset(key for key, value in split_lines if value == "on")
 
+
+def set_selinux_booleans(sebools: dict[str, bool], *, permanent: bool = True) -> int:
+    """Set SELinux booleans"""
+    args = ["run0", "-i", "setsebool"]
+    if permanent:
+        args.append("-P")
+    for key, value in sebools.items():
+        args.append(f"{key}={'on' if value else 'off'}")
+    return subprocess.run(args, check=False).returncode
 
 @dataclass(frozen=True)
 class SystemdService:

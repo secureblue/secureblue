@@ -1,25 +1,14 @@
 #!/usr/bin/python3
 
-# Copyright 2025 The Secureblue Authors
+# SPDX-FileCopyrightText: Copyright 2025-2026 The Secureblue Authors
 #
-# Licensed under the Apache License, Version 2.0 (the "License");
-# you may not use this file except in compliance with the License.
-# You may obtain a copy of the License at
-#
-#     http://www.apache.org/licenses/LICENSE-2.0
-#
-# Unless required by applicable law or agreed to in writing, software
-# distributed under the License is distributed on an "AS IS" BASIS,
-# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-# See the License for the specific language governing permissions and
-# limitations under the License.
+# SPDX-License-Identifier: Apache-2.0
 
 """Common data for kernel argument hardening."""
 
-import subprocess  # nosec
-from collections.abc import Sequence
-
+import subprocess
 import tomllib
+from collections.abc import Sequence
 
 with open("/usr/lib/bootc/kargs.d/10-secureblue.toml", "rb") as f:
     DEFAULT_KARGS = tomllib.load(f)["kargs"]
@@ -55,4 +44,4 @@ def apply_kargs(*, add: Sequence[str], remove: Sequence[str]) -> None:
         rpm_ostree_cmd.append(f"--append-if-missing={karg}")
     for karg in remove:
         rpm_ostree_cmd.append(f"--delete-if-present={karg}")
-    subprocess.run(rpm_ostree_cmd, check=True)  # nosec
+    subprocess.run(rpm_ostree_cmd, check=True)

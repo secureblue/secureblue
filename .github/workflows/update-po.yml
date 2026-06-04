@@ -1,16 +1,6 @@
-# Copyright 2025 The Secureblue Authors
+# SPDX-FileCopyrightText: Copyright 2025-2026 The Secureblue Authors
 #
-# Licensed under the Apache License, Version 2.0 (the "License");
-# you may not use this file except in compliance with the License.
-# You may obtain a copy of the License at
-#
-#     http://www.apache.org/licenses/LICENSE-2.0
-#
-# Unless required by applicable law or agreed to in writing, software
-# distributed under the License is distributed on an "AS IS" BASIS,
-# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-# See the License for the specific language governing permissions and
-# limitations under the License.
+# SPDX-License-Identifier: Apache-2.0
 
 name: update-po
 permissions: {}
@@ -27,34 +17,36 @@ jobs:
   update-po:
     name: Update PO files
     runs-on: ubuntu-24.04
+    environment: Create_PR
     permissions:
       contents: write  # needed to create branch
       pull-requests: write  # needed to create pull request
 
     steps:
-      - name: Optimize build times
-        shell: bash
-        run: |
-          echo 'set man-db/auto-update false' | sudo debconf-communicate
-          sudo dpkg-reconfigure man-db
-          sudo rm -f /var/lib/man-db/auto-update
-          sudo sed -i 's/^update_initramfs=.*/update_initramfs=no/' /etc/initramfs-tools/update-initramfs.conf
-
       - name: Install gettext
         shell: bash
         run: |
-          sudo apt-get install gettext
+          sudo apt update
+          sudo apt install gettext
 
-      - uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8  # v6.0.1
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd  # v6.0.2
         with:
-          persist-credentials: true  # zizmor: ignore[artipacked]
+          persist-credentials: false
 
       - name: Update PO files
         shell: bash
         run: |
-          python3 files/po/update_po.py
+          python3 tools/update_po.py
 
-      - uses: peter-evans/create-pull-request@98357b18bf14b5342f975ff684046ec3b2a07725  # v8.0.0
+      - uses: actions/create-github-app-token@bcd2ba49218906704ab6c1aa796996da409d3eb1 # v3.2.0
+        id: app-token
+        with:
+          client-id: ${{ vars.CLIENT_ID }}
+          private-key: ${{ secrets.PRIVATE_KEY }}
+          permission-contents: write
+          permission-pull-requests: write
+
+      - uses: peter-evans/create-pull-request@5f6978faf089d4d20b00c7766989d076bb2fc7f1  # v8.1.1
         with:
           add-paths: |
             files/po/*.pot
@@ -63,7 +55,8 @@ jobs:
           branch: create-pull-request/update-po
           sign-commits: true
           title: 'chore(i18n): update PO files'
+          token: ${{ steps.app-token.outputs.token }}
           body: |
-            Automatically update POT and PO files by running the script `files/po/update_po.py`.
+            Automatically update POT and PO files by running the script `tools/update_po.py`.
 
             Translators may need to add new translations to the PO files.

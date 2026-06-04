@@ -1,40 +1,75 @@
 #!/bin/bash
 
-# Copyright 2025 The Secureblue Authors
+# SPDX-FileCopyrightText: Copyright 2025-2026 The Secureblue Authors
 #
-# Licensed under the Apache License, Version 2.0 (the "License");
-# you may not use this file except in compliance with the License.
-# You may obtain a copy of the License at
-#
-#     http://www.apache.org/licenses/LICENSE-2.0
-#
-# Unless required by applicable law or agreed to in writing, software distributed under the License is
-# distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-# See the License for the specific language governing permissions and limitations under the License.
+# SPDX-License-Identifier: Apache-2.0
 
-set -oue pipefail
+set -euo pipefail
 
-status="$(rpm-ostree status)"
+cached_update_json="$(rpm-ostree status --json | jq -c '."cached-update"')"
+if [[ "${cached_update_json}" == 'null' ]]; then
+    exit 0
+fi
 
-if [[ "$status"  =~ SecAdvisories:.*(important|critical) ]]; then
-	case "$(notify-send --urgency=critical \
-		--app-name="secureblue" \
-		--action="Reboot" \
-		"A major security vulnerability has been patched" \
-		"Please reboot to run the updated system")" in
-			"0")
-				systemctl reboot ;;
+readarray -t upgraded_packages < <(jq -cr '."rpm-diff".upgraded[][1]' <<<"${cached_update_json}")
+kernel_updated='false'
+trivalent_updated='false'
+for package in "${upgraded_packages[@]}"; do
+    case "${package}" in
+        kernel) kernel_updated='true' ;;
+        trivalent) trivalent_updated='true' ;;
+        *) ;;
+    esac
+done
 
-	esac
+# Convert numerical advisory severity indices to strings. Reference for the format:
+# https://github.com/coreos/rpm-ostree/blob/721fccd3459ee50b600c88193f1e9f8dd69569dc/src/libpriv/rpmostree-rpm-util.h#L177
+# https://github.com/coreos/rpm-ostree/blob/721fccd3459ee50b600c88193f1e9f8dd69569dc/src/libpriv/rpmostree-types.h#L40
+# For each advisory:
+# * Field 1 is the DNF advisory kind; for security advisories, this is 1.
+# * Field 2 is an integer representing the severity.
+case "$(jq -c '[.advisories[]? | select(.[1] == 1) | .[2]] | max' <<<"${cached_update_json}")" in
+    null) max_advisory_severity='none' ;;
+    1) max_advisory_severity='low' ;;
+    2) max_advisory_severity='moderate' ;;
+    3) max_advisory_severity='important' ;;
+    4) max_advisory_severity='critical' ;;
+    *) max_advisory_severity='unknown' ;;
+esac
 
-elif [[ "$status"  =~ SecAdvisories:.*(unknown severity|low|moderate) ]]; then
-	case "$(notify-send --urgency=normal \
-		--expire-time=5000 \
-		--app-name="secureblue" \
-		--action="Reboot" \
-		"A security vulnerability has been patched" \
-		"Please reboot to run the updated system")" in
-			"0")
-				systemctl reboot ;;
-	esac
+notify_critical() {
+    notify-send --urgency=critical \
+        --app-name="secureblue" \
+        --action="Reboot" \
+        "A major security vulnerability has been patched" \
+        "Please reboot to run the updated system"
+}
+
+notify_normal() {
+    notify-send --urgency=normal \
+        --expire-time=5000 \
+        --app-name="secureblue" \
+        --action="Reboot" \
+        "A security vulnerability has been patched" \
+        "Please reboot to run the updated system"
+}
+
+prompt_reboot() {
+    secureblue_variant_in_use="$(grep -oP '^VARIANT_ID=\K\w+' /usr/lib/os-release)"
+
+    case "${secureblue_variant_in_use}" in
+        "silverblue") gnome-session-quit --reboot ;;
+        "kinoite") qdbus-qt6 org.kde.LogoutPrompt /LogoutPrompt promptReboot ;;
+        *) systemctl reboot ;;
+    esac
+}
+
+if [[ "${trivalent_updated}" == 'true' || "${max_advisory_severity}" == 'critical' ]]; then
+    if [[ "$(notify_critical)" == '0' ]]; then
+        prompt_reboot
+    fi
+elif [[ "${kernel_updated}" == 'true' || "${max_advisory_severity}" == 'important' || "${max_advisory_severity}" == 'unknown' ]]; then
+    if [[ "$(notify_normal)" == '0' ]]; then
+        prompt_reboot
+    fi
 fi

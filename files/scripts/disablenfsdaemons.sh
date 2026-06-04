@@ -1,18 +1,10 @@
 #!/usr/bin/env bash
 
-# Copyright 2025 The Secureblue Authors
+# SPDX-FileCopyrightText: Copyright 2025-2026 The Secureblue Authors
 #
-# Licensed under the Apache License, Version 2.0 (the "License");
-# you may not use this file except in compliance with the License.
-# You may obtain a copy of the License at
-#
-#     http://www.apache.org/licenses/LICENSE-2.0
-#
-# Unless required by applicable law or agreed to in writing, software distributed under the License is
-# distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-# See the License for the specific language governing permissions and limitations under the License.
+# SPDX-License-Identifier: Apache-2.0
 
-set -oue pipefail
+set -euo pipefail
 
 echo "Disabling NFS daemons"
 
@@ -22,40 +14,40 @@ systemctl mask nfs-idmapd.service
 systemctl disable nfs-client.target
 systemctl mask nfs-client.target
 
-systemctl disable nfs-blkmap.service
-systemctl mask nfs-blkmap.service
+systemctl disable nfs-blkmap.service 2>/dev/null || true
+systemctl mask nfs-blkmap.service 2>/dev/null || true
 
-systemctl disable nfs-mountd.service
-systemctl mask nfs-mountd.service
+systemctl disable nfs-mountd.service 2>/dev/null || true
+systemctl mask nfs-mountd.service 2>/dev/null || true
 
-systemctl disable nfsdcld.service
-systemctl mask nfsdcld.service
+systemctl disable nfsdcld.service 2>/dev/null || true
+systemctl mask nfsdcld.service 2>/dev/null || true
 
-systemctl disable nfs-server.service
-systemctl mask nfs-server.service
+systemctl disable nfs-server.service 2>/dev/null || true
+systemctl mask nfs-server.service 2>/dev/null || true
 
-systemctl disable nfs-utils.service
-systemctl mask nfs-utils.service
+systemctl disable nfs-utils.service 2>/dev/null || true
+systemctl mask nfs-utils.service 2>/dev/null || true
 
-systemctl disable rpc-gssd.service
-systemctl mask rpc-gssd.service
+systemctl disable rpc-gssd.service 2>/dev/null || true
+systemctl mask rpc-gssd.service 2>/dev/null || true
 
-systemctl disable rpc-statd-notify.service
-systemctl mask rpc-statd-notify.service
+systemctl disable rpc-statd-notify.service 2>/dev/null || true
+systemctl mask rpc-statd-notify.service 2>/dev/null || true
 
-systemctl disable rpc-statd.service
-systemctl mask rpc-statd.service
+systemctl disable rpc-statd.service 2>/dev/null || true
+systemctl mask rpc-statd.service 2>/dev/null || true
 
-systemctl disable rpcbind.service
-systemctl mask rpcbind.service
+systemctl disable rpcbind.service 2>/dev/null || true
+systemctl mask rpcbind.service 2>/dev/null || true
 
-systemctl disable rpcbind.socket
-systemctl mask rpcbind.socket
+systemctl disable rpcbind.socket 2>/dev/null || true
+systemctl mask rpcbind.socket 2>/dev/null || true
 
-systemctl disable rpcbind.target
-systemctl mask rpcbind.target
+systemctl disable rpcbind.target 2>/dev/null || true
+systemctl mask rpcbind.target 2>/dev/null || true
 
-systemctl disable rpc_pipefs.target
+systemctl disable rpc_pipefs.target 2>/dev/null || true
 
-systemctl disable gssproxy.service
-systemctl mask gssproxy.service
+systemctl disable gssproxy.service 2>/dev/null || true
+systemctl mask gssproxy.service 2>/dev/null || true

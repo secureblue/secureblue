@@ -1,25 +1,14 @@
-#!/usr/bin/env bash
+#!/usr/bin/sh
 
-# Copyright 2025 Universal Blue
+# SPDX-FileCopyrightText: Copyright 2025 Universal Blue
+# SPDX-FileCopyrightText: Copyright 2026 The Secureblue Authors
 #
-# Licensed under the Apache License, Version 2.0 (the "License");
-# you may not use this file except in compliance with the License.
-# You may obtain a copy of the License at
-#
-#     http://www.apache.org/licenses/LICENSE-2.0
-#
-# Unless required by applicable law or agreed to in writing, software distributed under the License is
-# distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-# See the License for the specific language governing permissions and limitations under the License.
+# SPDX-License-Identifier: Apache-2.0
 
 # Prevent doublesourcing
-if [ -z "$USERMOTDSOURCED" ]; then
-  USERMOTDSOURCED="Y"
-  if test -d "$HOME"; then
-    if test ! -e "$HOME"/.config/no-show-user-motd; then
-      if test -x "/usr/libexec/ublue-motd"; then
-        /usr/libexec/ublue-motd
-      fi
+if [ -z "${USERMOTDSOURCED-}" ]; then
+    USERMOTDSOURCED='Y'
+    if [ -d "${HOME}" ] && ! [ -e "${XDG_CONFIG_HOME:-"${HOME}/.config"}/no-show-user-motd" ] && [ -x '/usr/libexec/secureblue-motd' ]; then
+        /usr/libexec/secureblue-motd
     fi
-  fi
 fi

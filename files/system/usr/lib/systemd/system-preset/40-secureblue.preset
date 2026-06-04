@@ -1,7 +1,22 @@
+# SPDX-FileCopyrightText: Copyright 2025-2026 The Secureblue Authors
+#
+# SPDX-License-Identifier: Apache-2.0
+
+enable securebluecleanup.service
 enable dnsconfd.service
+enable fwupd-refresh.timer
 enable podman-auto-update.timer
 enable rpm-ostreed-automatic.timer
 enable secureblue-unbound-key.service
 
+# https://github.com/polkit-org/polkit/commit/c007940054392b67b84b6044dda8a215040d8eb5
+enable polkit-agent-helper.socket
+
+# TODO: remove this after sufficient time has passed
+enable secureblue-ptrace-migration.service
+
+disable flatpak-add-fedora-repos.service
 disable geoclue.service
+disable sshd-vsock.socket
 disable systemd-resolved.service
+disable rpm-ostree-countme.timer

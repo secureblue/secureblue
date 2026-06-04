@@ -1,6 +1,6 @@
 policy_module(systemsettings, 1.0.0)
 
-# SPDX-FileCopyrightText 2025 The Secureblue Authors
+# SPDX-FileCopyrightText: Copyright 2025-2026 The Secureblue Authors
 #
 # SPDX-License-Identifier: Apache-2.0 OR MIT
 
@@ -31,6 +31,9 @@ optional_policy(`
 
 	systemsettings_run(unconfined_t, unconfined_r)
 	systemsettings_run(trivalent_domain, unconfined_r)
+
+	# required for trivalent/systemsettings clipboard sharing
+	allow trivalent_domain systemsettings_t:fifo_file write;
 ')
 
 # Required for accountsd to access systemsettings's tmp file.

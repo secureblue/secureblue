@@ -1,6 +1,6 @@
 ## <summary>thunar file manager</summary>
 
-# SPDX-FileCopyrightText 2025 The Secureblue Authors
+# SPDX-FileCopyrightText: Copyright 2025-2026 The Secureblue Authors
 #
 # SPDX-License-Identifier: Apache-2.0 OR MIT
 
@@ -42,7 +42,7 @@ interface(`thunar_domtrans',`
 interface(`thunar_run',`
 	gen_require(`
 		type thunar_t;
-        attribute_role thunar_roles;
+		attribute_role thunar_roles;
 	')
 
 	thunar_domtrans($1)

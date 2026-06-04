@@ -1,14 +1,6 @@
-# Copyright 2025 The Secureblue Authors
+# SPDX-FileCopyrightText: Copyright 2025-2026 The Secureblue Authors
 #
-# Licensed under the Apache License, Version 2.0 (the "License");
-# you may not use this file except in compliance with the License.
-# You may obtain a copy of the License at
-#
-#     http://www.apache.org/licenses/LICENSE-2.0
-#
-# Unless required by applicable law or agreed to in writing, software distributed under the License is
-# distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-# See the License for the specific language governing permissions and limitations under the License.
+# SPDX-License-Identifier: Apache-2.0
 
 # Audit secureblue
 [positional-arguments]
@@ -29,6 +21,12 @@ set-bluetooth-modules *args:
     #!/bin/sh
     exec /usr/bin/python3 /usr/libexec/secureblue/bluetooth_main.py "$@"
 
+# Sets webcam kernel modules on/off (requires reboot)
+[positional-arguments]
+set-webcam-modules *args:
+    #!/bin/sh
+    exec /usr/bin/python3 /usr/libexec/secureblue/webcam_main.py "$@"
+
 # Interactively select secure DNS servers
 [positional-arguments]
 dns-selector *args:
@@ -44,12 +42,6 @@ set-kargs-hardening:
 remove-kargs-hardening:
     #!/bin/sh
     exec /usr/bin/python3 /usr/libexec/secureblue/remove_kargs_hardening.py
-
-# Sets Brew enabled/disabled
-[positional-arguments]
-set-brew *args:
-    #!/bin/sh
-    exec /usr/bin/python3 /usr/libexec/secureblue/brew_main.py "$@"
 
 # Create the admin user and remove wheel from the normal user
 [positional-arguments]
@@ -74,3 +66,28 @@ set-container-userns *args:
 install-dangerzone:
     #!/bin/sh
     exec /usr/bin/python3 /usr/libexec/secureblue/install_dangerzone.py "$@"
+
+# Toggle display of the user-motd in terminal
+toggle-user-motd:
+    #!/bin/sh
+    exec /usr/bin/python3 /usr/libexec/secureblue/toggle_user_motd.py
+
+# Toggle DHCP hostname sending.
+[positional-arguments]
+set-dhcp-hostname-sending *args:
+    #!/bin/sh
+    exec /usr/bin/python3 /usr/libexec/secureblue/dhcp_hostname_sending_main.py "$@"
+
+# Enable, disable, or check status of always-upgrade-on-boot
+[positional-arguments]
+set-always-upgrade-on-boot *args:
+    #!/bin/sh
+    exec /usr/bin/python3 /usr/libexec/secureblue/set_always_upgrade_on_boot.py "$@"
+
+# Configure ptrace support (for anticheat, debugging tools, etc.)
+[positional-arguments]
+set-ptrace *args:
+    #!/bin/sh
+    exec /usr/bin/python3 /usr/libexec/secureblue/set_ptrace.py "$@"
+
+alias set-anticheat-support := set-ptrace

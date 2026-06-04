@@ -278,7 +278,8 @@ def ask_option(options_count: int) -> int:
                 print()
                 return option
         print(f"Please enter a number between 1 and {options_count}.")
-        
+
+
 def get_selinux_booleans(*booleans: str) -> frozenset[str]:
     """Get list of SELinux booleans and return the set of all of them that are true/on."""
     output = command_stdout("/usr/bin/getsebool", *booleans)
@@ -294,6 +295,7 @@ def set_selinux_booleans(sebools: dict[str, bool], *, permanent: bool = True) ->
     for key, value in sebools.items():
         args.append(f"{key}={'on' if value else 'off'}")
     return subprocess.run(args, check=False).returncode
+
 
 @dataclass(frozen=True)
 class SystemdService:

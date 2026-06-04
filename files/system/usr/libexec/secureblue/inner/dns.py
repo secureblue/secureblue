@@ -29,6 +29,7 @@ TRIVALENT_POLICY_PATH: Final[Path] = Path(
     "/etc/trivalent/policies/managed/10-securedns-browser.json"
 )
 
+
 class DNSResolver(Enum):
     """A DNS resolver, such as Unbound or systemd-resolved."""
 

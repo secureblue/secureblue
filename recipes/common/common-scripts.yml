@@ -18,5 +18,4 @@ scripts:
   - localization.sh
   - installrar.sh
   - setchronysysconfig.sh
-  - maskbluetoothservices.sh
   - container-pubkey-symlinks.sh

@@ -7,18 +7,18 @@
 set -euo pipefail
 
 in_progress_indicator=~/.cache/secureblue-flatpak-setup-in-progress
-if [ ! -f "$in_progress_indicator" ]; then
+if [[ ! -f "${in_progress_indicator}" ]]; then
     notify-send -a 'secureblue' -i 'dialog-information' -u normal 'Provisioning core flatpaks, please wait...'
 fi
-touch "$in_progress_indicator"
+touch "${in_progress_indicator}"
 
 flatpak remote-add --if-not-exists --user --subset=verified --title='Flathub Verified' flathub-verified https://dl.flathub.org/repo/flathub.flatpakrepo
 ujust harden-flatpak
 
 image_name=$(awk -F= '$1 == "VARIANT_ID" { print $2; exit }' /etc/os-release)
-if [[ "$image_name" != *"kinoite"* ]]; then
+if [[ "${image_name}" != *"kinoite"* ]]; then
     flatpak install --user -y --noninteractive flathub-verified com.github.tchx84.Flatseal
 fi
 
 notify-send -a 'secureblue' -i 'dialog-information' -u normal 'Flatpak provisioning completed.'
-rm -f "$in_progress_indicator"
+rm -f "${in_progress_indicator}"

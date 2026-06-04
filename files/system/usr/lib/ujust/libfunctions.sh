@@ -14,7 +14,7 @@
 # echo "$CHOICE" will return "option 3"
 function Choose (){
     CHOICE=$(ugum choose "$@")
-    echo "$CHOICE"
+    echo "${CHOICE}"
 }
 
 ########

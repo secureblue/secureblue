@@ -10,7 +10,7 @@ set -euo pipefail
 mkdir -p /var/tmp
 chmod 1777 /var/tmp
 
-if [[ "$IMAGE_NAME" == *open* ]]; then
+if [[ "${IMAGE_NAME}" == *open* ]]; then
     nvidia_repo='fedora-nvidia'
 else
     nvidia_repo='fedora-nvidia-580'

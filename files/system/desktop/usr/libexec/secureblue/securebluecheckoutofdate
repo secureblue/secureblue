@@ -9,11 +9,11 @@ set -euo pipefail
 
 RPM_OSTREE_STATUS=$(rpm-ostree status --json --booted)
 
-IMAGE_DATE=$(echo "$RPM_OSTREE_STATUS" | jq -r '.deployments[0].timestamp')
+IMAGE_DATE=$(echo "${RPM_OSTREE_STATUS}" | jq -r '.deployments[0].timestamp')
 CURRENT_SECONDS=$(date +%s)
 DIFFERENCE=$((CURRENT_SECONDS - IMAGE_DATE))
 WEEK=604800 # 1 week
-if [ "$DIFFERENCE" -ge "$WEEK" ]; then
+if [[ "${DIFFERENCE}" -ge "${WEEK}" ]]; then
     # If the image is more than a week old, we're out of date.
     exit 0
 else

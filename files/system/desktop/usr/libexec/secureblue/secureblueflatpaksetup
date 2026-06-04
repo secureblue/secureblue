@@ -7,10 +7,10 @@
 set -euo pipefail
 
 in_progress_indicator=~/.cache/secureblue-flatpak-setup-in-progress
-if [ ! -f "$in_progress_indicator" ]; then
+if [[ ! -f "${in_progress_indicator}" ]]; then
     notify-send -a 'secureblue' -i 'dialog-information' -u normal 'Provisioning core flatpaks, please wait...'
 fi
-touch "$in_progress_indicator"
+touch "${in_progress_indicator}"
 
 flatpak remote-add --if-not-exists --user --subset=verified --title='Flathub Verified' flathub-verified https://dl.flathub.org/repo/flathub.flatpakrepo
 ujust harden-flatpak
@@ -18,4 +18,4 @@ ujust harden-flatpak
 flatpak preinstall --user --noninteractive
 
 notify-send -a 'secureblue' -i 'dialog-information' -u normal 'Flatpak provisioning completed.'
-rm -f "$in_progress_indicator"
+rm -f "${in_progress_indicator}"

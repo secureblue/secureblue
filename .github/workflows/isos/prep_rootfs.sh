@@ -29,7 +29,7 @@ sed -i '/^Prepend=/s/$/;liveinst.desktop/' /usr/share/kde-settings/kde-profile/d
 
 # Require the embedded installer image in containers-storage to satisfy the
 # same sigstore policy used for registry pulls.
-jq --arg image_ref "$IMAGE_REF" \
+jq --arg image_ref "${IMAGE_REF}" \
     '.transports["containers-storage"][""] =
     [
         {
@@ -144,7 +144,7 @@ EOF
 
 # Interactive Kickstart
 tee -a /usr/share/anaconda/interactive-defaults.ks <<EOF
-ostreecontainer --url=$IMAGE_REF:$IMAGE_TAG --transport=containers-storage
+ostreecontainer --url=${IMAGE_REF}:${IMAGE_TAG} --transport=containers-storage
 %include /usr/share/anaconda/post-scripts/install-configure-upgrade.ks
 %include /usr/share/anaconda/post-scripts/secureboot-enroll-key.ks
 EOF

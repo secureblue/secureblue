@@ -84,7 +84,7 @@ set-always-upgrade-on-boot *args:
     #!/bin/sh
     exec /usr/bin/python3 /usr/libexec/secureblue/set_always_upgrade_on_boot.py "$@"
 
-# Revert to the system default container policy, as well as deactivate any user overrides.
+# Revert both the user and system container policy overrides (if they exist) to the default system container policy.
 reset-container-policy:
     #!/bin/sh
     exec /usr/bin/python3 /usr/libexec/secureblue/reset_container_policy.py

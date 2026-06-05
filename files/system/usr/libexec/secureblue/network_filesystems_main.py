@@ -19,7 +19,8 @@ from utils import (
 )
 
 NETFS_HELP: Final[str] = """
-This python script toggles if network filesystems modules is enabled by creating or deleting a modprobe file at
+This python script toggles if network filesystems modules is enabled by
+creating or deleting a modprobe file at
 "/etc/modprobe.d/99-network-filesystems.conf" to disable or enable the kernel modules
 needed for network filesystems. Note this change only takes affect upon reboot.
 
@@ -75,7 +76,9 @@ def main() -> int:
         return 1
 
     enabled_by_file = Path(NETFS_MOD_FILE).exists()
-    network_filesystems_function = sandbox.SandboxedFunction("network_filesystems.py", read_write_paths=[NETFS_MOD_DIR])
+    network_filesystems_function = sandbox.SandboxedFunction(
+        "network_filesystems.py", read_write_paths=[NETFS_MOD_DIR]
+    )
     match mode:
         case "on" | "off":
             target_state_enabled = mode == "on"

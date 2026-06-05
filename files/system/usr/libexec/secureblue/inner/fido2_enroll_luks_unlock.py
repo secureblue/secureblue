@@ -14,8 +14,8 @@ import re
 import shutil
 import subprocess
 import sys
-
 from typing import Final
+
 from secureblue.utils import ask_yes_no
 
 CRYPTTAB_FILE: Final[str] = "/etc/crypttab"

@@ -34,7 +34,8 @@ class FidoDevice:
     use_bio: bool = False
 
     def test_supported_algorithm(self) -> None:
-        assert self.cbor_support
+        if not self.cbor_support:
+            raise RuntimeError("Device does not support CBOR")
 
         supported_algorithms = Ctap2(self.device).get_info().algorithms
 
@@ -42,7 +43,8 @@ class FidoDevice:
             self.supported_algorithms.add(element.get("alg"))
 
     def test_bio_support(self) -> bool:
-        assert self.cbor_support
+        if not self.cbor_support:
+            raise RuntimeError("Device does not support CBOR")
 
         info = Ctap2(self.device).get_info()
 

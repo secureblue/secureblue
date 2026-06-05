@@ -10,17 +10,19 @@ import os
 import re
 import sys
 import textwrap
+from typing import Final
 
 import inquirer
 import sandbox
 from fido import ConnectedDevices, CoseAlgorithms
 from sandbox import SandboxedFunction
 from utils import command_stdout, print_err
-from typing import Final
 
-SYSTEMD_CRYPTENROLL_SUPPORTED_ALGORITHMS: Final[set] = set(
-    [CoseAlgorithms.EDDSA, CoseAlgorithms.ES256, CoseAlgorithms.RS256]
-)
+SYSTEMD_CRYPTENROLL_SUPPORTED_ALGORITHMS: Final[set] = {
+    CoseAlgorithms.EDDSA,
+    CoseAlgorithms.ES256,
+    CoseAlgorithms.RS256
+}
 
 parser = argparse.ArgumentParser(
     prog="ujust setup-luks-fido2-unlock",
@@ -88,14 +90,13 @@ def get_uuid() -> str:
 def choose_algorithm(supported_algo: set) -> str | None:
     if CoseAlgorithms.EDDSA in supported_algo:
         return "eddsa"
-    elif CoseAlgorithms.ES256 in supported_algo:
+    if CoseAlgorithms.ES256 in supported_algo:
         return "es256"
-    elif CoseAlgorithms.RS256 in supported_algo:
+    if CoseAlgorithms.RS256 in supported_algo:
         return "rs256"
 
-    # Should not reach
-    else:
-        return None
+    # Should not reach, as incompatible devices should have been excluded.
+    return None
 
 
 connected_devices = ConnectedDevices()
@@ -134,12 +135,8 @@ for device in connected_devices.get_devices():
     if device.get_cbor_support:
         device.test_supported_algorithm()
 
-        if device.supported_algorithms.isdisjoint(
-            SYSTEMD_CRYPTENROLL_SUPPORTED_ALGORITHMS
-        ):
-            print(
-                f"Device {device.name} is not compatible for use with 'systemd-cryptenroll'."
-            )
+        if device.supported_algorithms.isdisjoint(SYSTEMD_CRYPTENROLL_SUPPORTED_ALGORITHMS):
+            print(f"Device {device.name} is not compatible for use with 'systemd-cryptenroll'.")
             print("This device cannot be used.\n")
             device.close()
             continue

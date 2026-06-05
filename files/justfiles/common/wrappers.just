@@ -72,6 +72,12 @@ toggle-user-motd:
     #!/bin/sh
     exec /usr/bin/python3 /usr/libexec/secureblue/toggle_user_motd.py
 
+# Set MAC randomisation (per-connection/per-network/off/status)
+[positional-arguments]
+set-mac-randomization *args:
+    #!/bin/sh
+    exec /usr/bin/python3 /usr/libexec/secureblue/set_mac_randomization.py "$@"
+    
 # Toggle DHCP hostname sending.
 [positional-arguments]
 set-dhcp-hostname-sending *args:

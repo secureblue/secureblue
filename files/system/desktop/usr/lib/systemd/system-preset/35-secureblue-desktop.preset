@@ -57,3 +57,6 @@ disable iscsiuio.socket
 
 # Enable upgrade-on-boot
 enable upgrade-on-boot.service
+
+# Disable bluetooth service
+disable bluetooth.service

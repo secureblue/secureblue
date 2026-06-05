@@ -320,7 +320,6 @@ class SystemdService:
         if self.is_user:
             actions = ("--user", *actions)
 
-        # nosemgrep: dangerous-subprocess-use-audit
         systemctl = subprocess.run(  # nosec
             ["/usr/bin/systemctl", *actions, self.name], check=False, capture_output=True
         )

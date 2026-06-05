@@ -38,8 +38,8 @@ def main() -> int:
             return 0
         case "off":
             os.remove(BLUE_MOD_FILE)
-            bluetooth_service.mask()
             bluetooth_service.disable_now()
+            bluetooth_service.mask()
             print("Bluetooth has been disabled. Reboot for effect.")
             return 0
         case _:

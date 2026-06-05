@@ -18,7 +18,7 @@ from utils import (
     is_module_loaded,
 )
 
-BLUE_HELP: Final[str] = """
+NETFS_HELP: Final[str] = """
 This python script toggles if network filesystems is enabled by creating or deleting a modprobe file at
 "/etc/modprobe.d/99-network-filesystems.conf" to disable or enable the kernel modules
 needed for network filesystems. Note this change only takes affect upon reboot.
@@ -40,8 +40,8 @@ ujust set-network-filesystem-modules --help
     Prints this message.
 """
 
-BLUE_MOD_DIR: Final[str] = "/etc/modprobe.d"
-BLUE_MOD_FILE: Final[str] = f"{BLUE_MOD_DIR}/99-network-filesystems.conf"
+NETFS_MOD_DIR: Final[str] = "/etc/modprobe.d"
+NETFS_MOD_FILE: Final[str] = f"{NETFS_MOD_DIR}/99-network-filesystems.conf"
 
 
 def print_status(enabled_by_file: bool) -> None:
@@ -74,8 +74,8 @@ def main() -> int:
         print("Too many options specified, see usage with --help.", file=sys.stderr)
         return 1
 
-    enabled_by_file = Path(BLUE_MOD_FILE).exists()
-    network_filesystems_function = sandbox.SandboxedFunction("network_filesystems.py", read_write_paths=[BLUE_MOD_DIR])
+    enabled_by_file = Path(NETFS_MOD_FILE).exists()
+    network_filesystems_function = sandbox.SandboxedFunction("network_filesystems.py", read_write_paths=[NETFS_MOD_DIR])
     match mode:
         case "on" | "off":
             target_state_enabled = mode == "on"
@@ -87,7 +87,7 @@ def main() -> int:
         case "status":
             print_status(enabled_by_file)
         case "--help":
-            print(BLUE_HELP)
+            print(NETFS_HELP)
         case _:
             print("Invalid option selected. Try --help.")
             return 1

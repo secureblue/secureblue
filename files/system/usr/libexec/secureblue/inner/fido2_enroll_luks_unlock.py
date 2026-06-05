@@ -106,14 +106,14 @@ def main(uuid: str, fido_device: list) -> None:
     if crypttab_content is not None:
         # Backup /etc/crypttab
         shutil.copy2(CRYPTTAB_FILE, CRYPTTAB_FILE_BACKUP)
-        print("File '/etc/crypttab' copied to '/etc/crypttab.backup'.\n")
+        print(f"File '{CRYPTTAB_FILE}' copied to '{CRYPTTAB_FILE_BACKUP}'.\n")
 
         # Write amended file content to crypttab.
         with open(CRYPTTAB_FILE, "wb") as crypttab:
             crypttab.write(crypttab_content)
 
-    os.chmod("/etc/crypttab", 0o600)
-    os.chown("/etc/crypttab", 0, 0)
+    os.chmod(CRYPTTAB_FILE, 0o600)
+    os.chown(CRYPTTAB_FILE, 0, 0)
 
     print(f"The following token(s) are currently enrolled for disk {uuid}:")
 

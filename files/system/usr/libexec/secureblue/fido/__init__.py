@@ -71,9 +71,9 @@ class FidoDevice:
 
 @dataclass
 class ConnectedDevices:
-    devices: list[FidoDevice] = field(default_factory=list)
+    __devices: list[FidoDevice] = field(default_factory=list)
     # Total number of devices connected
-    count: int = 0
+    __count: int = 0
 
     # Enumerate devices, stores a list of FidoDevice in ConnectedDevices.devices.
     def __init__(self):
@@ -94,7 +94,7 @@ class ConnectedDevices:
     # (Intended for use with prompt_select() only).
     def enumerate_list(self) -> list[(str, int)]:
         list_enumerated = []
-        for i, device in enumerate(self.devices):
+        for i, device in enumerate(self.get_devices()):
             list_enumerated.append((device.name, i))
         return list_enumerated
 

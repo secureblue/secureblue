@@ -12,8 +12,8 @@ import os
 import sys
 from typing import Final
 
-BLUE_MOD_FILE: Final[str] = "/etc/modprobe.d/99-network-filesystems.conf"
-BLUE_MOD_TEXT: Final[str] = """install nfs /sbin/modprobe --ignore-install nfs
+NETFS_MOD_FILE: Final[str] = "/etc/modprobe.d/99-network-filesystems.conf"
+NETFS_MOD_TEXT: Final[str] = """install nfs /sbin/modprobe --ignore-install nfs
 install nfsv4 /sbin/modprobe --ignore-install nfsv4
 install nfs_acl /sbin/modprobe --ignore-install nfs_acl
 install nfs_localio /sbin/modprobe --ignore-install nfs_localio
@@ -39,13 +39,13 @@ def main() -> int:
     mode = sys.argv[1]
     match mode:
         case "on":
-            with open(BLUE_MOD_FILE, "w", encoding="utf8") as fd:
-                fd.write(BLUE_MOD_TEXT)
-            os.chmod(BLUE_MOD_FILE, 0o644)
+            with open(NETFS_MOD_FILE, "w", encoding="utf8") as fd:
+                fd.write(NETFS_MOD_TEXT)
+            os.chmod(NETFS_MOD_FILE, 0o644)
             print("Network filesystems has been enabled. Reboot for effect.")
             return 0
         case "off":
-            os.remove(BLUE_MOD_FILE)
+            os.remove(NETFS_MOD_FILE)
             print("Network filesystems has been disabled. Reboot for effect.")
             return 0
         case _:

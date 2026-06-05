@@ -8,6 +8,7 @@
 
 import filecmp
 import os
+import shutil
 import sys
 from typing import Final
 
@@ -17,40 +18,32 @@ from utils import print_err
 # Use absolute paths
 SYSTEM_POLICY_FILE: Final[str] = "/etc/containers/policy.json"
 USER_POLICY_FILE: Final[str] = os.path.expanduser("~/.config/containers/policy.json")
-MAX_POLICY_CONFIGS: Final[int] = 50
 
 def main() -> int:
     """Main script entrypoint"""
 
-    container_function = sandbox.SandboxedFunction(
-        "container_policy.py",
-        read_write_paths=["/etc/containers", "/usr/etc/containers"],
-        capabilities=["CAP_DAC_OVERRIDE"]
-    )
+    system_policy_default = None
+    if os.path.exists(SYSTEM_POLICY_FILE):
+        system_policy_default = filecmp.cmp(f"/usr{SYSTEM_POLICY_FILE}", SYSTEM_POLICY_FILE)
+        if system_policy_default is False:
+            # replace current policy with the system default
+            container_function = sandbox.SandboxedFunction(
+                "container_policy.py",
+                read_write_paths=["/etc/containers", "/usr/etc/containers"],
+            )
+            sandbox.run(container_function)
 
-    # replace system policy file
-    if not filecmp.cmp(f"/usr{SYSTEM_POLICY_FILE}", SYSTEM_POLICY_FILE):
-        if not os.path.exists(f"{SYSTEM_POLICY_FILE}.old"):
-            # all requirements met
-            sandbox.run(container_function, "normal")
-        else:
-            # An old config is already present
-            sandbox.run(container_function, "multi-save")
-
-    # replace user override
+    user_policy_default = None
     if os.path.exists(USER_POLICY_FILE):
-        if os.path.exists(f"{USER_POLICY_FILE}.old"):
-            i = 1
-            while os.path.exists(f"{USER_POLICY_FILE}.old.{i}") and i >= MAX_POLICY_CONFIGS:
-                i += 1
-            if i >= MAX_POLICY_CONFIGS:
-                print_err("You have too many configurations.")
-                print_err("Please visit ~/.config/containers to clean up old configurations.")
-                print_err("ABORTING")
-                return 1
-            os.rename(USER_POLICY_FILE, f"{USER_POLICY_FILE}.old.{i}")
-        else:
-            os.rename(USER_POLICY_FILE, f"{USER_POLICY_FILE}.old")
+        user_policy_default = filecmp.cmp(f"/usr{SYSTEM_POLICY_FILE}", USER_POLICY_FILE)
+        if user_policy_default is False:
+            # save current policy & replace user override with the default
+            os.replace(USER_POLICY_FILE, f"{USER_POLICY_FILE}.old")
+            shutil.copy2(f"/usr{SYSTEM_POLICY_FILE}", USER_POLICY_FILE)
+
+    # notify the user that neither files exist and something is wrong
+    if user_policy_default is None and system_policy_default is None:
+        print_err("Warning: There is neither a system policy or a user policy! ! !")
 
     return 0
 

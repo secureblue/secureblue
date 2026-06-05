@@ -14,11 +14,6 @@ remove-luks-tpm-unlock:
     #!/usr/bin/bash
     run0 /usr/libexec/luks-disable-tpm2-autounlock.sh
 
-# Enabled LUKS unlock via a FIDO2 hardware key
-setup-luks-fido2-unlock:
-    #!/usr/bin/bash
-    run0 /usr/libexec/luks-enable-fido2-unlock.sh
-
 # Disable LUKS unlock via a FIDO2 hardware key
 remove-luks-fido2-unlock:
     #!/usr/bin/bash

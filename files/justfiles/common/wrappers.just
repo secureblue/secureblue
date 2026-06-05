@@ -21,6 +21,11 @@ set-bluetooth-modules *args:
     #!/bin/sh
     exec /usr/bin/python3 /usr/libexec/secureblue/bluetooth_main.py "$@"
 
+# Enable LUKS unlock via a FIDO2 hardware key
+setup-luks-fido2-unlock *args:
+    #!/bin/sh
+    exec /usr/bin/python3 /usr/libexec/secureblue/luks_enable_fido2_unlock.py "$@"
+
 # Sets webcam kernel modules on/off (requires reboot)
 [positional-arguments]
 set-webcam-modules *args:

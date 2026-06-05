@@ -19,22 +19,22 @@ from utils import (
 )
 
 NETFS_HELP: Final[str] = """
-This python script toggles if network filesystems is enabled by creating or deleting a modprobe file at
+This python script toggles if network filesystems modules is enabled by creating or deleting a modprobe file at
 "/etc/modprobe.d/99-network-filesystems.conf" to disable or enable the kernel modules
 needed for network filesystems. Note this change only takes affect upon reboot.
 
 usage:
 ujust set-network-filesystem-modules
-    Turns network filesystems on or off interactively based on the user's preference.
+    Turns network filesystems modules on or off interactively based on the user's preference.
 
 ujust set-network-filesystem-modules on
-    Turns network filesystems on, does nothing if already on.
+    Turns network filesystems modules on, does nothing if already on.
 
 ujust set-network-filesystem-modules off
-    Turns network filesystems off, does nothing if already off.
+    Turns network filesystems modules off, does nothing if already off.
 
 ujust set-network-filesystem-modules status
-    Reports if network filesystems is set on or off.
+    Reports if network filesystems modules is set on or off.
 
 ujust set-network-filesystem-modules --help
     Prints this message.

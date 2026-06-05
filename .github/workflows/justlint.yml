@@ -31,7 +31,7 @@ jobs:
           persist-credentials: false
 
       - name: Lint justfiles
-        run: |          
+        run: |
           sudo apt update
           sudo apt install pipx
           pipx install rust-just

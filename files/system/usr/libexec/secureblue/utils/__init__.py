@@ -10,6 +10,7 @@ Various utility functions used in secureblue scripts.
 
 import enum
 import json
+import os
 import subprocess
 import sys
 import textwrap
@@ -19,6 +20,7 @@ from dataclasses import dataclass
 from functools import partialmethod
 
 import rpm
+from pathlib import Path
 
 
 class ToggleMode(enum.StrEnum):
@@ -192,7 +194,7 @@ def print_err(text: str) -> None:
     print(f"\x1b[1m\x1b[31m{text}\x1b[0m", file=sys.stderr)
 
 
-def command_stdout(*args: str, check: bool = True) -> str:
+def command_stdout(*args: str | Path, check: bool = True) -> str:
     """Run a command in the shell and return the contents of stdout."""
     # We only call this with trusted inputs and do not set shell=True.
     # nosemgrep: dangerous-subprocess-use-audit
@@ -207,6 +209,22 @@ def command_succeeds(*args: str) -> bool:
         args, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, check=False
     ).returncode
     return ret_code == 0
+
+
+def get_config_dir() -> Path:
+    """Return the directory stored in XDG_CONFIG_HOME, or ~/.config if unset."""
+    default = Path.home() / ".config"
+    xdg_config = Path(os.environ.get("XDG_CONFIG_HOME", default))
+    # All paths set in these environment variables must be absolute.
+    # If an implementation encounters a relative path in any of these variables,
+    # it should consider the path invalid and ignore it.
+    if not xdg_config or not xdg_config.is_absolute():
+        xdg_config = default
+    # If, when attempting to write a file, the destination directory is non-existent
+    # an attempt should be made to create it with permission 0700.
+    if not xdg_config.is_dir():
+        os.mkdir(xdg_config, 0o700)
+    return xdg_config
 
 
 def parse_config(
@@ -244,9 +262,27 @@ def loaded_kernel_modules() -> frozenset[str]:
 
 def is_rpm_package_installed(name: str) -> bool:
     """Checks if the given RPM package is installed."""
-    ts = rpm.TransactionSet()
+    # slow to import and causes CI issues, so only import here
+    import rpm  # noqa: PLC0415
+
+    ts = rpm.TransactionSet()  # ty: ignore[unresolved-attribute]
     matches = ts.dbMatch("name", name)
     return len(matches) > 0
+
+
+def logout(prompt: str | None = None) -> None:
+    if prompt is not None and not ask_yes_no(prompt):
+        return
+    match Image.from_image_ref(booted_image_ref()):
+        case Image.SERICEA:
+            subprocess.run(["/usr/sbin/swaymsg", "exit"], check=True)
+        case Image.KINOITE:
+            subprocess.run(
+                ["/usr/bin/qdbus-qt6", "org.kde.Shutdown", "/Shutdown", "logout"], check=True
+            )
+        case _:
+            user = command_stdout("/usr/bin/whoami")
+            subprocess.run(["/usr/bin/loginctl", "terminate-user", user], check=True)
 
 
 def is_using_vpn() -> bool:
@@ -306,3 +342,20 @@ def ask_option(options_count: int) -> int:
                 print()
                 return option
         print(f"Please enter a number between 1 and {options_count}.")
+
+
+def get_selinux_booleans(*booleans: str) -> frozenset[str]:
+    """Get list of SELinux booleans and return the set of all of them that are true/on."""
+    output = command_stdout("/usr/bin/getsebool", *booleans)
+    split_lines = (line.split(" --> ", maxsplit=1) for line in output.splitlines())
+    return frozenset(key for key, value in split_lines if value == "on")
+
+
+def set_selinux_booleans(sebools: dict[str, bool], *, permanent: bool = True) -> int:
+    """Set SELinux booleans"""
+    args = ["run0", "-i", "setsebool"]
+    if permanent:
+        args.append("-P")
+    for key, value in sebools.items():
+        args.append(f"{key}={'on' if value else 'off'}")
+    return subprocess.run(args, check=False).returncode

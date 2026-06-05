@@ -7,7 +7,7 @@ assignees: []
 body:
   - type: textarea
     id: description
-    attributes:      
+    attributes:
       label: Description
       description: Describe the bug
       placeholder: A clear and concise description of what the bug is.
@@ -16,7 +16,7 @@ body:
 
   - type: textarea
     id: reproduce
-    attributes:      
+    attributes:
       label: Reproduce
       description: Steps to reproduce
       placeholder: Steps to reproduce the behavior.
@@ -25,16 +25,16 @@ body:
 
   - type: textarea
     id: expected
-    attributes:      
+    attributes:
       label: Expected
       description: Expected behavior
       placeholder: A clear and concise description of what you expected to happen.
     validations:
       required: true
-      
+
   - type: textarea
     id: actual
-    attributes:      
+    attributes:
       label: Actual
       description: Actual behavior
       placeholder: A clear and concise description of what actually happened
@@ -43,7 +43,7 @@ body:
 
   - type: input
     id: image
-    attributes:      
+    attributes:
       label: Image
       description: Your current image
       placeholder: 'rpm-ostree status'
@@ -53,7 +53,7 @@ body:
 
   - type: input
     id: upstream
-    attributes:      
+    attributes:
       label: Upstream
       description: Upstream confirmation
       placeholder: Confirmation that you cannot repro on a quay.io/fedora-ostree-desktops base image

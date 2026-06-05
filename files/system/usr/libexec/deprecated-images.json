@@ -1,15 +1,15 @@
 {
     "imageTypes": [
-      "framework",
-      "main-laptop",
-      "nvidia-laptop",
-      "server",
-      "bluefin",
-      "aurora",
-      "userns",
-      "wayblue-hyprland",
-      "wayblue-sway",
-      "wayblue-wayfire",
-      "wayblue-river"
+        "framework",
+        "main-laptop",
+        "nvidia-laptop",
+        "server",
+        "bluefin",
+        "aurora",
+        "userns",
+        "wayblue-hyprland",
+        "wayblue-sway",
+        "wayblue-wayfire",
+        "wayblue-river"
     ]
 }

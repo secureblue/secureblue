@@ -194,7 +194,13 @@ enroll_fido_devices = json.dumps(enroll_fido_devices)
 
 # Run privileged script.
 sandbox.run(
-    SandboxedFunction("fido2_enroll_luks_unlock.py", read_write_paths=["/etc"]),
+    SandboxedFunction(
+        "fido2_enroll_luks_unlock.py",
+        read_write_paths=[
+            "/etc/crypttab",
+            "/etc/crypttab.backup"
+        ]
+    ),
     target_uuid,
     enroll_fido_devices,
 )

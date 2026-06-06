@@ -1,0 +1,52 @@
+# SPDX-FileCopyrightText: Copyright 2026 The Secureblue Authors
+# SPDX-FileCopyrightText: Timothée Ravier <tim@siosm.fr>
+#
+# SPDX-License-Identifier: Apache-2.0 AND CC0-1.0
+
+ARG BASE=overridden
+ARG KERNEL=overriden
+ARG RELEASE=overridden
+
+# Capture scripts from the git repo
+FROM scratch as scripts
+COPY uki/scripts /
+
+FROM $KERNEL as kernel
+
+FROM $BASE as rootfs
+
+# Rebuild the initramfs now that dracut's configuration is complete.
+FROM rootfs as initramfs
+RUN --mount=type=tmpfs,target=/run \
+    --mount=type=tmpfs,target=/tmp \
+    --mount=type=tmpfs,target=/var/tmp \
+    --mount=type=bind,from=scripts,src=/,target=/run/scripts \
+    /run/scripts/rebuild-initrd.sh
+
+FROM quay.io/fedora/fedora-minimal:${RELEASE} as sealed-uki
+# Install prerequisites.
+RUN --mount=type=tmpfs,target=/run \
+    --mount=type=tmpfs,target=/tmp \
+    --mount=type=tmpfs,target=/var \
+    <<EORUN
+set -euxo pipefail
+dnf install -y systemd-ukify sbsigntools jq
+dnf install -y --enablerepo=updates-testing --refresh bootc
+EORUN
+
+# Copy the kernel and the initramfs into the image to build the UKI.
+COPY --from=kernel /vmlinuz /vmlinuz
+COPY --from=initramfs /initramfs /initramfs
+RUN --mount=type=tmpfs,target=/run \
+    --mount=type=tmpfs,target=/tmp \
+    --mount=type=tmpfs,target=/var/tmp \
+    --mount=type=secret,id=secureboot_key \
+    --mount=type=secret,id=secureboot_crt \
+    --mount=type=bind,from=rootfs,src=/,target=/run/target,ro \
+    --mount=type=bind,target=/run/src,ro \
+    --mount=type=bind,from=scripts,src=/,target=/run/scripts \
+    /run/scripts/uki.sh
+
+# Copy UKI to the final image.
+FROM rootfs as final
+COPY --from=sealed-uki /boot/EFI/Linux /boot/EFI/Linux

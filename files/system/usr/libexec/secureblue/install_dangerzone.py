@@ -13,7 +13,7 @@ import sys
 from typing import Final
 
 import sandbox
-from utils import ask_yes_no, print_wrapped
+from utils import BootcBackend, ask_yes_no, print_wrapped
 
 WARNING_MESSAGE: Final[str] = """
 Warning: Dangerzone (https://dangerzone.rocks/) requires enabling both container-domain
@@ -25,6 +25,10 @@ and to use ptrace to inspect child processes in containers.
 
 def main() -> int:
     """Main script entrypoint."""
+    if BootcBackend.from_running() == BootcBackend.COMPOSEFS:
+        print("This script does not support UKI systems yet.")
+        return 1
+
     print_wrapped(WARNING_MESSAGE)
     if not ask_yes_no("Continue installing Dangerzone?"):
         print("Canceling installation.")

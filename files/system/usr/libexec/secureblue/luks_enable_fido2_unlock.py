@@ -196,6 +196,7 @@ enroll_fido_devices = json.dumps(enroll_fido_devices)
 sandbox.run(
     SandboxedFunction(
         "fido2_enroll_luks_unlock.py",
+        capabilities=["CAP_CHOWN"],
         read_write_paths=[
             "/etc/crypttab",
             "/etc/crypttab.backup"

@@ -12,12 +12,12 @@ _comp_ujust() {
         # `ujust with-standard-malloc` wraps an arbitrary command, so generate
         # completions for that command.
         _comp_command_offset 2
-    elif [[ "$cur" == -* ]]; then
+    elif [[ "${cur}" == -* ]]; then
         # Completions for options
-        compgen -V COMPREPLY -W '--choose --dump -l --list -s --show --summary --usage' -- "$cur"
+        compgen -V COMPREPLY -W '--choose --dump -l --list -s --show --summary --usage' -- "${cur}"
     else
         # Completions for ujust recipes
-        compgen -V COMPREPLY -W "$(ujust --summary)" -- "$cur"
+        compgen -V COMPREPLY -W "$(ujust --summary)" -- "${cur}"
     fi
 }
 

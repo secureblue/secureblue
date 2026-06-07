@@ -54,12 +54,22 @@ notify_normal() {
         "Please reboot to run the updated system"
 }
 
+prompt_reboot() {
+    secureblue_variant_in_use="$(grep -oP '^VARIANT_ID=\K\w+' /usr/lib/os-release)"
+
+    case "${secureblue_variant_in_use}" in
+        "silverblue") gnome-session-quit --reboot ;;
+        "kinoite") qdbus-qt6 org.kde.LogoutPrompt /LogoutPrompt promptReboot ;;
+        *) systemctl reboot ;;
+    esac
+}
+
 if [[ "${trivalent_updated}" == 'true' || "${max_advisory_severity}" == 'critical' ]]; then
     if [[ "$(notify_critical)" == '0' ]]; then
-        systemctl reboot
+        prompt_reboot
     fi
 elif [[ "${kernel_updated}" == 'true' || "${max_advisory_severity}" == 'important' || "${max_advisory_severity}" == 'unknown' ]]; then
     if [[ "$(notify_normal)" == '0' ]]; then
-        systemctl reboot
+        prompt_reboot
     fi
 fi

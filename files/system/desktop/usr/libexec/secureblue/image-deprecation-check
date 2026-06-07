@@ -8,12 +8,12 @@
 set -euo pipefail
 
 RPM_OSTREE_STATUS=$(rpm-ostree status --json --booted)
-IMAGE_REF_NAME=$(echo "$RPM_OSTREE_STATUS" | jq -r '.deployments[0]."container-image-reference" // empty | split("/")[-1]')
+IMAGE_REF_NAME=$(echo "${RPM_OSTREE_STATUS}" | jq -r '.deployments[0]."container-image-reference" // empty | split("/")[-1]')
 
 readarray -t imageTypes < <(jq -r '.imageTypes[]' /usr/libexec/deprecated-images.json)
 
 for imageType in "${imageTypes[@]}"; do
-    if [[ "$IMAGE_REF_NAME" == *"$imageType"* ]]; then
+    if [[ "${IMAGE_REF_NAME}" == *"${imageType}"* ]]; then
         exit 0
     fi
 done

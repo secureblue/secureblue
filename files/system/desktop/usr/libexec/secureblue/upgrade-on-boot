@@ -13,40 +13,40 @@ NO_UPDATE_STRING="No update available, booting current deployment"
 plymouth watch-keystroke --keys="qQ" --command "systemctl stop upgrade-on-boot.service" &
 BOOTC_UPGRADE_CHECK_OUTPUT="$(bootc upgrade --check 2>&1)" || true
 
-if grep -q "failed to invoke method OpenImage" <<< "$BOOTC_UPGRADE_CHECK_OUTPUT"; then
+if grep -q "failed to invoke method OpenImage" <<< "${BOOTC_UPGRADE_CHECK_OUTPUT}"; then
     echo "Failed to check for updates"
     exit 1
 fi
 
-if grep -q "local rpm-ostree modifications" <<< "$BOOTC_UPGRADE_CHECK_OUTPUT"; then
+if grep -q "local rpm-ostree modifications" <<< "${BOOTC_UPGRADE_CHECK_OUTPUT}"; then
     echo "Using rpm-ostree"
     if ! /usr/libexec/secureblue/system-update-available; then
-        echo "$NO_UPDATE_STRING"
+        echo "${NO_UPDATE_STRING}"
         exit 0
     fi
-    
-    plymouth message --text="Staging update... $CANCEL_STRING"
+
+    plymouth message --text="Staging update... ${CANCEL_STRING}"
     if ! /usr/libexec/secureblue/verify-provenance.sh; then
-        echo "$PROVENANCE_FAILURE_STRING"
+        echo "${PROVENANCE_FAILURE_STRING}"
         exit 1
     fi
 
     rpm-ostree upgrade
     RPM_OSTREE_EXIT=$?
     if (( RPM_OSTREE_EXIT != 0 )); then
-        echo "$UPDATE_FAILURE_STRING"
-        plymouth message --text="$UPDATE_FAILURE_STRING"
+        echo "${UPDATE_FAILURE_STRING}"
+        plymouth message --text="${UPDATE_FAILURE_STRING}"
         exit 1
     fi
 else
     echo "Using bootc"
-    if grep -q "No changes" <<< "$BOOTC_UPGRADE_CHECK_OUTPUT"; then
-        echo "$NO_UPDATE_STRING"
+    if grep -q "No changes" <<< "${BOOTC_UPGRADE_CHECK_OUTPUT}"; then
+        echo "${NO_UPDATE_STRING}"
         exit 0
     fi
 
     if ! /usr/libexec/secureblue/verify-provenance.sh; then
-        echo "$PROVENANCE_FAILURE_STRING"
+        echo "${PROVENANCE_FAILURE_STRING}"
         exit 1
     fi
 
@@ -56,36 +56,36 @@ else
     echo "Plymouth initialized"
 
     BOOTC_OUTPUT=$(mktemp -u /run/bootc-upgrade-XXXXXX)
-    mkfifo "$BOOTC_OUTPUT"
+    mkfifo "${BOOTC_OUTPUT}"
 
     while IFS= read -r line; do
-        echo "Got line: $line"
-        type=$(echo "$line" | jq -r '.type // empty')
-        echo "Type: $type"
-        case "$type" in
+        echo "Got line: ${line}"
+        type=$(echo "${line}" | jq -r '.type // empty')
+        echo "Type: ${type}"
+        case "${type}" in
             ProgressBytes)
-                bytes=$(echo "$line" | jq -r '.bytes')
-                bytes_total=$(echo "$line" | jq -r '.bytesTotal')
+                bytes=$(echo "${line}" | jq -r '.bytes')
+                bytes_total=$(echo "${line}" | jq -r '.bytesTotal')
                 percent=$(( 100 * bytes / bytes_total ))
-                echo "Percent: $percent"
+                echo "Percent: ${percent}"
                 if (( percent >= 100 )); then
                     plymouth change-mode --boot-up
-                    plymouth message --text="Deploying update... $CANCEL_STRING"
+                    plymouth message --text="Deploying update... ${CANCEL_STRING}"
                 else
-                    plymouth system-update --progress="$percent"
+                    plymouth system-update --progress="${percent}"
                 fi
                 ;;
         esac
-    done < "$BOOTC_OUTPUT" &
+    done < "${BOOTC_OUTPUT}" &
 
-    bootc upgrade --quiet --progress-fd 3 3>"$BOOTC_OUTPUT"
+    bootc upgrade --quiet --progress-fd 3 3>"${BOOTC_OUTPUT}"
     BOOTC_EXIT=$?
-    echo "bootc exited with: $BOOTC_EXIT"
-    rm -f "$BOOTC_OUTPUT"
+    echo "bootc exited with: ${BOOTC_EXIT}"
+    rm -f "${BOOTC_OUTPUT}"
 
     if (( BOOTC_EXIT != 0 )); then
-        echo "$UPDATE_FAILURE_STRING"
-        plymouth message --text="$UPDATE_FAILURE_STRING"
+        echo "${UPDATE_FAILURE_STRING}"
+        plymouth message --text="${UPDATE_FAILURE_STRING}"
         exit 1
     fi
 fi

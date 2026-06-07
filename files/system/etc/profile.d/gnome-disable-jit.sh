@@ -1,4 +1,4 @@
-#!/usr/bin/env bash
+#!/usr/bin/sh
 
 # SPDX-FileCopyrightText: Copyright 2025-2026 The Secureblue Authors
 #

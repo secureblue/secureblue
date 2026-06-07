@@ -130,19 +130,19 @@ if connected_devices.get_count() == 0:
 print("---\n")
 
 for device in connected_devices.get_devices():
-    print(f"Scanning device {device.name}...\n")
+    print(f"Scanning device {device.get_name()}...\n")
 
     if device.get_cbor_support:
         device.test_supported_algorithm()
 
         if device.get_supported_algorithms().isdisjoint(SYSTEMD_CRYPTENROLL_SUPPORTED_ALGORITHMS):
-            print(f"Device {device.name} is not compatible for use with 'systemd-cryptenroll'.")
+            print(f"Device {device.get_name()} is not compatible for use with 'systemd-cryptenroll'.")
             print("This device cannot be used.\n")
             device.close()
             continue
 
         if device.test_bio_support():
-            print(f"Device {device.name} supports biometric authentication.")
+            print(f"Device {device.get_name()} supports biometric authentication.")
 
             device.set_use_bio(
                 inquirer.list_input(

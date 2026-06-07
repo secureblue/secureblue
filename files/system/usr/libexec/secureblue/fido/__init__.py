@@ -24,9 +24,9 @@ class CoseAlgorithms:
 
 @dataclass
 class FidoDevice:
-    device: CtapHidDevice
+    __device: CtapHidDevice
     # From self.device.product_name()
-    name: str
+    __name: str
     __cbor_support: bool
     # Set of integers with definitions defined in class CoseAlgorithms
     __supported_algorithms: set[int] = field(default_factory=set)
@@ -37,7 +37,7 @@ class FidoDevice:
         if not self.__cbor_support:
             raise RuntimeError("Device does not support CBOR")
 
-        supported_algorithms = Ctap2(self.device).get_info().algorithms
+        supported_algorithms = Ctap2(self.__device).get_info().algorithms
 
         for element in supported_algorithms:
             self.__supported_algorithms.add(element.get("alg"))
@@ -46,7 +46,7 @@ class FidoDevice:
         if not self.__cbor_support:
             raise RuntimeError("Device does not support CBOR")
 
-        info = Ctap2(self.device).get_info()
+        info = Ctap2(self.__device).get_info()
 
         return ("bioEnroll" in info.options) or (
             "FIDO_2_1_PRE" in info.versions
@@ -54,7 +54,7 @@ class FidoDevice:
         )
 
     def close(self) -> None:
-        self.device.close()
+        self.__device.close()
 
     # Getters & Setters
     def get_cbor_support(self) -> bool:
@@ -66,9 +66,12 @@ class FidoDevice:
     def get_use_bio(self) -> bool:
         return self.__bio
 
+    def get_name(self) -> str:
+        return self.__name
+
     # Returns the path (/dev/hidrawX) of the device.
     def get_path(self) -> str:
-        return self.device.descriptor.path
+        return self.__device.descriptor.path
 
     def get_supported_algorithms(self) -> set:
         return self.__supported_algorithms
@@ -100,7 +103,7 @@ class ConnectedDevices:
     def enumerate_list(self) -> list[(str, int)]:
         list_enumerated = []
         for i, device in enumerate(self.get_devices()):
-            list_enumerated.append((device.name, i))
+            list_enumerated.append((device.get_name(), i))
         return list_enumerated
 
     def prompt_select(self) -> None:

@@ -90,10 +90,9 @@ def read_crypttab(uuid: str) -> str | None:
 
 def systemd_cryptenroll(*additional_args: str) -> str:
     return command_stdout(
-        "/usr/bin/systemd-cryptenroll",
-        rf"/dev/disk/by-uuid/{uuid}",
-        *additional_args
+        "/usr/bin/systemd-cryptenroll", rf"/dev/disk/by-uuid/{uuid}", *additional_args
     )
+
 
 def main(uuid: str, fido_device: list) -> None:
     crypttab_content = read_crypttab(uuid)
@@ -130,16 +129,13 @@ def main(uuid: str, fido_device: list) -> None:
         # Disable PIN entry if biometric authentication is used.
         if bio:
             systemd_cryptenroll(
-                    rf"--fido2-device={path}",
-                    rf"--fido2-credential-algorithm={algo}",
-                    "--fido2-with-client-pin=no",
-                    "--fido2-with-user-verification=yes",
+                rf"--fido2-device={path}",
+                rf"--fido2-credential-algorithm={algo}",
+                "--fido2-with-client-pin=no",
+                "--fido2-with-user-verification=yes",
             )
         else:
-            systemd_cryptenroll(
-                rf"--fido2-device={path}",
-                rf"--fido2-credential-algorithm={algo}"
-            )
+            systemd_cryptenroll(rf"--fido2-device={path}", rf"--fido2-credential-algorithm={algo}")
 
     # A list of slots that FIDO tokens are enrolled
     slot_number: list = re.findall("[0-9]+(?= +fido2)", tokens_enrolled)
@@ -153,7 +149,7 @@ def main(uuid: str, fido_device: list) -> None:
                 rf"{i}",
                 "--priority",
                 "prefer",
-                rf"/dev/disk/by-uuid/{uuid}"
+                rf"/dev/disk/by-uuid/{uuid}",
             )
         )
 

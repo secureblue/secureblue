@@ -49,8 +49,7 @@ class FidoDevice:
         info = Ctap2(self.__device).get_info()
 
         return ("bioEnroll" in info.options) or (
-            "FIDO_2_1_PRE" in info.versions
-            and "userVerificationMgmtPreview" in info.options
+            "FIDO_2_1_PRE" in info.versions and "userVerificationMgmtPreview" in info.options
         )
 
     def close(self) -> None:

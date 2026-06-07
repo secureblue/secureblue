@@ -21,7 +21,7 @@ from utils import command_stdout, print_err
 SYSTEMD_CRYPTENROLL_SUPPORTED_ALGORITHMS: Final[set] = {
     CoseAlgorithms.EDDSA,
     CoseAlgorithms.ES256,
-    CoseAlgorithms.RS256
+    CoseAlgorithms.RS256,
 }
 
 parser = argparse.ArgumentParser(
@@ -136,7 +136,9 @@ for device in connected_devices.get_devices():
         device.test_supported_algorithm()
 
         if device.get_supported_algorithms().isdisjoint(SYSTEMD_CRYPTENROLL_SUPPORTED_ALGORITHMS):
-            print(f"Device {device.get_name()} is not compatible for use with 'systemd-cryptenroll'.")
+            print(
+                f"Device {device.get_name()} is not compatible for use with 'systemd-cryptenroll'."
+            )
             print("This device cannot be used.\n")
             device.close()
             continue
@@ -197,10 +199,7 @@ sandbox.run(
     SandboxedFunction(
         file_name="fido2_enroll_luks_unlock.py",
         capabilities=["CAP_CHOWN"],
-        read_write_paths=[
-            "/etc/crypttab",
-            "/etc/crypttab.backup"
-        ],
+        read_write_paths=["/etc/crypttab", "/etc/crypttab.backup"],
         allowed_syscalls=["@chown"],
         additional_sandbox_properties=[
             "--property=DeviceAllow=" + f"/dev/disk/by-uuid/{target_uuid}" + "r"

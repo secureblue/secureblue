@@ -135,7 +135,7 @@ for device in connected_devices.get_devices():
     if device.get_cbor_support:
         device.test_supported_algorithm()
 
-        if device.supported_algorithms.isdisjoint(SYSTEMD_CRYPTENROLL_SUPPORTED_ALGORITHMS):
+        if device.get_supported_algorithms().isdisjoint(SYSTEMD_CRYPTENROLL_SUPPORTED_ALGORITHMS):
             print(f"Device {device.name} is not compatible for use with 'systemd-cryptenroll'.")
             print("This device cannot be used.\n")
             device.close()
@@ -187,7 +187,7 @@ for device in connected_devices.get_devices():
     algorithm = choose_algorithm(device.get_supported_algorithms())
 
     enroll_fido_devices.append(
-        {"path": device.get_path(), "algorithm": algorithm, "bio": device.use_bio}
+        {"path": device.get_path(), "algorithm": algorithm, "bio": device.get_use_bio()}
     )
 
 enroll_fido_devices = json.dumps(enroll_fido_devices)
@@ -195,12 +195,18 @@ enroll_fido_devices = json.dumps(enroll_fido_devices)
 # Run privileged script.
 sandbox.run(
     SandboxedFunction(
-        "fido2_enroll_luks_unlock.py",
+        file_name="fido2_enroll_luks_unlock.py",
         capabilities=["CAP_CHOWN"],
         read_write_paths=[
             "/etc/crypttab",
             "/etc/crypttab.backup"
-        ]
+        ],
+        allowed_syscalls=["@chown"],
+        additional_sandbox_properties=[
+            "--property=DeviceAllow=" + f"/dev/disk/by-uuid/{target_uuid}" + "r"
+        ],
+        remove_sandbox_arguments=["--property=PrivateDevices=yes"],
+        subprocess_interactive=True,
     ),
     target_uuid,
     enroll_fido_devices,

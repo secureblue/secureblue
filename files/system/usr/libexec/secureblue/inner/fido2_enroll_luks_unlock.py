@@ -92,7 +92,7 @@ def systemd_cryptenroll(*additional_args: str) -> str:
     return command_stdout(
         "/usr/bin/systemd-cryptenroll",
         rf"/dev/disk/by-uuid/{uuid}",
-        additional_args
+        *additional_args
     )
 
 def main(uuid: str, fido_device: list) -> None:
@@ -161,14 +161,14 @@ def main(uuid: str, fido_device: list) -> None:
     print("All tokens enrolled.\n")
 
     rm_passwd = ask_yes_no(
-        "Would you like to remove other authentication methods and add a recovery key? [Y/n] "
+        "Would you like to remove other authentication methods and add a recovery key?"
     )
 
     if rm_passwd:
         # Use enrolled FIDO device to unlock the LUKS device.
         print(
             "Your recovery key: "
-            "{systemd_cryptenroll('--recovery-key', '--unlock-fido2-device=auto')}"
+            f"{systemd_cryptenroll('--recovery-key', '--unlock-fido2-device=auto')}"
         )
         print(systemd_cryptenroll("--wipe-slot=tpm2"))
         print(systemd_cryptenroll("--wipe-slot=pkcs11"))

@@ -27,23 +27,23 @@ class FidoDevice:
     device: CtapHidDevice
     # From self.device.product_name()
     name: str
-    cbor_support: bool
+    __cbor_support: bool
     # Set of integers with definitions defined in class CoseAlgorithms
-    supported_algorithms: set[int] = field(default_factory=set)
+    __supported_algorithms: set[int] = field(default_factory=set)
     # True if the device is equipped with biometric sensor, and the user wants to use it.
-    use_bio: bool = False
+    __use_bio: bool = False
 
     def test_supported_algorithm(self) -> None:
-        if not self.cbor_support:
+        if not self.__cbor_support:
             raise RuntimeError("Device does not support CBOR")
 
         supported_algorithms = Ctap2(self.device).get_info().algorithms
 
         for element in supported_algorithms:
-            self.supported_algorithms.add(element.get("alg"))
+            self.__supported_algorithms.add(element.get("alg"))
 
     def test_bio_support(self) -> bool:
-        if not self.cbor_support:
+        if not self.__cbor_support:
             raise RuntimeError("Device does not support CBOR")
 
         info = Ctap2(self.device).get_info()
@@ -58,17 +58,20 @@ class FidoDevice:
 
     # Getters & Setters
     def get_cbor_support(self) -> bool:
-        return self.cbor_support
+        return self.__cbor_support
 
     def set_use_bio(self, value: bool) -> None:
-        self.bio = value
+        self.__bio = value
+
+    def get_use_bio(self) -> bool:
+        return self.__bio
 
     # Returns the path (/dev/hidrawX) of the device.
     def get_path(self) -> str:
         return self.device.descriptor.path
 
     def get_supported_algorithms(self) -> set:
-        return self.supported_algorithms
+        return self.__supported_algorithms
 
 
 @dataclass

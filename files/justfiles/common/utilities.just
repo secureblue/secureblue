@@ -282,6 +282,46 @@ install-vpn:
         ["tailscale"]=""
     )
 
+	# Prompts the user to enable a service
+	function systemctl_prompt_enable_only() {
+		local SERVICE="$1.service"
+		if ! systemctl list-unit-files --full --all | grep -Fq "${SERVICE}"; then
+			echo "Service '${SERVICE}' does not exist, try rebooting"
+			return
+		fi
+		if ! systemctl is-enabled --quiet "${SERVICE}"; then
+			local proceedService
+            read -rp "$SERVICE is not enabled, enable and start now? [Y/n]" proceedService
+            if ! [[ "$proceedService" == [nN]* ]]; then
+				systemctl enable "${SERVICE}"
+            fi
+		fi
+		echo "${SERVICE} is enabled"
+	}
+
+	function systemctl_prompt_enable_start() {
+		local SERVICE="$1.service"
+		if ! systemctl list-unit-files --full --all | grep -Fq "${SERVICE}"; then
+			echo "Service '${SERVICE}' does not exist, try rebooting"
+			return
+		fi
+		if ! systemctl is-enabled --quiet "${SERVICE}"; then
+			local proceedService
+            read -rp "$SERVICE is not enabled, enable and start now? [Y/n]" proceedService
+            if ! [[ "$proceedService" == [nN]* ]]; then
+				systemctl enable --now "${SERVICE}"
+            fi
+		fi
+		if ! systemctl is-active --quiet "${SERVICE}"; then
+			local proceedService
+            read -rp "$SERVICE is enabled but not running, start it now? [Y/n]" proceedService
+            if ! [[ "$proceedService" == [nN]* ]]; then
+				systemctl start "${SERVICE}"
+            fi
+		fi
+		echo "${SERVICE} is enabled and running"
+	}
+
     # VPN install logic
     # ref: https://www.ivpn.net/knowledgebase/linux/fedora-silverblue/
     # ref: https://mullvad.net/de/download/vpn/linux
@@ -297,7 +337,8 @@ install-vpn:
 
                 if util_checkpackage "$PACKAGE_NAMES" || util_checkpackage "$PACKAGE_NAMES-ui"; then
                     echo 'Error: IVPN is already installed.'
-                    echo 'Aborting...'
+                    echo 'Checking if systemctl services are enabled and running...'
+					systemctl_prompt_enable_start ivpn-service
                     exit 1
                 fi
 
@@ -307,21 +348,22 @@ install-vpn:
                 if ! [[ "$proceed2" == [nN]* ]]; then
                     PACKAGE_NAMES="$PACKAGE_NAMES $PACKAGE_NAMES-ui"
                 fi
-                INSTRUCTIONS='Successfully installed IVPN. Please execute the command "systemctl enable --now ivpn-service" after rebooting.'
+                INSTRUCTIONS='Successfully installed IVPN. After rebooting, please execute the command "systemctl enable --now ivpn-service", or rerun this script'
                 ;;
 
             "mullvad")
                 PACKAGE_NAMES="mullvad-vpn"
                 REPO_NAME="mullvad"
-
                 if util_checkpackage "$PACKAGE_NAMES"; then
                     echo 'Error: Mullvad VPN is already installed.'
-                    echo 'Aborting...'
+                    echo 'Checking if systemctl services are enabled and running...'
+					systemctl_prompt_enable_only mullvad-daemon
+					systemctl_prompt_enable_start mullvad-early-boot-blocking
                     exit 1
                 fi
 
                 echo 'Installing Mullvad VPN...'
-                INSTRUCTIONS='Successfully installed Mullvad VPN. Please execute the command "systemctl enable --now mullvad-daemon && systemctl enable mullvad-early-boot-blocking" after rebooting.'
+                INSTRUCTIONS='Successfully installed Mullvad VPN. After rebooting, please execute the command "systemctl enable --now mullvad-daemon && systemctl enable mullvad-early-boot-blocking" or rerun this script'
                 ;;
 
             "proton")

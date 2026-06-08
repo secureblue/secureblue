@@ -15,7 +15,7 @@ import shutil
 import sys
 from typing import Final
 
-from secureblue.utils import ask_yes_no, command_stdout
+from utils import ask_yes_no, command_stdout
 
 CRYPTTAB_FILE: Final[str] = "/etc/crypttab"
 CRYPTTAB_FILE_BACKUP: Final[str] = "/etc/crypttab.backup"

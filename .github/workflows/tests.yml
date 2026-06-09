@@ -40,10 +40,16 @@ jobs:
            file-path: "${{ github.workspace }}/.bats/bats-file"
 
       - name: Install just
-        env:
-          OS_ARCH: x86_64
+        shell: bash
         run: |
-          sudo --preserve-env=OS_ARCH bash files/scripts/manuallyinstalljust.sh
+          just_version='1.52.0'
+          temp_dir="$(mktemp -d)"
+          cd "${temp_dir}"
+          just_tarball="just-${just_version}-x86_64-unknown-linux-musl.tar.gz"
+          curl -fLsS --retry 5 -O "https://github.com/casey/just/releases/download/${just_version}/${just_tarball}"
+          sha256sum -c <<<"e0a712614574d45625332529c864754e26782422b7c7db931466180a618f092d  ${just_tarball}"
+          tar -xzf "${just_tarball}"
+          sudo install ./just /usr/bin/just
 
       - name: Run tests
         shell: bash

@@ -19,7 +19,13 @@ LINUXBREW_HOME: Final[str] = "/home/linuxbrew"
 TMPFILES_OVERRIDE: Final[str] = "/etc/tmpfiles.d/homebrew.conf"
 BREW_PROFILE_FILE: Final[str] = "/etc/profile.d/brew.sh"
 BREW_PROFILE_COMPLETIONS_FILE: Final[str] = "/etc/profile.d/brew-bash-completions.sh"
-BREW_PROXY_SERVICE: Final[str] = "brew-proxy-daemon.service"
+BREW_SYSTEMD_UNITS: Final[list[str]] = [
+    "brew-update.service",
+    "brew-update.timer",
+    "brew-upgrade.service",
+    "brew-upgrade.timer",
+    "brew-proxy-daemon.service",
+]
 
 
 def enable_brew() -> None:
@@ -31,7 +37,7 @@ def enable_brew() -> None:
     )
     shutil.copy2(f"/usr{BREW_PROFILE_FILE}", BREW_PROFILE_FILE)
     shutil.copy2(f"/usr{BREW_PROFILE_COMPLETIONS_FILE}", BREW_PROFILE_COMPLETIONS_FILE)
-    subprocess.run(["/usr/bin/systemctl", "unmask", BREW_PROXY_SERVICE], check=True)
+    subprocess.run(["/usr/bin/systemctl", "unmask", "--", *BREW_SYSTEMD_UNITS], check=True)
 
 
 def disable_brew() -> None:
@@ -44,7 +50,7 @@ def disable_brew() -> None:
         os.remove(BREW_PROFILE_FILE)
     with contextlib.suppress(FileNotFoundError):
         os.remove(BREW_PROFILE_COMPLETIONS_FILE)
-    subprocess.run(["/usr/bin/systemctl", "mask", "--now", BREW_PROXY_SERVICE], check=True)
+    subprocess.run(["/usr/bin/systemctl", "mask", "--now", "--", *BREW_SYSTEMD_UNITS], check=True)
 
 
 def main() -> int:

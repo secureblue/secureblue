@@ -37,7 +37,7 @@ jobs:
       packages: read # pull images for iso generation
       id-token: write # generate token for signing
 
-    steps:    
+    steps:
       - name: Free disk space
         uses: hastd/free-disk-space@68572aeaadb7f76bd408246328e95926323402b5 # v0.1.2
         with:
@@ -62,7 +62,7 @@ jobs:
         run: |
           curl -fLsS --retry 5 -o "${WORKSPACE}/secureblue.repo" "https://copr.fedorainfracloud.org/coprs/secureblue/packages/repo/fedora-44/secureblue-packages-fedora-44.repo"
 
-      - name: Build ISO        
+      - name: Build ISO
         id: iso_build
         env:
           IMAGE_REF: ghcr.io/secureblue/${{ matrix.image }}:latest

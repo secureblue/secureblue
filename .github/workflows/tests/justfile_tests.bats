@@ -17,21 +17,21 @@ setup() {
     sudo cp -f files/system/usr/share/ublue-os/justfile /usr/share/ublue-os/
     sudo find files/justfiles -type f -name '*.just' -execdir cp -f '{}' /usr/share/bluebuild/justfiles/ ';'
     for filepath in /usr/share/bluebuild/justfiles/*.just; do
-        sudo sh -c "echo \"import '$filepath'\" >> /usr/share/ublue-os/just/60-custom.just"
+        sudo sh -c "echo \"import '${filepath}'\" >> /usr/share/ublue-os/just/60-custom.just"
     done
 }
 
 @test "Ensure ujust is configured correctly for tests" {
     run ujust bios
-    [ "$status" -eq 0 ]
+    [[ "${status}" -eq 0 ]]
 }
 
 @test "Ensure motd toggle functions properly" {
-    config_dir=${XDG_CONFIG_HOME:-"$HOME/.config"}
+    config_dir=${XDG_CONFIG_HOME:-"${HOME}/.config"}
     run ujust toggle-user-motd
-    [ "$status" -eq 0 ]
-    [ -f "${config_dir}/no-show-user-motd" ]
+    [[ "${status}" -eq 0 ]]
+    [[ -f "${config_dir}/no-show-user-motd" ]]
     run ujust toggle-user-motd
-    [ "$status" -eq 0 ]
-    [ ! -f "${config_dir}/no-show-user-motd" ]
+    [[ "${status}" -eq 0 ]]
+    [[ ! -f "${config_dir}/no-show-user-motd" ]]
 }

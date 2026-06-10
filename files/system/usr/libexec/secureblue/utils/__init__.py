@@ -14,7 +14,10 @@ import os
 import subprocess
 import sys
 import textwrap
+import time
 from collections.abc import Iterable, Sequence
+from dataclasses import dataclass
+from functools import partialmethod
 from pathlib import Path
 
 
@@ -203,6 +206,21 @@ def is_rpm_package_installed(name: str) -> bool:
     return len(matches) > 0
 
 
+def logout(prompt: str | None = None) -> None:
+    if prompt is not None and not ask_yes_no(prompt):
+        return
+    match Image.from_image_ref(booted_image_ref()):
+        case Image.SERICEA:
+            subprocess.run(["/usr/sbin/swaymsg", "exit"], check=True)
+        case Image.KINOITE:
+            subprocess.run(
+                ["/usr/bin/qdbus-qt6", "org.kde.Shutdown", "/Shutdown", "logout"], check=True
+            )
+        case _:
+            user = command_stdout("/usr/bin/whoami")
+            subprocess.run(["/usr/bin/loginctl", "terminate-user", user], check=True)
+
+
 def is_using_vpn() -> bool:
     """Returns whether an OpenVPN or Wireguard VPN is currently in use."""
 
@@ -260,3 +278,82 @@ def ask_option(options_count: int) -> int:
                 print()
                 return option
         print(f"Please enter a number between 1 and {options_count}.")
+
+
+def get_selinux_booleans(*booleans: str) -> frozenset[str]:
+    """Get list of SELinux booleans and return the set of all of them that are true/on."""
+    output = command_stdout("/usr/bin/getsebool", *booleans)
+    split_lines = (line.split(" --> ", maxsplit=1) for line in output.splitlines())
+    return frozenset(key for key, value in split_lines if value == "on")
+
+
+def set_selinux_booleans(sebools: dict[str, bool], *, permanent: bool = True) -> int:
+    """Set SELinux booleans"""
+    args = ["run0", "-i", "setsebool"]
+    if permanent:
+        args.append("-P")
+    for key, value in sebools.items():
+        args.append(f"{key}={'on' if value else 'off'}")
+    return subprocess.run(args, check=False).returncode
+
+
+@dataclass(frozen=True)
+class SystemdService:
+    """
+    A systemd service.
+
+    Attributes:
+        name (str): The unit name, e.g. "dnsconfd.service".
+    """
+
+    name: str
+    is_user: bool = False
+
+    def _do_systemctl_action(self, *actions: str) -> None:
+        """
+        Perform an action on a systemd service. Retry and eventually log on failure.
+
+        Args:
+            action (str): systemctl action (e.g. "start")
+        """
+
+        if self.is_user:
+            actions = ("--user", *actions)
+
+        systemctl = subprocess.run(  # nosec
+            ["/usr/bin/systemctl", *actions, self.name], check=False, capture_output=True
+        )
+
+        if not systemctl.returncode:
+            # All good.
+            return
+
+        # Error, so wait a few seconds and try again.
+        time.sleep(3)
+        # nosemgrep: dangerous-subprocess-use-audit
+        systemctl = subprocess.run(  # nosec
+            ["/usr/bin/systemctl", *actions, self.name], check=False, stdout=subprocess.PIPE
+        )
+
+        if systemctl.returncode:
+            print(f"Failed to {' '.join(actions)} {self.name}.", file=sys.stderr)
+            sys.exit(systemctl.returncode)
+
+    disable = partialmethod(_do_systemctl_action, "disable")
+    disable_now = partialmethod(_do_systemctl_action, "disable", "--now")
+    enable = partialmethod(_do_systemctl_action, "enable")
+    enable_now = partialmethod(_do_systemctl_action, "enable", "--now")
+    stop = partialmethod(_do_systemctl_action, "stop")
+    start = partialmethod(_do_systemctl_action, "start")
+    mask = partialmethod(_do_systemctl_action, "mask")
+    unmask = partialmethod(_do_systemctl_action, "unmask")
+
+    def is_enabled(self) -> bool:
+        """Returns whether the systemd service is enabled."""
+        # nosemgrep: dangerous-subprocess-use-audit
+        systemctl = subprocess.run(  # nosec
+            ["/usr/bin/systemctl", "is-enabled", "--quiet", self.name],
+            check=False,
+            capture_output=True,
+        )
+        return not systemctl.returncode

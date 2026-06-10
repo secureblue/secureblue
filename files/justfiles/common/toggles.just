@@ -6,34 +6,34 @@
 toggle-cups:
     #! /bin/run0 /bin/bash
     if systemctl is-enabled --quiet cups; then
-      firewall-cmd --permanent --remove-port=631/tcp
-      firewall-cmd --permanent --remove-port=631/udp
-      firewall-cmd --reload
-      systemctl disable --now cups.socket
-      systemctl mask cups.socket
-      systemctl disable --now cups.service
-      systemctl mask cups.service
-      systemctl mask --now avahi-daemon.socket
-      systemctl mask --now avahi-daemon.service
-      systemctl daemon-reload
-      echo "CUPS & avahi-daemon disabled"
+        firewall-cmd --permanent --remove-port=631/tcp
+        firewall-cmd --permanent --remove-port=631/udp
+        firewall-cmd --reload
+        systemctl disable --now cups.socket
+        systemctl mask cups.socket
+        systemctl disable --now cups.service
+        systemctl mask cups.service
+        systemctl mask --now avahi-daemon.socket
+        systemctl mask --now avahi-daemon.service
+        systemctl daemon-reload
+        echo "CUPS & avahi-daemon disabled"
     else
-      firewall-cmd --permanent --add-port=631/tcp
-      firewall-cmd --permanent --add-port=631/udp
-      firewall-cmd --reload
-      systemctl unmask cups.socket
-      systemctl unmask cups.service
-      systemctl enable --now cups.socket
-      systemctl enable --now cups.service
-      systemctl unmask avahi-daemon.service
-      systemctl unmask avahi-daemon.socket
-      systemctl daemon-reload
-      echo "CUPS enabled."
-      echo "avahi-daemon is unmasked & will be started as needed on an on-demand basis."
-      echo "Note: cups-browsed, the printer discovery service, is still disabled for"
-      echo "    security reasons. New network printers will need to be added manually."
-      echo "    If you absolutely need network discovery, you can enable the cups-browsed"
-      echo "    service at your own risk. Secureblue strongly recommends against this."
+        firewall-cmd --permanent --add-port=631/tcp
+        firewall-cmd --permanent --add-port=631/udp
+        firewall-cmd --reload
+        systemctl unmask cups.socket
+        systemctl unmask cups.service
+        systemctl enable --now cups.socket
+        systemctl enable --now cups.service
+        systemctl unmask avahi-daemon.service
+        systemctl unmask avahi-daemon.socket
+        systemctl daemon-reload
+        echo "CUPS enabled."
+        echo "avahi-daemon is unmasked & will be started as needed on an on-demand basis."
+        echo "Note: cups-browsed, the printer discovery service, is still disabled for"
+        echo "    security reasons. New network printers will need to be added manually."
+        echo "    If you absolutely need network discovery, you can enable the cups-browsed"
+        echo "    service at your own risk. Secureblue strongly recommends against this."
     fi
 
 # enable a kernel module that is disabled by modprobe.d (requires restart)
@@ -42,11 +42,11 @@ override-enable-module mod_name:
     MOD_NAME="{{ mod_name }}"
     MOD_FILE="/etc/modprobe.d/99-$MOD_NAME.conf"
     if [ -e "$MOD_FILE" ]; then
-      echo "$MOD_NAME module is already enabled."
+        echo "$MOD_NAME module is already enabled."
     else
-      sh -c 'echo "install $1 /sbin/modprobe --ignore-install $1" >> "$2"' _ "$MOD_NAME" "$MOD_FILE"
-      chmod 644 "$MOD_FILE"
-      echo "Override created to enable $MOD_NAME module. Reboot to take effect."
+        sh -c 'echo "install $1 /sbin/modprobe --ignore-install $1" >> "$2"' _ "$MOD_NAME" "$MOD_FILE"
+        chmod 644 "$MOD_FILE"
+        echo "Override created to enable $MOD_NAME module. Reboot to take effect."
     fi
 
 # reset the override by `just override-enable-module`, i.e. disable the module again (requires restart)
@@ -55,10 +55,10 @@ override-reset-module mod_name:
     MOD_NAME="{{ mod_name }}"
     MOD_FILE="/etc/modprobe.d/99-$MOD_NAME.conf"
     if [ -e "$MOD_FILE" ]; then
-      rm -f "$MOD_FILE"
-      echo "The override for $MOD_NAME module has been reset. Reboot to take effect."
+        rm -f "$MOD_FILE"
+        echo "The override for $MOD_NAME module has been reset. Reboot to take effect."
     else
-      echo "No override found for $MOD_NAME module."
+        echo "No override found for $MOD_NAME module."
     fi
 
 # Toggle debug mode (requires restart)
@@ -76,43 +76,10 @@ toggle-debug-mode:
         rm /etc/systemd/user.conf.d/60-disable-coredump.conf
         echo "kernel.core_pattern = |/usr/lib/systemd/systemd-coredump %P %u %g %s %t %c %h" >/etc/sysctl.d/99-enable-coredump.conf
         echo "Debug mode enabled."
-        if [[ $(</proc/sys/kernel/yama/ptrace_scope) != 1 ]]; then
-            echo "ptrace is restricted in this session. Some debuggers may not work as intended. Use ujust toggle-ptrace-scope to manage ptrace."
+        if [[ "$(getsebool deny_ptrace)" == *'--> on' ]]; then
+            setsebool deny_ptrace off
+            echo "Temporarily enabled ptrace for this session."
         fi
-    fi
-
-alias toggle-ptrace-scope := toggle-anticheat-support
-
-# Toggle anticheat support by changing ptrace scope (requires restart)
-toggle-anticheat-support:
-    #! /bin/run0 /bin/bash
-    set -euo pipefail
-    source /usr/lib/ujust/libformatting.sh
-    sysctl_ptrace_file='/etc/sysctl.d/61-ptrace-scope.conf'
-    umask 022
-    # Remove ptrace_scope = 3 from any lexicographically earlier sysctl conf files.
-    # This is because ptrace_scope = 3 cannot be overridden.
-    for conf_file in /etc/sysctl.d/*.conf; do
-        if [[ "$conf_file" < "$sysctl_ptrace_file" ]]; then
-            sed -i -e '/^kernel.yama.ptrace_scope[[:blank:]]*=[[:blank:]]*3/d' "$conf_file"
-        fi
-    done
-    # Set the ptrace_scope value we want in 61-ptrace-scope.conf
-    if grep -q '^kernel.yama.ptrace_scope[[:blank:]]*=[[:blank:]]*1$' "$sysctl_ptrace_file" 2>/dev/null; then
-        if rpm -q dangerzone > /dev/null; then
-            echo "${bold}WARNING${unbold} Dangerzone (https://dangerzone.rocks) is installed on this system and requires ptrace_scope set to 2 or lower to work."
-            echo 'This script disables Anticheat and sets ptrace_scope to 3 which will break Dangerzone.'
-            echo 'If you still want Dangerzone to work you can keep Anticheat enabled or edit /etc/sysctl.d/61-ptrace-scope.conf.'
-            read -r -p "Are you sure you would like to break Dangerzone by setting ptrace_scope to 3? [y/N] " user_choice
-            if [[ "$user_choice" != [yY]* ]]; then
-                exit
-            fi
-        fi
-        echo 'kernel.yama.ptrace_scope = 3' > "$sysctl_ptrace_file"
-        echo 'Anticheat support disabled. ptrace_scope set back to 3. Reboot to take effect.'
-    else
-        echo 'kernel.yama.ptrace_scope = 1' > "$sysctl_ptrace_file"
-        echo 'Anticheat support enabled. ptrace_scope set to 1. Reboot to take effect.'
     fi
 
 # Toggle bash environment lockdown (mitigates LD_PRELOAD attacks). Use skip_approval to bypass initial prompt, and apply_for_all_users to bypass secondary prompt.

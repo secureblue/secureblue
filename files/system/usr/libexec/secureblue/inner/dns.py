@@ -11,15 +11,14 @@ import argparse
 import json
 import os
 import pwd
-import subprocess
 import sys
 import textwrap
 import time
-from dataclasses import dataclass
 from enum import Enum
-from functools import partialmethod
 from pathlib import Path
 from typing import Final
+
+from utils import SystemdService
 
 DNSCONFD_CONF_PATH: Final[Path] = Path("/etc/dnsconfd.conf")
 DNSCONFD_MANAGER_PATH: Final[Path] = Path("/etc/NetworkManager/conf.d/dnsconfd.conf")
@@ -29,64 +28,6 @@ RESOLVED_RESOLVCONF_PATH: Final[Path] = Path("/run/systemd/resolve/stub-resolv.c
 TRIVALENT_POLICY_PATH: Final[Path] = Path(
     "/etc/trivalent/policies/managed/10-securedns-browser.json"
 )
-
-
-@dataclass(frozen=True)
-class SystemdService:
-    """
-    A systemd service.
-
-    Attributes:
-        name (str): The unit name, e.g. "dnsconfd.service".
-    """
-
-    name: str
-
-    def _do_systemctl_action(self, *actions: str) -> None:
-        """
-        Perform an action on a systemd service. Retry and eventually log on failure.
-
-        Args:
-            action (str): systemctl action (e.g. "start")
-        """
-        # nosemgrep: dangerous-subprocess-use-audit
-        systemctl = subprocess.run(
-            ["/usr/bin/systemctl", *actions, self.name], check=False, capture_output=True
-        )
-
-        if not systemctl.returncode:
-            # All good.
-            return
-
-        # Error, so wait a few seconds and try again.
-        time.sleep(3)
-        # nosemgrep: dangerous-subprocess-use-audit
-        systemctl = subprocess.run(
-            ["/usr/bin/systemctl", *actions, self.name], check=False, stdout=subprocess.PIPE
-        )
-
-        if systemctl.returncode:
-            print(f"Failed to {' '.join(actions)} {self.name}.", file=sys.stderr)
-            sys.exit(systemctl.returncode)
-
-    disable = partialmethod(_do_systemctl_action, "disable")
-    disable_now = partialmethod(_do_systemctl_action, "disable", "--now")
-    enable = partialmethod(_do_systemctl_action, "enable")
-    enable_now = partialmethod(_do_systemctl_action, "enable", "--now")
-    stop = partialmethod(_do_systemctl_action, "stop")
-    start = partialmethod(_do_systemctl_action, "start")
-    mask = partialmethod(_do_systemctl_action, "mask")
-    unmask = partialmethod(_do_systemctl_action, "unmask")
-
-    def is_enabled(self) -> bool:
-        """Returns whether the systemd service is enabled."""
-        # nosemgrep: dangerous-subprocess-use-audit
-        systemctl = subprocess.run(
-            ["/usr/bin/systemctl", "is-enabled", "--quiet", self.name],
-            check=False,
-            capture_output=True,
-        )
-        return not systemctl.returncode
 
 
 class DNSResolver(Enum):

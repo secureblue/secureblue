@@ -1,0 +1,108 @@
+#!/usr/bin/python3
+
+# SPDX-FileCopyrightText: Copyright 2026 The Secureblue Authors
+#
+# SPDX-License-Identifier: Apache-2.0
+
+"""Add or remove the unfiltered Flathub remote."""
+
+import subprocess
+import sys
+from typing import TYPE_CHECKING, Final, assert_never
+
+if TYPE_CHECKING:
+    from files.system.usr.libexec.secureblue import utils
+else:
+    import utils
+
+CommandUsageError: Final = utils.CommandUsageError
+ToggleMode: Final = utils.ToggleMode
+parse_basic_toggle_args: Final = utils.parse_basic_toggle_args
+command_stdout: Final = utils.command_stdout
+
+HELP_MESSAGE: Final[str] = """\
+Add or remove the unfiltered Flathub remote.
+
+Usage:
+ujust set-flathub-unfiltered
+    Adds or removes interactively based on the user's preference.
+
+ujust set-flathub-unfiltered on
+    Adds the unfiltered Flathub remote; does nothing if it is already present.
+
+ujust set-flathub-unfiltered off
+    Removes the unfiltered Flathub remote; does nothing if it is already removed.
+
+ujust set-flathub-unfiltered status
+    Reports whether the unfiltered Flathub remote is present on the system.
+
+ujust set-flathub-unfiltered --help
+    Prints this message.
+"""
+
+
+def unfiltered_remote_status() -> str:
+    return command_stdout("flatpak", "remotes", "--columns=subset")
+
+
+def unfiltered_remote_print_status() -> int:
+    if unfiltered_remote_status() != "verified":
+        print("The unfiltered Flathub remote is available on the system.")
+    else:
+        print("The unfiltered Flathub remote is removed from the system.")
+    return 0
+
+
+def add_unfiltered_remote() -> int:
+    if unfiltered_remote_status() != "verified":
+        print("The unfiltered Flathub remote has already been added to the system.")
+        return 0
+
+    subprocess.run(
+        [
+            "/usr/bin/flatpak",
+            "remote-add",
+            "--if-not-exists",
+            "--user",
+            "flathub",
+            "https://dl.flathub.org/repo/flathub.flatpakrepo",
+        ],
+        check=True,
+    )
+    return 0
+
+
+def remove_unfiltered_remote() -> int:
+    if unfiltered_remote_status() == "verified":
+        print("The unfiltered Flathub remote has already been removed from the system.")
+        return 0
+
+    subprocess.run(["/usr/bin/flatpak", "remote-delete", "--user", "flathub"], check=True)
+    return 0
+
+
+def main() -> int:
+    try:
+        mode = parse_basic_toggle_args(
+            prompt="Would you like to have the unfiltered Flathub remote available?"
+        )
+    except CommandUsageError as e:
+        print(f"Usage error: {e}. See usage with --help.")
+        return 2
+
+    match mode:
+        case ToggleMode.ON:
+            return add_unfiltered_remote()
+        case ToggleMode.OFF:
+            return remove_unfiltered_remote()
+        case ToggleMode.STATUS:
+            return unfiltered_remote_print_status()
+        case ToggleMode.HELP:
+            print(HELP_MESSAGE)
+        case _ as unreachable:
+            assert_never(unreachable)
+    return 0
+
+
+if __name__ == "__main__":
+    sys.exit(main())

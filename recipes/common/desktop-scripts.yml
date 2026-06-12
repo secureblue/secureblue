@@ -17,3 +17,4 @@ scripts:
   - disableiscsidaemons.sh
   - setplymouththemetext.sh
   - setfirewalldefaultzone.sh
+  - maskbluetoothservices.sh

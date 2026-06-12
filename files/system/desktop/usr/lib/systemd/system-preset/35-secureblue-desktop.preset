@@ -1,5 +1,11 @@
 enable flatpak-system-update.timer
 
+# Homebrew
+enable brew-proxy-setup.service
+enable brew-update.timer
+enable brew-upgrade.timer
+enable secureblue-brew-proxy-migration.service
+
 # Disable sshd
 disable sshd.service
 disable sshd.socket
@@ -40,3 +46,6 @@ disable iscsiuio.socket
 
 # Enable upgrade-on-boot
 enable upgrade-on-boot.service
+
+# Disable bluetooth service
+disable bluetooth.service

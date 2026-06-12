@@ -718,11 +718,11 @@ def audit_brew_auto_update():
     for unit in ("brew-update", "brew-upgrade"):
         timer = f"{unit}.timer"
         service = f"{unit}.service"
-        if not command_succeeds("systemctl", "--global", "is-enabled", "--quiet", timer):
+        if not command_succeeds("systemctl", "is-enabled", "--quiet", timer):
             status = FAIL
             disabled_timers.append(timer)
             notes.append(Note(_("{0} is not enabled.").format(timer), FAIL))
-        elif command_succeeds("systemctl", "--user", "is-failed", "--quiet", service):
+        elif command_succeeds("systemctl", "is-failed", "--quiet", service):
             status = status.downgrade_to(WARN)
             notes.append(Note(_("{0} has failed to run.").format(service), WARN))
 
@@ -731,7 +731,7 @@ def audit_brew_auto_update():
             (
                 _("Automatic updates for Homebrew are not enabled."),
                 _("To enable them, run:"),
-                f"$ systemctl enable --global --now {' '.join(disabled_timers)}",
+                f"$ systemctl enable --now {' '.join(disabled_timers)}",
             )
         )
 
@@ -762,7 +762,7 @@ def audit_groups():
     yield Report(_("Ensuring user is not a member of the wheel group"), status, recs=rec)
 
     username = getpass.getuser()
-    known_groups = (username, "usbguard", "wheel")
+    known_groups = (username, "brewadmin", "usbguard", "wheel")
     dangerous_groups = ("docker", "libvirt")
     status = PASS
     notes = []
@@ -790,6 +790,17 @@ def audit_groups():
                 note.text,
                 _("This group allows the user to read system and kernel logs."),
                 _("This might make it easier to exploit kernel vulnerabilities."),
+                _("To remove the user from this group, run:"),
+                remove_group_cmd,
+            ]
+            recs.append("\n".join(rec_lines))
+        elif group == "linuxbrew":
+            status = status.downgrade_to(WARN)
+            note = Note(_("The current user is in the group '{0}'.").format(group), WARN)
+            notes.append(note)
+            rec_lines = [
+                note.text,
+                _("This group allows the user to modify the Homebrew installation."),
                 _("To remove the user from this group, run:"),
                 remove_group_cmd,
             ]

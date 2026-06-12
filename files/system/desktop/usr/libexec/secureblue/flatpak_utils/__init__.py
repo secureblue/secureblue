@@ -10,8 +10,13 @@ Various utility functions used in secureblue flatpak scripts.
 
 import subprocess
 
-from utils import command_stdout, print_wrapped
+if TYPE_CHECKING:
+    from files.system.usr.libexec.secureblue import utils
+else:
+    import utils
 
+command_stdout: Final = utils.command_stdout
+print_wrapped: Final = utils.print_wrapped
 
 def flatpak_override(*args: str) -> None:
     """Apply flatpak overrides."""

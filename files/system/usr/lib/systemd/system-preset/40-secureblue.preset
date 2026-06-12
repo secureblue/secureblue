@@ -15,6 +15,24 @@ enable polkit-agent-helper.socket
 # TODO: remove this after sufficient time has passed
 enable secureblue-ptrace-migration.service
 
+# Disable NFS daemons
+disable gssproxy.service
+disable nfs-blkmap.service
+disable nfs-client.target
+disable nfs-idmapd.service
+disable nfs-mountd.service
+disable nfs-server.service
+disable nfs-utils.service
+disable nfsdcld.service
+disable rpc-gssd.service
+disable rpc-statd-notify.service
+disable rpc-statd.service
+disable rpc_pipefs.target
+disable rpcbind.service
+disable rpcbind.socket
+disable rpcbind.target
+disable var-lib-nfs-rpc_pipefs.mount
+
 disable flatpak-add-fedora-repos.service
 disable geoclue.service
 disable sshd-vsock.socket

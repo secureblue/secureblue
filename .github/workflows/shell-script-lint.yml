@@ -56,15 +56,29 @@ jobs:
 
           python3 -m pip install --require-hashes -r "${tmpfile}"
 
-      - name: Check shell script shebangs
+      - name: Get list of files to test
+        id: file_list
         run: |
-          git ls-files -z | xargs -0 awk -f tools/check-shell-script-shebangs.awk --
+          tempfile="$(mktemp)"
+          # We need to examine object modes to exclude directories that are the target
+          # of a symbolic link, which get included in the output of `git ls-files` and
+          # would otherwise be passed to awk, triggering a warning.
+          git ls-files -z --format='%(objectmode) %(path)' \
+            | sed -Enz -e '/^120/d' -e 's/^[0-9]+ //p' > "${tempfile}"
+          echo "file_list=${tempfile}" >> "${GITHUB_OUTPUT}"
+
+      - name: Check shell script shebangs
+        env:
+          FILE_LIST: ${{ steps.file_list.outputs.file_list }}
+        run: |
+          xargs -0 -a "${FILE_LIST}" awk -f tools/check-shell-script-shebangs.awk --
 
       - name: Run ShellCheck on shell scripts
+        env:
+          FILE_LIST: ${{ steps.file_list.outputs.file_list }}
         run: |
           # The previous step checks that all shell scripts start with a shebang.
-          git ls-files -z \
-            | xargs -0 awk 'FNR == 1 && /^#! *(\/usr)?\/bin\/(env )?(ba)?sh *$/ { printf("%s%c", FILENAME, 0) }' \
+          xargs -0 -a "${FILE_LIST}" awk 'FNR == 1 && /^#! *(\/usr)?\/bin\/(env )?(ba)?sh *$/ { printf("%s%c", FILENAME, 0) }' \
             | xargs -0 shellcheck --
 
       - name: Run ShellCheck on justfile shell scripts

@@ -10,7 +10,7 @@ shell := `grep :$(id -u): /etc/passwd | cut -d: -f7`
 # Boot into this device's BIOS/UEFI screen.
 bios:
     #!/usr/bin/sh
-    exec /usr/bin/pydoc3 /usr/libexec/secureblue/bios.py
+    exec /usr/bin/python3 /usr/libexec/secureblue/bios.py
 
 # Show all messages from this boot
 logs-this-boot:

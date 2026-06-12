@@ -864,7 +864,8 @@ def audit_thumbnailing(state):
     match state["image"]:
         case Image.SILVERBLUE:
             de = _("GNOME")
-            thumbnailing_disabled = command_stdout(
+            # show-image-thumbnails controls all thumbnailing
+            thumbnail_gsetting_output = command_stdout(
                 "command",
                 "-p",
                 "gsettings",
@@ -872,6 +873,7 @@ def audit_thumbnailing(state):
                 "org.gnome.nautilus.preferences",
                 "show-image-thumbnails",
             )
+            thumbnailing_disabled = thumbnail_gsetting_output == "'never'"
         case Image.KINOITE:
             de = _("KDE Plasma")
             dolphinrc_file = Path.home() / ".config/dolphinrc"

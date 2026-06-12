@@ -8,11 +8,11 @@ set -euo pipefail
 
 echo "Disabling NFS daemons"
 
-systemctl disable nfs-idmapd.service
-systemctl mask nfs-idmapd.service
+systemctl disable nfs-idmapd.service 2>/dev/null || true
+systemctl mask nfs-idmapd.service 2>/dev/null || true
 
-systemctl disable nfs-client.target
-systemctl mask nfs-client.target
+systemctl disable nfs-client.target 2>/dev/null || true
+systemctl mask nfs-client.target 2>/dev/null || true
 
 systemctl disable nfs-blkmap.service 2>/dev/null || true
 systemctl mask nfs-blkmap.service 2>/dev/null || true
@@ -48,6 +48,9 @@ systemctl disable rpcbind.target 2>/dev/null || true
 systemctl mask rpcbind.target 2>/dev/null || true
 
 systemctl disable rpc_pipefs.target 2>/dev/null || true
+systemctl mask rpc_pipefs.target 2>/dev/null || true
+
+systemctl mask var-lib-nfs-rpc_pipefs.mount 2>/dev/null || true
 
 systemctl disable gssproxy.service 2>/dev/null || true
 systemctl mask gssproxy.service 2>/dev/null || true

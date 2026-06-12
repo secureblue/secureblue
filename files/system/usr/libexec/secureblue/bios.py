@@ -7,8 +7,8 @@
 """Boot into this device's BIOS/UEFI screen."""
 
 from os import path
-from subprocess import run
 from utils import ask_yes_no
+from subprocess import run
 
 if path.exists("/sys/firmware/efi"):
     if ask_yes_no("The system will reboot into UEFI firmware settings. Proceed?"):

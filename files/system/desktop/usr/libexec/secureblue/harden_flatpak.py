@@ -12,8 +12,8 @@ import subprocess
 import sys
 from typing import TYPE_CHECKING, Final
 
-
 from flatpak_utils import flatpak_override, installed_app_list, resolve_app_id
+
 if TYPE_CHECKING:
     from files.system.usr.libexec.secureblue import utils
 else:

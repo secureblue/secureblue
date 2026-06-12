@@ -19,6 +19,7 @@ else:
 command_stdout: Final = utils.command_stdout
 print_wrapped: Final = utils.print_wrapped
 
+
 def flatpak_override(*args: str) -> None:
     """Apply flatpak overrides."""
     subprocess.run(["/usr/bin/flatpak", "override", "--user", *args], check=True)

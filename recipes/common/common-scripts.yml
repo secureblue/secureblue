@@ -6,7 +6,6 @@ type: script
 source: ghcr.io/blue-build/modules@sha256:d0e85328fcfa4182c33d3920854001d0b7efbbd341ed6f45bc1ec26c0751889d
 scripts:
   - set-ld-preload.sh
-  - manuallyinstalljust.sh
   - hardenlogindefs.sh
   - hardened_malloc-pam.sh
   - disableresolved.sh

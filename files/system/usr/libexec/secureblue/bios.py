@@ -7,11 +7,11 @@
 """Boot into this device's BIOS/UEFI screen."""
 
 from os import path
-from utils import ask_yes_no
 from subprocess import run
+import utils
 
 if path.exists("/sys/firmware/efi"):
-    if ask_yes_no("The system will reboot into UEFI firmware settings. Proceed?"):
+    if utils.ask_yes_no("The system will reboot into UEFI firmware settings. Proceed?"):
         run(["/usr/bin/systemctl", "reboot", "--firmware-setup"], check=True)
 else:
     print("Rebooting to legacy BIOS from OS is not supported.")

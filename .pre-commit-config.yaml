@@ -13,22 +13,19 @@ repos:
         exclude: "^\\.github/workflows/config/linkspector\\.yml$"
 
   - repo: https://github.com/astral-sh/ruff-pre-commit
-    rev: 0671d8ab202c4ac093b78433ae5baf74f3fc7246 # v0.15.15
+    rev: 22f0422809455ec89ffdcf5a00170ba816e42ddb # v0.15.16
     hooks:
       - id: ruff-check
       - id: ruff-format
 
+  - repo: https://github.com/astral-sh/ty-pre-commit
+    rev: 918cf00966c1e291e829f7819b7b7c2a0b0ff31f # v0.0.47
+    hooks:
+      - id: ty
+        args: [--isolated]
+
   - repo: local
     hooks:
-      # ty doesn't have an official pre-commit hook yet, so we use a local hook.
-      - id: ty
-        name: ty check
-        description: "Python type checker: https://docs.astral.sh/ty/"
-        entry: ty check
-        language: system
-        types: [python]
-        pass_filenames: false
-
       # We use a local hook rather than the official ShellCheck pre-commit hook
       # because the official hook runs as a container image, which won't run on
       # secureblue in the default system configuration.

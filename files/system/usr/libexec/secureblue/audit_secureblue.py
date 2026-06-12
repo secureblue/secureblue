@@ -893,6 +893,7 @@ def audit_thumbnailing(state):
             status = INFO
             note = Note(_("COSMIC Files doesn't yet support disabling thumbnails."), INFO)
             yield Report(_("Ensuring thumbnailing is disabled for COSMIC"), status, notes=note)
+            return
         case _:
             return
 

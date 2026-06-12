@@ -9,6 +9,7 @@ Various utility functions used in secureblue flatpak scripts.
 """
 
 import subprocess
+from typing import TYPE_CHECKING, Final
 
 if TYPE_CHECKING:
     from files.system.usr.libexec.secureblue import utils

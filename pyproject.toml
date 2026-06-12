@@ -1,22 +1,19 @@
 [project]
 name = "secureblue"
-requires-python = ">= 3.10"
+version = "4.9"
+requires-python = ">= 3.11"
 maintainers = [{name = "RoyalOughtness"}]
-description = "secureblue is a a security-focused desktop and server Linux operating system."
+description = "secureblue is a security-focused desktop and server Linux operating system."
 readme = "docs/README.md"
 license-files = ["LICENSES/*.txt"]
+dependencies = [
+    "inquirer",
+    "rpm",
+]
 
 [project.urls]
 Repository = "https://github.com/secureblue/secureblue"
 Issues = "https://github.com/secureblue/secureblue/issues"
-
-[tool.mypy]
-strict = true
-ignore_missing_imports = true
-
-[[tool.mypy.overrides]]
-module = "audit_secureblue"
-disallow_untyped_defs = false
 
 [tool.ruff]
 line-length = 100

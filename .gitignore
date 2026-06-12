@@ -6,3 +6,4 @@ cosign.private
 Containerfile
 .DS_Store
 __pycache__
+uv.lock

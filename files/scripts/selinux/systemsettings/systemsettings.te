@@ -31,6 +31,9 @@ optional_policy(`
 
 	systemsettings_run(unconfined_t, unconfined_r)
 	systemsettings_run(trivalent_domain, unconfined_r)
+
+	# required for trivalent/systemsettings clipboard sharing
+	allow trivalent_domain systemsettings_t:fifo_file write;
 ')
 
 # Required for accountsd to access systemsettings's tmp file.

@@ -1,9 +1,10 @@
 enable flatpak-system-update.timer
 
-# Homebrew setup migration
-# TODO: remove after enough time has passed that users should all be
-# migrated to the new Homebrew setup method based on tmpfiles.d
-enable brew-setup-migration.service
+# Homebrew
+enable brew-proxy-setup.service
+enable brew-update.timer
+enable brew-upgrade.timer
+enable secureblue-brew-proxy-migration.service
 
 # Disable NFS daemons
 disable gssproxy.service
@@ -54,5 +55,14 @@ disable cups.socket
 # Disable modem manager
 disable ModemManager.service
 
+# Disable iSCSI daemons
+disable iscsid.service
+disable iscsid.socket
+disable iscsiuio.service
+disable iscsiuio.socket
+
 # Enable upgrade-on-boot
 enable upgrade-on-boot.service
+
+# Disable bluetooth service
+disable bluetooth.service

@@ -1,0 +1,39 @@
+; SPDX-FileCopyrightText: Copyright 2026 The Secureblue Authors
+;
+; SPDX-License-Identifier: Apache-2.0 OR MIT
+
+; Audit usage of various socket classes. The purpose of this is to help testers
+; gather data on which socket classes are used rarely enough that we could
+; restrict access to them via SELinux. The audit info will be recorded in the
+; system audit logs as usual for SELinux AVCs and will need to be submitted
+; manually by testers.
+;
+; See `secureblue_socket_utils.cil` for macro definitions.
+
+(in secureblue
+    ; Sockets that are not part of another specific SELinux object class
+    (call audit_socket (socket))
+
+    ; Netlink socket classes
+    (call audit_socket_ioctl (netlink_connector_socket))
+    (call audit_socket (netlink_crypto_socket))
+    (call audit_socket (netlink_fib_lookup_socket))
+    (call audit_socket (netlink_firewall_socket))
+    (call audit_socket (netlink_ip6fw_socket))
+    (call audit_socket_ioctl (netlink_netfilter_socket))
+    (call audit_socket (netlink_nflog_socket))
+    (call audit_socket_ioctl (netlink_rdma_socket))
+    (call audit_socket_ioctl (netlink_route_socket))
+    (call audit_socket (netlink_scsitransport_socket))
+    (call audit_socket_ioctl (netlink_selinux_socket))
+    (call audit_socket (netlink_socket))
+    (call audit_socket_ioctl (netlink_tcpdiag_socket))
+
+    ; Miscellaneous socket classes
+    (call audit_bluetooth_socket_ioctl (bluetooth_socket))
+    (call audit_socket_ioctl (icmp_socket))
+    (call audit_socket (nfc_socket))
+    (call audit_socket (phonet_socket))
+    (call audit_socket (qipcrtr_socket))
+    (call audit_socket (vsock_socket))
+    (call audit_socket (xdp_socket)))

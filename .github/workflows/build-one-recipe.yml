@@ -42,7 +42,7 @@ jobs:
       id-token: write # Needed for token generation for signing
     steps:
       - name: Enable egress auditing
-        uses: step-security/harden-runner@6c3c2f2c1c457b00c10c4848d6f5491db3b629df # v2.18.0
+        uses: step-security/harden-runner@9af89fc71515a100421586dfdb3dc9c984fbf411 # v2.19.4
         with:
           egress-policy: block
           allowed-endpoints: >
@@ -85,6 +85,7 @@ jobs:
 
             # Docker installation
             production.cloudflare.docker.com:443
+            production.cloudfront.docker.com:443
             registry-1.docker.io:443
             auth.docker.io:443
 
@@ -181,7 +182,7 @@ jobs:
             ziply.mm.fcix.net:443
 
       - name: Checkout repo
-        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
         with:
           persist-credentials: false
 

@@ -8,18 +8,19 @@
 set -euo pipefail
 
 IMAGE_TAG="latest"
-IMAGE_VARIANT_ID=$(grep '^VARIANT_ID=' /etc/os-release | cut -d= -f2)
-IMAGE_REF="ghcr.io/secureblue/$IMAGE_VARIANT_ID"
+IMAGE_VARIANT_ID=$(grep '^VARIANT_ID=' /usr/lib/os-release | cut -d= -f2)
+IMAGE_REF="ghcr.io/secureblue/${IMAGE_VARIANT_ID}"
 
 sed -i '/^install squashfs /d' /usr/lib/modprobe.d/secureblue.conf
 
-dnf remove -y google-noto-fonts-all homebrew
+# https://github.com/ublue-os/bazzite/issues/4126#issuecomment-3980175243
+dnf remove -y google-noto-fonts-all homebrew bazaar
 dnf install -y secureblue-logos
 dnf reinstall -y polkit
 dnf install -y anaconda-live firefox libblockdev-btrfs libblockdev-btrfs libblockdev-lvm libblockdev-dm
 
 systemctl disable --global secureblue-flatpak-setup.service secureblue-flatpak-setup.timer podman-auto-update.timer flatpak-user-update.timer
-systemctl disable rpm-ostreed-automatic.timer rpm-ostree-countme.service bootloader-update.service 
+systemctl disable rpm-ostreed-automatic.timer rpm-ostree-countme.service bootloader-update.service
 
 rm -f /usr/share/applications/org.mozilla.Firefox.desktop /usr/share/applications/org.mozilla.firefox.desktop /usr/share/applications/firefox.desktop /usr/share/applications/firefox-wayland.desktop /usr/share/applications/firefox-x11.desktop
 
@@ -87,15 +88,15 @@ hidden_spokes =
 hidden_webui_pages =
     root-password
     network
-password_policies = 
+password_policies =
         root (quality 100, length 15)
-        user (quality 50, length 15)
-        luks (quality 100, length 20)
+        user (quality 50, length 8)
+        luks (quality 100, length 15)
 EOF
 
 # Fetch the Secureboot Public Key
 sbkey='https://github.com/secureblue/secureblue/raw/0d8f58d7c6482e97a620a336643fadff55dcd352/files/system/etc/pki/akmods/certs/akmods-secureblue.der'
-curl --retry 15 -Lo /etc/sb_pubkey.der $sbkey
+curl --retry 15 -Lo /etc/sb_pubkey.der "${sbkey}"
 
 # Enroll Secureboot Key
 tee /usr/share/anaconda/post-scripts/secureboot-enroll-key.ks <<'EOF'
@@ -127,7 +128,7 @@ EOF
 
 # Interactive Kickstart
 tee -a /usr/share/anaconda/interactive-defaults.ks <<EOF
-ostreecontainer --url=$IMAGE_REF:$IMAGE_TAG --transport=containers-storage --no-signature-verification
+ostreecontainer --url=${IMAGE_REF}:${IMAGE_TAG} --transport=containers-storage --no-signature-verification
 %include /usr/share/anaconda/post-scripts/install-configure-upgrade.ks
 %include /usr/share/anaconda/post-scripts/secureboot-enroll-key.ks
 EOF
@@ -135,7 +136,7 @@ EOF
 # Signed Images
 tee /usr/share/anaconda/post-scripts/install-configure-upgrade.ks <<EOF
 %post --erroronfail
-bootc switch --mutate-in-place --enforce-container-sigpolicy --transport registry $IMAGE_REF:$IMAGE_TAG
+bootc switch --mutate-in-place --enforce-container-sigpolicy --transport registry ${IMAGE_REF}:${IMAGE_TAG}
 %end
 EOF
 
@@ -149,5 +150,31 @@ cat >> /usr/share/cockpit/branding/fedora/branding.css << 'EOF'
         /* Hide the whole section with "Enable root account". Might be not as reliable as it seems to be */
         display: none;
     }
+}
+EOF
+
+# disable password strength labels
+cat >> /usr/share/cockpit/branding/fedora/branding.css << 'EOF'
+.anaconda {
+    #disk-encryption-password-strength-label {
+        display: none;
+    }
+
+    #anaconda-screen-accounts-create-account-password-strength-label {
+        display: none;
+    }
+}
+EOF
+
+# Disable "ask an AI chatbot" in the context menu
+mkdir -p /etc/firefox/policies
+cat >> /etc/firefox/policies/policies.json << 'EOF'
+{
+  "policies": {
+    "Preferences": {
+      "browser.ml.chat.menu": { "Value": false, "Status": "locked" },
+      "browser.ml.enable": { "Value": false, "Status": "locked" }
+    }
+  }
 }
 EOF

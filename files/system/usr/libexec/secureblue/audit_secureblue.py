@@ -15,15 +15,13 @@ import filecmp
 import getpass
 import glob
 import os
-import os.path
 import signal
 import stat
-
-# All subprocess calls we make have trusted inputs and do not use shell=True.
 import subprocess
 import sys
 import traceback
-from typing import Final
+from pathlib import Path
+from typing import Final, assert_never
 
 import kargs_hardening_common
 from audit_flatpak import check_flatpak_permissions, parse_flatpak_permissions
@@ -52,12 +50,14 @@ from utils import (
     booted_image_ref,
     command_stdout,
     command_succeeds,
+    get_config_dir,
     is_module_loaded,
     is_using_vpn,
     loaded_kernel_modules,
     parse_config,
     print_err,
 )
+from utils.ptrace import YAMA_DOC_URL, PtraceStatus, get_ptrace_status
 
 _: Final = gettext_marker()
 
@@ -206,42 +206,6 @@ def audit_modprobe(state):
 
 
 @audit
-def audit_ptrace(state):
-    """Ensure the ptrace syscall is forbidden."""
-    with open("/proc/sys/kernel/yama/ptrace_scope", encoding="utf-8") as f:
-        ptrace_scope = int(f.read())
-    match ptrace_scope:
-        case 3:
-            status = PASS
-            rec = None
-        case 0:
-            status = FAIL
-            rec_lines = [
-                _("ptrace is allowed and **unrestricted** ({0})!").format("ptrace_scope = 0"),
-                _("For more info on what this means, see:"),
-                "https://www.kernel.org/doc/html/latest/admin-guide/LSM/Yama.html",
-                _("To forbid ptrace, run:"),
-                "$ ujust toggle-ptrace-scope",
-                _("To allow restricted ptrace, run the above command twice."),
-            ]
-            rec = "\n".join(rec_lines)
-        case _:
-            status = WARN
-            rec_lines = [
-                _("ptrace is allowed, but restricted ({0}).").format(
-                    f"ptrace_scope = {ptrace_scope}"
-                ),
-                _("For more info on what this means, see:"),
-                "https://www.kernel.org/doc/html/latest/admin-guide/LSM/Yama.html",
-                _("To forbid ptrace, run:"),
-                "$ ujust toggle-ptrace-scope",
-            ]
-            rec = "\n".join(rec_lines)
-    state["ptrace_allowed"] = status != PASS
-    yield Report(_("Ensuring ptrace is forbidden"), status, recs=rec)
-
-
-@audit
 def audit_container_policy():
     """Check for modifications to container policy."""
     status = PASS
@@ -332,6 +296,75 @@ def audit_container_userns(state):
         ]
         recs = "\n".join(rec_lines)
     yield Report(_("Ensuring container user namespace creation disallowed"), status, recs=recs)
+
+
+@audit
+@depends_on("audit_container_userns")
+def audit_ptrace(state):
+    """Ensure ptrace is forbidden."""
+    ptrace_status = get_ptrace_status()
+    match ptrace_status:
+        case PtraceStatus.DISABLED:
+            status = PASS
+            note = None
+            rec = None
+        case PtraceStatus.UNRESTRICTED:
+            status = FAIL
+            note_text = _("ptrace is allowed and **unrestricted** ({0})!").format(
+                "ptrace_scope = 0"
+            )
+            note = Note(note_text, FAIL)
+            rec_lines = [
+                note_text,
+                _("For more info on what this means, see:"),
+                YAMA_DOC_URL,
+                _("Check the configuration in /etc/sysctl.d to fix this."),
+            ]
+            rec = "\n".join(rec_lines)
+        case PtraceStatus.RESTRICTED:
+            status = WARN
+            note_text = _("ptrace is allowed, but restricted to child processes ({0}).").format(
+                "ptrace_scope = 1"
+            )
+            note = Note(note_text, WARN)
+            rec_lines = [
+                note_text,
+                _("For more info on what this means, see:"),
+                YAMA_DOC_URL,
+                _("To forbid ptrace, run:"),
+                "$ ujust set-ptrace off",
+            ]
+            rec = "\n".join(rec_lines)
+        case PtraceStatus.ADMIN_ONLY:
+            status = INFO
+            note_text = _("ptrace access is restricted to administrative users ({0}).").format(
+                "ptrace_scope = 2"
+            )
+            note = Note(note_text, INFO)
+            rec_lines = [
+                note_text,
+                _("For more info on what this means, see:"),
+                YAMA_DOC_URL,
+                _("To forbid ptrace, run:"),
+                "$ ujust set-ptrace off",
+            ]
+            rec = "\n".join(rec_lines)
+        case PtraceStatus.CONTAINER_ONLY:
+            status = WARN if state["container_userns_enabled"] else INFO
+            note_text = _("ptrace on child processes ({0}) is allowed inside containers.").format(
+                "ptrace_scope = 1"
+            )
+            note = Note(note_text, status)
+            rec_lines = [
+                note_text,
+                _("To forbid ptrace, run:"),
+                "$ ujust set-ptrace off",
+            ]
+            rec = "\n".join(rec_lines)
+        case unreachable:
+            assert_never(unreachable)
+    state["ptrace_allowed"] = status != PASS
+    yield Report(_("Ensuring ptrace is forbidden"), status, notes=note, recs=rec)
 
 
 @audit
@@ -685,11 +718,11 @@ def audit_brew_auto_update():
     for unit in ("brew-update", "brew-upgrade"):
         timer = f"{unit}.timer"
         service = f"{unit}.service"
-        if not command_succeeds("systemctl", "--global", "is-enabled", "--quiet", timer):
+        if not command_succeeds("systemctl", "is-enabled", "--quiet", timer):
             status = FAIL
             disabled_timers.append(timer)
             notes.append(Note(_("{0} is not enabled.").format(timer), FAIL))
-        elif command_succeeds("systemctl", "--user", "is-failed", "--quiet", service):
+        elif command_succeeds("systemctl", "is-failed", "--quiet", service):
             status = status.downgrade_to(WARN)
             notes.append(Note(_("{0} has failed to run.").format(service), WARN))
 
@@ -698,7 +731,7 @@ def audit_brew_auto_update():
             (
                 _("Automatic updates for Homebrew are not enabled."),
                 _("To enable them, run:"),
-                f"$ systemctl enable --global --now {' '.join(disabled_timers)}",
+                f"$ systemctl enable --now {' '.join(disabled_timers)}",
             )
         )
 
@@ -729,7 +762,7 @@ def audit_groups():
     yield Report(_("Ensuring user is not a member of the wheel group"), status, recs=rec)
 
     username = getpass.getuser()
-    known_groups = (username, "usbguard", "wheel")
+    known_groups = (username, "brewadmin", "usbguard", "wheel")
     dangerous_groups = ("docker", "libvirt")
     status = PASS
     notes = []
@@ -757,6 +790,17 @@ def audit_groups():
                 note.text,
                 _("This group allows the user to read system and kernel logs."),
                 _("This might make it easier to exploit kernel vulnerabilities."),
+                _("To remove the user from this group, run:"),
+                remove_group_cmd,
+            ]
+            recs.append("\n".join(rec_lines))
+        elif group == "linuxbrew":
+            status = status.downgrade_to(WARN)
+            note = Note(_("The current user is in the group '{0}'.").format(group), WARN)
+            notes.append(note)
+            rec_lines = [
+                note.text,
+                _("This group allows the user to modify the Homebrew installation."),
                 _("To remove the user from this group, run:"),
                 remove_group_cmd,
             ]
@@ -789,16 +833,16 @@ def audit_xwayland(state):
     match state["image"]:
         case Image.SILVERBLUE:
             de = _("GNOME")
-            path = "/etc/systemd/user/org.gnome.Shell@user.service.d/override.conf"
+            override_path = Path("/etc/systemd/user/org.gnome.Shell@user.service.d/override.conf")
         case Image.KINOITE:
             de = _("KDE Plasma")
-            path = "/etc/systemd/user/plasma-kwin_wayland.service.d/override.conf"
+            override_path = Path("/etc/systemd/user/plasma-kwin_wayland.service.d/override.conf")
         case Image.SERICEA:
             de = _("Sway")
-            path = "/etc/sway/config.d/99-noxwayland.conf"
+            override_path = Path("/etc/sway/config.d/99-noxwayland.conf")
         case _:
             return
-    if os.path.isfile(path):
+    if override_path.is_file():
         status = PASS
         rec = None
     else:
@@ -1039,22 +1083,21 @@ def audit_secureboot():
 @audit
 def audit_bash_env_lockdown():
     """Ensure the current user's bash environment is locked down."""
-    bash_env_paths = map(
-        os.path.expanduser,
-        [
-            "~/.bashrc",
-            "~/.bash_profile",
-            "~/.config/bash_completion",
-            "~/.profile",
-            "~/.bash_logout",
-            "~/.bash_login",
-            "~/.bashrc.d/",
-            "~/.config/environment.d/",
-        ],
-    )
+    home_dir = Path.home()
+    config_dir = get_config_dir()
+    bash_env_paths = [
+        home_dir / ".bashrc",
+        home_dir / ".bash_profile",
+        home_dir / ".profile",
+        home_dir / ".bash_logout",
+        home_dir / ".bash_login",
+        home_dir / ".bashrc.d",
+        config_dir / "bash_completion",
+        config_dir / "environment.d",
+    ]
     unlocked_files = []
     for path in bash_env_paths:
-        if not os.path.exists(path) or (not os.path.isfile(path) and not os.path.isdir(path)):
+        if not path.exists() or (not path.is_file() and not path.is_dir()):
             unlocked_files.append(path)
         else:
             try:
@@ -1068,7 +1111,7 @@ def audit_bash_env_lockdown():
         rec_lines = [
             _("Bash environment is not locked down."),
             _("The following files do not appear to be immutable or do not exist:"),
-            *unlocked_files,
+            *(str(path) for path in unlocked_files),
             _("To fix this, run:"),
             "$ ujust toggle-bash-environment-lockdown",
         ]
@@ -1159,26 +1202,29 @@ def audit_webcam_module():
             if f.read().strip() == "install uvcvideo /bin/false":
                 if is_module_loaded("uvcvideo"):
                     status = INFO
-                    rec_lines = [
-                        _("Webcam module is blacklisted in {0} but is still enabled.").format(
-                            webcam_mod_file
-                        ),
-                        _("To disable it, you must reboot."),
-                    ]
+                    rec = "\n".join(
+                        [
+                            _("Webcam module is blacklisted in {0} but is still enabled.").format(
+                                webcam_mod_file
+                            ),
+                            _("To disable it, you must reboot."),
+                        ]
+                    )
                 else:
                     status = PASS
     except FileNotFoundError:
         status = INFO
-        rec_lines = [
-            _("Webcam module is enabled."),
-            _("To disable it, run:"),
-            "$ ujust set-webcam-modules off",
-        ]
+        rec = "\n".join(
+            [
+                _("Webcam module is enabled."),
+                _("To disable it, run:"),
+                "$ ujust set-webcam-modules off",
+            ]
+        )
     except PermissionError:
         note = Note(_("Unable to read file {0}.").format(webcam_mod_file), UNKNOWN)
 
     if status == INFO:
-        rec = "\n".join(rec_lines)
         note = Note(_("Webcam module is enabled."), INFO)
 
     yield Report(_("Checking whether webcam module is disabled"), status, notes=note, recs=rec)

@@ -7,9 +7,8 @@
 """Common data for kernel argument hardening."""
 
 import subprocess
-from collections.abc import Sequence
-
 import tomllib
+from collections.abc import Sequence
 
 with open("/usr/lib/bootc/kargs.d/10-secureblue.toml", "rb") as f:
     DEFAULT_KARGS = tomllib.load(f)["kargs"]

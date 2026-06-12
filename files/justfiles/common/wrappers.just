@@ -77,3 +77,17 @@ toggle-user-motd:
 set-dhcp-hostname-sending *args:
     #!/bin/sh
     exec /usr/bin/python3 /usr/libexec/secureblue/dhcp_hostname_sending_main.py "$@"
+
+# Enable, disable, or check status of always-upgrade-on-boot
+[positional-arguments]
+set-always-upgrade-on-boot *args:
+    #!/bin/sh
+    exec /usr/bin/python3 /usr/libexec/secureblue/set_always_upgrade_on_boot.py "$@"
+
+# Configure ptrace support (for anticheat, debugging tools, etc.)
+[positional-arguments]
+set-ptrace *args:
+    #!/bin/sh
+    exec /usr/bin/python3 /usr/libexec/secureblue/set_ptrace.py "$@"
+
+alias set-anticheat-support := set-ptrace

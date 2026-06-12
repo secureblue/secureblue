@@ -49,4 +49,3 @@ blocklists:
       - net.codelogistics.webapps
       # Appears to only support flatpaked browsers
       - org.pvermeer.WebAppHub
-

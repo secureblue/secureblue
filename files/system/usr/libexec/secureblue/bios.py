@@ -8,10 +8,15 @@
 
 from os import path
 from subprocess import run
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from files.system.usr.libexec.secureblue import utils
+else:
+    import utils
 
 if path.exists("/sys/firmware/efi"):
-    proceed = input("The system will reboot into UEFI firmware settings. Proceed? (y/N) ")
-    if proceed.lower() in ["yes", "y"]:
+    if utils.ask_yes_no("The system will reboot into UEFI firmware settings. Proceed?"):
         run(["/usr/bin/systemctl", "reboot", "--firmware-setup"], check=True)
 else:
     print("Rebooting to legacy BIOS from OS is not supported.")

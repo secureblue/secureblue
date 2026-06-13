@@ -12,9 +12,9 @@ scripts:
   - disableavahidaemon.sh
   - disablealsastate.sh
   - disablemodemmanager.sh
-  - disablenfsdaemons.sh
   - disablesssd.sh
   - disableunconfinedrootfulservices.sh
   - disableiscsidaemons.sh
   - setplymouththemetext.sh
   - setfirewalldefaultzone.sh
+  - maskbluetoothservices.sh

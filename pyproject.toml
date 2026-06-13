@@ -61,5 +61,5 @@ pycodestyle.max-doc-length = 100
 # Don't require audit checks' function signatures to have type hints.
 "files/system/usr/libexec/secureblue/audit_secureblue.py" = ["ANN"]
 
-# Allow partial executable paths in subprocess invocations in this script.
-"tools/update_po.py" = ["S607"]
+# Allow partial executable paths in subprocess invocations in dev tools
+"tools/*.py" = ["S607"]

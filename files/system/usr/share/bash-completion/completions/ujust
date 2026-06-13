@@ -6,6 +6,7 @@
 
 _comp_ujust() {
     local IFS=$' \t\n'
+    # shellcheck disable=SC2034
     local cur prev words cword comp_args
     _comp_initialize -- "$@" || return
     if [[ "${words[1]-}" == 'with-standard-malloc' ]] && (( cword >= 2 )); then

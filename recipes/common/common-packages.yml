@@ -25,6 +25,7 @@ install:
     - gettext
     - rsync
     - steam-devices
+    - just
 
     # signing deps
     - sbsigntools

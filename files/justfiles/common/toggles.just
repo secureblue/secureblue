@@ -40,25 +40,25 @@ toggle-cups:
 override-enable-module mod_name:
     #! /bin/run0 /bin/bash
     MOD_NAME="{{ mod_name }}"
-    MOD_FILE="/etc/modprobe.d/99-$MOD_NAME.conf"
-    if [ -e "$MOD_FILE" ]; then
-        echo "$MOD_NAME module is already enabled."
+    MOD_FILE="/etc/modprobe.d/99-${MOD_NAME}.conf"
+    if [[ -e "${MOD_FILE}" ]]; then
+        echo "${MOD_NAME} module is already enabled."
     else
-        sh -c 'echo "install $1 /sbin/modprobe --ignore-install $1" >> "$2"' _ "$MOD_NAME" "$MOD_FILE"
-        chmod 644 "$MOD_FILE"
-        echo "Override created to enable $MOD_NAME module. Reboot to take effect."
+        sh -c 'echo "install $1 /sbin/modprobe --ignore-install $1" >> "$2"' _ "${MOD_NAME}" "${MOD_FILE}"
+        chmod 644 "${MOD_FILE}"
+        echo "Override created to enable ${MOD_NAME} module. Reboot to take effect."
     fi
 
 # reset the override by `just override-enable-module`, i.e. disable the module again (requires restart)
 override-reset-module mod_name:
     #! /bin/run0 /bin/bash
     MOD_NAME="{{ mod_name }}"
-    MOD_FILE="/etc/modprobe.d/99-$MOD_NAME.conf"
-    if [ -e "$MOD_FILE" ]; then
-        rm -f "$MOD_FILE"
-        echo "The override for $MOD_NAME module has been reset. Reboot to take effect."
+    MOD_FILE="/etc/modprobe.d/99-${MOD_NAME}.conf"
+    if [[ -e "${MOD_FILE}" ]]; then
+        rm -f "${MOD_FILE}"
+        echo "The override for ${MOD_NAME} module has been reset. Reboot to take effect."
     else
-        echo "No override found for $MOD_NAME module."
+        echo "No override found for ${MOD_NAME} module."
     fi
 
 # Toggle debug mode (requires restart)
@@ -86,6 +86,7 @@ toggle-debug-mode:
 toggle-bash-environment-lockdown skip_approval="false" apply_for_all_users="prompt":
     #!/bin/run0 /bin/bash
     set -euo pipefail
+    # shellcheck disable=SC1091
     source /usr/lib/ujust/libformatting.sh
 
     # The below function fetches the minimium and maximium UIDS as configured in /etc/login.defs.
@@ -96,15 +97,15 @@ toggle-bash-environment-lockdown skip_approval="false" apply_for_all_users="prom
     function user_list_lookup() {
         uid_min="$(grep -Po '^\s*UID_MIN\s+\K\d+' /etc/login.defs)"
         uid_max="$(grep -Po '^\s*UID_MAX\s+\K\d+' /etc/login.defs)"
-        user_string="$(getent passwd | awk -F':' -v max="$uid_max" -v min="$uid_min" 'max >= $3 && $3 >= min {print $1}' | tr '\n' ',' | sed 's/,*$//')"
-        IFS=',' read -ra user_list <<< "$user_string"
+        user_string="$(getent passwd | awk -F':' -v max="${uid_max}" -v min="${uid_min}" 'max >= $3 && $3 >= min {print $1}' | tr '\n' ',' | sed 's/,*$//')"
+        IFS=',' read -ra user_list <<< "${user_string}"
     }
 
-    # $SUDO_USER is the user who started the script instead of whichever authorized it via polkit
-    # or the root home. From there this $USER_HOME uses getent to lookup their home directory to
+    # ${SUDO_USER} is the user who started the script instead of whichever authorized it via polkit
+    # or the root home. From there this ${USER_HOME} uses getent to lookup their home directory to
     # later check if they have an existing .bashrc file.
-    user_home="$(getent passwd "$SUDO_USER" | cut -d: -f6)"
-    if lsattr "$user_home/.bashrc" 2>/dev/null | awk '{print $1}' | grep -q 'i'; then
+    user_home="$(getent passwd "${SUDO_USER}" | cut -d: -f6)"
+    if lsattr "${user_home}/.bashrc" 2>/dev/null | awk '{print $1}' | grep -q 'i'; then
         pending_status="unlocked"
     else
         pending_status="locked"
@@ -114,10 +115,11 @@ toggle-bash-environment-lockdown skip_approval="false" apply_for_all_users="prom
     # despite execution time.
     current_time="$(date | tr ' ' '_')"
 
-    if [[ "$pending_status" == "locked" ]]; then
+    if [[ "${pending_status}" == "locked" ]]; then
+        # shellcheck disable=SC2154
         echo "${bold}WARNING${unbold} This will change your ~/.bashrc, ~/.bash_profile, ~/.config/bash_completion, ~/.profile, ~/.bash_logout, ~/.bash_login, ~/.bashrc.d/, and ~/.config/environment.d/"
         echo "This is needed to ensure the mitigation (see LD_PRELOAD attacks) is effective."
-        echo "This script will create backups of the old versions in ~/bash_env_files/$current_time."
+        echo "This script will create backups of the old versions in ~/bash_env_files/${current_time}."
     else
         echo "${bold}WARNING${unbold} .bashrc, .bash_profile, and more will be unlocked and made editable by non-root users. This represents a security risk (see LD_PRELOAD attacks)"
     fi
@@ -127,7 +129,7 @@ toggle-bash-environment-lockdown skip_approval="false" apply_for_all_users="prom
         echo "Do you understand?"
         accept=""
         read -r -p "Type ${bold}YES I UNDERSTAND${unbold} and press ${bold}Enter${unbold} to continue: " accept
-        if [[ "$accept" != "YES I UNDERSTAND" ]]; then
+        if [[ "${accept}" != "YES I UNDERSTAND" ]]; then
             exit
         fi
     elif [[ "{{ skip_approval }}" != "true" ]]; then
@@ -139,14 +141,14 @@ toggle-bash-environment-lockdown skip_approval="false" apply_for_all_users="prom
     if [[ "{{ apply_for_all_users }}" == "prompt" ]]; then
         user_list_lookup
         echo "This change can be applied to ${bold}all${unbold} users on this system (${user_list[*]})"
-        echo "or only to the user who launched this script ($SUDO_USER)."
+        echo "or only to the user who launched this script (${SUDO_USER})."
         user_choice=""
         read -r -p "Apply this change to ${bold}all${unbold} users? [y/N] " user_choice
-        if [[ "$user_choice" != [yY]* ]]; then
-            user_list=("$SUDO_USER")
+        if [[ "${user_choice}" != [yY]* ]]; then
+            user_list=("${SUDO_USER}")
         fi
     elif [[ "{{ apply_for_all_users }}" == "false" ]]; then
-        user_list=("$SUDO_USER")
+        user_list=("${SUDO_USER}")
     elif [[ "{{ apply_for_all_users }}" == "true" ]]; then
         user_list_lookup
     else
@@ -155,21 +157,21 @@ toggle-bash-environment-lockdown skip_approval="false" apply_for_all_users="prom
     fi
 
     for user in "${user_list[@]}"; do
-        echo "Applying for user: $user"
-        user_home="$(getent passwd "$user" | awk -F':' '{ print $6}')"
-        [ -d "$user_home" ] || { echo "Variable \$user_home for $user is somehow empty (check your getent passwd entries)"; echo "safely exiting."; exit 1; }
+        echo "Applying for user: ${user}"
+        user_home="$(getent passwd "${user}" | awk -F':' '{ print $6}')"
+        [[ -d "${user_home}" ]] || { echo "Variable \${user_home} for ${user} is somehow empty (check your getent passwd entries)"; echo "safely exiting."; exit 1; }
         xdg_config="$(run0 -i --user="${user}" printenv XDG_CONFIG_HOME || true)"
         user_config="${xdg_config:-"${user_home}/.config"}"
 
         BASH_ENV_FILES=(
-            "$user_home/.bashrc"
-            "$user_home/.bash_profile"
-            "$user_home/.profile"
-            "$user_home/.bash_logout"
-            "$user_home/.bash_login"
-            "$user_home/.bashrc.d/"
-            "$user_config/bash_completion"
-            "$user_config/environment.d/"
+            "${user_home}/.bashrc"
+            "${user_home}/.bash_profile"
+            "${user_home}/.profile"
+            "${user_home}/.bash_logout"
+            "${user_home}/.bash_login"
+            "${user_home}/.bashrc.d/"
+            "${user_config}/bash_completion"
+            "${user_config}/environment.d/"
         )
 
         # Purpose of the below block is to actually lock or unlock the current selected user
@@ -180,54 +182,54 @@ toggle-bash-environment-lockdown skip_approval="false" apply_for_all_users="prom
         #        create default or blank copies (deleting the old versions)
         #        add immutability
 
-        if [[ "$pending_status" == "locked" ]]; then
-            backup_dest="$user_home/bash_env_files/$current_time/"
-            mkdir -p "$backup_dest"
+        if [[ "${pending_status}" == "locked" ]]; then
+            backup_dest="${user_home}/bash_env_files/${current_time}/"
+            mkdir -p "${backup_dest}"
 
             for file in "${BASH_ENV_FILES[@]}"; do
-                # skel_file converts "$user_home/.bashrc" to ".bashrc"
+                # skel_file converts "${user_home}/.bashrc" to ".bashrc"
                 skel_file="${file#"${user_home}/"}"
-                if [ ! -f "$file" ] && [ ! -d "$file" ] && [ -e "$file" ]; then
-                    echo "Special file detected on absolute filepath ($file) from BASH_ENV_FILES. It will not be modified."
-                elif [ -f "$file" ]; then
-                    chattr -i "$file"
-                    rsync -a --mkpath "$file" "$backup_dest$skel_file"
-                    rm "$file"
-                elif [ -d "$file" ]; then
-                    chattr -R -i "$file"
-                    rsync -a --mkpath "$file" "$backup_dest$skel_file"
-                    rm -r "$file"
+                if [[ ! -f "${file}" && ! -d "${file}" && -e "${file}" ]]; then
+                    echo "Special file detected on absolute filepath (${file}) from BASH_ENV_FILES. It will not be modified."
+                elif [[ -f "${file}" ]]; then
+                    chattr -i "${file}"
+                    rsync -a --mkpath "${file}" "${backup_dest}${skel_file}"
+                    rm "${file}"
+                elif [[ -d "${file}" ]]; then
+                    chattr -R -i "${file}"
+                    rsync -a --mkpath "${file}" "${backup_dest}${skel_file}"
+                    rm -r "${file}"
                 fi
 
                 # Now we create new empty/default files and directories
-                if [ "${file: -1}" == "/" ]; then
-                    install -D -d -o "$user" -g "$user" -m 700 "$file"
-                    chattr +i -R "$file"
-                elif [ -f "/etc/skel/$skel_file" ]; then
-                    install -D -o "$user" -g "$user" -m 700 "/etc/skel/$skel_file" "$file"
-                    chattr +i "$file"
+                if [[ "${file: -1}" == "/" ]]; then
+                    install -D -d -o "${user}" -g "${user}" -m 700 "${file}"
+                    chattr +i -R "${file}"
+                elif [[ -f "/etc/skel/${skel_file}" ]]; then
+                    install -D -o "${user}" -g "${user}" -m 700 "/etc/skel/${skel_file}" "${file}"
+                    chattr +i "${file}"
                 else
-                    install -D -o "$user" -g "$user" -m 700 /dev/null "$file"
-                    chattr +i "$file"
+                    install -D -o "${user}" -g "${user}" -m 700 /dev/null "${file}"
+                    chattr +i "${file}"
                 fi
             done
 
-            chmod -R 700 "$user_home/bash_env_files"
-            chown -R "$user:" "$user_home/bash_env_files"
+            chmod -R 700 "${user_home}/bash_env_files"
+            chown -R "${user}:" "${user_home}/bash_env_files"
         else
             for file in "${BASH_ENV_FILES[@]}"; do
-                if [ ! -f "$file" ] && [ ! -d "$file" ] && [ -e "$file" ]; then
-                    echo "Special file detected on absolute filepath ($file) from BASH_ENV_FILES. It will not be modified."
-                elif [ -f "$file" ]; then
-                    chattr -i "$file"
-                elif [ -d "$file" ]; then
-                    chattr -R -i "$file"
+                if [[ ! -f "${file}" && ! -d "${file}" && -e "${file}" ]]; then
+                    echo "Special file detected on absolute filepath (${file}) from BASH_ENV_FILES. It will not be modified."
+                elif [[ -f "${file}" ]]; then
+                    chattr -i "${file}"
+                elif [[ -d "${file}" ]]; then
+                    chattr -R -i "${file}"
                 fi
             done
         fi
     done
 
-    echo "${user_list[@]}" "$pending_status."
+    echo "${user_list[@]}" "${pending_status}."
     echo "${bold}NOTE${unbold}: until a reboot, any process with an open file descriptor will continue to have the access they had before this script was run."
 
 # Toggle MAC Randomization
@@ -235,8 +237,8 @@ toggle-mac-randomization:
     #! /bin/run0 /bin/bash
     RAND_MAC_FILE="/etc/NetworkManager/conf.d/rand_mac.conf"
 
-    if test -e $RAND_MAC_FILE; then
-        rm -f $RAND_MAC_FILE
+    if test -e "${RAND_MAC_FILE}"; then
+        rm -f "${RAND_MAC_FILE}"
         echo "MAC randomization disabled."
         systemctl restart NetworkManager
     else
@@ -245,14 +247,14 @@ toggle-mac-randomization:
         randomization_choice=""
         read -rp "Do you want to use per-connection Wi-Fi MAC address randomization? [y/N] " randomization_choice
 
-        if [[ "$randomization_choice" == [Yy]* ]]; then
+        if [[ "${randomization_choice}" == [Yy]* ]]; then
             randomization_level=random
             echo "Selected state: per-connection"
         else
             randomization_level=stable
             echo "Selected state: per-network (stable)"
         fi
-        cat <<EOL > $RAND_MAC_FILE
+        cat <<EOL > "${RAND_MAC_FILE}"
     [device-mac-randomization]
     # "yes" is already the default for scanning
     wifi.scan-rand-mac-address=yes
@@ -260,9 +262,9 @@ toggle-mac-randomization:
     [connection-mac-randomization]
     # Generate a random MAC for each Network and associate the two permanently.
     ethernet.cloned-mac-address=stable
-    wifi.cloned-mac-address=$randomization_level
+    wifi.cloned-mac-address=${randomization_level}
     EOL
-        chmod 644 $RAND_MAC_FILE
+        chmod 644 "${RAND_MAC_FILE}"
         echo "MAC randomization enabled."
         systemctl restart NetworkManager
     fi

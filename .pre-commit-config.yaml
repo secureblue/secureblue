@@ -13,22 +13,19 @@ repos:
         exclude: "^\\.github/workflows/config/linkspector\\.yml$"
 
   - repo: https://github.com/astral-sh/ruff-pre-commit
-    rev: 0c7b6c989466a93942def1f84baf36ddfcd60c83 # v0.15.14
+    rev: 3b3f7c3f57fe9925356faf5fe6230835138be230 # v0.15.17
     hooks:
       - id: ruff-check
       - id: ruff-format
 
+  - repo: https://github.com/astral-sh/ty-pre-commit
+    rev: 918cf00966c1e291e829f7819b7b7c2a0b0ff31f # v0.0.47
+    hooks:
+      - id: ty
+        args: [--isolated]
+
   - repo: local
     hooks:
-      # ty doesn't have an official pre-commit hook yet, so we use a local hook.
-      - id: ty
-        name: ty check
-        description: "Python type checker: https://docs.astral.sh/ty/"
-        entry: ty check
-        language: system
-        types: [python]
-        pass_filenames: false
-
       # We use a local hook rather than the official ShellCheck pre-commit hook
       # because the official hook runs as a container image, which won't run on
       # secureblue in the default system configuration.
@@ -36,6 +33,14 @@ repos:
         name: ShellCheck
         description: "Shell script linter: https://www.shellcheck.net/"
         entry: shellcheck
+        language: system
+        types: [text]
+        types_or: [bash, bats, shell]
+
+      - id: shell-script-shebangs
+        name: check script shebangs
+        description: "Check shell script shebang lines are normalized"
+        entry: awk -f tools/check-shell-script-shebangs.awk
         language: system
         types: [text]
         types_or: [bash, bats, shell]

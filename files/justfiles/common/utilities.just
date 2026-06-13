@@ -7,17 +7,10 @@
 uid := `id -u`
 shell := `grep :$(id -u): /etc/passwd | cut -d: -f7`
 
-# Boot into this device's BIOS/UEFI screen
+# Boot into this device's BIOS/UEFI screen.
 bios:
-    #!/usr/bin/bash
-    if [ -d /sys/firmware/efi ]; then
-        read -rp 'The system will reboot into UEFI firmware settings. Proceed? (y/N) ' proceed
-        if [[ "$proceed" == [Yy]* ]]; then
-            systemctl reboot --firmware-setup
-        fi
-    else
-        echo "Rebooting to legacy BIOS from OS is not supported."
-    fi
+    #!/usr/bin/sh
+    exec /usr/bin/python3 /usr/libexec/secureblue/bios.py
 
 # Show all messages from this boot
 logs-this-boot:

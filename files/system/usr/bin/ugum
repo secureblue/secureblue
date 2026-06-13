@@ -21,16 +21,16 @@ GUM=$(which gum 2>/dev/null)
 # Check if fzf is installed and set it as the handler
 FALLBACK_HANDLER=$(which fzf 2>/dev/null)
 HANDLER=""
-if [[ -n $FALLBACK_HANDLER ]]; then
+if [[ -n ${FALLBACK_HANDLER} ]]; then
     HANDLER="fzf"
 fi
 
 # If $MENU is set
-if [[ -n $MENU ]]; then
+if [[ -n ${MENU} ]]; then
     for BIN in "${SUPPORTED_HANDLERS[@]}"
     do
-        if [[ "$BIN" == "$MENU" ]]; then
-            HANDLER=$BIN
+        if [[ "${BIN}" == "${MENU}" ]]; then
+            HANDLER=${BIN}
         fi
     done
 fi
@@ -48,7 +48,7 @@ function noGum () {
         exit 5
     elif [[ "$1" == "choose" ]]; then
         # If choose is the verb then run the choose function and pass all remaining args to an appropriate handler
-        if [[ "$HANDLER" == "fzf" ]]; then
+        if [[ "${HANDLER}" == "fzf" ]]; then
             # Use fzf for choice selector
             choose_Fzf "${@:2}"
         else
@@ -57,7 +57,7 @@ function noGum () {
         fi
     elif [[ "$1" == "confirm" ]]; then
         # If confirm is the verb then run the confirm function and pass all remaining args to an appropriate handler
-        if [[ "$HANDLER" == "fzf" ]]; then
+        if [[ "${HANDLER}" == "fzf" ]]; then
             # Use fzf as a confirm dialog
             confirm_Fzf "${@:2}"
         else
@@ -79,21 +79,21 @@ function choose_Generic () {
     for arg in "$@"
     do
         # If the argument does not start with -
-        if [[ ! $arg =~ ^- ]]; then
-            OPTIONS+=("$arg")
+        if [[ ! ${arg} =~ ^- ]]; then
+            OPTIONS+=("${arg}")
         fi
     done
 
     # Make a select prompt in bash
     select opt in "${OPTIONS[@]}"
     do
-        case $opt in
+        case ${opt} in
             "")
                 # Invalid options print to STDERR and then loops back for the user to select again
-                echo "Invalid option $REPLY" >&2
+                echo "Invalid option ${REPLY}" >&2
                 ;;
-            "$opt")
-                echo "$opt"
+            "${opt}")
+                echo "${opt}"
                 break
                 ;;
         esac
@@ -112,8 +112,8 @@ function choose_Fzf () {
     for arg in "$@"
     do
         # If the argument does not start with -
-        if [[ ! $arg =~ ^- ]]; then
-            if [[ "$OPTIONS" == "" ]]; then
+        if [[ ! ${arg} =~ ^- ]]; then
+            if [[ "${OPTIONS}" == "" ]]; then
                 OPTIONS="${arg}"
                 continue
             fi
@@ -122,7 +122,7 @@ function choose_Fzf () {
     done
 
     # Make a select prompt using fzf
-    echo -e "$OPTIONS" | fzf --layout=reverse --height="~20%" --prompt="$PROMPT"
+    echo -e "${OPTIONS}" | fzf --layout=reverse --height="~20%" --prompt="${PROMPT}"
 }
 
 # Implements a generic bash confirm dialog
@@ -133,14 +133,14 @@ function confirm_Generic () {
     # Parse the arguments for the ones we support and care about
     for arg in "$@"
     do
-        if [[ ! $arg =~ ^- ]]; then
-            PROMPT="$arg"
+        if [[ ! ${arg} =~ ^- ]]; then
+            PROMPT="${arg}"
         fi
     done
 
     # Print the prompt and read input
-    read -r -p "$PROMPT [Y/n]: " YESNO
-    confirm_Parse "$YESNO"
+    read -r -p "${PROMPT} [Y/n]: " YESNO
+    confirm_Parse "${YESNO}"
 }
 
 # Implements a confirm dialog in fzf
@@ -148,8 +148,8 @@ function confirm_Fzf () {
     PROMPT=$(confirm_getPrompt "$@")
 
     # Make the confirm prompt using fzf and read response
-    YESNO=$(echo -e "Yes\nNo" | fzf --layout=reverse --height="~20%" --prompt="$PROMPT ")
-    confirm_Parse "$YESNO"
+    YESNO=$(echo -e "Yes\nNo" | fzf --layout=reverse --height="~20%" --prompt="${PROMPT} ")
+    confirm_Parse "${YESNO}"
 }
 
 # Gets the prompt for the confirm dialog, with a fallback to "Are you sure?"
@@ -160,13 +160,13 @@ function confirm_getPrompt () {
     # Parse the arguments for the ones we support and care about
     for arg in "$@"
     do
-        if [[ ! $arg =~ ^- ]]; then
-            PROMPT="$arg"
+        if [[ ! ${arg} =~ ^- ]]; then
+            PROMPT="${arg}"
         fi
     done
 
     # Return the prompt
-    echo "$PROMPT"
+    echo "${PROMPT}"
 }
 
 # Parse the confirm response and translate it the same exit codes gum uses
@@ -188,9 +188,9 @@ function confirm_Parse () {
 }
 
 # If gum is not present
-if [[ -z "$GUM" ]]; then
+if [[ -z "${GUM}" ]]; then
     noGum "$@"
 else
     # If gum is present just pass args to gum
-    $GUM "$@"
+    ${GUM} "$@"
 fi

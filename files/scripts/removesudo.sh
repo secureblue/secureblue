@@ -8,15 +8,15 @@ set -euo pipefail
 
 SUDO_PACKAGES_TO_REMOVE=()
 
-if [[ "$IMAGE_NAME" != *"kinoite"* ]]; then
+if [[ "${IMAGE_NAME}" != *"kinoite"* ]]; then
     SUDO_PACKAGES_TO_REMOVE+=('sudo')
 fi
 
-if [[ "$IMAGE_NAME" == *"iot"* && "$OS_ARCH" == "aarch64" ]]; then
+if [[ "${IMAGE_NAME}" == *"iot"* && "${OS_ARCH}" == "aarch64" ]]; then
     SUDO_PACKAGES_TO_REMOVE+=('arm-image-installer')
 fi
 
-if [[ "$IMAGE_NAME" != *"iot"* && "$IMAGE_NAME" != *"securecore"* ]]; then
+if [[ "${IMAGE_NAME}" != *"iot"* && "${IMAGE_NAME}" != *"securecore"* ]]; then
     SUDO_PACKAGES_TO_REMOVE+=('sudo-python-plugin')
 fi
 

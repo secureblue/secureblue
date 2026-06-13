@@ -1,0 +1,10 @@
+; SPDX-FileCopyrightText: Copyright 2026 The Secureblue Authors
+;
+; SPDX-License-Identifier: Apache-2.0 OR MIT
+
+(boolean container_allow_ptrace false)
+(booleanif container_allow_ptrace
+           (true
+             (allow container_domain self (process (ptrace)))
+             (allow container_runtime_domain self (process (ptrace)))
+             (allow spc_t self (process (ptrace)))))

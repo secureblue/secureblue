@@ -36,3 +36,11 @@ repos:
         language: system
         types: [text]
         types_or: [bash, bats, shell]
+
+      - id: shell-script-shebangs
+        name: check script shebangs
+        description: "Check shell script shebang lines are normalized"
+        entry: awk -f tools/check-shell-script-shebangs.awk
+        language: system
+        types: [text]
+        types_or: [bash, bats, shell]

@@ -13,6 +13,7 @@ scripts:
   - authselect.sh
   - disablegeoclue.sh
   - disable-sshd-vsock.sh
+  - disablenfsdaemons.sh
   - removefedoraflatpakremoteservice.sh
   - localization.sh
   - installrar.sh

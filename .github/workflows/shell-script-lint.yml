@@ -1,0 +1,86 @@
+# SPDX-FileCopyrightText: Copyright 2025-2026 The Secureblue Authors
+#
+# SPDX-License-Identifier: Apache-2.0
+
+name: Shell script linters
+permissions: {}
+on:
+  pull_request:
+    paths:
+      - 'files/system/**'
+      - '**.sh'
+      - '.shellcheckrc'
+      - '.github/workflows/shell-script-lint.yml'
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+defaults:
+  run:
+    shell: bash
+
+jobs:
+  shell-script-linters:
+    name: Shell script linters
+    runs-on: ubuntu-slim
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd  # v6.0.2
+        with:
+          persist-credentials: false
+
+      - name: Install ShellCheck
+        run: |
+          temp_dir="$(mktemp -d)"
+          (
+            cd "${temp_dir}"
+            version='v0.11.0'
+            tarball="shellcheck-${version}.linux.x86_64.tar.gz"
+            curl -fLsS --retry 5 -O "https://github.com/koalaman/shellcheck/releases/download/${version}/${tarball}"
+            sha256sum -c <<<"b7af85e41cc99489dcc21d66c6d5f3685138f06d34651e6d34b42ec6d54fe6f6  ${tarball}"
+            tar -xzf "${tarball}"
+            sudo install -Dt /usr/local/bin "shellcheck-${version}/shellcheck"
+          )
+          rm -rf "${temp_dir}"
+          shellcheck --version
+
+      - name: Install just
+        run: |
+          tmpfile=$(mktemp)
+          cat <<'EOF' > "${tmpfile}"
+          pip==26.1.1 \
+            --hash=sha256:99cb1c2899893b075ff56e4ed0af55669a955b49ad7fb8d8603ecdaf4ed653fb
+          rust_just==1.51.0 \
+            --hash=sha256:71fdbd29ad68d67d0ee885ed0eb74f0e906f3e89601b860f69d88bdd4454a869
+          EOF
+
+          python3 -m pip install --require-hashes -r "${tmpfile}"
+
+      - name: Get list of files to test
+        id: file_list
+        run: |
+          tempfile="$(mktemp)"
+          # We need to examine object modes to exclude directories that are the target
+          # of a symbolic link, which get included in the output of `git ls-files` and
+          # would otherwise be passed to awk, triggering a warning.
+          git ls-files -z --format='%(objectmode) %(path)' \
+            | sed -Enz -e '/^120/d' -e 's/^[0-9]+ //p' > "${tempfile}"
+          echo "file_list=${tempfile}" >> "${GITHUB_OUTPUT}"
+
+      - name: Check shell script shebangs
+        env:
+          FILE_LIST: ${{ steps.file_list.outputs.file_list }}
+        run: |
+          xargs -0 -a "${FILE_LIST}" awk -f tools/check-shell-script-shebangs.awk --
+
+      - name: Run ShellCheck on shell scripts
+        env:
+          FILE_LIST: ${{ steps.file_list.outputs.file_list }}
+        run: |
+          # The previous step checks that all shell scripts start with a shebang.
+          xargs -0 -a "${FILE_LIST}" awk 'FNR == 1 && /^#! *(\/usr)?\/bin\/(env )?(ba)?sh *$/ { printf("%s%c", FILENAME, 0) }' \
+            | xargs -0 shellcheck --
+
+      - name: Run ShellCheck on justfile shell scripts
+        run: |
+          tools/shellcheck_justfiles.py

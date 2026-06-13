@@ -7,3 +7,4 @@ Containerfile
 .DS_Store
 __pycache__
 uv.lock
+justfile-tmp-*

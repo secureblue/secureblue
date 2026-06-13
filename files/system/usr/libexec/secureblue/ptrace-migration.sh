@@ -8,7 +8,7 @@ set -eu
 
 ptrace_scope=$(grep -oP '^kernel.yama.ptrace_scope\s*=\s*\K[0-9]+' /etc/sysctl.d/61-ptrace-scope.conf 2>/dev/null || echo 3)
 
-case "$ptrace_scope" in
+case "${ptrace_scope}" in
     0|1) ujust set-ptrace on ;;
     2) ujust set-ptrace container ;;
 esac

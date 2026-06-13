@@ -103,8 +103,8 @@ debug-info:
     local_overrides=$(echo -e "\n=== Listing Local Overrides ===\n"; ujust check-local-overrides)
     recent_events=$(echo -e "\n=== Recent System Events ===\n"; journalctl -b -p err..alert --since "1 hour ago")
     failed_services=$(echo -e "\n=== Failed Services ===\n"; systemctl list-units --state=failed)
-    content="$rpm_ostree_status$sysinfo$flatpaks$audit_results$local_overrides$recent_events$failed_services"
-    echo "$content" | fpaste --confirm --private=1
+    content="${rpm_ostree_status}${sysinfo}${flatpaks}${audit_results}${local_overrides}${recent_events}${failed_services}"
+    echo "${content}" | fpaste --confirm --private=1
 
 alias assemble := distrobox-assemble
 
@@ -117,12 +117,13 @@ distrobox-assemble CONTAINER="prompt" ACTION="create" FILE="/etc/distrobox/distr
         container_userns_now=""
         read -rp "Would you like to run 'ujust set-container-userns on' now? [Y/n] " container_userns_now
         container_userns_now=${container_userns_now:-y}
-        if [[ "$container_userns_now" == [Yy]* ]]; then
+        if [[ "${container_userns_now}" == [Yy]* ]]; then
             echo "Running 'ujust set-container-userns on'"
             ujust set-container-userns on
         fi
     fi
     # Distroboxes are gathered from distrobox.ini, please add them there
+    # shellcheck disable=SC1091
     source /usr/lib/ujust/ujust.sh
     AssembleList "{{ FILE }}" "{{ ACTION }}" "{{ CONTAINER }}"
 
@@ -135,12 +136,13 @@ toolbox-assemble CONTAINER="prompt" ACTION="create" FILE="/etc/toolbox/toolbox.i
         container_userns_now=""
         read -rp "Would you like to run 'ujust set-container-userns on' now? [Y/n] " container_userns_now
         container_userns_now=${container_userns_now:-y}
-        if [[ "$container_userns_now" == [Yy]* ]]; then
+        if [[ "${container_userns_now}" == [Yy]* ]]; then
             echo "Running 'ujust set-container-userns on'"
             ujust set-container-userns on
         fi
     fi
     # Toolboxes are gathered from toolbox.ini, please add them there
+    # shellcheck disable=SC1091
     source /usr/lib/ujust/ujust.sh
     ToolboxAssembleList "{{ FILE }}" "{{ ACTION }}" "{{ CONTAINER }}"
 
@@ -164,10 +166,10 @@ uninstall-docker:
 rebase-secureblue:
     #!/usr/bin/bash
     current_image=$(grep VARIANT= /etc/os-release | cut -d'"' -f2)
-    if [[ "$current_image" == 'CoreOS' ]] || [[ "$current_image" == 'IOT' ]]; then
+    if [[ "${current_image}" == 'CoreOS' ]] || [[ "${current_image}" == 'IOT' ]]; then
         image_name=$(grep VARIANT_ID= /etc/os-release | cut -d'=' -f2 | cut -d'-' -f1)
         read -rp "Do you need ZFS support? [y/N]: " use_zfs
-        [[ "$use_zfs" == [Yy]* ]] && image_name+="-zfs"
+        [[ "${use_zfs}" == [Yy]* ]] && image_name+="-zfs"
     else
         desktop_image_types=(
             "silverblue"
@@ -182,8 +184,8 @@ rebase-secureblue:
             "Cosmic images are considered beta."
         PS3=$'Enter your desktop choice: '
         select image_name in "${desktop_image_types[@]}"; do
-            if [[ -n "$image_name" ]]; then
-                echo "Selected desktop: $image_name"
+            if [[ -n "${image_name}" ]]; then
+                echo "Selected desktop: ${image_name}"
                 break
             else
                 echo "Invalid option, please select a valid number."
@@ -192,68 +194,68 @@ rebase-secureblue:
     fi
     echo "Nvidia's proprietary drivers provide superior performance and official support on Nvidia hardware."
     read -rp "Do you want Nvidia proprietary drivers? [y/N]: " use_nvidia
-    if [[ "$use_nvidia" == [Yy]* ]]; then
+    if [[ "${use_nvidia}" == [Yy]* ]]; then
         image_name+="-nvidia"
         echo "Nvidia's proprietary drivers with open source kernel modules are recommended for Turing or newer cards (GTX 16XX+)."
         read -rp "Do you want Nvidia's proprietary drivers with open source kernel modules? [Y/n]: " use_open
         use_open=${use_open:-y}
-        [[ "$use_open" == [Yy]* ]] && image_name+="-open"
+        [[ "${use_open}" == [Yy]* ]] && image_name+="-open"
     else
         image_name+="-main"
     fi
     image_name+="-hardened"
     full_ref=$(crane digest --full-ref "ghcr.io/secureblue/${image_name}:latest")
     slsa-verifier verify-image --source-uri "github.com/secureblue/secureblue" --source-branch "live" "${full_ref}"
-    rebase_command="rpm-ostree rebase ostree-image-signed:docker://ghcr.io/secureblue/$image_name:latest"
-    printf "Command to execute:\n%s\n\n" "$rebase_command"
+    rebase_command="rpm-ostree rebase ostree-image-signed:docker://ghcr.io/secureblue/${image_name}:latest"
+    printf "Command to execute:\n%s\n\n" "${rebase_command}"
     read -rp "Proceed? [y/N]: " rebase_proceed
-    if [[ "$rebase_proceed" == [Yy]* ]]; then
-        eval "$rebase_command"
+    if [[ "${rebase_proceed}" == [Yy]* ]]; then
+        eval "${rebase_command}"
     fi
 
 # Apply SELinux type "user_home_t" on external drives to allow access from Trivalent
 label-external-drives:
     #!/usr/bin/bash
     set -euo pipefail
-    media_paths=("/run/media/$USER/" "/mnt/")
+    media_paths=("/run/media/${USER}/" "/mnt/")
     selabel="user_home_t"
     supported_fs=("ext2" "ext3" "ext4" "jfs" "xfs" "btrfs") # ref: https://wiki.gentoo.org/wiki/SELinux/FAQ#Can_I_use_SELinux_with_any_file_system.3F
 
     echo "Warning: This will label your drives mounted on paths $(printf '"%s" and ' "${media_paths[@]}" | sed 's/ and $//') such that they are treated as an extension to your home directory. (You can select which ones to label)"
     echo 'If you do not want Trivalent to have access to these drives, do not proceed.'
     read -rp 'Are you sure you want to do this? [y/N] ' warning_proceed
-    if ! [[ "$warning_proceed" == [Yy]* ]]; then
+    if ! [[ "${warning_proceed}" == [Yy]* ]]; then
         echo 'Aborting.'
         exit 0
     fi
 
     for media_path in "${media_paths[@]}"; do
-        if [ -z "$( ls -A "$media_path" 2>&- )" ]; then
+        if [[ -z "$( ls -A "${media_path}" 2>&- )" ]]; then
             echo
-            echo "You don't have any drives mounted in \"$media_path\", skipping..."
+            echo "You don't have any drives mounted in \"${media_path}\", skipping..."
             continue
         fi
 
-        for dir in "$media_path"*/
+        for dir in "${media_path}"*/
         do
             echo
-            if [[ "$(stat -c '%U' "$dir")" != "$USER" ]]; then
-                echo "Drive root folder is not owned by you, skipping drive \"$dir\"..."
+            if [[ "$(stat -c '%U' "${dir}")" != "${USER}" ]]; then
+                echo "Drive root folder is not owned by you, skipping drive \"${dir}\"..."
                 continue
             fi
-            detected_fs="$(df -T "$dir" | awk '{print $2}' | sed -n 2p)"
-            if ! printf "%s\n" "${supported_fs[@]}" | grep -Fxq "$detected_fs"; then
-                echo "SELinux support is unknown for filesystem $detected_fs, skipping drive \"$dir\"..."
+            detected_fs="$(df -T "${dir}" | awk '{print $2}' | sed -n 2p)"
+            if ! printf "%s\n" "${supported_fs[@]}" | grep -Fxq "${detected_fs}"; then
+                echo "SELinux support is unknown for filesystem ${detected_fs}, skipping drive \"${dir}\"..."
                 continue
             fi
-            read -rp "Do you want to label \"$dir\"? [y/N] " proceed
-            if ! [[ "$proceed" == [Yy]* ]]; then
+            read -rp "Do you want to label \"${dir}\"? [y/N] " proceed
+            if ! [[ "${proceed}" == [Yy]* ]]; then
                 echo 'Skipping...'
                 continue
             fi
-            echo "Labeling drive mounted on \"$dir\" with $selabel"
+            echo "Labeling drive mounted on \"${dir}\" with ${selabel}"
             dir=${dir%*/} # remove trailing slash
-            if ! run0 sh -c 'semanage fcontext -a -t "$1" "$2(/.*)?" && restorecon -r "$2"' sh "$selabel" "$dir"; then
+            if ! run0 sh -c 'semanage fcontext -a -t "$1" "$2(/.*)?" && restorecon -r "$2"' sh "${selabel}" "${dir}"; then
                 echo 'Execution failed, aborting.'
                 exit 1
             fi
@@ -286,9 +288,9 @@ install-vpn:
         case "$1" in
             "ivpn")
                 PACKAGE_NAMES="ivpn"
-                REPO_NAME="$PACKAGE_NAMES"
+                REPO_NAME="${PACKAGE_NAMES}"
 
-                if util_checkpackage "$PACKAGE_NAMES" || util_checkpackage "$PACKAGE_NAMES-ui"; then
+                if util_checkpackage "${PACKAGE_NAMES}" || util_checkpackage "${PACKAGE_NAMES}-ui"; then
                     echo 'Error: IVPN is already installed.'
                     echo 'Aborting...'
                     exit 1
@@ -297,8 +299,8 @@ install-vpn:
                 echo 'Installing IVPN...'
                 local proceed2
                 read -rp 'Do you want the IVPN GUI to be installed? [Y/n] ' proceed2
-                if ! [[ "$proceed2" == [nN]* ]]; then
-                    PACKAGE_NAMES="$PACKAGE_NAMES $PACKAGE_NAMES-ui"
+                if ! [[ "${proceed2}" == [nN]* ]]; then
+                    PACKAGE_NAMES="${PACKAGE_NAMES} ${PACKAGE_NAMES}-ui"
                 fi
                 INSTRUCTIONS='Successfully installed IVPN. Please execute the command "systemctl enable --now ivpn-service" after rebooting.'
                 ;;
@@ -307,7 +309,7 @@ install-vpn:
                 PACKAGE_NAMES="mullvad-vpn"
                 REPO_NAME="mullvad"
 
-                if util_checkpackage "$PACKAGE_NAMES"; then
+                if util_checkpackage "${PACKAGE_NAMES}"; then
                     echo 'Error: Mullvad VPN is already installed.'
                     echo 'Aborting...'
                     exit 1
@@ -321,7 +323,7 @@ install-vpn:
                 PACKAGE_NAMES="proton-vpn-gnome-desktop"
                 REPO_NAME="protonvpn-stable"
 
-                if util_checkpackage "$PACKAGE_NAMES"; then
+                if util_checkpackage "${PACKAGE_NAMES}"; then
                     echo 'Error: Proton VPN is already installed.'
                     echo 'Aborting...'
                     exit 1
@@ -335,7 +337,7 @@ install-vpn:
                 PACKAGE_NAMES="tailscale"
                 REPO_NAME="tailscale"
 
-                if util_checkpackage "$PACKAGE_NAMES"; then
+                if util_checkpackage "${PACKAGE_NAMES}"; then
                     echo 'Error: Tailscale VPN is already installed.'
                     echo 'Aborting...'
                     exit 1
@@ -354,12 +356,12 @@ install-vpn:
 
         # The lack of quotes around $2 is intentional.
         # shellcheck disable=SC2086
-        if ! run0 sh -c 'sed -Ei "s/^enabled[[:space:]]*=.*/enabled=1/" "/etc/yum.repos.d/$1.repo" && rpm-ostree install -y $2' sh "$REPO_NAME" "$PACKAGE_NAMES"; then
+        if ! run0 sh -c 'sed -Ei "s/^enabled[[:space:]]*=.*/enabled=1/" "/etc/yum.repos.d/$1.repo" && rpm-ostree install -y $2' sh "${REPO_NAME}" "${PACKAGE_NAMES}"; then
             echo "Error: The installation didn't complete successfully, aborting..."
             exit 1
         fi
 
-        echo "$INSTRUCTIONS"
+        echo "${INSTRUCTIONS}"
     }
 
     function util_checkpackage() {
@@ -371,7 +373,7 @@ install-vpn:
     echo 'Using a VPN is currently incompatible with global DNS or local DNSSEC resolution.'
     echo 'If you are using Unbound, it will be disabled in favour of systemd-resolved.'
     read -rp 'Do you want to continue? [y/N] ' proceed
-    if ! [[ "$proceed" == [yY]* ]]; then
+    if ! [[ "${proceed}" == [yY]* ]]; then
         echo 'Aborting...'
         exit 0
     fi
@@ -379,23 +381,23 @@ install-vpn:
 
     echo 'NOTE: You can also install wireguard profiles from your provider directly into your DE, if you prefer.'
     read -rp 'Do you want to continue with installing a VPN app anyway? [y/N] ' proceed
-    if ! [[ "$proceed" == [yY]* ]]; then
+    if ! [[ "${proceed}" == [yY]* ]]; then
         echo 'Aborting...'
         exit 0
     fi
     echo
     echo 'Please choose your desired provider'
     vpn_choice="$(ugum choose "${!vpn_providers[@]}")"
-    echo "You selected $vpn_choice"
+    echo "You selected ${vpn_choice}"
 
-    vpn_requirements="${vpn_providers[$vpn_choice]}"
+    vpn_requirements="${vpn_providers[${vpn_choice}]}"
     needs_gui="1"
-    if [[ "$vpn_requirements" =~ "gui_needs_" ]]; then
+    if [[ "${vpn_requirements}" =~ "gui_needs_" ]]; then
         echo
         echo 'Notice: This VPN requires additional security features to be disabled in order to use its graphical interface.'
         echo "You can instead use the VPN app's command-line interface, which does not require disabling hardening."
         read -rp 'Do you intend to use the graphical interface? [y/N] ' proceed_gui
-        if [[ "$proceed_gui" == [yY]* ]]; then
+        if [[ "${proceed_gui}" == [yY]* ]]; then
             echo 'Additional hardening features that break the graphical interface will be disabled.'
         else
             echo 'Additional hardening features that break the graphical interface will not be disabled.'
@@ -403,7 +405,7 @@ install-vpn:
         fi
     fi
 
-    if [[ "$vpn_requirements" =~ "always_needs_unconfined_userns" || "$vpn_requirements" =~ "gui_needs_unconfined_userns" && "$needs_gui" == "1" ]]; then
+    if [[ "${vpn_requirements}" =~ "always_needs_unconfined_userns" || "${vpn_requirements}" =~ "gui_needs_unconfined_userns" && "${needs_gui}" == "1" ]]; then
         echo
         if [[ "$(ujust set-unconfined-userns status)" == "enabled" ]] ; then
             echo 'Unconfined domain user namespaces already enabled, skipping...'
@@ -412,7 +414,7 @@ install-vpn:
             echo 'This will execute "ujust set-unconfined-userns on". You can also manually do this later if you skip this step.'
             echo 'Warning: This is a security reduction!'
             read -rp 'Do you want to do this now? [Y/n] ' proceed_userns
-            if ! [[ "$proceed_userns" == [nN]* ]]; then
+            if ! [[ "${proceed_userns}" == [nN]* ]]; then
                 echo 'Enabling unconfined domain user namespaces...'
                 ujust set-unconfined-userns on
                 echo 'Enabled unconfined domain user namespaces.'
@@ -420,44 +422,44 @@ install-vpn:
         fi
     fi
 
-    if [[ "$vpn_requirements" =~ "always_needs_xwayland" || "$vpn_requirements" =~ "gui_needs_xwayland" && "$needs_gui" == "1" ]]; then
+    if [[ "${vpn_requirements}" =~ "always_needs_xwayland" || "${vpn_requirements}" =~ "gui_needs_xwayland" && "${needs_gui}" == "1" ]]; then
         echo
 
         DE="unknown"
         IMAGE="$(rpm-ostree status 2>&- | grep '●')"
-        if echo "$IMAGE" | grep -q 'silverblue'; then
+        if echo "${IMAGE}" | grep -q 'silverblue'; then
             DE="gnome"
-        elif echo "$IMAGE" | grep -q 'kinoite'; then
+        elif echo "${IMAGE}" | grep -q 'kinoite'; then
             DE="plasma"
-        elif echo "$IMAGE" | grep -q 'sericea' || echo "$IMAGE" | grep 'sway'; then
+        elif echo "${IMAGE}" | grep -q 'sericea' || echo "${IMAGE}" | grep 'sway'; then
             DE=sway
         fi
 
         xwayland_enabled="0"
-        if [[ "$DE" == "gnome" ]]; then
+        if [[ "${DE}" == "gnome" ]]; then
             if ! test -e "/etc/systemd/user/org.gnome.Shell@user.service.d/override.conf"; then
                 xwayland_enabled="1"
             fi
-        elif [[ "$DE" == "plasma" ]]; then
+        elif [[ "${DE}" == "plasma" ]]; then
             if ! test -e "/etc/systemd/user/plasma-kwin_wayland.service.d/override.conf"; then
                 xwayland_enabled="1"
             fi
-        elif [[ "$DE" == "sway" ]]; then
+        elif [[ "${DE}" == "sway" ]]; then
             if ! test -e "/etc/sway/config.d/99-noxwayland.conf"; then
                 xwayland_enabled="1"
             fi
         fi
 
-        if [[ "$DE" == "unknown" ]]; then
+        if [[ "${DE}" == "unknown" ]]; then
             echo 'Warning: Unable to identify your desktop environment. Please manually ensure that Xwayland is enabled. Skipping...'
-        elif [[ "$xwayland_enabled" == "1" ]]; then
+        elif [[ "${xwayland_enabled}" == "1" ]]; then
             echo 'Xwayland already enabled, skipping...'
         else
             echo 'This VPN requires Xwayland to be enabled.'
             echo 'This will execute "ujust set-xwayland on". You can also manually do this later if you skip this step.'
             echo 'Warning: This is a security reduction!'
             read -rp 'Do you want to do this now? [Y/n] ' proceed_xwayland
-            if ! [[ "$proceed_xwayland" == [nN]* ]]; then
+            if ! [[ "${proceed_xwayland}" == [nN]* ]]; then
                 echo 'Enabling Xwayland...'
                 ujust set-xwayland on
                 echo 'Enabled Xwayland.'
@@ -471,17 +473,17 @@ install-vpn:
         /usr/libexec/secureblue/dns_selector.py status |
         sed -n 's/^DNS Resolver: //p'
     )
-    if [[ "$resolver" == "systemd-resolved" ]]; then
+    if [[ "${resolver}" == "systemd-resolved" ]]; then
         echo 'DNS resolver is already systemd-resolved. Continuing...'
     else
-        echo "Detected DNS resolver as $resolver".
+        echo "Detected DNS resolver as ${resolver}".
         echo 'Setting DNS resolver to systemd-resolved...'
         /usr/libexec/secureblue/dns_selector.py resolver resolved > /dev/null
     fi
 
     echo
     echo 'Starting installation...'
-    install_vpn "$vpn_choice"
+    install_vpn "${vpn_choice}"
     echo 'Please reboot your device to fully apply the changes.'
 
 # Setup USBGuard
@@ -494,12 +496,12 @@ setup-usbguard:
         mkdir -p /etc/usbguard
         chmod 755 /etc/usbguard
         groupadd usbguard
-        usermod -aG usbguard "$SUDO_USER"
+        usermod -aG usbguard "${SUDO_USER}"
         usbguard generate-policy > /etc/usbguard/rules.conf
         sed -i "/^IPCAllowedGroups=wheel/s/\$/ usbguard/" /etc/usbguard/usbguard-daemon.conf
         restorecon -vR /var/log/usbguard
         systemctl enable --now usbguard.service
-        usbguard add-user "$SUDO_USER"
+        usbguard add-user "${SUDO_USER}"
     '
     if ! rpm-ostree status | grep '●' | grep -Eq 'securecore|iot'; then
         systemctl enable --user --now usbguard-notifier.service

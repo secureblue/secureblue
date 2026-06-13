@@ -6,13 +6,13 @@
 install-steam:
     #!/usr/bin/bash
     need_reboot=false
-    if [ -z "$(pgrep Xwayland)" ] && [ -z "$(pgrep Xorg)" ] ; then
+    if [[ -z "$(pgrep Xwayland)" && -z "$(pgrep Xorg)" ]]; then
         echo "Steam requires X or Xwayland, which your variant of secureblue has disabled by default." | fold -s
         echo "Please run 'ujust set-xwayland on' to re-enable it."
         enable_xwayland_now=""
         read -rp "Would you like to run 'ujust set-xwayland on' now? [Y/n] " enable_xwayland_now
         enable_xwayland_now=${enable_xwayland_now:-y}
-        if [[ "$enable_xwayland_now" == [Yy]* ]]; then
+        if [[ "${enable_xwayland_now}" == [Yy]* ]]; then
             echo "Running 'ujust set-xwayland on'"
             ujust set-xwayland on
             need_reboot=true
@@ -24,21 +24,21 @@ install-steam:
     echo "    2) Distrobox - Install Steam via the steambox (bazzite-arch) distrobox image (Recommended for SteamVR users)" | fold -s
     while true; do
         read -rp "Selection (1 or 2): " method_selection
-        case "$method_selection" in
+        case "${method_selection}" in
             1|2) break ;;
             *) echo "That is not a valid selection." ;;
         esac
     done
 
     echo "" # blank space
-    case "$method_selection" in
+    case "${method_selection}" in
         1)
             echo "Flatpak method selected."
             if ! flatpak remotes --columns=name | grep -q '^flathub$'; then
                 echo "The Steam flatpak is not verified by Valve and only distributed via the unfiltered Flathub repo." | fold -s
                 read -rp "Would you like to enable the unfiltered Flathub repo now? [Y/n] " flathub_unfiltered
                 flathub_unfiltered=${flathub_unfiltered:-y}
-                if [[ "$flathub_unfiltered" == [Yy]* ]]; then
+                if [[ "${flathub_unfiltered}" == [Yy]* ]]; then
                     echo "Enabling the unfiltered Flathub repo."
                     ujust enable-flathub-unfiltered
                 else
@@ -67,7 +67,7 @@ install-steam:
                 container_userns_now=""
                 read -rp "Would you like to run 'ujust set-container-userns on' now? [Y/n] " container_userns_now
                 container_userns_now=${container_userns_now:-y}
-                if [[ "$container_userns_now" == [Yy]* ]]; then
+                if [[ "${container_userns_now}" == [Yy]* ]]; then
                     echo "Running 'ujust set-container-userns on'"
                     ujust set-container-userns on
                 fi
@@ -94,17 +94,17 @@ install-steam:
         echo "You can enable ptrace support by running 'ujust set-ptrace on'."
         enable_ptrace=""
         read -rp "Would you like to enable ptrace support now? [y/N] " enable_ptrace
-        if [[ "$enable_ptrace" == [Yy]* ]]; then
+        if [[ "${enable_ptrace}" == [Yy]* ]]; then
             ujust set-ptrace on
         fi
     fi
 
-    if [[ "$need_reboot" == true ]]; then
+    if [[ "${need_reboot}" == true ]]; then
         echo "One or more of the changes made necessitates a reboot."
         echo "Steam will not work until you reboot."
         reboot_now=""
         read -rp "Would you like to reboot now? [y/N] " reboot_now
-        if [[ "$reboot_now" == [Yy]* ]]; then
+        if [[ "${reboot_now}" == [Yy]* ]]; then
             echo "Rebooting"
             systemctl reboot
         fi

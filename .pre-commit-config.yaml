@@ -1,0 +1,46 @@
+repos:
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: 3e8a8703264a2f4a69428a0aa4dcb512790b2c8c # v6.0.0
+    hooks:
+      - id: end-of-file-fixer
+      - id: trailing-whitespace
+        args: ['--markdown-linebreak-ext=md,patch']
+
+  - repo: https://github.com/zizmorcore/zizmor-pre-commit
+    rev: 9257c6050c0261b8c57e712f632dc4a8010109a9 # v1.25.2
+    hooks:
+      - id: zizmor
+        exclude: "^\\.github/workflows/config/linkspector\\.yml$"
+
+  - repo: https://github.com/astral-sh/ruff-pre-commit
+    rev: 3b3f7c3f57fe9925356faf5fe6230835138be230 # v0.15.17
+    hooks:
+      - id: ruff-check
+      - id: ruff-format
+
+  - repo: https://github.com/astral-sh/ty-pre-commit
+    rev: 918cf00966c1e291e829f7819b7b7c2a0b0ff31f # v0.0.47
+    hooks:
+      - id: ty
+        args: [--isolated]
+
+  - repo: local
+    hooks:
+      # We use a local hook rather than the official ShellCheck pre-commit hook
+      # because the official hook runs as a container image, which won't run on
+      # secureblue in the default system configuration.
+      - id: shellcheck
+        name: ShellCheck
+        description: "Shell script linter: https://www.shellcheck.net/"
+        entry: shellcheck
+        language: system
+        types: [text]
+        types_or: [bash, bats, shell]
+
+      - id: shell-script-shebangs
+        name: check script shebangs
+        description: "Check shell script shebang lines are normalized"
+        entry: awk -f tools/check-shell-script-shebangs.awk
+        language: system
+        types: [text]
+        types_or: [bash, bats, shell]

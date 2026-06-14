@@ -6,7 +6,7 @@ name: trivy
 permissions: {}
 on:
   schedule:
-    - cron: "00 8 * * *" # build at 8:00 UTC every day 
+    - cron: "00 8 * * *" # build at 8:00 UTC every day
                          # 120 minutes after secureblue images start building
   push:
     branches:
@@ -29,7 +29,7 @@ jobs:
       security-events: write # write findings to github
     steps:
       - name: Checkout code
-        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
         with:
           persist-credentials: false
 
@@ -48,7 +48,7 @@ jobs:
           TRIVY_JAVA_DB_REPOSITORY: ghcr.io/aquasecurity/trivy-java-db,public.ecr.aws/aquasecurity/trivy-java-db
 
       - name: Upload Trivy scan results to GitHub Security tab
-        uses: github/codeql-action/upload-sarif@68bde559dea0fdcac2102bfdf6230c5f70eb485e # v4.35.4
+        uses: github/codeql-action/upload-sarif@8aad20d150bbac5944a9f9d289da16a4b0d87c1e # v4.36.2
         with:
           sarif_file: trivy-results.sarif
 

@@ -1,21 +1,10 @@
 enable flatpak-system-update.timer
 
-# Disable NFS daemons
-disable gssproxy.service
-disable nfs-blkmap.service
-disable nfs-client.target
-disable nfs-idmapd.service
-disable nfs-mountd.service
-disable nfs-server.service
-disable nfs-utils.service
-disable nfsdcld.service
-disable rpc-gssd.service
-disable rpc-statd-notify.service
-disable rpc-statd.service
-disable rpc_pipefs.target
-disable rpcbind.service
-disable rpcbind.socket
-disable rpcbind.target
+# Homebrew
+enable brew-proxy-setup.service
+enable brew-update.timer
+enable brew-upgrade.timer
+enable secureblue-brew-proxy-migration.service
 
 # Disable sshd
 disable sshd.service
@@ -49,5 +38,14 @@ disable cups.socket
 # Disable modem manager
 disable ModemManager.service
 
+# Disable iSCSI daemons
+disable iscsid.service
+disable iscsid.socket
+disable iscsiuio.service
+disable iscsiuio.socket
+
 # Enable upgrade-on-boot
 enable upgrade-on-boot.service
+
+# Disable bluetooth service
+disable bluetooth.service

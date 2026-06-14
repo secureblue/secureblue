@@ -83,3 +83,11 @@ set-dhcp-hostname-sending *args:
 set-always-upgrade-on-boot *args:
     #!/bin/sh
     exec /usr/bin/python3 /usr/libexec/secureblue/set_always_upgrade_on_boot.py "$@"
+
+# Configure ptrace support (for anticheat, debugging tools, etc.)
+[positional-arguments]
+set-ptrace *args:
+    #!/bin/sh
+    exec /usr/bin/python3 /usr/libexec/secureblue/set_ptrace.py "$@"
+
+alias set-anticheat-support := set-ptrace

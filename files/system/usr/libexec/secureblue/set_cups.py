@@ -7,7 +7,7 @@
 """Enable or disable CUPS."""
 
 from typing import Final
-import subprocess
+import sandbox
 import sys
 
 import utils
@@ -15,28 +15,7 @@ import utils
 CommandUsageError: Final = utils.CommandUsageError
 ToggleMode: Final = utils.ToggleMode
 parse_basic_toggle_args: Final = utils.parse_basic_toggle_args
-SystemdService: Final = utils.SystemdService
 command_stdout: Final = utils.command_stdout
-
-UNITS: Final[list[str]] = [
-    "cups.service",
-    "cups.socket",
-]
-
-MASK_UNITS: Final[list[str]] = [
-    *UNITS,
-    "avahi-daemon.service",
-    "avahi-daemon.socket",
-]
-
-NOTE: Final[str] = """\
-CUPS enabled.
-avahi-daemon is unmasked & will be started as needed on an on-demand basis.
-
-Note: cups-browsed, the printer discovery service, is still disabled for
-security reasons. New network printers will need to be added manually.
-If you absolutely need network discovery, you can enable the cups-browsed
-service at your own risk. Secureblue strongly recommends against this."""
 
 HELP_MESSAGE: Final[str] = """\
 Enable or disable CUPS.
@@ -65,48 +44,22 @@ def run(mode: ToggleMode) -> int:
         print(HELP_MESSAGE)
         return 0
 
+    cups_function = sandbox.SandboxedFunction(
+        "cups.py", read_write_paths=["/etc/firewalld", "/etc/systemd/system"]
+    )
     cups_status = command_stdout("systemctl", "is-enabled", "cups.service", check=False)
-    cups_enabled = cups_status == "enabled"
 
     match mode:
         case ToggleMode.STATUS:
-            print("Enabled" if cups_enabled else "Disabled")
+            print("Enabled" if cups_status == "enabled" else "Disabled")
         case ToggleMode.ON:
-            if cups_enabled:
+            if cups_status == "enabled":
                 print("CUPS is already enabled.")
             else:
-                subprocess.run(
-                    [
-                        "/usr/bin/firewall-cmd",
-                        "--permanent",
-                        "--add-port=631/tcp",
-                        "--add-port=631/udp",
-                        "--quiet"
-                    ],
-                    check=True
-                )
-                subprocess.run(["/usr/bin/firewall-cmd", "--reload", "--quiet"], check=True)
-                subprocess.run(["/usr/bin/systemctl", "unmask", "--quiet", *MASK_UNITS], check=True)
-                SystemdService(*UNITS).enable_now("--system", "--quiet")
-                subprocess.run(["/usr/bin/systemctl", "daemon-reload"], check=True)
-                print(NOTE)
+                return sandbox.run(cups_function, "on")
         case ToggleMode.OFF:
             if cups_status != "masked":
-                subprocess.run(
-                    [
-                        "/usr/bin/firewall-cmd",
-                        "--permanent",
-                        "--remove-port=631/tcp",
-                        "--remove-port=631/udp",
-                        "--quiet"
-                    ],
-                    check=True
-                )
-                subprocess.run(["/usr/bin/firewall-cmd", "--reload", "--quiet"], check=True)
-                SystemdService(*UNITS).disable_now("--system", "--quiet")
-                subprocess.run(["/usr/bin/systemctl", "mask", "--now", "--quiet", *MASK_UNITS], check=True)
-                subprocess.run(["/usr/bin/systemctl", "daemon-reload"], check=True)
-                print("CUPS & avahi-daemon disabled.")
+                return sandbox.run(cups_function, "off")
             else:
                 print("CUPS is already disabled.")
 

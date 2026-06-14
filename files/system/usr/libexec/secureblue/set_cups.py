@@ -6,10 +6,10 @@
 
 """Enable or disable CUPS."""
 
-import sandbox
 import sys
 from typing import Final
 
+import sandbox
 import utils
 
 CommandUsageError: Final = utils.CommandUsageError

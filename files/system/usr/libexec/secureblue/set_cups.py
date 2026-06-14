@@ -45,7 +45,9 @@ def run(mode: ToggleMode) -> int:
         return 0
 
     cups_function = sandbox.SandboxedFunction(
-        "cups.py", read_write_paths=["/etc/firewalld", "/etc/systemd/system"]
+        "cups.py",
+        read_write_paths=["/etc/firewalld", "/etc/systemd/system"],
+        remove_sandbox_arguments=["--property=InaccessiblePaths=/run/dbus/"],
     )
     cups_status = command_stdout("systemctl", "is-enabled", "cups.service", check=False)
 

@@ -33,7 +33,7 @@ If you absolutely need network discovery, you can enable the cups-browsed
 service at your own risk. Secureblue strongly recommends against this."""
 
 
-def main() -> int
+def main() -> int:
     required_args_count = 2
     if len(sys.argv) != required_args_count:
         return 1

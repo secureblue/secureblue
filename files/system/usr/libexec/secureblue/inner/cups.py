@@ -4,9 +4,10 @@
 #
 # SPDX-License-Identifier: Apache-2.0
 
-from typing import Final
 import subprocess
 import sys
+from typing import Final
+
 import utils
 
 SystemdService: Final = utils.SystemdService

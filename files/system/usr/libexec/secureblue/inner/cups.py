@@ -7,7 +7,6 @@
 from typing import Final
 import subprocess
 import sys
-
 import utils
 
 SystemdService: Final = utils.SystemdService
@@ -40,7 +39,7 @@ def main() -> int:
 
     mode = sys.argv[1]
     match mode:
-        case on:
+        case "on":
             subprocess.run(
                 [
                     "/usr/bin/firewall-cmd",
@@ -57,7 +56,7 @@ def main() -> int:
             subprocess.run(["/usr/bin/systemctl", "daemon-reload"], check=True)
             print(NOTE)
             return 0
-        case off:
+        case "off":
             subprocess.run(
                 [
                     "/usr/bin/firewall-cmd",

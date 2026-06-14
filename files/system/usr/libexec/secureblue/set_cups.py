@@ -9,7 +9,6 @@
 from typing import Final
 import sandbox
 import sys
-
 import utils
 
 CommandUsageError: Final = utils.CommandUsageError
@@ -60,10 +59,10 @@ def run(mode: ToggleMode) -> int:
             else:
                 return sandbox.run(cups_function, "on")
         case ToggleMode.OFF:
-            if cups_status != "masked":
-                return sandbox.run(cups_function, "off")
-            else:
+            if cups_status == "masked":
                 print("CUPS is already disabled.")
+            else:
+                return sandbox.run(cups_function, "off")
 
     return 0
 

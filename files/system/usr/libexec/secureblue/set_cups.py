@@ -16,6 +16,7 @@ CommandUsageError: Final = utils.CommandUsageError
 ToggleMode: Final = utils.ToggleMode
 parse_basic_toggle_args: Final = utils.parse_basic_toggle_args
 SystemdService: Final = utils.SystemdService
+command_stdout: Final = utils.command_stdout
 
 UNITS: Final[list[str]] = [
     "cups.service",
@@ -64,7 +65,8 @@ def run(mode: ToggleMode) -> int:
         print(HELP_MESSAGE)
         return 0
 
-    cups_enabled = SystemdService("cups").is_enabled()
+    cups_status = command_stdout("systemctl", "is-enabled", "cups.service", check=False)
+    cups_enabled = cups_status == "enabled"
 
     match mode:
         case ToggleMode.STATUS:
@@ -89,7 +91,7 @@ def run(mode: ToggleMode) -> int:
                 subprocess.run(["/usr/bin/systemctl", "daemon-reload"], check=True)
                 print(NOTE)
         case ToggleMode.OFF:
-            if cups_enabled:
+            if cups_status != "masked":
                 subprocess.run(
                     [
                         "/usr/bin/firewall-cmd",

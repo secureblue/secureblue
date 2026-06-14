@@ -3,7 +3,9 @@
 # SPDX-License-Identifier: Apache-2.0
 
 # Enable or disable CUPS.
-set-cups:
+set-cups *args:
+    #!/bin/sh
+    exec /usr/bin/python3 /usr/libexec/secureblue/set_cups.py "$@"
 
 # enable a kernel module that is disabled by modprobe.d (requires restart)
 override-enable-module mod_name:

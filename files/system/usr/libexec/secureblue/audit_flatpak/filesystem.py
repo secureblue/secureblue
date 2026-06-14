@@ -40,44 +40,6 @@ ALIASES: dict[str, str] = {
 
 
 @dataclass(frozen=True)
-class DirectoryCheck(PermissionCheck):
-    """Variant of PermissionCheck specific to filesystem permissions."""
-
-    _: KW_ONLY  # Avoids interfering with PermissionCheck positional arguments
-
-    category: str = field(init=False, default="filesystems")
-
-    path: str = field(init=False)
-    """Less ambiguous alias for "permission", which could be mistaken for rwx permissions."""
-
-    description: str | None = None
-    """None shows the exact path, preventing grouping aliases into one recommendation."""
-
-    _comment_already_prefixed: bool = False
-
-    def __post_init__(self) -> None:
-        """Sets derived fields."""
-        object.__setattr__(self, "path", self.permission)
-
-        has_comment = hasattr(self, "comment") and self.comment is not None
-        if not has_comment:
-            return
-        if not self._comment_already_prefixed:
-            template = _("This grants access to {0}.").format(self.comment)
-            object.__setattr__(self, "comment", template)
-            object.__setattr__(self, "_comment_already_prefixed", True)
-
-
-DANGEROUS_DIRECTORY_CHECKS: list[DirectoryCheck] = [
-    DirectoryCheck("host", FAIL, _("all system files")),
-    DirectoryCheck("home", FAIL, _("all user files")),
-    DirectoryCheck("xdg-config", FAIL, _("other applications' configuration files")),
-    DirectoryCheck("xdg-cache", FAIL, _("other applications' cache files")),
-    DirectoryCheck("xdg-data", FAIL, _("other applications' data files")),
-]
-
-
-@dataclass(frozen=True)
 class Filesystem:
     """A fully parsed filesystem permission."""
 
@@ -129,22 +91,6 @@ one can simply do ("host-os" in FilesystemPerms), avoiding iteration.
 """
 
 
-def _check_dangerous_dirs(
-    state: FlatpakPermissionsState, filesystem_perms: FilesystemPerms
-) -> None:
-    for d in DANGEROUS_DIRECTORY_CHECKS:
-        dir_check = d  # avoids reassigning loop variable
-
-        canon_path = dir_check.path
-        if canon_path not in filesystem_perms:
-            continue
-        perm = filesystem_perms[canon_path]
-
-        if perm.is_aliased:
-            dir_check = dataclass_replace(dir_check, permission=perm.aliased_path)
-        state.update(note=dir_check.note(state.name), rec=dir_check.recommendation(state.name))
-
-
 def _check_hardened_malloc_access(
     state: FlatpakPermissionsState, filesystem_perms: FilesystemPerms
 ) -> None:
@@ -192,6 +138,60 @@ def _check_overrides_access(
     state.update(note=note, rec=rec)
 
 
+@dataclass(frozen=True)
+class DirectoryCheck(PermissionCheck):
+    """Variant of PermissionCheck specific to filesystem permissions."""
+
+    _: KW_ONLY  # Avoids interfering with PermissionCheck positional arguments
+
+    category: str = field(init=False, default="filesystems")
+
+    path: str = field(init=False)
+    """Less ambiguous alias for "permission", which could be mistaken for rwx permissions."""
+
+    description: str | None = None
+    """None shows the exact path, preventing grouping aliases into one recommendation."""
+
+    _comment_already_prefixed: bool = False
+
+    def __post_init__(self) -> None:
+        """Sets derived fields."""
+        object.__setattr__(self, "path", self.permission)
+
+        has_comment = hasattr(self, "comment") and self.comment is not None
+        if not has_comment:
+            return
+        if not self._comment_already_prefixed:
+            template = _("This grants access to {0}.").format(self.comment)
+            object.__setattr__(self, "comment", template)
+            object.__setattr__(self, "_comment_already_prefixed", True)
+
+
+DANGEROUS_DIRECTORY_CHECKS: list[DirectoryCheck] = [
+    DirectoryCheck("host", FAIL, _("all system files")),
+    DirectoryCheck("home", FAIL, _("all user files")),
+    DirectoryCheck("xdg-config", FAIL, _("other applications' configuration files")),
+    DirectoryCheck("xdg-cache", FAIL, _("other applications' cache files")),
+    DirectoryCheck("xdg-data", FAIL, _("other applications' data files")),
+]
+
+
+def _check_dangerous_dirs(
+    state: FlatpakPermissionsState, filesystem_perms: FilesystemPerms
+) -> None:
+    for d in DANGEROUS_DIRECTORY_CHECKS:
+        dir_check = d  # avoids reassigning loop variable
+
+        canon_path = dir_check.path
+        if canon_path not in filesystem_perms:
+            continue
+        perm = filesystem_perms[canon_path]
+
+        if perm.is_aliased:
+            dir_check = dataclass_replace(dir_check, permission=perm.aliased_path)
+        state.update(note=dir_check.note(state.name), rec=dir_check.recommendation(state.name))
+
+
 def check_fs_permissions(state: FlatpakPermissionsState, perms: Permissions) -> None:
     filesystem_perms: FilesystemPerms = {}
 
@@ -206,6 +206,6 @@ def check_fs_permissions(state: FlatpakPermissionsState, perms: Permissions) -> 
             continue
         filesystem_perms[perm.canon_path] = perm
 
-    _check_dangerous_dirs(state, filesystem_perms)
-    _check_overrides_access(state, filesystem_perms)
     _check_hardened_malloc_access(state, filesystem_perms)
+    _check_overrides_access(state, filesystem_perms)
+    _check_dangerous_dirs(state, filesystem_perms)

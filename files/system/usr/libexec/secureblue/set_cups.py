@@ -34,10 +34,8 @@ avahi-daemon is unmasked & will be started as needed on an on-demand basis.
 
 Note: cups-browsed, the printer discovery service, is still disabled for
 security reasons. New network printers will need to be added manually.
-
 If you absolutely need network discovery, you can enable the cups-browsed
-service at your own risk. Secureblue strongly recommends against this.
-"""
+service at your own risk. Secureblue strongly recommends against this."""
 
 HELP_MESSAGE: Final[str] = """\
 Enable or disable CUPS.
@@ -75,20 +73,36 @@ def run(mode: ToggleMode) -> int:
             if cups_enabled:
                 print("CUPS is already enabled.")
             else:
-                subprocess.run(["/usr/bin/firewall-cmd", "--permanent", "--add-port=631/tcp"], check=True)
-                subprocess.run(["/usr/bin/firewall-cmd", "--permanent", "--add-port=631/udp"], check=True)
-                subprocess.run(["/usr/bin/firewall-cmd", "--reload"], check=True)
-                subprocess.run(["/usr/bin/systemctl", "unmask", *MASK_UNITS], check=True)
-                SystemdService(*UNITS).enable_now("--system")
+                subprocess.run(
+                    [
+                        "/usr/bin/firewall-cmd",
+                        "--permanent",
+                        "--add-port=631/tcp",
+                        "--add-port=631/udp",
+                        "--quiet"
+                    ],
+                    check=True
+                )
+                subprocess.run(["/usr/bin/firewall-cmd", "--reload", "--quiet"], check=True)
+                subprocess.run(["/usr/bin/systemctl", "unmask", "--quiet", *MASK_UNITS], check=True)
+                SystemdService(*UNITS).enable_now("--system", "--quiet")
                 subprocess.run(["/usr/bin/systemctl", "daemon-reload"], check=True)
                 print(NOTE)
         case ToggleMode.OFF:
             if cups_enabled:
-                subprocess.run(["/usr/bin/firewall-cmd", "--permanent", "--remove-port=631/tcp"], check=True)
-                subprocess.run(["/usr/bin/firewall-cmd", "--permanent", "--remove-port=631/udp"], check=True)
-                subprocess.run(["/usr/bin/firewall-cmd", "--reload"], check=True)
-                SystemdService(*UNITS).disable_now("--system")
-                subprocess.run(["/usr/bin/systemctl", "mask", "--now", *MASK_UNITS], check=True)
+                subprocess.run(
+                    [
+                        "/usr/bin/firewall-cmd",
+                        "--permanent",
+                        "--remove-port=631/tcp",
+                        "--remove-port=631/udp",
+                        "--quiet"
+                    ],
+                    check=True
+                )
+                subprocess.run(["/usr/bin/firewall-cmd", "--reload", "--quiet"], check=True)
+                SystemdService(*UNITS).disable_now("--system", "--quiet")
+                subprocess.run(["/usr/bin/systemctl", "mask", "--now", "--quiet", *MASK_UNITS], check=True)
                 subprocess.run(["/usr/bin/systemctl", "daemon-reload"], check=True)
                 print("CUPS & avahi-daemon disabled.")
             else:

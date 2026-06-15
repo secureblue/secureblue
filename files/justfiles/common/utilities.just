@@ -4,24 +4,6 @@
 #
 # SPDX-License-Identifier: Apache-2.0
 
-uid := `id -u`
-shell := `grep :$(id -u): /etc/passwd | cut -d: -f7`
-
-# Boot into this device's BIOS/UEFI screen.
-bios:
-    #!/usr/bin/sh
-    exec /usr/bin/python3 /usr/libexec/secureblue/bios.py
-
-# Show all messages from this boot
-logs-this-boot:
-    #! /bin/run0 /bin/bash
-    journalctl -b 0
-
-# Show all messages from last boot
-logs-last-boot:
-    #! /bin/run0 /bin/bash
-    journalctl -b -1
-
 # Enroll secureblue's signing key for secure boot - Enter password "secureblue" if prompted
 enroll-secureblue-secure-boot-key:
     #! /bin/run0 /bin/bash

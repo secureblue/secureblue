@@ -5,8 +5,13 @@
 #
 # SPDX-License-Identifier: Apache-2.0
 
+set -euo pipefail
+
 # flatpak stores args in null-terminated fd to hide them from other processes
 # https://github.com/flatpak/xdg-dbus-proxy/issues/77#issuecomment-4366574809
+if ! [[ $1 == "--args" && $2 == +([0-9]) ]]; then
+    exit 1
+fi
 declare -ri args_fd="$2" # bwrap --args [args_fd] -- child
 
 # it's a sealed memfd, so we have to read from and recreate it
@@ -18,6 +23,6 @@ exec {args_fd}>&-
 # fd number must be same, only way to open an fd via variable is eval
 # only expanding a trusted integer provided by flatpak, it's fine
 eval "exec ${args_fd}<" \
-	<(printf '%s\0' "${original_args[@]}" "--tmpfs" "/dev/snd")
+    <(printf '%s\0' "${original_args[@]}" "--tmpfs" "/dev/snd")
 
 exec /usr/bin/bwrap "$@"

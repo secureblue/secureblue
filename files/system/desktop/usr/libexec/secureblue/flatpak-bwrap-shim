@@ -1,0 +1,23 @@
+#!/usr/bin/env -S LD_PRELOAD="libhardened_malloc.so" /usr/bin/bash
+# shellcheck shell=bash # flatpak clears environment, including LD_PRELOAD
+
+# SPDX-FileCopyrightText: Copyright 2026 The Secureblue Authors
+#
+# SPDX-License-Identifier: Apache-2.0
+
+# flatpak stores args in null-terminated fd to hide them from other processes
+# https://github.com/flatpak/xdg-dbus-proxy/issues/77#issuecomment-4366574809
+declare -ri args_fd="$2" # bwrap --args [args_fd] -- child
+
+# it's a sealed memfd, so we have to read from and recreate it
+readarray -u "${args_fd}" -d '' original_args
+
+# close the provided memfd now that we've read it
+exec {args_fd}>&-
+
+# fd number must be same, only way to open an fd via variable is eval
+# only expanding a trusted integer provided by flatpak, it's fine
+eval "exec ${args_fd}<" \
+	<(printf '%s\0' "${original_args[@]}" "--tmpfs" "/dev/snd")
+
+exec /usr/bin/bwrap "$@"

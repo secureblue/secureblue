@@ -12,6 +12,8 @@ import os
 import sys
 from typing import Final
 
+from utils import SystemdService
+
 NETFS_MOD_FILE: Final[str] = "/etc/modprobe.d/99-network-filesystems.conf"
 NETFS_MOD_TEXT: Final[str] = """install nfs /sbin/modprobe --ignore-install nfs
 install nfsv4 /sbin/modprobe --ignore-install nfsv4

@@ -7,13 +7,13 @@
 """Enable or disable CUPS (the printing service)."""
 
 import sys
-from typing import Final, assert_never
+from typing import Final
 
 import sandbox
 from utils import CommandUsageError, ToggleMode, command_stdout, parse_basic_toggle_args
 
 HELP_MESSAGE: Final[str] = """\
-Enable or disable CUPS.
+Enable or disable CUPS (the printing service).
 
 Usage:
 ujust set-cups
@@ -33,45 +33,61 @@ ujust set-cups --help
 """
 
 
-def run(mode: ToggleMode) -> int:
-    mode = ToggleMode(mode)
-    if mode == ToggleMode.HELP:
-        print(HELP_MESSAGE)
+CUPS_FUNCTION = sandbox.SandboxedFunction(
+    "cups.py",
+    read_write_paths=["/etc/firewalld", "/etc/systemd/system"],
+    remove_sandbox_arguments=["--property=InaccessiblePaths=/run/dbus/"],
+)
+CUPS_STATUS = command_stdout("systemctl", "is-enabled", "cups.service", check=False)
+
+
+def cups_print_status() -> None:
+    if CUPS_STATUS == "enabled":
+        print("CUPS (the printing service) is enabled.")
+    elif CUPS_STATUS == "disabled":
+        print("CUPS (the printing service) is disabled, but unmasked.")
+    else:
+        print("CUPS (the printing service) is masked.")
+
+
+def enable_cups() -> int:
+    if CUPS_STATUS == "enabled":
         return 0
 
-    cups_function = sandbox.SandboxedFunction(
-        "cups.py",
-        read_write_paths=["/etc/firewalld", "/etc/systemd/system"],
-        remove_sandbox_arguments=["--property=InaccessiblePaths=/run/dbus/"],
-    )
-    cups_status = command_stdout("systemctl", "is-enabled", "cups.service", check=False)
+    return sandbox.run(CUPS_FUNCTION, "on")
 
-    match mode:
-        case ToggleMode.STATUS:
-            print("Enabled" if cups_status == "enabled" else "Disabled")
-        case ToggleMode.ON:
-            if cups_status == "enabled":
-                print("CUPS is already enabled.")
-            else:
-                return sandbox.run(cups_function, "on")
-        case ToggleMode.OFF:
-            if cups_status == "masked":
-                print("CUPS is already disabled.")
-            else:
-                return sandbox.run(cups_function, "off")
-        case _ as unreachable:
-            assert_never(unreachable)
 
-    return 0
+def disable_cups() -> int:
+    if CUPS_STATUS == "disabled":
+        print("CUPS (the printing service) is already disabled.")
+        return 0
+
+    return sandbox.run(CUPS_FUNCTION, "off")
 
 
 def main() -> int:
     try:
-        mode = parse_basic_toggle_args(prompt="Would you like CUPS to be enabled?")
+        mode = parse_basic_toggle_args(
+            prompt="Would you like CUPS (the printing service) to be enabled?"
+        )
     except CommandUsageError as e:
         print(f"Usage error: {e}. See usage with --help.")
         return 2
-    return run(mode)
+
+    match mode:
+        case ToggleMode.ON:
+            return enable_cups()
+        case ToggleMode.OFF:
+            return disable_cups()
+        case ToggleMode.STATUS:
+            print(
+                "CUPS (the printing service) is enabled."
+                if CUPS_STATUS == "enabled"
+                else "CUPS (the printing service) is disabled."
+            )
+        case ToggleMode.HELP:
+            print(HELP_MESSAGE)
+    return 0
 
 
 if __name__ == "__main__":

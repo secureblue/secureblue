@@ -80,7 +80,7 @@ def main() -> int:
                 print("CUPS & avahi-daemon disabled.")
                 return 0
             case _:
-                print("Please provide a valid argument.")
+                print("Please provide a valid argument. See usage with --help.")
                 return 1
     except subprocess.CalledProcessError:
         print("An unexpected error occured.")

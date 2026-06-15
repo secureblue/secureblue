@@ -38,25 +38,29 @@ CUPS_FUNCTION = sandbox.SandboxedFunction(
     read_write_paths=["/etc/firewalld", "/etc/systemd/system"],
     remove_sandbox_arguments=["--property=InaccessiblePaths=/run/dbus/"],
 )
-CUPS_STATUS = command_stdout("systemctl", "is-enabled", "cups.service", check=False)
+
+
+def cups_status() -> str:
+    return command_stdout("systemctl", "is-enabled", "cups.service", check=False)
 
 
 def cups_print_status() -> None:
-    if CUPS_STATUS == "enabled":
+    if cups_status() == "enabled":
         print("CUPS (the printing service) is enabled.")
     else:
         print("CUPS (the printing service) is disabled.")
 
 
 def enable_cups() -> int:
-    if CUPS_STATUS == "enabled":
+    if cups_status() == "enabled":
+        print("CUPS (the printing service) is already enabled.")
         return 0
 
     return sandbox.run(CUPS_FUNCTION, "on")
 
 
 def disable_cups() -> int:
-    if CUPS_STATUS == "masked":
+    if cups_status() == "masked":
         print("CUPS (the printing service) is already disabled.")
         return 0
 
@@ -80,7 +84,7 @@ def main() -> int:
         case ToggleMode.STATUS:
             print(
                 "CUPS (the printing service) is enabled."
-                if CUPS_STATUS == "enabled"
+                if cups_status() == "enabled"
                 else "CUPS (the printing service) is disabled."
             )
         case ToggleMode.HELP:

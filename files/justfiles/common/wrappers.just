@@ -32,8 +32,7 @@ set-bluetooth-modules *args:
 
 # Enable or disable CUPS (the printing service).
 [positional-arguments]
-set-cups *args:
-    #!/bin/sh
+@set-cups *args:
     exec /usr/bin/python3 /usr/libexec/secureblue/set_cups.py "$@"
 
 # Sets webcam kernel modules on/off (requires reboot)

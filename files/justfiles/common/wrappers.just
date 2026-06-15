@@ -10,10 +10,19 @@ audit-secureblue *args:
 
 # Run a non-flatpak application with standard memory allocator
 [no-cd]
+[no-exit-message]
 [positional-arguments]
 with-standard-malloc *args:
     #!/bin/sh
-    LD_PRELOAD='' exec "$@"
+    if [ "$#" -eq 0 ] || [ "$1" = '--help' ]; then
+        echo 'Usage: ujust with-standard-malloc COMMAND [ARGS...]'
+        echo 'Runs COMMAND with the standard memory allocator instead of hardened_malloc.'
+        exit
+    fi
+    if [ "${1-}" = '--' ]; then
+        shift
+    fi
+    LD_PRELOAD='' exec -- "$@"
 
 # Sets bluetooth kernel modules on/off (requires reboot)
 [positional-arguments]

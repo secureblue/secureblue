@@ -8,6 +8,7 @@ on:
   pull_request:
     paths:
       - 'files/system/**'
+      - 'files/justfiles/**'
       - '**.sh'
       - '.shellcheckrc'
       - '.github/workflows/shell-script-lint.yml'

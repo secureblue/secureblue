@@ -71,6 +71,7 @@ def main() -> int:
             os.remove(NETFS_MOD_FILE)
 
             for netfs_service in netfs_services:
+                SystemdService(netfs_service).disable_now()
                 SystemdService(netfs_service).mask()
 
             print("Network filesystems has been disabled. Reboot for effect.")

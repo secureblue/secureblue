@@ -35,17 +35,42 @@ def main() -> int:
     required_args_count = 2
     if len(sys.argv) != required_args_count:
         return 1
-
+    netfs_services = [
+        "nfs-idmapd.service",
+        "nfs-client.target",
+        "nfs-blkmap.service",
+        "nfs-mountd.service",
+        "nfsdcld.service",
+        "nfs-server.service",
+        "nfs-utils.service",
+        "rpc-gssd.service",
+        "rpc-statd-notify.service",
+        "rpc-statd.service",
+        "rpcbind.service",
+        "rpcbind.socket",
+        "rpcbind.target",
+        "rpc_pipefs.target",
+        "var-lib-nfs-rpc_pipefs.mount",
+        "gssproxy.service"
+    ]
     mode = sys.argv[1]
     match mode:
         case "on":
             with open(NETFS_MOD_FILE, "w", encoding="utf8") as fd:
                 fd.write(NETFS_MOD_TEXT)
             os.chmod(NETFS_MOD_FILE, 0o644)
+
+            for netfs_service in netfs_services:
+                SystemdService(netfs_service).unmask()
+
             print("Network filesystems has been enabled. Reboot for effect.")
             return 0
         case "off":
             os.remove(NETFS_MOD_FILE)
+
+            for netfs_service in netfs_services:
+                SystemdService(netfs_service).mask()
+
             print("Network filesystems has been disabled. Reboot for effect.")
             return 0
         case _:

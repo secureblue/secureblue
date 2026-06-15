@@ -44,10 +44,8 @@ CUPS_STATUS = command_stdout("systemctl", "is-enabled", "cups.service", check=Fa
 def cups_print_status() -> None:
     if CUPS_STATUS == "enabled":
         print("CUPS (the printing service) is enabled.")
-    elif CUPS_STATUS == "disabled":
-        print("CUPS (the printing service) is disabled, but unmasked.")
     else:
-        print("CUPS (the printing service) is masked.")
+        print("CUPS (the printing service) is disabled.")
 
 
 def enable_cups() -> int:
@@ -58,7 +56,7 @@ def enable_cups() -> int:
 
 
 def disable_cups() -> int:
-    if CUPS_STATUS == "disabled":
+    if CUPS_STATUS == "masked":
         print("CUPS (the printing service) is already disabled.")
         return 0
 

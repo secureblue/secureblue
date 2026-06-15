@@ -12,6 +12,7 @@ scripts:
   - setup-dnsconfd.sh
   - authselect.sh
   - disablegeoclue.sh
+  - disablehomed.sh
   - disable-sshd-vsock.sh
   - disablenfsdaemons.sh
   - removefedoraflatpakremoteservice.sh

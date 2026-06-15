@@ -8,10 +8,6 @@ import subprocess
 import sys
 from typing import Final
 
-import utils
-
-SystemdService: Final = utils.SystemdService
-
 UNITS: Final[list[str]] = [
     "cups.service",
     "cups.socket",
@@ -47,13 +43,13 @@ def main() -> int:
                     "--permanent",
                     "--add-port=631/tcp",
                     "--add-port=631/udp",
-                    "--quiet"
+                    "--quiet",
                 ],
-                check=True
+                check=True,
             )
             subprocess.run(["/usr/bin/firewall-cmd", "--reload", "--quiet"], check=True)
             subprocess.run(["/usr/bin/systemctl", "unmask", "--quiet", *MASK_UNITS], check=True)
-            SystemdService(*UNITS).enable_now("--system", "--quiet")
+            subprocess.run(["/usr/bin/systemctl", "enable", "--now", "--quiet", *UNITS], check=True)
             subprocess.run(["/usr/bin/systemctl", "daemon-reload"], check=True)
             print(NOTE)
             return 0
@@ -64,16 +60,23 @@ def main() -> int:
                     "--permanent",
                     "--remove-port=631/tcp",
                     "--remove-port=631/udp",
-                    "--quiet"
+                    "--quiet",
                 ],
-                check=True
+                check=True,
             )
             subprocess.run(["/usr/bin/firewall-cmd", "--reload", "--quiet"], check=True)
-            SystemdService(*UNITS).disable_now("--system", "--quiet")
-            subprocess.run(["/usr/bin/systemctl", "mask", "--now", "--quiet", *MASK_UNITS], check=True)
+            subprocess.run(
+                ["/usr/bin/systemctl", "disable", "--now", "--quiet", *UNITS], check=True
+            )
+            subprocess.run(
+                ["/usr/bin/systemctl", "mask", "--now", "--quiet", *MASK_UNITS], check=True
+            )
             subprocess.run(["/usr/bin/systemctl", "daemon-reload"], check=True)
             print("CUPS & avahi-daemon disabled.")
             return 0
+        case _:
+            print("Please provide a valid option.")
+            return 1
 
 
 if __name__ == "__main__":

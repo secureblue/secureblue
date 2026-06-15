@@ -21,7 +21,7 @@ set-bluetooth-modules *args:
     #!/bin/sh
     exec /usr/bin/python3 /usr/libexec/secureblue/bluetooth_main.py "$@"
 
-# Enable or disable CUPS.
+# Enable or disable CUPS (the printing service).
 [positional-arguments]
 set-cups *args:
     #!/bin/sh

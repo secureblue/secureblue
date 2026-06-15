@@ -4,18 +4,13 @@
 #
 # SPDX-License-Identifier: Apache-2.0
 
-"""Enable or disable CUPS."""
+"""Enable or disable CUPS (the printing service)."""
 
 import sys
-from typing import Final
+from typing import Final, assert_never
 
 import sandbox
-import utils
-
-CommandUsageError: Final = utils.CommandUsageError
-ToggleMode: Final = utils.ToggleMode
-parse_basic_toggle_args: Final = utils.parse_basic_toggle_args
-command_stdout: Final = utils.command_stdout
+from utils import CommandUsageError, ToggleMode, command_stdout, parse_basic_toggle_args
 
 HELP_MESSAGE: Final[str] = """\
 Enable or disable CUPS.
@@ -64,6 +59,8 @@ def run(mode: ToggleMode) -> int:
                 print("CUPS is already disabled.")
             else:
                 return sandbox.run(cups_function, "off")
+        case _ as unreachable:
+            assert_never(unreachable)
 
     return 0
 

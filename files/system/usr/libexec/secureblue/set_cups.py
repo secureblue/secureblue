@@ -44,11 +44,12 @@ def cups_status() -> str:
     return command_stdout("systemctl", "is-enabled", "cups.service", check=False)
 
 
-def cups_print_status() -> None:
+def cups_print_status() -> int:
     if cups_status() == "enabled":
         print("CUPS (the printing service) is enabled.")
     else:
         print("CUPS (the printing service) is disabled.")
+    return 0
 
 
 def enable_cups() -> int:
@@ -82,11 +83,7 @@ def main() -> int:
         case ToggleMode.OFF:
             return disable_cups()
         case ToggleMode.STATUS:
-            print(
-                "CUPS (the printing service) is enabled."
-                if cups_status() == "enabled"
-                else "CUPS (the printing service) is disabled."
-            )
+            return cups_print_status()
         case ToggleMode.HELP:
             print(HELP_MESSAGE)
         case _ as unreachable:

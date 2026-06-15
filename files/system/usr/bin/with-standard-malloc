@@ -1,0 +1,21 @@
+#!/usr/bin/bash
+
+# SPDX-FileCopyrightText: Copyright 2025-2026 The Secureblue Authors
+#
+# SPDX-License-Identifier: Apache-2.0
+
+set -euo pipefail
+
+usage() {
+    echo 'Usage: with-standard-malloc COMMAND [ARGS...]'
+    echo 'Runs COMMAND with the standard memory allocator instead of hardened_malloc.'
+    exit
+}
+
+case "${1-}" in
+    ''|--help) usage ;;
+    --) shift ;;
+    *) ;;
+esac
+
+LD_PRELOAD='' exec -- "$@"

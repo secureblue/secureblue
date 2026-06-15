@@ -7,7 +7,7 @@
 """Enable or disable CUPS (the printing service)."""
 
 import sys
-from typing import Final
+from typing import Final, assert_never
 
 import sandbox
 from utils import CommandUsageError, ToggleMode, command_stdout, parse_basic_toggle_args
@@ -85,6 +85,8 @@ def main() -> int:
             )
         case ToggleMode.HELP:
             print(HELP_MESSAGE)
+        case _ as unreachable:
+            assert_never(unreachable)
     return 0
 
 

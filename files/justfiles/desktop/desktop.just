@@ -4,18 +4,15 @@
 
 # Enable or disable Homebrew installation
 [positional-arguments]
-set-brew *args:
-    #!/bin/sh
+@set-brew *args:
     exec /usr/bin/python3 /usr/libexec/secureblue/brew_main.py "$@"
 
 # Toggle libvirt daemons on or off
 [positional-arguments]
-set-libvirt-daemons *args:
-    #!/bin/sh
+@set-libvirt-daemons *args:
     exec /usr/bin/python3 /usr/libexec/secureblue/set_libvirt_daemons.py "$@"
 
 # Enable or disable Xwayland
 [positional-arguments]
-set-xwayland *args:
-    #!/bin/sh
+@set-xwayland *args:
     exec /usr/bin/python3 /usr/libexec/secureblue/set_xwayland.py "$@"

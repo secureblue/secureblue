@@ -6,23 +6,6 @@ enable brew-update.timer
 enable brew-upgrade.timer
 enable secureblue-brew-proxy-migration.service
 
-# Disable NFS daemons
-disable gssproxy.service
-disable nfs-blkmap.service
-disable nfs-client.target
-disable nfs-idmapd.service
-disable nfs-mountd.service
-disable nfs-server.service
-disable nfs-utils.service
-disable nfsdcld.service
-disable rpc-gssd.service
-disable rpc-statd-notify.service
-disable rpc-statd.service
-disable rpc_pipefs.target
-disable rpcbind.service
-disable rpcbind.socket
-disable rpcbind.target
-
 # Disable sshd
 disable sshd.service
 disable sshd.socket

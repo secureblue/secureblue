@@ -72,7 +72,6 @@ def disable_units() -> None:
 
 
 def main() -> int:
-    """Set or remove the network filesystems module override"""
     required_args_count = 2
     if len(sys.argv) != required_args_count:
         return 1

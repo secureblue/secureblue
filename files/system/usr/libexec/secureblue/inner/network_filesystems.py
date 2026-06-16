@@ -4,18 +4,14 @@
 #
 # SPDX-License-Identifier: Apache-2.0
 
-"""
-The sandboxed network filesystems toggle function
-"""
-
 import os
 import subprocess
 import sys
 from typing import Final
 
-NETFS_MODULES_FILE: Final[str] = "/etc/modprobe.d/99-network-filesystems.conf"
+MODULES_FILE: Final[str] = "/etc/modprobe.d/99-network-filesystems.conf"
 
-NETFS_MODULES: Final[list[str]] = [
+MODULES: Final[list[str]] = [
     "nfsv4",
     "nfs_acl",
     "nfs_localio",
@@ -31,7 +27,7 @@ NETFS_MODULES: Final[list[str]] = [
     "ksmbd",
 ]
 
-NETFS_SERVICES: Final[list[str]] = [
+UNITS: Final[list[str]] = [
     "nfs-idmapd.service",
     "nfs-client.target",
     "nfs-blkmap.service",
@@ -50,35 +46,55 @@ NETFS_SERVICES: Final[list[str]] = [
     "gssproxy.service"
 ]
 
+NOTE: Final[str] = """\
+Network filesystems unmasked.
+Enable the services as needed.
+
+Note: Secureblue strongly recommends against enabling all network filesystems services at once.
+Only enable the services you need for your use case."""
+
+
+def enable_units() -> None:
+    with open(MODULES_FILE, "w", encoding="utf8") as fd:
+        for module in MODULES:
+            fd.write(f"install {module} /sbin/modprobe --ignore-install {module}\n")
+    os.chmod(MODULES_FILE, 0o644)
+
+    subprocess.run(["/usr/bin/systemctl", "unmask", "--quiet", *UNITS], check=True)
+    subprocess.run(["/usr/bin/systemctl", "daemon-reload"], check=True)
+
+
+def disable_units() -> None:
+    os.remove(MODULES_FILE)
+
+    subprocess.run(["/usr/bin/systemctl", "disable", "--now", "--quiet", *UNITS], check=True)
+    subprocess.run(["/usr/bin/systemctl", "mask", "--now", "--quiet", *UNITS], check=True)
+    subprocess.run(["/usr/bin/systemctl", "daemon-reload"], check=True)
+
 
 def main() -> int:
     """Set or remove the network filesystems module override"""
     required_args_count = 2
     if len(sys.argv) != required_args_count:
         return 1
-    mode = sys.argv[1]
-    match mode:
-        case "on":
-            with open(NETFS_MODULES_FILE, "w", encoding="utf8") as fd:
-                for module in NETFS_MODULES:
-                    fd.write(f"install {module} /sbin/modprobe --ignore-install {module}\n")
-            os.chmod(NETFS_MODULES_FILE, 0o644)
 
-            subprocess.run(["/usr/bin/systemctl", "unmask", "--", *NETFS_SERVICES], check=True)
-
-            print("Network filesystems has been enabled. Reboot for effect.")
-            return 0
-        case "off":
-            os.remove(NETFS_MODULES_FILE)
-
-            subprocess.run(["/usr/bin/systemctl", "disable", "--now", "--", *NETFS_SERVICES], check=True)
-            subprocess.run(["/usr/bin/systemctl", "mask", "--", *NETFS_SERVICES], check=True)
-
-            print("Network filesystems has been disabled. Reboot for effect.")
-            return 0
-        case _:
-            print("Invalid inner script argument.")
-            return 1
+    mode = sys.argv[1].casefold()
+    try:
+        match mode:
+            case "on":
+                enable_units()
+                print(NOTE)
+                return 0
+            case "off":
+                disable_units()
+                print("Network filesystems disabled.")
+                return 0
+            case _:
+                print("Please provide a valid argument (on/off).")
+                return 1
+    except subprocess.CalledProcessError:
+        print("An unexpected error occured.")
+        return 1
 
 
 if __name__ == "__main__":

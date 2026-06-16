@@ -345,15 +345,27 @@ class SystemdService:
     enable_now = partialmethod(_do_systemctl_action, "enable", "--now")
     stop = partialmethod(_do_systemctl_action, "stop")
     start = partialmethod(_do_systemctl_action, "start")
+    reload = partialmethod(_do_systemctl_action, "reload")
     mask = partialmethod(_do_systemctl_action, "mask")
     unmask = partialmethod(_do_systemctl_action, "unmask")
 
-    def is_enabled(self) -> bool:
-        """Returns whether the systemd service is enabled."""
+    def _check_systemctl_action(self, *actions: str) -> bool:
+        """Returns whether a systemctl check action succeeds."""
+        if self.is_user:
+            actions = ("--user", *actions)
+
         # nosemgrep: dangerous-subprocess-use-audit
         systemctl = subprocess.run(  # nosec
-            ["/usr/bin/systemctl", "is-enabled", "--quiet", self.name],
+            ["/usr/bin/systemctl", *actions, self.name],
             check=False,
             capture_output=True,
         )
         return not systemctl.returncode
+
+    def is_enabled(self) -> bool:
+        """Returns whether the systemd service is enabled."""
+        return self._check_systemctl_action("is-enabled", "--quiet")
+
+    def is_active(self) -> bool:
+        """Returns whether the systemd service is active."""
+        return self._check_systemctl_action("is-active", "--quiet")

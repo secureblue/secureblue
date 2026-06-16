@@ -6,14 +6,16 @@
 
 """The sandboxed SSH password authentication toggle function."""
 
-import subprocess
 import sys
 from pathlib import Path
 from typing import Final
 
+from utils import SystemdService
+
 SSH_AUTH_DROPIN: Final[Path] = Path(
     "/etc/ssh/sshd_config.d/49-secureblue-disable-password-auth.conf"
 )
+SSHD_SERVICE: Final[SystemdService] = SystemdService("sshd.service")
 SSH_AUTH_DROPIN_TEXT: Final[str] = """# This file is managed by secureblue.
 PasswordAuthentication no
 KbdInteractiveAuthentication no
@@ -22,22 +24,11 @@ KbdInteractiveAuthentication no
 
 def reload_sshd() -> int:
     """Reload sshd if it is currently active."""
-    is_active = subprocess.run(
-        ["/usr/bin/systemctl", "is-active", "--quiet", "sshd.service"],
-        check=False,
-        stdout=subprocess.DEVNULL,
-        stderr=subprocess.DEVNULL,
-    )
-    if is_active.returncode != 0:
+    if not SSHD_SERVICE.is_active():
         return 0
 
-    systemctl = subprocess.run(
-        ["/usr/bin/systemctl", "reload", "sshd.service"],
-        check=False,
-    )
-    if systemctl.returncode != 0:
-        print("Failed to reload sshd.service.", file=sys.stderr)
-    return systemctl.returncode
+    SSHD_SERVICE.reload()
+    return 0
 
 
 def disable_password_auth() -> int:

@@ -4,96 +4,92 @@
 #
 # SPDX-License-Identifier: Apache-2.0
 
-"""
-The network filesystem toggle implementation for ujust
-"""
+"""Enable or disable support for network filesystems (NFS, CIFS)."""
 
 import sys
-from pathlib import Path
-from typing import Final
+from typing import Final, assert_never
 
 import sandbox
-from utils import (
-    ask_yes_no,
-    is_module_loaded,
-)
+from utils import CommandUsageError, ToggleMode, command_stdout, parse_basic_toggle_args
 
-NETFS_HELP: Final[str] = """
-This python script toggles if network filesystems modules is enabled by
-creating or deleting a modprobe file at
-"/etc/modprobe.d/99-network-filesystems.conf" to disable or enable the kernel modules
-needed for network filesystems. Note this change only takes affect upon reboot.
+HELP_MESSAGE: Final[str] = """\
+Enable or disable support for network filesystems (NFS, CIFS).
 
-usage:
+Usage:
 ujust set-network-filesystem-modules
-    Turns network filesystems modules on or off interactively based on the user's preference.
+    Enables or disables interactively based on the user's preference.
 
 ujust set-network-filesystem-modules on
-    Turns network filesystems modules on, does nothing if already on.
+    Enables network filesystems; does nothing if already on.
 
 ujust set-network-filesystem-modules off
-    Turns network filesystems modules off, does nothing if already off.
+    Disables network filesystems; does nothing if already off.
 
 ujust set-network-filesystem-modules status
-    Reports if network filesystems modules is set on or off.
+    Reports if network filesystems is enabled or disabled.
 
 ujust set-network-filesystem-modules --help
     Prints this message.
 """
 
-NETFS_MOD_DIR: Final[str] = "/etc/modprobe.d"
-NETFS_MOD_FILE: Final[str] = f"{NETFS_MOD_DIR}/99-network-filesystems.conf"
+
+NETFS_MODULE_DIR: Final[str] = "/etc/modprobe.d"
+NETFS_MODULE_FILE: Final[str] = f"{NETFS_MODULE_DIR}/99-network-filesystems.conf"
+
+NETFS_FUNCTION = sandbox.SandboxedFunction(
+    "network_filesystems.py",
+    read_write_paths=[NETFS_MODULE_DIR],
+)
 
 
-def print_status(enabled_by_file: bool) -> None:
-    """Print the current file and runtime status"""
+def network_filesystems_status() -> str:
+    return "enabled" if Path(NETFS_MODULE_FILE).exists() else "disabled"
 
-    network_filesystems_currently_enabled = is_module_loaded("nfs") or is_module_loaded("cifs")
-    file_matches_sys = "still " if enabled_by_file == network_filesystems_currently_enabled else ""
-    cur_status = "enabled" if network_filesystems_currently_enabled else "disabled"
-    file_status = "enabled" if enabled_by_file else "disabled"
 
-    print(
-        f"Network filesystems is currently {cur_status}, and after a reboot will",
-        f"{file_matches_sys}be {file_status}",
-    )
+def network_filesystems_print_status() -> int:
+    if network_filesystems_status() == "enabled":
+        print("Network filesystems is enabled.")
+    else:
+        print("Network filesystems is disabled.")
+    return 0
+
+
+def enable_network_filesystems() -> int:
+    if network_filesystems_status() == "enabled":
+        print("Network filesystems is already enabled.")
+        return 0
+
+    return sandbox.run(NETFS_FUNCTION, "on")
+
+
+def disable_network_filesystems() -> int:
+    if network_filesystems_status() == "disabled":
+        print("Network filesystems is already disabled.")
+        return 0
+
+    return sandbox.run(NETFS_FUNCTION, "off")
 
 
 def main() -> int:
-    """Handle the arguments and execute the network filesystem toggle"""
+    try:
+        mode = parse_basic_toggle_args(
+            prompt="Would you like to enable network filesystems (NFS, CIFS)?"
+        )
+    except CommandUsageError as e:
+        print(f"Usage error: {e}. See usage with --help.")
+        return 2
 
-    argc_interactive = 1
-    argc_on_off = 2
-
-    if len(sys.argv) == argc_interactive:
-        # Ask interactively.
-        mode = "on" if ask_yes_no("Would you like to load the network filesystem modules?") else "off"
-    elif len(sys.argv) == argc_on_off:
-        # Take mode from first argument, i.e. 'on' or 'off'.
-        mode = sys.argv[1].casefold()
-    else:
-        print("Too many options specified, see usage with --help.", file=sys.stderr)
-        return 1
-
-    enabled_by_file = Path(NETFS_MOD_FILE).exists()
-    network_filesystems_function = sandbox.SandboxedFunction(
-        "network_filesystems.py", read_write_paths=[NETFS_MOD_DIR]
-    )
     match mode:
-        case "on" | "off":
-            target_state_enabled = mode == "on"
-            state_already_set = target_state_enabled == enabled_by_file
-            if state_already_set:
-                print_status(enabled_by_file)
-            else:
-                return sandbox.run(network_filesystems_function, mode)
-        case "status":
-            print_status(enabled_by_file)
-        case "--help":
-            print(NETFS_HELP)
-        case _:
-            print("Invalid option selected. Try --help.")
-            return 1
+        case ToggleMode.ON:
+            return enable_network_filesystems()
+        case ToggleMode.OFF:
+            return disable_network_filesystems()
+        case ToggleMode.STATUS:
+            return print_status()
+        case ToggleMode.HELP:
+            print(HELP_MESSAGE)
+        case _ as unreachable:
+            assert_never(unreachable)
     return 0
 
 

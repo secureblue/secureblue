@@ -9,6 +9,7 @@ The sandboxed network filesystems toggle function
 """
 
 import os
+import subprocess
 import sys
 from typing import Final
 

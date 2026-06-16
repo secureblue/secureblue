@@ -1194,12 +1194,12 @@ def audit_print_services():
             status = status.downgrade_to(WARN)
             note = _("CUPS (the printing service) is enabled.")
             notes.append(Note(note, WARN))
-            recs.append("\n".join([note, _("To fix this, run:"), "$ ujust toggle-cups"]))
+            recs.append("\n".join([note, _("To fix this, run:"), "$ ujust set-cups off"]))
         case "disabled":
             status = status.downgrade_to(INFO)
             note = _("CUPS (the printing service) is disabled, but unmasked.")
             notes.append(Note(note, INFO))
-            recs.append("\n".join([note, _("To fix this, run:"), "$ ujust toggle-cups"]))
+            recs.append("\n".join([note, _("To fix this, run:"), "$ ujust set-cups off"]))
         case "masked":
             pass
         case _:

@@ -56,8 +56,7 @@ Only enable the services you need for your use case."""
 
 def enable_units() -> None:
     with open(MODULES_FILE, "w", encoding="utf8") as fd:
-        for module in MODULES:
-            fd.write(f"install {module} /sbin/modprobe --ignore-install {module}\n")
+        fd.writelines(f"install {module} /sbin/modprobe --ignore-install {module}\n" for module in MODULES)
     os.chmod(MODULES_FILE, 0o644)
 
     subprocess.run(["/usr/bin/systemctl", "unmask", "--quiet", *UNITS], check=True)

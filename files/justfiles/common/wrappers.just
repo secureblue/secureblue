@@ -21,7 +21,7 @@
 
 # Sets network filesystem kernel modules on/off (requires reboot)
 [positional-arguments]
-set-network-filesystem-modules *args:
+@set-network-filesystem-modules *args:
     #!/bin/sh
     exec /usr/bin/python3 /usr/libexec/secureblue/network_filesystems_main.py "$@"
 

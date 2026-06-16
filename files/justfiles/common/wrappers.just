@@ -19,6 +19,11 @@
 @set-bluetooth-modules *args:
     exec /usr/bin/python3 /usr/libexec/secureblue/bluetooth_main.py "$@"
 
+# Enable or disable CUPS (the printing service).
+[positional-arguments]
+@set-cups *args:
+    exec /usr/bin/python3 /usr/libexec/secureblue/set_cups.py "$@"
+
 # Sets webcam kernel modules on/off (requires reboot)
 [positional-arguments]
 @set-webcam-modules *args:

@@ -2,40 +2,6 @@
 #
 # SPDX-License-Identifier: Apache-2.0
 
-# Toggle the cups service on/off
-toggle-cups:
-    #! /bin/run0 /bin/bash
-    if systemctl is-enabled --quiet cups; then
-        firewall-cmd --permanent --remove-port=631/tcp
-        firewall-cmd --permanent --remove-port=631/udp
-        firewall-cmd --reload
-        systemctl disable --now cups.socket
-        systemctl mask cups.socket
-        systemctl disable --now cups.service
-        systemctl mask cups.service
-        systemctl mask --now avahi-daemon.socket
-        systemctl mask --now avahi-daemon.service
-        systemctl daemon-reload
-        echo "CUPS & avahi-daemon disabled"
-    else
-        firewall-cmd --permanent --add-port=631/tcp
-        firewall-cmd --permanent --add-port=631/udp
-        firewall-cmd --reload
-        systemctl unmask cups.socket
-        systemctl unmask cups.service
-        systemctl enable --now cups.socket
-        systemctl enable --now cups.service
-        systemctl unmask avahi-daemon.service
-        systemctl unmask avahi-daemon.socket
-        systemctl daemon-reload
-        echo "CUPS enabled."
-        echo "avahi-daemon is unmasked & will be started as needed on an on-demand basis."
-        echo "Note: cups-browsed, the printer discovery service, is still disabled for"
-        echo "    security reasons. New network printers will need to be added manually."
-        echo "    If you absolutely need network discovery, you can enable the cups-browsed"
-        echo "    service at your own risk. Secureblue strongly recommends against this."
-    fi
-
 # enable a kernel module that is disabled by modprobe.d (requires restart)
 override-enable-module mod_name:
     #! /bin/run0 /bin/bash

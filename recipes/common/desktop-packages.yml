@@ -21,6 +21,7 @@ install:
     - bazaar
     - homebrew
     - brew-proxy
+    - brew-proxy-selinux
     - firewall-config
 
     # yubikey enablement

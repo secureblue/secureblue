@@ -4,7 +4,7 @@
 
 modules:
   - type: dnf
-    source: ghcr.io/blue-build/modules@sha256:d0e85328fcfa4182c33d3920854001d0b7efbbd341ed6f45bc1ec26c0751889d
+    source: ghcr.io/blue-build/modules@sha256:0b74310a559451a6faf9b33f583855dfe5b2cdbe5d90603f2869dd4867c9b485
     install:
       install-weak-deps: false
       packages:
@@ -12,7 +12,7 @@ modules:
         - pipewire-libs-extra
 
   - type: dnf
-    source: ghcr.io/blue-build/modules@sha256:d0e85328fcfa4182c33d3920854001d0b7efbbd341ed6f45bc1ec26c0751889d
+    source: ghcr.io/blue-build/modules@sha256:0b74310a559451a6faf9b33f583855dfe5b2cdbe5d90603f2869dd4867c9b485
     replace:
       - from-repo: fedora-multimedia
         skip-unavailable: true
@@ -28,7 +28,7 @@ modules:
           - mesa-vulkan-drivers
 
   - type: dnf
-    source: ghcr.io/blue-build/modules@sha256:d0e85328fcfa4182c33d3920854001d0b7efbbd341ed6f45bc1ec26c0751889d
+    source: ghcr.io/blue-build/modules@sha256:0b74310a559451a6faf9b33f583855dfe5b2cdbe5d90603f2869dd4867c9b485
     replace:
       - from-repo: fedora-multimedia
         skip-unavailable: true

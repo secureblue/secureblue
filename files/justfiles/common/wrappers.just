@@ -24,6 +24,11 @@
 @set-network-filesystem-modules *args:
     #!/bin/sh
     exec /usr/bin/python3 /usr/libexec/secureblue/network_filesystems_main.py "$@"
+    
+# Enable or disable CUPS (the printing service).
+[positional-arguments]
+@set-cups *args:
+    exec /usr/bin/python3 /usr/libexec/secureblue/set_cups.py "$@"
 
 # Sets webcam kernel modules on/off (requires reboot)
 [positional-arguments]

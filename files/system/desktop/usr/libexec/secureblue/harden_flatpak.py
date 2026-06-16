@@ -12,7 +12,7 @@ import subprocess
 import sys
 from typing import TYPE_CHECKING, Final
 
-import inquirer
+from flatpak_utils import flatpak_override, installed_app_list, resolve_app_id
 
 if TYPE_CHECKING:
     from files.system.usr.libexec.secureblue import utils
@@ -24,8 +24,8 @@ print_wrapped: Final = utils.print_wrapped
 
 DESCRIPTION: Final[str] = """
 Harden flatpaks by preloading hardened_malloc, using the highest supported
-hardware capabilities. When called with one or more flatpak application IDs as
-arguments, applies the overrides to those applications instead of globally.
+hardware capabilities. When called with a flatpak application ID as an
+argument, it applies the override to that application instead of globally.
 """
 
 
@@ -47,45 +47,6 @@ def libhardened_malloc_path(uarch: str | None) -> str:
     if uarch is not None:
         directory += f"/glibc-hwcaps/{uarch}"
     return f"{directory}/libhardened_malloc.so"
-
-
-def flatpak_override(*args: str) -> None:
-    """Apply flatpak overrides."""
-    subprocess.run(["/usr/bin/flatpak", "override", "--user", *args], check=True)
-
-
-def installed_app_list() -> list[str]:
-    """Get list of installed flatpak app IDs."""
-    return command_stdout("/usr/bin/flatpak", "list", "--columns=application", "--app").splitlines()
-
-
-def resolve_app_id(provided: str, installed_app_ids: list[str]) -> str | None:
-    """Determine app ID intended by user."""
-    # First, return exact match if found.
-    if provided in installed_app_ids:
-        return provided
-
-    # Next, try case-insensitive matches.
-    provided = provided.casefold()
-    matches = [app_id for app_id in installed_app_ids if app_id.casefold() == provided]
-    # If there's exactly one case-insensitive match, just choose it, don't prompt the user.
-    if len(matches) == 1:
-        return matches[0]
-
-    print_wrapped(f"'{provided}' is not the application ID of an installed flatpak.")
-
-    # If there's no case-insensitive matches, try substring matches.
-    if not matches:
-        matches = [app_id for app_id in installed_app_ids if provided in app_id.casefold()]
-
-    if not matches:
-        return None
-
-    question = inquirer.List(
-        "app_id", message="Did you mean one of the following? (Ctrl+C to cancel)", choices=matches
-    )
-    answer = inquirer.prompt([question])
-    return None if answer is None else answer["app_id"]
 
 
 def current_override_status(app_id: str, hmalloc_path: str) -> tuple[bool, bool]:

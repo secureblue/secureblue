@@ -13,8 +13,12 @@ import enum
 import gettext
 import inspect
 import json
+import tomllib
 from collections.abc import AsyncGenerator, Callable, Generator, Sequence
+from pathlib import Path
 from typing import Any, ClassVar, Final, Self, assert_never
+
+from utils import print_wrapped
 
 
 def gettext_marker() -> Callable[[str], str]:
@@ -53,6 +57,23 @@ class Status(enum.Enum):
                 return _("UNKNOWN")
             case _ as unreachable:
                 assert_never(unreachable)
+
+    @classmethod
+    def from_str(cls, s: str) -> "Status":
+        """Parse string into status."""
+        s_orig = s
+        s = s.casefold()
+        if s in ("pass", _("PASS").casefold()):
+            return cls.PASS
+        if s in ("info", _("INFO").casefold()):
+            return cls.INFO
+        if s in ("warn", _("WARN").casefold()):
+            return cls.WARN
+        if s in ("fail", _("FAIL").casefold()):
+            return cls.FAIL
+        if s in ("unknown", _("UNKNOWN").casefold()):
+            return cls.UNKNOWN
+        raise ValueError(f"'{s_orig}' is not a valid status")
 
     def to_str_in_color(self) -> str:
         """Colored text representation of the status."""
@@ -191,7 +212,10 @@ class Check:
     recs: list[Recommendation] = dataclasses.field(default_factory=list)
 
     async def run(
-        self, state: dict[str, Any] | None = None, rerun: bool = False
+        self,
+        state: dict[str, Any] | None = None,
+        rerun: bool = False,
+        expectations: dict[str, Status] | None = None,
     ) -> AsyncGenerator[Report]:
         """Run the check and store the results."""
         if self.done and not rerun:
@@ -202,7 +226,11 @@ class Check:
             gen = (self.callback)(state)
         else:
             gen = (self.callback)()
+        if expectations is None:
+            expectations = {}
         async for report in gen:
+            if expectations.get(report.description) == report.status:
+                continue
             self.reports.append(report)
             self.recs += report.recs
             yield report
@@ -256,11 +284,47 @@ def _print_recs(recs: list[Recommendation], width: int = 80) -> None:
 class Audit:
     """A system audit."""
 
-    def __init__(self) -> None:
-        self.checks: list[Check] = []
-        self.state: dict[str, Any] = {}
-        self.recs: list[Recommendation] = []
-        self.categories: set[str] = set()
+    checks: list[Check]
+    state: dict[str, Any]
+    recs: list[Recommendation]
+    categories: set[str]
+    skip: set[str]
+    expected: dict[str, Status]
+
+    def __init__(
+        self, *, skip: Sequence[str] | None = None, expected: dict[str, Status] | None = None
+    ) -> None:
+        self.checks = []
+        self.state = {}
+        self.recs = []
+        self.categories = set()
+        self.skip = set() if skip is None else set(skip)
+        self.expected = expected or {}
+
+    def configure_from_file(self, conf_file: str | Path, *, ignore_missing: bool = False) -> None:
+        """Read a TOML config file and use it to set audit options."""
+        try:
+            with open(conf_file, "rb") as f:
+                config = tomllib.load(f)
+        except FileNotFoundError:
+            if ignore_missing:
+                return
+            raise
+
+        skip = config.get("skip")
+        if skip is not None:
+            if not isinstance(skip, list):
+                raise AuditError(f"'skip' entry in config file '{conf_file}' must be a list")
+            for name in skip:
+                self.skip.add(name)
+
+        expected = config.get("expected")
+        if expected is not None:
+            if not isinstance(expected, dict):
+                raise AuditError(f"'expected' entry in config file '{conf_file}' must be a table")
+            self.expected = {
+                str(desc): Status.from_str(status) for desc, status in expected.items()
+            }
 
     def names(self) -> list[str]:
         """Get a list of the names of all checks."""
@@ -276,35 +340,35 @@ class Audit:
             self.categories.add(check.category)
         self.checks.append(check)
 
-    async def run(
-        self, *, exclude: list[str] | None = None, width: int = 80
-    ) -> AsyncGenerator[tuple[Check, Exception]]:
+    async def run(self, *, width: int = 80) -> AsyncGenerator[tuple[Check, Exception]]:
         """Runs each stored check, prints their reports, then prints their recommendations."""
         print_heading(_("Audit"), width=width)
-        if exclude is None:
-            exclude = []
-        elif len(exclude) == 1:
-            print(_("Skipping checks in the following category:"), ", ".join(exclude))
-        elif len(exclude) > 1:
-            print(_("Skipping checks in the following categories:"), ", ".join(exclude))
-        checks = [check for check in self.checks if check.category not in exclude]
+        checks = [
+            check
+            for check in self.checks
+            if check.name not in self.skip and check.category not in self.skip
+        ]
         for check in checks:
             try:
-                async for report in check.run(self.state):
+                async for report in check.run(self.state, expectations=self.expected):
                     print(report.to_str(width=width))
-            # pylint: disable=broad-exception-caught
             except Exception as e:
                 yield check, e
             else:
                 self.recs += check.recs
         _print_recs(self.recs)
+        if self.skip or self.expected:
+            print_wrapped(
+                _("Note: some results omitted due to configuration file or '{0}' argument.").format(
+                    bold("--skip")
+                ),
+                width=width,
+            )
 
-    async def run_json(self, exclude: list[str] | None = None) -> AsyncGenerator[str]:
+    async def run_json(self) -> AsyncGenerator[str]:
         """Runs each stored check and prints the results as JSON."""
-        if exclude is None:
-            exclude = []
         for check in self.checks:
-            if check.category in exclude:
+            if check.name in self.skip or check.category in self.skip:
                 continue
             async for report in check.run(self.state):
                 notes = [

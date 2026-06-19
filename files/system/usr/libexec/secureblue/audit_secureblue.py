@@ -67,6 +67,8 @@ WARN: Final = Status.WARN
 FAIL: Final = Status.FAIL
 UNKNOWN: Final = Status.UNKNOWN
 
+CONFIG_FILE: Final[Path] = Path.home() / ".config/secureblue/audit.toml"
+
 
 @audit
 def audit_kargs():
@@ -1380,25 +1382,33 @@ async def main() -> int:
         _("options"),
         _("show this help message and exit"),
     )
-    categories = ",".join(sorted(global_audit.categories))
-    parser.add_argument("-s", "--skip", default="", help=_("skip categories") + f" ({categories})")
+    parser.add_argument(
+        "-i", "--ignore-config", action="store_true", help=_("ignore configuration file")
+    )
     parser.add_argument("-j", "--json", action="store_true", help=_("display output as JSON"))
+    parser.add_argument("-s", "--skip", default="", help=_("skip categories or individual checks"))
     args = parser.parse_args()
+
+    if not args.ignore_config:
+        global_audit.configure_from_file(CONFIG_FILE, ignore_missing=True)
+
     skip = args.skip.split(",") if args.skip else []
-    if any(cat not in global_audit.categories for cat in skip):
-        print(_("Valid arguments to {0} are: {1}").format("--skip", categories), file=sys.stderr)
-        sys.exit(1)
-    error_occurred = False
+    for name in skip:
+        global_audit.skip.add(name)
+
     if args.json:
-        async for report_json in global_audit.run_json(exclude=skip):
+        async for report_json in global_audit.run_json():
             print(report_json)
         return 0
-    async for check, err in global_audit.run(exclude=skip, width=get_width()):
+
+    error_occurred = False
+    async for check, err in global_audit.run(width=get_width()):
         print_err("\n" + _("*** Error in check '{0}' ***").format(check.name))
         traceback.print_exception(err)
         print_err("\n" + _("*** Continuing... ***"))
         error_occurred = True
-    if "flatpak" not in skip and command_succeeds("command", "-v", "flatpak"):
+
+    if "flatpak" not in global_audit.skip and command_succeeds("command", "-v", "flatpak"):
         print(_("Use option '{0}' to skip flatpak recommendations.").format(bold("--skip flatpak")))
     warn_if_root()
     if error_occurred:

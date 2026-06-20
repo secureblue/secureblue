@@ -7,6 +7,7 @@
 """Enable or disable support for network filesystems (NFS, CIFS)."""
 
 import sys
+from pathlib import Path
 from typing import Final, assert_never
 
 import sandbox

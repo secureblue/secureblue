@@ -41,12 +41,25 @@ ujust set-flathub-unfiltered --help
 """
 
 
-def unfiltered_remote_status() -> str:
-    return command_stdout("flatpak", "remotes", "--columns=subset")
+def unfiltered_remote_enabled() -> bool:
+    remotes: list[str] = command_stdout("flatpak", "remotes", "--columns=url,subset").splitlines()
+    for remote in remotes:
+        url, subset = remote.split("\t")
+        if (
+            url
+            in [
+                "https://dl.flathub.org/repo/",
+                "https://dl.flathub.org/beta-repo/",
+            ]
+            and subset != "verified"
+        ):
+            return True
+
+    return False
 
 
 def unfiltered_remote_print_status() -> int:
-    if unfiltered_remote_status() != "verified":
+    if unfiltered_remote_enabled():
         print("The unfiltered Flathub remote is available on the system.")
     else:
         print("The unfiltered Flathub remote is removed from the system.")
@@ -54,7 +67,7 @@ def unfiltered_remote_print_status() -> int:
 
 
 def add_unfiltered_remote() -> int:
-    if unfiltered_remote_status() != "verified":
+    if unfiltered_remote_enabled():
         print("The unfiltered Flathub remote has already been added to the system.")
         return 0
 
@@ -73,7 +86,7 @@ def add_unfiltered_remote() -> int:
 
 
 def remove_unfiltered_remote() -> int:
-    if unfiltered_remote_status() == "verified":
+    if not unfiltered_remote_enabled():
         print("The unfiltered Flathub remote has already been removed from the system.")
         return 0
 

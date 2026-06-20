@@ -43,7 +43,7 @@ UNITS: Final[list[str]] = [
     "rpcbind.target",
     "rpc_pipefs.target",
     "var-lib-nfs-rpc_pipefs.mount",
-    "gssproxy.service"
+    "gssproxy.service",
 ]
 
 NOTE: Final[str] = """\

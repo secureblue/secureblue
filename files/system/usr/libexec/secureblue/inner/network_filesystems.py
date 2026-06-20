@@ -47,8 +47,8 @@ UNITS: Final[list[str]] = [
 ]
 
 NOTE: Final[str] = """\
-Network filesystems unmasked.
-Enable the services as needed.
+Network modules are enabled, and services are unmasked.
+Please reboot the system for the changes to take effect.
 
 Note: Secureblue strongly recommends against enabling all network filesystems services at once.
 Only enable the services you need for your use case."""

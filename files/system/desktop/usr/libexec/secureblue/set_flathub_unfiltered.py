@@ -43,33 +43,27 @@ ujust set-flathub-unfiltered --help
 
 def unfiltered_remote_enabled() -> bool:
     remotes: list[str] = command_stdout("flatpak", "remotes", "--columns=url,subset").splitlines()
+    flathub_urls: list[str] = ["https://dl.flathub.org/repo/", "https://dl.flathub.org/beta-repo/"]
+
     for remote in remotes:
         url, subset = remote.split("\t")
-        if (
-            url
-            in [
-                "https://dl.flathub.org/repo/",
-                "https://dl.flathub.org/beta-repo/",
-            ]
-            and subset != "verified"
-        ):
+        if url in flathub_urls and subset != "verified":
             return True
 
     return False
 
 
-def unfiltered_remote_print_status() -> int:
+def unfiltered_remote_print_status() -> None:
     if unfiltered_remote_enabled():
-        print("The unfiltered Flathub remote is available on the system.")
+        print("The unfiltered Flathub remote is enabled.")
     else:
-        print("The unfiltered Flathub remote is removed from the system.")
-    return 0
+        print("The unfiltered Flathub remote is disabled.")
 
 
-def add_unfiltered_remote() -> int:
+def add_unfiltered_remote() -> None:
     if unfiltered_remote_enabled():
         print("The unfiltered Flathub remote has already been added to the system.")
-        return 0
+        return
 
     subprocess.run(
         [
@@ -82,16 +76,14 @@ def add_unfiltered_remote() -> int:
         ],
         check=True,
     )
-    return 0
 
 
-def remove_unfiltered_remote() -> int:
+def remove_unfiltered_remote() -> None:
     if not unfiltered_remote_enabled():
         print("The unfiltered Flathub remote has already been removed from the system.")
-        return 0
+        return
 
     subprocess.run(["/usr/bin/flatpak", "remote-delete", "--user", "flathub"], check=True)
-    return 0
 
 
 def main() -> int:
@@ -103,17 +95,22 @@ def main() -> int:
         print(f"Usage error: {e}. See usage with --help.")
         return 2
 
-    match mode:
-        case ToggleMode.ON:
-            return add_unfiltered_remote()
-        case ToggleMode.OFF:
-            return remove_unfiltered_remote()
-        case ToggleMode.STATUS:
-            return unfiltered_remote_print_status()
-        case ToggleMode.HELP:
-            print(HELP_MESSAGE)
-        case _ as unreachable:
-            assert_never(unreachable)
+    try:
+        match mode:
+            case ToggleMode.ON:
+                add_unfiltered_remote()
+            case ToggleMode.OFF:
+                remove_unfiltered_remote()
+            case ToggleMode.STATUS:
+                unfiltered_remote_print_status()
+            case ToggleMode.HELP:
+                print(HELP_MESSAGE)
+            case _ as unreachable:
+                assert_never(unreachable)
+    except subprocess.CalledProcessError:
+        print("An unexpected error occured.")
+        return 1
+
     return 0
 
 

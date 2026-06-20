@@ -68,7 +68,7 @@ def enable_units() -> None:
 def disable_units() -> None:
     os.remove(MODULES_FILE)
 
-    subprocess.run(["/usr/bin/systemctl", "disable", "--now", "--quiet", *UNITS], check=True)
+    subprocess.run(["/usr/bin/systemctl", "disable", "--now", "--quiet", *UNITS], check=False)
     subprocess.run(["/usr/bin/systemctl", "mask", "--now", "--quiet", *UNITS], check=True)
     subprocess.run(["/usr/bin/systemctl", "daemon-reload"], check=True)
 

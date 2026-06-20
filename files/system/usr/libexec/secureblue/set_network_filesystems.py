@@ -85,7 +85,7 @@ def main() -> int:
         case ToggleMode.OFF:
             return disable_network_filesystems()
         case ToggleMode.STATUS:
-            return print_status()
+            return network_filesystems_print_status()
         case ToggleMode.HELP:
             print(HELP_MESSAGE)
         case _ as unreachable:

@@ -48,10 +48,10 @@ UNITS: Final[list[str]] = [
 
 NOTE: Final[str] = """\
 Network modules are enabled, and services are unmasked.
-Please reboot the system for the changes to take effect.
+Please reboot the system for changes to take effect.
 
-Note: Secureblue strongly recommends against enabling all network filesystems services at once.
-Only enable the services you need for your use case."""
+Note: Network filesystem services are still disabled.
+Only enable the services you need for the use case (NFS, CIFS)."""
 
 
 def enable_units() -> None:

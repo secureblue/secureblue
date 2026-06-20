@@ -4,7 +4,7 @@
 #
 # SPDX-License-Identifier: Apache-2.0
 
-"""Enable or disable support for network filesystems (NFS, CIFS)."""
+"""Enable or disable support for network filesystems."""
 
 import sys
 from pathlib import Path
@@ -14,7 +14,7 @@ import sandbox
 from utils import CommandUsageError, ToggleMode, parse_basic_toggle_args
 
 HELP_MESSAGE: Final[str] = """\
-Enable or disable support for network filesystems (NFS, CIFS).
+Enable or disable support for network filesystems (NFS, CIFS, etc.).
 
 Usage:
 ujust set-network-filesystem-modules
@@ -27,7 +27,7 @@ ujust set-network-filesystem-modules off
     Disables network filesystems; does nothing if already off.
 
 ujust set-network-filesystem-modules status
-    Reports if network filesystems is enabled or disabled.
+    Reports if network filesystems are enabled or disabled.
 
 ujust set-network-filesystem-modules --help
     Prints this message.
@@ -49,15 +49,15 @@ def network_filesystems_status() -> str:
 
 def network_filesystems_print_status() -> int:
     if network_filesystems_status() == "enabled":
-        print("Network filesystems is enabled.")
+        print("Network filesystems are enabled.")
     else:
-        print("Network filesystems is disabled.")
+        print("Network filesystems are disabled.")
     return 0
 
 
 def enable_network_filesystems() -> int:
     if network_filesystems_status() == "enabled":
-        print("Network filesystems is already enabled.")
+        print("Network filesystems are already enabled.")
         return 0
 
     return sandbox.run(NETFS_FUNCTION, "on")
@@ -65,7 +65,7 @@ def enable_network_filesystems() -> int:
 
 def disable_network_filesystems() -> int:
     if network_filesystems_status() == "disabled":
-        print("Network filesystems is already disabled.")
+        print("Network filesystems are already disabled.")
         return 0
 
     return sandbox.run(NETFS_FUNCTION, "off")
@@ -74,7 +74,7 @@ def disable_network_filesystems() -> int:
 def main() -> int:
     try:
         mode = parse_basic_toggle_args(
-            prompt="Would you like to enable network filesystems (NFS, CIFS)?"
+            prompt="Would you like network filesystems (NFS, CIFS, etc.) to be enabled?"
         )
     except CommandUsageError as e:
         print(f"Usage error: {e}. See usage with --help.")

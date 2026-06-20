@@ -8,18 +8,19 @@
 
 import sys
 from pathlib import Path
-from subprocess import CalledProcessError, run
+from subprocess import DEVNULL, CalledProcessError, Popen, run
 
 
 def main() -> int:
     try:
         run(["/usr/libexec/secureblue/verify-provenance.sh"], check=True)
         run(["/usr/bin/rpm-ostree", "upgrade"], check=True)
-        if Path("/usr/libexec/secureblue/security-update-notification").is_file:
-            run(
+        if Path("/usr/libexec/secureblue/security-update-notification").is_file():
+            Popen(
                 ["/usr/libexec/secureblue/security-update-notification"],
-                check=True,
-                capture_output=True,
+                start_new_session=True,
+                stdout=DEVNULL,
+                stderr=DEVNULL,
             )
         return 0
     except CalledProcessError:

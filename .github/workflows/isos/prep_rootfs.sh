@@ -27,7 +27,23 @@ rm -f /usr/share/applications/org.mozilla.Firefox.desktop /usr/share/application
 # add installer to kickoff
 sed -i '/^Prepend=/s/$/;liveinst.desktop/' /usr/share/kde-settings/kde-profile/default/xdg/kicker-extra-favoritesrc || true
 
-jq '.transports["containers-storage"][""][0].type = "insecureAcceptAnything"' /etc/containers/policy.json | tee /etc/containers/policy.json.tmp && mv /etc/containers/policy.json.tmp /etc/containers/policy.json
+# Require the embedded installer image in containers-storage to satisfy the
+# same sigstore policy used for registry pulls.
+jq --arg image_ref "${IMAGE_REF}" \
+    '.transports["containers-storage"][""] =
+    [
+        {
+            "type": "sigstoreSigned",
+            "keyPaths": [
+                "/usr/share/pki/containers/secureblue.pub",
+                "/usr/share/pki/containers/secureblue-2025.pub"
+            ],
+            "signedIdentity": {
+                "type": "exactRepository",
+                "dockerRepository": $image_ref
+            }
+        }
+    ]' /etc/containers/policy.json | tee /etc/containers/policy.json.tmp && mv /etc/containers/policy.json.tmp /etc/containers/policy.json
 
 # Disable suspend/sleep during live environment and initial setup
 # This prevents the system from suspending during installation or first-boot user creation
@@ -128,7 +144,7 @@ EOF
 
 # Interactive Kickstart
 tee -a /usr/share/anaconda/interactive-defaults.ks <<EOF
-ostreecontainer --url=${IMAGE_REF}:${IMAGE_TAG} --transport=containers-storage --no-signature-verification
+ostreecontainer --url=${IMAGE_REF}:${IMAGE_TAG} --transport=containers-storage
 %include /usr/share/anaconda/post-scripts/install-configure-upgrade.ks
 %include /usr/share/anaconda/post-scripts/secureboot-enroll-key.ks
 EOF

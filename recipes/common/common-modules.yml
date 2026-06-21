@@ -35,7 +35,7 @@ modules:
   - type: script
     source: ghcr.io/blue-build/modules@sha256:0b74310a559451a6faf9b33f583855dfe5b2cdbe5d90603f2869dd4867c9b485
     scripts:
-      - signkernel.sh
+      - installandsignkernel.sh
     secrets:
       - type: env
         name: KERNEL_PRIVKEY

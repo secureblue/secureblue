@@ -61,11 +61,11 @@ jobs:
         id: file_list
         run: |
           tempfile="$(mktemp)"
-          # We need to examine object modes to exclude directories that are the target
-          # of a symbolic link, which get included in the output of `git ls-files` and
-          # would otherwise be passed to awk, triggering a warning.
+          # Examine object modes to exclude objects that are not regular files,
+          # which get included in the output of `git ls-files` and would
+          # otherwise be passed to awk, triggering warnings or errors.
           git ls-files -z --format='%(objectmode) %(path)' \
-            | sed -Enz -e '/^120/d' -e 's/^[0-9]+ //p' > "${tempfile}"
+            | sed -Enz -e '/^10/s/^[0-9]+ //p' > "${tempfile}"
           echo "file_list=${tempfile}" >> "${GITHUB_OUTPUT}"
 
       - name: Check shell script shebangs

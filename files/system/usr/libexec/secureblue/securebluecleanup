@@ -16,6 +16,9 @@ cp /usr/etc/authselect/authselect.conf /etc/authselect/authselect.conf
 cp /usr/etc/firewalld/zones/FedoraWorkstation.xml /etc/firewalld/zones/FedoraWorkstation.xml || true
 cp /usr/etc/firewalld/zones/FedoraServer.xml /etc/firewalld/zones/FedoraServer.xml || true
 
+# Undo chronyd timeserver configuration from Anaconda, which is empty sometimes.
+cp /usr/etc/chrony.conf /etc/chrony.conf
+
 if command -v flatpak &> /dev/null
 then
     flatpak remote-delete --system --force fedora || true

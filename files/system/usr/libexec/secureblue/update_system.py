@@ -15,6 +15,7 @@ def main() -> int:
     try:
         run(["/usr/libexec/secureblue/verify-provenance.sh"], check=True)
         run(["/usr/bin/rpm-ostree", "upgrade"], check=True)
+        # The script is not present on server images
         if Path("/usr/libexec/secureblue/security-update-notification").is_file():
             Popen(
                 ["/usr/libexec/secureblue/security-update-notification"],

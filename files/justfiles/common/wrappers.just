@@ -66,6 +66,15 @@
 @toggle-user-motd:
     exec /usr/bin/python3 /usr/libexec/secureblue/toggle_user_motd.py
 
+# Update system (with provenance verification).
+@update-system:
+    exec /usr/bin/python3 /usr/libexec/secureblue/update_system.py
+
+# Update device firmware.
+[no-exit-message]
+@update-firmware:
+    exec /usr/bin/python3 /usr/libexec/secureblue/update_firmware.py
+
 # Toggle DHCP hostname sending.
 [positional-arguments]
 @set-dhcp-hostname-sending *args:

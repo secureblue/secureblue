@@ -32,7 +32,7 @@ jobs:
 
       - name: Setup Bats and bats libs
         id: setup-bats
-        uses: bats-core/bats-action@77d6fb60505b4d0d1d73e48bd035b55074bbfb43 #v4.0.0
+        uses: bats-core/bats-action@77d6fb60505b4d0d1d73e48bd035b55074bbfb43 # 4.0.0
         with:
            support-path: "${{ github.workspace }}/.bats/bats-support"
            assert-path: "${{ github.workspace }}/.bats/bats-assert"

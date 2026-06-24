@@ -4,3 +4,5 @@
 
 (allow colord_t self (user_namespace (create)))
 (allow devicekit_power_t self (user_namespace (create)))
+(allow flatpak_helper_t self (user_namespace (create)))
+

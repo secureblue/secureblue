@@ -19,6 +19,11 @@
 @set-bluetooth-modules *args:
     exec /usr/bin/python3 /usr/libexec/secureblue/bluetooth_main.py "$@"
 
+# Enable or disable CUPS (the printing service).
+[positional-arguments]
+@set-cups *args:
+    exec /usr/bin/python3 /usr/libexec/secureblue/set_cups.py "$@"
+
 # Sets webcam kernel modules on/off (requires reboot)
 [positional-arguments]
 @set-webcam-modules *args:
@@ -60,6 +65,15 @@
 # Toggle display of the user-motd in terminal
 @toggle-user-motd:
     exec /usr/bin/python3 /usr/libexec/secureblue/toggle_user_motd.py
+
+# Update system (with provenance verification).
+@update-system:
+    exec /usr/bin/python3 /usr/libexec/secureblue/update_system.py
+
+# Update device firmware.
+[no-exit-message]
+@update-firmware:
+    exec /usr/bin/python3 /usr/libexec/secureblue/update_firmware.py
 
 # Toggle DHCP hostname sending.
 [positional-arguments]

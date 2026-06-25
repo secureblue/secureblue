@@ -37,13 +37,12 @@ def main() -> int:
     if os.path.exists(USER_POLICY_FILE):
         user_policy_default = filecmp.cmp(f"/usr{SYSTEM_POLICY_FILE}", USER_POLICY_FILE)
         if user_policy_default is False:
-            # save current policy & replace user override with the default
-            os.replace(USER_POLICY_FILE, f"{USER_POLICY_FILE}.old")
+            # replace user override with the default
             shutil.copy2(f"/usr{SYSTEM_POLICY_FILE}", USER_POLICY_FILE)
 
     # notify the user that neither files exist and something is wrong
     if user_policy_default is None and system_policy_default is None:
-        print_err("Warning: There is neither a system policy or a user policy! ! !")
+        print_err("Warning: There is neither a system policy or a user policy!")
 
     return 0
 

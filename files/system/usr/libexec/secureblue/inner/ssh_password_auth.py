@@ -22,29 +22,29 @@ KbdInteractiveAuthentication no
 """
 
 
-def reload_sshd() -> int:
+def reload_sshd() -> None:
     """Reload sshd if it is currently active."""
     if not SSHD_SERVICE.is_active():
-        return 0
+        return
 
     SSHD_SERVICE.reload()
-    return 0
 
 
-def disable_password_auth() -> int:
+def disable_password_auth() -> None:
     """Disable SSH password authentication."""
     SSH_AUTH_DROPIN.parent.mkdir(parents=True, exist_ok=True)
+    SSH_AUTH_DROPIN.parent.chmod(0o755)
     SSH_AUTH_DROPIN.write_text(SSH_AUTH_DROPIN_TEXT, encoding="utf-8")
     SSH_AUTH_DROPIN.chmod(0o644)
     print("SSH password authentication has been disabled. Reloading sshd if active.")
-    return reload_sshd()
+    reload_sshd()
 
 
-def enable_password_auth() -> int:
+def enable_password_auth() -> None:
     """Enable SSH password authentication."""
     SSH_AUTH_DROPIN.unlink(missing_ok=True)
     print("SSH password authentication has been enabled. Reloading sshd if active.")
-    return reload_sshd()
+    reload_sshd()
 
 
 def main() -> int:
@@ -56,12 +56,13 @@ def main() -> int:
     mode = sys.argv[1]
     match mode:
         case "off":
-            return disable_password_auth()
+            disable_password_auth()
         case "on":
-            return enable_password_auth()
+            enable_password_auth()
         case _:
             print("Invalid inner script argument.")
             return 1
+    return 0
 
 
 if __name__ == "__main__":

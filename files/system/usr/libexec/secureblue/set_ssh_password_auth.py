@@ -8,7 +8,7 @@
 
 import sys
 from pathlib import Path
-from typing import Final
+from typing import Final, assert_never
 
 import sandbox
 from utils import (
@@ -73,6 +73,7 @@ def enable_ssh_password_auth(currently_enabled: bool) -> int:
         SSH password authentication is currently disabled. Enabling it now by removing
         '{SSH_AUTH_DROPIN}'.
     """)
+    print("Warning: reloading sshd.service may interrupt active SSH sessions.")
     exit_code = sandbox.run(ssh_auth_function, "on")
     if exit_code == 0:
         print("SSH password authentication enabled.")
@@ -88,6 +89,7 @@ def disable_ssh_password_auth(currently_enabled: bool) -> int:
         SSH password authentication is currently enabled. Disabling it now by creating
         '{SSH_AUTH_DROPIN}'.
     """)
+    print("Warning: reloading sshd.service may interrupt active SSH sessions.")
     exit_code = sandbox.run(ssh_auth_function, "off")
     if exit_code == 0:
         print("SSH password authentication disabled.")
@@ -108,8 +110,8 @@ def run(mode: ToggleMode) -> int:
             return enable_ssh_password_auth(ssh_password_auth)
         case ToggleMode.OFF:
             return disable_ssh_password_auth(ssh_password_auth)
-        case _:
-            raise ValueError(f"Invalid mode value: {mode}")
+        case _ as unreachable:
+            assert_never(unreachable)
 
 
 def main() -> int:

@@ -66,6 +66,13 @@ INFO: Final = Status.INFO
 WARN: Final = Status.WARN
 FAIL: Final = Status.FAIL
 UNKNOWN: Final = Status.UNKNOWN
+SSH_AUTH_DROPIN: Final[Path] = Path(
+    "/etc/ssh/sshd_config.d/49-secureblue-disable-password-auth.conf"
+)
+SSH_AUTH_DISABLED_CONFIG: Final[dict[str, str]] = {
+    "PasswordAuthentication": "no",
+    "KbdInteractiveAuthentication": "no",
+}
 
 
 @audit
@@ -175,20 +182,37 @@ def audit_signed_image(state):
 @audit
 @depends_on("audit_signed_image")
 def audit_ssh_password_auth(state):
-    """Ensure SSH password authentication is disabled on server images."""
+    """Ensure SSH password authentication is disabled when sshd may be used."""
     image = state["image"]
-    if image is None or not image.is_server():
+    sshd_enabled_status = command_stdout("systemctl", "is-enabled", "sshd.service", check=False)
+    should_audit = (image is not None and image.is_server()) or sshd_enabled_status not in (
+        "",
+        "masked",
+        "not-found",
+    )
+    if not should_audit:
         return
 
-    ssh_password_auth_enabled = (
-        command_stdout("ujust", "set-ssh-password-auth", "status") != "disabled"
-    )
+    try:
+        with SSH_AUTH_DROPIN.open(encoding="utf-8") as f:
+            config = parse_config(f, sep=" ")
+    except FileNotFoundError:
+        ssh_password_auth_enabled = True
+    else:
+        ssh_password_auth_enabled = any(
+            config.get(key) != value for key, value in SSH_AUTH_DISABLED_CONFIG.items()
+        )
     if ssh_password_auth_enabled:
         status = FAIL
+        disable_command = (
+            "$ ujust set-ssh-password-auth off"
+            if image is not None and image.is_server()
+            else "$ /usr/bin/python3 /usr/libexec/secureblue/set_ssh_password_auth.py off"
+        )
         rec_lines = [
             _("SSH password authentication is enabled."),
             _("To disable it, run:"),
-            "$ ujust set-ssh-password-auth off",
+            disable_command,
         ]
         rec = "\n".join(rec_lines)
     else:

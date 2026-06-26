@@ -2,13 +2,10 @@
 #
 # SPDX-License-Identifier: Apache-2.0
 
-# Add the unfiltered Flathub flatpak repo
-@enable-flathub-unfiltered:
-    exec /usr/bin/flatpak remote-add --if-not-exists --user flathub https://dl.flathub.org/repo/flathub.flatpakrepo
-
-# Remove the unfiltered Flathub flatpak repo
-@disable-flathub-unfiltered:
-    exec /usr/bin/flatpak remote-delete --user flathub
+# Add or remove the unfiltered Flathub remote.
+[positional-arguments]
+@set-flathub-unfiltered *args:
+    exec /usr/bin/python3 /usr/libexec/secureblue/set_flathub_unfiltered.py "$@"
 
 # Harden flatpaks by preloading hardened_malloc (highest supported hwcap). When called with a flatpak application ID as an argument, applies the overrides to that application instead of globally.
 [positional-arguments]

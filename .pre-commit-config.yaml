@@ -7,19 +7,19 @@ repos:
         args: ['--markdown-linebreak-ext=md,patch']
 
   - repo: https://github.com/zizmorcore/zizmor-pre-commit
-    rev: 9257c6050c0261b8c57e712f632dc4a8010109a9 # v1.25.2
+    rev: e3eebf65325ccc992422292cb7a4baee967cf815 # v1.26.1
     hooks:
       - id: zizmor
         exclude: "^\\.github/workflows/config/linkspector\\.yml$"
 
   - repo: https://github.com/astral-sh/ruff-pre-commit
-    rev: 3b3f7c3f57fe9925356faf5fe6230835138be230 # v0.15.17
+    rev: 77039ccbba72c8aede339c5f8ae29b42aced0a2e # v0.15.18
     hooks:
       - id: ruff-check
       - id: ruff-format
 
   - repo: https://github.com/astral-sh/ty-pre-commit
-    rev: 1c2d685cd524a149bddf350f8c95875a0a3193ac # v0.0.50
+    rev: 05894e7188446033344d151e25e0a5b5d10a956f # v0.0.52
     hooks:
       - id: ty
         args: [--isolated]

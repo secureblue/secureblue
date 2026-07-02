@@ -4,19 +4,19 @@
 
 modules:
   - type: files
-    source: ghcr.io/blue-build/modules@sha256:0b74310a559451a6faf9b33f583855dfe5b2cdbe5d90603f2869dd4867c9b485
+    source: ghcr.io/blue-build/modules@sha256:a21771c64475511f5d7f8ab98bfb74217658c9958c2b1cb956d9c0bcbbdeed29
     files:
       - source: system/nvidia
         destination: /
 
   - type: justfiles
-    source: ghcr.io/blue-build/modules@sha256:0b74310a559451a6faf9b33f583855dfe5b2cdbe5d90603f2869dd4867c9b485
+    source: ghcr.io/blue-build/modules@sha256:a21771c64475511f5d7f8ab98bfb74217658c9958c2b1cb956d9c0bcbbdeed29
     validate: true
     include:
       - nvidia
 
   - type: script
-    source: ghcr.io/blue-build/modules@sha256:0b74310a559451a6faf9b33f583855dfe5b2cdbe5d90603f2869dd4867c9b485
+    source: ghcr.io/blue-build/modules@sha256:a21771c64475511f5d7f8ab98bfb74217658c9958c2b1cb956d9c0bcbbdeed29
     scripts:
       - installnvidiakmod.sh
     secrets:
@@ -27,7 +27,7 @@ modules:
           destination: /tmp/certs/private_key.priv
 
   - type: script
-    source: ghcr.io/blue-build/modules@sha256:0b74310a559451a6faf9b33f583855dfe5b2cdbe5d90603f2869dd4867c9b485
+    source: ghcr.io/blue-build/modules@sha256:a21771c64475511f5d7f8ab98bfb74217658c9958c2b1cb956d9c0bcbbdeed29
     scripts:
       - installnvidiapackages.sh
       - remove-nvidia-repos.sh

@@ -33,7 +33,7 @@ install:
     # ensure universal font coverage
     - google-noto-fonts-all
 
-    # libvirt/qemu/kvm packages
+    # Virtualization packages
     - libvirt
     - libvirt-nss
     - qemu-device-display-virtio-gpu
@@ -47,6 +47,7 @@ install:
     - virt-install
     - virt-manager
     - virt-viewer
+    - podman-machine
 
     # ensure MTP support parity
     - libmtp

@@ -34,11 +34,7 @@ install-steam:
     case "${method_selection}" in
         1)
             echo "Flatpak method selected."
-
-            # Adds flatpak remote in userspace
-            flatpak remote-add --user --if-not-exists flathub https://dl.flathub.org/repo/flathub.flatpakrepo
-
-            if ! flatpak remotes --columns=name | grep -q '^flathub$'; then
+            if ! flatpak remotes --user --columns=name | grep -q '^flathub$'; then
                 echo "The Steam flatpak is not verified by Valve and only distributed via the unfiltered Flathub remote." | fold -s
                 read -rp "Would you like to enable the unfiltered Flathub remote now? [Y/n] " flathub_unfiltered
                 flathub_unfiltered=${flathub_unfiltered:-y}

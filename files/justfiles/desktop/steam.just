@@ -34,6 +34,10 @@ install-steam:
     case "${method_selection}" in
         1)
             echo "Flatpak method selected."
+
+            # Adds flatpak remote in userspace
+            flatpak remote-add --user --if-not-exists flathub https://dl.flathub.org/repo/flathub.flatpakrepo
+
             if ! flatpak remotes --columns=name | grep -q '^flathub$'; then
                 echo "The Steam flatpak is not verified by Valve and only distributed via the unfiltered Flathub remote." | fold -s
                 read -rp "Would you like to enable the unfiltered Flathub remote now? [Y/n] " flathub_unfiltered
@@ -47,7 +51,7 @@ install-steam:
                 fi
             fi
             echo "Installing Steam flatpak."
-            flatpak install -y flathub com.valvesoftware.Steam
+            flatpak install -y --user flathub com.valvesoftware.Steam
             echo "Disabling hardened_malloc for Steam."
             flatpak override --user --unset-env=LD_PRELOAD --nofilesystem=host-os com.valvesoftware.Steam
 

@@ -63,3 +63,6 @@ pycodestyle.max-doc-length = 100
 
 # Allow partial executable paths in subprocess invocations in dev tools
 "tools/*.py" = ["S607"]
+
+[tool.pylint.main]
+source-roots = ["files/system/usr/libexec/secureblue"]

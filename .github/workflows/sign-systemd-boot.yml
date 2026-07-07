@@ -1,0 +1,109 @@
+# SPDX-FileCopyrightText: Copyright 2026 The Secureblue Authors
+# SPDX-FileCopyrightText: Timothée Ravier <tim@siosm.fr>
+#
+# SPDX-License-Identifier: Apache-2.0 AND CC0-1.0
+
+name: "Sign systemd-boot"
+
+permissions: {}
+
+env:
+  FEDORA_RELEASE: "44"
+
+on:
+  # This only needs rebuilding for new releases of systemd-boot, e.g. after
+  # every Fedora release, or if the signing key changes. Swapping it might
+  # change the TPM PCR values, which would prompt some users for PINs etc.
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  sign:
+    name: "Sign systemd boot"
+    runs-on: "ubuntu-26.04"
+    environment: Build
+    if: github.triggering_actor == 'royaloughtness'
+    permissions:
+      contents: read # Needed to pull the repo for the build
+      packages: write # Needed to publish images
+    outputs:
+      DIGEST: ${{ steps.push.outputs.digest }}
+    steps:
+      - name: "Checkout repo"
+        uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
+        with:
+          persist-credentials: false
+
+      - name: "Runner setup"
+        uses: ./.github/workflows/shared-runner-setup
+        with:
+          needs_cosign: 'true'
+
+      - name: "Log in to registry"
+        uses: redhat-actions/podman-login@4934294ad0449894bcd1e9f191899d7292469603 # v1.7
+        with:
+          registry: "ghcr.io/${{ github.repository_owner }}"
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: "Get secure boot signing key"
+        run: |
+          mkdir -p /tmp/keys
+          printenv UKI_DB_KEY > /tmp/keys/key
+          cp uki/keys/db/db.pem /tmp/keys/crt
+        env:
+          UKI_DB_KEY: ${{ secrets.UKI_DB_KEY }}
+
+      - name: "Build container image"
+        uses: redhat-actions/buildah-build@7a95fa7ee0f02d552a32753e7414641a04307056 # v2.13
+        with:
+          image: "systemd-boot"
+          tags: ${{ env.FEDORA_RELEASE }}
+          containerfiles: "uki/Containerfile.systemd-boot"
+          oci: true
+          build-args: |
+            RELEASE=${{ env.FEDORA_RELEASE }}
+          extra-args: |
+            --secret=id=secureboot_key,src=/tmp/keys/key
+            --secret=id=secureboot_crt,src=/tmp/keys/crt
+
+      - name: "Clean up secure boot signing key"
+        if: always()
+        run: rm -vrf /tmp/keys
+
+      - name: "Push to registry"
+        id: push
+        uses: redhat-actions/push-to-registry@5ed88d269cf581ea9ef6dd6806d01562096bee9c # v2.8
+        with:
+          registry: "ghcr.io/${{ github.repository_owner }}"
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+          image: "systemd-boot"
+          tags: ${{ env.FEDORA_RELEASE }}
+
+      - name: "Sign container image"
+        run: |
+          cosign sign -y --key env://COSIGN_KEY ghcr.io/${GITHUB_REPOSITORY_OWNER}/systemd-boot@${DIGEST}
+        env:
+          COSIGN_EXPERIMENTAL: false
+          COSIGN_KEY: ${{ secrets.SIGNING_SECRET }}
+          DIGEST: ${{ steps.push.outputs.digest }}
+
+  provenance:
+    needs: sign
+    permissions:
+      actions: read # for detecting the Github Actions environment.
+      id-token: write # for creating OIDC tokens for signing.
+      packages: write # for uploading attestations.
+    # Currently this must be referenced by tag, not by hash:
+    # https://github.com/slsa-framework/slsa-github-generator?tab=readme-ov-file#referencing-slsa-builders-and-generators
+    uses: slsa-framework/slsa-github-generator/.github/workflows/generator_container_slsa3.yml@v2.1.0 # zizmor: ignore[unpinned-uses]
+    with:
+      image: "ghcr.io/${{ github.repository_owner }}/systemd-boot"
+      digest: ${{ needs.sign.outputs.DIGEST }}
+      registry-username: ${{ github.actor }}
+    secrets:
+      registry-password: ${{ secrets.GITHUB_TOKEN }}

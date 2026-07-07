@@ -103,3 +103,10 @@ alias set-anticheat-support := set-ptrace
 # Show all messages from last boot
 @logs-last-boot:
     exec /usr/bin/run0 --via-shell journalctl -b -1
+
+# Enroll secure boot key into shim or firmware.
+[positional-arguments]
+@enroll-secure-boot-keys *args:
+    exec /usr/bin/python3 /usr/libexec/secureblue/enroll_secure_boot_keys.py "$@"
+
+alias enroll-secureblue-secure-boot-key := enroll-secure-boot-keys

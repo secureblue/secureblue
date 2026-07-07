@@ -1,0 +1,200 @@
+# SPDX-FileCopyrightText: Copyright 2026 The Secureblue Authors
+#
+# SPDX-License-Identifier: Apache-2.0
+
+name: build-sealed-image
+
+permissions: {}
+
+on:
+  workflow_call:
+    inputs:
+      image:
+        description: "Image name (e.g. silverblue-main-hardened)."
+        type: string
+        required: true
+      base_tag:
+        description: "The tag of the base image (e.g. latest)."
+        type: string
+        required: true
+      base_digest:
+        description: "The digest of the base image to seal (e.g. sha256:abc123)."
+        type: string
+        required: true
+      image_version:
+        description: "The Fedora image version used for getting the systemd-boot image, e.g. 44."
+        type: string
+        required: true
+    secrets:
+      COSIGN_KEY:
+        required: true
+      UKI_DB_KEY:
+        required: true
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}-${{ inputs.image }}
+  cancel-in-progress: true
+
+jobs:
+  build-sealed-image:
+    name: "Build sealed image"
+    runs-on: "ubuntu-26.04"
+    outputs:
+      IMAGE_DIGEST: ${{ steps.push.outputs.digest }}
+    permissions:
+      contents: read # Needed to pull the repo for the build
+      packages: write # Needed to publish images
+    steps:
+      - name: "Harden Runner"
+        uses: step-security/harden-runner@9af89fc71515a100421586dfdb3dc9c984fbf411 # v2.19.4
+        with:
+          egress-policy: audit
+
+      - name: "Check out repository"
+        uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
+        with:
+          persist-credentials: false
+
+      - name: "Set up runner"
+        uses: ./.github/workflows/shared-runner-setup
+        with:
+          needs_cosign: true
+          needs_slsa_crane: true
+
+      - name: "Log in to registry"
+        uses: redhat-actions/podman-login@4934294ad0449894bcd1e9f191899d7292469603 # v1.7
+        with:
+          registry: "ghcr.io/${{ github.repository_owner }}"
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: "Get base image digests"
+        id: base_image_digests
+        shell: bash
+        env:
+          IMAGE_VERSION: ${{ inputs.image_version }}
+        run: |
+          SYSTEMD_BOOT_DIGEST=$(crane digest "ghcr.io/${GITHUB_REPOSITORY_OWNER}/systemd-boot:${IMAGE_VERSION}")
+          echo "SYSTEMD_BOOT_DIGEST=${SYSTEMD_BOOT_DIGEST}" >> "${GITHUB_OUTPUT}"
+          UKI_ADDONS_DIGEST=$(crane digest "ghcr.io/${GITHUB_REPOSITORY_OWNER}/uki-addons:latest")
+          echo "UKI_ADDONS_DIGEST=${UKI_ADDONS_DIGEST}" >> "${GITHUB_OUTPUT}"
+
+      - name: "Verify base images"
+        shell: bash
+        env:
+          REPO: "ghcr.io/${{ github.repository_owner }}"
+          BASE_IMAGE: ${{ inputs.image }}
+          BASE_IMAGE_DIGEST: ${{ inputs.base_digest }}
+          SYSTEMD_BOOT_DIGEST: ${{ steps.base_image_digests.outputs.SYSTEMD_BOOT_DIGEST }}
+          UKI_ADDONS_DIGEST: ${{ steps.base_image_digests.outputs.UKI_ADDONS_DIGEST }}
+        run: |
+          slsa-verifier verify-image --source-uri "github.com/${GITHUB_REPOSITORY}" "${REPO}/${BASE_IMAGE}@${BASE_IMAGE_DIGEST}"
+          cosign verify --key ./cosign.pub "${REPO}/${BASE_IMAGE}@${BASE_IMAGE_DIGEST}"
+          slsa-verifier verify-image --source-uri "github.com/${GITHUB_REPOSITORY}" "${REPO}/systemd-boot@${SYSTEMD_BOOT_DIGEST}"
+          cosign verify --key ./cosign.pub "${REPO}/systemd-boot@${SYSTEMD_BOOT_DIGEST}"
+          slsa-verifier verify-image --source-uri "github.com/${GITHUB_REPOSITORY}" "${REPO}/uki-addons@${UKI_ADDONS_DIGEST}"
+          cosign verify --key ./cosign.pub "${REPO}/uki-addons@${UKI_ADDONS_DIGEST}"
+
+      - name: "Generate tags"
+        id: tags
+        run: |
+          set -euxo pipefail
+          date="$(date '+%Y%m%d')"
+          tags="${BASE_TAG}-uki"
+          if [[ "$BASE_TAG" == "latest" ]]; then
+            tags+=" uki ${date}-${IMAGE_VERSION}-uki ${date}-uki ${IMAGE_VERSION}-uki"
+          fi
+          echo "tags=${tags}" >> "$GITHUB_OUTPUT"
+        env:
+          BASE_TAG: ${{ inputs.base_tag }}
+          IMAGE_VERSION: ${{ inputs.image_version }}
+
+      - name: "Get secure boot signing key"
+        run: |
+          mkdir -p /tmp/keys
+          printenv UKI_DB_KEY > /tmp/keys/key
+          cp uki/keys/db/db.pem /tmp/keys/crt
+        env:
+          UKI_DB_KEY: ${{ secrets.UKI_DB_KEY }}
+
+      - name: "Build kernel container"
+        uses: redhat-actions/buildah-build@7a95fa7ee0f02d552a32753e7414641a04307056 # v2.13
+        with:
+          image: ${{ inputs.image }}-kernel
+          tags: ${{ inputs.base_tag }}-uki
+          containerfiles: uki/Containerfile.kernel
+          oci: true
+          build-args: |
+            BASE=ghcr.io/${{ github.repository_owner }}/${{ inputs.image }}@${{ inputs.base_digest }}
+
+      - name: "Build base container"
+        uses: redhat-actions/buildah-build@7a95fa7ee0f02d552a32753e7414641a04307056 # v2.13
+        with:
+          image: ${{ inputs.image }}-base
+          tags: ${{ inputs.base_tag }}-uki
+          containerfiles: uki/Containerfile.base
+          oci: true
+          build-args: |
+            BASE=ghcr.io/${{ github.repository_owner }}/${{ inputs.image }}@${{ inputs.base_digest }}
+            SYSTEMDBOOT=ghcr.io/${{ github.repository_owner }}/systemd-boot:${{ inputs.image_version }}
+            UKIADDONS=ghcr.io/${{ github.repository_owner }}/uki-addons:latest
+          extra-args: |
+            --skip-unused-stages=false
+            --security-opt=label=disable
+            --volume /home/runner/work/${{ github.event.repository.name }}/${{ github.event.repository.name }}:/run/src
+
+      - name: "Build final container"
+        uses: redhat-actions/buildah-build@7a95fa7ee0f02d552a32753e7414641a04307056 # v2.13
+        with:
+          image: ${{ inputs.image }}
+          tags: ${{ steps.tags.outputs.tags }}
+          containerfiles: uki/Containerfile.uki
+          oci: true
+          build-args: |
+            BASE=${{ inputs.image }}-base:${{ inputs.base_tag }}-uki
+            KERNEL=${{ inputs.image }}-kernel:${{ inputs.base_tag }}-uki
+            RELEASE=${{ inputs.image_version }}
+          extra-args: |
+            --security-opt=label=disable
+            --volume /home/runner/work/${{ github.event.repository.name }}/${{ github.event.repository.name }}:/run/src
+            --secret id=secureboot_key,src=/tmp/keys/key
+            --secret id=secureboot_crt,src=/tmp/keys/crt
+
+      - name: "Clean up secure boot signing key"
+        if: always()
+        run: rm -vrf /tmp/keys
+
+      - name: "Push to registry"
+        uses: redhat-actions/push-to-registry@5ed88d269cf581ea9ef6dd6806d01562096bee9c # v2.8
+        id: push
+        with:
+          image: ${{ inputs.image }}
+          tags: ${{ steps.tags.outputs.tags }}
+          registry: "ghcr.io/${{ github.repository_owner }}"
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: "Sign container image"
+        run: |
+          cosign sign -y --key env://COSIGN_KEY "ghcr.io/${GITHUB_REPOSITORY_OWNER}/${IMAGE}@${DIGEST}"
+        env:
+          COSIGN_EXPERIMENTAL: false
+          COSIGN_KEY: ${{ secrets.COSIGN_KEY }}
+          IMAGE: ${{ inputs.image }}
+          DIGEST: ${{ steps.push.outputs.digest }}
+
+  provenance:
+    needs: build-sealed-image
+    permissions:
+      actions: read # for detecting the Github Actions environment.
+      id-token: write # for creating OIDC tokens for signing.
+      packages: write # for uploading attestations.
+    # Currently this must be referenced by tag, not by hash:
+    # https://github.com/slsa-framework/slsa-github-generator?tab=readme-ov-file#referencing-slsa-builders-and-generators
+    uses: slsa-framework/slsa-github-generator/.github/workflows/generator_container_slsa3.yml@v2.1.0 # zizmor: ignore[unpinned-uses]
+    with:
+      image: "ghcr.io/${{ github.repository_owner }}/${{ inputs.image }}"
+      digest: ${{ needs.build-sealed-image.outputs.IMAGE_DIGEST }}
+      registry-username: ${{ github.actor }}
+    secrets:
+      registry-password: ${{ secrets.GITHUB_TOKEN }}

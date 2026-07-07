@@ -17,5 +17,6 @@ platforms:
   - linux/amd64
 
 modules:
+  - from-file: common/zfs-modules.yml
   - from-file: common/nvidia-install.yml
   - from-file: common/final-modules.yml

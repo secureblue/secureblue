@@ -19,6 +19,15 @@ on:
         required: true
       KERNEL_PRIVKEY:
         required: true
+    outputs:
+      IMAGE_DIGEST:
+        value: ${{ jobs.bluebuild.outputs.IMAGE_DIGEST }}
+      IMAGE_NAME:
+        value: ${{ jobs.bluebuild.outputs.IMAGE_NAME }}
+      IMAGE_TAG:
+        value: ${{ jobs.bluebuild.outputs.IMAGE_TAG }}
+      IMAGE_VERSION:
+        value: ${{ jobs.bluebuild.outputs.IMAGE_VERSION }}
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}-${{ inputs.recipe }}
@@ -30,8 +39,11 @@ jobs:
     runs-on: ubuntu-26.04
     environment: Build
     outputs:
-      FULL_IMAGE_REF: ${{ steps.runner_setup.outputs.FULL_IMAGE_REF }}
+      FULL_IMAGE_REF: ${{ steps.image_data.outputs.FULL_IMAGE_REF }}
+      IMAGE_NAME: ${{ steps.image_data.outputs.IMAGE_NAME }}
       IMAGE_DIGEST: ${{ steps.image_manifest_metadata.outputs.IMAGE_DIGEST }}
+      IMAGE_TAG: ${{ steps.image_data.outputs.IMAGE_TAG }}
+      IMAGE_VERSION: ${{ steps.image_data.outputs.BASE_IMAGE_VERSION }}
     permissions:
       contents: read # Needed to pull the repo for the build
       packages: write # Needed to publish images
@@ -183,11 +195,64 @@ jobs:
         with:
           persist-credentials: false
 
+      - name: Gather image data from recipe
+        id: image_data
+        shell: bash
+        env:
+          DEFAULT_BRANCH: ${{ github.event.repository.default_branch }}
+          PR_EVENT_NUMBER: ${{ github.event.number }}
+          RECIPE: ${{ inputs.recipe }}
+        run: |
+          IMAGE_NAME=$(yq -r '."name"' "./recipes/${RECIPE}")
+          echo "IMAGE_NAME=${IMAGE_NAME}" >> "${GITHUB_OUTPUT}"
+          echo "BASE_IMAGE=$(yq -r '."base-image"' "./recipes/${RECIPE}")" >> "${GITHUB_OUTPUT}"
+          echo "BASE_IMAGE_VERSION=$(yq -r '."image-version"' "./recipes/${RECIPE}")" >> "${GITHUB_OUTPUT}"
+
+          case "$GITHUB_REF" in
+            refs/heads/"$DEFAULT_BRANCH") image_tag='latest' ;;
+            refs/pull/*) image_tag="pr-${PR_EVENT_NUMBER}-44" ;;
+            *) image_tag="br-${GITHUB_REF_NAME}-44" ;;
+          esac
+          echo "IMAGE_TAG=${image_tag}" >> "${GITHUB_OUTPUT}"
+          FULL_IMAGE_REF="ghcr.io/${GITHUB_REPOSITORY_OWNER,,}/${IMAGE_NAME}:${image_tag}"
+          echo "FULL_IMAGE_REF=${FULL_IMAGE_REF}" >> "${GITHUB_OUTPUT}"
+
       - name: Runner setup
         id: runner_setup
         uses: ./.github/workflows/shared-runner-setup
         with:
-          recipe: ${{ inputs.recipe }}
+          needs_cosign: ${{ steps.image_data.outputs.IMAGE_NAME != 'securecore-main-hardened' && steps.image_data.outputs.IMAGE_NAME != 'iot-main-hardened' }}
+          needs_slsa_crane: ${{ startsWith(steps.image_data.outputs.BASE_IMAGE, format('ghcr.io/{0}/', github.repository_owner)) }}
+
+      - name: Verify base image provenance
+        shell: bash
+        if: startsWith(steps.image_data.outputs.BASE_IMAGE, format('ghcr.io/{0}/', github.repository_owner))
+        env:
+          BASE_IMAGE_VERSION: ${{ steps.image_data.outputs.BASE_IMAGE_VERSION }}
+          BASE_IMAGE: ${{ steps.image_data.outputs.BASE_IMAGE }}
+        run: |
+          DIGEST=$(crane digest "${BASE_IMAGE}:${BASE_IMAGE_VERSION}")
+          slsa-verifier verify-image --source-uri "github.com/${GITHUB_REPOSITORY}" "${BASE_IMAGE}:${BASE_IMAGE_VERSION}@${DIGEST}"
+          # remove slsa-verifier so that it can be successfully reinstalled later by bluebuild
+          rm -rf ~/.slsa/
+
+      - name: Verify base image signature
+        shell: bash
+        if: steps.image_data.outputs.IMAGE_NAME != 'securecore-main-hardened' && steps.image_data.outputs.IMAGE_NAME != 'iot-main-hardened'
+        env:
+          BASE_IMAGE_VERSION: ${{ steps.image_data.outputs.BASE_IMAGE_VERSION }}
+          BASE_IMAGE: ${{ steps.image_data.outputs.BASE_IMAGE }}
+        run: |
+          UPSTREAM_CONTAINER="${BASE_IMAGE}:${BASE_IMAGE_VERSION}"
+          if [[ "$BASE_IMAGE" == "ghcr.io/${GITHUB_REPOSITORY_OWNER}/"* ]]; then
+            UPSTREAM_PUBKEY='./cosign.pub'
+          else
+            UPSTREAM_PUBKEY='./files/system/usr/share/pki/containers/quay.io-fedora-ostree-desktops.pub'
+          fi
+          if ! cosign verify --key "${UPSTREAM_PUBKEY}" "${UPSTREAM_CONTAINER}" | jq; then
+            echo "NOTICE: Verification failed. Please ensure your public key is correct."
+            exit 1
+          fi
 
       - name: Build secureblue
         uses: blue-build/github-action@836161eb076426a451e6a0054f722b1153b8b3ad # v1.12.0
@@ -215,7 +280,7 @@ jobs:
         id: image_manifest_metadata
         shell: bash
         env:
-          FULL_IMAGE_REF: ${{ steps.runner_setup.outputs.FULL_IMAGE_REF }}
+          FULL_IMAGE_REF: ${{ steps.image_data.outputs.FULL_IMAGE_REF }}
         run: |
           IMAGE_DIGEST=$(regctl image digest "${FULL_IMAGE_REF}")
           echo "IMAGE_DIGEST=${IMAGE_DIGEST}" >> "${GITHUB_OUTPUT}"

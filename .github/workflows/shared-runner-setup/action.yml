@@ -7,14 +7,14 @@ name: shared-runner-setup
 description: Build runner setup
 
 inputs:
-  recipe:
-    type: string
-    required: true
-
-outputs:
-  FULL_IMAGE_REF:
-    description: "Full reference for the image to be built"
-    value: ${{ steps.image_data.outputs.FULL_IMAGE_REF }}
+  needs_cosign:
+    description: "Whether to install cosign, otherwise 'false'."
+    required: false
+    default: 'false'
+  needs_slsa_crane:
+    description: "Whether to install slsa-verifier and crane, otherwise 'false'."
+    required: false
+    default: 'false'
 
 runs:
   using: composite
@@ -34,42 +34,19 @@ runs:
         sudo sed -i '/^http:\/\//d' /etc/apt/apt-mirrors.txt
         sudo apt-get update
 
-    - name: Install dependencies
-      shell: bash
-      run: |
-        sudo apt install yq
-
-    - name: Gather image data from recipe
-      id: image_data
-      shell: bash
-      env:
-        DEFAULT_BRANCH: ${{ github.event.repository.default_branch }}
-        PR_EVENT_NUMBER: ${{ github.event.number }}
-        RECIPE: ${{ inputs.recipe }}
-      run: |
-        IMAGE_NAME=$(yq -r '."name"' "./recipes/${RECIPE}")
-        echo "IMAGE_NAME=${IMAGE_NAME}" >> "${GITHUB_OUTPUT}"
-        echo "BASE_IMAGE=$(yq -r '."base-image"' "./recipes/${RECIPE}")" >> "${GITHUB_OUTPUT}"
-        echo "BASE_IMAGE_VERSION=$(yq -r '."image-version"' "./recipes/${RECIPE}")" >> "${GITHUB_OUTPUT}"
-
-        case "$GITHUB_REF" in
-          refs/heads/"$DEFAULT_BRANCH") image_tag='latest' ;;
-          refs/pull/*) image_tag="pr-${PR_EVENT_NUMBER}-44" ;;
-          *) image_tag="br-${GITHUB_REF_NAME}-44" ;;
-        esac
-        FULL_IMAGE_REF="ghcr.io/${GITHUB_REPOSITORY_OWNER,,}/${IMAGE_NAME}:${image_tag}"
-        echo "FULL_IMAGE_REF=${FULL_IMAGE_REF}" >> "${GITHUB_OUTPUT}"
+    - name: Install cosign
+      uses: sigstore/cosign-installer@faadad0cce49287aee09b3a48701e75088a2c6ad # v4.0.0
+      if: ${{ inputs.needs_cosign == 'true' }}
+      with:
+        cosign-release: 'v2.6.0'
 
     - name: Install slsa-verifier
-      if: startsWith(steps.image_data.outputs.BASE_IMAGE, format('ghcr.io/{0}/', github.repository_owner))
+      if: ${{ inputs.needs_slsa_crane == 'true' }}
       uses: slsa-framework/slsa-verifier/actions/installer@ea584f4502babc6f60d9bc799dbbb13c1caa9ee6 # v2.7.1
 
-    - name: Verify base image provenance
+    - name: Install crane
+      if: ${{ inputs.needs_slsa_crane == 'true' }}
       shell: bash
-      if: startsWith(steps.image_data.outputs.BASE_IMAGE, format('ghcr.io/{0}/', github.repository_owner))
-      env:
-        BASE_IMAGE_VERSION: ${{ steps.image_data.outputs.BASE_IMAGE_VERSION }}
-        BASE_IMAGE: ${{ steps.image_data.outputs.BASE_IMAGE }}
       run: |
         # Install crane
         CRANE_VERSION=v0.20.7
@@ -80,6 +57,7 @@ runs:
             -o 'provenance.intoto.jsonl' "https://github.com/google/go-containerregistry/releases/download/${CRANE_VERSION}/multiple.intoto.jsonl"
         slsa-verifier verify-artifact go-containerregistry.tar.gz --provenance-path provenance.intoto.jsonl --source-uri github.com/google/go-containerregistry --source-tag "${CRANE_VERSION}"
         tar -zxvf go-containerregistry.tar.gz -C /usr/local/bin/ crane
+<<<<<<< HEAD
 
         DIGEST=$(crane digest "${BASE_IMAGE}:${BASE_IMAGE_VERSION}")
         slsa-verifier verify-image --source-uri "github.com/${GITHUB_REPOSITORY}" "${BASE_IMAGE}:${BASE_IMAGE_VERSION}@${DIGEST}"
@@ -114,3 +92,5 @@ runs:
           echo "NOTICE: Verification failed. Please ensure your public key is correct."
           exit 1
         fi
+=======
+>>>>>>> 77c7590a (feat(uki): sealed image builds (#2348))

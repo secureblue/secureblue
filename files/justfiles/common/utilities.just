@@ -4,15 +4,6 @@
 #
 # SPDX-License-Identifier: Apache-2.0
 
-# Enroll secureblue's signing key for secure boot - Enter password "secureblue" if prompted
-enroll-secureblue-secure-boot-key:
-    #! /bin/run0 /bin/bash
-    mokutil --timeout -1
-    echo 'The next line will prompt for a MOK password. Input "secureblue".'
-    mokutil --import /usr/share/pki/akmods/certs/akmods-secureblue.der
-    echo 'At next reboot, the mokutil UEFI menu UI will be displayed (*QWERTY* keyboard input and navigation).'
-    echo 'Then, select "Enroll MOK", and input "secureblue" as the password.'
-
 # Clean up old up unused podman images, volumes, flatpak packages and rpm-ostree content
 clean-system:
     #!/usr/bin/bash
@@ -22,7 +13,9 @@ clean-system:
     then
         flatpak uninstall --unused
     fi
-    rpm-ostree cleanup -bm
+    if [[ -f "/usr/bin/rpm-ostree" ]]; then
+        rpm-ostree cleanup -bm
+    fi
 
 # Check for local overrides
 check-local-overrides:
@@ -55,12 +48,17 @@ check-local-overrides:
         --exclude="system.control*" \
         --exclude="cdi" \
         --exclude="default.target" \
-        /usr/etc /etc 2>/dev/null | sed '/Binary\ files\ /d'
+        /usr/share/secureblue/etc /etc 2>/dev/null | sed '/Binary\ files\ /d'
 
 # Debug dump pastebin for issue reporting
 debug-info:
     #!/usr/bin/bash
-    rpm_ostree_status=$(echo -e "=== Rpm-Ostree Status ===\n"; rpm-ostree status --verbose)
+    if [[ -f "/usr/bin/rpm-ostree" ]]; then
+        rpm_ostree_status=$(echo -e "=== Rpm-Ostree Status ===\n"; rpm-ostree status --verbose)
+    else
+        echo "Please authenticate yourself as an administrator to collect debug info."
+        rpm_ostree_status=$(echo -e "=== Bootc Status ===\n"; run0 -i bootc status --verbose)
+    fi
     sysinfo=$(echo -e "\n"; fpaste --sysinfo --printonly)
     flatpaks=$(echo "=== Flatpaks Installed ==="; flatpak list --columns=application,version,options)
     audit_results=$(echo -e "\n=== Audit Results ===\n"; ujust audit-secureblue)
@@ -114,6 +112,10 @@ toolbox-assemble CONTAINER="prompt" ACTION="create" FILE="/etc/toolbox/toolbox.i
 install-docker:
     #!/usr/bin/run0 /bin/bash
     set -euo pipefail
+    if [[ ! -f "/usr/bin/rpm-ostree" ]]; then
+        echo "Cannot layer packages on a UKI system. Try Podman, rootless Docker or a systemd-sysext instead."
+        exit 1
+    fi
     sed -i -e '/^\[docker-ce-stable\]$/,/^\[/s/^enabled *= *0.*/enabled=1/' /etc/yum.repos.d/docker-ce.repo
     rpm-ostree refresh-md
     rpm-ostree install docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
@@ -122,7 +124,11 @@ install-docker:
 uninstall-docker:
     #!/usr/bin/run0 /bin/bash
     set -euo pipefail
-    cp /usr/etc/yum.repos.d/docker-ce.repo /etc/yum.repos.d/docker-ce.repo
+    if [[ ! -f "/usr/bin/rpm-ostree" ]]; then
+        echo "Cannot unlayer packages on a UKI system."
+        exit 1
+    fi
+    cp /usr/share/secureblue/etc/yum.repos.d/docker-ce.repo /etc/yum.repos.d/docker-ce.repo
     rpm-ostree refresh-md
     rpm-ostree uninstall docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
 
@@ -168,9 +174,14 @@ rebase-secureblue:
         image_name+="-main"
     fi
     image_name+="-hardened"
-    full_ref=$(crane digest --full-ref "ghcr.io/secureblue/${image_name}:latest")
+    if [[ -f "/usr/bin/rpm-ostree" ]]; then
+        full_ref=$(crane digest --full-ref "ghcr.io/secureblue/${image_name}:latest")
+        rebase_command="rpm-ostree rebase ostree-image-signed:docker://ghcr.io/secureblue/${image_name}:latest"
+    else
+        full_ref=$(crane digest --full-ref "ghcr.io/secureblue/${image_name}:uki")
+        rebase_command="run0 -i bootc switch ghcr.io/secureblue/${image_name}:uki"
+    fi
     slsa-verifier verify-image --source-uri "github.com/secureblue/secureblue" --source-branch "live" "${full_ref}"
-    rebase_command="rpm-ostree rebase ostree-image-signed:docker://ghcr.io/secureblue/${image_name}:latest"
     printf "Command to execute:\n%s\n\n" "${rebase_command}"
     read -rp "Proceed? [y/N]: " rebase_proceed
     if [[ "${rebase_proceed}" == [Yy]* ]]; then
@@ -232,6 +243,11 @@ label-external-drives:
 install-vpn:
     #!/usr/bin/bash
     set -euo pipefail
+
+    if [[ ! -f "/usr/bin/rpm-ostree" ]]; then
+        echo "Cannot layer packages on a UKI system. Try a systemd-sysext instead."
+        exit 1
+    fi
 
     # supported VPN providers and the security features they need disabled, separated by spaces
     declare -A vpn_providers=(
@@ -467,6 +483,6 @@ setup-usbguard:
         systemctl enable --now usbguard.service
         usbguard add-user "${SUDO_USER}"
     '
-    if ! rpm-ostree status | grep '●' | grep -Eq 'securecore|iot'; then
+    if ! grep -Eq '^IMAGE_ID=.*(securecore|iot)' /usr/lib/os-release; then
         systemctl enable --user --now usbguard-notifier.service
     fi

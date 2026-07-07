@@ -175,8 +175,6 @@ jobs:
       - name: Runner setup
         id: runner_setup
         uses: ./.github/workflows/shared-runner-setup
-        with:
-          recipe: ${{ inputs.recipe }}
 
       - name: Set up test keys
         id: test_keys

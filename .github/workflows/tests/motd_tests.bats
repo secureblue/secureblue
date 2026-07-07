@@ -10,8 +10,8 @@ setup() {
     cp files/system/usr/libexec/deprecated-images.json "${TEMP_TEST_DIR}/deprecated-images.json"
     sed --sandbox \
         -e "s@/usr/libexec/deprecated-images\\.json@${TEMP_TEST_DIR}/deprecated-images.json@g" \
+        -e "s@/usr/bin/rpm-ostree@${TEMP_TEST_DIR}/rpm-ostree@g" \
         files/system/usr/libexec/secureblue-motd > "${TEMP_TEST_DIR}/secureblue-motd"
-    touch /usr/bin/rpm-ostree 
     chmod +x "${TEMP_TEST_DIR}/secureblue-motd"
 }
 

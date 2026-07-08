@@ -32,10 +32,7 @@ def main() -> int:
 
     inner_script = sandbox.SandboxedFunction(
         "dangerzone.py",
-        read_write_paths=[
-            "/etc/yum.repos.d/dangerzone.repo",
-            "/etc/containers/policy.json",
-        ],
+        read_write_paths=["/etc/yum.repos.d/dangerzone.repo"],
     )
     exit_code = sandbox.run(inner_script)
     if exit_code != 0:

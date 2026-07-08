@@ -13,6 +13,8 @@
           (typeattributeset userns_privileged_file_type (file_manager_exec_type)))
 (optional flatpak_userns_privileged_file_type
           (typeattributeset userns_privileged_file_type (flatpak_exec_t)))
+(optional flatpak_helper_userns_privileged_file_type
+          (typeattributeset userns_privileged_file_type (flatpak_helper_exec_t)))
 (optional systemsettings_userns_privileged_file_type
           (typeattributeset userns_privileged_file_type (systemsettings_exec_t)))
 (optional trivalent_userns_privileged_file_type

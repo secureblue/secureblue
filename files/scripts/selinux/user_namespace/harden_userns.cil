@@ -14,6 +14,8 @@
           (typeattributeset userns_privileged_domain (file_manager_type)))
 (optional flatpak_userns_privileged_domain
           (typeattributeset userns_privileged_domain (flatpak_t)))
+(optional flatpak_helper_userns_privileged_domain
+          (typeattributeset userns_privileged_domain (flatpak_helper_t)))
 (optional systemsettings_userns_privileged_domain
           (typeattributeset userns_privileged_domain (systemsettings_t)))
 (optional trivalent_userns_privileged_domain

@@ -98,6 +98,33 @@ def get_legend(width: int = 80) -> str:
         ),
         width=width,
     )
+    legend += "\n\n" + textwrap.fill(
+        textwrap.dedent(
+            _("""\
+            A configuration file at `{0}` accepts two top-level keys: an array `{1}` of categories
+            of checks to skip entirely, and a table `{2}` of checks whose output should be
+            suppressed if their status matches the provided value. For example:
+            """).format("$HOME/.config/secureblue/audit.toml", "skip", "expected")
+        ),
+        width=width,
+    )
+    legend += textwrap.dedent(
+        """
+
+        ```
+        skip = ["flatpak"]
+
+        [expected]
+        "{0}" = "{fail}"
+        "{1}" = "{info}"
+        ```
+        """.format(
+            _("Ensuring no modprobe overrides"),
+            _("Checking whether webcam module is disabled"),
+            fail=_("FAIL").lower(),
+            info=_("INFO").lower(),
+        )
+    )
     return legend
 
 

@@ -216,6 +216,8 @@ def logout(prompt: str | None = None) -> None:
             subprocess.run(
                 ["/usr/bin/qdbus-qt6", "org.kde.Shutdown", "/Shutdown", "logout"], check=True
             )
+        case Image.SILVERBLUE:
+            subprocess.run(["/usr/bin/gnome-session-quit", "--logout"], check=True)
         case _:
             user = command_stdout("/usr/bin/whoami")
             subprocess.run(["/usr/bin/loginctl", "terminate-user", user], check=True)

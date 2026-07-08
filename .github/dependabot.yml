@@ -9,6 +9,11 @@ updates:
   - package-ecosystem: "pre-commit"
     directory: "/"
     schedule:
-      interval: "daily"
+      interval: "weekly"
     cooldown:
       default-days: 7
+    groups:
+      pre-commit:
+        applies-to: "version-updates"
+        patterns:
+          - "*"

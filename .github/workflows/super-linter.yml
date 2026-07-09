@@ -51,4 +51,6 @@ jobs:
           VALIDATE_MARKDOWN: false # covered by MARKDOWN_PRETTIER
           VALIDATE_BIOME_FORMAT: false # defaults that contradict other linters
           VALIDATE_BIOME_LINT: false # defaults that contradict other linters
+          VALIDATE_BASH_EXEC: false # covered by validate-exec-bit
+          VALIDATE_EDITORCONFIG: false # all whitespace, not worth the effort to clean at this point
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

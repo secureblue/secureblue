@@ -35,5 +35,13 @@ jobs:
           LINTER_RULES_PATH: .
           ENABLE_GITHUB_PULL_REQUEST_SUMMARY_COMMENT: false
           MULTI_STATUS: false
-          VALIDATE_YAML: false # covered by YAML_PRETTIER
+          VALIDATE_YAML: false # covered by YAML_PRETTIER      
+          VALIDATE_PYTHON_BLACK: false # PYTHON linting handled by python-lint.yml
+          VALIDATE_PYTHON_FLAKE8: false
+          VALIDATE_PYTHON_ISORT: false
+          VALIDATE_PYTHON_PYLINT: false
+          VALIDATE_PYTHON_RUFF: false
+          VALIDATE_PYTHON_RUFF_FORMAT: false
+          VALIDATE_GITHUB_ACTIONS_ZIZMOR: false
+          VALIDATE_SHELL_SHFMT: false
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

@@ -1,2 +1,3 @@
 [codespell]
 skip = *.po
+ignore-words-list = intoto

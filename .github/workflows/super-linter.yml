@@ -39,9 +39,15 @@ jobs:
           VALIDATE_PYTHON_BLACK: false # PYTHON linting handled by python-lint.yml
           VALIDATE_PYTHON_FLAKE8: false
           VALIDATE_PYTHON_ISORT: false
+          VALIDATE_PYTHON_MYPY: false
           VALIDATE_PYTHON_PYLINT: false
           VALIDATE_PYTHON_RUFF: false
           VALIDATE_PYTHON_RUFF_FORMAT: false
-          VALIDATE_GITHUB_ACTIONS_ZIZMOR: false
-          VALIDATE_SHELL_SHFMT: false
+          VALIDATE_GITHUB_ACTIONS: false # covered by zizmor.yml
+          VALIDATE_GITHUB_ACTIONS_ZIZMOR: false # covered by zizmor.yml
+          VALIDATE_SHELL_SHFMT: false # too many false positives by default
+          VALIDATE_JSCPD: false # too many false positives by default
+          VALIDATE_MARKDOWN: false # covered by MARKDOWN_PRETTIER
+          VALIDATE_BIOME_FORMAT: false # defaults that contradict other linters
+          VALIDATE_BIOME_LINT: false # defaults that contradict other linters
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

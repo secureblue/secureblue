@@ -1,0 +1,39 @@
+---
+name: Super-Linter
+
+on:
+  pull_request:
+    branches:
+      - live
+      - staging
+      - next
+      - testing
+
+permissions: {}
+
+env:
+  LINTER_RULES_PATH: .
+
+jobs:
+  build:
+    name: Super-Linter
+    runs-on: ubuntu-26.04
+
+    permissions:
+      contents: read # to clone the repository
+      packages: read # to read repository packages
+      issues: write # to write results as comments
+      pull-requests: write # to write results as comment
+      statuses: write # To report GitHub Actions status checks
+
+    steps:
+
+      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0  # v7.0.0
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Super-linter
+        uses: super-linter/super-linter@4ce20838b8ab83717e78138c5b3a1407148e0918 # v8.7.0
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

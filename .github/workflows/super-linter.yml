@@ -24,7 +24,6 @@ jobs:
       contents: read # to clone the repository
 
     steps:
-
       - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0  # v7.0.0
         with:
           fetch-depth: 0
@@ -35,4 +34,5 @@ jobs:
         env:
           LINTER_RULES_PATH: .
           ENABLE_GITHUB_PULL_REQUEST_SUMMARY_COMMENT: false
+          MULTI_STATUS: false
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

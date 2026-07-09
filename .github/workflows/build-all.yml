@@ -10,15 +10,15 @@ on:
 
   push:
     branches-ignore: # don't rebuild for dependabot
-      - 'dependabot/**'
-      - 'create-pull-request/**'
+      - "dependabot/**"
+      - "create-pull-request/**"
     paths-ignore: # don't rebuild if only documentation has changed
       - "**.md"
-
+  # checkov:skip=CKV_GHA_7
   workflow_dispatch: # allow manually triggering builds
     inputs:
       clear-plan:
-        description: 'Clear previous layer plan?'
+        description: "Clear previous layer plan?"
         type: boolean
         required: true
         default: false

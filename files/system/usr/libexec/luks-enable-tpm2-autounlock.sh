@@ -101,7 +101,7 @@ if lsinitrd 2>&1 | grep -q tpm2-tss > /dev/null; then
     fi
     rpm-ostree initramfs --enable --arg=--force-add --arg=tpm2-tss
 else
-    ## initramfs already containts tpm2-tss
+    ## initramfs already contains tpm2-tss
     echo "TPM2 already present in initramfs."
 fi
 

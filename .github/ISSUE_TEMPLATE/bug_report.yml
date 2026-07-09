@@ -46,10 +46,9 @@ body:
     attributes:
       label: Image
       description: Your current image
-      placeholder: 'rpm-ostree status'
+      placeholder: "rpm-ostree status"
     validations:
       required: true
-
 
   - type: input
     id: upstream

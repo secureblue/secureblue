@@ -6,7 +6,7 @@
  # must make up their mind.
 -UMASK		022
 +UMASK		027
- 
+
  # HOME_MODE is used by useradd(8) and newusers(8) to set the mode for new
  # home directories.
 @@ -255,7 +255,7 @@
@@ -15,6 +15,5 @@
  #
 -#YESCRYPT_COST_FACTOR 5
 +YESCRYPT_COST_FACTOR 8
- 
+
  # Currently CONSOLE_GROUPS is not supported
- 

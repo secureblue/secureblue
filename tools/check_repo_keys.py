@@ -53,13 +53,13 @@ def gpg_key_fingerprints(key_path: str) -> Generator[str]:
     # Reference for GPG colon-listing format: https://github.com/gpg/gnupg/blob/master/doc/DETAILS
     gpg_output = command_stdout("gpg", "--show-keys", "--with-colons", key_path)
     for line in gpg_output.splitlines():
-        if line.startswith(("fpr:", "fp2:")):
+        if line.startswith(("fpr:", "fp2:")):  # codespell:ignore fpr
             yield line.split(":")[9]
 
 
 def local_key_has_fingerprint(key_path: str, fingerprint: str) -> bool:
     """Check whether local GPG key has the specified fingerprint."""
-    return any(fingerprint == fpr for fpr in gpg_key_fingerprints(key_path))
+    return any(fingerprint == fpr for fpr in gpg_key_fingerprints(key_path))  # codespell:ignore fpr
 
 
 def verify_repo_data(repo_path: str, key_path: str, key_url: str, fingerprint: str) -> bool:

@@ -3,7 +3,7 @@
     "terminology": {
       "defaultTerms": true,
       "exclude": [
-        "web[- ]?site(s?)",
+        "web[- ]?site(s)?",
         "repo\\b"
       ]
     }

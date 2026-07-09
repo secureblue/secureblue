@@ -22,10 +22,6 @@ jobs:
 
     permissions:
       contents: read # to clone the repository
-      packages: read # to read repository packages
-      issues: write # to write results as comments
-      pull-requests: write # to write results as comment
-      statuses: write # To report GitHub Actions status checks
 
     steps:
 
@@ -38,4 +34,5 @@ jobs:
         uses: super-linter/super-linter@4ce20838b8ab83717e78138c5b3a1407148e0918 # v8.7.0
         env:
           LINTER_RULES_PATH: .
+          ENABLE_GITHUB_PULL_REQUEST_SUMMARY_COMMENT: false
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

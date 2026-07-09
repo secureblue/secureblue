@@ -11,9 +11,6 @@ on:
 
 permissions: {}
 
-env:
-  LINTER_RULES_PATH: .
-
 jobs:
   build:
     name: Super-Linter
@@ -36,4 +33,5 @@ jobs:
       - name: Super-linter
         uses: super-linter/super-linter@4ce20838b8ab83717e78138c5b3a1407148e0918 # v8.7.0
         env:
+          LINTER_RULES_PATH: .
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

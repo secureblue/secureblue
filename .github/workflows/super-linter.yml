@@ -35,4 +35,5 @@ jobs:
           LINTER_RULES_PATH: .
           ENABLE_GITHUB_PULL_REQUEST_SUMMARY_COMMENT: false
           MULTI_STATUS: false
+          VALIDATE_YAML: false # covered by YAML_PRETTIER
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

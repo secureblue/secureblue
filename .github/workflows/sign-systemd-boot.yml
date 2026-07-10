@@ -24,7 +24,7 @@ jobs:
   build-systemd-boot:
     name: "Build systemd boot"
     runs-on: "ubuntu-26.04"
-    environment: Build
+    environment: UKIBuild
     if: github.triggering_actor == 'royaloughtness'
     permissions:
       contents: read # Needed to pull the repo for the build

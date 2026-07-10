@@ -25,7 +25,6 @@ runs:
         echo 'set man-db/auto-update false' | sudo debconf-communicate
         sudo dpkg-reconfigure man-db
         sudo rm -f /var/lib/man-db/auto-update
-        sudo sed -i 's/^update_initramfs=.*/update_initramfs=no/' /etc/initramfs-tools/update-initramfs.conf
 
     - name: Drop Ubuntu HTTP mirrors and chrome repo
       shell: bash

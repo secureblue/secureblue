@@ -75,6 +75,7 @@ cd "zfs-${ZFS_VERSION}"
 # We want to exit if either A or B is false
 # shellcheck disable=SC2015
 ./configure \
+        --enable-linux-experimental
         -with-linux="/usr/src/kernels/${KERNEL_VERSION}/" \
         -with-linux-obj="/usr/src/kernels/${KERNEL_VERSION}/" \
     && make -j "$(nproc)" rpm-utils rpm-kmod \

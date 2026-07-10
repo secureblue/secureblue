@@ -19,10 +19,10 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  sign:
-    name: "Sign UKI addons"
+  build-uki-addons:
+    name: "Build UKI addons"
     runs-on: "ubuntu-26.04"
-    environment: Build
+    environment: UKIBuild
     if: github.triggering_actor == 'royaloughtness'
     permissions:
       contents: read # Needed to pull the repo for the build
@@ -82,16 +82,25 @@ jobs:
           image: "uki-addons"
           tags: "latest ${{ github.run_number }}"
 
+  sign-uki-addons:
+    needs: build-uki-addons
+    name: "Sign uki addons"
+    environment: Build
+    runs-on: "ubuntu-26.04"
+    permissions:
+      contents: read # Needed to pull the repo for the build
+      packages: write # Needed to sign images
+    steps:
       - name: "Sign container image"
         run: |
           cosign sign -y --key env://COSIGN_KEY ghcr.io/${GITHUB_REPOSITORY_OWNER}/uki-addons@${DIGEST}
         env:
           COSIGN_EXPERIMENTAL: false
           COSIGN_KEY: ${{ secrets.SIGNING_SECRET }}
-          DIGEST: ${{ steps.push.outputs.digest }}
+          DIGEST: ${{ needs.build-uki-addons.outputs.IMAGE_DIGEST }}
 
   provenance:
-    needs: sign
+    needs: sign-uki-addons
     permissions:
       actions: read # for detecting the Github Actions environment.
       id-token: write # for creating OIDC tokens for signing.
@@ -101,7 +110,7 @@ jobs:
     uses: slsa-framework/slsa-github-generator/.github/workflows/generator_container_slsa3.yml@v2.1.0 # zizmor: ignore[unpinned-uses]
     with:
       image: "ghcr.io/${{ github.repository_owner }}/uki-addons"
-      digest: ${{ needs.sign.outputs.DIGEST }}
+      digest: ${{ needs.build-uki-addons.outputs.IMAGE_DIGEST }}
       registry-username: ${{ github.actor }}
     secrets:
       registry-password: ${{ secrets.GITHUB_TOKEN }}

@@ -21,8 +21,8 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  build-systemd-boot:
-    name: "Build systemd boot"
+  uki-sign-systemd-boot:
+    name: "Build and UKI-sign systemd boot"
     runs-on: "ubuntu-26.04"
     environment: UKIBuild
     if: github.triggering_actor == 'royaloughtness'
@@ -84,9 +84,9 @@ jobs:
           image: "systemd-boot"
           tags: ${{ env.FEDORA_RELEASE }}
 
-  sign-systemd-boot:
-    needs: build-systemd-boot
-    name: "Sign systemd boot"
+  cosign-systemd-boot:
+    needs: uki-sign-systemd-boot
+    name: "Cosign systemd boot"
     environment: Build
     runs-on: "ubuntu-26.04"
     permissions:
@@ -102,7 +102,7 @@ jobs:
           DIGEST: ${{ needs.build-systemd-boot.outputs.IMAGE_DIGEST }}
 
   provenance:
-    needs: sign-systemd-boot
+    needs: cosign-systemd-boot
     permissions:
       actions: read # for detecting the Github Actions environment.
       id-token: write # for creating OIDC tokens for signing.
@@ -112,7 +112,7 @@ jobs:
     uses: slsa-framework/slsa-github-generator/.github/workflows/generator_container_slsa3.yml@v2.1.0 # zizmor: ignore[unpinned-uses]
     with:
       image: "ghcr.io/${{ github.repository_owner }}/systemd-boot"
-      digest: ${{ needs.build-systemd-boot.outputs.DIGEST }}
+      digest: ${{ needs.build-systemd-boot.outputs.IMAGE_DIGEST }}
       registry-username: ${{ github.actor }}
     secrets:
       registry-password: ${{ secrets.GITHUB_TOKEN }}

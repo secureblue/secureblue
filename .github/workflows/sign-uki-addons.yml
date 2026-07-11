@@ -19,8 +19,8 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  build-uki-addons:
-    name: "Build UKI addons"
+  uki-sign-uki-addons:
+    name: "Build and UKI-sign UKI addons"
     runs-on: "ubuntu-26.04"
     environment: UKIBuild
     if: github.triggering_actor == 'royaloughtness'
@@ -82,16 +82,16 @@ jobs:
           image: "uki-addons"
           tags: "latest ${{ github.run_number }}"
 
-  sign-uki-addons:
-    needs: build-uki-addons
-    name: "Sign uki addons"
+  cosign-uki-addons:
+    needs: uki-sign-uki-addons
+    name: "Cosign uki addons"
     environment: Build
     runs-on: "ubuntu-26.04"
     permissions:
       contents: read # Needed to pull the repo for the build
       packages: write # Needed to sign images
     steps:
-      - name: "Sign container image"
+      - name: "Cosign container image"
         run: |
           cosign sign -y --key env://COSIGN_KEY ghcr.io/${GITHUB_REPOSITORY_OWNER}/uki-addons@${DIGEST}
         env:
@@ -100,7 +100,7 @@ jobs:
           DIGEST: ${{ needs.build-uki-addons.outputs.IMAGE_DIGEST }}
 
   provenance:
-    needs: sign-uki-addons
+    needs: cosign-uki-addons
     permissions:
       actions: read # for detecting the Github Actions environment.
       id-token: write # for creating OIDC tokens for signing.

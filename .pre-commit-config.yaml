@@ -3,8 +3,9 @@ repos:
     rev: 3e8a8703264a2f4a69428a0aa4dcb512790b2c8c # v6.0.0
     hooks:
       - id: end-of-file-fixer
-      - id: trailing-whitespace
+      - id: trailing-whitespace       
         args: ["--markdown-linebreak-ext=md,patch"]
+        exclude: '\.patch$'
 
   - repo: https://github.com/zizmorcore/zizmor-pre-commit
     rev: e3eebf65325ccc992422292cb7a4baee967cf815 # v1.26.1

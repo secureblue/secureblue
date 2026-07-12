@@ -101,7 +101,7 @@ jobs:
         env:
           COSIGN_EXPERIMENTAL: false
           COSIGN_KEY: ${{ secrets.SIGNING_SECRET }}
-          DIGEST: ${{ needs.build-uki-addons.outputs.IMAGE_DIGEST }}
+          DIGEST: ${{ needs.uki-sign-uki-addons.outputs.IMAGE_DIGEST }}
 
   provenance:
     needs: cosign-uki-addons
@@ -114,7 +114,7 @@ jobs:
     uses: slsa-framework/slsa-github-generator/.github/workflows/generator_container_slsa3.yml@v2.1.0 # zizmor: ignore[unpinned-uses]
     with:
       image: "ghcr.io/${{ github.repository_owner }}/uki-addons"
-      digest: ${{ needs.build-uki-addons.outputs.IMAGE_DIGEST }}
+      digest: ${{ needs.uki-sign-uki-addons.outputs.IMAGE_DIGEST }}
       registry-username: ${{ github.actor }}
     secrets:
       registry-password: ${{ secrets.GITHUB_TOKEN }}

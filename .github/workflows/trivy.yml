@@ -6,8 +6,9 @@ name: trivy
 permissions: {}
 on:
   schedule:
-    - cron: "00 8 * * *" # build at 8:00 UTC every day
-                         # 120 minutes after secureblue images start building
+    - cron:
+        "00 8 * * *" # build at 8:00 UTC every day
+        # 120 minutes after secureblue images start building
   push:
     branches:
       - live
@@ -36,10 +37,10 @@ jobs:
       - name: Run Trivy vulnerability scanner
         uses: aquasecurity/trivy-action@ed142fd0673e97e23eac54620cfb913e5ce36c25 # v0.36.0
         with:
-          image-ref: 'ghcr.io/secureblue/silverblue-main-hardened:latest'
+          image-ref: "ghcr.io/secureblue/silverblue-main-hardened:latest"
           format: template
           scanners: vuln,secret,misconfig
-          template: '@/contrib/sarif.tpl'
+          template: "@/contrib/sarif.tpl"
           output: trivy-results.sarif
           timeout: 30m0s
           skip-dirs: "/sysroot/ostree"

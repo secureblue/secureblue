@@ -24,7 +24,7 @@ def main() -> int:
             )
         return 0
     except CalledProcessError:
-        print("An unexpected error occured.")
+        print("An unexpected error occurred.")
         return 1
 
 

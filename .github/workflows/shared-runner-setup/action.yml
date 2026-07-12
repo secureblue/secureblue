@@ -95,7 +95,7 @@ runs:
       uses: sigstore/cosign-installer@faadad0cce49287aee09b3a48701e75088a2c6ad # v4.0.0
       if: steps.image_data.outputs.IMAGE_NAME != 'securecore-main-hardened' && steps.image_data.outputs.IMAGE_NAME != 'iot-main-hardened'
       with:
-        cosign-release: 'v2.6.0'
+        cosign-release: "v2.6.0"
 
     - name: Verify base image
       shell: bash

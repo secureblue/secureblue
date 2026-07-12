@@ -108,7 +108,7 @@ def main() -> int:
             case _ as unreachable:
                 assert_never(unreachable)
     except subprocess.CalledProcessError:
-        print("An unexpected error occured.")
+        print("An unexpected error occurred.")
         return 1
 
     return 0

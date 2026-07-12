@@ -177,7 +177,7 @@ jobs:
 
   cosign-sealed-image:
     needs: uki-sign-sealed-image
-    name: "Coign sealed image"
+    name: "Cosign sealed image"
     environment: Build
     runs-on: "ubuntu-26.04"
     permissions:

@@ -16,7 +16,7 @@ concurrency:
 jobs:
   update-po:
     name: Update PO files
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-26.04
     environment: Create_PR
     permissions:
       contents: write  # needed to create branch

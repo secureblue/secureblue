@@ -20,7 +20,7 @@ repos:
       - id: ruff-format
 
   - repo: https://github.com/astral-sh/ty-pre-commit
-    rev: 73e808ce6d5bdbf3bf7950ef1a8c0a035c44a2c6 # v0.0.55
+    rev: a6000401e1ca0cf427a8398b42fd636a3a0dcb54 # v0.0.56
     hooks:
       - id: ty
         args: [--isolated]

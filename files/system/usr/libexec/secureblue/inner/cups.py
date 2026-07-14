@@ -83,7 +83,7 @@ def main() -> int:
                 print("Please provide a valid argument (on/off).")
                 return 1
     except subprocess.CalledProcessError:
-        print("An unexpected error occured.")
+        print("An unexpected error occurred.")
         return 1
 
 

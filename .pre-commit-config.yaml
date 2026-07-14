@@ -4,7 +4,8 @@ repos:
     hooks:
       - id: end-of-file-fixer
       - id: trailing-whitespace
-        args: ['--markdown-linebreak-ext=md,patch']
+        args: ["--markdown-linebreak-ext=md,patch"]
+        exclude: "\\.patch$"
 
   - repo: https://github.com/zizmorcore/zizmor-pre-commit
     rev: e3eebf65325ccc992422292cb7a4baee967cf815 # v1.26.1
@@ -19,7 +20,7 @@ repos:
       - id: ruff-format
 
   - repo: https://github.com/astral-sh/ty-pre-commit
-    rev: 73e808ce6d5bdbf3bf7950ef1a8c0a035c44a2c6 # v0.0.55
+    rev: a6000401e1ca0cf427a8398b42fd636a3a0dcb54 # v0.0.56
     hooks:
       - id: ty
         args: [--isolated]

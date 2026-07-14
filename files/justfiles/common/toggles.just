@@ -55,7 +55,7 @@ toggle-bash-environment-lockdown skip_approval="false" apply_for_all_users="prom
     # shellcheck disable=SC1091
     source /usr/lib/ujust/libformatting.sh
 
-    # The below function fetches the minimium and maximium UIDS as configured in /etc/login.defs.
+    # The below function fetches the minimum and maximum UIDS as configured in /etc/login.defs.
     # Any UIDs within this change are true user ids rather than system agents, and therefore
     # should be locked down. The user_string variable uses this fetched UID range to find all
     # existing users and their home directory along with formatting this data for later use.
@@ -99,7 +99,7 @@ toggle-bash-environment-lockdown skip_approval="false" apply_for_all_users="prom
             exit
         fi
     elif [[ "{{ skip_approval }}" != "true" ]]; then
-        echo 'Invalid skip_approval arguement, only "true", "false", or empty allowed.'
+        echo 'Invalid skip_approval argument, only "true", "false", or empty allowed.'
         exit
     fi
 

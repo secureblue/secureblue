@@ -10,6 +10,7 @@ on:
       - live
       - staging
       - next
+      - testing
     paths:
       - "**.just"
 

@@ -93,10 +93,16 @@ jobs:
       contents: read # Needed to pull the repo for the build
       packages: write # Needed to sign images
     steps:
+      - name: "Check out repository"
+        uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
+        with:
+          persist-credentials: false
+
       - name: "Set up runner"
         uses: ./.github/workflows/shared-runner-setup
         with:
           needs_cosign: true
+
       - name: "Sign container image"
         run: |
           cosign sign -y --key env://COSIGN_KEY ghcr.io/${GITHUB_REPOSITORY_OWNER}/systemd-boot@${DIGEST}

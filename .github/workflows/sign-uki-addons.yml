@@ -117,7 +117,7 @@ jobs:
           DIGEST: ${{ needs.uki-sign-uki-addons.outputs.IMAGE_DIGEST }}
 
   provenance:
-    needs: cosign-uki-addons
+    needs: uki-sign-uki-addons
     permissions:
       actions: read # for detecting the Github Actions environment.
       id-token: write # for creating OIDC tokens for signing.

@@ -72,6 +72,22 @@ fi
 tar -z -x --no-same-owner --no-same-permissions -f "zfs-${ZFS_VERSION}.tar.gz"
 
 cd "zfs-${ZFS_VERSION}"
+
+# SPDX-SnippetBegin
+# SPDX-SnippetCopyrightText: Copyright 2026 ArchZFS Contributors
+#
+# SPDX-License-Identifier: MIT
+# Source: https://github.com/archzfs/archzfs/blob/master/src/zfs-dkms/PKGBUILD.sh#L25
+case "${ZFS_VERSION}" in
+    2.4.2|2.4.3)
+        # These releases contain Linux 7.1 compatibility, but their
+        # metadata predates the support marker.
+        sed -Ei 's/^Linux-Maximum: (7\.0|99\.99)$/Linux-Maximum: 7.1/' META
+        grep -qx 'Linux-Maximum: 7.1' META
+        ;;
+esac
+# SPDX-SnippetEnd
+
 # We want to exit if either A or B is false
 # shellcheck disable=SC2015
 ./configure \

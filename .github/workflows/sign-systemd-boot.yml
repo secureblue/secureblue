@@ -21,16 +21,16 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  sign:
-    name: "Sign systemd boot"
+  uki-sign-systemd-boot:
+    name: "Build and UKI-sign systemd boot"
     runs-on: "ubuntu-26.04"
-    environment: Build
+    environment: UKIBuild
     if: github.triggering_actor == 'royaloughtness'
     permissions:
       contents: read # Needed to pull the repo for the build
       packages: write # Needed to publish images
     outputs:
-      DIGEST: ${{ steps.push.outputs.digest }}
+      IMAGE_DIGEST: ${{ steps.push.outputs.digest }}
     steps:
       - name: "Checkout repo"
         uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
@@ -84,16 +84,29 @@ jobs:
           image: "systemd-boot"
           tags: ${{ env.FEDORA_RELEASE }}
 
+  cosign-systemd-boot:
+    needs: uki-sign-systemd-boot
+    name: "Cosign systemd boot"
+    environment: Build
+    runs-on: "ubuntu-26.04"
+    permissions:
+      contents: read # Needed to pull the repo for the build
+      packages: write # Needed to sign images
+    steps:
+      - name: "Set up runner"
+        uses: ./.github/workflows/shared-runner-setup
+        with:
+          needs_cosign: true
       - name: "Sign container image"
         run: |
           cosign sign -y --key env://COSIGN_KEY ghcr.io/${GITHUB_REPOSITORY_OWNER}/systemd-boot@${DIGEST}
         env:
           COSIGN_EXPERIMENTAL: false
           COSIGN_KEY: ${{ secrets.SIGNING_SECRET }}
-          DIGEST: ${{ steps.push.outputs.digest }}
+          DIGEST: ${{ needs.uki-sign-systemd-boot.outputs.IMAGE_DIGEST }}
 
   provenance:
-    needs: sign
+    needs: cosign-systemd-boot
     permissions:
       actions: read # for detecting the Github Actions environment.
       id-token: write # for creating OIDC tokens for signing.
@@ -103,7 +116,7 @@ jobs:
     uses: slsa-framework/slsa-github-generator/.github/workflows/generator_container_slsa3.yml@v2.1.0 # zizmor: ignore[unpinned-uses]
     with:
       image: "ghcr.io/${{ github.repository_owner }}/systemd-boot"
-      digest: ${{ needs.sign.outputs.DIGEST }}
+      digest: ${{ needs.uki-sign-systemd-boot.outputs.IMAGE_DIGEST }}
       registry-username: ${{ github.actor }}
     secrets:
       registry-password: ${{ secrets.GITHUB_TOKEN }}

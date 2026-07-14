@@ -36,8 +36,8 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  build-sealed-image:
-    name: "Build sealed image"
+  uki-sign-sealed-image:
+    name: "Build and UKI-sign sealed image"
     environment: UKIBuild
     runs-on: "ubuntu-26.04"
     outputs:
@@ -175,15 +175,19 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
-  sign-sealed-image:
-    needs: build-sealed-image
-    name: "Sign sealed image"
+  cosign-sealed-image:
+    needs: uki-sign-sealed-image
+    name: "Cosign sealed image"
     environment: Build
     runs-on: "ubuntu-26.04"
     permissions:
       contents: read # Needed to pull the repo for the build
       packages: write # Needed to sign images
     steps:
+      - name: "Set up runner"
+        uses: ./.github/workflows/shared-runner-setup
+        with:
+          needs_cosign: true
       - name: "Sign container image"
         run: |
           cosign sign -y --key env://COSIGN_KEY "ghcr.io/${GITHUB_REPOSITORY_OWNER}/${IMAGE}@${DIGEST}"
@@ -194,7 +198,7 @@ jobs:
           DIGEST: ${{ needs.build-sealed-image.outputs.IMAGE_DIGEST }}
 
   provenance:
-    needs: sign-sealed-image
+    needs: cosign-sealed-image
     permissions:
       actions: read # for detecting the Github Actions environment.
       id-token: write # for creating OIDC tokens for signing.

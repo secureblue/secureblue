@@ -19,16 +19,16 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  sign:
-    name: "Sign UKI addons"
+  uki-sign-uki-addons:
+    name: "Build and UKI-sign UKI addons"
     runs-on: "ubuntu-26.04"
-    environment: Build
+    environment: UKIBuild
     if: github.triggering_actor == 'royaloughtness'
     permissions:
       contents: read # Needed to pull the repo for the build
       packages: write # Needed to publish images
     outputs:
-      DIGEST: ${{ steps.push.outputs.digest }}
+      IMAGE_DIGEST: ${{ steps.push.outputs.digest }}
     steps:
       - name: "Check out repository"
         uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
@@ -82,16 +82,29 @@ jobs:
           image: "uki-addons"
           tags: "latest ${{ github.run_number }}"
 
-      - name: "Sign container image"
+  cosign-uki-addons:
+    needs: uki-sign-uki-addons
+    name: "Cosign uki addons"
+    environment: Build
+    runs-on: "ubuntu-26.04"
+    permissions:
+      contents: read # Needed to pull the repo for the build
+      packages: write # Needed to sign images
+    steps:
+      - name: "Set up runner"
+        uses: ./.github/workflows/shared-runner-setup
+        with:
+          needs_cosign: true
+      - name: "Cosign container image"
         run: |
           cosign sign -y --key env://COSIGN_KEY ghcr.io/${GITHUB_REPOSITORY_OWNER}/uki-addons@${DIGEST}
         env:
           COSIGN_EXPERIMENTAL: false
           COSIGN_KEY: ${{ secrets.SIGNING_SECRET }}
-          DIGEST: ${{ steps.push.outputs.digest }}
+          DIGEST: ${{ needs.uki-sign-uki-addons.outputs.IMAGE_DIGEST }}
 
   provenance:
-    needs: sign
+    needs: cosign-uki-addons
     permissions:
       actions: read # for detecting the Github Actions environment.
       id-token: write # for creating OIDC tokens for signing.
@@ -101,7 +114,7 @@ jobs:
     uses: slsa-framework/slsa-github-generator/.github/workflows/generator_container_slsa3.yml@v2.1.0 # zizmor: ignore[unpinned-uses]
     with:
       image: "ghcr.io/${{ github.repository_owner }}/uki-addons"
-      digest: ${{ needs.sign.outputs.DIGEST }}
+      digest: ${{ needs.uki-sign-uki-addons.outputs.IMAGE_DIGEST }}
       registry-username: ${{ github.actor }}
     secrets:
       registry-password: ${{ secrets.GITHUB_TOKEN }}

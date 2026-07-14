@@ -119,7 +119,7 @@ jobs:
           DIGEST: ${{ needs.uki-sign-systemd-boot.outputs.IMAGE_DIGEST }}
 
   provenance:
-    needs: cosign-systemd-boot
+    needs: [ cosign-systemd-boot, uki-sign-systemd-boot ]
     permissions:
       actions: read # for detecting the Github Actions environment.
       id-token: write # for creating OIDC tokens for signing.

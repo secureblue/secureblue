@@ -59,6 +59,7 @@ jobs:
       - name: "Set up runner"
         uses: ./.github/workflows/shared-runner-setup
         with:
+          needs_cosign: true
           needs_slsa_crane: true
 
       - name: "Log in to registry"

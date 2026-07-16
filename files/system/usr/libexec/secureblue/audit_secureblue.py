@@ -765,7 +765,7 @@ def audit_groups():
 
     username = getpass.getuser()
     known_groups = (username, "brewadmin", "usbguard", "wheel")
-    dangerous_groups = ("docker", "libvirt")
+    dangerous_groups = ("docker", "libvirt", "lxd")
     status = PASS
     notes = []
     recs = []

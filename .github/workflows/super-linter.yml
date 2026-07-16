@@ -1,0 +1,56 @@
+---
+name: Super-Linter
+
+on:
+  pull_request:
+    branches:
+      - live
+      - staging
+      - next
+      - testing
+
+permissions: {}
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    name: Super-Linter
+    runs-on: ubuntu-26.04
+
+    permissions:
+      contents: read # to clone the repository
+
+    steps:
+      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Super-linter
+        uses: super-linter/super-linter@4ce20838b8ab83717e78138c5b3a1407148e0918 # v8.7.0
+        env:
+          LINTER_RULES_PATH: .
+          ENABLE_GITHUB_PULL_REQUEST_SUMMARY_COMMENT: false
+          MULTI_STATUS: false
+          VALIDATE_YAML: false # covered by YAML_PRETTIER
+          VALIDATE_PYTHON_BLACK: false # PYTHON linting handled by python-lint.yml
+          VALIDATE_PYTHON_FLAKE8: false
+          VALIDATE_PYTHON_ISORT: false
+          VALIDATE_PYTHON_MYPY: false
+          VALIDATE_PYTHON_PYLINT: false
+          VALIDATE_PYTHON_RUFF: false
+          VALIDATE_PYTHON_RUFF_FORMAT: false
+          VALIDATE_GITHUB_ACTIONS: false # covered by zizmor.yml
+          VALIDATE_GITHUB_ACTIONS_ZIZMOR: false # covered by zizmor.yml
+          SKIP: zizmor # covered by zizmor.yml
+          VALIDATE_SHELL_SHFMT: false # too many false positives by default
+          VALIDATE_JSCPD: false # too many false positives by default
+          VALIDATE_MARKDOWN: false # covered by MARKDOWN_PRETTIER
+          VALIDATE_BIOME_FORMAT: false # defaults that contradict other linters
+          VALIDATE_BIOME_LINT: false # defaults that contradict other linters
+          VALIDATE_BASH_EXEC: false # covered by validate-exec-bit
+          VALIDATE_EDITORCONFIG: false # all whitespace, not worth the effort to clean at this point
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

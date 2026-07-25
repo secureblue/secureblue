@@ -6,6 +6,10 @@ name: build-sealed-image
 
 permissions: {}
 
+env:
+  # For CoreOS (which has version "next"), use systemd-boot from F44.
+  IMAGE_VERSION: ${{ inputs.image_version == 'next' && '44' || inputs.image_version }}
+
 on:
   workflow_call:
     inputs:
@@ -51,6 +55,11 @@ jobs:
         with:
           egress-policy: audit
 
+      - name: "Free disk space"
+        uses: hastd/free-disk-space@68572aeaadb7f76bd408246328e95926323402b5 # v0.1.2
+        with:
+          skip-if-available: "64G"
+
       - name: "Check out repository"
         uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
         with:
@@ -72,8 +81,6 @@ jobs:
       - name: "Get base image digests"
         id: base_image_digests
         shell: bash
-        env:
-          IMAGE_VERSION: ${{ inputs.image_version }}
         run: |
           SYSTEMD_BOOT_DIGEST=$(crane digest "ghcr.io/${GITHUB_REPOSITORY_OWNER}/systemd-boot:${IMAGE_VERSION}")
           echo "SYSTEMD_BOOT_DIGEST=${SYSTEMD_BOOT_DIGEST}" >> "${GITHUB_OUTPUT}"
@@ -108,7 +115,6 @@ jobs:
           echo "tags=${tags}" >> "$GITHUB_OUTPUT"
         env:
           BASE_TAG: ${{ inputs.base_tag }}
-          IMAGE_VERSION: ${{ inputs.image_version }}
 
       - name: "Get secure boot signing key"
         run: |
@@ -137,7 +143,7 @@ jobs:
           oci: true
           build-args: |
             BASE=ghcr.io/${{ github.repository_owner }}/${{ inputs.image }}@${{ inputs.base_digest }}
-            SYSTEMDBOOT=ghcr.io/${{ github.repository_owner }}/systemd-boot:${{ inputs.image_version }}
+            SYSTEMDBOOT=ghcr.io/${{ github.repository_owner }}/systemd-boot:${{ env.IMAGE_VERSION }}
             UKIADDONS=ghcr.io/${{ github.repository_owner }}/uki-addons:latest
           extra-args: |
             --skip-unused-stages=false
@@ -154,7 +160,7 @@ jobs:
           build-args: |
             BASE=${{ inputs.image }}-base:${{ inputs.base_tag }}-uki
             KERNEL=${{ inputs.image }}-kernel:${{ inputs.base_tag }}-uki
-            RELEASE=${{ inputs.image_version }}
+            RELEASE=${{ env.IMAGE_VERSION }}
           extra-args: |
             --security-opt=label=disable
             --volume /home/runner/work/${{ github.event.repository.name }}/${{ github.event.repository.name }}:/run/src

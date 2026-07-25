@@ -10,12 +10,36 @@ cd "$(dirname "$0")"
 
 github_repo_owner="secureblue"
 github_repo_name="secureblue"
-image_ref="ghcr.io/${github_repo_owner}/silverblue-main-hardened:uki"
+ghcr_tag="br-testing-44-uki"
 
 if [[ $(/usr/bin/id -u) -ne 0 ]]; then
     echo "This script must be run as root."
     exit 1
 fi
+
+valid_images=(
+    silverblue-main-hardened
+    kinoite-main-hardened
+    sericea-main-hardened
+    cosmic-main-hardened
+    iot-main-hardened
+    securecore-main-hardened
+)
+echo "Choose an image to install:"
+printf -- "- %s\n" "${valid_images[@]}"
+read -r -p "Enter a full image name: " ghcr_image
+valid=0
+for image in "${valid_images[@]}"; do
+    if [[ "${ghcr_image}" == "${image}" ]]; then
+        valid=1
+        break
+    fi
+done
+if [[ "${valid}" -ne 1 ]]; then
+    echo "Invalid image."
+    exit 1
+fi
+image_ref="ghcr.io/${github_repo_owner}/${ghcr_image}:${ghcr_tag}"
 
 # The CoreOS installer has a permissive container policy by default.
 mkdir -p /etc/pki/containers

@@ -1,0 +1,16 @@
+misconfigurations:
+  - id: AVD-DS-0001
+    statement: "False positive - tag not needed if image is overridden"
+
+  - id: AVD-DS-0002
+    statement: "False positive - bootc Containerfiles are rootful"
+
+  - id: AVD-DS-0019
+    statement: "False positive - cleanup not needed if the container is unshipped"
+    paths:
+      - "uki/Containerfile.addons"
+      - "uki/Containerfile.systemd-boot"
+      - "uki/Containerfile.uki"
+
+  - id: AVD-DS-0026
+    statement: "False positive - HEALTHCHECK doesn't make sense for bootc"

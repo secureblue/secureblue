@@ -10,11 +10,11 @@ inputs:
   needs_cosign:
     description: "Whether to install cosign, otherwise 'false'."
     required: false
-    default: 'false'
+    default: "false"
   needs_slsa_crane:
     description: "Whether to install slsa-verifier and crane, otherwise 'false'."
     required: false
-    default: 'false'
+    default: "false"
 
 runs:
   using: composite

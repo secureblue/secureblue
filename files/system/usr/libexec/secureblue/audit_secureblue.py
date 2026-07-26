@@ -590,7 +590,7 @@ def audit_update_timer():
     # On OSTree systems, also check the rpm-ostree config to see if updates are disabled.
     bad_rpm_ostreed_conf = False
     try:
-        config = configparser.ConfigParser()
+        config = configparser.ConfigParser(delimiters=("=",))
         config.read("/etc/rpm-ostreed.conf")
         if config["Daemon"].get("AutomaticUpdatePolicy") not in ("stage", "apply"):
             bad_rpm_ostreed_conf = True
@@ -783,7 +783,7 @@ def audit_groups():
 
     username = getpass.getuser()
     known_groups = (username, "brewadmin", "usbguard", "wheel")
-    dangerous_groups = ("docker", "libvirt")
+    dangerous_groups = ("docker", "libvirt", "lxd")
     status = PASS
     notes = []
     recs = []
@@ -886,9 +886,7 @@ def audit_thumbnailing(state):
             de = _("GNOME")
             # show-image-thumbnails controls all thumbnailing
             thumbnail_gsetting_output = command_stdout(
-                "command",
-                "-p",
-                "gsettings",
+                "/usr/bin/gsettings",
                 "get",
                 "org.gnome.nautilus.preferences",
                 "show-image-thumbnails",
@@ -898,7 +896,7 @@ def audit_thumbnailing(state):
             de = _("KDE Plasma")
             dolphinrc_file = Path.home() / ".config/dolphinrc"
             if dolphinrc_file.exists():
-                config = configparser.ConfigParser()
+                config = configparser.ConfigParser(delimiters=("=",), allow_unnamed_section=True)
                 config.read(dolphinrc_file)
                 thumbnail_plugins = config.get("PreviewSettings", "Plugins", fallback="")
                 thumbnailing_disabled = thumbnail_plugins == ""
@@ -912,7 +910,9 @@ def audit_thumbnailing(state):
             de = _("COSMIC")
             status = INFO
             note = Note(_("COSMIC Files doesn't yet support disabling thumbnails."), INFO)
-            yield Report(_("Ensuring thumbnailing is disabled for COSMIC"), status, notes=note)
+            yield Report(
+                _("Ensuring thumbnailing is disabled for {0}").format(de), status, notes=note
+            )
             return
         case _:
             return
@@ -928,7 +928,7 @@ def audit_thumbnailing(state):
             "https://secureblue.dev/faq#thumbnailing",
         ]
         rec = "\n".join(rec_lines)
-    yield Report(_("Ensuring {0} is disabled for {1}").format("thumbnailing", de), status, recs=rec)
+    yield Report(_("Ensuring thumbnailing is disabled for {0}").format(de), status, recs=rec)
 
 
 @audit
@@ -938,9 +938,7 @@ def audit_gnome_extensions(state):
     if state["image"] != Image.SILVERBLUE:
         return
     allowed = command_stdout(
-        "command",
-        "-p",
-        "gsettings",
+        "/usr/bin/gsettings",
         "get",
         "org.gnome.shell",
         "allow-extension-installation",

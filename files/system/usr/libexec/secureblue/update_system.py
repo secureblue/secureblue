@@ -31,7 +31,7 @@ def main() -> int:
             run(["/usr/bin/run0", "--via-shell", "/usr/bin/bootc", "upgrade"], check=True)
         return 0
     except CalledProcessError:
-        print("An unexpected error occured.")
+        print("An unexpected error occurred.")
         return 1
 
 

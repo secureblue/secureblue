@@ -21,7 +21,7 @@ echo "This script utilizes systemd-cryptenroll for removing fido2 unlock. You ca
 "fido2 enable script. If you manually enabled fido2 unlock, you may need to manually edit /etc/crypttab or restore a known good backup you may have created."
 echo ""
 echo "INFO if no other nonfido2 slot is currently configured, script will fail. This is a safety precaution systemd-cryptenroll implements."
-echo "WARNING if you have not added an additional method, the recovery key will be the only avaliable unlock method after this script is run"
+echo "WARNING if you have not added an additional method, the recovery key will be the only available unlock method after this script is run"
 read -p "Are you sure are good with this and want to disable fido2 unlock? (y/N): " -n 1 -r
 echo
 if [[ ! ${REPLY} =~ ^[Yy]$ ]]; then

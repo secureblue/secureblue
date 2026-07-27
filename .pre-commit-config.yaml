@@ -8,19 +8,19 @@ repos:
         exclude: "\\.patch$"
 
   - repo: https://github.com/zizmorcore/zizmor-pre-commit
-    rev: e3eebf65325ccc992422292cb7a4baee967cf815 # v1.26.1
+    rev: 64a97fb7fa63188393d3215c6e312f5f9c6d0f78 # v1.27.0
     hooks:
       - id: zizmor
         exclude: "^\\.github/workflows/config/linkspector\\.yml$"
 
   - repo: https://github.com/astral-sh/ruff-pre-commit
-    rev: 01a675ea018f2fb714478a5ffb83fcea8374bb06 # v0.15.21
+    rev: 2700fd5671c633760d912769c041bfcde2b9a01b # v0.15.22
     hooks:
       - id: ruff-check
       - id: ruff-format
 
   - repo: https://github.com/astral-sh/ty-pre-commit
-    rev: e20b8a0be260b57e3b30f632a3ee8ade65b3dc5d # v0.0.59
+    rev: 1395c6934313bf0c086f3034f10c10747e7efc10 # v0.0.61
     hooks:
       - id: ty
         args: [--isolated]

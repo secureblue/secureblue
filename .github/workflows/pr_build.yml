@@ -112,6 +112,7 @@ jobs:
             dl.fedoraproject.org:443
             download-cc-rdu01.fedoraproject.org:443
             download-ib01.fedoraproject.org:443
+            fdix-ind.mm.fcix.net:443
             fedora-mirror-atl.gigsouth.com:443
             fedora.mirror.constant.com:443
             forksystems.mm.fcix.net:443

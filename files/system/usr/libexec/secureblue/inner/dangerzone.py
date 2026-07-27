@@ -16,7 +16,7 @@ DZ_REPO_PATH: Final[str] = "/etc/yum.repos.d/dangerzone.repo"
 
 def enable_repo(path: str | bytes, name: str) -> None:
     """Enable RPM repository"""
-    config = configparser.ConfigParser()
+    config = configparser.ConfigParser(delimiters=("=",))
     config.read(path)
     if config[name].get("enabled") == "1":
         return

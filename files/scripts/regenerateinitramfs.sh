@@ -17,20 +17,12 @@ sysloglvl=0
 kmsgloglvl=0
 fileloglvl=0
 EOF
-trap 'rm -f -- "${tmp_conf_file}"' EXIT
-
-# Exclude file that sets LD_PRELOAD from the initramfs.
-excluded_preload_file='/usr/lib/systemd/system.conf.d/40-hardened_malloc.conf'
-tmp_preload_file=$(mktemp --tmpdir '40-hardened_malloc-XXXXXXXXXX.conf')
-mv -- "${excluded_preload_file}" "${tmp_preload_file}"
-trap 'mv -- "${tmp_preload_file}" "${excluded_preload_file}"' EXIT
 
 # Temporarily patch /etc/os-release to avoid the initramfs depending on the
 # version number (which changes daily).
 tmp_release_file=$(mktemp --tmpdir 'os-release-XXXXXXXXXX')
 cp -- /etc/os-release "${tmp_release_file}"
 sed -Ei --follow-symlinks -e '/^(OSTREE_)?VERSION=/d' /etc/os-release
-trap 'cp -- "${tmp_release_file}" /etc/os-release; rm -f -- "${tmp_release_file}"' EXIT
 
 qualified_kernel=$(rpm -q 'kernel' --qf='%{VERSION}-%{RELEASE}.%{ARCH}')
 
@@ -46,8 +38,12 @@ extra_files=(
     --force \
     --add 'ostree' \
     --install "${extra_files[*]}" \
+    --remove '/usr/lib/systemd/system.conf.d/40-hardened_malloc.conf' \
     --no-hostonly \
     --reproducible \
     "/usr/lib/modules/${qualified_kernel}/initramfs.img"
 
 chmod 0600 "/usr/lib/modules/${qualified_kernel}/initramfs.img"
+
+cp -- "${tmp_release_file}" /etc/os-release
+rm -- "${tmp_release_file}" "${tmp_conf_file}"

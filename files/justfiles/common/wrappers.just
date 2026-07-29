@@ -103,3 +103,8 @@ alias set-anticheat-support := set-ptrace
 # Show all messages from last boot
 @logs-last-boot:
     exec /usr/bin/run0 --via-shell journalctl -b -1
+
+# Toggle libvirt daemons on or off
+[positional-arguments]
+@set-libvirt-daemons *args:
+    exec /usr/bin/python3 /usr/libexec/secureblue/set_libvirt_daemons.py "$@"

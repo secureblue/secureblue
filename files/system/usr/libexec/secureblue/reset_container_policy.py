@@ -8,12 +8,11 @@
 
 import filecmp
 import os
-import shutil
 import sys
 from typing import Final
 
 import sandbox
-from utils import print_err
+from utils import print_err, ask_yes_no
 
 # Use absolute paths
 SYSTEM_POLICY_FILE: Final[str] = "/etc/containers/policy.json"
@@ -22,6 +21,11 @@ USER_POLICY_FILE: Final[str] = os.path.expanduser("~/.config/containers/policy.j
 
 def main() -> int:
     """Main script entrypoint"""
+
+    print("Any local or system overrides to the container policy will be lost.")
+    if not ask_yes_no("Are you sure you want to do this?"):
+        return 0
+    print()
 
     system_policy_default = None
     if os.path.exists(SYSTEM_POLICY_FILE):

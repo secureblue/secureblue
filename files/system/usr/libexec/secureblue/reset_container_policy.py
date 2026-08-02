@@ -39,10 +39,8 @@ def main() -> int:
     if os.path.exists(USER_POLICY_FILE):
         user_policy_default = filecmp.cmp(DEFAULT_SYSTEM_POLICY_FILE, USER_POLICY_FILE)
         if user_policy_default is False:
-            # replace user override with the system default
-            shutil.copy2(DEFAULT_SYSTEM_POLICY_FILE, USER_POLICY_FILE)
-            print(f"Replaced container policy override at {USER_POLICY_FILE} with the system default policy.")
-
+            os.remove(USER_POLICY_FILE)
+            print(f"Removed local container policy override at {USER_POLICY_FILE}.")
     # notify the user when neither files exist (something is wrong)
     if user_policy_default is None and system_policy_default is None:
         print_err("No system or user container policy override was found!")

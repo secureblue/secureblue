@@ -4,7 +4,7 @@
 #
 # SPDX-License-Identifier: Apache-2.0
 
-"""Replace existing container policies with the default policy"""
+"""Replace existing container policy overrides with the default system container policy"""
 
 import filecmp
 import os
@@ -26,7 +26,7 @@ def main() -> int:
     if os.path.exists(SYSTEM_POLICY_FILE):
         system_policy_default = filecmp.cmp(f"/usr{SYSTEM_POLICY_FILE}", SYSTEM_POLICY_FILE)
         if system_policy_default is False:
-            # replace current policy with the system default
+            # replace system override with the system default
             container_function = sandbox.SandboxedFunction(
                 "container_policy.py",
                 read_write_paths=["/etc/containers", "/usr/etc/containers"],
@@ -37,10 +37,10 @@ def main() -> int:
     if os.path.exists(USER_POLICY_FILE):
         user_policy_default = filecmp.cmp(f"/usr{SYSTEM_POLICY_FILE}", USER_POLICY_FILE)
         if user_policy_default is False:
-            # replace user override with the default
+            # replace user override with the system default
             shutil.copy2(f"/usr{SYSTEM_POLICY_FILE}", USER_POLICY_FILE)
 
-    # notify the user that neither files exist and something is wrong
+    # notify the user when neither files exist (something is wrong)
     if user_policy_default is None and system_policy_default is None:
         print_err("Warning: There is neither a system policy or a user policy!")
 

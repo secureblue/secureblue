@@ -109,7 +109,7 @@ alias set-anticheat-support := set-ptrace
 @set-libvirt-daemons *args:
     exec /usr/bin/python3 /usr/libexec/secureblue/set_libvirt_daemons.py "$@"
 
-# Revert both the user and system container policy overrides (if they exist) to the default system container policy.
+# Revert all overrides to the container policy
 reset-container-policy:
     #!/bin/sh
     exec /usr/bin/python3 /usr/libexec/secureblue/reset_container_policy.py

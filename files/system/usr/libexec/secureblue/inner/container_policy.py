@@ -4,7 +4,9 @@
 #
 # SPDX-License-Identifier: Apache-2.0
 
-"""Sandbox script for reset_container_policy.py that conducts privileged file operations"""
+"""
+The sandboxed function to reset the system container policy
+"""
 
 import shutil
 import sys

@@ -209,7 +209,7 @@ def audit_modprobe(state):
 
 @audit
 def audit_container_policy():
-    """Check for modifications to container policy."""
+    """Check for container policy overrides."""
     status = PASS
     notes = []
     add_recs = False
@@ -269,8 +269,8 @@ def audit_container_policy():
         )
 
     recs = "\n".join([
-        _("You're not using the default container policy, or have a user override."),
-        _("To reset to the default container policy, run:"),
+        _("Container policy has been overriden."),
+        _("To reset to the default container policy, run the following command:"),
         "$ ujust reset-container-policy"
     ]) if add_recs else None
 

@@ -33,6 +33,7 @@ def main() -> int:
                 read_write_paths=["/etc/containers", "/usr/etc/containers"],
             )
             sandbox.run(container_function)
+            print(f"Replaced override file at {SYSTEM_POLICY_FILE} with the system default container policy.")
 
     user_policy_default = None
     if os.path.exists(USER_POLICY_FILE):
@@ -40,10 +41,11 @@ def main() -> int:
         if user_policy_default is False:
             # replace user override with the system default
             shutil.copy2(DEFAULT_SYSTEM_POLICY_FILE, USER_POLICY_FILE)
+            print(f"Replaced container policy override at {USER_POLICY_FILE} with the system default policy.")
 
     # notify the user when neither files exist (something is wrong)
     if user_policy_default is None and system_policy_default is None:
-        print_err("Warning: There is neither a system policy or a user policy!")
+        print_err("No system or user container policy override was found!")
 
     return 0
 

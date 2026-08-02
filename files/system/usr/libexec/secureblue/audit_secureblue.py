@@ -212,14 +212,17 @@ def audit_container_policy():
     """Check for modifications to container policy."""
     status = PASS
     notes = []
+    add_recs = False
     system_policy_file = "/etc/containers/policy.json"
     if not filecmp.cmp(f"/usr{system_policy_file}", system_policy_file):
+        add_recs = True
         status = status.downgrade_to(INFO)
         notes.append(Note(_("The file {0} has been modified.").format(system_policy_file), INFO))
 
     policy_audit, policy_path = analyze_active_container_policy()
 
     if policy_path != str(system_policy_file):
+        add_recs = True
         status = status.downgrade_to(INFO)
         notes.append(
             Note(_("Container policy has a local override at {0}.").format(policy_path), INFO)
@@ -230,6 +233,7 @@ def audit_container_policy():
         return
 
     if not policy_audit.default_secure:
+        add_recs = True
         status = status.downgrade_to(FAIL)
         notes.append(Note(_("The default container policy is insecure."), FAIL))
 
@@ -237,6 +241,7 @@ def audit_container_policy():
 
     for transport_name, transport_policy in policy_audit.transports.items():
         if not transport_policy.default_secure:
+            add_recs = True
             status = status.downgrade_to(FAIL)
             notes.append(
                 Note(
@@ -252,6 +257,7 @@ def audit_container_policy():
         ]
 
     if insecure_scopes:
+        add_recs = True
         status = status.downgrade_to(WARN)
         notes.append(
             Note(
@@ -262,7 +268,13 @@ def audit_container_policy():
             )
         )
 
-    yield Report(_("Analyzing container policy"), status, notes=notes)
+    recs = "\n".join([
+        _("You're not using the default container policy, or have a user override."),
+        _("To reset to the default container policy, run:"),
+        "$ ujust reset-container-policy"
+    ]) if add_recs else None
+
+    yield Report(_("Analyzing container policy"), status, notes=notes, recs=recs)
 
 
 @audit

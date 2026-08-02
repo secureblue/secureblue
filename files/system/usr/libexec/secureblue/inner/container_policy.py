@@ -5,7 +5,7 @@
 # SPDX-License-Identifier: Apache-2.0
 
 """
-The sandboxed function to reset the system container policy
+The sandboxed function to reset a system-wide override to the container policy
 """
 
 import shutil

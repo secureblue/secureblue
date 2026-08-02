@@ -17,6 +17,7 @@ from utils import print_err
 
 # Use absolute paths
 SYSTEM_POLICY_FILE: Final[str] = "/etc/containers/policy.json"
+DEFAULT_SYSTEM_POLICY_FILE: Final[str] = f"/usr{SYSTEM_POLICY_FILE}"
 USER_POLICY_FILE: Final[str] = os.path.expanduser("~/.config/containers/policy.json")
 
 def main() -> int:
@@ -24,7 +25,7 @@ def main() -> int:
 
     system_policy_default = None
     if os.path.exists(SYSTEM_POLICY_FILE):
-        system_policy_default = filecmp.cmp(f"/usr{SYSTEM_POLICY_FILE}", SYSTEM_POLICY_FILE)
+        system_policy_default = filecmp.cmp(DEFAULT_SYSTEM_POLICY_FILE, SYSTEM_POLICY_FILE)
         if system_policy_default is False:
             # replace system override with the system default
             container_function = sandbox.SandboxedFunction(
@@ -35,10 +36,10 @@ def main() -> int:
 
     user_policy_default = None
     if os.path.exists(USER_POLICY_FILE):
-        user_policy_default = filecmp.cmp(f"/usr{SYSTEM_POLICY_FILE}", USER_POLICY_FILE)
+        user_policy_default = filecmp.cmp(DEFAULT_SYSTEM_POLICY_FILE, USER_POLICY_FILE)
         if user_policy_default is False:
             # replace user override with the system default
-            shutil.copy2(f"/usr{SYSTEM_POLICY_FILE}", USER_POLICY_FILE)
+            shutil.copy2(DEFAULT_SYSTEM_POLICY_FILE, USER_POLICY_FILE)
 
     # notify the user when neither files exist (something is wrong)
     if user_policy_default is None and system_policy_default is None:

@@ -37,7 +37,9 @@ def main() -> int:
                 read_write_paths=["/etc/containers", "/usr/etc/containers"],
             )
             sandbox.run(container_function)
-            print(f"Replaced override file at {SYSTEM_POLICY_FILE} with the system default container policy.")
+            print(f"Restored default system container policy at {SYSTEM_POLICY_FILE}.")
+        else:
+            print("System container policy is unchanged.")
 
     user_policy_default = None
     if os.path.exists(USER_POLICY_FILE):
@@ -45,6 +47,9 @@ def main() -> int:
         if user_policy_default is False:
             os.remove(USER_POLICY_FILE)
             print(f"Removed local container policy override at {USER_POLICY_FILE}.")
+        else:
+            print("User container policy matches the system container policy.")
+    
     # notify the user when neither files exist (something is wrong)
     if user_policy_default is None and system_policy_default is None:
         print_err("No system or user container policy override was found!")

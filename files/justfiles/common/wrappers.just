@@ -104,6 +104,11 @@ alias set-anticheat-support := set-ptrace
 @logs-last-boot:
     exec /usr/bin/run0 --via-shell journalctl -b -1
 
+# Toggle libvirt daemons on or off
+[positional-arguments]
+@set-libvirt-daemons *args:
+    exec /usr/bin/python3 /usr/libexec/secureblue/set_libvirt_daemons.py "$@"
+
 # Enroll secure boot key into shim or firmware.
 [positional-arguments]
 @enroll-secure-boot-keys *args:

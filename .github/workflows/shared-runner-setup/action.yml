@@ -10,11 +10,11 @@ inputs:
   needs_cosign:
     description: "Whether to install cosign, otherwise 'false'."
     required: false
-    default: 'false'
+    default: "false"
   needs_slsa_crane:
     description: "Whether to install slsa-verifier and crane, otherwise 'false'."
     required: false
-    default: 'false'
+    default: "false"
 
 runs:
   using: composite
@@ -25,7 +25,7 @@ runs:
         echo 'set man-db/auto-update false' | sudo debconf-communicate
         sudo dpkg-reconfigure man-db
         sudo rm -f /var/lib/man-db/auto-update
-        echo "update_initramfs=no" | sudo tee /etc/initramfs-tools/update-initramfs.conf
+        echo 'update_initramfs=no' | sudo tee /etc/initramfs-tools/update-initramfs.conf > /dev/null
 
     - name: Drop Ubuntu HTTP mirrors and chrome repo
       shell: bash
@@ -38,7 +38,7 @@ runs:
       uses: sigstore/cosign-installer@faadad0cce49287aee09b3a48701e75088a2c6ad # v4.0.0
       if: ${{ inputs.needs_cosign == 'true' }}
       with:
-        cosign-release: 'v2.6.0'
+        cosign-release: "v2.6.0"
 
     - name: Install slsa-verifier
       if: ${{ inputs.needs_slsa_crane == 'true' }}

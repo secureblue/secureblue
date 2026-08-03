@@ -20,6 +20,7 @@ dnf remove -y \
     rpm-ostree-libs \
     gnome-software-rpm-ostree \
     plasma-discover-rpm-ostree
+dnf clean all
 rpm -e bootupd
 rm -vrf "/usr/lib/bootupd"
 rm -vrf "/usr/lib/ostree-boot"

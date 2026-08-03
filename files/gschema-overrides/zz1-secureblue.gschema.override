@@ -17,3 +17,7 @@ font-antialiasing="rgba"
 [org.gnome.desktop.background]
 picture-uri='file:///usr/share/backgrounds/secureblue/secureblue-blue.svg'
 picture-uri-dark='file:///usr/share/backgrounds/secureblue/secureblue-black.svg'
+
+[org.gnome.desktop.media-handling]
+automount=false
+automount-open=false

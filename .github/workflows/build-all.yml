@@ -12,18 +12,12 @@ on:
 
   push:
     branches-ignore: # don't rebuild for dependabot
-      - 'dependabot/**'
-      - 'create-pull-request/**'
+      - "dependabot/**"
+      - "create-pull-request/**"
     paths-ignore: # don't rebuild if only documentation has changed
       - "**.md"
-
+  # checkov:skip=CKV_GHA_7
   workflow_dispatch: # allow manually triggering builds
-    inputs:
-      clear-plan:
-        description: 'Clear previous layer plan?'
-        type: boolean
-        required: true
-        default: false
 
 # Cancels running workflows if a new workflow run for
 # the same workflow is started
@@ -44,7 +38,6 @@ jobs:
     with:
       recipe: general/recipe-silverblue-main.yml
       rechunk: true
-      clear-plan: ${{ inputs.clear-plan || false }}
     secrets:
       SIGNING_SECRET: ${{ secrets.SIGNING_SECRET }}
       KERNEL_PRIVKEY: ${{ secrets.KERNEL_PRIVKEY }}
@@ -80,7 +73,6 @@ jobs:
     with:
       recipe: general/recipe-kinoite-main.yml
       rechunk: true
-      clear-plan: ${{ inputs.clear-plan || false }}
     secrets:
       SIGNING_SECRET: ${{ secrets.SIGNING_SECRET }}
       KERNEL_PRIVKEY: ${{ secrets.KERNEL_PRIVKEY }}
@@ -116,7 +108,6 @@ jobs:
     with:
       recipe: general/recipe-sericea-main.yml
       rechunk: true
-      clear-plan: ${{ inputs.clear-plan || false }}
     secrets:
       SIGNING_SECRET: ${{ secrets.SIGNING_SECRET }}
       KERNEL_PRIVKEY: ${{ secrets.KERNEL_PRIVKEY }}
@@ -152,7 +143,6 @@ jobs:
     with:
       recipe: general/recipe-cosmic-main.yml
       rechunk: true
-      clear-plan: ${{ inputs.clear-plan || false }}
     secrets:
       SIGNING_SECRET: ${{ secrets.SIGNING_SECRET }}
       KERNEL_PRIVKEY: ${{ secrets.KERNEL_PRIVKEY }}
@@ -188,7 +178,6 @@ jobs:
     with:
       recipe: securecore/recipe-securecore-main.yml
       rechunk: true
-      clear-plan: ${{ inputs.clear-plan || false }}
     secrets:
       SIGNING_SECRET: ${{ secrets.SIGNING_SECRET }}
       KERNEL_PRIVKEY: ${{ secrets.KERNEL_PRIVKEY }}
@@ -224,7 +213,6 @@ jobs:
     with:
       recipe: iot/recipe-iot-main.yml
       rechunk: true
-      clear-plan: ${{ inputs.clear-plan || false }}
     secrets:
       SIGNING_SECRET: ${{ secrets.SIGNING_SECRET }}
       KERNEL_PRIVKEY: ${{ secrets.KERNEL_PRIVKEY }}

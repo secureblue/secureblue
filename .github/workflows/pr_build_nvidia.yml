@@ -14,10 +14,10 @@ on:
       - next
       - testing
     paths:
-      - '**nvidia**'
-      - '!**.md'
-      - '!.github/**'
-      - '.github/workflows/pr_build.yml'
+      - "**nvidia**"
+      - "!**.md"
+      - "!.github/**"
+      - ".github/workflows/pr_build.yml"
 
 # Cancels running workflows if a new workflow run for
 # the same workflow is started

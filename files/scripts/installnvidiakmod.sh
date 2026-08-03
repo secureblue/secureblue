@@ -16,7 +16,9 @@ else
     nvidia_repo='fedora-nvidia-580'
 fi
 
-dnf install -y --setopt=install_weak_deps=False "kernel-devel-matched-$(rpm -q 'kernel' --queryformat '%{VERSION}')"
+KERNEL_VERSION="$(rpm -q 'kernel' --queryformat '%{VERSION}-%{RELEASE}.%{ARCH}')"
+
+dnf install -y --setopt=install_weak_deps=False "kernel-devel-matched-${KERNEL_VERSION}"
 
 dnf install -y --setopt=install_weak_deps=False akmods gcc-c++
 
@@ -27,8 +29,6 @@ dnf install -y --setopt=install_weak_deps=False \
     --enable-repo="${nvidia_repo}" \
     --disable-repo='fedora-multimedia' \
     nvidia-kmod-common nvidia-modprobe akmod-nvidia
-
-KERNEL_VERSION="$(rpm -q "kernel" --queryformat '%{VERSION}-%{RELEASE}.%{ARCH}')"
 
 echo "Installing kmod..."
 akmods --force --kernels "${KERNEL_VERSION}" --kmod "nvidia"

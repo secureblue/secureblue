@@ -12,7 +12,7 @@ import sys
 from typing import Final
 
 import sandbox
-from utils import print_err, ask_yes_no
+from utils import ask_yes_no, print_err
 
 # Use absolute paths
 SYSTEM_POLICY_FILE: Final[str] = "/etc/containers/policy.json"
@@ -49,7 +49,7 @@ def main() -> int:
             print(f"Removed local container policy override at {USER_POLICY_FILE}.")
         else:
             print("User container policy matches the system container policy.")
-    
+
     # notify the user when neither files exist (something is wrong)
     if user_policy_default is None and system_policy_default is None:
         print_err("No system or user container policy override was found!")

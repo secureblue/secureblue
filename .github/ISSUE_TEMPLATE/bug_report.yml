@@ -46,7 +46,7 @@ body:
     attributes:
       label: Image
       description: Your current image
-      placeholder: 'rpm-ostree status (or `run0 -i bootc status` on UKI systems)'
+      placeholder: "rpm-ostree status (or `run0 -i bootc status` on UKI systems)"
     validations:
       required: true
 

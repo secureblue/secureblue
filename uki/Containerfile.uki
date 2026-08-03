@@ -4,7 +4,7 @@
 # SPDX-License-Identifier: Apache-2.0 AND CC0-1.0
 
 ARG BASE=overridden
-ARG KERNEL=overriden
+ARG KERNEL=overridden
 ARG RELEASE=overridden
 
 # Capture scripts from the git repo

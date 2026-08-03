@@ -40,7 +40,7 @@ To enter Setup Mode, instructions vary depending on the model of your device.
 The setting may be called "Delete Platform Key", "Clear Secure Boot Keys", or
 "Enter Setup Mode".
 
-This is *not* the same thing as "Reset Secure Boot Keys", which restores factory
+This is _not_ the same thing as "Reset Secure Boot Keys", which restores factory
 defaults.
 
 ##### On a VM with virt-manager
@@ -66,9 +66,9 @@ defaults.
   `sudo loadkeys <layout>`.
   - Examples include `gb`, `de`, `fr`, `es`, `ru`, `it`, `br-abnt2`, `jp106`.
   - A full list can be seen with `localectl list-keymaps`.
-- Connect to the Internet. For wired connections, this should happen
+- Connect to the internet. For wired connections, this should happen
   automatically.
-  - To connect via WiFi:
+  - To connect via Wi-Fi:
     `nmcli device wifi connect "YOUR_SSID" password "YOUR_PASSWORD"`
   - To verify: `nm-online`
 - Download the secureblue repository.

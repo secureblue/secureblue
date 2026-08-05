@@ -12,6 +12,7 @@ modules:
         - usbguard
         - firewalld
         - policycoreutils-python-utils
+        - udisks2
 
   - type: files
     source: ghcr.io/blue-build/modules@sha256:a21771c64475511f5d7f8ab98bfb74217658c9958c2b1cb956d9c0bcbbdeed29

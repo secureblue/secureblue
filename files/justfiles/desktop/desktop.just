@@ -7,11 +7,6 @@
 @set-brew *args:
     exec /usr/bin/python3 /usr/libexec/secureblue/brew_main.py "$@"
 
-# Toggle libvirt daemons on or off
-[positional-arguments]
-@set-libvirt-daemons *args:
-    exec /usr/bin/python3 /usr/libexec/secureblue/set_libvirt_daemons.py "$@"
-
 # Enable or disable Xwayland
 [positional-arguments]
 @set-xwayland *args:

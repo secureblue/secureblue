@@ -25,6 +25,8 @@ rpm -e bootupd
 rm -vrf "/usr/lib/bootupd"
 rm -vrf "/usr/lib/ostree-boot"
 rm -vrf "/usr/etc"
+# shellcheck disable=SC2114
+rm -vrf "/boot"
 
 # Remove GRUB packages.
 grub_packages=(

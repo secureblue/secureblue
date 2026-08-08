@@ -19,8 +19,8 @@ secureblue offers two options for Secure Boot. You should choose one:
    Your firmware will only trust secureblue. This offers improved security, but
    this can BRICK YOUR DEVICE by breaking the display if your external GPU
    requires an option ROM to work.
-    - A compatibility test will be added in a future version to determine
-      whether using a platform key is safe.
+   - A compatibility test will be added in a future version to determine
+     whether using a platform key is safe.
 
 In general, the Platform Key option is suitable for laptops, but not for
 desktops. However, modifying settings is entirely at your own risk, and you

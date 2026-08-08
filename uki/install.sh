@@ -12,18 +12,18 @@ github_repo_owner="secureblue"
 github_repo_name="secureblue"
 ghcr_tag="br-testing-44-uki"
 
+# Check prerequisites.
 if [[ $(id -u) -ne 0 ]]; then
     echo "The installer must be run as root."
     exit 1
 fi
-
 total_ram_kb=$(awk '/MemTotal/ {print $2}' /proc/meminfo)
 if [[ "${total_ram_kb}" -lt 3800000 ]]; then
     echo "The installer requires at least 4 GB of RAM."
     exit 1
 fi
 
-# Select an image.
+# Ask the user to select an image.
 valid_images=(
     silverblue-main-hardened
     kinoite-main-hardened
@@ -49,9 +49,10 @@ if [[ "${valid}" -ne 1 ]]; then
 fi
 image_ref="ghcr.io/${github_repo_owner}/${ghcr_image}:${ghcr_tag}"
 
-# The CoreOS installer has a permissive container policy by default.
+# The CoreOS installer has a permissive container policy by default. We modify
+# it to verify the cosign signature of the selected image.
 mkdir -p /etc/pki/containers
-cp ../cosign.pub "/etc/pki/containers/${github_repo_owner}.pub"
+cp ../cosign.pub "/etc/pki/containers/secureblue.pub"
 cat > /etc/containers/policy.json << EOF
 {
     "default": [{"type": "reject"}],
@@ -60,7 +61,7 @@ cat > /etc/containers/policy.json << EOF
             "ghcr.io/${github_repo_owner}": [
                 {
                     "type": "sigstoreSigned",
-                    "keyPath": "/etc/pki/containers/${github_repo_owner}.pub",
+                    "keyPath": "/etc/pki/containers/secureblue.pub",
                     "signedIdentity": {"type": "matchRepository"}
                 }
             ]
@@ -92,11 +93,11 @@ echo "${crane_sha256}  ${crane_tarball}" | sha256sum -c -
 tar -xzf "${crane_tarball}" -C /usr/local/bin crane
 rm -f "${crane_tarball}"
 
-# Get digest and verify provenance.
+# Get digest of selected image and verify provenance.
 full_ref=$(crane digest --full-ref "${image_ref}")
 slsa-verifier verify-image --source-uri "github.com/${github_repo_owner}/${github_repo_name}" "${full_ref}"
 
-# Partition the disk.
+# Create the configuration for systemd-repart to partition the disk.
 esp_uuid=$(systemd-id128 new --uuid)
 root_uuid=$(systemd-id128 new --uuid)
 mkdir -p /run/repart.d
@@ -113,10 +114,11 @@ cat > /run/repart.d/02-sysroot.conf << EOF
 Type=root
 Format=btrfs
 UUID=${root_uuid}
-SizeMinBytes=20G
+SizeMinBytes=28G
 Encrypt=key-file
 EOF
 
+# Display available block devices and ask the user to select one.
 clear
 lsblk
 echo
@@ -128,6 +130,7 @@ if [[ ! -b "${disk}" ]] || [[ $(lsblk -ndo TYPE "${disk}") != "disk" ]]; then
     exit 1
 fi
 
+# Ask the user for a LUKS encryption password for FDE on the root partition.
 echo
 echo "Choose a LUKS encryption password."
 read -r -s -p "Password: " password && echo
@@ -141,45 +144,59 @@ else
 fi
 unset password password2
 
+# Trap to clean up mounts that we set up later.
 cleanup() {
-    # Clean up /tmp, swap, then /mnt/tmp, then unmount everything else.
+    rm -f "${keyfile}"
+    # We expand /tmp to 8G later, so we need to clear it then shrink it to avoid
+    # OOMing when the swapfile is disabled.
     rm -rf /tmp/*
     mount -o remount,size=1G /tmp
+    # Disable the swapfile.
     swapoff /mnt/tmp/swap/swapfile || true
+    # Delete the swapfile, TMPDIR and container storage created on the disk.
     umount /var/lib/containers/storage || true
     rm -rf /mnt/tmp
+    # Now clean up remaining mounts.
     sync
     umount /mnt/boot/ || true
     umount /mnt/ || true
     cryptsetup close root || true
 }
 trap cleanup EXIT
-systemd-repart --dry-run=no --empty=force "--key-file=${keyfile}" "${disk}"
+
+# Partition the installation disk. Try twice.
+systemd-repart --dry-run=no --empty=force "--key-file=${keyfile}" "${disk}" || \
+    systemd-repart --dry-run=no --empty=force "--key-file=${keyfile}" "${disk}"
 udevadm settle
 sleep 1
 
-# Mount the partitions.
+# Mount the installation partitions to /mnt and /mnt/boot.
 cryptsetup open "--key-file=${keyfile}" "/dev/disk/by-partuuid/${root_uuid}" root
 mount /dev/mapper/root /mnt/
 mkdir /mnt/boot/
 mount "/dev/disk/by-partuuid/${esp_uuid}" /mnt/boot/
 
-# Use /mnt/tmp as a temporary download location, rather than using RAM.
+# To reduce the RAM requirement, we can use the installation disk for temporary
+# storage in /mnt/tmp, and clean it up afterwards.
+# Use the disk for container storage for podman (for the downloaded image).
 mkdir -p /mnt/tmp/storage
 mount --bind /mnt/tmp/storage /var/lib/containers/storage
 chcon "system_u:object_r:container_var_lib_t:s0" /var/lib/containers/storage
+# During the download of the image, a large $TMPDIR is needed.
 mkdir /mnt/tmp/tmp
 export TMPDIR=/mnt/tmp/tmp
+# To provide additional buffer, create a 4G swapfile on the disk.
 mkdir /mnt/tmp/swap
 chattr +C /mnt/tmp/swap
 fallocate -l 4G /mnt/tmp/swap/swapfile
 chmod 0600 /mnt/tmp/swap/swapfile
 mkswap /mnt/tmp/swap/swapfile
 swapon /mnt/tmp/swap/swapfile
+# With the swap space, we can expand the /tmp tmpfs to 8G as well.
 mount -o remount,size=8G /tmp
 mkdir /mnt/tmp/empty
 
-# Pull the image.
+# Pull the secureblue image.
 clear
 echo "Downloading secureblue..."
 podman pull "${full_ref}"
@@ -187,13 +204,15 @@ podman pull "${full_ref}"
 # Perform the installation.
 clear
 echo "Installing secureblue, this may take some time..."
+# We need to mask /mnt/tmp with an empty directory, as bootc validates that
+# the installation target only contains mountpoints.
 podman run --rm --privileged --pid=host --ipc=host \
     --security-opt label=type:unconfined_t \
-    -v /var/lib/containers:/var/lib/containers \
-    -v /dev:/dev \
     -v /:/run/host \
+    -v /dev:/dev \
     -v /mnt/tmp/empty:/run/host/mnt/tmp \
-    -v "/etc/pki/containers/${github_repo_owner}.pub:/etc/pki/containers/${github_repo_owner}.pub:ro" \
+    -v /var/lib/containers:/var/lib/containers \
+    -v "/etc/pki/containers/secureblue.pub:/etc/pki/containers/secureblue.pub:ro" \
     -v /etc/containers/policy.json:/etc/containers/policy.json:ro \
     "${full_ref}" \
     bootc install to-filesystem \
@@ -202,14 +221,16 @@ podman run --rm --privileged --pid=host --ipc=host \
         --bootloader=systemd --composefs-backend --skip-finalize \
         /run/host/mnt/
 
-# Configure systemd-boot timeout.
+# Configure systemd-boot on the target system to give a GRUB-like menu to select
+# the desired bootc deployment (e.g. for rollback).
 sed -i 's/#timeout 3/timeout 3/' /mnt/boot/loader/loader.conf
 
-# Add boot.mount (systemd-gpt-auto-generator doesn't work with composefs+LUKS).
-# In future, something like Anaconda will do all of this.
+# Configure /boot (boot.mount) on the target system. systemd-gpt-auto-generator
+# can't automatically do this with composefs+LUKS, so we do it manually.
 etc_dirs=(/mnt/state/deploy/*/etc)
 if [[ ${#etc_dirs[@]} -ne 1 ]]; then
     echo "Expected only one deployment, found ${#etc_dirs[@]}."
+    echo "This is a bug! Report to https://github.com/secureblue/secureblue/issues."
     exit 1
 fi
 etc_dir=${etc_dirs[0]}
@@ -233,19 +254,25 @@ EOF
 mkdir -p "${etc_dir}/systemd/system/local-fs.target.wants"
 ln -s /etc/systemd/system/boot.mount "${etc_dir}/systemd/system/local-fs.target.wants/boot.mount"
 
-# Create user.
+# Create the login user on the target system.
 clear
-echo "Enter the details of your login account. It will be added to the admin (wheel) group."
-echo "You should NOT choose a system username, like 'root' or 'admin'."
-echo "Your password will be set to 'secureblue'. You must change it after logging in."
-echo
+cat << EOF
+Enter the details of your login account. It will be added to the wheel group.
+You should NOT choose a system username, like 'root' or 'admin'.
+Your password will be set to 'secureblue'. You must change it after logging in.
+
+EOF
 read -r -p "Username: " username
+# We use a hardcoded password because yescrypt isn't available here, only
+# SHA512, so the user will have to change it themselves after firstrun.
 password=$(openssl passwd -6 "secureblue")
 last_changed=$(( $(date +%s) / 86400 ))
 echo "${username}:x:1000:1000:${username}:/var/home/${username}:/bin/bash" >> "${etc_dir}/passwd"
 echo "${username}:${password}:${last_changed}:0:99999:7:::" >> "${etc_dir}/shadow"
+# Now add the user to the wheel group.
 echo "${username}:x:1000:" >> "${etc_dir}/group"
 sed -i "s/^wheel:x:10:$/&${username}/" "${etc_dir}/group"
+# Create their home directory using /etc/skel and set correct permissions.
 var_dir="/mnt/state/os/default/var"
 mkdir -p "${var_dir}/home/${username}/"
 cp -a "${etc_dir}/skel/." "${var_dir}/home/${username}/"
@@ -276,25 +303,29 @@ if [[ "${secure_boot}" != "2" ]]; then
     shim_dirs=(/usr/lib/efi/shim/*/EFI)
     if [[ ${#shim_dirs[@]} -ne 1 ]]; then
         echo "Expected only one shim installation, found ${#shim_dirs[@]}."
+        echo "This is a bug! Report to https://github.com/secureblue/secureblue/issues."
         exit 1
     fi
     shim_dir=${shim_dirs[0]}
-    # BOOT/{BOOTX64.EFI, fbx64.efi, etc.}
+
+    # Install shim.
+    # Install the shim EFI binaries.
     cp "${shim_dir}"/BOOT/* /mnt/boot/EFI/BOOT/
-    # fedora/{shim.efi, shimx64.efi, BOOTX64.CSV, mmx64.efi, etc.}
     cp -r "${shim_dir}"/fedora /mnt/boot/EFI/
-    # Put MokManager in BOOT/.
+    # mmx64.efi is MokManager, and we want it to run by default.
     cp "${shim_dir}"/fedora/mmx64.efi /mnt/boot/EFI/BOOT/
     # Rename systemd-boot to grubx64.efi as this is hardcoded into shim.
     mv /mnt/boot/EFI/systemd/systemd-bootx64.efi /mnt/boot/EFI/fedora/grubx64.efi
     rmdir /mnt/boot/EFI/systemd
-    # We need to import the key that signed systemd-boot.
+    # systemd-boot was signed with the secureblue MOK, so that needs to be
+    # imported before first boot.
     printf "secureblue\nsecureblue\n" | mokutil --import keys/db/db.der > /dev/null
 fi
 
+# Everything succeeded, so clean up now to delete /mnt/tmp before firstrun.
 cleanup
 
-# Reboot the system.
+# Display instructions and reboot the system.
 clear
 cat << EOF
 Installation is finished.
@@ -307,6 +338,7 @@ if [[ "${secure_boot}" == "1" ]]; then
 cat << EOF
 When the system reboots, you need to choose "Enroll MOK" and enter "secureblue"
 as the password.
+
 EOF
 else
 cat << 'EOF'

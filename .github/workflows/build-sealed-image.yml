@@ -57,6 +57,8 @@ jobs:
 
       - name: "Free disk space"
         uses: hastd/free-disk-space@68572aeaadb7f76bd408246328e95926323402b5 # v0.1.2
+        with:
+          skip-if-available: "64G"
 
       - name: "Check out repository"
         uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0

@@ -3,9 +3,7 @@
 ### 1. System requirements
 
 - 32+ GiB disk space
-- 16+ GiB memory
-  - This requirement will be reduced when ISOs are available. For now, lots of
-    memory is needed to hold secureblue in RAM before installing it to disk.
+- 4+ GiB memory
 - UEFI-based firmware
 - For measured boot: a TPM 2.0
 
@@ -13,13 +11,16 @@
 
 secureblue offers two options for Secure Boot. You should choose one:
 
-1. **shim** - Safe for all devices. However, your firmware must trust the
-   Microsoft Third Party CA, which signs many bootloaders and ROMs. This greatly
-   increases attack surface but is compatible with all hardware.
-2. **secureblue Platform Key** - Only suitable for some devices. Your firmware
-   will only trust secureblue. This offers improved security, but this can BRICK
-   YOUR DEVICE by breaking the display if your external GPU requires an option
-   ROM to work.
+1. **shim** - Safe for all devices.
+   However, your firmware must trust the Microsoft Third Party CA, which signs
+   many bootloaders and ROMs. This greatly increases attack surface but is
+   compatible with all hardware.
+2. **secureblue Platform Key - WARNING: Not suitable for all devices.**
+   Your firmware will only trust secureblue. This offers improved security, but
+   this can BRICK YOUR DEVICE by breaking the display if your external GPU
+   requires an option ROM to work.
+   - A compatibility test will be added in a future version to determine
+     whether using a platform key is safe.
 
 In general, the Platform Key option is suitable for laptops, but not for
 desktops. However, modifying settings is entirely at your own risk, and you
@@ -77,6 +78,8 @@ defaults.
   `secureblue/uki/install.sh` and `secureblue/uki/keys/db/db.der` with
   `sha256sum`.
 - Start the installation: `sudo secureblue/uki/install.sh`
+- If using the Platform Key: run `ujust enroll-secure-boot-keys` after
+  installation.
 - Report any bugs to [secureblue's GitHub Issues page](https://github.com/secureblue/secureblue/issues).
 
 ## Making your own UKI build (advanced)

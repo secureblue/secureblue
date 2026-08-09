@@ -39,7 +39,6 @@ COPY --from=kernel /vmlinuz /vmlinuz
 COPY --from=initramfs /initramfs /initramfs
 RUN --mount=type=tmpfs,target=/run \
     --mount=type=tmpfs,target=/tmp \
-    --mount=type=tmpfs,target=/var/tmp \
     --mount=type=secret,id=secureboot_key \
     --mount=type=secret,id=secureboot_crt \
     --mount=type=bind,from=rootfs,src=/,target=/run/target,ro \

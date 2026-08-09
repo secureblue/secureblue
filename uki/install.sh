@@ -52,7 +52,7 @@ image_ref="ghcr.io/${github_repo_owner}/${ghcr_image}:${ghcr_tag}"
 # The CoreOS installer has a permissive container policy by default. We modify
 # it to verify the cosign signature of the selected image.
 mkdir -p /etc/pki/containers
-cp ../cosign.pub "/etc/pki/containers/secureblue.pub"
+cp ../cosign.pub /etc/pki/containers/secureblue.pub
 cat > /etc/containers/policy.json << EOF
 {
     "default": [{"type": "reject"}],
@@ -115,7 +115,6 @@ Type=root
 Format=btrfs
 UUID=${root_uuid}
 SizeMinBytes=28G
-Encrypt=key-file
 EOF
 
 # Display available block devices and ask the user to select one.
@@ -132,21 +131,25 @@ fi
 
 # Ask the user for a LUKS encryption password for FDE on the root partition.
 echo
-echo "Choose a LUKS encryption password."
-read -r -s -p "Password: " password && echo
-read -r -s -p "Confirm: " password2 && echo
-if [[ "${password}" == "${password2}" ]]; then
-    keyfile=$(mktemp)
-    printf "%s" "${password}" > "${keyfile}"
-else
-    echo "Passwords do not match."
-    exit 1
+read -r -p "Would you like to configure disk encryption? [Y/n] " luks
+if [[ ! "${luks}" =~ ^[Nn] ]]; then
+    echo "Choose a LUKS encryption password."
+    read -r -s -p "Password: " password && echo
+    read -r -s -p "Confirm: " password2 && echo
+    if [[ "${password}" == "${password2}" ]]; then
+        keyfile=$(mktemp)
+        printf "%s" "${password}" > "${keyfile}"
+        unset password password2
+    else
+        echo "Passwords do not match."
+        exit 1
+    fi
+    echo "Encrypt=key-file" >> /run/repart.d/02-sysroot.conf
+    echo "KeyFile=${keyfile}" >> /run/repart.d/02-sysroot.conf
 fi
-unset password password2
 
 # Trap to clean up mounts that we set up later.
 cleanup() {
-    rm -f "${keyfile}"
     # We expand /tmp to 8G later, so we need to clear it then shrink it to avoid
     # OOMing when the swapfile is disabled.
     rm -rf /tmp/*
@@ -165,14 +168,18 @@ cleanup() {
 trap cleanup EXIT
 
 # Partition the installation disk. Try twice.
-systemd-repart --dry-run=no --empty=force "--key-file=${keyfile}" "${disk}" || \
-    systemd-repart --dry-run=no --empty=force "--key-file=${keyfile}" "${disk}"
+systemd-repart --dry-run=no --empty=force "${disk}" || \
+    systemd-repart --dry-run=no --empty=force "${disk}"
 udevadm settle
 sleep 1
 
 # Mount the installation partitions to /mnt and /mnt/boot.
-cryptsetup open "--key-file=${keyfile}" "/dev/disk/by-partuuid/${root_uuid}" root
-mount /dev/mapper/root /mnt/
+if [[ ! "${luks}" =~ ^[Nn] ]]; then
+    cryptsetup open "--key-file=${keyfile}" "/dev/disk/by-partuuid/${root_uuid}" root
+    mount /dev/mapper/root /mnt/
+else
+    mount "/dev/disk/by-partuuid/${root_uuid}" /mnt/
+fi
 mkdir /mnt/boot/
 mount "/dev/disk/by-partuuid/${esp_uuid}" /mnt/boot/
 
@@ -192,8 +199,8 @@ fallocate -l 4G /mnt/tmp/swap/swapfile
 chmod 0600 /mnt/tmp/swap/swapfile
 mkswap /mnt/tmp/swap/swapfile
 swapon /mnt/tmp/swap/swapfile
-# With the swap space, we can expand the /tmp tmpfs to 8G as well.
-mount -o remount,size=8G /tmp
+# With the swap space, we can expand the /tmp tmpfs to 4G as well.
+mount -o remount,size=4G /tmp
 mkdir /mnt/tmp/empty
 
 # Pull the secureblue image.
@@ -278,6 +285,11 @@ mkdir -p "${var_dir}/home/${username}/"
 cp -a "${etc_dir}/skel/." "${var_dir}/home/${username}/"
 chown -R 1000:1000 "${var_dir}/home/${username}"
 chmod 0700 "${var_dir}/home/${username}"
+# We have to manually set the SELinux contexts, otherwise they'll be etc_t.
+chcon -R "unconfined_u:object_r:user_home_t:s0" "${var_dir}/home/${username}"
+chcon "unconfined_u:object_r:user_home_dir_t:s0" "${var_dir}/home/${username}"
+chcon -R "unconfined_u:object_r:config_home_t:s0" "${var_dir}/home/${username}/.config" || true
+chcon -R "unconfined_u:object_r:virt_home_t:s0" "${var_dir}/home/${username}/.config/libvirt" || true
 
 # Optionally install shim.
 clear
@@ -285,9 +297,9 @@ cat << 'EOF'
 Choose a secure boot option:
 
 1. shim - Safe for all devices.
-   Your firmware must trust the Microsoft Third Party CA, which signs many
-   bootloaders and ROMs. This greatly increases attack surface but is compatible
-   with all hardware.
+   However, your firmware must trust the Microsoft Third Party CA, which signs
+   many bootloaders and ROMs. This greatly increases attack surface but is
+   compatible with all hardware.
 
 2. secureblue Platform Key - WARNING: Not suitable for all devices.
    Your firmware will only trust secureblue. This offers improved security, but
@@ -311,9 +323,9 @@ if [[ "${secure_boot}" != "2" ]]; then
     # Install shim.
     # Install the shim EFI binaries.
     cp "${shim_dir}"/BOOT/* /mnt/boot/EFI/BOOT/
-    cp -r "${shim_dir}"/fedora /mnt/boot/EFI/
+    cp -r "${shim_dir}/fedora" /mnt/boot/EFI/
     # mmx64.efi is MokManager, and we want it to run by default.
-    cp "${shim_dir}"/fedora/mmx64.efi /mnt/boot/EFI/BOOT/
+    cp "${shim_dir}/fedora/mmx64.efi" /mnt/boot/EFI/BOOT/
     # Rename systemd-boot to grubx64.efi as this is hardcoded into shim.
     mv /mnt/boot/EFI/systemd/systemd-bootx64.efi /mnt/boot/EFI/fedora/grubx64.efi
     rmdir /mnt/boot/EFI/systemd
@@ -342,7 +354,7 @@ as the password.
 EOF
 else
 cat << 'EOF'
-After logging in, you must run `ujust enroll-secure-boot-key` to finish setting
+After logging in, you must run `ujust enroll-secure-boot-keys` to finish setting
 up secure boot.
 
 Make sure your device is in Setup Mode first by deleting the Platform Key in

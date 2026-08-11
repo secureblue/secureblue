@@ -4,7 +4,7 @@
 
 modules:
   - type: script
-    source: ghcr.io/blue-build/modules@sha256:a21771c64475511f5d7f8ab98bfb74217658c9958c2b1cb956d9c0bcbbdeed29
+    source: ghcr.io/blue-build/modules@sha256:c5ed99f07b15c8d575a4fa64a77e5cd5602b00da4c84379f5675db2ae4757061
     scripts:
       - removeunusedrepos.sh
       - httpsmirrors.sh
@@ -15,7 +15,7 @@ modules:
       - check-rpm-ostree-version.sh
 
   - type: files
-    source: ghcr.io/blue-build/modules@sha256:a21771c64475511f5d7f8ab98bfb74217658c9958c2b1cb956d9c0bcbbdeed29
+    source: ghcr.io/blue-build/modules@sha256:c5ed99f07b15c8d575a4fa64a77e5cd5602b00da4c84379f5675db2ae4757061
     files:
       - source: system/usr
         destination: /usr
@@ -27,13 +27,13 @@ modules:
   - from-file: common/common-scripts.yml
 
   - type: justfiles
-    source: ghcr.io/blue-build/modules@sha256:a21771c64475511f5d7f8ab98bfb74217658c9958c2b1cb956d9c0bcbbdeed29
+    source: ghcr.io/blue-build/modules@sha256:c5ed99f07b15c8d575a4fa64a77e5cd5602b00da4c84379f5675db2ae4757061
     validate: true
     include:
       - common
 
   - type: script
-    source: ghcr.io/blue-build/modules@sha256:a21771c64475511f5d7f8ab98bfb74217658c9958c2b1cb956d9c0bcbbdeed29
+    source: ghcr.io/blue-build/modules@sha256:c5ed99f07b15c8d575a4fa64a77e5cd5602b00da4c84379f5675db2ae4757061
     scripts:
       - installandsignkernel.sh
     secrets:

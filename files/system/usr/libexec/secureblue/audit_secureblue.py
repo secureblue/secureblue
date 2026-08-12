@@ -982,7 +982,7 @@ def audit_environment_file():
     note = None
     rec = None
     try:
-        if not filecmp.cmp("/usr" + env_file, env_file):
+        if not filecmp.cmp("/usr/share/secureblue" + env_file, env_file):
             status = WARN
             note = Note(_("The file {0} has been modified.").format(env_file), WARN)
     except FileNotFoundError:

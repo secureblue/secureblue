@@ -1,0 +1,9 @@
+# SPDX-FileCopyrightText: Copyright 2026 The Secureblue Authors
+#
+# SPDX-License-Identifier: Apache-2.0
+
+[D-BUS Service]
+Name=dev.secureblue.PrivCmd0
+User=root
+Exec=/usr/bin/python3 /usr/libexec/secureblue/priv-cmd/daemon.py
+SystemdService=secureblue-priv-cmd-daemon.service

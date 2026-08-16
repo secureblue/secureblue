@@ -7,6 +7,11 @@
 @audit-secureblue *args:
     exec /usr/bin/python3 /usr/libexec/secureblue/audit_secureblue.py "$@"
 
+# Get bootc status
+[positional-arguments]
+@bootc-status:
+    exec /usr/libexec/secureblue/secureblue-priv-cmd bootc-status
+
 # Run a non-flatpak application with standard memory allocator
 [no-cd]
 [no-exit-message]

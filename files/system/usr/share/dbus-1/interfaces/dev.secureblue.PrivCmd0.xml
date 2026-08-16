@@ -1,0 +1,26 @@
+<!DOCTYPE node PUBLIC "-//freedesktop//DTD D-BUS Object Introspection 1.0//EN"
+ "http://www.freedesktop.org/standards/dbus/1.0/introspect.dtd">
+<node name="/dev/secureblue/PrivCmd0">
+  <interface name="dev.secureblue.PrivCmd0">
+    <method name="BootcStatus">
+      <arg direction="out" name="pid" type="u"/>
+      <arg direction="out" name="pty" type="h"/>
+    </method>
+    <method name="BootcUpgrade">
+      <arg direction="out" name="pid" type="u"/>
+      <arg direction="out" name="pty" type="h"/>
+    </method>
+    <method name="BootcUpgradeCheck">
+      <arg direction="out" name="pid" type="u"/>
+      <arg direction="out" name="pty" type="h"/>
+    </method>
+    <method name="SemoduleList">
+      <arg direction="out" name="pid" type="u"/>
+      <arg direction="out" name="pty" type="h"/>
+    </method>
+    <signal name="ChildExited">
+      <arg direction="out" name="pid" type="u"/>
+      <arg direction="out" name="exit_code" type="y"/>
+    </signal>
+  </interface>
+</node>

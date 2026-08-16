@@ -33,7 +33,8 @@ install:
     # address hardened_malloc incompatibilities
     - no_rlimit_as
 
-    # For use in unprivileged ujust scripts
+    # Python dependencies for use in scripts
+    - python3-dbus-fast
     - python3-inquirer
 
     # provenance deps

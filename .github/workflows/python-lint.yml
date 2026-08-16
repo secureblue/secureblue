@@ -37,29 +37,31 @@ jobs:
         run: |
           tmpfile=$(mktemp)
           cat <<'EOF' > "${tmpfile}"
-          pip==26.1.1 \
-            --hash=sha256:99cb1c2899893b075ff56e4ed0af55669a955b49ad7fb8d8603ecdaf4ed653fb
+          pip==26.2.1 \
+            --hash=sha256:71138adf1f4ca900cdb7d289c21b7494329f2332b6d85f0e1c42108c0384ed3e
 
-          blessed==1.42.0 \
-            --hash=sha256:f96c4a6dc664b48e0b832fa732acc16df67abd30f0ec35babf99025982f21852
+          blessed==1.48.0 \
+            --hash=sha256:c4ce01cba220f41d2ff244e9829cb4ef2390a26ace8ce1687b8bced1613676e5
+          dbus_fast==2.46.4 \
+            --hash=sha256:018c7d878857599e3478c56575aa2ed9ff52eb7a88c5118685db8e033b3916e9
           editor==1.8.0 \
             --hash=sha256:7d47ff88ae6c5f6c43d28c30b6f7fd59a24741175a1771ab06c969d946d7dfd0
           inquirer==3.4.1 \
             --hash=sha256:717bf146d547b595d2495e7285fd55545cff85e5ce01decc7487d2ec6a605412
-          jinxed==2.0.0 \
-            --hash=sha256:b3df1be5262a37145ef42875a8bbf918f1a563fbd035359650dd9fc0bb2b9294
+          jinxed==2.1.0 \
+            --hash=sha256:43b802d18b70e405d410fb66eb2837d1101e7e5ea922e666507bb43f34d11d09
           readchar==4.2.2 \
             --hash=sha256:92daf7e42c52b0787e6c75d01ecfb9a94f4ceff3764958b570c1dddedd47b200
           rpm==0.4.0 \
             --hash=sha256:0ef697cb5fb73bf9300a13d423529d7ec215239bf95c5ecb145e6610645f6067
-          ruff==0.15.14 \
-            --hash=sha256:715c543cf450c4888251f91c52f1942a800541d9bddd7ac060aa4e6b77ae7cba
+          ruff==0.16.3 \
+            --hash=sha256:294b95c4ae0cda9388525c2047778aa758d6b8d4bb876fd4e9eaa3ebc92343eb
           runs==1.3.0 \
             --hash=sha256:e71a551cfa8da9ef882cac1d5a108bda78c9edee5b8d87e37c1003da5b6a7bed
-          ty==0.0.38 \
-            --hash=sha256:375d3a964c6b4aea2e9237fdb5eb9ed03dc43088986a94209a28a4ea3b62001c
-          wcwidth==0.7.0 \
-            --hash=sha256:5d69154c429a82910e241c738cd0e2976fac8a2dd47a1a805f4afed1c0f136f2
+          ty==0.0.72 \
+            --hash=sha256:802c5970a77d7739e6f499921fbb6984fb7ad8a31d95e1ff42fd46f3642e4f3b
+          wcwidth==0.8.2 \
+            --hash=sha256:d63947694a0539a1d51e01eda7caf800c291020e6cdd7e28ad7b14dd33ad4f85
           xmod==1.10.0 \
             --hash=sha256:bebf8493b7ac63097401590a329c9ed20da224de0583a522e7ccb634af122f5a
           EOF

@@ -11,3 +11,5 @@ cd "${0%/*}"
 cd "$(git rev-parse --show-toplevel)"
 install -Dm 644 -t /run/extensions sysext-tmp/secureblue-dev.raw
 systemd-sysext refresh
+systemctl daemon-reload
+busctl call org.freedesktop.DBus /org/freedesktop/DBus org.freedesktop.DBus ReloadConfig

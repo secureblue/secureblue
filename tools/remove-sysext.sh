@@ -9,3 +9,5 @@ set -euo pipefail
 umask 022
 rm -f /run/extensions/secureblue-dev.raw
 systemd-sysext refresh
+systemctl daemon-reload
+busctl call org.freedesktop.DBus /org/freedesktop/DBus org.freedesktop.DBus ReloadConfig

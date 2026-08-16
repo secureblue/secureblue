@@ -1,0 +1,18 @@
+policy_module(secureblue-misc, 1.0.0)
+
+# SPDX-FileCopyrightText: Copyright 2026 The Secureblue Authors
+#
+# SPDX-License-Identifier: Apache-2.0 OR MIT
+
+# This policy module is for miscellaneous policy fixes not yet added upstream.
+
+# Fixes https://github.com/fedora-selinux/selinux-policy/issues/3349
+# Remove after this change makes it into an upstream release:
+# https://github.com/fedora-selinux/selinux-policy/pull/3350
+optional_policy(`
+	gen_require(`
+		type unconfined_service_t;
+		role system_r;
+	')
+	anaconda_run_install(unconfined_service_t, system_r)
+')

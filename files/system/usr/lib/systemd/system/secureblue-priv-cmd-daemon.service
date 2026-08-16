@@ -1,0 +1,11 @@
+# SPDX-FileCopyrightText: Copyright 2026 The Secureblue Authors
+#
+# SPDX-License-Identifier: Apache-2.0
+
+[Unit]
+Description=Allows secureblue users to run selected privileged commands
+
+[Service]
+Type=dbus
+BusName=dev.secureblue.PrivCmd0
+ExecStart=/usr/bin/python3 /usr/libexec/secureblue/priv-cmd/daemon.py

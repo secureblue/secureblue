@@ -1,0 +1,18 @@
+name: build-testing
+
+permissions: {}
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "00 6 * * *" # build at 6:00 UTC every day
+
+jobs:
+  trigger:
+    runs-on:  ubuntu-26.04
+    permissions:
+      actions: write
+    steps:
+      - run: gh workflow run build-all.yml --repo "${GITHUB_REPOSITORY}" --ref testing
+        env:
+          GH_TOKEN: ${{ github.token }}

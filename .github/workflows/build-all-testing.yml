@@ -8,10 +8,11 @@ on:
     - cron: "00 6 * * *" # build at 6:00 UTC every day
 
 jobs:
-  trigger:
+  build-testing:
+    name: Build UKI images (testing)
     runs-on:  ubuntu-26.04
     permissions:
-      actions: write
+      actions: write # needed to kick off job
     steps:
       - run: gh workflow run build-all.yml --repo "${GITHUB_REPOSITORY}" --ref testing
         env:

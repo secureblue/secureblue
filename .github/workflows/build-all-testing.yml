@@ -7,6 +7,10 @@ on:
   schedule:
     - cron: "00 6 * * *" # build at 6:00 UTC every day
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref || github.run_id }}
+  cancel-in-progress: true
+
 jobs:
   build-testing:
     name: Build UKI images (testing)

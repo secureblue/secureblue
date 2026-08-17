@@ -14,7 +14,7 @@ concurrency:
 jobs:
   build-testing:
     name: Build UKI images (testing)
-    runs-on:  ubuntu-26.04
+    runs-on: ubuntu-26.04
     permissions:
       actions: write # needed to kick off job
     steps:

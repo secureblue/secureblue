@@ -57,11 +57,6 @@
 @set-container-userns *args:
     exec /usr/bin/python3 /usr/libexec/secureblue/set_container_userns.py "$@"
 
-# Enable Dangerzone (sandboxed PDF sanitizer)
-[positional-arguments]
-@enable-dangerzone:
-    exec /usr/bin/python3 /usr/libexec/secureblue/enable_dangerzone.py "$@"
-
 # Toggle display of the user-motd in terminal
 @toggle-user-motd:
     exec /usr/bin/python3 /usr/libexec/secureblue/toggle_user_motd.py

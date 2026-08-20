@@ -108,30 +108,6 @@ toolbox-assemble CONTAINER="prompt" ACTION="create" FILE="/etc/toolbox/toolbox.i
     source /usr/lib/ujust/ujust.sh
     ToolboxAssembleList "{{ FILE }}" "{{ ACTION }}" "{{ CONTAINER }}"
 
-# Install the official Docker packages
-install-docker:
-    #!/usr/bin/run0 /bin/bash
-    set -euo pipefail
-    if [[ ! -f "/usr/bin/rpm-ostree" ]]; then
-        echo "Cannot layer packages on a UKI system. Try Podman, rootless Docker or a systemd-sysext instead."
-        exit 1
-    fi
-    sed -i -e '/^\[docker-ce-stable\]$/,/^\[/s/^enabled *= *0.*/enabled=1/' /etc/yum.repos.d/docker-ce.repo
-    rpm-ostree refresh-md
-    rpm-ostree install docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
-
-# Uninstall the official Docker packages
-uninstall-docker:
-    #!/usr/bin/run0 /bin/bash
-    set -euo pipefail
-    if [[ ! -f "/usr/bin/rpm-ostree" ]]; then
-        echo "Cannot unlayer packages on a UKI system."
-        exit 1
-    fi
-    cp /usr/share/secureblue/etc/yum.repos.d/docker-ce.repo /etc/yum.repos.d/docker-ce.repo
-    rpm-ostree refresh-md
-    rpm-ostree uninstall docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
-
 # Rebase to a different secureblue Desktop Environment/Atomic Desktop
 rebase-secureblue:
     #!/usr/bin/bash

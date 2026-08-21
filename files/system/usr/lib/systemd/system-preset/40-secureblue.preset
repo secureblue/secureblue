@@ -41,3 +41,6 @@ disable systemd-homed-firstboot.service
 disable systemd-homed.service
 disable systemd-resolved.service
 disable rpm-ostree-countme.timer
+
+disable docker.service
+disable docker.socket

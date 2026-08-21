@@ -23,7 +23,6 @@ install:
     - brew-proxy
     - brew-proxy-selinux
     - firewall-config
-    - dangerzone
 
     # yubikey enablement
     - pam-u2f

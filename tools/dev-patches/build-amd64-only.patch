@@ -1,0 +1,12 @@
+diff --git a/.github/workflows/build-one-recipe.yml b/.github/workflows/build-one-recipe.yml
+index 33028e8f..9b5af441 100644
+--- a/.github/workflows/build-one-recipe.yml
++++ b/.github/workflows/build-one-recipe.yml
+@@ -207,6 +207,7 @@ jobs:
+           use_cache: false
+           retry_push_count: 3
+           verify_install: true
++          build_opts: --platform linux/amd64
+ 
+       - name: Install regctl
+         uses: regclient/actions/regctl-installer@1b705e32d40851370799ea5814e83d0a5f6a70dc # v0.1.0

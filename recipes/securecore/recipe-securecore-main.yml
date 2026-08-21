@@ -18,6 +18,7 @@ platforms:
   - linux/arm64
 
 modules:
+  - from-file: common/securecore-modules.yml
   - from-file: common/common-modules.yml
   - from-file: common/server-modules.yml
   - from-file: common/selinux-modules.yml

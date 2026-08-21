@@ -6,6 +6,7 @@
 
 import sys
 from pathlib import Path
+from subprocess import CalledProcessError
 
 
 def enable_gnome_jit() -> None:
@@ -24,14 +25,18 @@ def main() -> int:
         return 1
 
     mode = sys.argv[1].casefold()
-    match mode:
-        case "on":
-            enable_gnome_jit()
-        case "off":
-            disable_gnome_jit()
-        case _:
-            print("Please provide a valid argument (on/off).")
-            return 1
+    try:
+        match mode:
+            case "on":
+                enable_gnome_jit()
+            case "off":
+                disable_gnome_jit()
+            case _:
+                print("Please provide a valid argument (on/off).")
+                return 1
+    except CalledProcessError:
+        print("An unexpected error occurred.")
+        return 1
 
     return 0
 

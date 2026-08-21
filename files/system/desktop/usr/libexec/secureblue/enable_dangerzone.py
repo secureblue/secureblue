@@ -10,10 +10,12 @@ Install Dangerzone (sandboxed PDF sanitizer): https://dangerzone.rocks/
 
 import subprocess
 import sys
-from typing import Final
+from typing import TYPE_CHECKING, Final
 
-import sandbox
-from utils import BootcBackend, ask_yes_no, print_wrapped
+if TYPE_CHECKING:
+    from files.system.usr.libexec.secureblue.utils import ask_yes_no, print_wrapped
+else:
+    from utils import ask_yes_no, print_wrapped
 
 WARNING_MESSAGE: Final[str] = """
 Warning: Dangerzone (https://dangerzone.rocks/) requires enabling both container-domain
@@ -25,32 +27,31 @@ and to use ptrace to inspect child processes in containers.
 
 def main() -> int:
     """Main script entrypoint."""
-    if BootcBackend.from_running() == BootcBackend.COMPOSEFS:
-        print("This script does not support UKI systems yet.")
+
+    try:
+        subprocess.run(
+            ["/usr/bin/rpm", "-q", "dangerzone"],
+            stdout=subprocess.DEVNULL,
+            stderr=subprocess.DEVNULL,
+            check=True,
+        )
+    except subprocess.CalledProcessError:
+        print("Dangerzone is not installed on this system. Unable to enable Dangerzone.")
         return 1
 
     print_wrapped(WARNING_MESSAGE)
-    if not ask_yes_no("Continue installing Dangerzone?"):
-        print("Canceling installation.")
+    if not ask_yes_no("Continue to enable Dangerzone?"):
+        print("Canceling.")
         return 0
 
-    inner_script = sandbox.SandboxedFunction(
-        "dangerzone.py",
-        read_write_paths=["/etc/yum.repos.d/dangerzone.repo"],
-    )
-    exit_code = sandbox.run(inner_script)
-    if exit_code != 0:
-        return exit_code
     try:
         print("Enabling container-domain user namespace creation...")
         subprocess.run(["/usr/bin/ujust", "set-container-userns", "on"], check=True)
         print("Ensuring ptrace is allowed in containers...")
         subprocess.run(["/usr/bin/ujust", "set-ptrace", "container"], check=True)
-        print("Installing Dangerzone as layered package...")
-        subprocess.run(["/usr/bin/rpm-ostree", "install", "dangerzone"], check=True)
     except subprocess.CalledProcessError:
         return 1
-    print("Reboot to complete the installation.")
+
     return 0
 
 

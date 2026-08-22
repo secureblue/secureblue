@@ -11,10 +11,15 @@ set -euo pipefail
 # unnecessary scheduled workflows.
 
 # Run in the repository root.
-cd "$(dirname "$0")/.."
+cd "$(git -C "$(dirname "$0")" rev-parse --show-toplevel)"
 
 # We'll create secrets/{cosign, MOK, PK, KEK, db}.key.
-mkdir secrets/
+if [ -d secrets/ ]; then
+  echo "A secrets directory already exists. Would you like to overwrite them?"
+  read -r -p "Continue? [y/N]: " answer
+  [[ ${answer} =~ ^[Yy] ]] || exit 0
+fi
+mkdir -p secrets/
 
 # Generate the cosign key.
 # `cosign generate-key-pair` uses prime256v1 (ECDSA P-256) by default,
@@ -23,7 +28,8 @@ openssl ecparam -name prime256v1 -genkey -noout -out secrets/cosign.key
 openssl ec -in secrets/cosign.key -pubout -out cosign.pub
 
 # Generate the MOK (akmods) key.
-openssl req -new -x509 -nodes -subj "/CN=secureblue MOK CA $(date +%Y)/" \
+date="$(date -I)"
+openssl req -new -x509 -nodes -subj "/CN=secureblue Test MOK CA ${date}/" \
   -keyout secrets/MOK.key -out files/system/usr/share/pki/akmods/certs/akmods-secureblue.der \
   -outform DER &> /dev/null
 
@@ -35,7 +41,7 @@ echo "${uuid}" > uki/keys/GUID
 for key in PK KEK db; do
   mkdir "uki/keys/${key}"
 
-  openssl req -new -x509 -nodes -subj "/CN=secureblue ${key} CA $(date +%Y)/" \
+  openssl req -new -x509 -nodes -subj "/CN=secureblue Test ${key} CA ${date}/" \
     -keyout "secrets/${key}.key" -out "uki/keys/${key}/${key}.pem" &> /dev/null
   openssl x509 -outform DER -in "uki/keys/${key}/${key}.pem" -out "uki/keys/${key}/${key}.der"
 
@@ -56,15 +62,17 @@ sbvarsign --attr "${attr}" --key secrets/KEK.key --cert uki/keys/KEK/KEK.pem \
 
 # Replace instances of RoyalOughtness with the user's GitHub username.
 read -r -p "Enter your GitHub username (e.g. royaloughtness): " username
-sed -i "s/royaloughtness/${username}/g" .github/workflows/*.yml
-sed -i "s/royaloughtness/${username}/gi" .github/CODEOWNERS
+sed --sandbox -i "s/royaloughtness/${username}/g" .github/workflows/*.yml
+sed --sandbox -i "s/royaloughtness/${username}/gi" .github/CODEOWNERS
 
 # Apply patches (e.g. remove schedule trigger on workflows).
 git apply tools/dev-patches/*.patch
 
-echo "Please back up all your keys, found in the secrets/ directory."
-echo "Commit the generated .auth, .der and .pem files to the repository."
-echo "Upload the following secrets to GitHub by copy-pasting the file contents:"
-echo "- SIGNING_SECRET - \"$(pwd)/secrets/cosign.key\""
-echo "- KERNEL_PRIVKEY - \"$(pwd)/secrets/MOK.key\""
-echo "- UKI_DB_KEY     - \"$(pwd)/secrets/db.key\""
+cat << EOF
+Please back up all your keys, found in the secrets/ directory.
+Commit the generated .auth, .der and .pem files to the repository.
+Upload the following secrets to GitHub by copy-pasting the file contents:
+- SIGNING_SECRET - "${PWD}/secrets/cosign.key"
+- KERNEL_PRIVKEY - "${PWD}/secrets/MOK.key"
+- UKI_DB_KEY     - "${PWD}/secrets/db.key"
+EOF

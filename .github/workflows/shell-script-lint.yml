@@ -7,11 +7,11 @@ permissions: {}
 on:
   pull_request:
     paths:
-      - 'files/system/**'
-      - 'files/justfiles/**'
-      - '**.sh'
-      - '.shellcheckrc'
-      - '.github/workflows/shell-script-lint.yml'
+      - "files/system/**"
+      - "files/justfiles/**"
+      - "**.sh"
+      - ".shellcheckrc"
+      - ".github/workflows/shell-script-lint.yml"
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
@@ -26,7 +26,7 @@ jobs:
     name: Shell script linters
     runs-on: ubuntu-slim
     steps:
-      - uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10  # v6.0.3
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           persist-credentials: false
 
@@ -61,11 +61,11 @@ jobs:
         id: file_list
         run: |
           tempfile="$(mktemp)"
-          # We need to examine object modes to exclude directories that are the target
-          # of a symbolic link, which get included in the output of `git ls-files` and
-          # would otherwise be passed to awk, triggering a warning.
+          # Examine object modes to exclude objects that are not regular files,
+          # which get included in the output of `git ls-files` and would
+          # otherwise be passed to awk, triggering warnings or errors.
           git ls-files -z --format='%(objectmode) %(path)' \
-            | sed -Enz -e '/^120/d' -e 's/^[0-9]+ //p' > "${tempfile}"
+            | sed -Enz -e '/^10/s/^[0-9]+ //p' > "${tempfile}"
           echo "file_list=${tempfile}" >> "${GITHUB_OUTPUT}"
 
       - name: Check shell script shebangs

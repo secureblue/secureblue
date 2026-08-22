@@ -6,8 +6,9 @@ name: trivy
 permissions: {}
 on:
   schedule:
-    - cron: "00 8 * * *" # build at 8:00 UTC every day
-                         # 120 minutes after secureblue images start building
+    - cron:
+        "00 8 * * *" # build at 8:00 UTC every day
+        # 120 minutes after secureblue images start building
   push:
     branches:
       - live
@@ -29,17 +30,17 @@ jobs:
       security-events: write # write findings to github
     steps:
       - name: Checkout code
-        uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           persist-credentials: false
 
       - name: Run Trivy vulnerability scanner
         uses: aquasecurity/trivy-action@ed142fd0673e97e23eac54620cfb913e5ce36c25 # v0.36.0
         with:
-          image-ref: 'ghcr.io/secureblue/silverblue-main-hardened:latest'
+          image-ref: "ghcr.io/secureblue/silverblue-main-hardened:latest"
           format: template
           scanners: vuln,secret,misconfig
-          template: '@/contrib/sarif.tpl'
+          template: "@/contrib/sarif.tpl"
           output: trivy-results.sarif
           timeout: 30m0s
           skip-dirs: "/sysroot/ostree"
@@ -48,7 +49,7 @@ jobs:
           TRIVY_JAVA_DB_REPOSITORY: ghcr.io/aquasecurity/trivy-java-db,public.ecr.aws/aquasecurity/trivy-java-db
 
       - name: Upload Trivy scan results to GitHub Security tab
-        uses: github/codeql-action/upload-sarif@8aad20d150bbac5944a9f9d289da16a4b0d87c1e # v4.36.2
+        uses: github/codeql-action/upload-sarif@5595ccaf912efad79be6eef63a5619ff05969be3 # v4.37.6
         with:
           sarif_file: trivy-results.sarif
 

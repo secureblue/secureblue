@@ -1,0 +1,14 @@
+{
+    "KPlugin": {
+        "Authors": [
+            {
+                "Email": "secureblueadmin@proton.me",
+                "Name": "Secureblue Devs"
+            }
+        ],
+        "Id": "SecureblueBlack",
+        "License": "Apache-2.0",
+        "Name": "Secureblue Black",
+        "Name[de]": "Secureblue Schwarz"
+    }
+}

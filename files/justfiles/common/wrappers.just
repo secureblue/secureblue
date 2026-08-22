@@ -62,14 +62,18 @@
 @set-container-userns *args:
     exec /usr/bin/python3 /usr/libexec/secureblue/set_container_userns.py "$@"
 
-# Install Dangerzone (sandboxed PDF sanitizer)
-[positional-arguments]
-@install-dangerzone:
-    exec /usr/bin/python3 /usr/libexec/secureblue/install_dangerzone.py "$@"
-
 # Toggle display of the user-motd in terminal
 @toggle-user-motd:
     exec /usr/bin/python3 /usr/libexec/secureblue/toggle_user_motd.py
+
+# Update system (with provenance verification).
+@update-system:
+    exec /usr/bin/python3 /usr/libexec/secureblue/update_system.py
+
+# Update device firmware.
+[no-exit-message]
+@update-firmware:
+    exec /usr/bin/python3 /usr/libexec/secureblue/update_firmware.py
 
 # Toggle DHCP hostname sending.
 [positional-arguments]
@@ -99,3 +103,8 @@ alias set-anticheat-support := set-ptrace
 # Show all messages from last boot
 @logs-last-boot:
     exec /usr/bin/run0 --via-shell journalctl -b -1
+
+# Toggle libvirt daemons on or off
+[positional-arguments]
+@set-libvirt-daemons *args:
+    exec /usr/bin/python3 /usr/libexec/secureblue/set_libvirt_daemons.py "$@"

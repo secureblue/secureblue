@@ -20,14 +20,14 @@ concurrency:
 jobs:
   bluebuild:
     name: PR build
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-26.04
     permissions:
       contents: read # Needed to pull the repo for the build
       packages: read # Needed to read base image manifests
 
     steps:
       - name: Enable egress auditing
-        uses: step-security/harden-runner@9af89fc71515a100421586dfdb3dc9c984fbf411 # v2.19.4
+        uses: step-security/harden-runner@b09bb98e06d4d774595224525879c09bc6e98c40 # v2.20.1
         with:
           egress-policy: block
           allowed-endpoints: >
@@ -112,6 +112,7 @@ jobs:
             dl.fedoraproject.org:443
             download-cc-rdu01.fedoraproject.org:443
             download-ib01.fedoraproject.org:443
+            fdix-ind.mm.fcix.net:443
             fedora-mirror-atl.gigsouth.com:443
             fedora.mirror.constant.com:443
             forksystems.mm.fcix.net:443
@@ -167,7 +168,7 @@ jobs:
             ziply.mm.fcix.net:443
 
       - name: Checkout repo
-        uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           persist-credentials: false
 
@@ -189,11 +190,11 @@ jobs:
           } >> "${GITHUB_OUTPUT}"
 
       - name: Build secureblue
-        uses: blue-build/github-action@24d146df25adc2cf579e918efe2d9bff6adea408 # v1.11.1
+        uses: blue-build/github-action@836161eb076426a451e6a0054f722b1153b8b3ad # v1.12.0
         env:
           KERNEL_PRIVKEY: ${{ steps.test_keys.outputs.kernel_privkey }}
         with:
-          cli_version: v0.9.33
+          cli_version: v0.9.36
           recipe: ${{ inputs.recipe }}
           push: false
           registry_token: ${{ github.token }}

@@ -2,13 +2,10 @@
 #
 # SPDX-License-Identifier: Apache-2.0
 
-# Add the unfiltered Flathub flatpak repo
-@enable-flathub-unfiltered:
-    exec /usr/bin/flatpak remote-add --if-not-exists --user flathub https://dl.flathub.org/repo/flathub.flatpakrepo
-
-# Remove the unfiltered Flathub flatpak repo
-@disable-flathub-unfiltered:
-    exec /usr/bin/flatpak remote-delete --user flathub
+# Add or remove the unfiltered Flathub remote.
+[positional-arguments]
+@set-flathub-unfiltered *args:
+    exec /usr/bin/python3 /usr/libexec/secureblue/set_flathub_unfiltered.py "$@"
 
 # Harden flatpaks by preloading hardened_malloc (highest supported hwcap). When called with a flatpak application ID as an argument, applies the overrides to that application instead of globally.
 [positional-arguments]
@@ -112,6 +109,6 @@ flatpak-permissions-lockdown:
 flatpak-reset-global-overrides:
     #!/usr/bin/bash
     GLOBAL_OVERRIDES="${HOME}/.local/share/flatpak/overrides/global"
-    echo "This will undo the flatpak-harden command, the flatpak-permissions-lockdown command, as well as any other global overrides (individual app overrides will not be affected)."
+    echo "This will undo the harden-flatpak command, the flatpak-permissions-lockdown command, as well as any other global overrides (individual app overrides will not be affected)."
     echo "It will not delete the file, but simply move it from ${GLOBAL_OVERRIDES} to ${GLOBAL_OVERRIDES}.save"
     mv "${GLOBAL_OVERRIDES}" "${GLOBAL_OVERRIDES}.save"

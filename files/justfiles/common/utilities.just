@@ -13,24 +13,6 @@ enroll-secureblue-secure-boot-key:
     echo 'At next reboot, the mokutil UEFI menu UI will be displayed (*QWERTY* keyboard input and navigation).'
     echo 'Then, select "Enroll MOK", and input "secureblue" as the password.'
 
-# Update system (with provenance verification)
-update-system:
-    #!/bin/sh
-    set -eu
-    /usr/libexec/secureblue/verify-provenance.sh
-    /usr/bin/rpm-ostree upgrade
-    if [ -f /usr/libexec/secureblue/security-update-notification ]; then
-        /usr/libexec/secureblue/security-update-notification >/dev/null 2>&1 &
-    fi
-
-# Update device firmware
-[no-exit-message]
-update-firmware:
-    #!/usr/bin/bash
-    fwupdmgr refresh --force
-    fwupdmgr get-updates
-    fwupdmgr update
-
 # Clean up old up unused podman images, volumes, flatpak packages and rpm-ostree content
 clean-system:
     #!/usr/bin/bash
@@ -253,7 +235,7 @@ install-vpn:
 
     # supported VPN providers and the security features they need disabled, separated by spaces
     declare -A vpn_providers=(
-        ["ivpn"]="gui_needs_unconfined_userns gui_needs_xwayland"
+        ["ivpn"]="gui_needs_unconfined_userns"
         ["mullvad"]="gui_needs_unconfined_userns"
         ["proton"]=""
         ["tailscale"]=""

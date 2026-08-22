@@ -10,18 +10,12 @@ on:
 
   push:
     branches-ignore: # don't rebuild for dependabot
-      - 'dependabot/**'
-      - 'create-pull-request/**'
+      - "dependabot/**"
+      - "create-pull-request/**"
     paths-ignore: # don't rebuild if only documentation has changed
       - "**.md"
-
+  # checkov:skip=CKV_GHA_7
   workflow_dispatch: # allow manually triggering builds
-    inputs:
-      clear-plan:
-        description: 'Clear previous layer plan?'
-        type: boolean
-        required: true
-        default: false
 
 # Cancels running workflows if a new workflow run for
 # the same workflow is started
@@ -31,7 +25,7 @@ concurrency:
 jobs:
   silverblue-main:
     name: Build silverblue main
-    if: github.triggering_actor == 'royaloughtness' || github.event_name == 'schedule' || github.event_name == 'push'
+    if: github.triggering_actor == 'royaloughtness' || github.triggering_actor == 'github-actions[bot]' || github.event_name == 'schedule' || github.event_name == 'push'
     permissions:
       contents: read # Needed to pull the repo for the build
       actions: read # Needed to read actions and actions logs for provenance generation
@@ -41,14 +35,13 @@ jobs:
     with:
       recipe: general/recipe-silverblue-main.yml
       rechunk: true
-      clear-plan: ${{ inputs.clear-plan || false }}
     secrets:
       SIGNING_SECRET: ${{ secrets.SIGNING_SECRET }}
       KERNEL_PRIVKEY: ${{ secrets.KERNEL_PRIVKEY }}
 
   kinoite-main:
     name: Build kinoite main
-    if: github.triggering_actor == 'royaloughtness' || github.event_name == 'schedule' || github.event_name == 'push'
+    if: github.triggering_actor == 'royaloughtness' || github.triggering_actor == 'github-actions[bot]' || github.event_name == 'schedule' || github.event_name == 'push'
     permissions:
       contents: read # Needed to pull the repo for the build
       actions: read # Needed to read actions and actions logs for provenance generation
@@ -58,14 +51,13 @@ jobs:
     with:
       recipe: general/recipe-kinoite-main.yml
       rechunk: true
-      clear-plan: ${{ inputs.clear-plan || false }}
     secrets:
       SIGNING_SECRET: ${{ secrets.SIGNING_SECRET }}
       KERNEL_PRIVKEY: ${{ secrets.KERNEL_PRIVKEY }}
 
   sericea-main:
     name: Build sericea main
-    if: github.triggering_actor == 'royaloughtness' || github.event_name == 'schedule' || github.event_name == 'push'
+    if: github.triggering_actor == 'royaloughtness' || github.triggering_actor == 'github-actions[bot]' || github.event_name == 'schedule' || github.event_name == 'push'
     permissions:
       contents: read # Needed to pull the repo for the build
       actions: read # Needed to read actions and actions logs for provenance generation
@@ -75,14 +67,13 @@ jobs:
     with:
       recipe: general/recipe-sericea-main.yml
       rechunk: true
-      clear-plan: ${{ inputs.clear-plan || false }}
     secrets:
       SIGNING_SECRET: ${{ secrets.SIGNING_SECRET }}
       KERNEL_PRIVKEY: ${{ secrets.KERNEL_PRIVKEY }}
 
   cosmic-main:
     name: Build cosmic main
-    if: github.triggering_actor == 'royaloughtness' || github.event_name == 'schedule' || github.event_name == 'push'
+    if: github.triggering_actor == 'royaloughtness' || github.triggering_actor == 'github-actions[bot]' || github.event_name == 'schedule' || github.event_name == 'push'
     permissions:
       contents: read # Needed to pull the repo for the build
       actions: read # Needed to read actions and actions logs for provenance generation
@@ -92,14 +83,13 @@ jobs:
     with:
       recipe: general/recipe-cosmic-main.yml
       rechunk: true
-      clear-plan: ${{ inputs.clear-plan || false }}
     secrets:
       SIGNING_SECRET: ${{ secrets.SIGNING_SECRET }}
       KERNEL_PRIVKEY: ${{ secrets.KERNEL_PRIVKEY }}
 
   silverblue-nvidia:
     name: Build silverblue nvidia images
-    if: github.triggering_actor == 'royaloughtness' || github.event_name == 'schedule' || github.event_name == 'push'
+    if: github.triggering_actor == 'royaloughtness' || github.triggering_actor == 'github-actions[bot]' || github.event_name == 'schedule' || github.event_name == 'push'
     needs: silverblue-main
     permissions:
       contents: read # Needed to pull the repo for the build
@@ -116,14 +106,13 @@ jobs:
     with:
       recipe: ${{ matrix.recipe }}
       rechunk: true
-      clear-plan: ${{ inputs.clear-plan || false }}
     secrets:
       SIGNING_SECRET: ${{ secrets.SIGNING_SECRET }}
       KERNEL_PRIVKEY: ${{ secrets.KERNEL_PRIVKEY }}
 
   kinoite-nvidia:
     name: Build kinoite nvidia images
-    if: github.triggering_actor == 'royaloughtness' || github.event_name == 'schedule' || github.event_name == 'push'
+    if: github.triggering_actor == 'royaloughtness' || github.triggering_actor == 'github-actions[bot]' || github.event_name == 'schedule' || github.event_name == 'push'
     needs: kinoite-main
     permissions:
       contents: read # Needed to pull the repo for the build
@@ -140,14 +129,13 @@ jobs:
     with:
       recipe: ${{ matrix.recipe }}
       rechunk: true
-      clear-plan: ${{ inputs.clear-plan || false }}
     secrets:
       SIGNING_SECRET: ${{ secrets.SIGNING_SECRET }}
       KERNEL_PRIVKEY: ${{ secrets.KERNEL_PRIVKEY }}
 
   sericea-nvidia:
     name: Build sericea nvidia images
-    if: github.triggering_actor == 'royaloughtness' || github.event_name == 'schedule' || github.event_name == 'push'
+    if: github.triggering_actor == 'royaloughtness' || github.triggering_actor == 'github-actions[bot]' || github.event_name == 'schedule' || github.event_name == 'push'
     needs: sericea-main
     permissions:
       contents: read # Needed to pull the repo for the build
@@ -164,14 +152,13 @@ jobs:
     with:
       recipe: ${{ matrix.recipe }}
       rechunk: true
-      clear-plan: ${{ inputs.clear-plan || false }}
     secrets:
       SIGNING_SECRET: ${{ secrets.SIGNING_SECRET }}
       KERNEL_PRIVKEY: ${{ secrets.KERNEL_PRIVKEY }}
 
   cosmic-nvidia:
     name: Build cosmic nvidia images
-    if: github.triggering_actor == 'royaloughtness' || github.event_name == 'schedule' || github.event_name == 'push'
+    if: github.triggering_actor == 'royaloughtness' || github.triggering_actor == 'github-actions[bot]' || github.event_name == 'schedule' || github.event_name == 'push'
     needs: cosmic-main
     permissions:
       contents: read # Needed to pull the repo for the build
@@ -188,14 +175,13 @@ jobs:
     with:
       recipe: ${{ matrix.recipe }}
       rechunk: true
-      clear-plan: ${{ inputs.clear-plan || false }}
     secrets:
       SIGNING_SECRET: ${{ secrets.SIGNING_SECRET }}
       KERNEL_PRIVKEY: ${{ secrets.KERNEL_PRIVKEY }}
 
   securecore-main:
     name: Build securecore main images
-    if: github.triggering_actor == 'royaloughtness' || github.event_name == 'schedule' || github.event_name == 'push'
+    if: github.triggering_actor == 'royaloughtness' || github.triggering_actor == 'github-actions[bot]' || github.event_name == 'schedule' || github.event_name == 'push'
     permissions:
       contents: read # Needed to pull the repo for the build
       actions: read # Needed to read actions and actions logs for provenance generation
@@ -205,14 +191,13 @@ jobs:
     with:
       recipe: securecore/recipe-securecore-main.yml
       rechunk: true
-      clear-plan: ${{ inputs.clear-plan || false }}
     secrets:
       SIGNING_SECRET: ${{ secrets.SIGNING_SECRET }}
       KERNEL_PRIVKEY: ${{ secrets.KERNEL_PRIVKEY }}
 
   securecore-nvidia:
     name: Build securecore nvidia images
-    if: github.triggering_actor == 'royaloughtness' || github.event_name == 'schedule' || github.event_name == 'push'
+    if: github.triggering_actor == 'royaloughtness' || github.triggering_actor == 'github-actions[bot]' || github.event_name == 'schedule' || github.event_name == 'push'
     needs: securecore-main
     permissions:
       contents: read # Needed to pull the repo for the build
@@ -229,14 +214,13 @@ jobs:
     with:
       recipe: ${{ matrix.recipe }}
       rechunk: true
-      clear-plan: ${{ inputs.clear-plan || false }}
     secrets:
       SIGNING_SECRET: ${{ secrets.SIGNING_SECRET }}
       KERNEL_PRIVKEY: ${{ secrets.KERNEL_PRIVKEY }}
 
   securecore-zfs-main:
     name: Build securecore zfs main images
-    if: github.triggering_actor == 'royaloughtness' || github.event_name == 'schedule' || github.event_name == 'push'
+    if: github.triggering_actor == 'royaloughtness' || github.triggering_actor == 'github-actions[bot]' || github.event_name == 'schedule' || github.event_name == 'push'
     needs: securecore-main
     permissions:
       contents: read # Needed to pull the repo for the build
@@ -247,14 +231,13 @@ jobs:
     with:
       recipe: securecore/recipe-securecore-zfs-main.yml
       rechunk: true
-      clear-plan: ${{ inputs.clear-plan || false }}
     secrets:
       SIGNING_SECRET: ${{ secrets.SIGNING_SECRET }}
       KERNEL_PRIVKEY: ${{ secrets.KERNEL_PRIVKEY }}
 
   securecore-zfs-nvidia:
     name: Build securecore zfs nvidia images
-    if: github.triggering_actor == 'royaloughtness' || github.event_name == 'schedule' || github.event_name == 'push'
+    if: github.triggering_actor == 'royaloughtness' || github.triggering_actor == 'github-actions[bot]' || github.event_name == 'schedule' || github.event_name == 'push'
     needs: securecore-zfs-main
     permissions:
       contents: read # Needed to pull the repo for the build
@@ -271,14 +254,13 @@ jobs:
     with:
       recipe: ${{ matrix.recipe }}
       rechunk: true
-      clear-plan: ${{ inputs.clear-plan || false }}
     secrets:
       SIGNING_SECRET: ${{ secrets.SIGNING_SECRET }}
       KERNEL_PRIVKEY: ${{ secrets.KERNEL_PRIVKEY }}
 
   iot-main:
     name: Build iot main images
-    if: github.triggering_actor == 'royaloughtness' || github.event_name == 'schedule' || github.event_name == 'push'
+    if: github.triggering_actor == 'royaloughtness' || github.triggering_actor == 'github-actions[bot]' || github.event_name == 'schedule' || github.event_name == 'push'
     permissions:
       contents: read # Needed to pull the repo for the build
       actions: read # Needed to read actions and actions logs for provenance generation
@@ -288,14 +270,13 @@ jobs:
     with:
       recipe: iot/recipe-iot-main.yml
       rechunk: true
-      clear-plan: ${{ inputs.clear-plan || false }}
     secrets:
       SIGNING_SECRET: ${{ secrets.SIGNING_SECRET }}
       KERNEL_PRIVKEY: ${{ secrets.KERNEL_PRIVKEY }}
 
   iot-nvidia:
     name: Build iot nvidia images
-    if: github.triggering_actor == 'royaloughtness' || github.event_name == 'schedule' || github.event_name == 'push'
+    if: github.triggering_actor == 'royaloughtness' || github.triggering_actor == 'github-actions[bot]' || github.event_name == 'schedule' || github.event_name == 'push'
     needs: iot-main
     permissions:
       contents: read # Needed to pull the repo for the build
@@ -312,14 +293,13 @@ jobs:
     with:
       recipe: ${{ matrix.recipe }}
       rechunk: true
-      clear-plan: ${{ inputs.clear-plan || false }}
     secrets:
       SIGNING_SECRET: ${{ secrets.SIGNING_SECRET }}
       KERNEL_PRIVKEY: ${{ secrets.KERNEL_PRIVKEY }}
 
   iot-zfs-main:
     name: Build iot zfs main images
-    if: github.triggering_actor == 'royaloughtness' || github.event_name == 'schedule' || github.event_name == 'push'
+    if: github.triggering_actor == 'royaloughtness' || github.triggering_actor == 'github-actions[bot]' || github.event_name == 'schedule' || github.event_name == 'push'
     needs: iot-main
     permissions:
       contents: read # Needed to pull the repo for the build
@@ -330,14 +310,13 @@ jobs:
     with:
       recipe: iot/recipe-iot-zfs-main.yml
       rechunk: true
-      clear-plan: ${{ inputs.clear-plan || false }}
     secrets:
       SIGNING_SECRET: ${{ secrets.SIGNING_SECRET }}
       KERNEL_PRIVKEY: ${{ secrets.KERNEL_PRIVKEY }}
 
   iot-zfs-nvidia:
     name: Build iot zfs nvidia images
-    if: github.triggering_actor == 'royaloughtness' || github.event_name == 'schedule' || github.event_name == 'push'
+    if: github.triggering_actor == 'royaloughtness' || github.triggering_actor == 'github-actions[bot]' || github.event_name == 'schedule' || github.event_name == 'push'
     needs: iot-zfs-main
     permissions:
       contents: read # Needed to pull the repo for the build
@@ -354,7 +333,6 @@ jobs:
     with:
       recipe: ${{ matrix.recipe }}
       rechunk: true
-      clear-plan: ${{ inputs.clear-plan || false }}
     secrets:
       SIGNING_SECRET: ${{ secrets.SIGNING_SECRET }}
       KERNEL_PRIVKEY: ${{ secrets.KERNEL_PRIVKEY }}

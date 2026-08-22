@@ -26,18 +26,18 @@ jobs:
     name: Install Bats and run tests
     steps:
       - name: Checkout repo
-        uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           persist-credentials: false
 
       - name: Setup Bats and bats libs
         id: setup-bats
-        uses: bats-core/bats-action@77d6fb60505b4d0d1d73e48bd035b55074bbfb43 #v4.0.0
+        uses: bats-core/bats-action@77d6fb60505b4d0d1d73e48bd035b55074bbfb43 # 4.0.0
         with:
-           support-path: "${{ github.workspace }}/.bats/bats-support"
-           assert-path: "${{ github.workspace }}/.bats/bats-assert"
-           detik-path: "${{ github.workspace }}/.bats/bats-detik"
-           file-path: "${{ github.workspace }}/.bats/bats-file"
+          support-path: "${{ github.workspace }}/.bats/bats-support"
+          assert-path: "${{ github.workspace }}/.bats/bats-assert"
+          detik-path: "${{ github.workspace }}/.bats/bats-detik"
+          file-path: "${{ github.workspace }}/.bats/bats-file"
 
       - name: Install just
         shell: bash

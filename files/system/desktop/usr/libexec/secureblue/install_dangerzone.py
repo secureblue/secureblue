@@ -10,10 +10,14 @@ Install Dangerzone (sandboxed PDF sanitizer): https://dangerzone.rocks/
 
 import subprocess
 import sys
-from typing import Final
+from typing import TYPE_CHECKING, Final
 
-import sandbox
-from utils import ask_yes_no, print_wrapped
+if TYPE_CHECKING:
+    from files.system.usr.libexec.secureblue import sandbox
+    from files.system.usr.libexec.secureblue.utils import ask_yes_no, print_wrapped
+else:
+    import sandbox
+    from utils import ask_yes_no, print_wrapped
 
 WARNING_MESSAGE: Final[str] = """
 Warning: Dangerzone (https://dangerzone.rocks/) requires enabling both container-domain
@@ -32,10 +36,7 @@ def main() -> int:
 
     inner_script = sandbox.SandboxedFunction(
         "dangerzone.py",
-        read_write_paths=[
-            "/etc/yum.repos.d/dangerzone.repo",
-            "/etc/containers/policy.json",
-        ],
+        read_write_paths=["/etc/yum.repos.d/dangerzone.repo"],
     )
     exit_code = sandbox.run(inner_script)
     if exit_code != 0:

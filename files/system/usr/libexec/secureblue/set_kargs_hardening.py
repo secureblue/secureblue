@@ -8,15 +8,12 @@
 
 # https://docs.kernel.org/admin-guide/kernel-parameters.html
 
-import subprocess
 from typing import Final
 
 from kargs_hardening_common import (
     DEFAULT_KARGS,
     DISABLE_32_BIT,
     FORCE_NOSMT,
-    MODULE_NO_SIG_ENFORCE,
-    MODULE_SIG_ENFORCE,
     UNSTABLE_KARGS,
     apply_kargs,
 )
@@ -24,7 +21,7 @@ from utils import ask_yes_no
 
 
 def build_kargs_list(
-    *, disable_32_bit: bool, nosmt: bool, unstable: bool, secure_boot: bool
+    *, disable_32_bit: bool, nosmt: bool, unstable: bool
 ) -> tuple[list[str], list[str]]:
     """Build the list of kargs to add and remove."""
     kargs_to_add = DEFAULT_KARGS
@@ -44,13 +41,6 @@ def build_kargs_list(
         kargs_to_add += UNSTABLE_KARGS
     else:
         kargs_to_remove += UNSTABLE_KARGS
-
-    if secure_boot:
-        kargs_to_remove.append(MODULE_NO_SIG_ENFORCE)
-    else:
-        kargs_to_add.remove(MODULE_SIG_ENFORCE)
-        kargs_to_add.append(MODULE_NO_SIG_ENFORCE)
-        kargs_to_remove.append(MODULE_SIG_ENFORCE)
 
     return kargs_to_add, kargs_to_remove
 
@@ -94,21 +84,10 @@ def main() -> None:
     else:
         print("Selected: do not set unstable hardening kernel arguments.")
 
-    # Check for secure boot support, required for some drivers. (e.g. WiFi on some
-    # Macbooks, plus there would be no way to verify these anyways.)
-    sb_state = subprocess.run(["/usr/bin/mokutil", "--sb-state"], capture_output=True, check=False)
-    secure_boot_supported = not (
-        b"doesn't support Secure Boot" in sb_state.stderr
-        or b"EFI variables are not supported" in sb_state.stderr
-    )
-    if not secure_boot_supported:
-        print("Secure Boot not supported. Will disable module signature enforcement.")
-
     kargs_to_add, kargs_to_remove = build_kargs_list(
         disable_32_bit=disable_32_bit,
         nosmt=nosmt,
         unstable=unstable,
-        secure_boot=secure_boot_supported,
     )
 
     print("\nApplying boot parameters...")

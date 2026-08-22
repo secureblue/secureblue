@@ -33,9 +33,6 @@ UNSTABLE_KARGS = [
     "oops=panic",
 ]
 
-MODULE_SIG_ENFORCE = "module.sig_enforce=1"
-MODULE_NO_SIG_ENFORCE = "module.sig_enforce=0"
-
 
 def apply_kargs(*, add: Sequence[str], remove: Sequence[str]) -> None:
     """Add and remove kernel arguments."""

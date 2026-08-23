@@ -14,7 +14,7 @@ set -euo pipefail
 cd "$(git -C "$(dirname "$0")" rev-parse --show-toplevel)"
 
 # We'll create secrets/{cosign, MOK, PK, KEK, db}.key.
-if [ -d secrets/ ]; then
+if [[ -d secrets/ ]]; then
   echo "A secrets directory already exists. Would you like to overwrite them?"
   read -r -p "Continue? [y/N]: " answer
   [[ ${answer} =~ ^[Yy] ]] || exit 0

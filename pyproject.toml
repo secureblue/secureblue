@@ -1,7 +1,7 @@
 [project]
 name = "secureblue"
 version = "4.9"
-requires-python = ">= 3.13"
+requires-python = ">= 3.14"
 maintainers = [{name = "RoyalOughtness"}]
 description = "secureblue is a security-focused desktop and server Linux operating system."
 readme = "docs/README.md"

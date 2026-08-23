@@ -16,10 +16,13 @@ import subprocess
 import sys
 import textwrap
 import time
-from collections.abc import Iterable, Sequence
 from dataclasses import dataclass
 from functools import partialmethod
 from pathlib import Path
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from collections.abc import Iterable, Sequence
 
 
 class ToggleMode(enum.StrEnum):
@@ -68,7 +71,7 @@ class BootcBackend(enum.Enum):
     OSTREE = enum.auto()
 
     @classmethod
-    def from_running(cls) -> "BootcBackend":
+    def from_running(cls) -> BootcBackend:
         """Gets the `BootcBackend` of the running system."""
         return cls.OSTREE if Path("/usr/bin/rpm-ostree").exists() else cls.COMPOSEFS
 
@@ -84,7 +87,7 @@ class Image(enum.Enum):
     IOT = enum.auto()
 
     @classmethod
-    def from_running(cls) -> "Image | None":
+    def from_running(cls) -> Image | None:
         """Gets the `Image` of the running system."""
         os_release = platform.freedesktop_os_release()
         image = os_release["IMAGE_ID"]  # e.g. silverblue-main-hardened
@@ -92,7 +95,7 @@ class Image(enum.Enum):
         return cls.by_alias(image_prefix)
 
     @classmethod
-    def by_alias(cls, alias: str) -> "Image | None":
+    def by_alias(cls, alias: str) -> Image | None:
         """Look up Image enum instance by alias."""
         alias = alias.casefold()
         aliases: dict[Image, Sequence[str]] = {
@@ -260,7 +263,7 @@ def interruptible_ask(prompt: str) -> str:
     prompt = textwrap.fill(prompt) + " "
     try:
         return input(prompt).strip()
-    except (KeyboardInterrupt, EOFError):
+    except KeyboardInterrupt, EOFError:
         print()
         sys.exit(130)
 

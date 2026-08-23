@@ -10,7 +10,7 @@
 
 from typing import Final
 
-from kargs_hardening_common import (
+from shared.kargs_hardening import (
     DEFAULT_KARGS,
     DISABLE_32_BIT,
     FORCE_NOSMT,

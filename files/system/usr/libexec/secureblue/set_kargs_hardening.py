@@ -17,15 +17,22 @@ from shared.kargs_hardening import (
     UNSTABLE_KARGS,
     apply_kargs,
 )
-from utils import ask_yes_no
+from shared.secure_boot import Bootloader
+from utils import BootcBackend, ask_yes_no
 
 
 def build_kargs_list(
     *, disable_32_bit: bool, nosmt: bool, unstable: bool
 ) -> tuple[list[str], list[str]]:
     """Build the list of kargs to add and remove."""
-    kargs_to_add = DEFAULT_KARGS
+    kargs_to_add = []
     kargs_to_remove = []
+
+    if (
+        BootcBackend.from_running() == BootcBackend.OSTREE
+        and Bootloader.from_running() == Bootloader.GRUB2
+    ):
+        kargs_to_add += DEFAULT_KARGS
 
     if disable_32_bit:
         kargs_to_add.append(DISABLE_32_BIT)

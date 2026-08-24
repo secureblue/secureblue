@@ -576,7 +576,7 @@ def audit_rpm_ostree_timer():
         config.read("/etc/rpm-ostreed.conf")
         if config["Daemon"].get("AutomaticUpdatePolicy") not in ("stage", "apply"):
             bad_rpm_ostreed_conf = True
-    except (configparser.Error, KeyError):
+    except configparser.Error, KeyError:
         bad_rpm_ostreed_conf = True
 
     if bad_rpm_ostreed_conf:
@@ -994,7 +994,7 @@ def audit_kde_ghns(state):
     try:
         with open("/etc/xdg/kdeglobals", encoding="utf-8") as f:
             config = parse_config(f)
-    except (FileNotFoundError, PermissionError):
+    except FileNotFoundError, PermissionError:
         status = WARN
         note = Note(
             _("The file {0} was not found or inaccessible.").format("/etc/xdg/kdeglobals"), WARN

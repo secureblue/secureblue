@@ -11,3 +11,5 @@ justfile-tmp-*
 sysext-tmp
 uki/**/*.key
 uki/**/*.esl
+.ruff_cache
+.venv

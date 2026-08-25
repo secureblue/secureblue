@@ -42,16 +42,10 @@ def addon_from_karg(karg: str) -> str:
     return addon + ADDON_SUFFIX
 
 
-def ensure_dir_exists(directory: Path) -> None:
-    """Creates the requested directory if it doesn't exist."""
-
-    directory.mkdir(exist_ok=True)
-
-
 def add_kargs(kargs: Sequence[str]) -> None:
     """Adds kargs by loading UKI addons."""
 
-    ensure_dir_exists(LOADED_ADDONS_PATH)
+    LOADED_ADDONS_PATH.mkdir(exist_ok=True)
 
     addons = [addon_from_karg(karg) for karg in kargs]
     for addon in addons:

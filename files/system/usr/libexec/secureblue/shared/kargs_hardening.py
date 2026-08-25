@@ -87,8 +87,7 @@ def apply_kargs(*, add: Sequence[str], remove: Sequence[str]) -> None:
 
         if exit_code:
             print(f"Worker failed (exit {exit_code})", file=sys.stderr)
-
-        sys.exit(exit_code)
+            sys.exit(exit_code)
 
     elif bootc_backend == BootcBackend.OSTREE and bootloader == Bootloader.GRUB2:
         rpm_ostree_cmd = ["/usr/bin/rpm-ostree", "kargs"]

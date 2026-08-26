@@ -99,7 +99,7 @@ slsa-verifier verify-image --source-uri "github.com/${github_repo_owner}/${githu
 
 # Display available block devices and ask the user to select one.
 clear
-lsblk
+lsblk -o name,size,fstype,model,label
 echo
 echo "Choose a disk to install to, e.g. /dev/vda, /dev/sda or /dev/nvme0n1."
 echo "This will erase the disk."

@@ -22,7 +22,7 @@ setup() {
 }
 
 @test "Ensure ujust is configured correctly for tests" {
-    run ujust bios
+    run ujust --list
     [[ "${status}" -eq 0 ]]
 }
 

@@ -113,6 +113,12 @@ if [[ $(lsblk -o SIZE -bnd "${disk}") -lt 30000000000 ]]; then
     exit 1
 fi
 
+read -r -p "This will wipe ${disk}, do you wish to proceed? [y/N] " confirm_wipe
+if [[ ! "${confirm_wipe}" =~ ^[Yy] ]]; then
+    echo "Wipe of ${disk} not confirmed, rerun the script if you wish to pick another disk."
+    exit 1
+fi
+
 # Ask the user for a LUKS encryption password for FDE on the root partition.
 echo
 read -r -p "Would you like to configure disk encryption? [Y/n] " luks

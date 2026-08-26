@@ -108,6 +108,10 @@ if [[ ! -b "${disk}" ]] || [[ $(lsblk -ndo TYPE "${disk}") != "disk" ]]; then
     echo "Invalid disk."
     exit 1
 fi
+if [[ $(lsblk -o SIZE -bnd "${disk}") -lt 30000000000 ]]; then
+    echo "Disk must have a size of at least 32 GB."
+    exit 1
+fi
 
 # Ask the user for a LUKS encryption password for FDE on the root partition.
 echo

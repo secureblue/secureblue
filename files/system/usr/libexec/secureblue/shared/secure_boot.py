@@ -145,7 +145,7 @@ class Bootloader(enum.Enum):
     GRUB2 = enum.auto()
 
     @classmethod
-    def from_running(cls) -> "Bootloader":
+    def from_running(cls) -> Bootloader:
         """Gets the `Bootloader` in use on the running system.
 
         Raises:

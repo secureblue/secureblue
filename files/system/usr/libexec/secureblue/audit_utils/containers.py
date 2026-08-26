@@ -10,10 +10,12 @@ https://github.com/containers/image/blob/main/docs/containers-policy.json.5.md
 """
 
 import json
-from collections.abc import Mapping, Sequence
 from dataclasses import dataclass
-from pathlib import Path
-from typing import Any
+from typing import TYPE_CHECKING, Any
+
+if TYPE_CHECKING:
+    from collections.abc import Mapping, Sequence
+    from pathlib import Path
 
 
 class ContainersPolicyError(Exception):
@@ -36,7 +38,7 @@ class TransportPolicyAudit:
     insecure_scopes: list[str]
 
     @staticmethod
-    def from_data(scopes: Mapping[str, Sequence[Mapping[str, Any]]]) -> "TransportPolicyAudit":
+    def from_data(scopes: Mapping[str, Sequence[Mapping[str, Any]]]) -> TransportPolicyAudit:
         """Analyze container transport policy from given JSON data."""
         default_secure = True
         insecure_scopes = []
@@ -60,7 +62,7 @@ class ContainersPolicyAudit:
     transports: dict[str, TransportPolicyAudit]
 
     @staticmethod
-    def from_data(policy: Mapping[str, Any]) -> "ContainersPolicyAudit":
+    def from_data(policy: Mapping[str, Any]) -> ContainersPolicyAudit:
         """Parse containers policy from JSON data."""
         try:
             default = policy["default"]
@@ -78,7 +80,7 @@ class ContainersPolicyAudit:
         return ContainersPolicyAudit(default_secure, transport_audits)
 
     @staticmethod
-    def from_file(path: str | Path) -> "ContainersPolicyAudit":
+    def from_file(path: str | Path) -> ContainersPolicyAudit:
         """Parse containers policy from a file."""
         try:
             with open(path, "rb") as f:

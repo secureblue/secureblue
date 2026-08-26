@@ -23,7 +23,6 @@ import traceback
 from pathlib import Path
 from typing import Final, assert_never
 
-import kargs_hardening_common
 from audit_flatpak import check_flatpak_permissions, parse_flatpak_permissions
 from audit_utils import (
     analyze_active_container_policy,
@@ -45,6 +44,7 @@ from auditor import (
     gettext_marker,
     global_audit,
 )
+from shared import kargs_hardening
 from utils import (
     BootcBackend,
     Image,
@@ -79,27 +79,27 @@ def audit_kargs():
     rec = None
 
     kargs_current = frozenset(Path("/proc/cmdline").read_text(encoding="utf-8").split())
-    kargs_expected = kargs_hardening_common.DEFAULT_KARGS
+    kargs_expected = kargs_hardening.DEFAULT_KARGS
     for karg in kargs_expected:
         if karg not in kargs_current:
             status = status.downgrade_to(FAIL)
             notes.append(Note(_("Missing kernel argument: {0}").format(karg), FAIL))
 
-    karg_32bit = kargs_hardening_common.DISABLE_32_BIT
+    karg_32bit = kargs_hardening.DISABLE_32_BIT
     if karg_32bit not in kargs_current:
         status = status.downgrade_to(WARN)
         notes.append(
             Note(_("Missing kernel argument: {0} (32-bit support)").format(karg_32bit), WARN)
         )
 
-    karg_nosmt = kargs_hardening_common.FORCE_NOSMT
+    karg_nosmt = kargs_hardening.FORCE_NOSMT
     if karg_nosmt not in kargs_current:
         status = status.downgrade_to(WARN)
         notes.append(
             Note(_("Missing kernel argument: {0} (force-disable SMT)").format(karg_nosmt), WARN)
         )
 
-    kargs_expected_unstable = kargs_hardening_common.UNSTABLE_KARGS
+    kargs_expected_unstable = kargs_hardening.UNSTABLE_KARGS
     for karg in kargs_expected_unstable:
         if karg not in kargs_current:
             status = status.downgrade_to(WARN)
@@ -594,7 +594,7 @@ def audit_update_timer():
         config.read("/etc/rpm-ostreed.conf")
         if config["Daemon"].get("AutomaticUpdatePolicy") not in ("stage", "apply"):
             bad_rpm_ostreed_conf = True
-    except (configparser.Error, KeyError):
+    except configparser.Error, KeyError:
         bad_rpm_ostreed_conf = True
 
     if bad_rpm_ostreed_conf:
@@ -1012,7 +1012,7 @@ def audit_kde_ghns(state):
     try:
         with open("/etc/xdg/kdeglobals", encoding="utf-8") as f:
             config = parse_config(f)
-    except (FileNotFoundError, PermissionError):
+    except FileNotFoundError, PermissionError:
         status = WARN
         note = Note(
             _("The file {0} was not found or inaccessible.").format("/etc/xdg/kdeglobals"), WARN

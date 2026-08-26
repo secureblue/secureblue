@@ -14,11 +14,13 @@ import gettext
 import inspect
 import json
 import tomllib
-from collections.abc import AsyncGenerator, Callable, Generator, Sequence
-from pathlib import Path
-from typing import Any, ClassVar, Final, Self, assert_never
+from typing import TYPE_CHECKING, Any, ClassVar, Final, Self, assert_never
 
 from utils import print_wrapped
+
+if TYPE_CHECKING:
+    from collections.abc import AsyncGenerator, Callable, Generator, Sequence
+    from pathlib import Path
 
 
 def gettext_marker() -> Callable[[str], str]:
@@ -59,7 +61,7 @@ class Status(enum.Enum):
                 assert_never(unreachable)
 
     @classmethod
-    def from_str(cls, s: str) -> "Status":
+    def from_str(cls, s: str) -> Status:
         """Parse string into status."""
         s_orig = s
         s = s.casefold()
@@ -109,7 +111,7 @@ class Status(enum.Enum):
         """Printable width of status."""
         return len(self.local_name())
 
-    def downgrade_to(self, other: "Status") -> "Status":
+    def downgrade_to(self, other: Status) -> Status:
         """Returns the more severe of the two statuses."""
         return max(self, other, key=lambda status: status.value)
 

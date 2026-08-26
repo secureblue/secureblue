@@ -15,10 +15,13 @@ import subprocess
 import sys
 import textwrap
 import time
-from collections.abc import Iterable, Sequence
 from dataclasses import dataclass
 from functools import partialmethod
 from pathlib import Path
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from collections.abc import Iterable, Sequence
 
 
 class ToggleMode(enum.StrEnum):
@@ -71,7 +74,7 @@ class Image(enum.Enum):
     IOT = enum.auto()
 
     @classmethod
-    def from_image_ref(cls, image_ref: str) -> "Image | None":
+    def from_image_ref(cls, image_ref: str) -> Image | None:
         """Convert an image reference to the corresponding Image enum instance."""
         image_dict: dict[str, Image] = {
             "silverblue": cls.SILVERBLUE,
@@ -86,7 +89,7 @@ class Image(enum.Enum):
         return image_dict.get(image_prefix)
 
     @classmethod
-    def by_alias(cls, alias: str) -> "Image | None":
+    def by_alias(cls, alias: str) -> Image | None:
         """Look up Image enum instance by alias."""
         alias = alias.casefold()
         aliases: dict[Image, Sequence[str]] = {
@@ -252,7 +255,7 @@ def interruptible_ask(prompt: str) -> str:
     prompt = textwrap.fill(prompt) + " "
     try:
         return input(prompt).strip()
-    except (KeyboardInterrupt, EOFError):
+    except KeyboardInterrupt, EOFError:
         print()
         sys.exit(130)
 

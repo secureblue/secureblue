@@ -8,7 +8,10 @@
 
 import subprocess
 import tomllib
-from collections.abc import Sequence
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from collections.abc import Sequence
 
 with open("/usr/lib/bootc/kargs.d/10-secureblue.toml", "rb") as f:
     DEFAULT_KARGS = tomllib.load(f)["kargs"]

@@ -97,26 +97,6 @@ rm -f "${crane_tarball}"
 full_ref=$(crane digest --full-ref "${image_ref}")
 slsa-verifier verify-image --source-uri "github.com/${github_repo_owner}/${github_repo_name}" "${full_ref}"
 
-# Create the configuration for systemd-repart to partition the disk.
-esp_uuid=$(systemd-id128 new --uuid)
-root_uuid=$(systemd-id128 new --uuid)
-mkdir -p /run/repart.d
-cat > /run/repart.d/01-esp.conf << EOF
-[Partition]
-Type=esp
-Format=vfat
-UUID=${esp_uuid}
-SizeMinBytes=2G
-SizeMaxBytes=2G
-EOF
-cat > /run/repart.d/02-sysroot.conf << EOF
-[Partition]
-Type=root
-Format=btrfs
-UUID=${root_uuid}
-SizeMinBytes=28G
-EOF
-
 # Display available block devices and ask the user to select one.
 clear
 lsblk
@@ -144,8 +124,6 @@ if [[ ! "${luks}" =~ ^[Nn] ]]; then
         echo "Passwords do not match."
         exit 1
     fi
-    echo "Encrypt=key-file" >> /run/repart.d/02-sysroot.conf
-    echo "KeyFile=${keyfile}" >> /run/repart.d/02-sysroot.conf
 fi
 
 # Trap to clean up mounts that we set up later.
@@ -167,15 +145,41 @@ cleanup() {
 }
 trap cleanup EXIT
 
-# Partition the installation disk. Try twice.
-systemd-repart --dry-run=no --empty=force "${disk}" || \
-    systemd-repart --dry-run=no --empty=force "${disk}"
+# Partition the installation disk.
+wipefs -a "${disk}"
+sgdisk --zap-all "${disk}"
+
+esp_uuid=$(systemd-id128 new --uuid)
+root_uuid=$(systemd-id128 new --uuid)
+sgdisk --new=1:2048:+2G \
+    --typecode=1:ef00 \
+    --change-name=1:"esp" \
+    --partition-guid=1:"${esp_uuid}" \
+    "${disk}"
+# Note: typecode 8304 is x86-64 specific.
+sgdisk --largest-new=2 \
+    --typecode=2:8304 \
+    --change-name=2:"root-x86-64" \
+    --partition-guid=2:"${root_uuid}" \
+    "${disk}"
 udevadm settle
-sleep 1
+
+wipefs -a "/dev/disk/by-partuuid/${root_uuid}"
+wipefs -a "/dev/disk/by-partuuid/${esp_uuid}"
+
+if [[ ! "${luks}" =~ ^[Nn] ]]; then
+    cryptsetup luksFormat -q "/dev/disk/by-partuuid/${root_uuid}" "${keyfile}"
+    cryptsetup open "--key-file=${keyfile}" "/dev/disk/by-partuuid/${root_uuid}" root
+    mkfs.btrfs /dev/mapper/root
+else
+    mkfs.btrfs --force "/dev/disk/by-partuuid/${root_uuid}"
+fi
+
+mkfs.vfat -F 32 "/dev/disk/by-partuuid/${esp_uuid}"
+udevadm settle
 
 # Mount the installation partitions to /mnt and /mnt/boot.
 if [[ ! "${luks}" =~ ^[Nn] ]]; then
-    cryptsetup open "--key-file=${keyfile}" "/dev/disk/by-partuuid/${root_uuid}" root
     mount /dev/mapper/root /mnt/
 else
     mount "/dev/disk/by-partuuid/${root_uuid}" /mnt/

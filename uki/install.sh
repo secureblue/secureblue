@@ -184,9 +184,9 @@ udevadm settle
 
 # Mount the installation partitions to /mnt and /mnt/boot.
 if [[ ! "${luks}" =~ ^[Nn] ]]; then
-    mount /dev/mapper/root /mnt/
+    mount -o compress=zstd:1 /dev/mapper/root /mnt/
 else
-    mount "/dev/disk/by-partuuid/${root_uuid}" /mnt/
+    mount -o compress=zstd:1 "/dev/disk/by-partuuid/${root_uuid}" /mnt/
 fi
 mkdir /mnt/boot/
 mount "/dev/disk/by-partuuid/${esp_uuid}" /mnt/boot/

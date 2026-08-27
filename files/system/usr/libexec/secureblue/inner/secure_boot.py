@@ -183,6 +183,8 @@ def main() -> int:
             print(f"Unhandled action: {request}", file=sys.stderr)
             return 1
 
+    return 1
+
 
 if __name__ == "__main__":
     sys.exit(main())

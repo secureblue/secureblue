@@ -7,7 +7,7 @@
 
 set -euo pipefail
 
-CONTAINER_DIR='/usr/etc/containers'
+CONTAINER_DIR='/usr/share/secureblue/etc/containers'
 ETC_CONTAINER_DIR='/etc/containers'
 MODULE_DIRECTORY="${MODULE_DIRECTORY:-/tmp/modules}"
 IMAGE_REGISTRY_TITLE=$(echo "${IMAGE_REGISTRY}" | cut -d'/' -f2-)
@@ -38,7 +38,6 @@ jq --arg image_registry "${IMAGE_REGISTRY}" \
         }
     ] } + .' "${POLICY_FILE}" > POLICY.tmp
 
-# covering our bases here since /usr/etc is technically unsupported, reevaluate once bootc is the primary deployment tool
 cp POLICY.tmp "${CONTAINER_DIR}/policy.json"
 cp POLICY.tmp "${ETC_CONTAINER_DIR}/policy.json"
 rm POLICY.tmp

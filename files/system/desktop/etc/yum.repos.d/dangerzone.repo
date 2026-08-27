@@ -5,4 +5,4 @@ baseurl = https://packages.freedom.press/yum-tools-prod/dangerzone/f$releasever
 gpgkey = file:///usr/share/pki/rpm-gpg/fpf-yum-tools-archive-keyring.gpg
 gpgcheck = 1
 repo_gpgcheck = 0
-enabled = 0
+enabled = 1

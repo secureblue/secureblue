@@ -66,3 +66,6 @@ pycodestyle.max-doc-length = 100
     "S607", # start-process-with-partial-path
     "TC003", # typing-only-standard-library-import
 ]
+
+[tool.pylint.main]
+source-roots = ["files/system/usr/libexec/secureblue"]

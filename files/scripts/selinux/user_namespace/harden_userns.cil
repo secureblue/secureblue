@@ -27,3 +27,4 @@
 (typeattributeset userns_restricted_domain (and (domain) (not (userns_privileged_domain))))
 
 (deny userns_restricted_domain self (user_namespace (create)))
+(deny userns_restricted_domain userns_privileged_domain (process (noatsecure)))

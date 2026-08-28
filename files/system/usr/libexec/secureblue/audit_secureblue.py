@@ -903,7 +903,9 @@ def audit_thumbnailing(state):
         status = PASS
         rec = None
     else:
-        status = WARN
+        status = (
+            FAIL if state["image"] == Image.SILVERBLUE or state["image"] == Image.SERICEA else WARN
+        )
         rec_lines = [
             _("Thumbnailing is enabled for {0}.").format(de),
             _("To disable it, consult the following FAQ:"),

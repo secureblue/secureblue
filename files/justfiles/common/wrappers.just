@@ -103,3 +103,8 @@ alias set-anticheat-support := set-ptrace
 [positional-arguments]
 @set-libvirt-daemons *args:
     exec /usr/bin/python3 /usr/libexec/secureblue/set_libvirt_daemons.py "$@"
+
+# Revert all overrides to the container policy
+reset-container-policy:
+    #!/bin/sh
+    exec /usr/bin/python3 /usr/libexec/secureblue/reset_container_policy.py

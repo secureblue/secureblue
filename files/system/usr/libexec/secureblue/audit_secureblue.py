@@ -862,7 +862,7 @@ def audit_xwayland(state):
 @depends_on("audit_signed_image")
 def audit_thumbnailing(state):
     """Check whether thumbnailing is disabled."""
-    thumbnailing_disabled = False
+    thumbnailing_disabled = True
     match state["image"]:
         case Image.SILVERBLUE:
             de = _("GNOME")

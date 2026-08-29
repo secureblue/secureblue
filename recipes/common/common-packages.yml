@@ -53,3 +53,10 @@ install:
     - qemu-user-binfmt
     - virt-install
     - podman-machine
+
+    - docker-ce
+    - docker-ce-cli
+    - docker-ce-rootless-extras
+    - containerd.io
+    - docker-buildx-plugin
+    - docker-compose-plugin

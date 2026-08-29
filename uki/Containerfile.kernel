@@ -1,0 +1,14 @@
+# SPDX-FileCopyrightText: Timothée Ravier <tim@siosm.fr>
+# SPDX-License-Identifier: CC0-1.0
+
+ARG BASE=overridden
+FROM $BASE as rootfs
+
+RUN <<EORUN
+set -euxo pipefail
+kver=$(cd "/usr/lib/modules" && echo *) && \
+mv "/usr/lib/modules/$kver/vmlinuz" "/vmlinuz"
+EORUN
+
+FROM scratch
+COPY --from=rootfs /vmlinuz /vmlinuz

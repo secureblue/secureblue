@@ -7,6 +7,5 @@ ConditionPathIsDirectory=/var/home/%u
 
 [Service]
 Type=oneshot
-ExecCondition=/bin/bash -c 'mokutil --list-enrolled --short >/dev/null 2>&1'
-ExecCondition=/bin/bash -c '! mokutil --list-enrolled --short | grep -Fq "secureblue secureboot key"'
+ExecCondition=/bin/bash -c 'ujust enroll-secure-boot-keys status | grep -Fq "Status: not enrolled"'
 ExecStart=/usr/libexec/secureblue/securebluesecurebootnotify

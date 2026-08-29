@@ -31,9 +31,9 @@ override-reset-module mod_name:
 toggle-debug-mode:
     #! /bin/run0 /bin/bash
     if test -e /etc/sysctl.d/99-enable-coredump.conf; then
-        cp /usr/etc/security/limits.d/60-disable-coredump.conf /etc/security/limits.d/60-disable-coredump.conf
-        cp /usr/etc/systemd/system.conf.d/60-disable-coredump.conf /etc/systemd/system.conf.d/60-disable-coredump.conf
-        cp /usr/etc/systemd/user.conf.d/60-disable-coredump.conf /etc/systemd/user.conf.d/60-disable-coredump.conf
+        cp /usr/share/secureblue/etc/security/limits.d/60-disable-coredump.conf /etc/security/limits.d/60-disable-coredump.conf
+        cp /usr/share/secureblue/etc/systemd/system.conf.d/60-disable-coredump.conf /etc/systemd/system.conf.d/60-disable-coredump.conf
+        cp /usr/share/secureblue/etc/systemd/user.conf.d/60-disable-coredump.conf /etc/systemd/user.conf.d/60-disable-coredump.conf
         rm /etc/sysctl.d/99-enable-coredump.conf
         echo "Debug mode disabled."
     else

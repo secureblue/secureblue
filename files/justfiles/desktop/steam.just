@@ -5,6 +5,11 @@
 # Install Steam via choice of 2 methods
 install-steam:
     #!/usr/bin/bash
+    if [[ ! -f "/usr/bin/rpm-ostree" ]]; then
+        echo "This script does not support UKI systems yet."
+        exit 1
+    fi
+
     need_reboot=false
     if [[ -z "$(pgrep Xwayland)" && -z "$(pgrep Xorg)" ]]; then
         echo "Steam requires X or Xwayland, which your variant of secureblue has disabled by default." | fold -s

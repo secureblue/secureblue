@@ -7,17 +7,17 @@
 set -euo pipefail
 
 # Remove vestigial authselect overrides from Anaconda
-cp /usr/etc/authselect/system-auth /etc/authselect/system-auth
-cp /usr/etc/authselect/fingerprint-auth /etc/authselect/fingerprint-auth
-cp /usr/etc/authselect/dconf-db /etc/authselect/dconf-db
-cp /usr/etc/authselect/authselect.conf /etc/authselect/authselect.conf
+cp /usr/share/secureblue/etc/authselect/system-auth /etc/authselect/system-auth
+cp /usr/share/secureblue/etc/authselect/fingerprint-auth /etc/authselect/fingerprint-auth
+cp /usr/share/secureblue/etc/authselect/dconf-db /etc/authselect/dconf-db
+cp /usr/share/secureblue/etc/authselect/authselect.conf /etc/authselect/authselect.conf
 
 # Remove firewalld zone override from Anaconda
-cp /usr/etc/firewalld/zones/FedoraWorkstation.xml /etc/firewalld/zones/FedoraWorkstation.xml || true
-cp /usr/etc/firewalld/zones/FedoraServer.xml /etc/firewalld/zones/FedoraServer.xml || true
+cp /usr/share/secureblue/etc/firewalld/zones/FedoraWorkstation.xml /etc/firewalld/zones/FedoraWorkstation.xml || true
+cp /usr/share/secureblue/etc/firewalld/zones/FedoraServer.xml /etc/firewalld/zones/FedoraServer.xml || true
 
 # Undo chronyd timeserver configuration from Anaconda, which is empty sometimes.
-cp /usr/etc/chrony.conf /etc/chrony.conf
+cp /usr/share/secureblue/etc/chrony.conf /etc/chrony.conf
 
 if command -v flatpak &> /dev/null
 then
@@ -28,6 +28,12 @@ then
     flatpak remote-delete --system --force flathub || true
     flatpak remote-delete --user --force flathub || true
     flatpak remove --system --noninteractive --all || true
+fi
+
+if [[ ! -f "/usr/bin/rpm-ostree" ]]; then
+    # If on UKI image, we need to exit success early otherwise securebluecleanup
+    # will fail and keep retrying and running the above steps.
+    exit 0
 fi
 
 # Ensure we are on signed

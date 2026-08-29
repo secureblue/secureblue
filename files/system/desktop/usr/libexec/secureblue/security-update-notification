@@ -6,6 +6,19 @@
 
 set -euo pipefail
 
+# If there's been a bootc/composefs upgrade, then unconditionally notify.
+# We don't have an equivalent to the rpm-ostree database.
+if [[ ! -f "/usr/bin/rpm-ostree" ]]; then
+    if jq -e '.status.staged != null' /run/bootc/status.json > /dev/null; then
+        notify-send --urgency=critical \
+            --app-name="secureblue" \
+            --action="Reboot" \
+            "An update is ready" \
+            "Please reboot to run the updated system."
+    fi
+    exit 0
+fi
+
 cached_update_json="$(rpm-ostree status --json | jq -c '."cached-update"')"
 if [[ "${cached_update_json}" == 'null' ]]; then
     exit 0

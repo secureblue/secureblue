@@ -9,8 +9,6 @@
           (typeattributeset userns_privileged_file_type (container_runtime_exec_t docker_exec_t kubelet_exec_t)))
 (optional devicekit_power_userns_privileged_file_type
           (typeattributeset userns_privileged_file_type (devicekit_power_exec_t)))
-(optional file_manager_userns_privileged_file_type
-          (typeattributeset userns_privileged_file_type (file_manager_exec_type)))
 (optional flatpak_userns_privileged_file_type
           (typeattributeset userns_privileged_file_type (flatpak_exec_t)))
 (optional flatpak_helper_userns_privileged_file_type

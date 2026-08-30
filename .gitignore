@@ -3,11 +3,13 @@ cosign.key
 cosign.private
 *.kate-swp
 .directory
-Containerfile
+/Containerfile
 .DS_Store
 __pycache__
 uv.lock
 justfile-tmp-*
 sysext-tmp
+uki/**/*.key
+uki/**/*.esl
 .ruff_cache
 .venv

@@ -7,9 +7,14 @@
 
 set -euo pipefail
 
-RPM_OSTREE_STATUS=$(rpm-ostree status --json --booted)
+if [[ -f "/usr/bin/rpm-ostree" ]]; then
+    RPM_OSTREE_STATUS=$(rpm-ostree status --json --booted)
+    IMAGE_DATE=$(echo "${RPM_OSTREE_STATUS}" | jq -r '.deployments[0].timestamp')
+else
+    IMAGE_DATE=$(jq -r '.status.booted.image.timestamp' /run/bootc/status.json)
+    IMAGE_DATE=$(date -d "${IMAGE_DATE}" '+%s')
+fi
 
-IMAGE_DATE=$(echo "${RPM_OSTREE_STATUS}" | jq -r '.deployments[0].timestamp')
 CURRENT_SECONDS=$(date +%s)
 DIFFERENCE=$((CURRENT_SECONDS - IMAGE_DATE))
 WEEK=604800 # 1 week

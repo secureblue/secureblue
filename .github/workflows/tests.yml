@@ -10,6 +10,7 @@ on:
       - live
       - staging
       - next
+      - testing
     paths-ignore:
       - "**.md"
   workflow_dispatch: # allow manually triggering

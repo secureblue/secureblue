@@ -56,7 +56,7 @@ storage:
             echo "Error: Secureblue installation failed." >&2
             exit "$status"
           else
-            sudo cp /usr/etc/containers/policy.json /etc/containers/policy.json
+            sudo cp /usr/share/secureblue/etc/containers/policy.json /etc/containers/policy.json
             sed -i -e '/\/opt\/install_secureblue.sh/d' /var/home/core/.bash_profile
             sudo rm -f /opt/install_secureblue.sh /etc/pki/containers/secureblue-2025.pub
             echo "Automatically rebooting in 5 seconds..."

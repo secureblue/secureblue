@@ -10,7 +10,7 @@ cd "$(dirname "$0")"
 
 github_repo_owner="secureblue"
 github_repo_name="secureblue"
-ghcr_tag="br-testing-44-uki"
+ghcr_tag="latest-uki"
 
 # Check prerequisites.
 if [[ $(id -u) -ne 0 ]]; then

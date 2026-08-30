@@ -22,6 +22,7 @@ addons=(
     "oops=panic"
     "amdgpu.dcdebugmask=0x10" # https://invent.kde.org/kde-linux/kde-linux/-/merge_requests/431
     "module_blacklist=nouveau"
+    "nouveau.config=NvGspRm=1" # https://nouveau.freedesktop.org/PowerManagement.html
 )
 # We need a UKI addon (karg or initrd) to get the right keyboard layout at the
 # LUKS screen. Taken from `localectl list-keymaps`, deduplicated with niche ones

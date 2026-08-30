@@ -10,7 +10,7 @@ cd "$(dirname "$0")"
 
 github_repo_owner="secureblue"
 github_repo_name="secureblue"
-ghcr_tag="latest-uki"
+ghcr_tag="uki"
 
 # Check prerequisites.
 if [[ $(id -u) -ne 0 ]]; then
@@ -172,6 +172,7 @@ sgdisk --largest-new=2 \
     --change-name=2:"root-x86-64" \
     --partition-guid=2:"${root_uuid}" \
     "${disk}"
+partprobe "${disk}"
 udevadm settle
 
 wipefs -a "/dev/disk/by-partuuid/${root_uuid}"
@@ -186,6 +187,7 @@ else
 fi
 
 mkfs.vfat -F 32 "/dev/disk/by-partuuid/${esp_uuid}"
+partprobe "${disk}"
 udevadm settle
 
 # Mount the installation partitions to /mnt and /mnt/boot.

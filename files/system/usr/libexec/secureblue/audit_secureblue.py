@@ -880,7 +880,7 @@ def audit_xwayland(state):
 @depends_on("audit_signed_image")
 def audit_thumbnailing(state):
     """Check whether thumbnailing is disabled."""
-    thumbnailing_disabled = False
+    thumbnailing_disabled = True
     match state["image"]:
         case Image.SILVERBLUE:
             de = _("GNOME")
@@ -902,10 +902,8 @@ def audit_thumbnailing(state):
                 thumbnailing_disabled = thumbnail_plugins == ""
         case Image.SERICEA:
             de = _("Sway")
-            if not command_succeeds(
-                "systemctl", "is-enabled", "--quiet", "--user", "tumblerd.service"
-            ):
-                thumbnailing_disabled = True
+            if command_succeeds("systemctl", "is-enabled", "--quiet", "--user", "tumblerd.service"):
+                thumbnailing_disabled = False
         case Image.COSMIC:
             de = _("COSMIC")
             status = INFO
@@ -921,7 +919,7 @@ def audit_thumbnailing(state):
         status = PASS
         rec = None
     else:
-        status = WARN
+        status = FAIL
         rec_lines = [
             _("Thumbnailing is enabled for {0}.").format(de),
             _("To disable it, consult the following FAQ:"),

@@ -10,8 +10,6 @@
           (typeattributeset userns_privileged_domain (container_domain container_runtime_domain spc_t)))
 (optional devicekit_power_userns_privileged_domain
           (typeattributeset userns_privileged_domain (devicekit_power_t)))
-(optional file_manager_userns_privileged_domain
-          (typeattributeset userns_privileged_domain (file_manager_type)))
 (optional flatpak_userns_privileged_domain
           (typeattributeset userns_privileged_domain (flatpak_t)))
 (optional flatpak_helper_userns_privileged_domain

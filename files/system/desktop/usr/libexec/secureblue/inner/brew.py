@@ -35,8 +35,10 @@ def enable_brew() -> None:
     subprocess.run(
         ["/usr/bin/systemd-tmpfiles", "--create", f"--prefix={LINUXBREW_HOME}"], check=True
     )
-    shutil.copy2(f"/usr{BREW_PROFILE_FILE}", BREW_PROFILE_FILE)
-    shutil.copy2(f"/usr{BREW_PROFILE_COMPLETIONS_FILE}", BREW_PROFILE_COMPLETIONS_FILE)
+    shutil.copy2(f"/usr/share/secureblue{BREW_PROFILE_FILE}", BREW_PROFILE_FILE)
+    shutil.copy2(
+        f"/usr/share/secureblue{BREW_PROFILE_COMPLETIONS_FILE}", BREW_PROFILE_COMPLETIONS_FILE
+    )
     subprocess.run(["/usr/bin/systemctl", "unmask", "--", *BREW_SYSTEMD_UNITS], check=True)
 
 

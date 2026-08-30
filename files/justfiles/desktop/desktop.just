@@ -11,3 +11,8 @@
 [positional-arguments]
 @set-xwayland *args:
     exec /usr/bin/python3 /usr/libexec/secureblue/set_xwayland.py "$@"
+
+# Enable Dangerzone (sandboxed PDF sanitizer)
+[positional-arguments]
+@enable-dangerzone:
+    exec /usr/bin/python3 /usr/libexec/secureblue/enable_dangerzone.py "$@"

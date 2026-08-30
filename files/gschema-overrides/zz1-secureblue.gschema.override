@@ -21,3 +21,6 @@ picture-uri-dark='file:///usr/share/backgrounds/secureblue/secureblue-black.svg'
 [org.gnome.desktop.media-handling]
 automount=false
 automount-open=false
+
+[org.gnome.nautilus.preferences]
+show-image-thumbnails='never'

@@ -57,11 +57,6 @@
 @set-container-userns *args:
     exec /usr/bin/python3 /usr/libexec/secureblue/set_container_userns.py "$@"
 
-# Install Dangerzone (sandboxed PDF sanitizer)
-[positional-arguments]
-@install-dangerzone:
-    exec /usr/bin/python3 /usr/libexec/secureblue/install_dangerzone.py "$@"
-
 # Toggle display of the user-motd in terminal
 @toggle-user-motd:
     exec /usr/bin/python3 /usr/libexec/secureblue/toggle_user_motd.py
@@ -108,3 +103,10 @@ alias set-anticheat-support := set-ptrace
 [positional-arguments]
 @set-libvirt-daemons *args:
     exec /usr/bin/python3 /usr/libexec/secureblue/set_libvirt_daemons.py "$@"
+
+# Enroll secure boot key into shim or firmware.
+[positional-arguments]
+@enroll-secure-boot-keys *args:
+    exec /usr/bin/python3 /usr/libexec/secureblue/enroll_secure_boot_keys.py "$@"
+
+alias enroll-secureblue-secure-boot-key := enroll-secure-boot-keys

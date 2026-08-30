@@ -1,0 +1,21 @@
+# SPDX-FileCopyrightText: Copyright 2026 The Secureblue Authors
+#
+# SPDX-License-Identifier: Apache-2.0
+
+[Unit]
+Description=Upgrade bootc image
+Documentation=man:bootc(8)
+After=network-online.target nss-lookup.target
+Wants=network-online.target
+StartLimitIntervalSec=24h
+StartLimitBurst=3
+OnSuccess=bootc-status.service
+
+[Service]
+Type=oneshot
+ExecCondition=/bin/bash -c '[[ "$(busctl get-property org.freedesktop.NetworkManager /org/freedesktop/NetworkManager org.freedesktop.NetworkManager Metered | cut -c 3-)" =~ ^(2|4)$ ]]'
+ExecStartPre=/usr/libexec/secureblue/verify-provenance.sh
+ExecStart=/usr/bin/bootc upgrade --quiet
+ExecStop=/bin/sh -c 'umask 022 && mkdir -p /var/lib/secureblue && date -Iseconds > /var/lib/secureblue/rpm-ostreed-automatic-completed.stamp'
+RestartSec=1h
+Restart=on-failure

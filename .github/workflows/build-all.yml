@@ -3,7 +3,9 @@
 # SPDX-License-Identifier: Apache-2.0
 
 name: build
+
 permissions: {}
+
 on:
   schedule:
     - cron: "00 6 * * *" # build at 6:00 UTC every day
@@ -22,6 +24,7 @@ on:
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref || github.run_id }}
   cancel-in-progress: true
+
 jobs:
   silverblue-main:
     name: Build silverblue main
@@ -39,6 +42,25 @@ jobs:
       SIGNING_SECRET: ${{ secrets.SIGNING_SECRET }}
       KERNEL_PRIVKEY: ${{ secrets.KERNEL_PRIVKEY }}
 
+  silverblue-main-sealed:
+    name: Build silverblue main sealed
+    if: github.triggering_actor == 'royaloughtness' || github.triggering_actor == 'github-actions[bot]' || github.event_name == 'schedule' || github.event_name == 'push'
+    needs: silverblue-main
+    permissions:
+      contents: read # Needed to pull the repo for the build
+      actions: read # Needed to read actions and actions logs for provenance generation
+      packages: write # Needed to publish images
+      id-token: write # Needed for token generation for signing
+    uses: ./.github/workflows/build-sealed-image.yml
+    with:
+      image: ${{ needs.silverblue-main.outputs.IMAGE_NAME }}
+      base_tag: ${{ needs.silverblue-main.outputs.IMAGE_TAG }}
+      base_digest: ${{ needs.silverblue-main.outputs.IMAGE_DIGEST }}
+      image_version: ${{ needs.silverblue-main.outputs.IMAGE_VERSION }}
+    secrets:
+      COSIGN_KEY: ${{ secrets.SIGNING_SECRET }}
+      UKI_DB_KEY: ${{ secrets.UKI_DB_KEY }}
+
   kinoite-main:
     name: Build kinoite main
     if: github.triggering_actor == 'royaloughtness' || github.triggering_actor == 'github-actions[bot]' || github.event_name == 'schedule' || github.event_name == 'push'
@@ -54,6 +76,25 @@ jobs:
     secrets:
       SIGNING_SECRET: ${{ secrets.SIGNING_SECRET }}
       KERNEL_PRIVKEY: ${{ secrets.KERNEL_PRIVKEY }}
+
+  kinoite-main-sealed:
+    name: Build kinoite main sealed
+    if: github.triggering_actor == 'royaloughtness' || github.triggering_actor == 'github-actions[bot]' || github.event_name == 'schedule' || github.event_name == 'push'
+    needs: kinoite-main
+    permissions:
+      contents: read # Needed to pull the repo for the build
+      actions: read # Needed to read actions and actions logs for provenance generation
+      packages: write # Needed to publish images
+      id-token: write # Needed for token generation for signing
+    uses: ./.github/workflows/build-sealed-image.yml
+    with:
+      image: ${{ needs.kinoite-main.outputs.IMAGE_NAME }}
+      base_tag: ${{ needs.kinoite-main.outputs.IMAGE_TAG }}
+      base_digest: ${{ needs.kinoite-main.outputs.IMAGE_DIGEST }}
+      image_version: ${{ needs.kinoite-main.outputs.IMAGE_VERSION }}
+    secrets:
+      COSIGN_KEY: ${{ secrets.SIGNING_SECRET }}
+      UKI_DB_KEY: ${{ secrets.UKI_DB_KEY }}
 
   sericea-main:
     name: Build sericea main
@@ -71,6 +112,25 @@ jobs:
       SIGNING_SECRET: ${{ secrets.SIGNING_SECRET }}
       KERNEL_PRIVKEY: ${{ secrets.KERNEL_PRIVKEY }}
 
+  sericea-main-sealed:
+    name: Build sericea main sealed
+    if: github.triggering_actor == 'royaloughtness' || github.triggering_actor == 'github-actions[bot]' || github.event_name == 'schedule' || github.event_name == 'push'
+    needs: sericea-main
+    permissions:
+      contents: read # Needed to pull the repo for the build
+      actions: read # Needed to read actions and actions logs for provenance generation
+      packages: write # Needed to publish images
+      id-token: write # Needed for token generation for signing
+    uses: ./.github/workflows/build-sealed-image.yml
+    with:
+      image: ${{ needs.sericea-main.outputs.IMAGE_NAME }}
+      base_tag: ${{ needs.sericea-main.outputs.IMAGE_TAG }}
+      base_digest: ${{ needs.sericea-main.outputs.IMAGE_DIGEST }}
+      image_version: ${{ needs.sericea-main.outputs.IMAGE_VERSION }}
+    secrets:
+      COSIGN_KEY: ${{ secrets.SIGNING_SECRET }}
+      UKI_DB_KEY: ${{ secrets.UKI_DB_KEY }}
+
   cosmic-main:
     name: Build cosmic main
     if: github.triggering_actor == 'royaloughtness' || github.triggering_actor == 'github-actions[bot]' || github.event_name == 'schedule' || github.event_name == 'push'
@@ -86,6 +146,25 @@ jobs:
     secrets:
       SIGNING_SECRET: ${{ secrets.SIGNING_SECRET }}
       KERNEL_PRIVKEY: ${{ secrets.KERNEL_PRIVKEY }}
+
+  cosmic-main-sealed:
+    name: Build cosmic main sealed
+    if: github.triggering_actor == 'royaloughtness' || github.triggering_actor == 'github-actions[bot]' || github.event_name == 'schedule' || github.event_name == 'push'
+    needs: cosmic-main
+    permissions:
+      contents: read # Needed to pull the repo for the build
+      actions: read # Needed to read actions and actions logs for provenance generation
+      packages: write # Needed to publish images
+      id-token: write # Needed for token generation for signing
+    uses: ./.github/workflows/build-sealed-image.yml
+    with:
+      image: ${{ needs.cosmic-main.outputs.IMAGE_NAME }}
+      base_tag: ${{ needs.cosmic-main.outputs.IMAGE_TAG }}
+      base_digest: ${{ needs.cosmic-main.outputs.IMAGE_DIGEST }}
+      image_version: ${{ needs.cosmic-main.outputs.IMAGE_VERSION }}
+    secrets:
+      COSIGN_KEY: ${{ secrets.SIGNING_SECRET }}
+      UKI_DB_KEY: ${{ secrets.UKI_DB_KEY }}
 
   silverblue-nvidia:
     name: Build silverblue nvidia images
@@ -195,6 +274,25 @@ jobs:
       SIGNING_SECRET: ${{ secrets.SIGNING_SECRET }}
       KERNEL_PRIVKEY: ${{ secrets.KERNEL_PRIVKEY }}
 
+  securecore-main-sealed:
+    name: Build securecore main sealed
+    if: github.triggering_actor == 'royaloughtness' || github.triggering_actor == 'github-actions[bot]' || github.event_name == 'schedule' || github.event_name == 'push'
+    needs: securecore-main
+    permissions:
+      contents: read # Needed to pull the repo for the build
+      actions: read # Needed to read actions and actions logs for provenance generation
+      packages: write # Needed to publish images
+      id-token: write # Needed for token generation for signing
+    uses: ./.github/workflows/build-sealed-image.yml
+    with:
+      image: ${{ needs.securecore-main.outputs.IMAGE_NAME }}
+      base_tag: ${{ needs.securecore-main.outputs.IMAGE_TAG }}
+      base_digest: ${{ needs.securecore-main.outputs.IMAGE_DIGEST }}
+      image_version: ${{ needs.securecore-main.outputs.IMAGE_VERSION }}
+    secrets:
+      COSIGN_KEY: ${{ secrets.SIGNING_SECRET }}
+      UKI_DB_KEY: ${{ secrets.UKI_DB_KEY }}
+
   securecore-nvidia:
     name: Build securecore nvidia images
     if: github.triggering_actor == 'royaloughtness' || github.triggering_actor == 'github-actions[bot]' || github.event_name == 'schedule' || github.event_name == 'push'
@@ -273,6 +371,25 @@ jobs:
     secrets:
       SIGNING_SECRET: ${{ secrets.SIGNING_SECRET }}
       KERNEL_PRIVKEY: ${{ secrets.KERNEL_PRIVKEY }}
+
+  iot-main-sealed:
+    name: Build iot main sealed
+    if: github.triggering_actor == 'royaloughtness' || github.triggering_actor == 'github-actions[bot]' || github.event_name == 'schedule' || github.event_name == 'push'
+    needs: iot-main
+    permissions:
+      contents: read # Needed to pull the repo for the build
+      actions: read # Needed to read actions and actions logs for provenance generation
+      packages: write # Needed to publish images
+      id-token: write # Needed for token generation for signing
+    uses: ./.github/workflows/build-sealed-image.yml
+    with:
+      image: ${{ needs.iot-main.outputs.IMAGE_NAME }}
+      base_tag: ${{ needs.iot-main.outputs.IMAGE_TAG }}
+      base_digest: ${{ needs.iot-main.outputs.IMAGE_DIGEST }}
+      image_version: ${{ needs.iot-main.outputs.IMAGE_VERSION }}
+    secrets:
+      COSIGN_KEY: ${{ secrets.SIGNING_SECRET }}
+      UKI_DB_KEY: ${{ secrets.UKI_DB_KEY }}
 
   iot-nvidia:
     name: Build iot nvidia images

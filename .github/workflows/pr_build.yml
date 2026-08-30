@@ -27,7 +27,7 @@ jobs:
 
     steps:
       - name: Enable egress auditing
-        uses: step-security/harden-runner@b09bb98e06d4d774595224525879c09bc6e98c40 # v2.20.1
+        uses: step-security/harden-runner@05e31511f85b41b11d1cf0ef85d0992719546e2c # v2.21.0
         with:
           egress-policy: block
           allowed-endpoints: >
@@ -73,6 +73,10 @@ jobs:
             production.cloudfront.docker.com:443
             registry-1.docker.io:443
             auth.docker.io:443
+            download.docker.com:443
+
+            # Dangerzone installation
+            packages.freedom.press:443
 
             # Negativo packages installation
             negativo17.org:443
@@ -175,8 +179,6 @@ jobs:
       - name: Runner setup
         id: runner_setup
         uses: ./.github/workflows/shared-runner-setup
-        with:
-          recipe: ${{ inputs.recipe }}
 
       - name: Set up test keys
         id: test_keys

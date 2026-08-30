@@ -11,14 +11,18 @@ Various utility functions used in secureblue scripts.
 import enum
 import json
 import os
+import platform
 import subprocess
 import sys
 import textwrap
 import time
-from collections.abc import Iterable, Sequence
 from dataclasses import dataclass
 from functools import partialmethod
 from pathlib import Path
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from collections.abc import Iterable, Sequence
 
 
 class ToggleMode(enum.StrEnum):
@@ -60,6 +64,18 @@ def parse_basic_toggle_args(*, prompt: str | None = None) -> ToggleMode:
         raise CommandUsageError("Invalid option selected") from e
 
 
+class BootcBackend(enum.Enum):
+    """A bootc storage backend: either `OSTREE` (legacy) or `COMPOSEFS` (UKI)."""
+
+    COMPOSEFS = enum.auto()
+    OSTREE = enum.auto()
+
+    @classmethod
+    def from_running(cls) -> BootcBackend:
+        """Gets the `BootcBackend` of the running system."""
+        return cls.OSTREE if Path("/usr/bin/rpm-ostree").exists() else cls.COMPOSEFS
+
+
 class Image(enum.Enum):
     """Fedora atomic base image"""
 
@@ -71,22 +87,15 @@ class Image(enum.Enum):
     IOT = enum.auto()
 
     @classmethod
-    def from_image_ref(cls, image_ref: str) -> "Image | None":
-        """Convert an image reference to the corresponding Image enum instance."""
-        image_dict: dict[str, Image] = {
-            "silverblue": cls.SILVERBLUE,
-            "kinoite": cls.KINOITE,
-            "sericea": cls.SERICEA,
-            "cosmic": cls.COSMIC,
-            "securecore": cls.COREOS,
-            "iot": cls.IOT,
-        }
-        image_name = image_ref.rsplit("/", maxsplit=1)[-1]
-        image_prefix = image_name.split("-", maxsplit=1)[0]
-        return image_dict.get(image_prefix)
+    def from_running(cls) -> Image | None:
+        """Gets the `Image` of the running system."""
+        os_release = platform.freedesktop_os_release()
+        image = os_release["IMAGE_ID"]  # e.g. silverblue-main-hardened
+        image_prefix = image.split("-", maxsplit=1)[0]
+        return cls.by_alias(image_prefix)
 
     @classmethod
-    def by_alias(cls, alias: str) -> "Image | None":
+    def by_alias(cls, alias: str) -> Image | None:
         """Look up Image enum instance by alias."""
         alias = alias.casefold()
         aliases: dict[Image, Sequence[str]] = {
@@ -111,8 +120,10 @@ class Image(enum.Enum):
         return not self.is_server()
 
 
-def booted_image_ref() -> str:
+def ostree_booted_image_ref() -> str:
     """Get the image reference of the booted deployment."""
+    if BootcBackend.from_running() != BootcBackend.OSTREE:
+        raise RuntimeError("Cannot get booted OSTree image on a composefs bootc system.")
     ostree_status = command_stdout("/usr/bin/rpm-ostree", "status", "--json")
     image_ref = json.loads(ostree_status)["deployments"][0]["container-image-reference"]
     if not isinstance(image_ref, str):
@@ -209,7 +220,7 @@ def is_rpm_package_installed(name: str) -> bool:
 def logout(prompt: str | None = None) -> None:
     if prompt is not None and not ask_yes_no(prompt):
         return
-    match Image.from_image_ref(booted_image_ref()):
+    match Image.from_running():
         case Image.SERICEA:
             subprocess.run(["/usr/sbin/swaymsg", "exit"], check=True)
         case Image.KINOITE:
@@ -252,7 +263,7 @@ def interruptible_ask(prompt: str) -> str:
     prompt = textwrap.fill(prompt) + " "
     try:
         return input(prompt).strip()
-    except (KeyboardInterrupt, EOFError):
+    except KeyboardInterrupt, EOFError:
         print()
         sys.exit(130)
 

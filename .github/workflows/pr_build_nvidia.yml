@@ -12,6 +12,7 @@ on:
       - live
       - staging
       - next
+      - testing
     paths:
       - "**nvidia**"
       - "!**.md"

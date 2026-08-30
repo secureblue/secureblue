@@ -10,6 +10,7 @@ on:
       - live
       - staging
       - next
+      - testing
     paths-ignore:
       - "**.md"
   workflow_dispatch: # allow manually triggering
@@ -20,7 +21,7 @@ concurrency:
 
 jobs:
   run_tests:
-    runs-on: ubuntu-slim
+    runs-on: ubuntu-26.04
     permissions:
       contents: read
     name: Install Bats and run tests

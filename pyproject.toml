@@ -1,7 +1,7 @@
 [project]
 name = "secureblue"
 version = "4.9"
-requires-python = ">= 3.13"
+requires-python = ">= 3.14"
 maintainers = [{name = "RoyalOughtness"}]
 description = "secureblue is a security-focused desktop and server Linux operating system."
 readme = "docs/README.md"
@@ -61,5 +61,11 @@ pycodestyle.max-doc-length = 100
 # Don't require audit checks' function signatures to have type hints.
 "files/system/usr/libexec/secureblue/audit_secureblue.py" = ["ANN"]
 
-# Allow partial executable paths in subprocess invocations in dev tools
-"tools/*.py" = ["S607"]
+# Allow certain lints in dev tools
+"tools/*.py" = [
+    "S607", # start-process-with-partial-path
+    "TC003", # typing-only-standard-library-import
+]
+
+[tool.pylint.main]
+source-roots = ["files/system/usr/libexec/secureblue"]

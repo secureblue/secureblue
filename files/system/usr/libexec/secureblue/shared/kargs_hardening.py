@@ -79,7 +79,7 @@ def apply_kargs(*, add: Sequence[str], remove: Sequence[str]) -> None:
     if bootc_backend == BootcBackend.COMPOSEFS and bootloader == Bootloader.SYSTEMD_BOOT:
         worker = sandbox.SandboxedFunction(
             "set_kargs_uki.py",
-            read_write_paths=["/boot/loader/addons/"],
+            read_write_paths=["/boot/loader/"],
         )
 
         request = SetKargs(list(add), list(remove))

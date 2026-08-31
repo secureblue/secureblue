@@ -51,7 +51,7 @@ jobs:
       packages: write # Needed to publish images
     steps:
       - name: "Harden Runner"
-        uses: step-security/harden-runner@9af89fc71515a100421586dfdb3dc9c984fbf411 # v2.19.4
+        uses: step-security/harden-runner@05e31511f85b41b11d1cf0ef85d0992719546e2c # v2.21.0
         with:
           egress-policy: audit
 
@@ -61,7 +61,7 @@ jobs:
           skip-if-available: "64G"
 
       - name: "Check out repository"
-        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           persist-credentials: false
 
@@ -72,7 +72,7 @@ jobs:
           needs_slsa_crane: true
 
       - name: "Log in to registry"
-        uses: redhat-actions/podman-login@4934294ad0449894bcd1e9f191899d7292469603 # v1.7
+        uses: redhat-actions/podman-login@50c2d9a331bb67c8fdab99b86455fad05e2e3252 # v2.0
         with:
           registry: "ghcr.io/${{ github.repository_owner }}"
           username: ${{ github.actor }}
@@ -125,7 +125,7 @@ jobs:
           UKI_DB_KEY: ${{ secrets.UKI_DB_KEY }}
 
       - name: "Build kernel container"
-        uses: redhat-actions/buildah-build@7a95fa7ee0f02d552a32753e7414641a04307056 # v2.13
+        uses: redhat-actions/buildah-build@719e3c40d8af9790c23eca13f7daa339f2867034 # v3.1.0
         with:
           image: ${{ inputs.image }}-kernel
           tags: ${{ inputs.base_tag }}-uki
@@ -135,7 +135,7 @@ jobs:
             BASE=ghcr.io/${{ github.repository_owner }}/${{ inputs.image }}@${{ inputs.base_digest }}
 
       - name: "Build base container"
-        uses: redhat-actions/buildah-build@7a95fa7ee0f02d552a32753e7414641a04307056 # v2.13
+        uses: redhat-actions/buildah-build@719e3c40d8af9790c23eca13f7daa339f2867034 # v3.1.0
         with:
           image: ${{ inputs.image }}-base
           tags: ${{ inputs.base_tag }}-uki
@@ -151,7 +151,7 @@ jobs:
             --volume /home/runner/work/${{ github.event.repository.name }}/${{ github.event.repository.name }}:/run/src
 
       - name: "Build final container"
-        uses: redhat-actions/buildah-build@7a95fa7ee0f02d552a32753e7414641a04307056 # v2.13
+        uses: redhat-actions/buildah-build@719e3c40d8af9790c23eca13f7daa339f2867034 # v3.1.0
         with:
           image: ${{ inputs.image }}
           tags: ${{ steps.tags.outputs.tags }}
@@ -172,7 +172,7 @@ jobs:
         run: rm -vrf /tmp/keys
 
       - name: "Push to registry"
-        uses: redhat-actions/push-to-registry@5ed88d269cf581ea9ef6dd6806d01562096bee9c # v2.8
+        uses: redhat-actions/push-to-registry@94ade333c38ecc0e60e94785125d9a52ca423b37 # v3.0.0
         id: push
         with:
           image: ${{ inputs.image }}
@@ -191,7 +191,7 @@ jobs:
       packages: write # Needed to sign images
     steps:
       - name: "Check out repository"
-        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           persist-credentials: false
 
@@ -201,7 +201,7 @@ jobs:
           needs_cosign: true
 
       - name: "Log in to registry"
-        uses: redhat-actions/podman-login@4934294ad0449894bcd1e9f191899d7292469603 # v1.7
+        uses: redhat-actions/podman-login@50c2d9a331bb67c8fdab99b86455fad05e2e3252 # v2.0
         with:
           registry: "ghcr.io/${{ github.repository_owner }}"
           username: ${{ github.actor }}

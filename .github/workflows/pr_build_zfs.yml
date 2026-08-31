@@ -36,7 +36,7 @@ jobs:
         recipe:
           - securecore/recipe-securecore-zfs-main.yml
           - iot/recipe-iot-zfs-main.yml
-    uses: ./.github/workflows/pr_build.yml
+    uses: $/.github/workflows/pr_build.yml
     with:
       recipe: ${{ matrix.recipe }}
       platform: linux/amd64

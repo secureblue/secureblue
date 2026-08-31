@@ -18,4 +18,9 @@ case "${1-}" in
     *) ;;
 esac
 
-LD_PRELOAD='' exec -- "$@"
+# shellcheck disable=SC2016
+exec /usr/bin/bwrap-restricted \
+    --dev-bind / / \
+    --ro-bind-try /dev/null /etc/ld.so.preload \
+    --unsetenv LD_PRELOAD \
+    -- /usr/bin/bash -c 'exec -- "$0" "$@"' "$@"

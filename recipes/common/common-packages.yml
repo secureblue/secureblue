@@ -7,6 +7,9 @@ source: ghcr.io/blue-build/modules@sha256:c5ed99f07b15c8d575a4fa64a77e5cd5602b00
 install:
   install-weak-deps: false
   packages:
+    - bwrap-restricted
+    - bwrap-restricted-selinux
+    - bwrap-restricted-shim
     - hardened_malloc
     - run0edit
     - dnsconfd-unbound

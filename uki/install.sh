@@ -161,15 +161,20 @@ sgdisk --zap-all "${disk}"
 
 esp_uuid=$(systemd-id128 new --uuid)
 root_uuid=$(systemd-id128 new --uuid)
+esp_name="esp"
+root_name="root-x86-64"
+# https://wiki.archlinux.org/title/GPT_fdisk#Partition_type
+esp_typecode="ef00"
+root_typecode="8304" # x86-64 specific
+
 sgdisk --new=1:2048:+2G \
-    --typecode=1:ef00 \
-    --change-name=1:"esp" \
+    --typecode=1:"${esp_typecode}" \
+    --change-name=1:"${esp_name}" \
     --partition-guid=1:"${esp_uuid}" \
     "${disk}"
-# Note: typecode 8304 is x86-64 specific.
 sgdisk --largest-new=2 \
-    --typecode=2:8304 \
-    --change-name=2:"root-x86-64" \
+    --typecode=2:"${root_typecode}" \
+    --change-name=2:"${root_name}" \
     --partition-guid=2:"${root_uuid}" \
     "${disk}"
 blockdev --rereadpt "${disk}"

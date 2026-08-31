@@ -57,7 +57,7 @@ storage:
               echo "Error: Mismatched checksums."
               echo "Expected: ${expected_checksum}"
               echo "Found: ${found_checksum}"
-              echo "Please report this on the official Discord server or GitHub repo."
+              echo "Please open a GitHub issue reporting this finding."
               rm -rf "${tmpdir}"
               exit 1
           else

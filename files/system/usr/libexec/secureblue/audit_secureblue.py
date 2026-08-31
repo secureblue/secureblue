@@ -14,9 +14,7 @@ import configparser
 import filecmp
 import getpass
 import glob
-import os
 import signal
-import stat
 import subprocess
 import sys
 import traceback
@@ -1031,84 +1029,48 @@ def audit_kde_ghns(state):
 
 
 @audit
-def audit_ld_preload():
-    """Ensure ld.so.preload exists and is readable only by root."""
-    status = PASS
-    notes = []
-    rec = None
+def audit_hardened_malloc():
+    """Ensure hardened_malloc is set to be preloaded in place of the default system malloc."""
     ld_so_preload = "/etc/ld.so.preload"
     try:
-        stat_result = os.stat(ld_so_preload)
-    except FileNotFoundError:
+        with open(ld_so_preload, encoding="utf8") as f:
+            preloads = f.read().strip().split()
+    except OSError as err:
         status = FAIL
-        notes.append(Note(_("The file {0} was not found.").format(ld_so_preload), FAIL))
+        note = Note(_("{0} could not be read: {1}").format(ld_so_preload, err.strerror), FAIL)
     else:
-        mode = stat.S_IMODE(stat_result.st_mode)
-        expected_mode = 0o600
-        if mode != expected_mode:
+        if preloads == ["libhardened_malloc.so", "libno_rlimit_as.so"]:
+            status = PASS
+            note = None
+        elif "libhardened_malloc.so" in preloads:
             status = WARN
-            notes.append(
-                Note(
-                    _("{0} has mode {1:o} (expected {2:o})").format(
-                        ld_so_preload, mode, expected_mode
-                    ),
-                    WARN,
-                )
+            note = Note(
+                _("hardened_malloc is enabled, but {1} has been modified.").format(ld_so_preload),
+                WARN,
             )
-        if stat_result.st_uid != 0:
+        elif "libhardened_malloc-light.so" in preloads:
+            status = WARN
+            note = Note(
+                _("The '{0}' variant of hardened_malloc is enabled.").format("light"),
+                WARN,
+            )
+        elif "libhardened_malloc-pkey.so" in preloads:
+            status = WARN
+            note = Note(_("The '{0}' variant of hardened_malloc is enabled.").format("pkey"), WARN)
+        else:
             status = FAIL
-            notes.append(Note(_("{0} is owned by a non-root user!").format(ld_so_preload), FAIL))
+            note = Note(_("hardened_malloc is not enabled."), FAIL)
+
     if status != PASS:
         rec_lines = [
             _("The file {0} has been modified or deleted.").format(ld_so_preload),
-            _("To reset it and enable hardened_malloc for system processes, run:"),
+            _("To reset it and enable hardened_malloc, run:"),
             f"$ run0 -i cp -p /usr/share/secureblue{ld_so_preload} {ld_so_preload}",
         ]
         rec = "\n".join(rec_lines)
-    yield Report(
-        _("Ensuring {0} has expected permissions").format("ld.so.preload"),
-        status,
-        notes=notes,
-        recs=rec,
-    )
-
-
-@audit
-def audit_hardened_malloc():
-    """Ensure hardened_malloc is set to be preloaded in place of the default system malloc."""
-    rec = None
-    ld_preload = os.environ.get("LD_PRELOAD")
-    preloads = [] if ld_preload is None else ld_preload.split()
-    expected_preloads = ["libhardened_malloc.so", "libno_rlimit_as.so"]
-    if preloads == expected_preloads:
-        status = PASS
-        note = None
-    elif "libhardened_malloc.so" in preloads:
-        status = WARN
-        note = Note(
-            _("{0} is set, but {1} has been modified.").format("hardened_malloc", "LD_PRELOAD"),
-            WARN,
-        )
-    elif "libhardened_malloc-light.so" in preloads:
-        status = WARN
-        note = Note(
-            _("The '{0}' variant of {1} has been set.").format("light", "hardened_malloc"), WARN
-        )
-    elif "libhardened_malloc-pkey.so" in preloads:
-        status = WARN
-        note = Note(
-            _("The '{0}' variant of {1} has been set.").format("pkey", "hardened_malloc"), WARN
-        )
     else:
-        status = FAIL
-        note = Note(_("{0} has not been set.").format("LD_PRELOAD=libhardened_malloc.so"), FAIL)
+        rec = None
 
-    if status != PASS:
-        rec = _("""The environment variable {0} has been modified or is unset.
-                Check that {1} has not been overridden in
-                {2} or related configuration files.""").format(
-            "LD_PRELOAD", "LD_PRELOAD=libhardened_malloc.so", "/etc/profile.d"
-        )
     yield Report(
         _("Ensuring hardened_malloc is set to be preloaded"),
         status,

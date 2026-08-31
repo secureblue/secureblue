@@ -172,7 +172,7 @@ jobs:
         run: rm -vrf /tmp/keys
 
       - name: "Push to registry"
-        uses: redhat-actions/push-to-registry@5ed88d269cf581ea9ef6dd6806d01562096bee9c # v2.8
+        uses: redhat-actions/push-to-registry@94ade333c38ecc0e60e94785125d9a52ca423b37 # v3.0.0
         id: push
         with:
           image: ${{ inputs.image }}

@@ -125,7 +125,7 @@ jobs:
           UKI_DB_KEY: ${{ secrets.UKI_DB_KEY }}
 
       - name: "Build kernel container"
-        uses: redhat-actions/buildah-build@7a95fa7ee0f02d552a32753e7414641a04307056 # v2.13
+        uses: redhat-actions/buildah-build@719e3c40d8af9790c23eca13f7daa339f2867034 # v3.1.0
         with:
           image: ${{ inputs.image }}-kernel
           tags: ${{ inputs.base_tag }}-uki
@@ -135,7 +135,7 @@ jobs:
             BASE=ghcr.io/${{ github.repository_owner }}/${{ inputs.image }}@${{ inputs.base_digest }}
 
       - name: "Build base container"
-        uses: redhat-actions/buildah-build@7a95fa7ee0f02d552a32753e7414641a04307056 # v2.13
+        uses: redhat-actions/buildah-build@719e3c40d8af9790c23eca13f7daa339f2867034 # v3.1.0
         with:
           image: ${{ inputs.image }}-base
           tags: ${{ inputs.base_tag }}-uki
@@ -151,7 +151,7 @@ jobs:
             --volume /home/runner/work/${{ github.event.repository.name }}/${{ github.event.repository.name }}:/run/src
 
       - name: "Build final container"
-        uses: redhat-actions/buildah-build@7a95fa7ee0f02d552a32753e7414641a04307056 # v2.13
+        uses: redhat-actions/buildah-build@719e3c40d8af9790c23eca13f7daa339f2867034 # v3.1.0
         with:
           image: ${{ inputs.image }}
           tags: ${{ steps.tags.outputs.tags }}

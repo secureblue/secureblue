@@ -7,6 +7,7 @@ source: ghcr.io/blue-build/modules@sha256:c5ed99f07b15c8d575a4fa64a77e5cd5602b00
 install:
   install-weak-deps: false
   packages:
+    - bubblewrap-selinux
     - hardened_malloc
     - run0edit
     - dnsconfd-unbound
@@ -59,3 +60,7 @@ install:
     - containerd
     - docker-buildx
     - docker-compose
+replace:
+  - from-repo: copr:copr.fedorainfracloud.org:secureblue:packages
+    packages:
+      - bubblewrap

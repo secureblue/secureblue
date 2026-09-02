@@ -42,13 +42,6 @@
         "gpgFingerprint": "2596A99EAAB33821893C0A79458CA832957F5868"
     },
     {
-        "localRepo": "files/system/desktop/etc/yum.repos.d/dangerzone.repo",
-        "repoSource": "https://packages.freedom.press/yum-tools-prod/dangerzone/dangerzone.repo",
-        "localGpgKey": "files/system/usr/share/pki/rpm-gpg/fpf-yum-tools-archive-keyring.gpg",
-        "remoteGpgKey": "https://packages.freedom.press/yum-tools-prod/dangerzone/fpf-yum-tools-archive-keyring.gpg",
-        "gpgFingerprint": "DE28AB241FA48260FAC9B8BAA7C9B38522604281"
-    },
-    {
         "localRepo": "files/system/desktop/etc/yum.repos.d/repo.secureblue.dev.secureblue.repo",
         "repoSource": "https://repo.secureblue.dev/secureblue.repo",
         "localGpgKey": "files/system/desktop/usr/share/pki/rpm-gpg/secureblue.gpg",

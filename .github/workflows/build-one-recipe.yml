@@ -97,9 +97,6 @@ jobs:
             registry-1.docker.io:443
             auth.docker.io:443
 
-            # Dangerzone installation
-            packages.freedom.press:443
-
             # Negativo packages installation
             negativo17.org:443
 

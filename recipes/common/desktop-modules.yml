@@ -18,6 +18,7 @@ modules:
     install:
       install-weak-deps: false
       skip-broken: true
+      skip-unavailable: true
       packages:
         - dangerzone
 

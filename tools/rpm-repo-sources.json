@@ -1,12 +1,5 @@
 [
     {
-        "localRepo": "files/system/etc/yum.repos.d/docker-ce.repo",
-        "repoSource": "https://download.docker.com/linux/fedora/docker-ce.repo",
-        "localGpgKey": "files/system/usr/share/pki/rpm-gpg/docker-ce.gpg",
-        "remoteGpgKey": "https://download.docker.com/linux/fedora/gpg",
-        "gpgFingerprint": "060A61C51B558A7F742B77AAC52FEB6B621E9F35"
-    },
-    {
         "localRepo": "files/system/etc/yum.repos.d/fedora-multimedia.repo",
         "repoSource": "https://negativo17.org/repos/fedora-multimedia.repo",
         "localGpgKey": "files/system/usr/share/pki/rpm-gpg/RPM-GPG-KEY-slaanesh.gpg",

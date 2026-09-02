@@ -73,7 +73,6 @@ jobs:
             production.cloudfront.docker.com:443
             registry-1.docker.io:443
             auth.docker.io:443
-            download.docker.com:443
 
             # Negativo packages installation
             negativo17.org:443

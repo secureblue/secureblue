@@ -12,9 +12,12 @@ on:
       recipe:
         required: true
         type: string
+      platform:
+        required: true
+        type: string
 
 concurrency:
-  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}-${{ inputs.recipe }}
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}-${{ inputs.recipe }}-${{ inputs.platform }}
   cancel-in-progress: true
 
 jobs:
@@ -201,3 +204,4 @@ jobs:
           squash: true
           skip_checkout: true
           verify_install: true
+          build_opts: --platform ${{ inputs.platform }}

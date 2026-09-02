@@ -55,7 +55,7 @@ install:
     - podman-machine
     - moby-engine
     - docker-cli
-    - moby-engine-rootless-extras 
+    - moby-engine-rootless-extras
     - containerd
     - docker-buildx
     - docker-compose

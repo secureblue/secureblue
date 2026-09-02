@@ -7,13 +7,6 @@
         "gpgFingerprint": "060A61C51B558A7F742B77AAC52FEB6B621E9F35"
     },
     {
-        "localRepo": "files/system/etc/yum.repos.d/fedora-multimedia.repo",
-        "repoSource": "https://negativo17.org/repos/fedora-multimedia.repo",
-        "localGpgKey": "files/system/usr/share/pki/rpm-gpg/RPM-GPG-KEY-slaanesh.gpg",
-        "remoteGpgKey": "https://negativo17.org/repos/RPM-GPG-KEY-slaanesh",
-        "gpgFingerprint": "0C5D0F470484AE2FC40A9B6597F3008993E8909B"
-    },
-    {
         "localRepo": "files/system/etc/yum.repos.d/ivpn.repo",
         "repoSource": "https://repo.ivpn.net/stable/fedora/generic/ivpn.repo",
         "localGpgKey": "files/system/usr/share/pki/rpm-gpg/ivpn-repo.gpg",

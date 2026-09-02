@@ -33,7 +33,6 @@ fi
 dnf install -y --setopt=install_weak_deps=False \
     --enable-repo="${nvidia_repo}" \
     --enable-repo='nvidia-container-toolkit' \
-    --disable-repo='fedora-multimedia' \
     "${nvidia_packages_list[@]}"
 
 kmod_version=$(rpm -qa | grep akmod-nvidia | awk -F':' '{print $(NF)}' | awk -F'-' '{print $(NF-1)}')

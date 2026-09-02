@@ -39,3 +39,4 @@ jobs:
     uses: ./.github/workflows/pr_build.yml
     with:
       recipe: ${{ matrix.recipe }}
+      platform: linux/amd64

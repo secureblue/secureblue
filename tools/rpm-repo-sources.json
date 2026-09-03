@@ -1,10 +1,10 @@
 [
     {
-        "localRepo": "files/system/etc/yum.repos.d/fedora-multimedia.repo",
-        "repoSource": "https://negativo17.org/repos/fedora-multimedia.repo",
-        "localGpgKey": "files/system/usr/share/pki/rpm-gpg/RPM-GPG-KEY-slaanesh.gpg",
-        "remoteGpgKey": "https://negativo17.org/repos/RPM-GPG-KEY-slaanesh",
-        "gpgFingerprint": "0C5D0F470484AE2FC40A9B6597F3008993E8909B"
+        "localRepo": "files/system/etc/yum.repos.d/terra.repo",
+        "repoSource": "https://raw.githubusercontent.com/terrapkg/packages/f44/anda/terra/release/terra.repo",
+        "localGpgKey": "files/system/usr/share/pki/rpm-gpg/RPM-GPG-KEY-terra44.gpg",
+        "remoteGpgKey": "https://raw.githubusercontent.com/terrapkg/packages/refs/heads/f44/anda/terra/gpg-keys/RPM-GPG-KEY-terra44",
+        "gpgFingerprint": "AE09157A4DE88B497EA1D5D300CDAB43DE226D6F"
     },
     {
         "localRepo": "files/system/etc/yum.repos.d/ivpn.repo",

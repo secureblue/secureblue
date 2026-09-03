@@ -47,7 +47,6 @@ jobs:
           VALIDATE_GITHUB_ACTIONS_ZIZMOR: false # covered by zizmor.yml
           SKIP: zizmor # covered by zizmor.yml
           VALIDATE_SHELL_SHFMT: false # too many false positives by default
-          VALIDATE_JSCPD: false # too many false positives by default
           VALIDATE_MARKDOWN: false # covered by MARKDOWN_PRETTIER
           VALIDATE_BIOME_FORMAT: false # defaults that contradict other linters
           VALIDATE_BIOME_LINT: false # defaults that contradict other linters

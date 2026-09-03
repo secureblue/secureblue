@@ -1,0 +1,4 @@
+{
+  "threshold": 2,
+  "ignore": ["files/po/**", "**/*.svg", "LICENSES/**", ".github/**", "recipes/**"]
+}

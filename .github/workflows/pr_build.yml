@@ -80,6 +80,9 @@ jobs:
             # Negativo packages installation
             negativo17.org:443
 
+            # Terra packages installation
+            tetsudou.fyralabs.com:443
+            
             # Trivalent installation
             repo.secureblue.dev:443
 

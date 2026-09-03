@@ -62,7 +62,7 @@ dnf --best --repo=terra-extras -y download --resolve \
  
 check_local_rpm_provenance
 
-dnf -y --setopt=localpkg_gpgcheck=True --setopt=install_weak_deps=False do \
+dnf -y --setopt=localpkg_gpgcheck=True --setopt=install_weak_deps=False 'do' \
     --allowerasing \
     --action=remove \
         ffmpeg-free \

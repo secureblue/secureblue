@@ -291,6 +291,7 @@ jobs:
         uses: blue-build/github-action@fb86c457fd3d0e13d5e9c1875c6305cf28b09234 # v1.14.0
         env:
           KERNEL_PRIVKEY: ${{ secrets.KERNEL_PRIVKEY }}
+          GH_TOKEN: ${{ github.token }}
         with:
           # renovate: datasource=github-releases depName=blue-build/cli
           cli_version: v0.9.41

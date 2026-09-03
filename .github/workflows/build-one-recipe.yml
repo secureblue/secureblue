@@ -100,8 +100,18 @@ jobs:
             # Negativo packages installation
             negativo17.org:443
 
-            # Terra packages installation
+            # Terra packages installation (with mirrors)
             tetsudou.fyralabs.com:443
+            mirror.june.fish:443
+            repos-v4.fyralabs.com:443
+            repos.fyralabs.com:443
+            mirror.alebcay.com:443
+            mirror.krfoss.org:443
+            mirror4.krfoss.org:443
+            mirror5.krfoss.org:443
+            mirror.funami.tech:443
+            mirror.freedif.org:443
+
 
             # Trivalent installation
             repo.secureblue.dev:443

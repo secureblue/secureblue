@@ -25,7 +25,7 @@ check_local_rpm_provenance() {
     done
 }
 
-dnf --best --repo=terra -y download --resolve \
+dnf --best --repo=terra -y download --resolve --arch="${OS_ARCH}" --arch=noarch \
     terra-release-mesa \
     terra-release-multimedia \
     terra-release-extras
@@ -37,7 +37,7 @@ rpmkeys --import /etc/pki/rpm-gpg/RPM-GPG-KEY-terra44-mesa \
     /etc/pki/rpm-gpg/RPM-GPG-KEY-terra44-multimedia \
     /etc/pki/rpm-gpg/RPM-GPG-KEY-terra44-extras
 
-dnf --best --repo=terra-mesa -y download --resolve \
+dnf --best --repo=terra-mesa -y download --resolve --arch="${OS_ARCH}" --arch=noarch \
     mesa-dri-drivers \
     mesa-filesystem \
     mesa-libEGL \
@@ -45,7 +45,7 @@ dnf --best --repo=terra-mesa -y download --resolve \
     mesa-libgbm \
     mesa-vulkan-drivers
  
-dnf --best --repo=terra-multimedia -y download --resolve \
+dnf --best --repo=terra-multimedia -y download --resolve --arch="${OS_ARCH}" --arch=noarch \
     ffmpeg \
     libavcodec \
     libavdevice \
@@ -55,7 +55,7 @@ dnf --best --repo=terra-multimedia -y download --resolve \
     libswresample \
     libswscale
 
-dnf --best --repo=terra-extras -y download --resolve \
+dnf --best --repo=terra-extras -y download --resolve --arch="${OS_ARCH}" --arch=noarch \
     unrar
 
 check_local_rpm_provenance

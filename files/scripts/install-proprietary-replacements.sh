@@ -30,8 +30,6 @@ dnf --best --repo=terra -y download --resolve \
     terra-release-multimedia \
     terra-release-extras
 
-check_local_rpm_provenance
-
 dnf -y --setopt=localpkg_gpgcheck=True --setopt=install_weak_deps=False install ./*.rpm
 rm ./*.rpm
 

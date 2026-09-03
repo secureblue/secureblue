@@ -7,3 +7,9 @@ modules:
     source: ghcr.io/blue-build/modules@sha256:c5ed99f07b15c8d575a4fa64a77e5cd5602b00da4c84379f5675db2ae4757061
     scripts:
       - install-proprietary-replacements.sh
+    secrets:
+      - type: env
+        name: GH_TOKEN
+        mount:
+          type: env
+          name: GH_TOKEN

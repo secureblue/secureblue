@@ -206,8 +206,9 @@ jobs:
         uses: blue-build/github-action@836161eb076426a451e6a0054f722b1153b8b3ad # v1.12.0
         env:
           KERNEL_PRIVKEY: ${{ steps.test_keys.outputs.kernel_privkey }}
+          GH_TOKEN: ${{ github.token }}
         with:
-          cli_version: v0.9.36
+          cli_version: v0.9.37
           recipe: ${{ inputs.recipe }}
           push: false
           registry_token: ${{ github.token }}

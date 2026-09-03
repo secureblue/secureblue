@@ -82,7 +82,7 @@ jobs:
 
             # Terra packages installation
             tetsudou.fyralabs.com:443
-            
+
             # Trivalent installation
             repo.secureblue.dev:443
 

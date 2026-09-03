@@ -1,4 +1,3 @@
-/terra/release/terra.repo 
 [terra]
 name=Terra $releasever
 #baseurl=https://repos.fyralabs.com/terra$releasever

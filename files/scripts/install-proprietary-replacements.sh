@@ -29,7 +29,7 @@ dnf --best --repo=terra -y download --resolve \
     terra-release-mesa \
     terra-release-multimedia \
     terra-release-extras
- 
+
 check_local_rpm_provenance
 
 dnf -y --setopt=localpkg_gpgcheck=True --setopt=install_weak_deps=False install ./*.rpm
@@ -59,7 +59,7 @@ dnf --best --repo=terra-multimedia -y download --resolve \
 
 dnf --best --repo=terra-extras -y download --resolve \
     unrar
- 
+
 check_local_rpm_provenance
 
 dnf -y --setopt=localpkg_gpgcheck=True --setopt=install_weak_deps=False 'do' \

@@ -85,6 +85,7 @@ jobs:
             mirror.june.fish:443
             repos-v4.fyralabs.com:443
             repos.fyralabs.com:443
+            fyralabs-mirror.s3.us-west-lz-lax-a.cloud.ovh.us:443
             mirror.alebcay.com:443
             mirror.krfoss.org:443
             mirror4.krfoss.org:443

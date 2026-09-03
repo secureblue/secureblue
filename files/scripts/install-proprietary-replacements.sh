@@ -7,7 +7,7 @@
 set -euo pipefail
 shopt -s nullglob
 
-dnf install -y --setopt=install_weak_deps=False gh
+dnf install -y --setopt=install_weak_deps=False gh rpm-sign
 rpmkeys --import /usr/share/pki/rpm-gpg/RPM-GPG-KEY-terra44.gpg
 
 sed -i 's/^enabled=0$/enabled=1/' /etc/yum.repos.d/terra.repo

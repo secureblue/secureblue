@@ -27,3 +27,9 @@ modules:
       - setserverdefaultzone.sh
       - disable-coreos-migration-motd.sh
       - remove-dns-greenboot-check.sh
+
+  - type: justfiles
+    source: ghcr.io/blue-build/modules@sha256:d0e85328fcfa4182c33d3920854001d0b7efbbd341ed6f45bc1ec26c0751889d
+    validate: true
+    include:
+      - server

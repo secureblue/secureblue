@@ -1,0 +1,51 @@
+#!/usr/bin/env bash
+
+# SPDX-FileCopyrightText: Copyright 2026 The Secureblue Authors
+#
+# SPDX-License-Identifier: Apache-2.0
+
+set -euox pipefail
+
+# only run if not sourced; parent script should have done this
+if [[ "${BASH_SOURCE[0]}" == "${0}" ]]; then
+	declare -A report_args
+	declare -r script_dir="$(dirname "$0")"
+	while (( $# > 0 )); do
+		source "${script_dir}/inner/bug-report-args"
+		shift
+		continue
+	done
+fi
+
+title="${report_args["title"]:-}"
+if [[ -n "${title}" ]]; then
+	report_args["title"]="[BUG] ${title}"
+fi
+
+get_image() {
+	{ set +x; } 2>/dev/null
+	local -r ostree_output=$(rpm-ostree status --json -b)
+	local -r current_image=$(echo "${ostree_output}" | jq -r '.deployments[0].["container-image-reference"] | split("/")[-1] | split(":")[0]')
+	local -r current_version=$(echo "${ostree_output}" | jq -r .deployments[0].version)
+	set -x
+	echo "${current_image}:${current_version}"
+}
+
+
+url="https://github.com/secureblue/secureblue/issues/new?template=bug_report.yml"
+
+append() {
+	if [[ -z $1 || -z $2 ]]; then
+		return
+	fi
+	url+="&$1=$(echo "$2" | jq -sRr @uri)";
+}
+
+append "image" "$(get_image)"
+
+for key in "${!report_args[@]}"; do
+	value="${report_args[${key}]}"
+	append "${key}" "${value}"
+done
+
+xdg-open "${url}"

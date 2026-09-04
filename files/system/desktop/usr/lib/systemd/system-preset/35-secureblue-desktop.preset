@@ -2,6 +2,7 @@ enable flatpak-system-update.timer
 
 # Homebrew
 enable brew-proxy-setup.service
+enable brew-proxy-fix-ownership.service
 enable brew-update.timer
 enable brew-upgrade.timer
 enable secureblue-brew-proxy-migration.service

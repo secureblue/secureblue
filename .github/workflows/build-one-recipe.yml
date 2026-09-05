@@ -96,10 +96,6 @@ jobs:
             production.cloudfront.docker.com:443
             registry-1.docker.io:443
             auth.docker.io:443
-            download.docker.com:443
-
-            # Dangerzone installation
-            packages.freedom.press:443
 
             # Negativo packages installation
             negativo17.org:443
@@ -263,7 +259,7 @@ jobs:
         env:
           KERNEL_PRIVKEY: ${{ secrets.KERNEL_PRIVKEY }}
         with:
-          cli_version: v0.9.36
+          cli_version: v0.9.37
           recipe: ${{ inputs.recipe }}
           cosign_private_key: ${{ secrets.SIGNING_SECRET }}
           registry_token: ${{ github.token }}

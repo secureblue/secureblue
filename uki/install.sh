@@ -10,7 +10,7 @@ cd "$(dirname "$0")"
 
 github_repo_owner="secureblue"
 github_repo_name="secureblue"
-ghcr_tag="br-testing-44-uki"
+ghcr_tag="uki"
 
 # Check prerequisites.
 if [[ $(id -u) -ne 0 ]]; then
@@ -97,35 +97,25 @@ rm -f "${crane_tarball}"
 full_ref=$(crane digest --full-ref "${image_ref}")
 slsa-verifier verify-image --source-uri "github.com/${github_repo_owner}/${github_repo_name}" "${full_ref}"
 
-# Create the configuration for systemd-repart to partition the disk.
-esp_uuid=$(systemd-id128 new --uuid)
-root_uuid=$(systemd-id128 new --uuid)
-mkdir -p /run/repart.d
-cat > /run/repart.d/01-esp.conf << EOF
-[Partition]
-Type=esp
-Format=vfat
-UUID=${esp_uuid}
-SizeMinBytes=2G
-SizeMaxBytes=2G
-EOF
-cat > /run/repart.d/02-sysroot.conf << EOF
-[Partition]
-Type=root
-Format=btrfs
-UUID=${root_uuid}
-SizeMinBytes=28G
-EOF
-
 # Display available block devices and ask the user to select one.
 clear
-lsblk
+lsblk -o name,size,fstype,model,label
 echo
 echo "Choose a disk to install to, e.g. /dev/vda, /dev/sda or /dev/nvme0n1."
 echo "This will erase the disk."
 read -r -p "Enter disk: " disk
 if [[ ! -b "${disk}" ]] || [[ $(lsblk -ndo TYPE "${disk}") != "disk" ]]; then
     echo "Invalid disk."
+    exit 1
+fi
+if [[ $(lsblk -o SIZE -bnd "${disk}") -lt 30000000000 ]]; then
+    echo "Disk must have a size of at least 32 GB."
+    exit 1
+fi
+
+read -r -p "This will wipe ${disk}, do you wish to proceed? [y/N] " confirm_wipe
+if [[ ! "${confirm_wipe}" =~ ^[Yy] ]]; then
+    echo "Wipe of ${disk} not confirmed, rerun the script if you wish to pick another disk."
     exit 1
 fi
 
@@ -144,8 +134,6 @@ if [[ ! "${luks}" =~ ^[Nn] ]]; then
         echo "Passwords do not match."
         exit 1
     fi
-    echo "Encrypt=key-file" >> /run/repart.d/02-sysroot.conf
-    echo "KeyFile=${keyfile}" >> /run/repart.d/02-sysroot.conf
 fi
 
 # Trap to clean up mounts that we set up later.
@@ -167,18 +155,50 @@ cleanup() {
 }
 trap cleanup EXIT
 
-# Partition the installation disk. Try twice.
-systemd-repart --dry-run=no --empty=force "${disk}" || \
-    systemd-repart --dry-run=no --empty=force "${disk}"
+# Partition the installation disk.
+wipefs -a "${disk}"
+sgdisk --zap-all "${disk}"
+
+esp_uuid=$(systemd-id128 new --uuid)
+root_uuid=$(systemd-id128 new --uuid)
+esp_name="esp"
+root_name="root-x86-64"
+# https://wiki.archlinux.org/title/GPT_fdisk#Partition_type
+esp_typecode="ef00"
+root_typecode="8304" # x86-64 specific
+
+sgdisk --new=1:2048:+2G \
+    --typecode=1:"${esp_typecode}" \
+    --change-name=1:"${esp_name}" \
+    --partition-guid=1:"${esp_uuid}" \
+    "${disk}"
+sgdisk --largest-new=2 \
+    --typecode=2:"${root_typecode}" \
+    --change-name=2:"${root_name}" \
+    --partition-guid=2:"${root_uuid}" \
+    "${disk}"
+blockdev --rereadpt "${disk}"
 udevadm settle
-sleep 1
+
+wipefs -a "/dev/disk/by-partuuid/${root_uuid}"
+wipefs -a "/dev/disk/by-partuuid/${esp_uuid}"
+
+if [[ ! "${luks}" =~ ^[Nn] ]]; then
+    cryptsetup luksFormat -q "/dev/disk/by-partuuid/${root_uuid}" "${keyfile}"
+    cryptsetup open "--key-file=${keyfile}" "/dev/disk/by-partuuid/${root_uuid}" root
+    mkfs.btrfs /dev/mapper/root
+else
+    mkfs.btrfs --force "/dev/disk/by-partuuid/${root_uuid}"
+fi
+
+mkfs.vfat -F 32 "/dev/disk/by-partuuid/${esp_uuid}"
+udevadm settle
 
 # Mount the installation partitions to /mnt and /mnt/boot.
 if [[ ! "${luks}" =~ ^[Nn] ]]; then
-    cryptsetup open "--key-file=${keyfile}" "/dev/disk/by-partuuid/${root_uuid}" root
-    mount /dev/mapper/root /mnt/
+    mount -o compress=zstd:1 /dev/mapper/root /mnt/
 else
-    mount "/dev/disk/by-partuuid/${root_uuid}" /mnt/
+    mount -o compress=zstd:1 "/dev/disk/by-partuuid/${root_uuid}" /mnt/
 fi
 mkdir /mnt/boot/
 mount "/dev/disk/by-partuuid/${esp_uuid}" /mnt/boot/

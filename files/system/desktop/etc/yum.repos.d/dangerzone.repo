@@ -1,8 +1,0 @@
-[dangerzone]
-name = Dangerzone repository
-baseurl = https://packages.freedom.press/yum-tools-prod/dangerzone/f$releasever
-# gpgkey = https://packages.freedom.press/yum-tools-prod/dangerzone/fpf-yum-tools-archive-keyring.gpg
-gpgkey = file:///usr/share/pki/rpm-gpg/fpf-yum-tools-archive-keyring.gpg
-gpgcheck = 1
-repo_gpgcheck = 0
-enabled = 1

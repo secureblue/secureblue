@@ -53,6 +53,7 @@ cat > "/usr/lib/bootc/kargs.d/10-plymouth.toml" << 'EOF'
 kargs = [
   "quiet",
   "rhgb",
+  "systemd.default_device_timeout_sec=0",
 ]
 EOF
 # Temporary. See: https://github.com/systemd/systemd/issues/40159 and

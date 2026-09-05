@@ -219,7 +219,7 @@ jobs:
 
       - name: Runner setup
         id: runner_setup
-        uses: ./.github/workflows/shared-runner-setup
+        uses: $/.github/workflows/shared-runner-setup
         with:
           needs_cosign: ${{ steps.image_data.outputs.IMAGE_NAME != 'securecore-main-hardened' && steps.image_data.outputs.IMAGE_NAME != 'iot-main-hardened' }}
           needs_slsa_crane: ${{ startsWith(steps.image_data.outputs.BASE_IMAGE, format('ghcr.io/{0}/', github.repository_owner)) }}

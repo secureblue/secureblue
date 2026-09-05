@@ -45,7 +45,9 @@ install:
     - libvirt-nss
     - qemu-device-display-virtio-gpu
     - qemu-device-display-virtio-vga
+    - qemu-device-usb-host
     - qemu-device-usb-redirect
+    - qemu-device-usb-smartcard
     - qemu-kvm-core
     - qemu-img
     - qemu-tools

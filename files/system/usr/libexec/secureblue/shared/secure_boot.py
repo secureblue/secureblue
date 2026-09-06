@@ -60,7 +60,11 @@ _TYPES: dict[str, type] = {
 
 
 def read_efivar(name: str, ns_guid: str) -> bytes:
-    """Returns the raw contents of a UEFI variable."""
+    """Returns the raw contents of a UEFI variable.
+
+    Raises:
+        FileNotFoundError: The efivar could not be found (not an EFI system?)
+    """
 
     path = EFIVARS / f"{name}-{ns_guid}"
     data = path.read_bytes()
@@ -70,7 +74,11 @@ def read_efivar(name: str, ns_guid: str) -> bytes:
 
 
 def read_efivar_str(name: str, ns_guid: str) -> str:
-    """Returns the string contents of a UEFI variable."""
+    """Returns the string contents of a UEFI variable.
+
+    Raises:
+        FileNotFoundError: The efivar could not be found (not an EFI system?)
+    """
     return read_efivar(name, ns_guid).decode("utf-16-le").rstrip("\x00")
 
 
@@ -130,12 +138,20 @@ def is_cert_in_signature_list(der: Path, efivar: Path) -> bool:
 
 def is_secure_boot_enabled() -> bool:
     """Returns whether Secure Boot is enabled."""
-    return read_efivar("SecureBoot", EFI_NS_GLOBAL)[0] == 1
+
+    try:
+        return read_efivar("SecureBoot", EFI_NS_GLOBAL)[0] == 1
+    except FileNotFoundError:
+        return False
 
 
 def is_setup_mode_enabled() -> bool:
     """Returns whether the system is in Setup Mode."""
-    return read_efivar("SetupMode", EFI_NS_GLOBAL)[0] == 1
+
+    try:
+        return read_efivar("SetupMode", EFI_NS_GLOBAL)[0] == 1
+    except FileNotFoundError:
+        return False
 
 
 class Bootloader(enum.Enum):
@@ -150,14 +166,20 @@ class Bootloader(enum.Enum):
 
         Raises:
             RuntimeError: The bootloader could not be determined.
-            FileNotFoundError: Could not find systemd `LoaderInfo` efivar.
         """
 
-        raw_bootloader = read_efivar_str("LoaderInfo", EFI_NS_SYSTEMD)
+        try:
+            raw_bootloader = read_efivar_str("LoaderInfo", EFI_NS_SYSTEMD)
+        except FileNotFoundError:
+            # Could not find systemd `LoaderInfo` efivar. Must be running on a
+            # BIOS system, and only GRUB supports that.
+            return cls.GRUB2
+
         if "GRUB 2" in raw_bootloader:
             return cls.GRUB2
         if "systemd-boot" in raw_bootloader:
             return cls.SYSTEMD_BOOT
+
         raise RuntimeError(f"Unknown bootloader: {raw_bootloader}")
 
 

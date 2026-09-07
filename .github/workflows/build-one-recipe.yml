@@ -50,7 +50,7 @@ jobs:
       id-token: write # Needed for token generation for signing
     steps:
       - name: Enable egress auditing
-        uses: step-security/harden-runner@05e31511f85b41b11d1cf0ef85d0992719546e2c # v2.21.0
+        uses: step-security/harden-runner@e14015d583714f6e62063499dc959a02595150a1 # v2.21.1
         with:
           egress-policy: block
           allowed-endpoints: >
@@ -219,7 +219,7 @@ jobs:
 
       - name: Runner setup
         id: runner_setup
-        uses: ./.github/workflows/shared-runner-setup
+        uses: $/.github/workflows/shared-runner-setup
         with:
           needs_cosign: ${{ steps.image_data.outputs.IMAGE_NAME != 'securecore-main-hardened' && steps.image_data.outputs.IMAGE_NAME != 'iot-main-hardened' }}
           needs_slsa_crane: ${{ startsWith(steps.image_data.outputs.BASE_IMAGE, format('ghcr.io/{0}/', github.repository_owner)) }}

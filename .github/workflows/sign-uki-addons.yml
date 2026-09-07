@@ -36,7 +36,7 @@ jobs:
           persist-credentials: false
 
       - name: "Set up runner"
-        uses: ./.github/workflows/shared-runner-setup
+        uses: $/.github/workflows/shared-runner-setup
 
       - name: "Log in to registry"
         uses: redhat-actions/podman-login@50c2d9a331bb67c8fdab99b86455fad05e2e3252 # v2.0
@@ -95,7 +95,7 @@ jobs:
           persist-credentials: false
 
       - name: "Set up runner"
-        uses: ./.github/workflows/shared-runner-setup
+        uses: $/.github/workflows/shared-runner-setup
         with:
           needs_cosign: true
 

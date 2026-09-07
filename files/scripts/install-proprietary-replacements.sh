@@ -45,15 +45,15 @@ dnf --best --repo=terra-mesa -y download --resolve --arch="${OS_ARCH}" --arch=no
     mesa-libgbm \
     mesa-vulkan-drivers
  
-dnf --best --repo=terra-multimedia -y download --resolve --arch="${OS_ARCH}" --arch=noarch \
-    ffmpeg \
-    libavcodec \
-    libavdevice \
-    libavfilter \
-    libavformat \
-    libavutil \
-    libswresample \
-    libswscale
+# dnf --best --repo=terra-multimedia -y download --resolve --arch="${OS_ARCH}" --arch=noarch \
+#     ffmpeg \
+#     libavcodec \
+#     libavdevice \
+#     libavfilter \
+#     libavformat \
+#     libavutil \
+#     libswresample \
+#     libswscale
 
 dnf --best --repo=terra-extras -y download --resolve --arch="${OS_ARCH}" --arch=noarch \
     unrar
@@ -62,15 +62,15 @@ check_local_rpm_provenance
 
 dnf -y --setopt=localpkg_gpgcheck=True --setopt=install_weak_deps=False 'do' \
     --allowerasing \
-    --action=remove \
-        ffmpeg-free \
-        libavcodec-free \
-        libavdevice-free \
-        libavfilter-free \
-        libavformat-free \
-        libavutil-free \
-        libswresample-free \
-        libswscale-free \
+    # --action=remove \
+    #     ffmpeg-free \
+    #     libavcodec-free \
+    #     libavdevice-free \
+    #     libavfilter-free \
+    #     libavformat-free \
+    #     libavutil-free \
+    #     libswresample-free \
+    #     libswscale-free \
     --action=install ./*.rpm
 rm ./*.rpm
 

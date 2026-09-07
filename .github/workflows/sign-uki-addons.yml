@@ -31,7 +31,7 @@ jobs:
       IMAGE_DIGEST: ${{ steps.push.outputs.digest }}
     steps:
       - name: "Check out repository"
-        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           persist-credentials: false
 
@@ -39,7 +39,7 @@ jobs:
         uses: ./.github/workflows/shared-runner-setup
 
       - name: "Log in to registry"
-        uses: redhat-actions/podman-login@4934294ad0449894bcd1e9f191899d7292469603 # v1.7
+        uses: redhat-actions/podman-login@50c2d9a331bb67c8fdab99b86455fad05e2e3252 # v2.0
         with:
           registry: "ghcr.io/${{ github.repository_owner }}"
           username: ${{ github.actor }}
@@ -54,7 +54,7 @@ jobs:
           UKI_DB_KEY: ${{ secrets.UKI_DB_KEY }}
 
       - name: "Build container image"
-        uses: redhat-actions/buildah-build@7a95fa7ee0f02d552a32753e7414641a04307056 # v2.13
+        uses: redhat-actions/buildah-build@719e3c40d8af9790c23eca13f7daa339f2867034 # v3.1.0
         with:
           image: "uki-addons"
           tags: "latest ${{ github.run_number }}"
@@ -72,7 +72,7 @@ jobs:
 
       - name: "Push to registry"
         id: push
-        uses: redhat-actions/push-to-registry@5ed88d269cf581ea9ef6dd6806d01562096bee9c # v2.8
+        uses: redhat-actions/push-to-registry@94ade333c38ecc0e60e94785125d9a52ca423b37 # v3.0.0
         with:
           registry: "ghcr.io/${{ github.repository_owner }}"
           username: ${{ github.actor }}
@@ -90,7 +90,7 @@ jobs:
       packages: write # Needed to sign images
     steps:
       - name: "Check out repository"
-        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           persist-credentials: false
 
@@ -100,7 +100,7 @@ jobs:
           needs_cosign: true
 
       - name: "Log in to registry"
-        uses: redhat-actions/podman-login@4934294ad0449894bcd1e9f191899d7292469603 # v1.7
+        uses: redhat-actions/podman-login@50c2d9a331bb67c8fdab99b86455fad05e2e3252 # v2.0
         with:
           registry: "ghcr.io/${{ github.repository_owner }}"
           username: ${{ github.actor }}

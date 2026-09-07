@@ -7,6 +7,7 @@ source: ghcr.io/blue-build/modules@sha256:c5ed99f07b15c8d575a4fa64a77e5cd5602b00
 scripts:
   - install-trivalent.sh
   - installsubresourcefilter.sh
+  - install-dangerzone.sh
   - disablecups.sh
   - disablesshd.sh
   - disableavahidaemon.sh

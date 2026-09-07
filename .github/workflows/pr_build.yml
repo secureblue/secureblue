@@ -12,9 +12,12 @@ on:
       recipe:
         required: true
         type: string
+      platform:
+        required: true
+        type: string
 
 concurrency:
-  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}-${{ inputs.recipe }}
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}-${{ inputs.recipe }}-${{ inputs.platform }}
   cancel-in-progress: true
 
 jobs:
@@ -73,10 +76,6 @@ jobs:
             production.cloudfront.docker.com:443
             registry-1.docker.io:443
             auth.docker.io:443
-            download.docker.com:443
-
-            # Dangerzone installation
-            packages.freedom.press:443
 
             # Negativo packages installation
             negativo17.org:443
@@ -196,7 +195,7 @@ jobs:
         env:
           KERNEL_PRIVKEY: ${{ steps.test_keys.outputs.kernel_privkey }}
         with:
-          cli_version: v0.9.36
+          cli_version: v0.9.37
           recipe: ${{ inputs.recipe }}
           push: false
           registry_token: ${{ github.token }}
@@ -205,3 +204,4 @@ jobs:
           squash: true
           skip_checkout: true
           verify_install: true
+          build_opts: --platform ${{ inputs.platform }}

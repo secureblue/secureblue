@@ -46,6 +46,10 @@ jobs:
           # general/recipe-silverblue-main already covered by pr_build_minimal.yml
           - securecore/recipe-securecore-main.yml
           - iot/recipe-iot-main.yml
+        platform:
+          - linux/amd64
+          - linux/arm64
     uses: ./.github/workflows/pr_build.yml
     with:
       recipe: ${{ matrix.recipe }}
+      platform: ${{ matrix.platform }}

@@ -15,6 +15,7 @@ sed -i 's/^enabled=0$/enabled=1/' /etc/yum.repos.d/terra.repo
 # https://github.com/terrapkg/packages/issues/12949
 check_local_rpm_provenance() {
     for terra_rpm in *.rpm; do
+        echo "checking attestation for ${terra_rpm}"
         cp "${terra_rpm}" "unsigned-${terra_rpm}"
         rpm --delsign "unsigned-${terra_rpm}"
         gh attestation verify "unsigned-${terra_rpm}" \

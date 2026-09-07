@@ -12,8 +12,6 @@ rows:
           - org.gnome.Loupe
           - io.github.diegopvlk.Cine
           - org.kde.haruna
-          - io.github.mpobaschnig.Vaults
-          - io.github.mhogomchungu.sirikali
           - org.gnome.World.PikaBackup
           - io.github.vmkspv.lenspect
           - org.keepassxc.KeePassXC

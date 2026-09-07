@@ -89,6 +89,45 @@
                     "https": "https://family.cloudflare-dns.com/dns-query"
                 }
             ]
+        },
+        {
+            "providerName": "Quad9",
+            "providerDescription": "fast with little data collection, anycast",
+            "servers": [
+                {
+                    "serverDescription": "Recommended: Malware Blocking, DNSSEC Validation",
+                    "ipv4": [
+                        "dns+tls://9.9.9.9#dns.quad9.net",
+                        "dns+tls://149.112.112.112#dns.quad9.net"
+                    ],
+                    "ipv6": [
+                        "dns+tls://2620:fe::fe#dns.quad9.net",
+                        "dns+tls://2620:fe::9#dns.quad9.net"
+                    ]
+                },
+                {
+                    "serverDescription": "Secured w/ECS: Malware blocking, DNSSEC Validation, ECS enabled",
+                    "ipv4": [
+                        "dns+tls://9.9.9.11#dns11.quad9.net",
+                        "dns+tls://149.112.112.11#dns11.quad9.net"
+                    ],
+                    "ipv6": [
+                        "dns+tls://2620:fe::11#dns11.quad9.net",
+                        "dns+tls://2620:fe::fe:11#dns11.quad9.net"
+                    ]
+                },
+                {
+                    "serverDescription": "Unsecured: No Malware blocking, DNSSEC validation",
+                    "ipv4": [
+                        "dns+tls://9.9.9.10#dns10.quad9.net",
+                        "dns+tls://149.112.112.10#dns10.quad9.net"
+                    ],
+                    "ipv6": [
+                        "dns+tls://2620:fe::10#dns10.quad9.net",
+                        "dns+tls://2620:fe::fe:10#dns10.quad9.net"
+                    ]
+                }
+            ]
         }
     ]
 }

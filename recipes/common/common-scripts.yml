@@ -17,6 +17,5 @@ scripts:
   - disablenfsdaemons.sh
   - removefedoraflatpakremoteservice.sh
   - localization.sh
-  - installrar.sh
   - setchronysysconfig.sh
   - container-pubkey-symlinks.sh

@@ -26,6 +26,7 @@ install:
     - rsync
     - steam-devices
     - just
+    - ffmpegthumbnailer
 
     # signing deps
     - sbsigntools

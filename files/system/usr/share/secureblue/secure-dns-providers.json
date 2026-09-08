@@ -101,8 +101,8 @@
                         "dns+tls://149.112.112.112#dns.quad9.net"
                     ],
                     "ipv6": [
-                        "dns+tls://2620:fe::fe#dns.quad9.net",
-                        "dns+tls://2620:fe::9#dns.quad9.net"
+                        "dns+tls://[2620:fe::fe]#dns.quad9.net",
+                        "dns+tls://[2620:fe::9]#dns.quad9.net"
                     ]
                 },
                 {
@@ -112,8 +112,8 @@
                         "dns+tls://149.112.112.11#dns11.quad9.net"
                     ],
                     "ipv6": [
-                        "dns+tls://2620:fe::11#dns11.quad9.net",
-                        "dns+tls://2620:fe::fe:11#dns11.quad9.net"
+                        "dns+tls://[2620:fe::11]#dns11.quad9.net",
+                        "dns+tls://[2620:fe::fe:11]#dns11.quad9.net"
                     ]
                 },
                 {
@@ -123,8 +123,8 @@
                         "dns+tls://149.112.112.10#dns10.quad9.net"
                     ],
                     "ipv6": [
-                        "dns+tls://2620:fe::10#dns10.quad9.net",
-                        "dns+tls://2620:fe::fe:10#dns10.quad9.net"
+                        "dns+tls://[2620:fe::10]#dns10.quad9.net",
+                        "dns+tls://[2620:fe::fe:10]#dns10.quad9.net"
                     ]
                 }
             ]

@@ -1216,7 +1216,7 @@ def audit_print_services():
             note = _("CUPS (the printing service) is disabled, but unmasked.")
             notes.append(Note(note, INFO))
             recs.append("\n".join([note, _("To fix this, run:"), "$ ujust set-cups off"]))
-        case "masked":
+        case "masked" | "not-found":
             pass
         case _:
             status = status.downgrade_to(WARN)
@@ -1251,7 +1251,7 @@ def audit_print_services():
                     ]
                 )
             )
-        case "masked":
+        case "masked" | "not-found":
             pass
         case _:
             status = status.downgrade_to(FAIL)

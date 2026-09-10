@@ -240,7 +240,7 @@ toggle-zswap:
     #! /bin/run0 /bin/bash
     set -euo pipefail
     zram_state="$(swapon --show)"
-    if [[ $zram_state == *"/dev/zram0"* ]] ; then
+    if [[ ${zram_state} == *"/dev/zram0"* ]] ; then
         accept=""
         read -r -p "Currently ZRAM is enabled and encrypted ZSWAP disabled, switch? [y/N]: " accept
         if [[ "${accept}" == [yY]* ]]; then

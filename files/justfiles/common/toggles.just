@@ -27,34 +27,6 @@ override-reset-module mod_name:
         echo "No override found for ${MOD_NAME} module."
     fi
 
-# Toggle between ZSWAP and ZRAM
-toggle-zswap:
-    #! /bin/run0 /bin/bash
-    zswap_state="$(grep /var/swap/swapfile /etc/fstab)"
-    if [[ -z $zswap_state ]] ; then
-        accept=""
-        read -r -p "Currently ZRAM is enabled and ZSWAP disabled, switch? [y/N]: " accept
-        if [[ "${accept}" == [yY]* ]]; then
-            btrfs subvolume create /var/swap
-            btrfs filesystem mkswapfile --size 8g --uuid clear /var/swap/swapfile
-            swapon /var/swap/swapfile
-            echo "/var/swap/swapfile none swap defaults 0 0" >> /etc/fstab
-            ln -s /dev/null /etc/systemd/zram-generator.conf
-            systemctl enable --now zswap.service
-            echo "ZRAM disabled and ZSWAP enabled, please reboot soon"
-        fi
-    else
-        accept=""
-        read -r -p "Currently ZRAM is disabled and ZSWAP enabled, switch? [y/N]: " accept
-        if [[ "${accept}" == [yY]* ]]; then
-            systemctl disable --now zswap.service
-            swapoff -a
-            sed -i '/^\/var\/swap\/swapfile/d' /etc/fstab
-            btrfs subvolume delete /var/swap
-            unlink /etc/systemd/zram-generator.conf
-            echo "ZRAM enabled and ZSWAP disabled, please reboot soon"
-        fi
-    fi
 
 # Toggle debug mode (requires restart)
 toggle-debug-mode:
@@ -262,4 +234,34 @@ toggle-mac-randomization:
         chmod 644 "${RAND_MAC_FILE}"
         echo "MAC randomization enabled."
         systemctl restart NetworkManager
+    fi
+
+# Toggle between ZRAM and encrypted ZSWAP
+toggle-zswap:
+    #! /bin/run0 /bin/bash
+    zswap_state="$(grep /dev/mapper/cryptswap /etc/fstab)"
+    if [[ -z $zswap_state ]] ; then
+        accept=""
+        read -r -p "Currently ZRAM is enabled and encrypted ZSWAP disabled, switch? [y/N]: " accept
+        if [[ "${accept}" == [yY]* ]]; then
+            btrfs subvolume create /var/swap
+            btrfs filesystem mkswapfile --size 8g --uuid clear /var/swap/cryptswap
+            echo "cryptswap /var/swap/cryptswap /dev/urandom swap" >> /etc/crypttab
+            echo "/dev/mapper/cryptswap none swap defaults 0 0" >> /etc/fstab
+            ln -s /dev/null /etc/systemd/zram-generator.conf
+            systemctl enable zswap.service
+            echo "ZRAM disabled and encrypted ZSWAP enabled, please reboot soon"
+        fi
+    else
+        accept=""
+        read -r -p "Currently ZRAM is disabled and encrypted ZSWAP enabled, switch? [y/N]: " accept
+        if [[ "${accept}" == [yY]* ]]; then
+            systemctl disable --now zswap.service
+            swapoff /dev/mapper/cryptswap
+            sed -i '/^\/dev\/mapper\/cryptswap/d' /etc/fstab
+            sed -i '/\/var\/swap\/cryptswap/d' /etc/crypttab
+            btrfs subvolume delete /var/swap
+            unlink /etc/systemd/zram-generator.conf
+            echo "ZRAM enabled and encrypted ZSWAP disabled, please reboot soon"
+        fi
     fi

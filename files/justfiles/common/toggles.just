@@ -30,21 +30,30 @@ override-reset-module mod_name:
 # Toggle between ZSWAP and ZRAM
 toggle-zswap:
     #! /bin/run0 /bin/bash
-    set -euo pipefail
-    if test -n $(swapon --show); then
-        btrfs subvolume create /var/swap
-        btrfs filesystem mkswapfile --size 8g --uuid clear /var/swap/swapfile
-        echo "/var/swap/swapfile none swap defaults 0 0" >> /etc/fstab
-        ln -s /dev/null /etc/systemd/zram-generator.conf
-        systemctl enable --now zswap.service
-        echo "ZRAM disabled and ZSWAP enabled, please reboot soon"
+    zswap_state="$(grep /var/swap/swapfile /etc/fstab)"
+    if [[ -z $zswap_state ]] ; then
+        accept=""
+        read -r -p "Currently ZRAM is enabled and ZSWAP disabled, switch? [y/N]: " accept
+        if [[ "${accept}" == [yY]* ]]; then
+            btrfs subvolume create /var/swap
+            btrfs filesystem mkswapfile --size 8g --uuid clear /var/swap/swapfile
+            swapon /var/swap/swapfile
+            echo "/var/swap/swapfile none swap defaults 0 0" >> /etc/fstab
+            ln -s /dev/null /etc/systemd/zram-generator.conf
+            systemctl enable --now zswap.service
+            echo "ZRAM disabled and ZSWAP enabled, please reboot soon"
+        fi
     else
-        swapoff -a
-        sed -i '/^\/var\/swap\/swapfile/d' /etc/fstab
-        btrfs subvolume delete /var/swap
-        unlink /etc/systemd/zram-generator.conf
-        systemctl disable --now zswap.service
-        echo "ZRAM enabled and ZSWAP disabled, please reboot soon"
+        accept=""
+        read -r -p "Currently ZRAM is disabled and ZSWAP enabled, switch? [y/N]: " accept
+        if [[ "${accept}" == [yY]* ]]; then
+            systemctl disable --now zswap.service
+            swapoff -a
+            sed -i '/^\/var\/swap\/swapfile/d' /etc/fstab
+            btrfs subvolume delete /var/swap
+            unlink /etc/systemd/zram-generator.conf
+            echo "ZRAM enabled and ZSWAP disabled, please reboot soon"
+        fi
     fi
 
 # Toggle debug mode (requires restart)

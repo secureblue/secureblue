@@ -11,8 +11,7 @@ enabled_metadata=1
 metadata_expire=6h
 type=rpm-md
 repo_gpgcheck=0
-includepkgs=akmod-nvidia,nvidia-kmod-common,nvidia-modprobe,nvidia-driver-selinux,libnvidia-fbc,nvidia-driver,nvidia-driver-cuda,nvidia-settings,
-    nvidia-driver-common,nvidia-driver-cuda-libs,nvidia-driver-libs,nvidia-libXNVCtrl,nvidia-persistenced
+includepkgs=akmod-nvidia,libnvidia-fbc,nvidia-driver,nvidia-driver-common,nvidia-driver-cuda,nvidia-driver-cuda-libs,nvidia-driver-libs,nvidia-driver-selinux,nvidia-kmod-common,nvidia-libXNVCtrl,nvidia-modprobe,nvidia-persistenced,nvidia-settings
 
 [fedora-nvidia-source]
 name=negativo17 - Nvidia - Source

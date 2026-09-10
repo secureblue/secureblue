@@ -29,6 +29,14 @@ optional_policy(`
 ')
 
 optional_policy(`
+	bubblewrap_exec(flatpak_t)
+')
+
+optional_policy(`
+	bwrap_restricted_exec(flatpak_t)
+')
+
+optional_policy(`
 	gen_require(`
 		type unconfined_t;
 		attribute trivalent_domain;

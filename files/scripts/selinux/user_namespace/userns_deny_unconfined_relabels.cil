@@ -3,6 +3,8 @@
 ;; SPDX-License-Identifier: Apache-2.0 OR MIT
 
 (typeattribute userns_privileged_file_type)
+(optional bwrap_restricted_userns_privileged_file_type
+          (typeattributeset userns_privileged_file_type (bwrap_restricted_exec_t)))
 (optional colord_userns_privileged_file_type
           (typeattributeset userns_privileged_file_type (colord_exec_t)))
 (optional container_userns_privileged_file_type

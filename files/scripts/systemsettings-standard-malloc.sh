@@ -7,4 +7,4 @@
 set -euo pipefail
 
 # Unset LD_PRELOAD in all invocations of systemsettings in .desktop files
-sed -Ei 's/^Exec=systemsettings( .*)?$/Exec=env LD_PRELOAD= systemsettings\1/' /usr/share/applications/*.desktop
+sed -Ei 's/^Exec=systemsettings( .*)?$/Exec=with-standard-malloc systemsettings\1/' /usr/share/applications/*.desktop

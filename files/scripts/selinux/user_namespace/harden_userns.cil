@@ -4,6 +4,8 @@
 
 (typeattribute userns_privileged_domain)
 (typeattributeset userns_privileged_domain (init_t install_t kernel_t))
+(optional bwrap_restricted_userns_privileged_domain
+          (typeattributeset userns_privileged_domain (bwrap_restricted_domain)))
 (optional colord_userns_privileged_domain
           (typeattributeset userns_privileged_domain (colord_t)))
 (optional container_userns_privileged_domain

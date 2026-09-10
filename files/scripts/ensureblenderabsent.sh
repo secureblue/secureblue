@@ -6,7 +6,7 @@
 
 set -euo pipefail
 
-if command -v blender &> /dev/null
+if rpm -q blender &> /dev/null
 then
     echo "blender found. Exiting..."
     exit 1

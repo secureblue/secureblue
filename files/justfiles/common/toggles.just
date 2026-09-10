@@ -27,6 +27,26 @@ override-reset-module mod_name:
         echo "No override found for ${MOD_NAME} module."
     fi
 
+# Toggle between ZSWAP and ZRAM
+toggle-zswap:
+    #! /bin/run0 /bin/bash
+    set -euo pipefail
+    if test -n $(swapon --show); then
+        btrfs subvolume create /var/swap
+        btrfs filesystem mkswapfile --size 8g --uuid clear /var/swap/swapfile
+        echo "/var/swap/swapfile none swap defaults 0 0" >> /etc/fstab
+        ln -s /dev/null /etc/systemd/zram-generator.conf
+        systemctl enable --now zswap.service
+        echo "ZRAM disabled and ZSWAP enabled, please reboot soon"
+    else
+        swapoff -a
+        sed -i '/^\/var\/swap\/swapfile/d' /etc/fstab
+        btrfs subvolume delete /var/swap
+        unlink /etc/systemd/zram-generator.conf
+        systemctl disable --now zswap.service
+        echo "ZRAM enabled and ZSWAP disabled, please reboot soon"
+    fi
+
 # Toggle debug mode (requires restart)
 toggle-debug-mode:
     #! /bin/run0 /bin/bash

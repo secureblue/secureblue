@@ -10,6 +10,11 @@ enabled_metadata=1
 metadata_expire=6h
 type=rpm-md
 repo_gpgcheck=0
+includepkgs=pipewire-libs-extra,libfreeaptx,liblc3plus,libva,libva-intel-media-driver,
+    mesa-dri-drivers,mesa-filesystem,mesa-libEGL,mesa-libGL,mesa-libgbm,mesa-vulkan-drivers,
+    ffmpeg,libavcodec,libavdevice,libavfilter,libavformat,libavutil,libpostproc,libswresample,
+    libswscale,xevd-libs,xeve-libs,LCEVCdec,davs2-libs,kvazaar-libs,librtmp,libxavs,uavs3d-libs,
+    vvenc-libs,x264-libs,x265-libs,xavs2-libs
 
 [fedora-multimedia-source]
 name=negativo17 - Multimedia - Source

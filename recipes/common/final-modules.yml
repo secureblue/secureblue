@@ -13,6 +13,7 @@ modules:
       - enable-preset-services.sh
       - removesudo.sh
       - ensuresudoabsent.sh
+      - ensureblenderabsent.sh
       - check-selinux-fcontext.sh
       - libdnf5-clear-history.sh
       - backupetc.sh

@@ -11,6 +11,8 @@ enabled_metadata=1
 metadata_expire=6h
 type=rpm-md
 repo_gpgcheck=0
+includepkgs=akmod-nvidia,nvidia-kmod-common,nvidia-modprobe,libnvidia-fbc,nvidia-driver,nvidia-driver-cuda,nvidia-settings,
+    nvidia-driver-cuda-libs,nvidia-driver-libs,nvidia-libXNVCtrl,nvidia-persistenced,libnvidia-ml,libnvidia-gpucomp,libnvidia-cfg
 
 [fedora-nvidia-580-source]
 name=negativo17 - Nvidia - Source

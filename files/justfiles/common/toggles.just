@@ -246,6 +246,8 @@ toggle-zswap:
         if [[ "${accept}" == [yY]* ]]; then
             btrfs subvolume create /var/swap
             btrfs filesystem mkswapfile --size 8g --uuid clear /var/swap/cryptswap
+            semanage fcontext -a -t swapfile_t -s system_u /var/swap/cryptswap
+            restorecon -F /var/swap/cryptswap
             echo "cryptswap /var/swap/cryptswap /dev/random swap,cipher=aes-xts-plain64,size=512,sector-size=4096,no-read-workqueue,no-write-workqueue,discard" >> /etc/crypttab
             echo "/dev/mapper/cryptswap none swap discard=once 0 0" >> /etc/fstab
             ln -s /dev/null /etc/systemd/zram-generator.conf

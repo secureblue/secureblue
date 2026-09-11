@@ -1,0 +1,129 @@
+diff --git a/.github/workflows/build-all-testing.yml b/.github/workflows/build-all-testing.yml
+index 67c68c50..76788d14 100644
+--- a/.github/workflows/build-all-testing.yml
++++ b/.github/workflows/build-all-testing.yml
+@@ -4,8 +4,6 @@ permissions: {}
+
+ on:
+   workflow_dispatch:
+-  schedule:
+-    - cron: "00 6 * * *" # build at 6:00 UTC every day
+
+ concurrency:
+   group: ${{ github.workflow }}-${{ github.ref || github.run_id }}
+diff --git a/.github/workflows/build-all.yml b/.github/workflows/build-all.yml
+index 8a945450..7a91b999 100644
+--- a/.github/workflows/build-all.yml
++++ b/.github/workflows/build-all.yml
+@@ -5,16 +5,6 @@
+ name: build
+ permissions: {}
+ on:
+-  schedule:
+-    - cron: "00 6 * * *" # build at 6:00 UTC every day
+-
+-  push:
+-    branches-ignore: # don't rebuild for dependabot
+-      - "dependabot/**"
+-      - "create-pull-request/**"
+-    paths-ignore: # don't rebuild if only documentation has changed
+-      - "**.md"
+-  # checkov:skip=CKV_GHA_7
+   workflow_dispatch: # allow manually triggering builds
+
+ # Cancels running workflows if a new workflow run for
+diff --git a/.github/workflows/check-rpm-repos.yml b/.github/workflows/check-rpm-repos.yml
+index 7c4f06f6..82158be7 100644
+--- a/.github/workflows/check-rpm-repos.yml
++++ b/.github/workflows/check-rpm-repos.yml
+@@ -13,8 +13,6 @@ on:
+       - "**/rpm-gpg/*"
+       - "files/scripts/**"
+       - "tools/**"
+-  schedule:
+-    - cron: "00 3 * * *" # run at 3:00 UTC every day
+   workflow_dispatch:
+
+ concurrency:
+diff --git a/.github/workflows/integration_tests.yml b/.github/workflows/integration_tests.yml
+index 54e78449..74cf6888 100644
+--- a/.github/workflows/integration_tests.yml
++++ b/.github/workflows/integration_tests.yml
+@@ -5,9 +5,6 @@
+ name: integ-tests
+ permissions: {}
+ on:
+-  schedule:
+-    - cron: "00 7 * * *" # run at 7:00 UTC every day
+-
+   workflow_dispatch:
+
+ concurrency:
+diff --git a/.github/workflows/provenance.yml b/.github/workflows/provenance.yml
+index eca5449a..8aab56e5 100644
+--- a/.github/workflows/provenance.yml
++++ b/.github/workflows/provenance.yml
+@@ -5,9 +5,6 @@
+ name: verify-provenance
+ permissions: {}
+ on:
+-  schedule:
+-    - cron: "00 15 * * *" # run at 15:00 UTC every day
+-
+   workflow_dispatch:
+
+ concurrency:
+diff --git a/.github/workflows/scorecard.yml b/.github/workflows/scorecard.yml
+index 81b97241..0212658a 100644
+--- a/.github/workflows/scorecard.yml
++++ b/.github/workflows/scorecard.yml
+@@ -5,8 +5,6 @@ on:
+   branch_protection_rule:
+   # To guarantee Maintained check is occasionally updated. See
+   # https://github.com/ossf/scorecard/blob/main/docs/checks.md#maintained
+-  schedule:
+-    - cron: "20 7 * * 2"
+   push:
+     branches: ["live"]
+
+diff --git a/.github/workflows/trivy.yml b/.github/workflows/trivy.yml
+index ab1458f7..44ee9781 100644
+--- a/.github/workflows/trivy.yml
++++ b/.github/workflows/trivy.yml
+@@ -5,10 +5,6 @@
+ name: trivy
+ permissions: {}
+ on:
+-  schedule:
+-    - cron:
+-        "00 8 * * *" # build at 8:00 UTC every day
+-        # 120 minutes after secureblue images start building
+   push:
+     branches:
+       - live
+diff --git a/.github/workflows/update-modules.yml b/.github/workflows/update-modules.yml
+index 8241e631..d8c490af 100644
+--- a/.github/workflows/update-modules.yml
++++ b/.github/workflows/update-modules.yml
+@@ -5,8 +5,6 @@
+ name: update-modules
+ permissions: {}
+ on:
+-  schedule:
+-    - cron: 00 0 * * TUE # run weekly
+   workflow_dispatch:
+
+ concurrency:
+diff --git a/.github/workflows/update-po.yml b/.github/workflows/update-po.yml
+index 0822dd48..ab01b1dc 100644
+--- a/.github/workflows/update-po.yml
++++ b/.github/workflows/update-po.yml
+@@ -5,8 +5,6 @@
+ name: update-po
+ permissions: {}
+ on:
+-  schedule:
+-    - cron: 00 0 * * MON # run weekly
+   workflow_dispatch:
+
+ concurrency:

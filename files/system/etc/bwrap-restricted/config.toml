@@ -1,0 +1,10 @@
+# Configuration for bwrap-restricted
+
+# Path to the bwrap executable:
+bwrap_path = "/usr/bin/bwrap-original"
+
+# bwrap options to forbid:
+forbidden_options = ["--cap-add"]
+
+# Extra options to insert between the options list and the command arguments:
+extra_options = ["--cap-drop", "ALL"]

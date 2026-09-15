@@ -8,14 +8,7 @@ modules:
     install:
       install-weak-deps: false
       packages:
-        - setools-console
-        - usbguard
-        - firewalld
-        - policycoreutils-python-utils
         - udisks2
-    remove:
-      packages:
-        - tpm2-pkcs11
 
   - type: files
     source: ghcr.io/blue-build/modules@sha256:f1273b17987eed439b0feff77bf4b7f1c734e6f77607dc99c9de9d9070555c7a
@@ -28,5 +21,3 @@ modules:
     scripts:
       - excludepcsc.sh
       - setserverdefaultzone.sh
-      - disable-coreos-migration-motd.sh
-      - remove-dns-greenboot-check.sh

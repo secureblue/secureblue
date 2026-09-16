@@ -7,20 +7,23 @@ if [[ $- == *i* && -n "${BASH_VERSION:-}" ]]; then
         # Only print the function name during xtrace for cleaner output
         { local -; set +x; } 2>/dev/null
 
-        local start
-        start+=$'\e[31m' # red
-        start+="["
-        start+=$'\e[1m' # bold
+        if [[ "$1" == 0 ]]; then
+            return
+        fi
 
-        local end
-        end+=$'\e[22m' # default intensity
-        end+="]"
-        end+=$'\e[39m' # default color
+        local -r ps1_prefix=(
+            $'\e[31m' # red
+            "["
+            $'\e[1m' # bold
+            "$1"
+            $'\e[22m' # default intensity
+            "]"
+            $'\e[39m' # default color
+        )
 
-        local -r code=${1#0}
-        echo -n "${code:+${start}${code}${end}}"
+        printf '%s' "${ps1_prefix[@]}"
     }
 
     # shellcheck disable=SC2154
-    PS1='$(__scbl_ps1_exit_code $?)'"${PS1:-}"
+    PS1='$(__scbl_ps1_exit_code "$?")'"${PS1:-}"
 fi

@@ -9,13 +9,9 @@ modules:
       - removeunusedrepos.sh
       - httpsmirrors.sh
       - unprotectsudo.sh
-      # Temporarily pin amd-gpu-firmware until this issue is fixed:
-      # https://gitlab.freedesktop.org/drm/amd/-/work_items/5803
-      - temp-pin-amdgpu-firmware.sh
+      - check-bad-package-versions.sh
       # comment/uncomment the line below to disable/enable kernel pinning
       # - installpinnedkernel.sh
-      # remove line below once rpm-ostree has been updated to fixed version on all images
-      - check-rpm-ostree-version.sh
 
   - type: files
     source: ghcr.io/blue-build/modules@sha256:c5ed99f07b15c8d575a4fa64a77e5cd5602b00da4c84379f5675db2ae4757061

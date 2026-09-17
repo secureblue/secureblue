@@ -11,17 +11,21 @@ if [[ $- == *i* && -n "${BASH_VERSION:-}" ]]; then
             return
         fi
 
+        # https://www.gnu.org/software/bash/manual/html_node/Controlling-the-Prompt.html
+        local -r esc='\[\e[!m\]'
+
         local -r ps1_prefix=(
-            $'\e[31m' # red
+            "${esc/!/31}" # red
             "["
-            $'\e[1m' # bold
+            "${esc/!/1}" # bold
             "$1"
-            $'\e[22m' # default intensity
+            "${esc/!/22}" # default intensity
             "]"
-            $'\e[39m' # default color
+            "${esc/!/39}" # default color
         )
 
-        printf '%s' "${ps1_prefix[@]}"
+        # @P tells Bash to expand the values as a prompt string
+        printf '%s' "${ps1_prefix[@]@P}"
     }
 
     # shellcheck disable=SC2154

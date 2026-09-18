@@ -12,16 +12,14 @@ if [[ $- == *i* && -n "${BASH_VERSION:-}" ]]; then
         fi
 
         # https://www.gnu.org/software/bash/manual/html_node/Controlling-the-Prompt.html
-        local -r esc='\[\e[!m\]'
-
         local -r ps1_prefix=(
-            "${esc/!/31}" # red
+            '\[\e[31m\]' # red
             "["
-            "${esc/!/1}" # bold
+            '\[\e[1m\]' # bold
             "$1"
-            "${esc/!/22}" # default intensity
+            '\[\e[22m\]' # default intensity
             "]"
-            "${esc/!/39}" # default color
+            '\[\e[39m\]' # default color
         )
 
         # @P tells Bash to expand the values as a prompt string

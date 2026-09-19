@@ -7,7 +7,6 @@
 set -euo pipefail
 
 bad_packages=(
-    'amd-gpu-firmware-20260910-*'
     'rpm-ostree-2026.1-1.fc*'
 )
 

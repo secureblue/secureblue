@@ -8,6 +8,7 @@ UPDATE_FAILURE_STRING="Update failed, booting existing deployment..."
 
 PROVENANCE_FAILURE_STRING="Provenance verification failed, booting existing deployment..."
 CANCEL_STRING="Press Q to cancel and boot the existing deployment."
+DEPLOYING_STRING="Deploying update... ${CANCEL_STRING}"
 NO_UPDATE_STRING="No update available, booting current deployment"
 
 plymouth watch-keystroke --keys="qQ" --command "systemctl stop upgrade-on-boot.service" &
@@ -70,10 +71,14 @@ else
                 echo "Percent: ${percent}"
                 if (( percent >= 100 )); then
                     plymouth change-mode --boot-up
-                    plymouth message --text="Deploying update... ${CANCEL_STRING}"
+                    plymouth message --text="${DEPLOYING_STRING}"
                 else
                     plymouth system-update --progress="${percent}"
                 fi
+                ;;
+            ProgressSteps)
+                plymouth change-mode --boot-up
+                plymouth message --text="${DEPLOYING_STRING}"
                 ;;
         esac
     done < "${BOOTC_OUTPUT}" &

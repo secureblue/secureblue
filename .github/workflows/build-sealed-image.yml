@@ -7,8 +7,8 @@ name: build-sealed-image
 permissions: {}
 
 env:
-  # For CoreOS (which has version "next"), use systemd-boot from F44.
-  IMAGE_VERSION: ${{ inputs.image_version == 'next' && '44' || inputs.image_version }}
+  # For CoreOS (which has version "testing"), use systemd-boot from F44.
+  IMAGE_VERSION: ${{ inputs.image_version == 'testing' && '44' || inputs.image_version }}
 
 on:
   workflow_call:

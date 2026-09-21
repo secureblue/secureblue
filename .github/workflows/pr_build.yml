@@ -191,7 +191,7 @@ jobs:
           } >> "${GITHUB_OUTPUT}"
 
       - name: Build secureblue
-        uses: blue-build/github-action@836161eb076426a451e6a0054f722b1153b8b3ad # v1.12.0
+        uses: blue-build/github-action@c295af864f2802fc6aea227507af43d35823db81 # v1.13.0
         env:
           KERNEL_PRIVKEY: ${{ steps.test_keys.outputs.kernel_privkey }}
         with:

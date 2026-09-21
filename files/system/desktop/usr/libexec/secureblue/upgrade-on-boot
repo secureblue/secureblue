@@ -67,6 +67,13 @@ else
             ProgressBytes)
                 bytes=$(echo "${line}" | jq -r '.bytes')
                 bytes_total=$(echo "${line}" | jq -r '.bytesTotal')
+                # https://github.com/bootc-dev/bootc/blob/main/crates/lib/src/bootc_composefs/progress.rs#L246
+                # Just show the spinner for composefs
+                if (( bytes_total == 0 )); then
+                    plymouth change-mode --boot-up
+                    plymouth message --text="${DEPLOYING_STRING}"
+                    continue
+                fi
                 percent=$(( 100 * bytes / bytes_total ))
                 echo "Percent: ${percent}"
                 if (( percent >= 100 )); then

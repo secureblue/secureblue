@@ -51,12 +51,17 @@ else
         exit 1
     fi
 
-    BOOTC_STATUS=$(bootc status --json)
-    COMPOSEFS=$(echo "${BOOTC_STATUS}" | jq -r '.status.booted.composefs != null')
+    COMPOSEFS=$(bootc status --json | jq -r '.status.booted.composefs != null')
 
-    # Composefs doesn't support ProgressBytes, so just set the spinner in that case
+
+    # https://github.com/bootc-dev/bootc/issues/2484
     # https://github.com/bootc-dev/bootc/blob/main/crates/lib/src/bootc_composefs/progress.rs#L119
-    if [[ "${COMPOSEFS}" == "false" ]]; then
+    if [[ "${COMPOSEFS}" == "true" ]]; then
+        plymouth change-mode --boot-up
+        plymouth message --text="${DEPLOYING_STRING}"
+        bootc upgrade --quiet
+        BOOTC_EXIT=$?
+    else
         plymouth change-mode --updates
         plymouth system-update --progress=0
 
@@ -90,11 +95,6 @@ else
         bootc upgrade --quiet --progress-fd 3 3>"${BOOTC_OUTPUT}"
         BOOTC_EXIT=$?
         rm -f "${BOOTC_OUTPUT}"
-    else
-        plymouth change-mode --boot-up
-        plymouth message --text="${DEPLOYING_STRING}"
-        bootc upgrade --quiet
-        BOOTC_EXIT=$?
     fi
 
     echo "bootc exited with: ${BOOTC_EXIT}"

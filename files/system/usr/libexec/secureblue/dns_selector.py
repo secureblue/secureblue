@@ -149,6 +149,15 @@ def ask_servers(https_only: bool = False) -> DNSServers:
     data = json.loads(SERVERS_JSON_PATH.read_text(encoding="utf-8"))
     providers = data["providers"]
 
+    # If we're asking for servers for DoH use only, there's no point in showing
+    # providers/servers with no DoH endpoint.
+    if https_only:
+        providers = [
+            {**p, "servers": [s for s in p["servers"] if s.get("https")]}
+            for p in providers
+            if any(s.get("https") for s in p["servers"])
+        ]
+
     print("Select a DNS provider:")
     custom_option = len(providers) + 1
     for i, p in enumerate(providers, start=1):

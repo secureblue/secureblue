@@ -4,7 +4,7 @@
 
 modules:
   - type: dnf
-    source: ghcr.io/blue-build/modules@sha256:45471c9764ad88e10414ef8580db0a6984508443b0b6463d301d5b13f9092f2e
+    source: ghcr.io/blue-build/modules@sha256:f1273b17987eed439b0feff77bf4b7f1c734e6f77607dc99c9de9d9070555c7a
     install:
       install-weak-deps: false
       packages:
@@ -14,12 +14,12 @@ modules:
         - policycoreutils-python-utils
 
   - type: files
-    source: ghcr.io/blue-build/modules@sha256:45471c9764ad88e10414ef8580db0a6984508443b0b6463d301d5b13f9092f2e
+    source: ghcr.io/blue-build/modules@sha256:f1273b17987eed439b0feff77bf4b7f1c734e6f77607dc99c9de9d9070555c7a
     files:
       - source: system/securecore
         destination: /
 
   - type: script
-    source: ghcr.io/blue-build/modules@sha256:45471c9764ad88e10414ef8580db0a6984508443b0b6463d301d5b13f9092f2e
+    source: ghcr.io/blue-build/modules@sha256:f1273b17987eed439b0feff77bf4b7f1c734e6f77607dc99c9de9d9070555c7a
     scripts:
       - disable-coreos-migration-motd.sh

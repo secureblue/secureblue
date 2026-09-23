@@ -23,7 +23,7 @@ concurrency:
 jobs:
   bluebuild:
     name: PR build
-    runs-on: ubuntu-26.04
+    runs-on: ${{ inputs.platform == 'linux/arm64' && 'ubuntu-26.04-arm' || 'ubuntu-26.04' }}
     permissions:
       contents: read # Needed to pull the repo for the build
       packages: read # Needed to read base image manifests

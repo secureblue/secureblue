@@ -23,6 +23,8 @@ install:
     - brew-proxy
     - brew-proxy-selinux
     - firewall-config
+    - trivalent-selinux
+    - ffmpegthumbnailer
 
     # yubikey enablement
     - pam-u2f

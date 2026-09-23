@@ -30,7 +30,7 @@ jobs:
 
     steps:
       - name: Enable egress auditing
-        uses: step-security/harden-runner@05e31511f85b41b11d1cf0ef85d0992719546e2c # v2.21.0
+        uses: step-security/harden-runner@e14015d583714f6e62063499dc959a02595150a1 # v2.21.1
         with:
           egress-policy: block
           allowed-endpoints: >
@@ -177,7 +177,7 @@ jobs:
 
       - name: Runner setup
         id: runner_setup
-        uses: ./.github/workflows/shared-runner-setup
+        uses: $/.github/workflows/shared-runner-setup
 
       - name: Set up test keys
         id: test_keys
@@ -191,11 +191,11 @@ jobs:
           } >> "${GITHUB_OUTPUT}"
 
       - name: Build secureblue
-        uses: blue-build/github-action@836161eb076426a451e6a0054f722b1153b8b3ad # v1.12.0
+        uses: blue-build/github-action@c295af864f2802fc6aea227507af43d35823db81 # v1.13.0
         env:
           KERNEL_PRIVKEY: ${{ steps.test_keys.outputs.kernel_privkey }}
         with:
-          cli_version: v0.9.36
+          cli_version: v0.9.37
           recipe: ${{ inputs.recipe }}
           push: false
           registry_token: ${{ github.token }}

@@ -8,6 +8,7 @@ enabled=0
 gpgkey=file:///usr/share/pki/rpm-gpg/nvidia-container-gpgkey.gpg
 sslverify=1
 sslcacert=/etc/pki/ca-trust/extracted/pem/tls-ca-bundle.pem
+includepkgs=nvidia-container-toolkit,libnvidia-container-tools,libnvidia-container1,nvidia-container-toolkit-base
 
 [nvidia-container-toolkit-experimental]
 name=nvidia-container-toolkit-experimental

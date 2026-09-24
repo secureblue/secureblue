@@ -85,6 +85,10 @@ def enroll_efi_keys(*, db_auth: Path, kek_auth: Path, pk_auth: Path) -> None:
 def update_systemd_boot() -> None:
     """Updates systemd-boot in the ESP to the version shipped with secureblue. Invalidates PCR."""
 
+    # Exit if systemd-boot isn't detected.
+    if not BOOTLOADER_ESP_SYSTEMD.exists():
+        return
+
     new_systemd = hashlib.file_digest(SYSTEMD_BOOT_NEW.open("rb"), "sha256").hexdigest()
     esp_boot = hashlib.file_digest(BOOTLOADER_ESP_BOOT.open("rb"), "sha256").hexdigest()
     esp_systemd = hashlib.file_digest(BOOTLOADER_ESP_SYSTEMD.open("rb"), "sha256").hexdigest()
@@ -158,10 +162,6 @@ def enroll_mok_key(der: Path, *, password: str) -> None:
     _write_efi_bytes("MokNew", EFI_NS_SHIM, attrs, mok_new_payload)
     _write_efi_bytes("MokAuth", EFI_NS_SHIM, attrs, mok_auth_payload)
 
-    # To avoid boot failures if there's been a key rotation, we make sure
-    # systemd-boot is up to date with any new signature or version.
-    update_systemd_boot()
-
 
 def main() -> int:
     """Execute the requested function."""
@@ -175,10 +175,14 @@ def main() -> int:
                 kek_auth=Path(request.kek_auth),
                 pk_auth=Path(request.pk_auth),
             )
+            update_systemd_boot()
             return 0
+
         case EnrollMokKey():
             enroll_mok_key(der=Path(request.der), password=request.password)
+            update_systemd_boot()
             return 0
+
         case _:
             print(f"Unhandled action: {request}", file=sys.stderr)
             return 1

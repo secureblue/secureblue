@@ -17,7 +17,7 @@ def main() -> int:
         run(["/usr/bin/fwupdmgr", "update"], check=True)
         return 0
     except CalledProcessError:
-        print("An unexpected error occured.")
+        print("An unexpected error occurred.")
         return 1
 
 

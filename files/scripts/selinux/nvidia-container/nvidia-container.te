@@ -3,7 +3,7 @@
 #
 # SPDX-License-Identifier: MIT
 #
-# Source: https://github.com/NVIDIA/dgx-selinux/blob/b988ea65e7b43009a705eb5e5d7e94048f916734/src/nvidia-container-selinux/nvidia-container.te
+# Source: https://github.com/NVIDIA/dgx-selinux/blob/b988ea65e7b43009a705eb5e5d7e94048f916734/src/nvidia-container-selinux/nvidia-container.te # codespell:ignore te
 
 # /usr/share/selinux/devel/include
 

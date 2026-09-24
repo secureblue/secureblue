@@ -160,11 +160,16 @@ def normalize_sysctl(sysctl: str) -> str:
 
 def validate_sysctl(sysctl: str, actual: str, expected: str) -> bool:
     """Validate a sysctl value against an expected value."""
-    if sysctl == "kernel.sysrq":
-        # Both 0 and 4 are secure values for this setting. For details, see:
-        # https://www.kernel.org/doc/html/latest/admin-guide/sysrq.html
-        return actual in (expected, "0", "4")
-    return actual == expected
+    match sysctl:
+        case "kernel.sysrq":
+            # Both 0 and 4 are secure values for this setting. For details, see:
+            # https://www.kernel.org/doc/html/latest/admin-guide/sysrq.html
+            return actual in (expected, "0", "4")
+        case "kernel.yama.ptrace_scope":
+            # Higher values are more stringent.
+            return int(actual) >= int(expected)
+        case _:
+            return actual == expected
 
 
 def analyze_active_container_policy() -> tuple[ContainersPolicyAudit, str]:

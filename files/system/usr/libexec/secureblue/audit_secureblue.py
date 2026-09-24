@@ -23,7 +23,6 @@ import traceback
 from pathlib import Path
 from typing import Final, assert_never
 
-import kargs_hardening_common
 from audit_flatpak import check_flatpak_permissions, parse_flatpak_permissions
 from audit_utils import (
     analyze_active_container_policy,
@@ -45,15 +44,17 @@ from auditor import (
     gettext_marker,
     global_audit,
 )
+from shared import kargs_hardening
 from utils import (
+    BootcBackend,
     Image,
-    booted_image_ref,
     command_stdout,
     command_succeeds,
     get_config_dir,
     is_module_loaded,
     is_using_vpn,
     loaded_kernel_modules,
+    ostree_booted_image_ref,
     parse_config,
     print_err,
 )
@@ -84,28 +85,28 @@ def audit_kargs():
     notes = []
     rec = None
 
-    kargs_current = frozenset(command_stdout("rpm-ostree", "kargs").split())
-    kargs_expected = kargs_hardening_common.DEFAULT_KARGS
+    kargs_current = frozenset(Path("/proc/cmdline").read_text(encoding="utf-8").split())
+    kargs_expected = kargs_hardening.DEFAULT_KARGS
     for karg in kargs_expected:
         if karg not in kargs_current:
             status = status.downgrade_to(FAIL)
             notes.append(Note(_("Missing kernel argument: {0}").format(karg), FAIL))
 
-    karg_32bit = kargs_hardening_common.DISABLE_32_BIT
+    karg_32bit = kargs_hardening.DISABLE_32_BIT
     if karg_32bit not in kargs_current:
         status = status.downgrade_to(WARN)
         notes.append(
             Note(_("Missing kernel argument: {0} (32-bit support)").format(karg_32bit), WARN)
         )
 
-    karg_nosmt = kargs_hardening_common.FORCE_NOSMT
+    karg_nosmt = kargs_hardening.FORCE_NOSMT
     if karg_nosmt not in kargs_current:
         status = status.downgrade_to(WARN)
         notes.append(
             Note(_("Missing kernel argument: {0} (force-disable SMT)").format(karg_nosmt), WARN)
         )
 
-    kargs_expected_unstable = kargs_hardening_common.UNSTABLE_KARGS
+    kargs_expected_unstable = kargs_hardening.UNSTABLE_KARGS
     for karg in kargs_expected_unstable:
         if karg not in kargs_current:
             status = status.downgrade_to(WARN)
@@ -161,8 +162,14 @@ def audit_sysctl():
 @audit
 def audit_signed_image(state):
     """Check that the secureblue image is signed."""
-    image_ref = booted_image_ref()
-    state["image"] = Image.from_image_ref(image_ref)
+
+    state["image"] = Image.from_running()
+    if BootcBackend.from_running() == BootcBackend.COMPOSEFS:
+        # bootc doesn't give specific info on this; it's best handled as part of
+        # audit_container_policy() which is also used by bootc.
+        return
+
+    image_ref = ostree_booted_image_ref()
     if image_ref.startswith("ostree-image-signed:"):
         status = PASS
         rec = None
@@ -263,7 +270,7 @@ def audit_container_policy():
     status = PASS
     notes = []
     system_policy_file = "/etc/containers/policy.json"
-    if not filecmp.cmp(f"/usr{system_policy_file}", system_policy_file):
+    if not filecmp.cmp(f"/usr/share/secureblue{system_policy_file}", system_policy_file):
         status = status.downgrade_to(INFO)
         notes.append(Note(_("The file {0} has been modified.").format(system_policy_file), INFO))
 
@@ -598,35 +605,46 @@ def audit_mac_randomization():
 
 
 @audit
-def audit_rpm_ostree_timer():
-    """Ensure rpm-ostree automatic updates are enabled."""
+def audit_update_timer():
+    """Ensure automatic updates are enabled."""
     status = PASS
     notes = []
     recs = []
 
-    if not command_succeeds("systemctl", "is-enabled", "--quiet", "rpm-ostreed-automatic.timer"):
+    is_ostree = BootcBackend.from_running() == BootcBackend.OSTREE
+    timer_unit = "rpm-ostreed-automatic.timer" if is_ostree else "bootc-upgrade.timer"
+    service_unit = "rpm-ostreed-automatic.service" if is_ostree else "bootc-upgrade.service"
+
+    # Check for upgrade timer or service failures.
+    if not command_succeeds("systemctl", "is-enabled", "--quiet", timer_unit):
         status = FAIL
-        note_text = _("{0} is disabled.").format("rpm-ostreed-automatic.timer")
+        note_text = _("{0} is disabled.").format(timer_unit)
         notes.append(Note(note_text, FAIL))
         rec_lines = [
             note_text,
             _("To enable it, run:"),
-            "$ systemctl enable --now rpm-ostreed-automatic.timer",
+            f"$ systemctl enable --now {timer_unit}",
         ]
         recs.append("\n".join(rec_lines))
-    elif command_succeeds("systemctl", "is-failed", "--quiet", "rpm-ostreed-automatic.service"):
+    elif command_succeeds("systemctl", "is-failed", "--quiet", service_unit):
         status = status.downgrade_to(WARN)
-        notes.append(
-            Note(_("{0} has failed to run.").format("rpm-ostreed-automatic.service"), WARN)
-        )
+        notes.append(Note(_("{0} has failed to run.").format(service_unit), WARN))
 
+    # For bootc/composefs systems, this is enough.
+    if not is_ostree:
+        yield Report(
+            _("Ensuring automatic system updates are enabled"), status, notes=notes, recs=recs
+        )
+        return
+
+    # On OSTree systems, also check the rpm-ostree config to see if updates are disabled.
     bad_rpm_ostreed_conf = False
     try:
-        config = configparser.ConfigParser()
+        config = configparser.ConfigParser(delimiters=("=",))
         config.read("/etc/rpm-ostreed.conf")
         if config["Daemon"].get("AutomaticUpdatePolicy") not in ("stage", "apply"):
             bad_rpm_ostreed_conf = True
-    except (configparser.Error, KeyError):
+    except configparser.Error, KeyError:
         bad_rpm_ostreed_conf = True
 
     if bad_rpm_ostreed_conf:
@@ -636,7 +654,7 @@ def audit_rpm_ostree_timer():
         rec_lines = [
             note_text,
             _("To fix this, run:"),
-            "$ run0 -i cp /usr/etc/rpm-ostreed.conf /etc/rpm-ostreed.conf",
+            "$ run0 -i cp /usr/share/secureblue/etc/rpm-ostreed.conf /etc/rpm-ostreed.conf",
         ]
         recs.append("\n".join(rec_lines))
 
@@ -815,7 +833,7 @@ def audit_groups():
 
     username = getpass.getuser()
     known_groups = (username, "brewadmin", "usbguard", "wheel")
-    dangerous_groups = ("docker", "libvirt")
+    dangerous_groups = ("docker", "libvirt", "lxd")
     status = PASS
     notes = []
     recs = []
@@ -912,15 +930,13 @@ def audit_xwayland(state):
 @depends_on("audit_signed_image")
 def audit_thumbnailing(state):
     """Check whether thumbnailing is disabled."""
-    thumbnailing_disabled = False
+    thumbnailing_disabled = True
     match state["image"]:
         case Image.SILVERBLUE:
             de = _("GNOME")
             # show-image-thumbnails controls all thumbnailing
             thumbnail_gsetting_output = command_stdout(
-                "command",
-                "-p",
-                "gsettings",
+                "/usr/bin/gsettings",
                 "get",
                 "org.gnome.nautilus.preferences",
                 "show-image-thumbnails",
@@ -930,21 +946,21 @@ def audit_thumbnailing(state):
             de = _("KDE Plasma")
             dolphinrc_file = Path.home() / ".config/dolphinrc"
             if dolphinrc_file.exists():
-                config = configparser.ConfigParser()
+                config = configparser.ConfigParser(delimiters=("=",), allow_unnamed_section=True)
                 config.read(dolphinrc_file)
                 thumbnail_plugins = config.get("PreviewSettings", "Plugins", fallback="")
                 thumbnailing_disabled = thumbnail_plugins == ""
         case Image.SERICEA:
             de = _("Sway")
-            if not command_succeeds(
-                "systemctl", "is-enabled", "--quiet", "--user", "tumblerd.service"
-            ):
-                thumbnailing_disabled = True
+            if command_succeeds("systemctl", "is-enabled", "--quiet", "--user", "tumblerd.service"):
+                thumbnailing_disabled = False
         case Image.COSMIC:
             de = _("COSMIC")
             status = INFO
             note = Note(_("COSMIC Files doesn't yet support disabling thumbnails."), INFO)
-            yield Report(_("Ensuring thumbnailing is disabled for COSMIC"), status, notes=note)
+            yield Report(
+                _("Ensuring thumbnailing is disabled for {0}").format(de), status, notes=note
+            )
             return
         case _:
             return
@@ -953,14 +969,14 @@ def audit_thumbnailing(state):
         status = PASS
         rec = None
     else:
-        status = WARN
+        status = FAIL
         rec_lines = [
             _("Thumbnailing is enabled for {0}.").format(de),
             _("To disable it, consult the following FAQ:"),
             "https://secureblue.dev/faq#thumbnailing",
         ]
         rec = "\n".join(rec_lines)
-    yield Report(_("Ensuring {0} is disabled for {1}").format("thumbnailing", de), status, recs=rec)
+    yield Report(_("Ensuring thumbnailing is disabled for {0}").format(de), status, recs=rec)
 
 
 @audit
@@ -970,9 +986,7 @@ def audit_gnome_extensions(state):
     if state["image"] != Image.SILVERBLUE:
         return
     allowed = command_stdout(
-        "command",
-        "-p",
-        "gsettings",
+        "/usr/bin/gsettings",
         "get",
         "org.gnome.shell",
         "allow-extension-installation",
@@ -1016,7 +1030,7 @@ def audit_environment_file():
     note = None
     rec = None
     try:
-        if not filecmp.cmp("/usr" + env_file, env_file):
+        if not filecmp.cmp("/usr/share/secureblue" + env_file, env_file):
             status = WARN
             note = Note(_("The file {0} has been modified.").format(env_file), WARN)
     except FileNotFoundError:
@@ -1029,7 +1043,7 @@ def audit_environment_file():
         rec_lines = [
             _("The file {0} has been modified.").format(env_file),
             _("To reset it, run:"),
-            f"$ run0 -i cp -p /usr{env_file} {env_file}",
+            f"$ run0 -i cp -p /usr/share/secureblue{env_file} {env_file}",
         ]
         rec = "\n".join(rec_lines)
     yield Report(_("Ensuring no environment file overrides"), status, notes=note, recs=rec)
@@ -1046,7 +1060,7 @@ def audit_kde_ghns(state):
     try:
         with open("/etc/xdg/kdeglobals", encoding="utf-8") as f:
             config = parse_config(f)
-    except (FileNotFoundError, PermissionError):
+    except FileNotFoundError, PermissionError:
         status = WARN
         note = Note(
             _("The file {0} was not found or inaccessible.").format("/etc/xdg/kdeglobals"), WARN
@@ -1098,7 +1112,7 @@ def audit_ld_preload():
         rec_lines = [
             _("The file {0} has been modified or deleted.").format(ld_so_preload),
             _("To reset it and enable hardened_malloc for system processes, run:"),
-            f"$ run0 -i cp -p /usr{ld_so_preload} {ld_so_preload}",
+            f"$ run0 -i cp -p /usr/share/secureblue{ld_so_preload} {ld_so_preload}",
         ]
         rec = "\n".join(rec_lines)
     yield Report(
@@ -1252,7 +1266,7 @@ def audit_print_services():
             note = _("CUPS (the printing service) is disabled, but unmasked.")
             notes.append(Note(note, INFO))
             recs.append("\n".join([note, _("To fix this, run:"), "$ ujust set-cups off"]))
-        case "masked":
+        case "masked" | "not-found":
             pass
         case _:
             status = status.downgrade_to(WARN)
@@ -1287,7 +1301,7 @@ def audit_print_services():
                     ]
                 )
             )
-        case "masked":
+        case "masked" | "not-found":
             pass
         case _:
             status = status.downgrade_to(FAIL)

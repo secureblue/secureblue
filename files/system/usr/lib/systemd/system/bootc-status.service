@@ -1,0 +1,19 @@
+# SPDX-FileCopyrightText: Copyright 2026 The Secureblue Authors
+#
+# SPDX-License-Identifier: Apache-2.0
+
+# This service is a workaround for `bootc status` requiring root: see
+# <https://github.com/bootc-dev/bootc/issues/409>.
+
+[Unit]
+Description=Write bootc status to file
+Documentation=man:bootc(8)
+After=local-fs.target
+
+[Service]
+Type=oneshot
+ExecStart=/usr/bin/bootc status --format json
+StandardOutput=truncate:/run/bootc/status.json
+
+[Install]
+WantedBy=multi-user.target

@@ -33,18 +33,6 @@ fi
 trivalent_rpm_sans_prefix=${trivalent_rpm#trivalent-}
 trivalent_version=${trivalent_rpm_sans_prefix%".${ARCH}.rpm"}
 
-trivalent_selinux_pkg="trivalent-selinux-${trivalent_version}"
-dnf --repo=secureblue -y download "${trivalent_selinux_pkg}"
-
-trivalent_selinux_rpm="${trivalent_selinux_pkg}.noarch.rpm"
-
-if [[ -f "${trivalent_selinux_rpm}" ]]; then
-    echo "Trivalent SELinux policy RPM: ${trivalent_selinux_rpm}"
-else
-    echo "trivalent-selinux RPM not found"
-    exit 1
-fi
-
 provenance_file="multiple.intoto.jsonl"
 curl -fLsS --retry 5 -O "https://github.com/secureblue/Trivalent/releases/download/${trivalent_version}/${provenance_file}"
 
@@ -52,10 +40,9 @@ slsa-verifier verify-artifact \
     --provenance-path "${provenance_file}" \
     --source-uri 'github.com/secureblue/Trivalent' \
     --source-branch 'live' \
-    "${trivalent_rpm}" "${trivalent_selinux_rpm}"
+    "${trivalent_rpm}"
 
 # Forcing GPG check for packages installed outside of a repository
-dnf --setopt=localpkg_gpgcheck=True --setopt=install_weak_deps=False -y \
-    install "${trivalent_rpm}" "${trivalent_selinux_rpm}"
+dnf --setopt=localpkg_gpgcheck=True --setopt=install_weak_deps=False -y install "${trivalent_rpm}"
 
 sed -i 's/org\.mozilla\.firefox\.desktop/trivalent.desktop/' /usr/share/applications/mimeapps.list

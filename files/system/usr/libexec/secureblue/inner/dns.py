@@ -42,7 +42,7 @@ class DNSResolver(Enum):
         return SystemdService(self.value)
 
     @classmethod
-    def get_current(cls) -> "DNSResolver":
+    def get_current(cls) -> DNSResolver:
         """
         Gets the resolver whose systemd service is enabled.
 

@@ -8,7 +8,7 @@
 
 # https://docs.kernel.org/admin-guide/kernel-parameters.html
 
-from kargs_hardening_common import (
+from shared.kargs_hardening import (
     DEFAULT_KARGS,
     DISABLE_32_BIT,
     FORCE_NOSMT,

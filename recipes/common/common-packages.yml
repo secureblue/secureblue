@@ -3,7 +3,7 @@
 # SPDX-License-Identifier: Apache-2.0
 
 type: dnf
-source: ghcr.io/blue-build/modules@sha256:a21771c64475511f5d7f8ab98bfb74217658c9958c2b1cb956d9c0bcbbdeed29
+source: ghcr.io/blue-build/modules@sha256:f1273b17987eed439b0feff77bf4b7f1c734e6f77607dc99c9de9d9070555c7a
 install:
   install-weak-deps: false
   packages:
@@ -39,3 +39,25 @@ install:
     # provenance deps
     - crane
     - slsa-verifier
+
+    # Virtualization packages
+    - libvirt
+    - libvirt-nss
+    - qemu-device-display-virtio-gpu
+    - qemu-device-display-virtio-vga
+    - qemu-device-usb-host
+    - qemu-device-usb-redirect
+    - qemu-device-usb-smartcard
+    - qemu-kvm-core
+    - qemu-img
+    - qemu-tools
+    - qemu-user
+    - qemu-user-binfmt
+    - virt-install
+    - podman-machine
+    - moby-engine
+    - docker-cli
+    - moby-engine-rootless-extras
+    - containerd
+    - docker-buildx
+    - docker-compose

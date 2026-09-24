@@ -5,6 +5,11 @@
 # Install Steam via choice of 2 methods
 install-steam:
     #!/usr/bin/bash
+    if [[ ! -f "/usr/bin/rpm-ostree" ]]; then
+        echo "This script does not support UKI systems yet."
+        exit 1
+    fi
+
     need_reboot=false
     if [[ -z "$(pgrep Xwayland)" && -z "$(pgrep Xorg)" ]]; then
         echo "Steam requires X or Xwayland, which your variant of secureblue has disabled by default." | fold -s
@@ -34,7 +39,7 @@ install-steam:
     case "${method_selection}" in
         1)
             echo "Flatpak method selected."
-            if ! flatpak remotes --columns=name | grep -q '^flathub$'; then
+            if ! flatpak remotes --user --columns=name | grep -q '^flathub$'; then
                 echo "The Steam flatpak is not verified by Valve and only distributed via the unfiltered Flathub remote." | fold -s
                 read -rp "Would you like to enable the unfiltered Flathub remote now? [Y/n] " flathub_unfiltered
                 flathub_unfiltered=${flathub_unfiltered:-y}
@@ -47,7 +52,7 @@ install-steam:
                 fi
             fi
             echo "Installing Steam flatpak."
-            flatpak install -y flathub com.valvesoftware.Steam
+            flatpak install -y --user flathub com.valvesoftware.Steam
             echo "Disabling hardened_malloc for Steam."
             flatpak override --user --unset-env=LD_PRELOAD --nofilesystem=host-os com.valvesoftware.Steam
 

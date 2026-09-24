@@ -42,7 +42,9 @@ ujust set-flathub-unfiltered --help
 
 
 def unfiltered_remote_enabled() -> bool:
-    remotes: list[str] = command_stdout("flatpak", "remotes", "--columns=url,subset").splitlines()
+    remotes: list[str] = command_stdout(
+        "flatpak", "remotes", "--user", "--columns=url,subset"
+    ).splitlines()
     flathub_urls: list[str] = ["https://dl.flathub.org/repo/", "https://dl.flathub.org/beta-repo/"]
 
     for remote in remotes:
@@ -108,7 +110,7 @@ def main() -> int:
             case _ as unreachable:
                 assert_never(unreachable)
     except subprocess.CalledProcessError:
-        print("An unexpected error occured.")
+        print("An unexpected error occurred.")
         return 1
 
     return 0

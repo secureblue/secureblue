@@ -14,7 +14,7 @@ curl -fLsS --retry 5 -o data.json "https://api.github.com/repos/openzfs/zfs/rele
 ZFS_VERSION=$(jq -r --arg ZMV "zfs-${ZFS_MINOR_VERSION}" '[ .[] | select(.prerelease==false and .draft==false) | select(.tag_name | startswith($ZMV))][0].tag_name' data.json|cut -f2- -d-)
 echo "ZFS_VERSION==${ZFS_VERSION}"
 
-dnf install -y --setopt=install_weak_deps=False "kernel-devel-matched-$(rpm -q 'kernel' --queryformat '%{VERSION}')"
+dnf install -y --setopt=install_weak_deps=False "kernel-devel-matched-${KERNEL_VERSION}"
 dnf install -y --setopt=install_weak_deps=False autoconf automake gcc pv akmods mock libunwind-devel pam-devel libatomic libtirpc-devel libblkid-devel libuuid-devel libudev-devel openssl-devel libaio-devel libattr-devel elfutils-libelf-devel python3-devel python3-cffi libffi-devel libcurl-devel ncompress python3-setuptools
 
 
@@ -72,6 +72,22 @@ fi
 tar -z -x --no-same-owner --no-same-permissions -f "zfs-${ZFS_VERSION}.tar.gz"
 
 cd "zfs-${ZFS_VERSION}"
+
+# SPDX-SnippetBegin
+# SPDX-SnippetCopyrightText: Copyright 2026 ArchZFS Contributors
+#
+# SPDX-License-Identifier: MIT
+# Source: https://github.com/archzfs/archzfs/blob/master/src/zfs-dkms/PKGBUILD.sh#L25
+case "${ZFS_VERSION}" in
+    2.4.2|2.4.3)
+        # These releases contain Linux 7.1 compatibility, but their
+        # metadata predates the support marker.
+        sed -Ei 's/^Linux-Maximum: (7\.0|99\.99)$/Linux-Maximum: 7.1/' META
+        grep -qx 'Linux-Maximum: 7.1' META
+        ;;
+esac
+# SPDX-SnippetEnd
+
 # We want to exit if either A or B is false
 # shellcheck disable=SC2015
 ./configure \

@@ -5,7 +5,12 @@
 #
 # SPDX-License-Identifier: Apache-2.0
 
-set -eou pipefail
+set -euo pipefail
+
+if [[ ! -f "/usr/bin/rpm-ostree" ]]; then
+    echo "This script does not support UKI systems yet."
+    exit 1
+fi
 
 [[ "${UID}" -eq 0 ]] || { echo "This script must be run as root."; exit 1;}
 

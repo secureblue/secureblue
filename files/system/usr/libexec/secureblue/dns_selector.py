@@ -149,6 +149,15 @@ def ask_servers(https_only: bool = False) -> DNSServers:
     data = json.loads(SERVERS_JSON_PATH.read_text(encoding="utf-8"))
     providers = data["providers"]
 
+    # If we're asking for servers for DoH use only, there's no point in showing
+    # providers/servers with no DoH endpoint.
+    if https_only:
+        providers = [
+            {**p, "servers": [s for s in p["servers"] if s.get("https")]}
+            for p in providers
+            if any(s.get("https") for s in p["servers"])
+        ]
+
     print("Select a DNS provider:")
     custom_option = len(providers) + 1
     for i, p in enumerate(providers, start=1):
@@ -183,7 +192,7 @@ class DNSResolver(Enum):
     UNKNOWN = auto()
 
     @classmethod
-    def detect(cls) -> "DNSResolver":
+    def detect(cls) -> DNSResolver:
         """Returns the current resolver based on the contents of /etc/resolv.conf."""
         # Unlike in dns.py, the exact services running are unimportant, as we
         # need to be VPN aware and measure the effective configuration.
@@ -199,7 +208,7 @@ class DNSResolver(Enum):
                             return cls.RESOLVED
             return cls.UNKNOWN
 
-        except (OSError, UnicodeDecodeError):
+        except OSError, UnicodeDecodeError:
             print("Unable to open and parse /etc/resolv.conf.", file=sys.stderr)
             return cls.UNKNOWN
 
@@ -340,7 +349,7 @@ def print_dnssec_status() -> None:
         print("DNSSEC: enabled" if dnssec_enabled else "DNSSEC: disabled")
     except FileNotFoundError:
         print("DNSSEC: disabled")
-    except (OSError, UnicodeDecodeError):
+    except OSError, UnicodeDecodeError:
         print("DNSSEC: unable to open and parse configuration", file=sys.stderr)
 
 
@@ -406,7 +415,7 @@ def print_trivalent_doh_status() -> None:
         print("Trivalent DoH: disabled")
     except json.JSONDecodeError:
         print("Trivalent DoH: configuration invalid", file=sys.stderr)
-    except (OSError, UnicodeDecodeError):
+    except OSError, UnicodeDecodeError:
         print("Trivalent DoH: unable to open and parse configuration", file=sys.stderr)
 
 

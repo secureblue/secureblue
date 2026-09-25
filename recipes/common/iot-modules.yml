@@ -1,23 +1,21 @@
-# SPDX-FileCopyrightText: Copyright 2025-2026 The Secureblue Authors
+# SPDX-FileCopyrightText: Copyright 2026 The Secureblue Authors
 #
 # SPDX-License-Identifier: Apache-2.0
 
 modules:
   - type: dnf
     source: ghcr.io/blue-build/modules@sha256:f1273b17987eed439b0feff77bf4b7f1c734e6f77607dc99c9de9d9070555c7a
-    install:
-      install-weak-deps: false
+    remove:
       packages:
-        - udisks2
+        - tpm2-pkcs11
 
   - type: files
     source: ghcr.io/blue-build/modules@sha256:f1273b17987eed439b0feff77bf4b7f1c734e6f77607dc99c9de9d9070555c7a
     files:
-      - source: system/server
+      - source: system/iot
         destination: /
 
   - type: script
     source: ghcr.io/blue-build/modules@sha256:f1273b17987eed439b0feff77bf4b7f1c734e6f77607dc99c9de9d9070555c7a
     scripts:
-      - excludepcsc.sh
-      - setserverdefaultzone.sh
+      - remove-dns-greenboot-check.sh

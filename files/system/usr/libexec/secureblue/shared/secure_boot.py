@@ -1,4 +1,4 @@
-#!/usr/bin/python3
+#!/usr/bin/python3 -Es
 
 """Shared data objects for `ujust enroll-secure-boot-keys`."""
 

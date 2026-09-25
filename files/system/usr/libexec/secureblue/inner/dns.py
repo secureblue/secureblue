@@ -1,4 +1,4 @@
-#!/usr/bin/python3
+#!/usr/bin/python3 -Es
 
 """Sets DNS configuration. Should be run as root."""
 

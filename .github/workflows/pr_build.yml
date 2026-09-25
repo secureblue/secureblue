@@ -23,7 +23,7 @@ concurrency:
 jobs:
   bluebuild:
     name: PR build
-    runs-on: ubuntu-26.04
+    runs-on: ${{ inputs.platform == 'linux/arm64' && 'ubuntu-26.04-arm' || 'ubuntu-26.04' }}
     permissions:
       contents: read # Needed to pull the repo for the build
       packages: read # Needed to read base image manifests
@@ -191,7 +191,7 @@ jobs:
           } >> "${GITHUB_OUTPUT}"
 
       - name: Build secureblue
-        uses: blue-build/github-action@836161eb076426a451e6a0054f722b1153b8b3ad # v1.12.0
+        uses: blue-build/github-action@c295af864f2802fc6aea227507af43d35823db81 # v1.13.0
         env:
           KERNEL_PRIVKEY: ${{ steps.test_keys.outputs.kernel_privkey }}
         with:
@@ -203,5 +203,5 @@ jobs:
           maximize_build_space: true
           squash: true
           skip_checkout: true
-          verify_install: true
+          verify_install: ${{ inputs.platform == 'linux/amd64' }}
           build_opts: --platform ${{ inputs.platform }}

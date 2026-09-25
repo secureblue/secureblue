@@ -1,4 +1,4 @@
-#!/usr/bin/python3
+#!/usr/bin/python3 -Es
 
 # SPDX-FileCopyrightText: Copyright 2025-2026 The Secureblue Authors
 #
@@ -430,7 +430,7 @@ def audit_dns(state):
 
     # Parse `ujust dns-selector status` output.
     status_out = command_stdout(
-        "/usr/bin/python3", "/usr/libexec/secureblue/dns_selector.py", "status"
+        "/usr/bin/python3", "-Es", "/usr/libexec/secureblue/dns_selector.py", "status"
     )
     flags = {}
     for line in status_out.splitlines():

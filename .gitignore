@@ -9,6 +9,7 @@ __pycache__
 uv.lock
 justfile-tmp-*
 sysext-tmp
+secrets/
 uki/**/*.key
 uki/**/*.esl
 .ruff_cache

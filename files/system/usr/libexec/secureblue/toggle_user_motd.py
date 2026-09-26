@@ -11,7 +11,7 @@ Toggle display of the user-motd in terminal
 import os
 import sys
 
-from utils import get_config_dir
+from shared.utils import get_config_dir
 
 
 # Extra parentheses added so python doesn't check the individual string instead of the path

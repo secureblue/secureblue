@@ -12,7 +12,7 @@ import os
 import sys
 from typing import Final
 
-from utils import SystemdService
+from shared.utils import SystemdService
 
 BLUE_MOD_FILE: Final[str] = "/etc/modprobe.d/99-bluetooth.conf"
 BLUE_MOD_TEXT: Final[str] = """install bluetooth /sbin/modprobe --ignore-install bluetooth

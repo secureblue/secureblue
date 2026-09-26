@@ -13,7 +13,7 @@ from pathlib import Path
 from typing import Final
 
 import sandbox
-from utils import CommandUsageError, ToggleMode, parse_basic_toggle_args
+from shared.utils import CommandUsageError, ToggleMode, parse_basic_toggle_args
 
 HOSTNAME_SENDING_HELP: Final[str] = """
 This python script toggles if the system's hostname is sent to the DHCP server

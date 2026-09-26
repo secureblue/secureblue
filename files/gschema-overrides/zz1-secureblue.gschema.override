@@ -24,3 +24,7 @@ automount-open=false
 
 [org.gnome.nautilus.preferences]
 show-image-thumbnails='never'
+
+
+[org.gnome.nautilus.thumbnailers]
+disable-all=true

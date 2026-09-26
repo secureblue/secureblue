@@ -6,6 +6,12 @@
 
 set -euo pipefail
 
+# PDFs in particular are a security nightmare, and automatically parsing
+# them for thumbnailing introduces substantial attack surface. This removes
+# all PDF thumbnailing support from the images, even if thumbnailing in
+# general is enabled. 
+# Example exploit: https://github.com/v12-security/pocs/tree/main/ghostscript
+
 dnf remove -y papers-thumbnailer
 
 rm -f /usr/lib64/qt6/plugins/kf6/thumbcreator/gsthumbnail.so

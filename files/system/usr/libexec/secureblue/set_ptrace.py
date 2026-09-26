@@ -10,14 +10,14 @@ import subprocess
 import sys
 from typing import Final, assert_never
 
-from utils import get_selinux_booleans, set_selinux_booleans
-from utils.ptrace import (
+from shared.ptrace import (
     SEBOOL_CONTAINER_ALLOW_PTRACE,
     SEBOOL_DENY_PTRACE,
     YAMA_DOC_URL,
     PtraceStatus,
     get_ptrace_status,
 )
+from shared.utils import get_selinux_booleans, set_selinux_booleans
 
 HELP_MESSAGE: Final[str] = """\
 Configure ptrace support (for anticheat, debugging tools, etc.)

@@ -45,7 +45,8 @@ from auditor import (
     global_audit,
 )
 from shared import kargs_hardening
-from utils import (
+from shared.ptrace import YAMA_DOC_URL, PtraceStatus, get_ptrace_status
+from shared.utils import (
     BootcBackend,
     Image,
     command_stdout,
@@ -58,7 +59,6 @@ from utils import (
     parse_config,
     print_err,
 )
-from utils.ptrace import YAMA_DOC_URL, PtraceStatus, get_ptrace_status
 
 _: Final = gettext_marker()
 

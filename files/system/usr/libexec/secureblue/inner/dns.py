@@ -6,7 +6,6 @@
 #
 # SPDX-License-Identifier: Apache-2.0
 
-# We only make fixed subprocess calls to /usr/bin/systemctl.
 import argparse
 import json
 import os
@@ -18,7 +17,7 @@ from enum import Enum
 from pathlib import Path
 from typing import Final
 
-from utils import SystemdService
+from shared.utils import SystemdService
 
 DNSCONFD_CONF_PATH: Final[Path] = Path("/etc/dnsconfd.conf")
 DNSCONFD_MANAGER_PATH: Final[Path] = Path("/etc/NetworkManager/conf.d/dnsconfd.conf")

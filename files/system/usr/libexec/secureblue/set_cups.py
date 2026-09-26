@@ -10,7 +10,7 @@ import sys
 from typing import Final, assert_never
 
 import sandbox
-from utils import CommandUsageError, ToggleMode, command_stdout, parse_basic_toggle_args
+from shared.utils import CommandUsageError, ToggleMode, command_stdout, parse_basic_toggle_args
 
 HELP_MESSAGE: Final[str] = """\
 Enable or disable CUPS (the printing service).

@@ -34,6 +34,8 @@ on:
         required: true
       UKI_DB_KEY:
         required: true
+      UKI_PCR_KEY:
+        required: true
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}-${{ inputs.image }}
@@ -260,6 +262,13 @@ jobs:
         env:
           UKI_DB_KEY: ${{ secrets.UKI_DB_KEY }}
 
+      - name: "Get PCR signing key"
+        run: |
+          mkdir -p /tmp/keys
+          printenv UKI_PCR_KEY > /tmp/keys/pcr_key
+        env:
+          UKI_PCR_KEY: ${{ secrets.UKI_PCR_KEY }}
+
       - name: "Build kernel container"
         uses: redhat-actions/buildah-build@719e3c40d8af9790c23eca13f7daa339f2867034 # v3.1.0
         with:
@@ -302,8 +311,9 @@ jobs:
             --volume /home/runner/work/${{ github.event.repository.name }}/${{ github.event.repository.name }}:/run/src
             --secret id=secureboot_key,src=/tmp/keys/key
             --secret id=secureboot_crt,src=/tmp/keys/crt
+            --secret id=pcr_key,src=/tmp/keys/pcr_key
 
-      - name: "Clean up secure boot signing key"
+      - name: "Clean up signing keys"
         if: always()
         run: rm -vrf /tmp/keys
 

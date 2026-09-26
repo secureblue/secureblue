@@ -85,8 +85,9 @@ defaults.
 ## Making your own UKI build (advanced)
 
 1. In the repository root, run `uki/create-uki-keys.sh`. Back up the `uki/keys/`
-   directory that was generated, and upload the contents of `uki/keys/db/db.key`
-   as the `UKI_DB_KEY` secret to GitHub.
+   directory that was generated, upload the contents of `uki/keys/db/db.key`
+   as the `UKI_DB_KEY` secret and the contents of `uki/keys/pcr/pcr.key` as the
+   `UKI_PCR_KEY` secret to GitHub.
 2. Manually trigger the `Sign UKI addons` and `Sign systemd-boot` workflows on
    GitHub.
 3. Trigger a secureblue build as usual. The UKI will be built after the normal

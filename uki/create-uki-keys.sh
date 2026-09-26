@@ -10,6 +10,8 @@ set -euo pipefail
 # database key). These, alongside Microsoft's certificates, are converted to EFI
 # signature lists, and (self-)signed to produce authenticated variables that can
 # be enrolled in the firmware.
+# It also creates a PCR signing keypair, used to sign the TPM2 PCR 11
+# predictions that get embedded in the UKI.
 
 cd "$(dirname "$0")"
 
@@ -40,8 +42,15 @@ sbvarsign --attr "${attr}" --key keys/PK/PK.key --cert keys/PK/PK.pem \
 sbvarsign --attr "${attr}" --key keys/KEK/KEK.key --cert keys/KEK/KEK.pem \
   --output "keys/db/db.auth" db keys/db/db.esl
 
+# This part creates the keypair used to sign TPM2 PCR 11 predictions.
+mkdir keys/pcr
+ukify genkey \
+  --pcr-private-key=keys/pcr/pcr.key \
+  --pcr-public-key=keys/pcr/pcr.pem
+
 echo "Please back up your keys:"
 echo " - \"$(pwd)/keys/PK/PK.key\","
 echo " - \"$(pwd)/keys/KEK/KEK.key\","
 echo " - \"$(pwd)/keys/db/db.key\" (upload to GitHub as the UKI_DB_KEY secret),"
+echo " - \"$(pwd)/keys/pcr/pcr.key\" (upload to GitHub as the UKI_PCR_KEY secret),"
 echo "and commit the generated .auth, .der and .pem files to the repository."

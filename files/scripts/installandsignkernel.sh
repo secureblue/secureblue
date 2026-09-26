@@ -7,9 +7,12 @@
 
 set -euo pipefail
 
+FEDORA_VERSION="$(rpm -E '%{fedora}')"
+
 # Get latest stable Fedora kernel version and install corresponding secureblue kernel
 KERNEL_VERSION="$(dnf repoquery \
-    --repo 'updates' \
+    --repofrompath="updates-primary,https://dl.fedoraproject.org/pub/fedora/linux/updates/${FEDORA_VERSION}/Everything/${OS_ARCH}/" \
+    --repo 'updates-primary' \
     --latest-limit 1 \
     --arch "${OS_ARCH}" \
     --queryformat '%{version}-%{release}.%{arch}' \

@@ -6,6 +6,34 @@
 
 set -euo pipefail
 
+secureblue_state_dir="${XDG_STATE_HOME:-"${HOME}/.local/state"}/secureblue"
+critical_timestamp_file="${secureblue_state_dir}/security-update-notification-critical.stamp"
+normal_timestamp_file="${secureblue_state_dir}/security-update-notification-normal.stamp"
+timestamp_today="$(date '+%Y%m%d')"
+readonly secureblue_state_dir critical_timestamp_file normal_timestamp_file timestamp_today
+
+recent_critical_notification() {
+    [[ "$(2>/dev/null <"${critical_timestamp_file}")" == "${timestamp_today}" ]]
+}
+
+recent_normal_notification() {
+    [[ "$(2>/dev/null <"${normal_timestamp_file}")" == "${timestamp_today}" ]]
+}
+
+write_critical_timestamp() {
+    mkdir -p "${secureblue_state_dir}"
+    echo "${timestamp_today}" > "${critical_timestamp_file}"
+}
+
+write_normal_timestamp() {
+    mkdir -p "${secureblue_state_dir}"
+    echo "${timestamp_today}" > "${normal_timestamp_file}"
+}
+
+if recent_critical_notification; then
+    exit 0
+fi
+
 # If there's been a bootc/composefs upgrade, then unconditionally notify.
 # We don't have an equivalent to the rpm-ostree database.
 if [[ ! -f "/usr/bin/rpm-ostree" ]]; then
@@ -15,6 +43,7 @@ if [[ ! -f "/usr/bin/rpm-ostree" ]]; then
             --action="Reboot" \
             "An update is ready" \
             "Please reboot to run the updated system."
+        write_critical_timestamp
     fi
     exit 0
 fi
@@ -56,15 +85,19 @@ notify_critical() {
         --action="Reboot" \
         "A major security vulnerability has been patched" \
         "Please reboot to run the updated system"
+    write_critical_timestamp
 }
 
 notify_normal() {
-    notify-send --urgency=normal \
-        --expire-time=5000 \
-        --app-name="secureblue" \
-        --action="Reboot" \
-        "A security vulnerability has been patched" \
-        "Please reboot to run the updated system"
+    if ! recent_normal_notification; then
+        notify-send --urgency=normal \
+            --expire-time=5000 \
+            --app-name="secureblue" \
+            --action="Reboot" \
+            "A security vulnerability has been patched" \
+            "Please reboot to run the updated system"
+        write_normal_timestamp
+    fi
 }
 
 prompt_reboot() {

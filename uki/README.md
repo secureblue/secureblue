@@ -73,7 +73,7 @@ defaults.
     `nmcli device wifi connect "YOUR_SSID" password "YOUR_PASSWORD"`
   - To verify: `nm-online`
 - Download the secureblue repository.
-  `git clone https://github.com/secureblue/secureblue.git --branch testing`
+  `git clone --depth 1 https://github.com/secureblue/secureblue`
 - Optional: verify the checksums of `secureblue/cosign.pub`,
   `secureblue/uki/install.sh` and `secureblue/uki/keys/db/db.der` with
   `sha256sum`.

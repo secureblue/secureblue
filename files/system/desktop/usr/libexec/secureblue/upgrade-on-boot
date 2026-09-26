@@ -8,6 +8,7 @@ UPDATE_FAILURE_STRING="Update failed, booting existing deployment..."
 
 PROVENANCE_FAILURE_STRING="Provenance verification failed, booting existing deployment..."
 CANCEL_STRING="Press Q to cancel and boot the existing deployment."
+DEPLOYING_STRING="Deploying update... ${CANCEL_STRING}"
 NO_UPDATE_STRING="No update available, booting current deployment"
 
 plymouth watch-keystroke --keys="qQ" --command "systemctl stop upgrade-on-boot.service" &
@@ -50,39 +51,53 @@ else
         exit 1
     fi
 
-    echo "Update available, proceeding"
-    plymouth change-mode --updates
-    plymouth system-update --progress=0
-    echo "Plymouth initialized"
+    COMPOSEFS=$(bootc status --json | jq -r '.status.booted.composefs != null')
 
-    BOOTC_OUTPUT=$(mktemp -u /run/bootc-upgrade-XXXXXX)
-    mkfifo "${BOOTC_OUTPUT}"
 
-    while IFS= read -r line; do
-        echo "Got line: ${line}"
-        type=$(echo "${line}" | jq -r '.type // empty')
-        echo "Type: ${type}"
-        case "${type}" in
-            ProgressBytes)
-                bytes=$(echo "${line}" | jq -r '.bytes')
-                bytes_total=$(echo "${line}" | jq -r '.bytesTotal')
-                percent=$(( 100 * bytes / bytes_total ))
-                echo "Percent: ${percent}"
-                if (( percent >= 100 )); then
+    # https://github.com/bootc-dev/bootc/issues/2484
+    # https://github.com/bootc-dev/bootc/blob/main/crates/lib/src/bootc_composefs/progress.rs#L119
+    if [[ "${COMPOSEFS}" == "true" ]]; then
+        plymouth change-mode --boot-up
+        plymouth message --text="${DEPLOYING_STRING}"
+        bootc upgrade --quiet
+        BOOTC_EXIT=$?
+    else
+        plymouth change-mode --updates
+        plymouth system-update --progress=0
+
+        BOOTC_OUTPUT=$(mktemp -u /run/bootc-upgrade-XXXXXX)
+        mkfifo "${BOOTC_OUTPUT}"
+
+        while IFS= read -r line; do
+            echo "Got line: ${line}"
+            type=$(echo "${line}" | jq -r '.type // empty')
+            echo "Type: ${type}"
+            case "${type}" in
+                ProgressBytes)
+                    bytes=$(echo "${line}" | jq -r '.bytes')
+                    bytes_total=$(echo "${line}" | jq -r '.bytesTotal')
+                    percent=$(( 100 * bytes / bytes_total ))
+                    echo "Percent: ${percent}"
+                    if (( percent >= 100 )); then
+                        plymouth change-mode --boot-up
+                        plymouth message --text="${DEPLOYING_STRING}"
+                    else
+                        plymouth system-update --progress="${percent}"
+                    fi
+                    ;;
+                ProgressSteps)
                     plymouth change-mode --boot-up
-                    plymouth message --text="Deploying update... ${CANCEL_STRING}"
-                else
-                    plymouth system-update --progress="${percent}"
-                fi
-                ;;
-        esac
-    done < "${BOOTC_OUTPUT}" &
+                    plymouth message --text="${DEPLOYING_STRING}"
+                    ;;
+            esac
+        done < "${BOOTC_OUTPUT}" &
 
-    bootc upgrade --quiet --progress-fd 3 3>"${BOOTC_OUTPUT}"
-    BOOTC_EXIT=$?
+        bootc upgrade --quiet --progress-fd 3 3>"${BOOTC_OUTPUT}"
+        BOOTC_EXIT=$?
+        rm -f "${BOOTC_OUTPUT}"
+    fi
+
     echo "bootc exited with: ${BOOTC_EXIT}"
-    rm -f "${BOOTC_OUTPUT}"
-
     if (( BOOTC_EXIT != 0 )); then
         echo "${UPDATE_FAILURE_STRING}"
         plymouth message --text="${UPDATE_FAILURE_STRING}"

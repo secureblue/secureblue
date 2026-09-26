@@ -1,4 +1,4 @@
-#!/usr/bin/python3
+#!/usr/bin/python3 -Es
 
 # SPDX-FileCopyrightText: Copyright 2025-2026 The Secureblue Authors
 #
@@ -45,7 +45,8 @@ from auditor import (
     global_audit,
 )
 from shared import kargs_hardening
-from utils import (
+from shared.ptrace import YAMA_DOC_URL, PtraceStatus, get_ptrace_status
+from shared.utils import (
     BootcBackend,
     Image,
     command_stdout,
@@ -58,7 +59,6 @@ from utils import (
     parse_config,
     print_err,
 )
-from utils.ptrace import YAMA_DOC_URL, PtraceStatus, get_ptrace_status
 
 _: Final = gettext_marker()
 
@@ -430,7 +430,7 @@ def audit_dns(state):
 
     # Parse `ujust dns-selector status` output.
     status_out = command_stdout(
-        "/usr/bin/python3", "/usr/libexec/secureblue/dns_selector.py", "status"
+        "/usr/bin/python3", "-Es", "/usr/libexec/secureblue/dns_selector.py", "status"
     )
     flags = {}
     for line in status_out.splitlines():
@@ -1216,7 +1216,7 @@ def audit_print_services():
             note = _("CUPS (the printing service) is disabled, but unmasked.")
             notes.append(Note(note, INFO))
             recs.append("\n".join([note, _("To fix this, run:"), "$ ujust set-cups off"]))
-        case "masked":
+        case "masked" | "not-found":
             pass
         case _:
             status = status.downgrade_to(WARN)
@@ -1251,7 +1251,7 @@ def audit_print_services():
                     ]
                 )
             )
-        case "masked":
+        case "masked" | "not-found":
             pass
         case _:
             status = status.downgrade_to(FAIL)

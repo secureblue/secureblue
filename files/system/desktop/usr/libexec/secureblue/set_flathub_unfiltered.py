@@ -1,4 +1,4 @@
-#!/usr/bin/python3
+#!/usr/bin/python3 -Es
 
 # SPDX-FileCopyrightText: Copyright 2026 The Secureblue Authors
 #
@@ -11,9 +11,9 @@ import sys
 from typing import TYPE_CHECKING, Final, assert_never
 
 if TYPE_CHECKING:
-    from files.system.usr.libexec.secureblue import utils
+    from files.system.usr.libexec.secureblue.shared import utils
 else:
-    import utils
+    from shared import utils
 
 CommandUsageError: Final = utils.CommandUsageError
 ToggleMode: Final = utils.ToggleMode

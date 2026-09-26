@@ -6,7 +6,7 @@
 
 set -euo pipefail
 
-packages=(blender sudo sushi plocate)
+packages=(blender sushi plocate)
 
 for pkg in "${packages[@]}"; do
     if rpm -q "${pkg}" &> /dev/null; then
@@ -14,3 +14,9 @@ for pkg in "${packages[@]}"; do
         exit 1
     fi
 done
+
+if command -v sudo &> /dev/null
+then
+    echo "sudo found. Exiting..."
+    exit 1
+fi

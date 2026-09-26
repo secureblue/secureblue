@@ -14,6 +14,7 @@ modules:
       - removesudo.sh
       - ensuresudoabsent.sh
       - ensureblenderabsent.sh
+      - ensure-caps-lib-present.sh
       - check-selinux-fcontext.sh
       - libdnf5-clear-history.sh
       - backupetc.sh

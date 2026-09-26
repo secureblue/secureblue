@@ -13,7 +13,7 @@ from pathlib import Path
 from typing import Final
 
 import sandbox
-from utils import (
+from shared.utils import (
     ask_yes_no,
     is_module_loaded,
 )

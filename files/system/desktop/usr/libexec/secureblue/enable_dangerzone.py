@@ -13,9 +13,9 @@ import sys
 from typing import TYPE_CHECKING, Final
 
 if TYPE_CHECKING:
-    from files.system.usr.libexec.secureblue.utils import ask_yes_no, print_wrapped
+    from files.system.usr.libexec.secureblue.shared.utils import ask_yes_no, print_wrapped
 else:
-    from utils import ask_yes_no, print_wrapped
+    from shared.utils import ask_yes_no, print_wrapped
 
 WARNING_MESSAGE: Final[str] = """
 Warning: Dangerzone (https://dangerzone.rocks/) requires enabling both container-domain

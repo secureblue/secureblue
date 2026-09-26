@@ -10,12 +10,10 @@ import sys
 from pathlib import Path
 from typing import TYPE_CHECKING
 
-from shared.kargs_hardening import (
-    deserialize,
-)
-
 if TYPE_CHECKING:
     from collections.abc import Sequence
+
+from shared.kargs_hardening import deserialize
 
 LOADED_ADDONS_PATH = Path("/boot/loader/addons/")
 AVAIL_ADDONS_PATH = Path("/usr/share/secureblue/uki/addons/")

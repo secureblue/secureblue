@@ -185,6 +185,7 @@ def run(sandboxed_function: SandboxedFunction, *args: str, stdin: str | None = N
         *sandboxed_function.get_arguments(),
         "--",
         "/usr/bin/python3",
+        "-Es",
         "-B",  # prevents use of bytecode (pycache) to ease run0 sandboxing configuration
         f"{INNER_DIR}/{sandboxed_function.file_name}",
         *args,

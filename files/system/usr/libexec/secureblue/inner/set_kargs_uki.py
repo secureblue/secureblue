@@ -1,4 +1,4 @@
-#!/usr/bin/python3
+#!/usr/bin/python3 -Es
 
 """Sets kargs by loading/unloading UKI addons. Should be run as root."""
 

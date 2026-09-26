@@ -1,4 +1,4 @@
-#!/usr/bin/python3
+#!/usr/bin/python3 -Es
 
 """Enrolls secure boot keys into shim or the firmware - `ujust enroll-secure-boot-keys`."""
 

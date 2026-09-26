@@ -16,12 +16,13 @@ dnf upgrade -y --enablerepo=updates-testing --refresh bootc
 
 # Remove rpm-ostree legacy files.
 dnf remove -y \
-    rpm-ostree \
-    rpm-ostree-libs \
-    gnome-software-rpm-ostree \
-    plasma-discover-rpm-ostree
+    bootupd \
+    gnome-software-rpm-ostree plasma-discover-rpm-ostree
 dnf clean all
-rpm -e bootupd
+# --nodeps is used because tuned currently depends on `(rpm-ostree if bootc)`.
+# TODO: Switch back to dnf when tuned drops this dependency.
+rpm -e --nodeps rpm-ostree rpm-ostree-libs
+
 rm -vrf "/usr/lib/bootupd"
 rm -vrf "/usr/lib/ostree-boot"
 rm -vrf "/usr/etc"

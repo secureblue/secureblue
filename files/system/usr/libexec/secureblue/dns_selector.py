@@ -1,4 +1,4 @@
-#!/usr/bin/python3
+#!/usr/bin/python3 -Es
 
 """Sets DNS configuration, a.k.a. `ujust dns-selector`."""
 

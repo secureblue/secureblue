@@ -1,5 +1,3 @@
-#!/usr/bin/python3 -Es
-
 # SPDX-FileCopyrightText: Copyright 2025-2026 The Secureblue Authors
 #
 # SPDX-License-Identifier: Apache-2.0
@@ -11,7 +9,7 @@ Utility functions involving ptrace
 from enum import StrEnum
 from typing import Final
 
-from . import get_selinux_booleans
+from .utils import get_selinux_booleans
 
 SEBOOL_DENY_PTRACE: Final[str] = "deny_ptrace"
 SEBOOL_CONTAINER_ALLOW_PTRACE: Final[str] = "container_allow_ptrace"

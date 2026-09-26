@@ -12,9 +12,9 @@ import sys
 from typing import TYPE_CHECKING, Final
 
 if TYPE_CHECKING:
-    from files.system.usr.libexec.secureblue import utils
+    from files.system.usr.libexec.secureblue.shared import utils
 else:
-    import utils
+    from shared import utils
 
 CommandUsageError: Final = utils.CommandUsageError
 Image: Final = utils.Image

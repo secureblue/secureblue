@@ -1,5 +1,3 @@
-#!/usr/bin/python3 -Es
-
 # SPDX-FileCopyrightText: Copyright 2025-2026 The Secureblue Authors
 #
 # SPDX-License-Identifier: Apache-2.0
@@ -14,13 +12,13 @@ import tomllib
 from dataclasses import dataclass
 from typing import TYPE_CHECKING
 
-import sandbox
-from utils import BootcBackend
-
-from shared.secure_boot import Bootloader
-
 if TYPE_CHECKING:
     from collections.abc import Sequence
+
+import sandbox
+
+from .secure_boot import Bootloader
+from .utils import BootcBackend
 
 with open("/usr/lib/bootc/kargs.d/10-secureblue.toml", "rb") as f:
     DEFAULT_KARGS = tomllib.load(f)["kargs"]

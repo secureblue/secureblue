@@ -55,7 +55,6 @@ RUN0_BASE_ARGUMENTS: Final[list[str]] = [
     f"--property=SystemCallFilter={' '.join(SYSCALLS_TO_ALLOW)}",
     f"--property=SystemCallFilter=~{' '.join(SYSCALLS_TO_DENY)}",
     "--property=SystemCallErrorNumber=EPERM",
-    "--setenv=PYTHONPATH=/usr/libexec/secureblue",
 ]
 
 

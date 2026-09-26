@@ -11,7 +11,7 @@ import sys
 from typing import Final
 
 import sandbox
-from utils import (
+from shared.utils import (
     CommandUsageError,
     ToggleMode,
     ask_yes_no,

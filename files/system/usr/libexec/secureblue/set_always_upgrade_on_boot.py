@@ -11,7 +11,7 @@ from pathlib import Path
 from typing import Final
 
 import sandbox
-from utils import (
+from shared.utils import (
     CommandUsageError,
     ToggleMode,
     parse_basic_toggle_args,

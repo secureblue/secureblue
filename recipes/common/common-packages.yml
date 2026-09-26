@@ -61,3 +61,10 @@ install:
     - containerd
     - docker-buildx
     - docker-compose
+replace:
+  - from-repo: copr:copr.fedorainfracloud.org:secureblue:packages
+    packages:
+      # Patched version from https://codeberg.org/HastD/bubblewrap-utils
+      # This removes bwrap's ability to create user namespaces with elevated
+      # capabilities via the --cap-add option:
+      - bubblewrap

@@ -12,6 +12,9 @@ install:
     - run0edit
     - dnsconfd-unbound
 
+    # ensure this is present so firewalld can drop caps
+    - libcap-ng-python3
+
     # missing upstream
     - openssl
     - patch

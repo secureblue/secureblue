@@ -157,6 +157,16 @@ FLATPAK_PERMISSION_CHECKS: list[PermissionCheck] = [
     PermissionCheck("sockets", "system-bus", FAIL, _("access to the D-Bus system bus")),
     PermissionCheck("sockets", "ssh-auth", WARN, _("access to the SSH agent")),
     PermissionCheck(
+        "sockets",
+        "gpg-agent",
+        FAIL,
+        _("access to the GPG agent"),
+        comment=_("For more info, see: {}").format(
+            "https://github.com/flatpak/flatpak/issues/6564"
+        ),
+        sandbox_escape=True,
+    ),
+    PermissionCheck(
         "devices",
         "all",
         FAIL,

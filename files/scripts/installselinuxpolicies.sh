@@ -21,7 +21,6 @@ cil_policy_modules=(
     './selinux/sockets/secureblue_deny_obscure_sockets.cil'
     './selinux/sockets/secureblue_deny_packet_radio_sockets.cil'
     './selinux/sockets/secureblue_socket_utils.cil'
-    './selinux/user_namespace/grant_userns.cil'
     './selinux/user_namespace/harden_container_userns.cil'
     './selinux/user_namespace/harden_userns.cil'
     './selinux/user_namespace/userns_deny_unconfined_relabels.cil'

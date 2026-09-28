@@ -9,6 +9,7 @@ modules:
       - removeunusedrepos.sh
       - httpsmirrors.sh
       - unprotectsudo.sh
+      - copy-unpatched-bwrap.sh
       - check-bad-package-versions.sh
       # comment/uncomment the line below to disable/enable kernel pinning
       # - installpinnedkernel.sh

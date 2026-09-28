@@ -1,4 +1,4 @@
-#!/usr/bin/python3
+#!/usr/bin/python3 -Es
 
 # SPDX-FileCopyrightText: Copyright 2025-2026 The Secureblue Authors
 #
@@ -12,14 +12,13 @@ import sys
 from typing import TYPE_CHECKING, Final
 
 if TYPE_CHECKING:
-    from files.system.usr.libexec.secureblue import utils
+    from files.system.usr.libexec.secureblue.shared import utils
 else:
-    import utils
+    from shared import utils
 
 CommandUsageError: Final = utils.CommandUsageError
 Image: Final = utils.Image
 ToggleMode: Final = utils.ToggleMode
-booted_image_ref: Final = utils.booted_image_ref
 logout: Final = utils.logout
 parse_basic_toggle_args: Final = utils.parse_basic_toggle_args
 
@@ -63,7 +62,7 @@ def run(mode: ToggleMode) -> int:
         print(HELP_MESSAGE)
         return 0
 
-    image = Image.from_image_ref(booted_image_ref())
+    image = Image.from_running()
     if image not in XWAYLAND_OVERRIDE_FILES:
         print("The booted image does not support toggling Xwayland.")
         return 1
@@ -96,7 +95,7 @@ def run(mode: ToggleMode) -> int:
                         "/usr/bin/cp",
                         "-p",
                         "--",
-                        f"/usr{override_file}",
+                        f"/usr/share/secureblue{override_file}",
                         override_file,
                     ],
                     check=True,

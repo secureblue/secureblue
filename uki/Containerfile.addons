@@ -1,0 +1,25 @@
+# SPDX-FileCopyrightText: Copyright 2026 The Secureblue Authors
+#
+# SPDX-License-Identifier: Apache-2.0
+
+ARG RELEASE=overridden
+
+# Capture scripts from the git repo
+FROM scratch as scripts
+COPY uki/scripts /
+
+FROM quay.io/fedora/fedora-minimal:${RELEASE} as builder
+
+RUN --mount=type=tmpfs,target=/run \
+    --mount=type=tmpfs,target=/tmp \
+    --mount=type=tmpfs,target=/var \
+    dnf install -y systemd-ukify sbsigntools
+
+RUN --mount=type=tmpfs,target=/run \
+    --mount=type=bind,from=scripts,src=/,target=/run/scripts \
+    --mount=type=secret,id=secureboot_key \
+    --mount=type=secret,id=secureboot_crt \
+    /run/scripts/sign-uki-addons.sh
+
+FROM scratch
+COPY --from=builder /addons/ /

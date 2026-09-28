@@ -1,0 +1,27 @@
+# SPDX-FileCopyrightText: Copyright 2026 The Secureblue Authors
+# SPDX-FileCopyrightText: Timothée Ravier <tim@siosm.fr>
+#
+# SPDX-License-Identifier: Apache-2.0 AND CC0-1.0
+
+ARG RELEASE=overridden
+FROM quay.io/fedora/fedora-minimal:${RELEASE} as builder
+
+RUN <<EORUN
+set -euxo pipefail
+dnf install -y systemd-boot-unsigned sbsigntools
+EORUN
+
+RUN --mount=type=tmpfs,target=/run \
+    --mount=type=secret,id=secureboot_key \
+    --mount=type=secret,id=secureboot_crt \
+    <<EORUN
+set -euxo pipefail
+sbsign \
+    --key /run/secrets/secureboot_key \
+    --cert /run/secrets/secureboot_crt \
+    --output /systemd-bootx64.efi \
+    /usr/lib/systemd/boot/efi/systemd-bootx64.efi
+EORUN
+
+FROM scratch
+COPY --from=builder /systemd-bootx64.efi /systemd-bootx64.efi

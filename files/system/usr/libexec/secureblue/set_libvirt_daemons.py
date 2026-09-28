@@ -1,4 +1,4 @@
-#!/usr/bin/python3
+#!/usr/bin/python3 -Es
 
 # SPDX-FileCopyrightText: Copyright 2026 The Secureblue Authors
 #
@@ -71,7 +71,7 @@ class LibvirtDaemonSelection(enum.Flag):
     PROXYD = enum.auto()
 
     @classmethod
-    def current_status(cls) -> "LibvirtDaemonSelection":
+    def current_status(cls) -> LibvirtDaemonSelection:
         """Get current daemon status."""
         sockets = (~cls(0)).sockets()
         status_list, _ = _systemd_units_status(*sockets)

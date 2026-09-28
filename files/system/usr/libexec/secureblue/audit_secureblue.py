@@ -1,4 +1,4 @@
-#!/usr/bin/python3
+#!/usr/bin/python3 -Es
 
 # SPDX-FileCopyrightText: Copyright 2025-2026 The Secureblue Authors
 #
@@ -14,16 +14,13 @@ import configparser
 import filecmp
 import getpass
 import glob
-import os
 import signal
-import stat
 import subprocess
 import sys
 import traceback
 from pathlib import Path
 from typing import Final, assert_never
 
-import kargs_hardening_common
 from audit_flatpak import check_flatpak_permissions, parse_flatpak_permissions
 from audit_utils import (
     analyze_active_container_policy,
@@ -45,19 +42,21 @@ from auditor import (
     gettext_marker,
     global_audit,
 )
-from utils import (
+from shared import kargs_hardening
+from shared.ptrace import YAMA_DOC_URL, PtraceStatus, get_ptrace_status
+from shared.utils import (
+    BootcBackend,
     Image,
-    booted_image_ref,
     command_stdout,
     command_succeeds,
     get_config_dir,
     is_module_loaded,
     is_using_vpn,
     loaded_kernel_modules,
+    ostree_booted_image_ref,
     parse_config,
     print_err,
 )
-from utils.ptrace import YAMA_DOC_URL, PtraceStatus, get_ptrace_status
 
 _: Final = gettext_marker()
 
@@ -77,28 +76,28 @@ def audit_kargs():
     notes = []
     rec = None
 
-    kargs_current = frozenset(command_stdout("rpm-ostree", "kargs").split())
-    kargs_expected = kargs_hardening_common.DEFAULT_KARGS
+    kargs_current = frozenset(Path("/proc/cmdline").read_text(encoding="utf-8").split())
+    kargs_expected = kargs_hardening.DEFAULT_KARGS
     for karg in kargs_expected:
         if karg not in kargs_current:
             status = status.downgrade_to(FAIL)
             notes.append(Note(_("Missing kernel argument: {0}").format(karg), FAIL))
 
-    karg_32bit = kargs_hardening_common.DISABLE_32_BIT
+    karg_32bit = kargs_hardening.DISABLE_32_BIT
     if karg_32bit not in kargs_current:
         status = status.downgrade_to(WARN)
         notes.append(
             Note(_("Missing kernel argument: {0} (32-bit support)").format(karg_32bit), WARN)
         )
 
-    karg_nosmt = kargs_hardening_common.FORCE_NOSMT
+    karg_nosmt = kargs_hardening.FORCE_NOSMT
     if karg_nosmt not in kargs_current:
         status = status.downgrade_to(WARN)
         notes.append(
             Note(_("Missing kernel argument: {0} (force-disable SMT)").format(karg_nosmt), WARN)
         )
 
-    kargs_expected_unstable = kargs_hardening_common.UNSTABLE_KARGS
+    kargs_expected_unstable = kargs_hardening.UNSTABLE_KARGS
     for karg in kargs_expected_unstable:
         if karg not in kargs_current:
             status = status.downgrade_to(WARN)
@@ -154,8 +153,14 @@ def audit_sysctl():
 @audit
 def audit_signed_image(state):
     """Check that the secureblue image is signed."""
-    image_ref = booted_image_ref()
-    state["image"] = Image.from_image_ref(image_ref)
+
+    state["image"] = Image.from_running()
+    if BootcBackend.from_running() == BootcBackend.COMPOSEFS:
+        # bootc doesn't give specific info on this; it's best handled as part of
+        # audit_container_policy() which is also used by bootc.
+        return
+
+    image_ref = ostree_booted_image_ref()
     if image_ref.startswith("ostree-image-signed:"):
         status = PASS
         rec = None
@@ -213,7 +218,7 @@ def audit_container_policy():
     status = PASS
     notes = []
     system_policy_file = "/etc/containers/policy.json"
-    if not filecmp.cmp(f"/usr{system_policy_file}", system_policy_file):
+    if not filecmp.cmp(f"/usr/share/secureblue{system_policy_file}", system_policy_file):
         status = status.downgrade_to(INFO)
         notes.append(Note(_("The file {0} has been modified.").format(system_policy_file), INFO))
 
@@ -423,7 +428,7 @@ def audit_dns(state):
 
     # Parse `ujust dns-selector status` output.
     status_out = command_stdout(
-        "/usr/bin/python3", "/usr/libexec/secureblue/dns_selector.py", "status"
+        "/usr/bin/python3", "-Es", "/usr/libexec/secureblue/dns_selector.py", "status"
     )
     flags = {}
     for line in status_out.splitlines():
@@ -548,35 +553,46 @@ def audit_mac_randomization():
 
 
 @audit
-def audit_rpm_ostree_timer():
-    """Ensure rpm-ostree automatic updates are enabled."""
+def audit_update_timer():
+    """Ensure automatic updates are enabled."""
     status = PASS
     notes = []
     recs = []
 
-    if not command_succeeds("systemctl", "is-enabled", "--quiet", "rpm-ostreed-automatic.timer"):
+    is_ostree = BootcBackend.from_running() == BootcBackend.OSTREE
+    timer_unit = "rpm-ostreed-automatic.timer" if is_ostree else "bootc-upgrade.timer"
+    service_unit = "rpm-ostreed-automatic.service" if is_ostree else "bootc-upgrade.service"
+
+    # Check for upgrade timer or service failures.
+    if not command_succeeds("systemctl", "is-enabled", "--quiet", timer_unit):
         status = FAIL
-        note_text = _("{0} is disabled.").format("rpm-ostreed-automatic.timer")
+        note_text = _("{0} is disabled.").format(timer_unit)
         notes.append(Note(note_text, FAIL))
         rec_lines = [
             note_text,
             _("To enable it, run:"),
-            "$ systemctl enable --now rpm-ostreed-automatic.timer",
+            f"$ systemctl enable --now {timer_unit}",
         ]
         recs.append("\n".join(rec_lines))
-    elif command_succeeds("systemctl", "is-failed", "--quiet", "rpm-ostreed-automatic.service"):
+    elif command_succeeds("systemctl", "is-failed", "--quiet", service_unit):
         status = status.downgrade_to(WARN)
-        notes.append(
-            Note(_("{0} has failed to run.").format("rpm-ostreed-automatic.service"), WARN)
-        )
+        notes.append(Note(_("{0} has failed to run.").format(service_unit), WARN))
 
+    # For bootc/composefs systems, this is enough.
+    if not is_ostree:
+        yield Report(
+            _("Ensuring automatic system updates are enabled"), status, notes=notes, recs=recs
+        )
+        return
+
+    # On OSTree systems, also check the rpm-ostree config to see if updates are disabled.
     bad_rpm_ostreed_conf = False
     try:
         config = configparser.ConfigParser(delimiters=("=",))
         config.read("/etc/rpm-ostreed.conf")
         if config["Daemon"].get("AutomaticUpdatePolicy") not in ("stage", "apply"):
             bad_rpm_ostreed_conf = True
-    except (configparser.Error, KeyError):
+    except configparser.Error, KeyError:
         bad_rpm_ostreed_conf = True
 
     if bad_rpm_ostreed_conf:
@@ -586,7 +602,7 @@ def audit_rpm_ostree_timer():
         rec_lines = [
             note_text,
             _("To fix this, run:"),
-            "$ run0 -i cp /usr/etc/rpm-ostreed.conf /etc/rpm-ostreed.conf",
+            "$ run0 -i cp /usr/share/secureblue/etc/rpm-ostreed.conf /etc/rpm-ostreed.conf",
         ]
         recs.append("\n".join(rec_lines))
 
@@ -862,7 +878,7 @@ def audit_xwayland(state):
 @depends_on("audit_signed_image")
 def audit_thumbnailing(state):
     """Check whether thumbnailing is disabled."""
-    thumbnailing_disabled = False
+    thumbnailing_disabled = True
     match state["image"]:
         case Image.SILVERBLUE:
             de = _("GNOME")
@@ -884,10 +900,8 @@ def audit_thumbnailing(state):
                 thumbnailing_disabled = thumbnail_plugins == ""
         case Image.SERICEA:
             de = _("Sway")
-            if not command_succeeds(
-                "systemctl", "is-enabled", "--quiet", "--user", "tumblerd.service"
-            ):
-                thumbnailing_disabled = True
+            if command_succeeds("systemctl", "is-enabled", "--quiet", "--user", "tumblerd.service"):
+                thumbnailing_disabled = False
         case Image.COSMIC:
             de = _("COSMIC")
             status = INFO
@@ -903,7 +917,7 @@ def audit_thumbnailing(state):
         status = PASS
         rec = None
     else:
-        status = WARN
+        status = FAIL
         rec_lines = [
             _("Thumbnailing is enabled for {0}.").format(de),
             _("To disable it, consult the following FAQ:"),
@@ -964,7 +978,7 @@ def audit_environment_file():
     note = None
     rec = None
     try:
-        if not filecmp.cmp("/usr" + env_file, env_file):
+        if not filecmp.cmp("/usr/share/secureblue" + env_file, env_file):
             status = WARN
             note = Note(_("The file {0} has been modified.").format(env_file), WARN)
     except FileNotFoundError:
@@ -977,7 +991,7 @@ def audit_environment_file():
         rec_lines = [
             _("The file {0} has been modified.").format(env_file),
             _("To reset it, run:"),
-            f"$ run0 -i cp -p /usr{env_file} {env_file}",
+            f"$ run0 -i cp -p /usr/share/secureblue{env_file} {env_file}",
         ]
         rec = "\n".join(rec_lines)
     yield Report(_("Ensuring no environment file overrides"), status, notes=note, recs=rec)
@@ -994,7 +1008,7 @@ def audit_kde_ghns(state):
     try:
         with open("/etc/xdg/kdeglobals", encoding="utf-8") as f:
             config = parse_config(f)
-    except (FileNotFoundError, PermissionError):
+    except FileNotFoundError, PermissionError:
         status = WARN
         note = Note(
             _("The file {0} was not found or inaccessible.").format("/etc/xdg/kdeglobals"), WARN
@@ -1015,84 +1029,48 @@ def audit_kde_ghns(state):
 
 
 @audit
-def audit_ld_preload():
-    """Ensure ld.so.preload exists and is readable only by root."""
-    status = PASS
-    notes = []
-    rec = None
+def audit_hardened_malloc():
+    """Ensure hardened_malloc is set to be preloaded in place of the default system malloc."""
     ld_so_preload = "/etc/ld.so.preload"
     try:
-        stat_result = os.stat(ld_so_preload)
-    except FileNotFoundError:
+        with open(ld_so_preload, encoding="utf8") as f:
+            preloads = f.read().strip().split()
+    except OSError as err:
         status = FAIL
-        notes.append(Note(_("The file {0} was not found.").format(ld_so_preload), FAIL))
+        note = Note(_("{0} could not be read: {1}").format(ld_so_preload, err.strerror), FAIL)
     else:
-        mode = stat.S_IMODE(stat_result.st_mode)
-        expected_mode = 0o600
-        if mode != expected_mode:
+        if preloads == ["libhardened_malloc.so", "libno_rlimit_as.so"]:
+            status = PASS
+            note = None
+        elif "libhardened_malloc.so" in preloads:
             status = WARN
-            notes.append(
-                Note(
-                    _("{0} has mode {1:o} (expected {2:o})").format(
-                        ld_so_preload, mode, expected_mode
-                    ),
-                    WARN,
-                )
+            note = Note(
+                _("hardened_malloc is enabled, but {1} has been modified.").format(ld_so_preload),
+                WARN,
             )
-        if stat_result.st_uid != 0:
+        elif "libhardened_malloc-light.so" in preloads:
+            status = WARN
+            note = Note(
+                _("The '{0}' variant of hardened_malloc is enabled.").format("light"),
+                WARN,
+            )
+        elif "libhardened_malloc-pkey.so" in preloads:
+            status = WARN
+            note = Note(_("The '{0}' variant of hardened_malloc is enabled.").format("pkey"), WARN)
+        else:
             status = FAIL
-            notes.append(Note(_("{0} is owned by a non-root user!").format(ld_so_preload), FAIL))
+            note = Note(_("hardened_malloc is not enabled."), FAIL)
+
     if status != PASS:
         rec_lines = [
             _("The file {0} has been modified or deleted.").format(ld_so_preload),
-            _("To reset it and enable hardened_malloc for system processes, run:"),
-            f"$ run0 -i cp -p /usr{ld_so_preload} {ld_so_preload}",
+            _("To reset it and enable hardened_malloc, run:"),
+            f"$ run0 -i cp -p /usr/share/secureblue{ld_so_preload} {ld_so_preload}",
         ]
         rec = "\n".join(rec_lines)
-    yield Report(
-        _("Ensuring {0} has expected permissions").format("ld.so.preload"),
-        status,
-        notes=notes,
-        recs=rec,
-    )
-
-
-@audit
-def audit_hardened_malloc():
-    """Ensure hardened_malloc is set to be preloaded in place of the default system malloc."""
-    rec = None
-    ld_preload = os.environ.get("LD_PRELOAD")
-    preloads = [] if ld_preload is None else ld_preload.split()
-    expected_preloads = ["libhardened_malloc.so", "libno_rlimit_as.so"]
-    if preloads == expected_preloads:
-        status = PASS
-        note = None
-    elif "libhardened_malloc.so" in preloads:
-        status = WARN
-        note = Note(
-            _("{0} is set, but {1} has been modified.").format("hardened_malloc", "LD_PRELOAD"),
-            WARN,
-        )
-    elif "libhardened_malloc-light.so" in preloads:
-        status = WARN
-        note = Note(
-            _("The '{0}' variant of {1} has been set.").format("light", "hardened_malloc"), WARN
-        )
-    elif "libhardened_malloc-pkey.so" in preloads:
-        status = WARN
-        note = Note(
-            _("The '{0}' variant of {1} has been set.").format("pkey", "hardened_malloc"), WARN
-        )
     else:
-        status = FAIL
-        note = Note(_("{0} has not been set.").format("LD_PRELOAD=libhardened_malloc.so"), FAIL)
+        rec = None
 
-    if status != PASS:
-        rec = _("""The environment variable {0} has been modified or is unset.
-                Check that {1} has not been overridden in
-                {2} or related configuration files.""").format(
-            "LD_PRELOAD", "LD_PRELOAD=libhardened_malloc.so", "/etc/profile.d"
-        )
     yield Report(
         _("Ensuring hardened_malloc is set to be preloaded"),
         status,
@@ -1200,7 +1178,7 @@ def audit_print_services():
             note = _("CUPS (the printing service) is disabled, but unmasked.")
             notes.append(Note(note, INFO))
             recs.append("\n".join([note, _("To fix this, run:"), "$ ujust set-cups off"]))
-        case "masked":
+        case "masked" | "not-found":
             pass
         case _:
             status = status.downgrade_to(WARN)
@@ -1235,7 +1213,7 @@ def audit_print_services():
                     ]
                 )
             )
-        case "masked":
+        case "masked" | "not-found":
             pass
         case _:
             status = status.downgrade_to(FAIL)

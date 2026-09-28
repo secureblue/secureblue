@@ -53,4 +53,5 @@ jobs:
           VALIDATE_BIOME_LINT: false # defaults that contradict other linters
           VALIDATE_BASH_EXEC: false # covered by validate-exec-bit
           VALIDATE_EDITORCONFIG: false # all whitespace, not worth the effort to clean at this point
+          VALIDATE_TRIVY: false # covered by trivy action
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

@@ -1,0 +1,19 @@
+# SPDX-FileCopyrightText: Copyright 2026 The Secureblue Authors
+#
+# SPDX-License-Identifier: Apache-2.0
+
+[Unit]
+Description=Upgrade bootc image
+Documentation=man:bootc(8)
+After=network-online.target
+Wants=network-online.target
+
+[Timer]
+OnBootSec=1h
+OnUnitInactiveSec=8h
+RandomizedDelaySec=10m
+OnCalendar=*-*-* 4:00:00
+Persistent=true
+
+[Install]
+WantedBy=timers.target

@@ -159,36 +159,48 @@ class SandboxedFunction:
 
         return args
 
-    def run(self, *args: str) -> int:
+    def run(self, *args: str, stdin: str | None = None) -> int:
         """Run the sandboxed function.
 
         Args:
             *args (str): Positional arguments to pass to the sandboxed function.
+            stdin (str | None): Text to pipe to the sandboxed function's stdin.
+                Only valid for non-interactive functions.
         Returns:
             int: The exit status code of the function.
         """
 
-        return run(self, *args)
+        return run(self, *args, stdin=stdin)
 
 
-def run(sandboxed_function: SandboxedFunction, *args: str) -> int:
+def run(sandboxed_function: SandboxedFunction, *args: str, stdin: str | None = None) -> int:
     """Execute a sandboxed function."""
+
+    if sandboxed_function.subprocess_interactive and stdin is not None:
+        raise ValueError("Cannot specify 'stdin' when 'subprocess_interactive' is set to True.")
 
     command = [
         "/usr/bin/run0",
         *sandboxed_function.get_arguments(),
         "--",
         "/usr/bin/python3",
+        "-Es",
         "-B",  # prevents use of bytecode (pycache) to ease run0 sandboxing configuration
         f"{INNER_DIR}/{sandboxed_function.file_name}",
         *args,
     ]
 
-    if sandboxed_function.subprocess_interactive:
+    if stdin is not None:
+        result = subprocess.run(
+            command, check=False, input=stdin, stdout=sys.stdout, stderr=sys.stderr, text=True
+        )
+    elif sandboxed_function.subprocess_interactive:
         result = subprocess.run(
             command, check=False, stdin=sys.stdin, stdout=sys.stdout, stderr=sys.stderr
         )
     else:
-        result = subprocess.run(command, check=False, stdin=subprocess.DEVNULL)
+        result = subprocess.run(
+            command, check=False, stdin=subprocess.DEVNULL, stdout=sys.stdout, stderr=sys.stderr
+        )
 
     return result.returncode

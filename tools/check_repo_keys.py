@@ -13,8 +13,10 @@ import json
 import os
 import subprocess
 import sys
-from collections.abc import Generator
-from typing import Final
+from typing import TYPE_CHECKING, Final
+
+if TYPE_CHECKING:
+    from collections.abc import Generator
 
 REPO_DATA_PATH: Final[str] = "tools/rpm-repo-sources.json"
 

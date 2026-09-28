@@ -1,0 +1,62 @@
+# SPDX-FileCopyrightText: Copyright 2026 The Secureblue Authors
+# SPDX-FileCopyrightText: Timothée Ravier <tim@siosm.fr>
+#
+# SPDX-License-Identifier: Apache-2.0 AND CC0-1.0
+
+ARG BASE=overridden
+ARG SYSTEMDBOOT=overridden
+ARG UKIADDONS=overridden
+
+# Capture scripts from the git repo
+FROM scratch as scripts
+COPY uki/scripts /
+
+FROM $SYSTEMDBOOT as systemd-boot
+
+FROM $UKIADDONS as uki-addons
+
+FROM $BASE as rootfs-base
+
+# General changes done to the base image
+RUN --mount=type=tmpfs,target=/run \
+    --mount=type=tmpfs,target=/tmp \
+    --mount=type=tmpfs,target=/var \
+    --mount=type=bind,from=scripts,src=/,target=/run/scripts \
+    /run/scripts/prepare-rootfs.sh
+
+# Replace Fedora's systemd-boot with our signed one
+COPY --from=systemd-boot /systemd-bootx64.efi /usr/lib/systemd/boot/efi/systemd-bootx64.efi
+
+# Copy UKI addons into the filesystem so they can be added as needed at runtime.
+COPY --from=uki-addons / /usr/share/secureblue/uki/addons/
+COPY uki/keys/*/*.auth /usr/share/secureblue/uki/keys/
+COPY uki/keys/*/*.der /usr/share/secureblue/uki/keys/
+
+# Make sure we pass the lints
+FROM rootfs-base as lint
+RUN --mount=type=bind,from=scripts,src=/,target=/run/scripts \
+    bootc container lint --fatal-warnings --no-truncate --skip nonempty-run-tmp
+
+# Remove the kernel and initrd from the base image
+FROM rootfs-base as rootfs
+RUN --mount=type=bind,from=scripts,src=/,target=/run/scripts \
+    /run/scripts/remove-kernel-initrd.sh
+
+# Rechunk container image to ensure that we compute the correct composefs hash
+# - Use more layers (128)
+# - Ignore legacy ostree folders
+FROM quay.io/coreos/chunkah AS chunkah
+RUN --mount=from=rootfs,src=/,target=/chunkah,ro \
+    --mount=type=bind,target=/run/src,rw \
+        chunkah build \
+            --max-layers 256 \
+            --prune /ostree \
+            --prune /sysroot/ostree \
+            --output oci:/run/src/out
+
+# Create the final base image from the rechunked oci output
+FROM oci:out as rootfs-chunked
+LABEL containers.bootc 1
+ENV container=oci
+STOPSIGNAL SIGRTMIN+3
+CMD ["/sbin/init"]

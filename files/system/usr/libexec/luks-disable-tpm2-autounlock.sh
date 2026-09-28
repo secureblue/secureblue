@@ -8,6 +8,11 @@
 ## disable unlock LUKS2 encrypted root on Fedora/Silverblue/maybe others
 set -euo pipefail
 
+if [[ ! -f "/usr/bin/rpm-ostree" ]]; then
+    echo "This script does not support UKI systems yet."
+    exit 1
+fi
+
 [[ "${UID}" -eq 0 ]] || { echo "This script must be run as root."; exit 1;}
 
 echo "This script utilizes systemd-cryptenroll for removing tpm2 unlock."

@@ -3,13 +3,17 @@
 # SPDX-License-Identifier: Apache-2.0
 
 type: dnf
-source: ghcr.io/blue-build/modules@sha256:c5ed99f07b15c8d575a4fa64a77e5cd5602b00da4c84379f5675db2ae4757061
+source: ghcr.io/blue-build/modules@sha256:f1273b17987eed439b0feff77bf4b7f1c734e6f77607dc99c9de9d9070555c7a
 install:
   install-weak-deps: false
   packages:
+    - bubblewrap-selinux
     - hardened_malloc
     - run0edit
     - dnsconfd-unbound
+
+    # ensure this is present so firewalld can drop caps
+    - libcap-ng-python3
 
     # missing upstream
     - openssl
@@ -45,7 +49,9 @@ install:
     - libvirt-nss
     - qemu-device-display-virtio-gpu
     - qemu-device-display-virtio-vga
+    - qemu-device-usb-host
     - qemu-device-usb-redirect
+    - qemu-device-usb-smartcard
     - qemu-kvm-core
     - qemu-img
     - qemu-tools
@@ -53,3 +59,16 @@ install:
     - qemu-user-binfmt
     - virt-install
     - podman-machine
+    - moby-engine
+    - docker-cli
+    - moby-engine-rootless-extras
+    - containerd
+    - docker-buildx
+    - docker-compose
+replace:
+  - from-repo: copr:copr.fedorainfracloud.org:secureblue:packages
+    packages:
+      # Patched version from https://codeberg.org/HastD/bubblewrap-utils
+      # This removes bwrap's ability to create user namespaces with elevated
+      # capabilities via the --cap-add option:
+      - bubblewrap

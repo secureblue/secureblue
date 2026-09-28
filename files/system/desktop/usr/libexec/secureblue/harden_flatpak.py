@@ -1,4 +1,4 @@
-#!/usr/bin/python3
+#!/usr/bin/python3 -Es
 
 # SPDX-FileCopyrightText: Copyright 2025-2026 The Secureblue Authors
 #
@@ -15,9 +15,9 @@ from typing import TYPE_CHECKING, Final
 from flatpak_utils import flatpak_override, installed_app_list, resolve_app_id
 
 if TYPE_CHECKING:
-    from files.system.usr.libexec.secureblue import utils
+    from files.system.usr.libexec.secureblue.shared import utils
 else:
-    import utils
+    from shared import utils
 
 command_stdout: Final = utils.command_stdout
 print_wrapped: Final = utils.print_wrapped
@@ -33,7 +33,7 @@ def best_microarch() -> str | None:
     """Get best microarchitecture for system."""
     try:
         ld_info = command_stdout("/usr/lib64/ld-linux-x86-64.so.2", "--help")
-    except (FileNotFoundError, subprocess.CalledProcessError):
+    except FileNotFoundError, subprocess.CalledProcessError:
         return None
     m = re.search(
         r"^\s*(x86-64-v\d+).*\(supported, searched\)", ld_info, flags=re.ASCII | re.MULTILINE

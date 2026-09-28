@@ -20,6 +20,8 @@
           (typeattributeset userns_privileged_domain (passt_t)))
 (optional systemsettings_userns_privileged_domain
           (typeattributeset userns_privileged_domain (systemsettings_t)))
+(optional thumb_userns_privileged_domain
+          (typeattributeset userns_privileged_domain (thumb_t)))
 (optional trivalent_userns_privileged_domain
           (typeattributeset userns_privileged_domain (trivalent_domain trivalent_script_domain)))
 

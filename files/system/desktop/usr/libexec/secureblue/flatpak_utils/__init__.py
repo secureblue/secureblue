@@ -1,4 +1,4 @@
-#!/usr/bin/python3
+#!/usr/bin/python3 -Es
 
 # SPDX-FileCopyrightText: Copyright 2025-2026 The Secureblue Authors
 #
@@ -12,9 +12,9 @@ import subprocess
 from typing import TYPE_CHECKING, Final
 
 if TYPE_CHECKING:
-    from files.system.usr.libexec.secureblue import utils
+    from files.system.usr.libexec.secureblue.shared import utils
 else:
-    import utils
+    from shared import utils
 
 command_stdout: Final = utils.command_stdout
 print_wrapped: Final = utils.print_wrapped

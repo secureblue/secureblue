@@ -1,4 +1,4 @@
-#!/usr/bin/python3
+#!/usr/bin/python3 -Es
 
 # SPDX-FileCopyrightText: Copyright 2025-2026 The Secureblue Authors
 #
@@ -18,7 +18,7 @@ from shared.kargs_hardening import (
     apply_kargs,
 )
 from shared.secure_boot import Bootloader
-from utils import BootcBackend, ask_yes_no
+from shared.utils import BootcBackend, ask_yes_no
 
 
 def build_kargs_list(

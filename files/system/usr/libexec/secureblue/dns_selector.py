@@ -1,4 +1,4 @@
-#!/usr/bin/python3
+#!/usr/bin/python3 -Es
 
 """Sets DNS configuration, a.k.a. `ujust dns-selector`."""
 
@@ -19,7 +19,7 @@ from typing import Final
 from urllib.parse import urlparse
 
 import sandbox
-from utils import ask_option, ask_yes_no, interruptible_ask
+from shared.utils import ask_option, ask_yes_no, interruptible_ask
 
 RESET: Final[str] = "\033[0m"
 BOLD: Final[str] = "\033[1m"
@@ -148,6 +148,15 @@ def ask_servers(https_only: bool = False) -> DNSServers:
 
     data = json.loads(SERVERS_JSON_PATH.read_text(encoding="utf-8"))
     providers = data["providers"]
+
+    # If we're asking for servers for DoH use only, there's no point in showing
+    # providers/servers with no DoH endpoint.
+    if https_only:
+        providers = [
+            {**p, "servers": [s for s in p["servers"] if s.get("https")]}
+            for p in providers
+            if any(s.get("https") for s in p["servers"])
+        ]
 
     print("Select a DNS provider:")
     custom_option = len(providers) + 1

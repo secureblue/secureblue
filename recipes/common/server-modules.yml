@@ -4,7 +4,7 @@
 
 modules:
   - type: dnf
-    source: ghcr.io/blue-build/modules@sha256:c5ed99f07b15c8d575a4fa64a77e5cd5602b00da4c84379f5675db2ae4757061
+    source: ghcr.io/blue-build/modules@sha256:f1273b17987eed439b0feff77bf4b7f1c734e6f77607dc99c9de9d9070555c7a
     install:
       install-weak-deps: false
       packages:
@@ -13,15 +13,18 @@ modules:
         - firewalld
         - policycoreutils-python-utils
         - udisks2
+    remove:
+      packages:
+        - tpm2-pkcs11
 
   - type: files
-    source: ghcr.io/blue-build/modules@sha256:c5ed99f07b15c8d575a4fa64a77e5cd5602b00da4c84379f5675db2ae4757061
+    source: ghcr.io/blue-build/modules@sha256:f1273b17987eed439b0feff77bf4b7f1c734e6f77607dc99c9de9d9070555c7a
     files:
       - source: system/server
         destination: /
 
   - type: script
-    source: ghcr.io/blue-build/modules@sha256:c5ed99f07b15c8d575a4fa64a77e5cd5602b00da4c84379f5675db2ae4757061
+    source: ghcr.io/blue-build/modules@sha256:f1273b17987eed439b0feff77bf4b7f1c734e6f77607dc99c9de9d9070555c7a
     scripts:
       - excludepcsc.sh
       - setserverdefaultzone.sh

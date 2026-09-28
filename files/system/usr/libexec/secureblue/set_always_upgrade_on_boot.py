@@ -1,4 +1,4 @@
-#!/usr/bin/python3
+#!/usr/bin/python3 -Es
 
 # SPDX-FileCopyrightText: Copyright 2026 The Secureblue Authors
 #
@@ -11,7 +11,7 @@ from pathlib import Path
 from typing import Final
 
 import sandbox
-from utils import (
+from shared.utils import (
     CommandUsageError,
     ToggleMode,
     parse_basic_toggle_args,

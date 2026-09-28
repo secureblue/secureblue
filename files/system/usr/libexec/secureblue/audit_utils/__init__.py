@@ -1,4 +1,4 @@
-#!/usr/bin/python3
+#!/usr/bin/python3 -Es
 
 # SPDX-FileCopyrightText: Copyright 2025-2026 The Secureblue Authors
 #
@@ -11,14 +11,12 @@ Utils for system auditing.
 import asyncio
 import os
 import re
-
-# All subprocess calls we make have trusted inputs and do not use shell=True.
 import subprocess
 import textwrap
 from typing import Final
 
 from auditor import AuditError, Status, gettext_marker
-from utils import get_config_dir, print_err
+from shared.utils import get_config_dir, print_err
 
 from .containers import ContainersPolicyAudit
 

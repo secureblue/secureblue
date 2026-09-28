@@ -5,7 +5,7 @@
 # Audit secureblue
 [positional-arguments]
 @audit-secureblue *args:
-    exec /usr/bin/python3 /usr/libexec/secureblue/audit_secureblue.py "$@"
+    exec /usr/bin/python3 -Es /usr/libexec/secureblue/audit_secureblue.py "$@"
 
 # Run a non-flatpak application with standard memory allocator
 [no-cd]
@@ -17,79 +17,79 @@
 # Sets bluetooth kernel modules on/off (requires reboot)
 [positional-arguments]
 @set-bluetooth-modules *args:
-    exec /usr/bin/python3 /usr/libexec/secureblue/bluetooth_main.py "$@"
+    exec /usr/bin/python3 -Es /usr/libexec/secureblue/bluetooth_main.py "$@"
 
 # Enable or disable CUPS (the printing service).
 [positional-arguments]
 @set-cups *args:
-    exec /usr/bin/python3 /usr/libexec/secureblue/set_cups.py "$@"
+    exec /usr/bin/python3 -Es /usr/libexec/secureblue/set_cups.py "$@"
 
 # Sets webcam kernel modules on/off (requires reboot)
 [positional-arguments]
 @set-webcam-modules *args:
-    exec /usr/bin/python3 /usr/libexec/secureblue/webcam_main.py "$@"
+    exec /usr/bin/python3 -Es /usr/libexec/secureblue/webcam_main.py "$@"
 
 # Interactively select secure DNS servers
 [positional-arguments]
 @dns-selector *args:
-    exec /usr/bin/python3 /usr/libexec/secureblue/dns_selector.py "$@"
+    exec /usr/bin/python3 -Es /usr/libexec/secureblue/dns_selector.py "$@"
 
 # Add additional boot parameters for hardening (requires reboot)
 @set-kargs-hardening:
-    exec /usr/bin/python3 /usr/libexec/secureblue/set_kargs_hardening.py
+    exec /usr/bin/python3 -Es /usr/libexec/secureblue/set_kargs_hardening.py
 
 # Remove all hardening boot parameters (requires reboot)
 @remove-kargs-hardening:
-    exec /usr/bin/python3 /usr/libexec/secureblue/remove_kargs_hardening.py
+    exec /usr/bin/python3 -Es /usr/libexec/secureblue/remove_kargs_hardening.py
 
 # Create the admin user and remove wheel from the normal user
 [positional-arguments]
 @create-admin *args:
-    exec /usr/bin/python3 /usr/libexec/secureblue/create_admin.py "$@"
+    exec /usr/bin/python3 -Es /usr/libexec/secureblue/create_admin.py "$@"
 
 # Enable, disable, or check status of unconfined-domain user namespace creation.
 [positional-arguments]
 @set-unconfined-userns *args:
-    exec /usr/bin/python3 /usr/libexec/secureblue/set_unconfined_userns.py "$@"
+    exec /usr/bin/python3 -Es /usr/libexec/secureblue/set_unconfined_userns.py "$@"
 
 # Enable, disable, or check status of container-domain user namespace creation.
 [positional-arguments]
 @set-container-userns *args:
-    exec /usr/bin/python3 /usr/libexec/secureblue/set_container_userns.py "$@"
+    exec /usr/bin/python3 -Es /usr/libexec/secureblue/set_container_userns.py "$@"
 
 # Toggle display of the user-motd in terminal
 @toggle-user-motd:
-    exec /usr/bin/python3 /usr/libexec/secureblue/toggle_user_motd.py
+    exec /usr/bin/python3 -Es /usr/libexec/secureblue/toggle_user_motd.py
 
 # Update system (with provenance verification).
 @update-system:
-    exec /usr/bin/python3 /usr/libexec/secureblue/update_system.py
+    exec /usr/bin/python3 -Es /usr/libexec/secureblue/update_system.py
 
 # Update device firmware.
 [no-exit-message]
 @update-firmware:
-    exec /usr/bin/python3 /usr/libexec/secureblue/update_firmware.py
+    exec /usr/bin/python3 -Es /usr/libexec/secureblue/update_firmware.py
 
 # Toggle DHCP hostname sending.
 [positional-arguments]
 @set-dhcp-hostname-sending *args:
-    exec /usr/bin/python3 /usr/libexec/secureblue/dhcp_hostname_sending_main.py "$@"
+    exec /usr/bin/python3 -Es /usr/libexec/secureblue/dhcp_hostname_sending_main.py "$@"
 
 # Enable, disable, or check status of always-upgrade-on-boot
 [positional-arguments]
 @set-always-upgrade-on-boot *args:
-    exec /usr/bin/python3 /usr/libexec/secureblue/set_always_upgrade_on_boot.py "$@"
+    exec /usr/bin/python3 -Es /usr/libexec/secureblue/set_always_upgrade_on_boot.py "$@"
 
 # Configure ptrace support (for anticheat, debugging tools, etc.)
 [positional-arguments]
 @set-ptrace *args:
-    exec /usr/bin/python3 /usr/libexec/secureblue/set_ptrace.py "$@"
+    exec /usr/bin/python3 -Es /usr/libexec/secureblue/set_ptrace.py "$@"
 
 alias set-anticheat-support := set-ptrace
 
 # Boot into this device's BIOS/UEFI screen.
 @bios:
-    exec /usr/bin/python3 /usr/libexec/secureblue/bios.py
+    exec /usr/bin/python3 -Es /usr/libexec/secureblue/bios.py
 
 # Show all messages from this boot
 @logs-this-boot:
@@ -102,11 +102,11 @@ alias set-anticheat-support := set-ptrace
 # Toggle libvirt daemons on or off
 [positional-arguments]
 @set-libvirt-daemons *args:
-    exec /usr/bin/python3 /usr/libexec/secureblue/set_libvirt_daemons.py "$@"
+    exec /usr/bin/python3 -Es /usr/libexec/secureblue/set_libvirt_daemons.py "$@"
 
 # Enroll secure boot key into shim or firmware.
 [positional-arguments]
 @enroll-secure-boot-keys *args:
-    exec /usr/bin/python3 /usr/libexec/secureblue/enroll_secure_boot_keys.py "$@"
+    exec /usr/bin/python3 -Es /usr/libexec/secureblue/enroll_secure_boot_keys.py "$@"
 
 alias enroll-secureblue-secure-boot-key := enroll-secure-boot-keys

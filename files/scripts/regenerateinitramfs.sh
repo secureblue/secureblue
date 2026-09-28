@@ -45,5 +45,8 @@ extra_files=(
 
 chmod 0600 "/usr/lib/modules/${qualified_kernel}/initramfs.img"
 
+# Set file modification time to Unix epoch for reproducibility
+touch -a -m -d '1970-01-01T00:00:00Z' "/usr/lib/modules/${qualified_kernel}/initramfs.img"
+
 cp -- "${tmp_release_file}" /etc/os-release
 rm -- "${tmp_release_file}" "${tmp_conf_file}"

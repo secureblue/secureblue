@@ -276,7 +276,7 @@ install-vpn:
                 ;;
 
             "proton")
-                PACKAGE_NAMES="proton-vpn-gnome-desktop"
+                PACKAGE_NAMES="protonvpn-stable-release"
                 REPO_NAME="protonvpn-stable"
 
                 if util_checkpackage "${PACKAGE_NAMES}"; then

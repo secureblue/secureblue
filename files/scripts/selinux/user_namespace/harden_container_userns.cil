@@ -4,5 +4,7 @@
 
 (deny container_domain self (user_namespace (create)))
 (deny container_runtime_domain self (user_namespace (create)))
+(deny spc_t self (user_namespace (create)))
 (deny unconfined_domain_type container_domain (process (noatsecure)))
 (deny unconfined_domain_type container_runtime_domain (process (noatsecure)))
+(deny unconfined_domain_type spc_t (process (noatsecure)))

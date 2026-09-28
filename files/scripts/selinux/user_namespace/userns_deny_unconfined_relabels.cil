@@ -19,6 +19,8 @@
           (typeattributeset userns_privileged_file_type (passt_exec_t)))
 (optional systemsettings_userns_privileged_file_type
           (typeattributeset userns_privileged_file_type (systemsettings_exec_t)))
+(optional thumb_userns_privileged_file_type
+          (typeattributeset userns_privileged_file_type (thumb_exec_t)))
 (optional trivalent_userns_privileged_file_type
           (typeattributeset userns_privileged_file_type (trivalent_exec_t trivalent_script_exec_t)))
 

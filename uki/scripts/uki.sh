@@ -16,12 +16,15 @@ kver=$(cd "${target}/usr/lib/modules" && echo *)
 # Baseline ukify options
 mkdir -p "${output}"
 ukifyargs=(
-    --measure
     --json pretty
     --output "${output}/${kver}.efi"
     --signtool sbsign
     --secureboot-private-key "${secrets}/secureboot_key"
     --secureboot-certificate "${secrets}/secureboot_crt"
+    --pcr-private-key "${secrets}/pcr_key"
+    --pcr-public-key "${target}/usr/share/secureblue/uki/keys/pcr.pub.pem"
+    --pcr-banks sha256
+    --phases enter-initrd
 )
 
 # In future, `bootc container ukify` will compute the composefs digest, read

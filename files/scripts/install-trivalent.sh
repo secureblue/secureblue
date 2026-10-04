@@ -34,7 +34,7 @@ trivalent_rpm_sans_prefix=${trivalent_rpm#trivalent-}
 trivalent_version=${trivalent_rpm_sans_prefix%".${ARCH}.rpm"}
 
 provenance_file="multiple.intoto.jsonl"
-curl -fLsS --retry 5 -O "https://github.com/secureblue/Trivalent/releases/download/${trivalent_version}/${provenance_file}"
+curl -fLsS --retry 5 -O "https://github.com/secureblue/Trivalent/releases/download/${trivalent_version}-${ARCH}/${provenance_file}"
 
 slsa-verifier verify-artifact \
     --provenance-path "${provenance_file}" \

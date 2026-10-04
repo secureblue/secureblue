@@ -13,7 +13,7 @@ set -euo pipefail
 # Run in the repository root.
 cd "$(git -C "$(dirname "$0")" rev-parse --show-toplevel)"
 
-# We'll create secrets/{cosign, MOK, PK, KEK, db}.key.
+# We'll create secrets/{cosign, MOK, PK, KEK, db, pcr}.key.
 if [[ -d secrets/ ]]; then
   echo "A secrets directory already exists. Would you like to overwrite them?"
   read -r -p "Continue? [y/N]: " answer
@@ -33,32 +33,13 @@ openssl req -new -x509 -nodes -subj "/CN=secureblue Test MOK CA ${date}/" \
   -keyout secrets/MOK.key -out files/system/usr/share/pki/akmods/certs/akmods-secureblue.der \
   -outform DER &> /dev/null
 
-# Generate UKI secure boot keys: PK, KEK and db.
-mkdir -p uki/keys/
-uuid=$(systemd-id128 new --uuid)
-echo "${uuid}" > uki/keys/GUID
-
-for key in PK KEK db; do
-  mkdir "uki/keys/${key}"
-
-  openssl req -new -x509 -nodes -subj "/CN=secureblue Test ${key} CA ${date}/" \
-    -keyout "secrets/${key}.key" -out "uki/keys/${key}/${key}.pem" &> /dev/null
-  openssl x509 -outform DER -in "uki/keys/${key}/${key}.pem" -out "uki/keys/${key}/${key}.der"
-
-  # Convert to an EFI signature list.
-  sbsiglist --owner "${uuid}" --type x509 \
-    --output "uki/keys/${key}/${key}.esl" "uki/keys/${key}/${key}.der"
+# Generate the UKI keys (secure boot PK, KEK and db, and the PCR signing
+# keypair), replacing the upstream ones, then move the private keys to secrets/.
+rm -rf uki/keys/
+uki/create-uki-keys.sh > /dev/null
+for key in PK KEK db pcr; do
+  mv "uki/keys/${key}/${key}.key" "secrets/${key}.key"
 done
-
-# Produce authenticated variables for enrolment in the firmware.
-# The PK is self-signed, which signs the KEK, which signs the db.
-attr=NON_VOLATILE,RUNTIME_ACCESS,BOOTSERVICE_ACCESS,TIME_BASED_AUTHENTICATED_WRITE_ACCESS
-sbvarsign --attr "${attr}" --key secrets/PK.key --cert uki/keys/PK/PK.pem \
-  --output uki/keys/PK/PK.auth PK uki/keys/PK/PK.esl
-sbvarsign --attr "${attr}" --key secrets/PK.key --cert uki/keys/PK/PK.pem \
-  --output uki/keys/KEK/KEK.auth KEK uki/keys/KEK/KEK.esl
-sbvarsign --attr "${attr}" --key secrets/KEK.key --cert uki/keys/KEK/KEK.pem \
-  --output uki/keys/db/db.auth db uki/keys/db/db.esl
 
 # Replace instances of RoyalOughtness with the user's GitHub username.
 read -r -p "Enter your GitHub username (e.g. royaloughtness): " username
@@ -75,4 +56,5 @@ Upload the following secrets to GitHub by copy-pasting the file contents:
 - SIGNING_SECRET - "${PWD}/secrets/cosign.key"
 - KERNEL_PRIVKEY - "${PWD}/secrets/MOK.key"
 - UKI_DB_KEY     - "${PWD}/secrets/db.key"
+- UKI_PCR_KEY    - "${PWD}/secrets/pcr.key"
 EOF

@@ -23,7 +23,7 @@ ukifyargs=(
     --secureboot-private-key "${secrets}/secureboot_key"
     --secureboot-certificate "${secrets}/secureboot_crt"
     --pcr-private-key "${secrets}/pcr_key"
-    --pcr-public-key "${target}/usr/share/secureblue/uki/keys/pcr.pem"
+    --pcr-public-key "${target}/usr/share/secureblue/uki/keys/PCR.pem"
     --pcr-banks sha256
     --phases enter-initrd
 )

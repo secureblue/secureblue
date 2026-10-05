@@ -1,0 +1,33 @@
+#!/usr/bin/env bash
+
+# SPDX-FileCopyrightText: Copyright 2026 The Secureblue Authors
+#
+# SPDX-License-Identifier: Apache-2.0
+
+no_report_match=false
+
+# corresponds to the ids of the bug report template fields
+# https://github.com/secureblue/secureblue/blob/live/.github/ISSUE_TEMPLATE/bug_report.yml?plain=1
+# https://docs.github.com/en/issues/tracking-your-work-with-issues/using-issues/creating-an-issue#creating-an-issue-from-a-url-query
+
+case "$1" in
+	--title=*)
+		report_args+=( ["title"]="${1#*=}" )
+		;;
+	--description=*)
+		report_args+=( ["description"]="${1#*=}" )
+		;;
+	--reproduce=*)
+		report_args+=( ["reproduce"]="${1#*=}" )
+		;;
+	--expected=*)
+		report_args+=( ["expected"]="${1#*=}" )
+		;;
+	--actual=*)
+		report_args+=( ["actual"]="${1#*=}" )
+		;;
+	*)
+		# shellcheck disable=SC2034
+		no_report_match=true
+		;;
+esac

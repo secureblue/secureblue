@@ -52,6 +52,13 @@ jobs:
           tar -xzf "${just_tarball}"
           sudo install ./just /usr/bin/just
 
+      - name: Disable AppArmor restrictions
+        shell: bash
+        run: |
+          sudo apt install apparmor-utils
+          sudo aa-teardown
+          sudo sysctl -w kernel.apparmor_restrict_unprivileged_userns=0
+
       - name: Run tests
         shell: bash
         env:

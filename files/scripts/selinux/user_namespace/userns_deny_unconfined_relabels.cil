@@ -13,6 +13,8 @@
           (typeattributeset userns_privileged_file_type (flatpak_helper_exec_t)))
 (optional passt_userns_privileged_file_type
           (typeattributeset userns_privileged_file_type (passt_exec_t)))
+(optional stdmalloc_userns_privileged_file_type
+          (typeattributeset userns_privileged_file_type (stdmalloc_exec_t)))
 (optional systemsettings_userns_privileged_file_type
           (typeattributeset userns_privileged_file_type (systemsettings_exec_t)))
 (optional thumb_userns_privileged_file_type

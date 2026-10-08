@@ -32,3 +32,4 @@ stdmalloc_run(unconfined_t, unconfined_r)
 # with-standard-malloc manually transitions to unconfined_t, so we enforce
 # that only unconfined domains can execute it.
 neverallow ~unconfined_domain_type stdmalloc_exec_t:file execute;
+neverallow ~unconfined_domain_type stdmalloc_t:process transition;

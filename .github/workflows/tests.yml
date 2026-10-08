@@ -65,3 +65,5 @@ jobs:
           BATS_LIB_PATH: "${{ github.workspace }}/.bats"
         run: |
           bats --timing --trace --verbose-run -r .github/workflows/tests
+          # Also test with-standard-malloc as root
+          sudo "$(command -v bats)" --timing --trace --verbose-run -r .github/workflows/tests/stdmalloc_tests.bats

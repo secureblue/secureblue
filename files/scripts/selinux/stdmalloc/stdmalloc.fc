@@ -1,0 +1,5 @@
+# SPDX-FileCopyrightText: Copyright 2026 The Secureblue Authors
+#
+# SPDX-License-Identifier: Apache-2.0 OR MIT
+
+/usr/bin/with-standard-malloc	--	gen_context(system_u:object_r:stdmalloc_exec_t,s0)

@@ -31,6 +31,7 @@ COPY --from=systemd-boot /systemd-bootx64.efi /usr/lib/systemd/boot/efi/systemd-
 COPY --from=uki-addons / /usr/share/secureblue/uki/addons/
 COPY uki/keys/*/*.auth /usr/share/secureblue/uki/keys/
 COPY uki/keys/*/*.der /usr/share/secureblue/uki/keys/
+COPY uki/keys/PCR/PCR.pem /usr/share/secureblue/uki/keys/
 
 # Make sure we pass the lints
 FROM rootfs-base as lint

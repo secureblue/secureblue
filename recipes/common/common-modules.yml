@@ -10,7 +10,6 @@ modules:
       - httpsmirrors.sh
       - unprotectsudo.sh
       - check-bad-package-versions.sh
-      - disablecountme.sh
       # comment/uncomment the line below to disable/enable kernel pinning
       # - installpinnedkernel.sh
 

@@ -6,7 +6,7 @@
 name: "Sign UKI addons"
 
 env:
-  FEDORA_RELEASE: "44"
+  FEDORA_RELEASE: "45"
 
 on:
   # This only needs changing when the kargs change.

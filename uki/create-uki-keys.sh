@@ -23,15 +23,15 @@ else
   ca_date="$(date +%Y)"
   ca_expiry_days=3650
   ca_title="secureblue"
+
+  if [[ -d uki/keys/ || -d secrets/ ]]; then
+    echo "A secrets directory already exists in uki/keys/ or secrets/."
+    read -r -p "Would you like to overwrite them? [y/N]: " answer
+    [[ ${answer} == [Yy]* ]] || exit 1
+  fi
 fi
 
-if [[ "${1:-}" != "--dev" && ( -d uki/keys/ || -d secrets/ ) ]]; then
-  echo "A secrets directory already exists in uki/keys/ or secrets/."
-  read -r -p "Would you like to overwrite them? [y/N]: " answer
-  [[ ${answer} =~ ^[Yy] ]] || exit 1
-fi
-mkdir -p secrets/
-mkdir -p uki/keys/
+mkdir -p secrets uki/keys
 uuid=$(systemd-id128 new --uuid)
 echo "${uuid}" > uki/keys/GUID
 

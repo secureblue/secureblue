@@ -52,9 +52,18 @@ jobs:
           tar -xzf "${just_tarball}"
           sudo install ./just /usr/bin/just
 
+      - name: Disable AppArmor restrictions
+        shell: bash
+        run: |
+          sudo apt install apparmor-utils
+          sudo aa-teardown
+          sudo sysctl -w kernel.apparmor_restrict_unprivileged_userns=0
+
       - name: Run tests
         shell: bash
         env:
           BATS_LIB_PATH: "${{ github.workspace }}/.bats"
         run: |
           bats --timing --trace --verbose-run -r .github/workflows/tests
+          # Also test with-standard-malloc as root
+          sudo "$(command -v bats)" --timing --trace --verbose-run -r .github/workflows/tests/stdmalloc_tests.bats

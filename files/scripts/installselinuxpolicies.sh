@@ -10,7 +10,7 @@ selinux_policy_version="$(rpm -q --qf '%{version}-%{release}' selinux-policy)"
 dnf install -y --setopt=install_weak_deps=False --enable-repo=updates-archive \
     "selinux-policy-devel-${selinux_policy_version}"
 
-policy_modules=(flatpakfull systemsettings)
+policy_modules=(flatpakfull stdmalloc systemsettings)
 
 cil_policy_modules=(
     './selinux/flatpakfull/grant_systemd_flatpak_exec.cil'

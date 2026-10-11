@@ -1,0 +1,52 @@
+## <summary>stdmalloc policy</summary>
+
+# SPDX-FileCopyrightText: Copyright 2026 The Secureblue Authors
+#
+# SPDX-License-Identifier: Apache-2.0 OR MIT
+
+########################################
+## <summary>
+##	Execute stdmalloc in the stdmalloc domain.
+## </summary>
+## <param name="domain">
+## <summary>
+##	Domain allowed to transition.
+## </summary>
+## </param>
+#
+interface(`stdmalloc_domtrans',`
+	gen_require(`
+		type stdmalloc_exec_t;
+		type stdmalloc_t;
+	')
+
+	domtrans_pattern($1, stdmalloc_exec_t, stdmalloc_t)
+')
+
+
+########################################
+## <summary>
+##	Allow role to run stdmalloc
+## </summary>
+## <param name="domain">
+## <summary>
+##	Domain allowed to transition.
+## </summary>
+## </param>
+## <param name="role">
+##	<summary>
+##	Role allowed access.
+##	</summary>
+## </param>
+#
+interface(`stdmalloc_run',`
+	gen_require(`
+		type bin_t;
+		type stdmalloc_t;
+		attribute_role stdmalloc_roles;
+	')
+
+	stdmalloc_domtrans($1)
+	spec_domtrans_pattern(stdmalloc_t, bin_t, $1)
+	roleattribute $2 stdmalloc_roles;
+')

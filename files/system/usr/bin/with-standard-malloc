@@ -1,10 +1,12 @@
-#!/usr/bin/bash
+#!/usr/bin/bash -p
 
 # SPDX-FileCopyrightText: Copyright 2025-2026 The Secureblue Authors
 #
 # SPDX-License-Identifier: Apache-2.0
 
 set -euo pipefail
+
+unset BASH_ENV LD_PRELOAD
 
 usage() {
     echo 'Usage: with-standard-malloc COMMAND [ARGS...]'
@@ -18,9 +20,39 @@ case "${1-}" in
     *) ;;
 esac
 
+if [[ ! -f /etc/ld.so.preload ]]; then
+    exec -- "$@"
+fi
+
+# If running as root, we only need a mount namespace.
+if [[ "$(/usr/bin/id -u)" == 0 ]]; then
+    # shellcheck disable=SC2016
+    inner_script='
+    /usr/bin/mount --bind /dev/null /etc/ld.so.preload && \
+    exec /usr/bin/runcon --type=unconfined_t \
+        -- /usr/bin/bash -p -c '"'"'exec -- "$0" "$@"'"'"' "$0" "$@"
+    '
+    exec /usr/bin/unshare --mount \
+        -- /usr/bin/bash -p -c "${inner_script}" "$@"
+fi
+
+# First, we enter a new mount namespace and user namespace with full
+# capabilities. Inside this namespace, we execute a script that does the
+# following:
+# 1. Bind-mount /etc/ld.so.preload to /dev/null
+# 2. Change the SELinux type of the process to unconfined_t
+# 3. Drop all capabilities
+# 4. Execute the wrapped command
+
 # shellcheck disable=SC2016
-exec /usr/bin/bwrap \
-    --dev-bind / / \
-    --ro-bind-try /dev/null /etc/ld.so.preload \
-    --unsetenv LD_PRELOAD \
-    -- /usr/bin/bash -c 'exec -- "$0" "$@"' "$@"
+inner_script='
+/usr/bin/mount --bind /dev/null /etc/ld.so.preload && \
+exec /usr/bin/runcon --type=unconfined_t \
+    -- /usr/bin/capsh --iab= --noamb \
+        -- -p -c '"'"'exec -- "$0" "$@"'"'"' "$0" "$@"
+'
+
+exec /usr/bin/unshare \
+    --mount --propagation=shared \
+    --user --map-current-user --map-subids --keep-caps \
+    -- /usr/bin/bash -p -c "${inner_script}" "$@"

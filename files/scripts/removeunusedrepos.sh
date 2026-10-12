@@ -4,16 +4,22 @@
 #
 # SPDX-License-Identifier: Apache-2.0
 
+# Remove RPMFusion repos (secureblue uses Negativo instead) and some other unused repos
+
 set -euo pipefail
 
-rm -f /etc/yum.repos.d/eyecantcu-supergfxctl.repo
-rm -f /etc/yum.repos.d/_copr_ublue-os-akmods.repo
-rm -f /etc/yum.repos.d/_copr:copr.fedorainfracloud.org:phracek:PyCharm.repo
-rm -f /etc/yum.repos.d/google-chrome.repo
-rm -f /etc/yum.repos.d/fedora-cisco-openh264.repo
+repos_to_remove=(
+    eyecantcu-supergfxctl.repo
+    _copr_ublue-os-akmods.repo
+    _copr:copr.fedorainfracloud.org:phracek:PyCharm.repo
+    google-chrome.repo
+    fedora-cisco-openh264.repo
+    rpmfusion-nonfree-nvidia-driver.repo
+    rpmfusion-nonfree-steam.repo
+    rpmfusion-nonfree-nvidia-driver.repo.rpmsave
+    rpmfusion-nonfree-steam.repo.rpmsave
+)
 
-# RPMFusion repos (secureblue uses Negativo instead)
-rm -f /etc/yum.repos.d/rpmfusion-nonfree-nvidia-driver.repo
-rm -f /etc/yum.repos.d/rpmfusion-nonfree-steam.repo
-rm -f /etc/yum.repos.d/rpmfusion-nonfree-nvidia-driver.repo.rpmsave
-rm -f /etc/yum.repos.d/rpmfusion-nonfree-steam.repo.rpmsave
+for repo in "${repos_to_remove[@]}"; do
+    rm -f "/usr/share/dnf5/repos.d/${repo}" "/etc/yum.repos.d/${repo}"
+done

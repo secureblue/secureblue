@@ -6,7 +6,5 @@
 
 set -euo pipefail
 
-# Make ld.so.preload readable only by root, so user processes can override
-# hardened_malloc by resetting LD_PRELOAD.
-umask 077
-echo 'libhardened_malloc.so' > /etc/ld.so.preload
+umask 022
+echo 'libhardened_malloc.so libno_rlimit_as.so' > /etc/ld.so.preload

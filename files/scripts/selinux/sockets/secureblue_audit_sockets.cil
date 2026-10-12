@@ -33,7 +33,4 @@
     (call audit_bluetooth_socket_ioctl (bluetooth_socket))
     (call audit_socket_ioctl (icmp_socket))
     (call audit_socket (nfc_socket))
-    (call audit_socket (phonet_socket))
-    (call audit_socket (qipcrtr_socket))
-    (call audit_socket (vsock_socket))
-    (call audit_socket (xdp_socket)))
+    (call audit_socket (vsock_socket)))

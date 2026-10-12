@@ -1,4 +1,4 @@
-#!/usr/bin/python3
+#!/usr/bin/python3 -Es
 
 # SPDX-FileCopyrightText: Copyright 2026 The Secureblue Authors
 #
@@ -9,7 +9,7 @@
 from os import path
 from subprocess import run
 
-from utils import ask_yes_no
+from shared.utils import ask_yes_no
 
 if path.exists("/sys/firmware/efi"):
     if ask_yes_no("The system will reboot into UEFI firmware settings. Proceed?"):

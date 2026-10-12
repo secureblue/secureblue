@@ -54,6 +54,7 @@ remove:
     - fuse
     - passim
     - fedora-chromium-config
+    - intel-mediasdk
 replace:
   - from-repo: copr:copr.fedorainfracloud.org:secureblue:packages
     packages:

@@ -1,4 +1,4 @@
-#!/usr/bin/python3
+#!/usr/bin/python3 -Es
 
 # SPDX-FileCopyrightText: Copyright 2026 The Secureblue Authors
 #
@@ -10,7 +10,7 @@ import sys
 from pathlib import Path
 from typing import Final
 
-from utils import SystemdService
+from shared.utils import SystemdService
 
 SSH_AUTH_DROPIN: Final[Path] = Path(
     "/etc/ssh/sshd_config.d/49-secureblue-disable-password-auth.conf"

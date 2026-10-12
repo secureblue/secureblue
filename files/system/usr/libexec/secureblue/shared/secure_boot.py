@@ -1,5 +1,3 @@
-#!/usr/bin/python3
-
 """Shared data objects for `ujust enroll-secure-boot-keys`."""
 
 # SPDX-FileCopyrightText: Copyright 2026 The Secureblue Authors

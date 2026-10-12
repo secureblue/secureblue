@@ -60,6 +60,7 @@ jobs:
     secrets:
       COSIGN_KEY: ${{ secrets.SIGNING_SECRET }}
       UKI_DB_KEY: ${{ secrets.UKI_DB_KEY }}
+      UKI_PCR_KEY: ${{ secrets.UKI_PCR_KEY }}
 
   kinoite-main:
     name: Build kinoite main
@@ -95,6 +96,7 @@ jobs:
     secrets:
       COSIGN_KEY: ${{ secrets.SIGNING_SECRET }}
       UKI_DB_KEY: ${{ secrets.UKI_DB_KEY }}
+      UKI_PCR_KEY: ${{ secrets.UKI_PCR_KEY }}
 
   sericea-main:
     name: Build sericea main
@@ -130,6 +132,7 @@ jobs:
     secrets:
       COSIGN_KEY: ${{ secrets.SIGNING_SECRET }}
       UKI_DB_KEY: ${{ secrets.UKI_DB_KEY }}
+      UKI_PCR_KEY: ${{ secrets.UKI_PCR_KEY }}
 
   cosmic-main:
     name: Build cosmic main
@@ -165,6 +168,7 @@ jobs:
     secrets:
       COSIGN_KEY: ${{ secrets.SIGNING_SECRET }}
       UKI_DB_KEY: ${{ secrets.UKI_DB_KEY }}
+      UKI_PCR_KEY: ${{ secrets.UKI_PCR_KEY }}
 
   silverblue-nvidia:
     name: Build silverblue nvidia images
@@ -292,6 +296,7 @@ jobs:
     secrets:
       COSIGN_KEY: ${{ secrets.SIGNING_SECRET }}
       UKI_DB_KEY: ${{ secrets.UKI_DB_KEY }}
+      UKI_PCR_KEY: ${{ secrets.UKI_PCR_KEY }}
 
   securecore-nvidia:
     name: Build securecore nvidia images
@@ -390,6 +395,7 @@ jobs:
     secrets:
       COSIGN_KEY: ${{ secrets.SIGNING_SECRET }}
       UKI_DB_KEY: ${{ secrets.UKI_DB_KEY }}
+      UKI_PCR_KEY: ${{ secrets.UKI_PCR_KEY }}
 
   iot-nvidia:
     name: Build iot nvidia images

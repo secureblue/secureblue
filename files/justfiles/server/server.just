@@ -5,4 +5,4 @@
 # Enable, disable, or check status of SSH password authentication
 [positional-arguments]
 @set-ssh-password-auth *args:
-    exec /usr/bin/python3 /usr/libexec/secureblue/set_ssh_password_auth.py "$@"
+    exec /usr/bin/python3 -Es /usr/libexec/secureblue/set_ssh_password_auth.py "$@"

@@ -1,4 +1,4 @@
-#!/usr/bin/python3
+#!/usr/bin/python3 -Es
 
 # SPDX-FileCopyrightText: Copyright 2026 The Secureblue Authors
 #
@@ -10,7 +10,7 @@ import sys
 from pathlib import Path
 from subprocess import DEVNULL, CalledProcessError, Popen, run
 
-from utils import BootcBackend
+from shared.utils import BootcBackend
 
 
 def main() -> int:

@@ -1,4 +1,4 @@
-#!/usr/bin/python3
+#!/usr/bin/python3 -Es
 
 # SPDX-FileCopyrightText: Copyright 2025-2026 The Secureblue Authors
 #
@@ -16,11 +16,11 @@ import json
 import tomllib
 from typing import TYPE_CHECKING, Any, ClassVar, Final, Self, assert_never
 
-from utils import print_wrapped
-
 if TYPE_CHECKING:
     from collections.abc import AsyncGenerator, Callable, Generator, Sequence
     from pathlib import Path
+
+from shared.utils import print_wrapped
 
 
 def gettext_marker() -> Callable[[str], str]:

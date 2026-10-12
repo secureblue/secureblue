@@ -1,4 +1,4 @@
-#!/usr/bin/python3
+#!/usr/bin/python3 -Es
 
 """Sets DNS configuration, a.k.a. `ujust dns-selector`."""
 
@@ -19,7 +19,7 @@ from typing import Final
 from urllib.parse import urlparse
 
 import sandbox
-from utils import ask_option, ask_yes_no, interruptible_ask
+from shared.utils import ask_option, ask_yes_no, interruptible_ask
 
 RESET: Final[str] = "\033[0m"
 BOLD: Final[str] = "\033[1m"

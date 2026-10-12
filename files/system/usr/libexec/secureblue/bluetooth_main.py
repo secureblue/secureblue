@@ -1,4 +1,4 @@
-#!/usr/bin/python3
+#!/usr/bin/python3 -Es
 
 # SPDX-FileCopyrightText: Copyright 2025-2026 The Secureblue Authors
 #
@@ -13,7 +13,7 @@ from pathlib import Path
 from typing import Final
 
 import sandbox
-from utils import (
+from shared.utils import (
     ask_yes_no,
     is_module_loaded,
 )

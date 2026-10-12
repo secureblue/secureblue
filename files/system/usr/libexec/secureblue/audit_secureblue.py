@@ -217,22 +217,33 @@ def audit_container_policy():
     """Check for modifications to container policy."""
     status = PASS
     notes = []
-    system_policy_file = "/etc/containers/policy.json"
-    if not filecmp.cmp(f"/usr/share/secureblue{system_policy_file}", system_policy_file):
-        status = status.downgrade_to(INFO)
-        notes.append(Note(_("The file {0} has been modified.").format(system_policy_file), INFO))
-
+    rec = None
     policy_audit, policy_path = analyze_active_container_policy()
 
-    if policy_path != str(system_policy_file):
+    if policy_path == "/usr/share/containers/policy.json":
+        pass
+    elif policy_path == "/etc/containers/policy.json":
         status = status.downgrade_to(INFO)
-        notes.append(
-            Note(_("Container policy has a local override at {0}.").format(policy_path), INFO)
+        message = _("Container policy has a system-wide override at {0}.").format(policy_path)
+        notes.append(Note(message, INFO))
+        rec = "\n".join(
+            [
+                message,
+                _("To restore the default container policy, run:"),
+                "$ run0 -i rm /etc/containers/policy.json",
+            ]
         )
-    elif status == PASS:
-        # No need to parse the policy, it's unmodified.
-        yield Report(_("Analyzing container policy"), PASS)
-        return
+    else:
+        status = status.downgrade_to(INFO)
+        message = _("Container policy has a local override at {0}.").format(policy_path)
+        notes.append(Note(message, INFO))
+        rec = "\n".join(
+            [
+                message,
+                _("To restore the default container policy, run:"),
+                f"$ rm '{policy_path}'",
+            ]
+        )
 
     if not policy_audit.default_secure:
         status = status.downgrade_to(FAIL)
@@ -267,7 +278,7 @@ def audit_container_policy():
             )
         )
 
-    yield Report(_("Analyzing container policy"), status, notes=notes)
+    yield Report(_("Analyzing container policy"), status, notes=notes, recs=rec)
 
 
 @audit

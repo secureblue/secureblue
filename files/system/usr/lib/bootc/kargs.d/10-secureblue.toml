@@ -35,7 +35,7 @@ kargs = [
   "slab_debug=FZ",
   "slab_nomerge",
   "spec_store_bypass_disable=on",
-  "spectre_v2=on",
+  "spectre_v2=auto",
   "ssbd=force-on",
   "systemd.ssh_auto=no",
   "vdso32=0",

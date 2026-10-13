@@ -13,11 +13,18 @@ FEDORA_VERSION="$(rpm -E '%{fedora}')"
 KERNEL_VERSION="$(dnf repoquery \
     --repofrompath="updates-primary,https://dl.fedoraproject.org/pub/fedora/linux/updates/${FEDORA_VERSION}/Everything/${OS_ARCH}/" \
     --repo 'updates-primary' \
+    --repo 'fedora' \
     --latest-limit 1 \
     --arch "${OS_ARCH}" \
     --queryformat '%{version}-%{release}.%{arch}' \
     'kernel'
 )"
+
+if [[ -z "${KERNEL_VERSION}" ]]; then
+    echo "Failed to determine the upstream ${FEDORA_VERSION} kernel version for ${OS_ARCH}"
+    exit 1
+fi
+
 SECUREBLUE_KERNEL_VERSION="${KERNEL_VERSION/.fc/.secureblue.*.fc}"
 dnf install --repo "copr:copr.fedorainfracloud.org:secureblue:packages" "kernel-${SECUREBLUE_KERNEL_VERSION}" -y
 

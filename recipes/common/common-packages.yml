@@ -28,7 +28,6 @@ install:
     - wireguard-tools
     - gettext
     - rsync
-    - steam-devices
     - just
 
     # signing deps

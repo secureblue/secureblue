@@ -168,11 +168,36 @@ class DirectoryCheck(PermissionCheck):
 
 
 DANGEROUS_DIRECTORY_CHECKS: list[DirectoryCheck] = [
+    DirectoryCheck(
+        "host-root", FAIL, _("all system files"), sandbox_escape=True, arbitrary_permissions=True
+    ),
     DirectoryCheck("host", FAIL, _("all system files")),
     DirectoryCheck("home", FAIL, _("all user files")),
+    DirectoryCheck("/var/home", FAIL, _("all user files")),
     DirectoryCheck("xdg-config", FAIL, _("other applications' configuration files")),
+    DirectoryCheck("xdg-config/autostart", FAIL, _("user autostart configuration files")),
+    DirectoryCheck("xdg-config/environment.d", FAIL, _("user environment configuration files")),
+    DirectoryCheck("xdg-config/systemd", FAIL, _("user systemd configuration files")),
+    DirectoryCheck("xdg-config/systemd/user", FAIL, _("user systemd configuration files")),
     DirectoryCheck("xdg-cache", FAIL, _("other applications' cache files")),
+    DirectoryCheck("home/.local", FAIL, _("other applications' data files")),
     DirectoryCheck("xdg-data", FAIL, _("other applications' data files")),
+    DirectoryCheck(
+        "xdg-data/flatpak",
+        FAIL,
+        _("other flatpak applications' installation files"),
+        sandbox_escape=True,
+        arbitrary_permissions=True,
+    ),
+    DirectoryCheck("home/.var", FAIL, _("other flatpak applications' data files")),
+    DirectoryCheck("home/.var/app", FAIL, _("other flatpak applications' data files")),
+    DirectoryCheck("home/.bashrc", FAIL, _("user shell configuration files")),
+    DirectoryCheck("home/.bashrc.d", FAIL, _("user shell configuration files")),
+    DirectoryCheck("home/.bash_login", FAIL, _("user shell configuration files")),
+    DirectoryCheck("home/.bash_logout", FAIL, _("user shell configuration files")),
+    DirectoryCheck("home/.bash_profile", FAIL, _("user shell configuration files")),
+    DirectoryCheck("home/.profile", FAIL, _("user shell configuration files")),
+    DirectoryCheck("xdg-config/bash_completion", FAIL, _("user shell configuration files")),
 ]
 
 
@@ -190,6 +215,7 @@ def _check_dangerous_dirs(
         if perm.is_aliased:
             dir_check = dataclass_replace(dir_check, permission=perm.aliased_path)
         state.update(note=dir_check.note(state.name), rec=dir_check.recommendation(state.name))
+        state.arbitrary_permissions |= dir_check.arbitrary_permissions
 
 
 def check_fs_permissions(state: FlatpakPermissionsState, perms: Permissions) -> None:

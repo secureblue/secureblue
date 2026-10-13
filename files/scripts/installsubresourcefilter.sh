@@ -10,5 +10,5 @@ set -euo pipefail
 # hardcoded to x86_64 deliberately.
 dnf install -y --setopt=install_weak_deps=False \
     --repo=copr:copr.fedorainfracloud.org:secureblue:packages \
-    --setopt="copr:copr.fedorainfracloud.org:secureblue:packages.baseurl=https://download.copr.fedorainfracloud.org/results/secureblue/packages/fedora-\$releasever-x86_64/" \
+    --setopt='copr:copr.fedorainfracloud.org:secureblue:packages.baseurl=https://download.copr.fedorainfracloud.org/results/secureblue/packages/fedora-$releasever-x86_64/' \
     trivalent-subresource-filter

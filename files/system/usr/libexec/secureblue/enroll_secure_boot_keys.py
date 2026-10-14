@@ -33,7 +33,9 @@ PK_AUTH_PATH = "/usr/share/secureblue/uki/keys/PK.auth"
 PK_DER_PATH = "/usr/share/secureblue/uki/keys/PK.der"
 
 worker = sandbox.SandboxedFunction(
-    "secure_boot.py", read_write_paths=[EFIVARS.as_posix()], capabilities=["CAP_LINUX_IMMUTABLE"]
+    "secure_boot.py",
+    read_write_paths=[EFIVARS.as_posix(), "/boot"],
+    capabilities=["CAP_LINUX_IMMUTABLE"],
 )
 
 

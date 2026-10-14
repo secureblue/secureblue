@@ -10,7 +10,7 @@ import subprocess
 import sys
 from typing import Final
 
-import sandbox
+from shared import sandbox
 from shared.utils import (
     CommandUsageError,
     ToggleMode,

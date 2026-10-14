@@ -10,7 +10,7 @@ import sys
 from pathlib import Path
 from typing import Final
 
-import sandbox
+from shared import sandbox
 from shared.utils import (
     CommandUsageError,
     ToggleMode,

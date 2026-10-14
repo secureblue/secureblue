@@ -12,7 +12,7 @@ import sys
 from pathlib import Path
 from typing import Final
 
-import sandbox
+from shared import sandbox
 from shared.utils import CommandUsageError, ToggleMode, parse_basic_toggle_args
 
 HOSTNAME_SENDING_HELP: Final[str] = """

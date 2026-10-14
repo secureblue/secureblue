@@ -9,7 +9,7 @@
 import sys
 from pathlib import Path
 
-import sandbox
+from shared import sandbox
 from shared.secure_boot import (
     EFI_NS_GLOBAL,
     EFI_NS_SHIM,

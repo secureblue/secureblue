@@ -13,7 +13,7 @@ import re
 import sys
 from typing import Final
 
-import sandbox
+from shared import sandbox
 
 # Note this script calls the new user admin in userfacing contexts,
 # and wheel internally for clarity.

@@ -210,8 +210,8 @@ jobs:
 
           case "$GITHUB_REF" in
             refs/heads/"$DEFAULT_BRANCH") image_tag='latest' ;;
-            refs/pull/*) image_tag="pr-${PR_EVENT_NUMBER}-44" ;;
-            *) image_tag="br-${GITHUB_REF_NAME}-44" ;;
+            refs/pull/*) image_tag="pr-${PR_EVENT_NUMBER}-45" ;;
+            *) image_tag="br-${GITHUB_REF_NAME}-45" ;;
           esac
           echo "IMAGE_TAG=${image_tag}" >> "${GITHUB_OUTPUT}"
           FULL_IMAGE_REF="ghcr.io/${GITHUB_REPOSITORY_OWNER,,}/${IMAGE_NAME}:${image_tag}"

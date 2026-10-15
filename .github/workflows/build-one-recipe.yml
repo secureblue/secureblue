@@ -26,8 +26,6 @@ on:
         value: ${{ jobs.bluebuild.outputs.IMAGE_NAME }}
       IMAGE_TAG:
         value: ${{ jobs.bluebuild.outputs.IMAGE_TAG }}
-      IMAGE_VERSION:
-        value: ${{ jobs.bluebuild.outputs.IMAGE_VERSION }}
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}-${{ inputs.recipe }}
@@ -43,7 +41,6 @@ jobs:
       IMAGE_NAME: ${{ steps.image_data.outputs.IMAGE_NAME }}
       IMAGE_DIGEST: ${{ steps.image_manifest_metadata.outputs.IMAGE_DIGEST }}
       IMAGE_TAG: ${{ steps.image_data.outputs.IMAGE_TAG }}
-      IMAGE_VERSION: ${{ steps.image_data.outputs.BASE_IMAGE_VERSION }}
     permissions:
       contents: read # Needed to pull the repo for the build
       packages: write # Needed to publish images

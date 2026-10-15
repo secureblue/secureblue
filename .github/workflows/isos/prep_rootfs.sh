@@ -43,7 +43,7 @@ jq --arg image_ref "${IMAGE_REF}" \
                 "dockerRepository": $image_ref
             }
         }
-    ]' /etc/containers/policy.json | tee /etc/containers/policy.json.tmp && mv /etc/containers/policy.json.tmp /etc/containers/policy.json
+    ]' /usr/share/containers/policy.json >/etc/containers/policy.json
 
 # Disable suspend/sleep during live environment and initial setup
 # This prevents the system from suspending during installation or first-boot user creation

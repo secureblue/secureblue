@@ -12,7 +12,7 @@ import sys
 from pathlib import Path
 from typing import Final
 
-import sandbox
+from shared import sandbox
 from shared.utils import (
     ask_yes_no,
     is_module_loaded,

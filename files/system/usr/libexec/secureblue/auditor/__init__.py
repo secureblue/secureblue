@@ -206,7 +206,7 @@ class Check:
 
     name: str
     callback: Callable[..., AsyncGenerator[Report]]
-    category: str | None = None
+    categories: set[str] = dataclasses.field(default_factory=set)
     stateful: bool = False
     dependencies: list[str] = dataclasses.field(default_factory=list)
     done: bool = False
@@ -338,8 +338,7 @@ class Audit:
         for dep in check.dependencies:
             if dep not in names:
                 raise DependencyError(f"'{check.name}' requires '{dep}' to be run first.")
-        if check.category is not None:
-            self.categories.add(check.category)
+        self.categories |= check.categories
         self.checks.append(check)
 
     async def run(self, *, width: int = 80) -> AsyncGenerator[tuple[Check, Exception]]:
@@ -348,7 +347,7 @@ class Audit:
         checks = [
             check
             for check in self.checks
-            if check.name not in self.skip and check.category not in self.skip
+            if check.name not in self.skip and not (check.categories & self.skip)
         ]
         for check in checks:
             try:
@@ -370,7 +369,7 @@ class Audit:
     async def run_json(self) -> AsyncGenerator[str]:
         """Runs each stored check and prints the results as JSON."""
         for check in self.checks:
-            if check.name in self.skip or check.category in self.skip:
+            if check.name in self.skip or check.categories & self.skip:
                 continue
             async for report in check.run(self.state):
                 notes = [
@@ -386,7 +385,7 @@ class Audit:
                 yield json.dumps(
                     {
                         "name": check.name,
-                        "category": check.category,
+                        "categories": sorted(check.categories),
                         "description": report.description,
                         "status": report.status.name.lower(),
                         "notes": notes,
@@ -443,14 +442,15 @@ def depends_on(*dependencies: str) -> Callable[..., Check]:
     return add_dependencies
 
 
-def categorize(cat: str) -> Callable[..., Check]:
-    """Mark a check as belonging to a given category."""
+def categorize(*categories: str) -> Callable[..., Check]:
+    """Mark a check as belonging to the given categories."""
 
     def add_category(
         f: Check | Callable[..., AsyncGenerator[Report]] | Callable[..., Generator[Report]],
     ) -> Check:
         check = make_check(f)
-        check.category = cat
+        for cat in categories:
+            check.categories.add(cat)
         return check
 
     return add_category

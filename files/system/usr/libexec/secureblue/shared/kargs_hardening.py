@@ -10,7 +10,7 @@ import subprocess
 import sys
 import tomllib
 from dataclasses import dataclass
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, cast
 
 if TYPE_CHECKING:
     from collections.abc import Sequence
@@ -20,8 +20,14 @@ import sandbox
 from .secure_boot import Bootloader
 from .utils import BootcBackend
 
-with open("/usr/lib/bootc/kargs.d/10-secureblue.toml", "rb") as f:
+bootc_kargs_file = "/usr/lib/bootc/kargs.d/10-secureblue.toml"
+with open(bootc_kargs_file, "rb") as f:
     DEFAULT_KARGS = tomllib.load(f)["kargs"]
+
+if not isinstance(DEFAULT_KARGS, list) or not all(isinstance(karg, str) for karg in DEFAULT_KARGS):
+    raise ValueError(f"Invalid kargs entry (not a list of strings) in {bootc_kargs_file}")
+
+DEFAULT_KARGS = cast("list[str]", DEFAULT_KARGS)
 
 try:
     with open("/usr/lib/bootc/kargs.d/20-nvidia.toml", "rb") as f:

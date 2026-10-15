@@ -10,6 +10,7 @@ import enum
 import json
 import os
 import platform
+import re
 import subprocess
 import sys
 import textwrap
@@ -187,6 +188,43 @@ def parse_config(
         key, value = line.split(sep, maxsplit=1)
         config[key.strip()] = value.strip()
     return config
+
+
+def parse_kernel_cmdline(cmdline: str) -> dict[str, str | None]:
+    """
+    Parse kernel cmdline into a key-value mapping. Later kernel arguments
+    override earlier ones with the same key, so this represents the kargs that
+    are actually applied. Parameter names are normalized by replacing hyphens
+    with underscores. Double-quoted values are interpreted as documented here:
+    https://www.kernel.org/doc/html/latest/admin-guide/kernel-parameters.html#special-handling
+    """
+    kargs_map = {}
+    split_by_quotes = cmdline.split('"')
+    if len(split_by_quotes) % 2 == 0:
+        raise ValueError("Unmatched double-quote character in kernel command-line")
+    segments = iter(split_by_quotes)
+    first_segment = True
+    non_whitespace_char = re.compile(r"\S")
+    try:
+        while True:
+            unquoted_segment = next(segments)
+            if not first_segment and re.match(non_whitespace_char, unquoted_segment):
+                raise ValueError(
+                    "Closing double-quote must be followed by whitespace in kernel command-line"
+                )
+            first_segment = False
+            for karg in unquoted_segment.split():
+                key, sep, value = karg.partition("=")
+                key = key.replace("-", "_")
+                value = value if sep else None
+                kargs_map[key] = value
+            quoted_segment = next(segments)
+            if unquoted_segment.endswith("="):
+                kargs_map[key] = quoted_segment
+            else:
+                raise ValueError("Opening double-quote must follow = in kernel command-line")
+    except StopIteration:
+        return kargs_map
 
 
 def is_module_loaded(module_name: str) -> bool:

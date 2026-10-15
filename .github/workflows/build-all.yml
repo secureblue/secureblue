@@ -56,7 +56,6 @@ jobs:
       image: ${{ needs.silverblue-main.outputs.IMAGE_NAME }}
       base_tag: ${{ needs.silverblue-main.outputs.IMAGE_TAG }}
       base_digest: ${{ needs.silverblue-main.outputs.IMAGE_DIGEST }}
-      image_version: ${{ needs.silverblue-main.outputs.IMAGE_VERSION }}
     secrets:
       COSIGN_KEY: ${{ secrets.SIGNING_SECRET }}
       UKI_DB_KEY: ${{ secrets.UKI_DB_KEY }}
@@ -92,7 +91,6 @@ jobs:
       image: ${{ needs.kinoite-main.outputs.IMAGE_NAME }}
       base_tag: ${{ needs.kinoite-main.outputs.IMAGE_TAG }}
       base_digest: ${{ needs.kinoite-main.outputs.IMAGE_DIGEST }}
-      image_version: ${{ needs.kinoite-main.outputs.IMAGE_VERSION }}
     secrets:
       COSIGN_KEY: ${{ secrets.SIGNING_SECRET }}
       UKI_DB_KEY: ${{ secrets.UKI_DB_KEY }}
@@ -128,7 +126,6 @@ jobs:
       image: ${{ needs.sericea-main.outputs.IMAGE_NAME }}
       base_tag: ${{ needs.sericea-main.outputs.IMAGE_TAG }}
       base_digest: ${{ needs.sericea-main.outputs.IMAGE_DIGEST }}
-      image_version: ${{ needs.sericea-main.outputs.IMAGE_VERSION }}
     secrets:
       COSIGN_KEY: ${{ secrets.SIGNING_SECRET }}
       UKI_DB_KEY: ${{ secrets.UKI_DB_KEY }}
@@ -164,7 +161,6 @@ jobs:
       image: ${{ needs.cosmic-main.outputs.IMAGE_NAME }}
       base_tag: ${{ needs.cosmic-main.outputs.IMAGE_TAG }}
       base_digest: ${{ needs.cosmic-main.outputs.IMAGE_DIGEST }}
-      image_version: ${{ needs.cosmic-main.outputs.IMAGE_VERSION }}
     secrets:
       COSIGN_KEY: ${{ secrets.SIGNING_SECRET }}
       UKI_DB_KEY: ${{ secrets.UKI_DB_KEY }}
@@ -292,7 +288,6 @@ jobs:
       image: ${{ needs.securecore-main.outputs.IMAGE_NAME }}
       base_tag: ${{ needs.securecore-main.outputs.IMAGE_TAG }}
       base_digest: ${{ needs.securecore-main.outputs.IMAGE_DIGEST }}
-      image_version: ${{ needs.securecore-main.outputs.IMAGE_VERSION }}
     secrets:
       COSIGN_KEY: ${{ secrets.SIGNING_SECRET }}
       UKI_DB_KEY: ${{ secrets.UKI_DB_KEY }}
@@ -391,7 +386,6 @@ jobs:
       image: ${{ needs.iot-main.outputs.IMAGE_NAME }}
       base_tag: ${{ needs.iot-main.outputs.IMAGE_TAG }}
       base_digest: ${{ needs.iot-main.outputs.IMAGE_DIGEST }}
-      image_version: ${{ needs.iot-main.outputs.IMAGE_VERSION }}
     secrets:
       COSIGN_KEY: ${{ secrets.SIGNING_SECRET }}
       UKI_DB_KEY: ${{ secrets.UKI_DB_KEY }}

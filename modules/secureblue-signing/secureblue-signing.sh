@@ -7,20 +7,20 @@
 
 set -euo pipefail
 
-CONTAINER_DIR='/usr/share/secureblue/etc/containers'
-ETC_CONTAINER_DIR='/etc/containers'
+CONTAINER_DIR=/usr/share/containers
 MODULE_DIRECTORY="${MODULE_DIRECTORY:-/tmp/modules}"
-IMAGE_REGISTRY_TITLE=$(echo "${IMAGE_REGISTRY}" | cut -d'/' -f2-)
+IMAGE_REGISTRY_TITLE="${IMAGE_REGISTRY#*/}"
+IMAGE_REGISTRY_TITLE="${IMAGE_REGISTRY_TITLE//"/"/-}"
 
 echo "Setting up container signing in policy.json and cosign.yaml for ${IMAGE_NAME}"
 echo "Registry to write: ${IMAGE_REGISTRY}"
 
-mkdir -p "${CONTAINER_DIR}/registries.d" "${ETC_CONTAINER_DIR}/registries.d"
+mkdir -p "${CONTAINER_DIR}/registries.d"
 
-cp "${MODULE_DIRECTORY}/secureblue-signing/policy.json" "${CONTAINER_DIR}/policy.json"
-cp "${MODULE_DIRECTORY}/secureblue-signing/policy.json" "${ETC_CONTAINER_DIR}/policy.json"
-
-POLICY_FILE="${CONTAINER_DIR}/policy.json"
+# shellcheck disable=SC2016
+envsubst '${IMAGE_REGISTRY}' \
+    <"${MODULE_DIRECTORY}/secureblue-signing/registry-config.yaml" \
+    >"${CONTAINER_DIR}/registries.d/${IMAGE_REGISTRY_TITLE}.yaml"
 
 jq --arg image_registry "${IMAGE_REGISTRY}" \
     --arg image_registry_title "${IMAGE_REGISTRY_TITLE}" \
@@ -36,13 +36,5 @@ jq --arg image_registry "${IMAGE_REGISTRY}" \
                 "type": "matchRepository"
             }
         }
-    ] } + .' "${POLICY_FILE}" > POLICY.tmp
-
-cp POLICY.tmp "${CONTAINER_DIR}/policy.json"
-cp POLICY.tmp "${ETC_CONTAINER_DIR}/policy.json"
-rm POLICY.tmp
-
-sed -i --sandbox -e "s|ghcr.io/IMAGENAME|${IMAGE_REGISTRY}|g" "${MODULE_DIRECTORY}/secureblue-signing/registry-config.yaml"
-cp "${MODULE_DIRECTORY}/secureblue-signing/registry-config.yaml" "${CONTAINER_DIR}/registries.d/${IMAGE_REGISTRY_TITLE}.yaml"
-cp "${MODULE_DIRECTORY}/secureblue-signing/registry-config.yaml" "${ETC_CONTAINER_DIR}/registries.d/${IMAGE_REGISTRY_TITLE}.yaml"
-rm "${MODULE_DIRECTORY}/secureblue-signing/registry-config.yaml"
+    ] } + .' "${MODULE_DIRECTORY}/secureblue-signing/policy.json" \
+    >"${CONTAINER_DIR}/policy.json"

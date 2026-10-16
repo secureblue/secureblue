@@ -6,17 +6,29 @@
 
 set -euo pipefail
 
-packages=(blender sushi plocate)
+packages=(
+    NetworkManager-fortisslvpn
+    NetworkManager-iodine
+    NetworkManager-l2tp
+    NetworkManager-libreswan
+    NetworkManager-pptp
+    NetworkManager-ssh
+    NetworkManager-sstp
+    NetworkManager-strongswan
+    NetworkManager-vpnc
+    blender
+    plocate
+    sushi
+)
 
 for pkg in "${packages[@]}"; do
-    if rpm -q "${pkg}" &> /dev/null; then
+    if rpm -q "${pkg}" &>/dev/null; then
         echo "${pkg} found. Exiting..."
         exit 1
     fi
 done
 
-if command -v sudo &> /dev/null
-then
+if command -v sudo &>/dev/null; then
     echo "sudo found. Exiting..."
     exit 1
 fi

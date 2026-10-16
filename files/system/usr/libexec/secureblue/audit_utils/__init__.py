@@ -16,7 +16,7 @@ import textwrap
 from typing import Final
 
 from auditor import AuditError, Status, gettext_marker
-from shared.utils import get_config_dir, print_err
+from shared.utils import get_config_dir
 
 from .containers import ContainersPolicyAudit
 
@@ -28,13 +28,6 @@ UNKNOWN: Final = Status.UNKNOWN
 
 
 _: Final = gettext_marker()
-
-
-def warn_if_root() -> None:
-    """If run as root, warn that this is not recommended."""
-    if not os.getuid():
-        print_err("\n" + _("*** WARNING: Running audit script as root is not recommended. ***"))
-        print_err(_("*** Some results may be misleading or incomplete. ***") + "\n")
 
 
 def get_width() -> int:

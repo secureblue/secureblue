@@ -28,7 +28,6 @@ install:
     - wireguard-tools
     - gettext
     - rsync
-    - steam-devices
     - just
 
     # signing deps
@@ -72,3 +71,16 @@ replace:
       # This removes bwrap's ability to create user namespaces with elevated
       # capabilities via the --cap-add option:
       - bubblewrap
+remove:
+  packages:
+    # Remove uncommon or obsolete NetworkManager plugins
+    - NetworkManager-fortisslvpn
+    - NetworkManager-iodine
+    - NetworkManager-l2tp
+    - NetworkManager-libreswan
+    - NetworkManager-pptp
+    - NetworkManager-ssh
+    - NetworkManager-ssh-selinux
+    - NetworkManager-sstp
+    - NetworkManager-strongswan
+    - NetworkManager-vpnc

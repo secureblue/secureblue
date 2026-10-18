@@ -7,15 +7,20 @@
 """Enable, disable, or check status of SSH password authentication."""
 
 import sys
-from pathlib import Path
 from typing import Final, assert_never
 
 import sandbox
+from shared.ssh_password_auth import (
+    SSH_AUTH_DROPIN,
+    SSHD_CONFIG_DIR,
+    SSHPasswordAuthError,
+    ssh_password_auth_enabled,
+)
 from shared.utils import (
     CommandUsageError,
     ToggleMode,
     parse_basic_toggle_args,
-    parse_config,
+    print_err,
     print_wrapped,
 )
 
@@ -27,41 +32,23 @@ ujust set-ssh-password-auth
     Enables or disables interactively based on the user preference.
 
 ujust set-ssh-password-auth on
-    Enables SSH password authentication; does nothing if already on.
+    Removes the managed drop-in; does nothing if already on.
+    Other SSH configuration disabling password authentication must be changed manually.
 
 ujust set-ssh-password-auth off
     Disables SSH password authentication; does nothing if already off.
 
 ujust set-ssh-password-auth status
-    Reports if SSH password authentication is enabled or disabled.
+    Reports if SSH password authentication is enabled or disabled in the effective configuration.
 
 ujust set-ssh-password-auth --help
     Prints this message.
 """
 
-SSHD_CONFIG_DIR: Final[str] = "/etc/ssh/sshd_config.d"
-SSH_AUTH_DROPIN: Final[Path] = Path(f"{SSHD_CONFIG_DIR}/49-secureblue-disable-password-auth.conf")
-SSH_AUTH_DISABLED_CONFIG: Final[dict[str, str]] = {
-    "PasswordAuthentication": "no",
-    "KbdInteractiveAuthentication": "no",
-}
-
-
 ssh_auth_function = sandbox.SandboxedFunction(
     "ssh_password_auth.py",
     read_write_paths=[SSHD_CONFIG_DIR],
 )
-
-
-def ssh_password_auth_enabled() -> bool:
-    """Return whether SSH password authentication is enabled."""
-    try:
-        with SSH_AUTH_DROPIN.open(encoding="utf-8") as f:
-            config = parse_config(f, sep=" ")
-    except FileNotFoundError:
-        return True
-
-    return any(config.get(key) != value for key, value in SSH_AUTH_DISABLED_CONFIG.items())
 
 
 def enable_ssh_password_auth(currently_enabled: bool) -> int:
@@ -70,8 +57,8 @@ def enable_ssh_password_auth(currently_enabled: bool) -> int:
         print("SSH password authentication is already enabled.")
         return 0
     print_wrapped(f"""
-        SSH password authentication is currently disabled. Enabling it now by removing
-        '{SSH_AUTH_DROPIN}'.
+        SSH password authentication is currently disabled. Removing
+        '{SSH_AUTH_DROPIN}' if present.
     """)
     print("Warning: reloading sshd.service may interrupt active SSH sessions.")
     exit_code = sandbox.run(ssh_auth_function, "on")
@@ -124,7 +111,11 @@ def main() -> int:
         print(f"Usage error: {e}. See usage with --help.")
         return 2
 
-    return run(mode)
+    try:
+        return run(mode)
+    except SSHPasswordAuthError as error:
+        print_err(str(error))
+        return 1
 
 
 if __name__ == "__main__":

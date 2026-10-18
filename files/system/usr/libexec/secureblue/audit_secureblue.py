@@ -45,6 +45,7 @@ from auditor import (
 )
 from shared import kargs_hardening
 from shared.ptrace import YAMA_DOC_URL, PtraceStatus, get_ptrace_status
+from shared.ssh_password_auth import SSHPasswordAuthError, ssh_password_auth_enabled
 from shared.utils import (
     BootcBackend,
     Image,
@@ -67,13 +68,6 @@ INFO: Final = Status.INFO
 WARN: Final = Status.WARN
 FAIL: Final = Status.FAIL
 UNKNOWN: Final = Status.UNKNOWN
-SSH_AUTH_DROPIN: Final[Path] = Path(
-    "/etc/ssh/sshd_config.d/49-secureblue-disable-password-auth.conf"
-)
-SSH_AUTH_DISABLED_CONFIG: Final[dict[str, str]] = {
-    "PasswordAuthentication": "no",
-    "KbdInteractiveAuthentication": "no",
-}
 
 CONFIG_FILE: Final[Path] = get_config_dir() / "secureblue/audit.toml"
 
@@ -207,15 +201,15 @@ def audit_ssh_password_auth(state):
         return
 
     try:
-        with SSH_AUTH_DROPIN.open(encoding="utf-8") as f:
-            config = parse_config(f, sep=" ")
-    except FileNotFoundError:
-        ssh_password_auth_enabled = True
-    else:
-        ssh_password_auth_enabled = any(
-            config.get(key) != value for key, value in SSH_AUTH_DISABLED_CONFIG.items()
+        password_auth_enabled = ssh_password_auth_enabled()
+    except SSHPasswordAuthError:
+        yield Report(
+            _("Ensuring SSH password authentication is disabled"),
+            UNKNOWN,
+            notes=[Note(_("Unable to read the effective SSH server configuration."), UNKNOWN)],
         )
-    if ssh_password_auth_enabled:
+        return
+    if password_auth_enabled:
         status = FAIL
         disable_command = (
             "$ ujust set-ssh-password-auth off"

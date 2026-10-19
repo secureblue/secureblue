@@ -10,7 +10,9 @@ BEGIN {
 }
 
 FNR == 1 && (FILENAME ~ /\.sh$/ || /^#![[:blank:]]*(\/usr)?\/bin\/(env[[:blank:]]+)?(ba)?sh[[:blank:]]*$/) {
-    if ($0 !~ /^#!/) {
+    if (FILENAME ~ /\/etc\/profile.d\// && $0 ~ /^# shellcheck shell=/) {
+        nextfile
+    } else if ($0 !~ /^#!/) {
         print FILENAME " is missing a shebang line."
         failure = 1
     } else if (FILENAME ~ /^files\/system\// && $0 !~ /^#!(\/usr)?\/bin\/(ba)?sh$/) {

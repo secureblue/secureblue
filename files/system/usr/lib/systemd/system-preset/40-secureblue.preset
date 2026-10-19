@@ -12,9 +12,6 @@ enable secureblue-unbound-key.service
 # https://github.com/polkit-org/polkit/commit/c007940054392b67b84b6044dda8a215040d8eb5
 enable polkit-agent-helper.socket
 
-# TODO: remove this after sufficient time has passed
-enable secureblue-ptrace-migration.service
-
 # Disable NFS daemons
 disable gssproxy.service
 disable nfs-blkmap.service

@@ -15,8 +15,7 @@ from typing import TYPE_CHECKING, cast
 if TYPE_CHECKING:
     from collections.abc import Sequence
 
-import sandbox
-
+from .sandbox import SandboxedFunction
 from .secure_boot import Bootloader
 from .utils import BootcBackend
 
@@ -81,7 +80,7 @@ def apply_kargs(*, add: Sequence[str], remove: Sequence[str]) -> None:
     bootloader = Bootloader.from_running()
 
     if bootc_backend == BootcBackend.COMPOSEFS and bootloader == Bootloader.SYSTEMD_BOOT:
-        worker = sandbox.SandboxedFunction(
+        worker = SandboxedFunction(
             "set_kargs_uki.py",
             read_write_paths=["/boot/loader/"],
         )

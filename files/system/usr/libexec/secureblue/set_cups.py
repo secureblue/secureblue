@@ -9,7 +9,7 @@
 import sys
 from typing import Final, assert_never
 
-import sandbox
+from shared import sandbox
 from shared.utils import CommandUsageError, ToggleMode, command_stdout, parse_basic_toggle_args
 
 HELP_MESSAGE: Final[str] = """\

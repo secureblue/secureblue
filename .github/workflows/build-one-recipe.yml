@@ -50,7 +50,7 @@ jobs:
       id-token: write # Needed for token generation for signing
     steps:
       - name: Enable egress auditing
-        uses: step-security/harden-runner@351661ca32ac09a36dc5ee2d536e3128f2a3c8ed # v2.22.0
+        uses: step-security/harden-runner@ccd8616d44fd3846e67624a50d5aad6d37bf2d25 # v2.22.1
         with:
           egress-policy: block
           allowed-endpoints: >
@@ -274,7 +274,7 @@ jobs:
           verify_install: true
 
       - name: Install regctl
-        uses: regclient/actions/regctl-installer@1b705e32d40851370799ea5814e83d0a5f6a70dc # v0.1.0
+        uses: regclient/actions/regctl-installer@dd58ad94f76adb73d8ac1bf75ed25f01545d5b32 # v0.2.0
 
       - name: Parse image manifest
         id: image_manifest_metadata

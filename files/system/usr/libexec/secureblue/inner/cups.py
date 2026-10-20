@@ -34,8 +34,6 @@ def enable_cups() -> None:
         [
             "/usr/bin/firewall-cmd",
             "--permanent",
-            "--add-port=631/tcp",
-            "--add-port=631/udp",
             "--quiet",
         ],
         check=True,
@@ -51,8 +49,6 @@ def disable_cups() -> None:
         [
             "/usr/bin/firewall-cmd",
             "--permanent",
-            "--remove-port=631/tcp",
-            "--remove-port=631/udp",
             "--quiet",
         ],
         check=True,

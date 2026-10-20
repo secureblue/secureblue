@@ -13,7 +13,15 @@ import sys
 from typing import Final
 
 WEBCAM_MOD_FILE: Final[str] = "/etc/modprobe.d/99-disable-webcam.conf"
-WEBCAM_MOD_TEXT: Final[str] = """install uvcvideo /bin/false"""
+WEBCAM_MOD_TEXT: Final[str] = """
+install ipu-bridge /bin/false
+install ipu3-cio2 /bin/false
+install intel_ipu6 /bin/false
+install intel_ipu6_isys /bin/false
+install intel_ipu7 /bin/false
+install intel_ipu7_isys /bin/false
+install uvcvideo /bin/false
+"""
 
 
 def main() -> int:

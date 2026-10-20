@@ -7,21 +7,21 @@
         "gpgFingerprint": "0C5D0F470484AE2FC40A9B6597F3008993E8909B"
     },
     {
-        "localRepo": "files/system/usr/share/dnf5/repos.d/ivpn.repo",
+        "localRepo": null,
         "repoSource": "https://repo.ivpn.net/stable/fedora/generic/ivpn.repo",
         "localGpgKey": "files/system/usr/share/pki/rpm-gpg/ivpn-repo.gpg",
         "remoteGpgKey": "https://repo.ivpn.net/stable/fedora/generic/repo.gpg",
         "gpgFingerprint": "F52691AB05F2FCDF67CD6516D437F3E150DB096C"
     },
     {
-        "localRepo": "files/system/usr/share/dnf5/repos.d/mullvad.repo",
+        "localRepo": null,
         "repoSource": "https://repository.mullvad.net/rpm/stable/mullvad.repo",
         "localGpgKey": "files/system/usr/share/pki/rpm-gpg/mullvad-keyring.asc",
         "remoteGpgKey": "https://repository.mullvad.net/rpm/mullvad-keyring.asc",
         "gpgFingerprint": "A1198702FC3E0A09A9AE5B75D5A1D4F266DE8DDF"
     },
     {
-        "localRepo": "files/system/usr/share/dnf5/repos.d/protonvpn-stable.repo",
+        "localRepo": null,
         "repoSource": "https://repo.protonvpn.com/fedora-45-stable/protonvpn-stable-release/protonvpn-stable-release-1.0.3-1.noarch.rpm",
         "localGpgKey": "files/system/usr/share/pki/rpm-gpg/protonvpn_public_key.asc",
         "remoteGpgKey": "https://repo.protonvpn.com/fedora-45-stable/public_key.asc",
@@ -35,7 +35,7 @@
         "gpgFingerprint": "FEE4CA50D94042B7D9C42B8D33CC2522E09126A6"
     },
     {
-        "localRepo": "files/system/usr/share/dnf5/repos.d/tailscale.repo",
+        "localRepo": null,
         "repoSource": "https://pkgs.tailscale.com/stable/fedora/tailscale.repo",
         "localGpgKey": "files/system/usr/share/pki/rpm-gpg/tailscale-repo.gpg",
         "remoteGpgKey": "https://pkgs.tailscale.com/stable/fedora/repo.gpg",

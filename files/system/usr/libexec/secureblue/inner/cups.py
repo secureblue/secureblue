@@ -30,34 +30,12 @@ service at your own risk. Secureblue strongly recommends against this."""
 
 
 def enable_cups() -> None:
-    subprocess.run(
-        [
-            "/usr/bin/firewall-cmd",
-            "--permanent",
-            "--add-port=631/tcp",
-            "--add-port=631/udp",
-            "--quiet",
-        ],
-        check=True,
-    )
-    subprocess.run(["/usr/bin/firewall-cmd", "--reload", "--quiet"], check=True)
     subprocess.run(["/usr/bin/systemctl", "unmask", "--quiet", *MASK_UNITS], check=True)
     subprocess.run(["/usr/bin/systemctl", "enable", "--now", "--quiet", *UNITS], check=True)
     subprocess.run(["/usr/bin/systemctl", "daemon-reload"], check=True)
 
 
 def disable_cups() -> None:
-    subprocess.run(
-        [
-            "/usr/bin/firewall-cmd",
-            "--permanent",
-            "--remove-port=631/tcp",
-            "--remove-port=631/udp",
-            "--quiet",
-        ],
-        check=True,
-    )
-    subprocess.run(["/usr/bin/firewall-cmd", "--reload", "--quiet"], check=True)
     subprocess.run(["/usr/bin/systemctl", "disable", "--now", "--quiet", *UNITS], check=True)
     subprocess.run(["/usr/bin/systemctl", "mask", "--now", "--quiet", *MASK_UNITS], check=True)
     subprocess.run(["/usr/bin/systemctl", "daemon-reload"], check=True)

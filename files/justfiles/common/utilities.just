@@ -111,6 +111,7 @@ toolbox-assemble CONTAINER="prompt" ACTION="create" FILE="/etc/toolbox/toolbox.i
 # Rebase to a different secureblue Desktop Environment/Atomic Desktop
 rebase-secureblue:
     #!/usr/bin/bash
+    set -euo pipefail
     current_image=$(grep VARIANT= /etc/os-release | cut -d'"' -f2)
     if [[ "${current_image}" == 'CoreOS' ]] || [[ "${current_image}" == 'IOT' ]]; then
         image_name=$(grep VARIANT_ID= /etc/os-release | cut -d'=' -f2 | cut -d'-' -f1)

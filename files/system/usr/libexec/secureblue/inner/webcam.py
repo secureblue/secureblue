@@ -15,6 +15,7 @@ from typing import Final
 WEBCAM_MOD_FILE: Final[str] = "/etc/modprobe.d/99-disable-webcam.conf"
 WEBCAM_MOD_TEXT: Final[str] = """
 install ipu-bridge /bin/false
+install ipu3-imgu /bin/false
 install ipu3-cio2 /bin/false
 install intel_ipu6 /bin/false
 install intel_ipu6_isys /bin/false

@@ -14,7 +14,7 @@
  # The value must be within the 1-11 range.
  #
 -#YESCRYPT_COST_FACTOR 5
-+YESCRYPT_COST_FACTOR 11
++YESCRYPT_COST_FACTOR 8
  
  # Currently CONSOLE_GROUPS is not supported
  

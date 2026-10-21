@@ -1,0 +1,21 @@
+# SPDX-FileCopyrightText: Copyright 2025-2026 The Secureblue Authors
+#
+# SPDX-License-Identifier: Apache-2.0
+
+name: iot-zfs-nvidia-open-hardened
+
+description: "IOT with nvidia-open and zfs, hardened"
+
+base-image: ghcr.io/secureblue/iot-zfs-main-hardened
+
+image-version: latest
+
+cosign-version: none
+nushell-version: none
+
+platforms:
+  - linux/amd64
+
+modules:
+  - from-file: common/nvidia-install.yml
+  - from-file: common/final-modules.yml

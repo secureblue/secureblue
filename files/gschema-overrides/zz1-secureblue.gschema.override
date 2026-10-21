@@ -1,12 +1,29 @@
+# SPDX-FileCopyrightText: Copyright 2025-2026 The Secureblue Authors
+#
+# SPDX-License-Identifier: Apache-2.0
+
 # Disable GNOME user extensions installation & usage
 # Only GNOME system extensions are trusted if installed
 
 [org.gnome.shell]
 allow-extension-installation=false
-favorite-apps = ['trivalent.desktop', 'org.gnome.Nautilus.desktop', 'org.gnome.Ptyxis.desktop', 'com.github.tchx84.Flatseal.desktop', 'io.github.flattool.Warehouse.desktop']
+favorite-apps = ['trivalent.desktop', 'org.gnome.Nautilus.desktop', 'org.gnome.Ptyxis.desktop', 'com.github.tchx84.Flatseal.desktop', 'io.github.kolunmi.Bazaar.desktop']
 enabled-extensions = []
 
 [org.gnome.desktop.interface]
 gtk-theme='adw-gtk3'
 font-antialiasing="rgba"
-monospace-font-name="Monospace 12"
+
+[org.gnome.desktop.background]
+picture-uri='file:///usr/share/backgrounds/secureblue/secureblue-blue.svg'
+picture-uri-dark='file:///usr/share/backgrounds/secureblue/secureblue-black.svg'
+
+[org.gnome.desktop.media-handling]
+automount=false
+automount-open=false
+
+[org.gnome.nautilus.preferences]
+show-image-thumbnails='never'
+
+[org.gnome.desktop.thumbnailers]
+disable-all=true

@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE wallpapers SYSTEM "gnome-wp-list.dtd">
+<wallpapers>
+    <wallpaper deleted="false">
+        <name>Secureblue Blue</name>
+        <filename>/usr/share/backgrounds/secureblue/secureblue-blue.svg</filename>
+        <options>zoom</options>
+    </wallpaper>
+    <wallpaper deleted="false">
+        <name>Secureblue Black</name>
+        <filename>/usr/share/backgrounds/secureblue/secureblue-black.svg</filename>
+        <options>zoom</options>
+    </wallpaper>
+    <wallpaper deleted="false">
+        <name>Secureblue BW</name>
+        <filename>/usr/share/backgrounds/secureblue/secureblue-bw.svg</filename>
+        <options>zoom</options>
+    </wallpaper>
+    <wallpaper deleted="false">
+        <name>Secureblue Time of Day</name>
+        <filename>/usr/share/backgrounds/default.xml</filename>
+        <options>zoom</options>
+    </wallpaper>
+</wallpapers>

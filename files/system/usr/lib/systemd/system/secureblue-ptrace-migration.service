@@ -1,0 +1,23 @@
+# SPDX-FileCopyrightText: Copyright 2026 The Secureblue Authors
+#
+# SPDX-License-Identifier: Apache-2.0
+
+# This service exists to migrate users from secureblue's previous way of
+# restricting ptrace access only with Yama to the new way of using SELinux
+# booleans to manage ptrace access.
+#
+# TODO: remove this service after ISOs are rebuilt.
+
+[Unit]
+Description=Secureblue ptrace access management migration
+ConditionPathExists=!/var/lib/secureblue/secureblue-ptrace-migration.stamp
+After=multi-user.target
+Wants=multi-user.target
+
+[Service]
+Type=oneshot
+ExecStart=/bin/sh /usr/libexec/secureblue/ptrace-migration.sh
+ExecStartPost=touch /var/lib/secureblue/secureblue-ptrace-migration.stamp
+
+[Install]
+WantedBy=multi-user.target

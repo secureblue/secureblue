@@ -1,12 +1,35 @@
+# SPDX-FileCopyrightText: Copyright 2025-2026 The Secureblue Authors
+#
+# SPDX-License-Identifier: Apache-2.0
+
 modules:
-  - type: script
-    scripts:
-      - installnvidiakmod.sh
-      - installnvidiapackages.sh
-      - removeunusedrepos.sh
-      - setearlyloading.sh
-      - setdrmvariables.sh
   - type: files
+    source: ghcr.io/blue-build/modules@sha256:f1273b17987eed439b0feff77bf4b7f1c734e6f77607dc99c9de9d9070555c7a
     files:
       - source: system/nvidia
         destination: /
+
+  - type: justfiles
+    source: ghcr.io/blue-build/modules@sha256:f1273b17987eed439b0feff77bf4b7f1c734e6f77607dc99c9de9d9070555c7a
+    validate: true
+    include:
+      - nvidia
+
+  - type: script
+    source: ghcr.io/blue-build/modules@sha256:f1273b17987eed439b0feff77bf4b7f1c734e6f77607dc99c9de9d9070555c7a
+    scripts:
+      - installnvidiakmod.sh
+    secrets:
+      - type: env
+        name: KERNEL_PRIVKEY
+        mount:
+          type: file
+          destination: /tmp/certs/private_key.priv
+
+  - type: script
+    source: ghcr.io/blue-build/modules@sha256:f1273b17987eed439b0feff77bf4b7f1c734e6f77607dc99c9de9d9070555c7a
+    scripts:
+      - installnvidiapackages.sh
+      - remove-nvidia-repos.sh
+      - setearlyloading.sh
+      - setdrmvariables.sh

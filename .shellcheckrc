@@ -1,0 +1,5 @@
+# https://github.com/koalaman/shellcheck/wiki/Optional
+enable=quote-safe-variables
+enable=require-double-brackets
+enable=require-variable-braces
+enable=useless-use-of-cat

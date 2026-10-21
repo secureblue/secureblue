@@ -1,0 +1,9 @@
+#!/usr/bin/bash
+
+# SPDX-FileCopyrightText: Copyright 2025-2026 The Secureblue Authors
+#
+# SPDX-License-Identifier: Apache-2.0
+
+set -euo pipefail
+
+notify-send -a 'secureblue' -i 'dialog-warning' 'Your system is out of date' 'Run <i>ujust update-system</i> to resolve this issue.' -u critical

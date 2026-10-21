@@ -1,0 +1,167 @@
+# SPDX-FileCopyrightText: Copyright 2025-2026 The Secureblue Authors
+#
+# SPDX-License-Identifier: Apache-2.0
+
+name: Build ISOs
+
+permissions: {}
+
+on:
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref || github.run_id }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    name: Build ISOs
+    runs-on: ubuntu-26.04
+    environment: ISOs
+    if: github.triggering_actor == 'royaloughtness'
+    strategy:
+      fail-fast: false
+      matrix:
+        image:
+          - silverblue-main-hardened
+          - silverblue-nvidia-hardened
+          - silverblue-nvidia-open-hardened
+          - kinoite-main-hardened
+          - kinoite-nvidia-hardened
+          - kinoite-nvidia-open-hardened
+          - sericea-main-hardened
+          - sericea-nvidia-hardened
+          - sericea-nvidia-open-hardened
+    permissions:
+      contents: read # read repo contents
+      packages: read # pull images for iso generation
+      id-token: write # generate token for signing
+
+    steps:
+      - name: Free disk space
+        uses: hastd/free-disk-space@68572aeaadb7f76bd408246328e95926323402b5 # v0.1.2
+        with:
+          skip-if-available: "64G"
+
+      - name: Install deps
+        shell: bash
+        id: install_deps
+        run: |
+          sudo apt-get install rclone
+
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Setup Branding Repo
+        id: setup-branding-repo
+        shell: bash
+        env:
+          WORKSPACE: ${{ github.workspace }}
+        run: |
+          curl -fLsS --retry 5 -o "${WORKSPACE}/secureblue.repo" "https://copr.fedorainfracloud.org/coprs/secureblue/packages/repo/fedora-44/secureblue-packages-fedora-44.repo"
+
+      - name: Build ISO
+        id: iso_build
+        env:
+          IMAGE_REF: ghcr.io/secureblue/${{ matrix.image }}:latest
+        uses: RoyalOughtness/titanoboa@3d19fdfa8bff13542c0bb92620ed7826f1bbe82c # main
+        with:
+          image-ref: ${{ env.IMAGE_REF }}
+          hook-post-rootfs: ${{ github.workspace }}/.github/workflows/isos/prep_rootfs.sh
+          hook-pre-initramfs: ${{ github.workspace }}/.github/workflows/isos/prep_initramfs.sh
+
+      - name: Rename ISO
+        env:
+          IMAGE_NAME: ${{ matrix.image }}
+          ISO_DEST: ${{ steps.iso_build.outputs.iso-dest }}
+        run: |
+          mv "${ISO_DEST}" "${IMAGE_NAME}.iso"
+          sha256sum "${IMAGE_NAME}.iso" | tee "${IMAGE_NAME}.iso-CHECKSUM"
+
+      - name: Rename ISO and sign CHECKSUM
+        id: rename
+        shell: bash
+        env:
+          IMAGE_NAME: ${{ matrix.image }}
+          ISO_SIGNING_KEY: ${{ secrets.ISO_SIGNING_KEY }}
+        run: |
+          sudo chown $(whoami) "${IMAGE_NAME}.iso" "${IMAGE_NAME}.iso-CHECKSUM"
+
+          TARGET_OUTPUT_DIRECTORY="$(pwd)/output"
+          mkdir -p "${TARGET_OUTPUT_DIRECTORY}"
+          PREFIX="secureblue"
+          DATE_SUFFIX="$(date +%Y%m%d)"
+          ISO_NAME="${PREFIX}-${IMAGE_NAME}-${DATE_SUFFIX}.iso"
+          CHECKSUM_NAME="${ISO_NAME}-CHECKSUM"
+          mv "${IMAGE_NAME}.iso" "${ISO_NAME}"
+          mv "${IMAGE_NAME}.iso-CHECKSUM" "${CHECKSUM_NAME}"
+          mv "${ISO_NAME}" "$TARGET_OUTPUT_DIRECTORY"
+          mv "${CHECKSUM_NAME}" "$TARGET_OUTPUT_DIRECTORY"
+          cd "$TARGET_OUTPUT_DIRECTORY"
+
+          HASH=$(cat "${CHECKSUM_NAME}" | cut -d ' ' -f1)
+          ISO_SIZE=$(stat -c %s "${ISO_NAME}")
+          ISO_FILE_NAME="${ISO_NAME}"
+          {
+            echo "# $ISO_FILE_NAME: $ISO_SIZE bytes"
+            echo "SHA256 ($ISO_FILE_NAME) = $HASH"
+          } > "${CHECKSUM_NAME}"
+
+          echo "CHECKSUM contents"
+          cat "${CHECKSUM_NAME}"
+          echo
+
+          echo "${ISO_SIGNING_KEY}" | gpg --import
+
+          echo "Signing the ISO"
+          gpg --clearsign -u 26B4463ED8F313BC7E3FBDF9D9223AF0F47B3E41 "${CHECKSUM_NAME}"
+          mv "${CHECKSUM_NAME}.asc" "${CHECKSUM_NAME}"
+
+          echo "Signed CHECKSUM contents"
+          cat "${CHECKSUM_NAME}"
+          echo
+
+          # validate signature
+          curl -fLsS --retry 5 -O "https://repo.secureblue.dev/secureblue.gpg"
+          gpg --no-default-keyring --keyring ./secureblue-keyring.gpg --import secureblue.gpg
+
+          if ! gpgv --keyring ./secureblue-keyring.gpg "${CHECKSUM_NAME}"; then
+              echo "CHECKSUM signature verification FAILED! Exiting..."
+              exit 1
+          fi
+
+          if ! sha256sum --ignore-missing -c "${CHECKSUM_NAME}"; then
+              echo "CHECKSUM verification FAILED! Exiting..."
+              exit 1
+          fi
+
+          rm ./secureblue-keyring.gpg~
+          rm secureblue.gpg
+
+          echo "output-directory=${TARGET_OUTPUT_DIRECTORY}" >> ${GITHUB_OUTPUT}
+
+      - name: Upload ISO and Checksum to Job Artifacts
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          path: ${{ steps.rename.outputs.output-directory }}
+          name: ${{ matrix.image }}
+          if-no-files-found: error
+          retention-days: 3
+          compression-level: 0
+          overwrite: true
+
+      - name: Upload ISO and checksum to R2 to ISOS Bucket
+        shell: bash
+        env:
+          RCLONE_CONFIG_R2_TYPE: s3
+          RCLONE_CONFIG_R2_PROVIDER: Cloudflare
+          RCLONE_CONFIG_R2_ACCESS_KEY_ID: ${{ secrets.ISOS_ACCESS_KEY_ID }}
+          RCLONE_CONFIG_R2_SECRET_ACCESS_KEY: ${{ secrets.ISOS_SECRET_ACCESS_KEY }}
+          RCLONE_CONFIG_R2_REGION: auto
+          RCLONE_CONFIG_R2_ENDPOINT: ${{ secrets.ISOS_ENDPOINT }}
+          OUTPUT_DIRECTORY: ${{ steps.rename.outputs.output-directory }}
+          SOURCE_DIR: .
+        run: |
+          rclone copy "${OUTPUT_DIRECTORY}" R2:isos

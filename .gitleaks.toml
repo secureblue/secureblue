@@ -1,0 +1,6 @@
+[extend]
+useDefault = true
+
+[allowlist]
+description = "Test key"
+paths = ['''\.github/workflows/private_key\.priv\.test$''']

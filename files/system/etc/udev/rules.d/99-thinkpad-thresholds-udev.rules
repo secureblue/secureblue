@@ -1,7 +1,0 @@
-# Change the permissions of the battery threshold attributes so that they can be modified by ordinary users
-# See https://gitlab.com/marcosdalvarez/thinkpad-battery-threshold-extension
-
-ACTION=="add|change", KERNEL=="BAT[0-1]", GROUP="wheel" , SUBSYSTEM=="power_supply", TEST{0002}!="/sys%p/charge_control_start_threshold", RUN+="/bin/chmod 666 /sys%p/charge_control_start_threshold"
-ACTION=="add|change", KERNEL=="BAT[0-1]", GROUP="wheel" , SUBSYSTEM=="power_supply", TEST{0002}!="/sys%p/charge_control_end_threshold", RUN+="/bin/chmod 666 /sys%p/charge_control_end_threshold"
-ACTION=="add|change", KERNEL=="BAT[0-1]", GROUP="wheel" , SUBSYSTEM=="power_supply", TEST{0002}!="/sys%p/charge_start_threshold", RUN+="/bin/chmod 666 /sys%p/charge_start_threshold"
-ACTION=="add|change", KERNEL=="BAT[0-1]", GROUP="wheel" , SUBSYSTEM=="power_supply", TEST{0002}!="/sys%p/charge_stop_threshold", RUN+="/bin/chmod 666 /sys%p/charge_stop_threshold"

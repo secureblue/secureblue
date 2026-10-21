@@ -1,0 +1,12 @@
+[Unit]
+Description=Unbound DNS server control UNIX socket
+
+[Socket]
+ListenStream=/run/unbound/control
+SocketMode=0660
+SocketUser=unbound
+SocketGroup=unbound
+Service=unbound.service
+
+[Install]
+WantedBy=sockets.target

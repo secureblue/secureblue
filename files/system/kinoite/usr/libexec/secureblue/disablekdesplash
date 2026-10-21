@@ -1,5 +1,0 @@
-#!/usr/bin/bash
-
-set -euo pipefail
-
-cp /etc/skel/.config/ksplashrc ~/.config/ksplashrc

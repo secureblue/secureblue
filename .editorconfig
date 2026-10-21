@@ -1,0 +1,28 @@
+root = true
+
+[*]
+indent_style = space
+indent_size = 4
+end_of_line = lf
+charset = utf-8
+trim_trailing_whitespace = true
+insert_final_newline = true
+
+[*.{yml,yaml}]
+indent_size = 2
+
+[*.xml]
+indent_size = 2
+
+[*.md]
+indent_size = 2
+# Sometimes undesired
+trim_trailing_whitespace = false
+
+# SELinux
+[*.{fc,if,te}]
+indent_style = tab
+indent_size = 8
+
+[*.cil]
+indent_size = 2

@@ -1,0 +1,10 @@
+[Unit]
+Description=Monitor for rpm-ostreed-automatic completion
+Wants=paths.target
+ConditionUser=!@system
+
+[Path]
+PathChanged=/var/lib/secureblue/rpm-ostreed-automatic-completed.stamp
+
+[Install]
+WantedBy=paths.target

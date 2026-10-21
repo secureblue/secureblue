@@ -1,0 +1,3 @@
+# Source: https://web.archive.org/web/20260124011654/https://support.google.com/titansecuritykey/answer/9148044
+
+KERNEL=="hidraw*", SUBSYSTEM=="hidraw", ATTRS{idVendor}=="18d1|096e", ATTRS{idProduct}=="5026|0858|085b", TAG+="uaccess"

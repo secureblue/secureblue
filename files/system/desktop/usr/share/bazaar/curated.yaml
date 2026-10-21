@@ -1,0 +1,19 @@
+rows:
+  - section:
+      title: "Suggested by secureblue"
+      subtitle:
+        string: "These apps provide security functionality or are well-maintained applications that provide common functionality."
+      appids:
+        list:
+          - org.gnome.Firmware
+          - org.fedoraproject.MediaWriter
+          - com.github.tchx84.Flatseal
+          - org.kde.kleopatra
+          - org.gnome.Loupe
+          - io.github.diegopvlk.Cine
+          - org.kde.haruna
+          - org.gnome.World.PikaBackup
+          - io.github.vmkspv.lenspect
+          - org.keepassxc.KeePassXC
+          - io.github.flattool.Ignition
+          - dev.ters.LocalTranslate

@@ -1,5 +1,9 @@
 #!/usr/bin/env bash
 
-set -oue pipefail
+# SPDX-FileCopyrightText: Copyright 2025-2026 The Secureblue Authors
+#
+# SPDX-License-Identifier: Apache-2.0
 
-sed -i 's/add_dracutmodules+=" fido2 tpm2-tss pkcs11 pcsc "/add_dracutmodules+=" fido2 tpm2-tss pkcs11 "/' /usr/lib/dracut/dracut.conf.d/90-ublue-luks.conf
+set -euo pipefail
+
+sed -i '/^add_dracutmodules+=" .* "/s/ pcsc / /' /usr/lib/dracut/dracut.conf.d/90-ublue-luks.conf

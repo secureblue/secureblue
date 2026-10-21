@@ -1,0 +1,121 @@
+#!/bin/bash
+
+# SPDX-FileCopyrightText: Copyright 2025-2026 The Secureblue Authors
+#
+# SPDX-License-Identifier: Apache-2.0
+
+set -euo pipefail
+
+secureblue_state_dir="${XDG_STATE_HOME:-"${HOME}/.local/state"}/secureblue"
+critical_timestamp_file="${secureblue_state_dir}/security-update-notification-critical.stamp"
+normal_timestamp_file="${secureblue_state_dir}/security-update-notification-normal.stamp"
+timestamp_today="$(date '+%Y%m%d')"
+readonly secureblue_state_dir critical_timestamp_file normal_timestamp_file timestamp_today
+
+recent_critical_notification() {
+    [[ "$(2>/dev/null <"${critical_timestamp_file}")" == "${timestamp_today}" ]]
+}
+
+recent_normal_notification() {
+    [[ "$(2>/dev/null <"${normal_timestamp_file}")" == "${timestamp_today}" ]]
+}
+
+write_critical_timestamp() {
+    mkdir -p "${secureblue_state_dir}"
+    echo "${timestamp_today}" > "${critical_timestamp_file}"
+}
+
+write_normal_timestamp() {
+    mkdir -p "${secureblue_state_dir}"
+    echo "${timestamp_today}" > "${normal_timestamp_file}"
+}
+
+if recent_critical_notification; then
+    exit 0
+fi
+
+# If there's been a bootc/composefs upgrade, then unconditionally notify.
+# We don't have an equivalent to the rpm-ostree database.
+if [[ ! -f "/usr/bin/rpm-ostree" ]]; then
+    if jq -e '.status.staged != null' /run/bootc/status.json > /dev/null; then
+        notify-send --urgency=critical \
+            --app-name="secureblue" \
+            --action="Reboot" \
+            "An update is ready" \
+            "Please reboot to run the updated system."
+        write_critical_timestamp
+    fi
+    exit 0
+fi
+
+cached_update_json="$(rpm-ostree status --json | jq -c '."cached-update"')"
+if [[ "${cached_update_json}" == 'null' ]]; then
+    exit 0
+fi
+
+readarray -t upgraded_packages < <(jq -cr '."rpm-diff".upgraded[][1]' <<<"${cached_update_json}")
+kernel_updated='false'
+trivalent_updated='false'
+for package in "${upgraded_packages[@]}"; do
+    case "${package}" in
+        kernel) kernel_updated='true' ;;
+        trivalent) trivalent_updated='true' ;;
+        *) ;;
+    esac
+done
+
+# Convert numerical advisory severity indices to strings. Reference for the format:
+# https://github.com/coreos/rpm-ostree/blob/721fccd3459ee50b600c88193f1e9f8dd69569dc/src/libpriv/rpmostree-rpm-util.h#L177
+# https://github.com/coreos/rpm-ostree/blob/721fccd3459ee50b600c88193f1e9f8dd69569dc/src/libpriv/rpmostree-types.h#L40
+# For each advisory:
+# * Field 1 is the DNF advisory kind; for security advisories, this is 1.
+# * Field 2 is an integer representing the severity.
+case "$(jq -c '[.advisories[]? | select(.[1] == 1) | .[2]] | max' <<<"${cached_update_json}")" in
+    null) max_advisory_severity='none' ;;
+    1) max_advisory_severity='low' ;;
+    2) max_advisory_severity='moderate' ;;
+    3) max_advisory_severity='important' ;;
+    4) max_advisory_severity='critical' ;;
+    *) max_advisory_severity='unknown' ;;
+esac
+
+notify_critical() {
+    notify-send --urgency=critical \
+        --app-name="secureblue" \
+        --action="Reboot" \
+        "A major security vulnerability has been patched" \
+        "Please reboot to run the updated system"
+    write_critical_timestamp
+}
+
+notify_normal() {
+    if ! recent_normal_notification; then
+        notify-send --urgency=normal \
+            --expire-time=5000 \
+            --app-name="secureblue" \
+            --action="Reboot" \
+            "A security vulnerability has been patched" \
+            "Please reboot to run the updated system"
+        write_normal_timestamp
+    fi
+}
+
+prompt_reboot() {
+    secureblue_variant_in_use="$(grep -oP '^VARIANT_ID=\K\w+' /usr/lib/os-release)"
+
+    case "${secureblue_variant_in_use}" in
+        "silverblue") gnome-session-quit --reboot ;;
+        "kinoite") qdbus-qt6 org.kde.LogoutPrompt /LogoutPrompt promptReboot ;;
+        *) systemctl reboot ;;
+    esac
+}
+
+if [[ "${trivalent_updated}" == 'true' || "${max_advisory_severity}" == 'critical' ]]; then
+    if [[ "$(notify_critical)" == '0' ]]; then
+        prompt_reboot
+    fi
+elif [[ "${kernel_updated}" == 'true' || "${max_advisory_severity}" == 'important' || "${max_advisory_severity}" == 'unknown' ]]; then
+    if [[ "$(notify_normal)" == '0' ]]; then
+        prompt_reboot
+    fi
+fi

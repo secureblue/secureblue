@@ -1,0 +1,11 @@
+[Unit]
+Description=secureblue Firmware Update Checks
+ConditionUser=!@system
+
+[Timer]
+RandomizedDelaySec=1m
+OnStartupSec=2m
+OnUnitActiveSec=1d
+
+[Install]
+WantedBy=timers.target

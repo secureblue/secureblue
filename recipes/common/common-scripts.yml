@@ -1,11 +1,22 @@
+# SPDX-FileCopyrightText: Copyright 2025-2026 The Secureblue Authors
+#
+# SPDX-License-Identifier: Apache-2.0
+
 type: script
+source: ghcr.io/blue-build/modules@sha256:f1273b17987eed439b0feff77bf4b7f1c734e6f77607dc99c9de9d9070555c7a
 scripts:
+  - set-ld-preload.sh
+  - hardenlogindefs.sh
+  - disableresolved.sh
+  - setup-dnsconfd.sh
   - authselect.sh
-  - setfilepermissions.sh
-  - disablesealertpopups.sh
-  - httpsmirrors.sh
-  - createmissingdirectories.sh
   - disablegeoclue.sh
-  - enablesecurebluefirstrun.sh
-  - createjustcompletions.sh
-  - enablekeyverification.sh
+  - disablehomed.sh
+  - disable-sshd-vsock.sh
+  - disablenfsdaemons.sh
+  - removefedoraflatpakremoteservice.sh
+  - localization.sh
+  - installrar.sh
+  - setchronysysconfig.sh
+  - container-pubkey-symlinks.sh
+  - disablecountme.sh

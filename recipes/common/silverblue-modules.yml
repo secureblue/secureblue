@@ -1,12 +1,18 @@
+# SPDX-FileCopyrightText: Copyright 2025-2026 The Secureblue Authors
+#
+# SPDX-License-Identifier: Apache-2.0
+
 modules:
-    - type: rpm-ostree
-      install:
-        - firewall-config
+  - type: dnf
+    source: ghcr.io/blue-build/modules@sha256:f1273b17987eed439b0feff77bf4b7f1c734e6f77607dc99c9de9d9070555c7a
+    install:
+      install-weak-deps: false
+      packages:
         - gnome-disk-utility
         - adw-gtk3-theme
-        - gnome-epub-thumbnailer
         - gnome-tweaks
-      remove:
+    remove:
+      packages:
         - gnome-shell-extension-background-logo
         - gnome-tour
         - yelp
@@ -19,11 +25,27 @@ modules:
         - gnome-remote-desktop
         - libvncserver
         - fedora-chromium-config-gnome
-        - gnome-software-rpm-ostree
+        - gnome-software
+        - epiphany-runtime
         - totem-video-thumbnailer
-    - type: gschema-overrides
-      include:
-        - zz1-secureblue.gschema.override
-    - type: script
-      scripts:
-        - removedkmshelper.sh
+        - fedora-flathub-remote
+        - fedora-third-party
+        - fedora-workstation-repositories
+  - type: gschema-overrides
+    source: ghcr.io/blue-build/modules@sha256:f1273b17987eed439b0feff77bf4b7f1c734e6f77607dc99c9de9d9070555c7a
+    include:
+      - zz1-secureblue.gschema.override
+  - type: script
+    source: ghcr.io/blue-build/modules@sha256:f1273b17987eed439b0feff77bf4b7f1c734e6f77607dc99c9de9d9070555c7a
+    scripts:
+      - removedkmshelper.sh
+  - type: files
+    source: ghcr.io/blue-build/modules@sha256:f1273b17987eed439b0feff77bf4b7f1c734e6f77607dc99c9de9d9070555c7a
+    files:
+      - source: system/silverblue
+        destination: /
+  - type: justfiles
+    source: ghcr.io/blue-build/modules@sha256:f1273b17987eed439b0feff77bf4b7f1c734e6f77607dc99c9de9d9070555c7a
+    validate: true
+    include:
+      - silverblue.just

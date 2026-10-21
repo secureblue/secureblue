@@ -1,0 +1,3 @@
+[submodule "tools/sysextbuddy"]
+	path = tools/sysextbuddy
+	url = https://github.com/tulilirockz/sysextbuddy.git

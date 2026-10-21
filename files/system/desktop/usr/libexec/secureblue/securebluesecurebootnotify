@@ -1,0 +1,13 @@
+#!/usr/bin/bash
+
+# SPDX-FileCopyrightText: Copyright 2025-2026 The Secureblue Authors
+#
+# SPDX-License-Identifier: Apache-2.0
+
+set -euo pipefail
+
+selection=$(notify-send -A 'info=More Information' -a 'secureblue' -i 'dialog-warning' 'Secure Boot key is not enrolled!' 'Run <i>ujust enroll-secure-boot-keys</i> to resolve this issue.' -u critical)
+
+if [[ ${selection} == "info" ]]; then
+    trivalent "https://secureblue.dev/faq#new-key"
+fi

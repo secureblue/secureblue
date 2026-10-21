@@ -1,0 +1,11 @@
+[Unit]
+Description=secureblue Firmware Update Notifications
+Wants=graphical-session.target
+After=graphical-session.target
+ConditionUser=!@system
+ConditionPathIsDirectory=/var/home/%u
+
+[Service]
+Type=simple
+ExecCondition=/usr/libexec/secureblue/firmwarecheckoutofdate
+ExecStart=/usr/libexec/secureblue/firmwareoutofdatenotify

@@ -1,27 +1,46 @@
+# SPDX-FileCopyrightText: Copyright 2025-2026 The Secureblue Authors
+#
+# SPDX-License-Identifier: Apache-2.0
+
 modules:
-    - type: script
-      scripts:
-        - createautostartdir.sh
-    - type: script
-      scripts:
-        - unprotectsudo.sh
-        - addimageinfo.sh
-    - from-file: common/common-packages.yml
-    - type: script
-      scripts:
-        - hardenlogindefs.sh
-    - type: files
-      files:
-        - source: system/usr
-          destination: /usr
-        - source: system/etc
-          destination: /etc
-    - type: justfiles
-      validate: true
-    - from-file: common/common-scripts.yml
-    - type: script
-      scripts:
-        - enablecommonautoupdate.sh
-        - signkernel.sh
-    - type: secureblue-signing
-      source: local
+  - type: script
+    source: ghcr.io/blue-build/modules@sha256:f1273b17987eed439b0feff77bf4b7f1c734e6f77607dc99c9de9d9070555c7a
+    scripts:
+      - removeunusedrepos.sh
+      - httpsmirrors.sh
+      - unprotectsudo.sh
+      - check-bad-package-versions.sh
+      # comment/uncomment the line below to disable/enable kernel pinning
+      # - installpinnedkernel.sh
+
+  - type: files
+    source: ghcr.io/blue-build/modules@sha256:f1273b17987eed439b0feff77bf4b7f1c734e6f77607dc99c9de9d9070555c7a
+    files:
+      - source: system/usr
+        destination: /usr
+      - source: system/etc
+        destination: /etc
+
+  - from-file: common/common-packages.yml
+
+  - from-file: common/common-scripts.yml
+
+  - type: justfiles
+    source: ghcr.io/blue-build/modules@sha256:f1273b17987eed439b0feff77bf4b7f1c734e6f77607dc99c9de9d9070555c7a
+    validate: true
+    include:
+      - common
+
+  - type: script
+    source: ghcr.io/blue-build/modules@sha256:f1273b17987eed439b0feff77bf4b7f1c734e6f77607dc99c9de9d9070555c7a
+    scripts:
+      - installandsignkernel.sh
+    secrets:
+      - type: env
+        name: KERNEL_PRIVKEY
+        mount:
+          type: file
+          destination: /tmp/certs/private_key.priv
+
+  - type: secureblue-signing
+    source: local

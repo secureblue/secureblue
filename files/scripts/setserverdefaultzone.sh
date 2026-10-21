@@ -1,5 +1,9 @@
 #!/usr/bin/env bash
 
-set -oue pipefail
+# SPDX-FileCopyrightText: Copyright 2025-2026 The Secureblue Authors
+#
+# SPDX-License-Identifier: Apache-2.0
 
-sed -i 's@DefaultZone=public@DefaultZone=FedoraServer@g' /etc/firewalld/firewalld.conf
+set -euo pipefail
+
+sed -i 's/^DefaultZone=public/DefaultZone=FedoraServer/' /etc/firewalld/firewalld.conf

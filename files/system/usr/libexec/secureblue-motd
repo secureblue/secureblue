@@ -1,0 +1,82 @@
+#!/usr/bin/bash
+
+# SPDX-FileCopyrightText: Copyright 2025 Universal Blue
+# SPDX-FileCopyrightText: Copyright 2025-2026 The Secureblue Authors
+#
+# SPDX-License-Identifier: Apache-2.0
+
+set -euo pipefail
+
+reset=$'\e[0m'
+bold=$'\e[1m'
+slight_red=$'\e[48;2;48;48;48m\e[38;2;245;86;71m'
+link=$'\e[38;2;23;118;122m'
+header=$'\e[1;38;5;228m\e[48;5;63m'
+
+if [[ ! -f "/usr/bin/rpm-ostree" ]]; then
+    full_image_ref=$(jq -r '.status.booted.image.image.image' /run/bootc/status.json)
+    image_ref_name=${full_image_ref##*/}
+    image_date=$(jq -r '.status.booted.image.timestamp' /run/bootc/status.json)
+    image_date=$(date -d "${image_date}" '+%s')
+    is_deprecated='false'
+else
+    rpm_ostree_status=$(rpm-ostree status --json --booted)
+    full_image_ref=$(jq -cr '.deployments[0]."container-image-reference"' <<<"${rpm_ostree_status}")
+    image_ref_name=${full_image_ref##*/}
+    image_date=$(jq -cr '.deployments[0].timestamp' <<<"${rpm_ostree_status}")
+    is_deprecated=$(jq -cr --arg 'image' "${image_ref_name}" '.imageTypes | any(inside($image))' /usr/libexec/deprecated-images.json)
+fi
+
+if [[ "${image_ref_name}" == *hardened:* ]]; then
+    image_tag=${image_ref_name##*:}
+else
+    image_tag=''
+fi
+
+current_seconds=$(date +%s)
+difference=$((current_seconds - image_date))
+week=$((7 * 24 * 60 * 60))
+
+# We only display one tag at a time, determined from most to least urgent.
+tip=''
+if [[ "${is_deprecated}" == 'true' ]]; then
+    tip="${bold}You are on a deprecated image, rebase: ${reset}${link}https://github.com/secureblue/secureblue/blob/live/files/system/usr/libexec/deprecated-images.json.md${reset}"
+elif ujust enroll-secure-boot-keys status | grep -Fq "Status: not enrolled"; then
+    tip="${bold}Secure Boot key is not enrolled! Run ${reset}${slight_red} ujust enroll-secure-boot-keys ${reset}${bold} to resolve this issue. More information: ${reset}${link}https://secureblue.dev/faq#new-key${reset}"
+elif [[ -z "${image_tag}" ]]; then
+    tip="${bold}You are missing an image tag, which is unsupported by secureblue. Rebase to the ${reset}${slight_red} latest ${reset}${bold} tag to ensure you continue to receive updates.${reset}"
+elif [[ "${image_tag}" != "latest" && "${image_tag}" != "uki" && "${image_tag}" != "latest-uki" ]]; then
+    tip="${bold}You are on a specific tag, which is unsupported by secureblue. Rebase to the ${reset}${slight_red} latest ${reset}${bold} tag to ensure you continue to receive updates.${reset}"
+elif (( difference >= week )); then
+    tip="${bold}Your current image is over 1 week old, run ${reset}${slight_red} ujust update-system ${reset}${reset}"
+elif [[ "${image_tag}" == "uki" || "${image_tag}" == "latest-uki" ]]; then
+    tip="${bold}UKI images are currently experimental.${reset}"
+fi
+
+cat << EOF
+
+  ${header} Welcome to secureblue! ${reset}
+
+  Your image is: ${slight_red} ${image_ref_name} ${reset}
+
+   >. Command                    │ Description
+  ───────────────────────────────┼────────────────────────────────────────────
+   ${slight_red} ujust --choose ${reset}              │ List all available commands
+   ${slight_red} ujust toggle-user-motd ${reset}      │ Toggle this banner on/off
+EOF
+if command -v brew >/dev/null 2>&1; then
+    echo "   ${slight_red} brew help ${reset}                   │ Manage command line packages"
+fi
+if [[ -n "${tip}" ]]; then
+    echo
+    echo -e "  ${tip}"
+fi
+cat << EOF
+
+  • ${bold}Release notifications:${reset} ${link}https://secureblue.dev/faq#release${reset}
+  • ${bold}Report an issue:${reset} ${link}https://github.com/secureblue/secureblue/issues${reset}
+  • ${bold}FAQ:${reset} ${link}https://secureblue.dev/faq${reset}
+  • ${bold}Donate:${reset} ${link}https://secureblue.dev/donate${reset}
+  • ${bold}Discord:${reset} ${link}https://discord.gg/qMTv5cKfbF${reset}
+
+EOF

@@ -1,0 +1,16 @@
+; SPDX-FileCopyrightText: Copyright 2026 The Secureblue Authors
+;
+; SPDX-License-Identifier: Apache-2.0 OR MIT
+
+; Denies all userspace processes access to socket classes related to packet
+; radio. This reduces attack surface, as these are not needed by the vast
+; majority of users. Users of some software related to amateur radio may need
+; to disable this module.
+;
+; See `secureblue_socket_utils.cil` for macro definitions.
+
+(in secureblue
+    (call deny_userspace (ax25_socket))
+    (call deny_userspace (netrom_socket))
+    (call deny_userspace (rose_socket))
+    (call deny_userspace (x25_socket)))

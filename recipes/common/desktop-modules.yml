@@ -1,22 +1,20 @@
+# SPDX-FileCopyrightText: Copyright 2025-2026 The Secureblue Authors
+#
+# SPDX-License-Identifier: Apache-2.0
+
 modules:
-    - from-file: common/desktop-packages.yml
-    - type: rpm-ostree
-      repos:
-        - https://copr.fedorainfracloud.org/coprs/secureblue/trivalent/repo/fedora-%OS_VERSION%/secureblue-trivalent-fedora-%OS_VERSION%.repo
-      install:
-        - trivalent-subresource-filter
-    - from-file: common/desktop-scripts.yml
-    - type: fonts
-      fonts:
-        nerd-fonts:
-          - FiraCode
-          - JetBrainsMono
-          - NerdFontsSymbolsOnly
-          - Ubuntu
-    - type: script
-      scripts:
-        - enableflatpakautoupdate.sh
-        - fixupstreamicdloaderbug.sh
-    - type: yafti
-    - type: brew 
-      brew-analytics: false
+  - type: files
+    source: ghcr.io/blue-build/modules@sha256:f1273b17987eed439b0feff77bf4b7f1c734e6f77607dc99c9de9d9070555c7a
+    files:
+      - source: system/desktop
+        destination: /
+
+  - from-file: common/desktop-packages.yml
+
+  - from-file: common/desktop-scripts.yml
+
+  - type: justfiles
+    source: ghcr.io/blue-build/modules@sha256:f1273b17987eed439b0feff77bf4b7f1c734e6f77607dc99c9de9d9070555c7a
+    validate: true
+    include:
+      - desktop

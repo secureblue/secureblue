@@ -1,39 +1,66 @@
-type: rpm-ostree
-repos:
-  - https://copr.fedorainfracloud.org/coprs/secureblue/bubblejail/repo/fedora-%OS_VERSION%/secureblue-bubblejail-fedora-%OS_VERSION%.repo
-  - https://repo.secureblue.dev/secureblue.repo
-  - https://copr.fedorainfracloud.org/coprs/secureblue/branding/repo/fedora-%OS_VERSION%/secureblue-branding-fedora-%OS_VERSION%.repo
+# SPDX-FileCopyrightText: Copyright 2025-2026 The Secureblue Authors
+#
+# SPDX-License-Identifier: Apache-2.0
+
+type: dnf
+source: ghcr.io/blue-build/modules@sha256:f1273b17987eed439b0feff77bf4b7f1c734e6f77607dc99c9de9d9070555c7a
 install:
-  - headsetcontrol
-  - trivalent
-  - secureblue-logos
-  - mediainfo
-  - bubblejail
-  - usbguard-notifier
-  - usbguard
-  - setools
-  - fscrypt
-  - vim
-  - wl-clipboard
-  - alsa-firmware
-  
-  # yubikey enablement
-  - pam-u2f
-  - pam_yubico
-  - pamu2fcfg
-  - yubikey-manager
+  install-weak-deps: false
+  packages:
+    - headsetcontrol
+    - mediainfo
+    - bubblejail
+    - usbguard-notifier
+    - usbguard
+    - setools
+    - fscrypt
+    - vim
+    - wl-clipboard
+    - alsa-firmware
+    - fzf
+    - bazaar
+    - homebrew
+    - brew-proxy
+    - brew-proxy-selinux
+    - firewall-config
+    - trivalent-selinux
+    - ffmpegthumbnailer
 
-  # ensure universal font coverage
-  - google-noto-fonts-all
+    # yubikey enablement
+    - pam-u2f
+    - pam_yubico
+    - pamu2fcfg
+    - yubikey-manager
+
+    # ensure universal font coverage
+    - google-noto-fonts-all
+
+    # Virtualization packages
+    - qemu-kvm
+    - virt-manager
+    - virt-viewer
+
+    # ensure MTP support parity
+    - libmtp
+    - gvfs-mtp
+
+    # ensure adb availability
+    - android-tools
+
 remove:
-  - fedora-logos
-  - firefox
-  - firefox-langpacks
-  - fuse
-  - fedora-chromium-config
-  - fedora-flathub-remote
-  - passim
-
-
-
-
+  packages:
+    - firefox
+    - firefox-langpacks
+    - fuse
+    - passim
+    - fedora-chromium-config
+    - intel-mediasdk
+replace:
+  - from-repo: copr:copr.fedorainfracloud.org:secureblue:packages
+    packages:
+      - old: fedora-logos
+        new: secureblue-logos
+  - from-repo: fedora
+    packages:
+      - old: OpenCL-ICD-Loader
+        new: ocl-icd

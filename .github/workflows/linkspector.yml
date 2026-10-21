@@ -1,17 +1,33 @@
+# SPDX-FileCopyrightText: Copyright 2025-2026 The Secureblue Authors
+#
+# SPDX-License-Identifier: Apache-2.0
+
 name: linkspector-scan
-on: 
+permissions: {}
+on:
   pull_request:
     branches:
       - live
       - staging
+      - next
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
 jobs:
   check-links:
     name: Linkspector
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-26.04
+    permissions:
+      contents: read
     steps:
-      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
       - name: Run linkspector
-        uses: umbrelladocs/action-linkspector@a0567ce1c7c13de4a2358587492ed43cab5d0102 # v1.3.4
+        uses: umbrelladocs/action-linkspector@568ec8d29fa92b31fd9ea5381e155c51e922af83 # v1.5.5
         with:
           filter_mode: nofilter
           reporter: github-pr-review

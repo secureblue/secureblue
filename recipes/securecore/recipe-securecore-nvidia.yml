@@ -1,14 +1,21 @@
+# SPDX-FileCopyrightText: Copyright 2025-2026 The Secureblue Authors
+#
+# SPDX-License-Identifier: Apache-2.0
+
 name: securecore-nvidia-hardened
 
 description: "CoreOS with nvidia, hardened"
 
-base-image: quay.io/fedora/fedora-coreos
+base-image: ghcr.io/secureblue/securecore-main-hardened
 
-image-version: testing
+image-version: latest
+
+cosign-version: none
+nushell-version: none
+
+platforms:
+  - linux/amd64
 
 modules:
-  - from-file: common/common-modules.yml
-  - from-file: common/server-modules.yml
-  - from-file: common/nvidia-install.yml 
-  - from-file: common/selinux-modules.yml
+  - from-file: common/nvidia-install.yml
   - from-file: common/final-modules.yml

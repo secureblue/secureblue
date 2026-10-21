@@ -1,37 +1,69 @@
+# SPDX-FileCopyrightText: Copyright 2025-2026 The Secureblue Authors
+#
+# SPDX-License-Identifier: Apache-2.0
+
 name: run-tests
+permissions: {}
 on:
   pull_request:
     branches:
       - live
       - staging
+      - next
+      - testing
     paths-ignore:
       - "**.md"
-  workflow_dispatch: # allow manually triggering 
+  workflow_dispatch: # allow manually triggering
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
 jobs:
   run_tests:
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-26.04
+    permissions:
+      contents: read
     name: Install Bats and run tests
     steps:
       - name: Checkout repo
-        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
 
       - name: Setup Bats and bats libs
         id: setup-bats
-        uses: bats-core/bats-action@42fcc8700f773c075a16a90eb11674c0318ad507 #v3.0.1
+        uses: bats-core/bats-action@77d6fb60505b4d0d1d73e48bd035b55074bbfb43 # 4.0.0
         with:
-           support-path: "${{ github.workspace }}/.bats/bats-support"
-           assert-path: "${{ github.workspace }}/.bats/bats-assert"
-           detik-path: "${{ github.workspace }}/.bats/bats-detik"
-           file-path: "${{ github.workspace }}/.bats/bats-file"
-      
+          support-path: "${{ github.workspace }}/.bats/bats-support"
+          assert-path: "${{ github.workspace }}/.bats/bats-assert"
+          detik-path: "${{ github.workspace }}/.bats/bats-detik"
+          file-path: "${{ github.workspace }}/.bats/bats-file"
+
       - name: Install just
-        run: |          
-          sudo apt-get install just
+        shell: bash
+        run: |
+          just_version='1.52.0'
+          temp_dir="$(mktemp -d)"
+          cd "${temp_dir}"
+          just_tarball="just-${just_version}-x86_64-unknown-linux-musl.tar.gz"
+          curl -fLsS --retry 5 -O "https://github.com/casey/just/releases/download/${just_version}/${just_tarball}"
+          sha256sum -c <<<"e0a712614574d45625332529c864754e26782422b7c7db931466180a618f092d  ${just_tarball}"
+          tar -xzf "${just_tarball}"
+          sudo install ./just /usr/bin/just
+
+      - name: Disable AppArmor restrictions
+        shell: bash
+        run: |
+          sudo apt install apparmor-utils
+          sudo aa-teardown
+          sudo sysctl -w kernel.apparmor_restrict_unprivileged_userns=0
 
       - name: Run tests
         shell: bash
         env:
-          INSTALL_SCRIPT: files/system/usr/share/secureblue/install_secureblue.sh
           BATS_LIB_PATH: "${{ github.workspace }}/.bats"
         run: |
           bats --timing --trace --verbose-run -r .github/workflows/tests
+          # Also test with-standard-malloc as root
+          sudo "$(command -v bats)" --timing --trace --verbose-run -r .github/workflows/tests/stdmalloc_tests.bats

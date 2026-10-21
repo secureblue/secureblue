@@ -1,0 +1,62 @@
+# SPDX-FileCopyrightText: Copyright 2025-2026 The Secureblue Authors
+#
+# SPDX-License-Identifier: Apache-2.0
+
+name: update-po
+permissions: {}
+on:
+  schedule:
+    - cron: 00 0 * * MON # run weekly
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  update-po:
+    name: Update PO files
+    runs-on: ubuntu-26.04
+    environment: Create_PR
+    permissions:
+      contents: write # needed to create branch
+      pull-requests: write # needed to create pull request
+
+    steps:
+      - name: Install gettext
+        shell: bash
+        run: |
+          sudo apt update
+          sudo apt install gettext
+
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Update PO files
+        shell: bash
+        run: |
+          python3 tools/update_po.py
+
+      - uses: actions/create-github-app-token@64ab729a6294000f5aa4a4bc0b73d1f32bc45510 # v3.3.0
+        id: app-token
+        with:
+          client-id: ${{ vars.CLIENT_ID }}
+          private-key: ${{ secrets.PRIVATE_KEY }}
+          permission-contents: write
+          permission-pull-requests: write
+
+      - uses: peter-evans/create-pull-request@5f6978faf089d4d20b00c7766989d076bb2fc7f1 # v8.1.1
+        with:
+          add-paths: |
+            files/po/*.pot
+            files/po/*/*.po
+          commit-message: "chore(i18n): update PO files"
+          branch: create-pull-request/update-po
+          sign-commits: true
+          title: "chore(i18n): update PO files"
+          token: ${{ steps.app-token.outputs.token }}
+          body: |
+            Automatically update POT and PO files by running the script `tools/update_po.py`.
+
+            Translators may need to add new translations to the PO files.

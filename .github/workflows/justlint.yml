@@ -1,27 +1,40 @@
+# SPDX-FileCopyrightText: Copyright 2025-2026 The Secureblue Authors
+#
+# SPDX-License-Identifier: Apache-2.0
+
 name: just-lint
+permissions: {}
 on:
   pull_request:
     branches:
       - live
       - staging
+      - next
+      - testing
     paths:
       - "**.just"
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
 jobs:
   bluebuild:
     name: Just lint
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-slim
     permissions:
       contents: read
-    strategy:
-      fail-fast: false # stop GH from cancelling all matrix builds if one fails
 
     steps:
       - name: Checkout repo
-        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
 
       - name: Lint justfiles
-        run: |          
-          sudo apt-get install pipx
+        run: |
+          sudo apt update
+          sudo apt install pipx
           pipx install rust-just
           find "./files/justfiles" -type f -name "*.just" | while read -r file; do
             echo "Checking syntax: $file"

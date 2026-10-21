@@ -1,18 +1,86 @@
-type: rpm-ostree
-repos: 
-  - https://copr.fedorainfracloud.org/coprs/secureblue/hardened_malloc/repo/fedora-%OS_VERSION%/secureblue-hardened_malloc-fedora-%OS_VERSION%.repo
-install:
-  - hardened_malloc
+# SPDX-FileCopyrightText: Copyright 2025-2026 The Secureblue Authors
+#
+# SPDX-License-Identifier: Apache-2.0
 
-  # missing upstream
-  - openssl
-  - just
-  - patch
-  - p7zip
-  - distrobox
-  - toolbox
-  - podman
-  - nvme-cli
-  
-  # signing deps 
-  - sbsigntools
+type: dnf
+source: ghcr.io/blue-build/modules@sha256:f1273b17987eed439b0feff77bf4b7f1c734e6f77607dc99c9de9d9070555c7a
+install:
+  install-weak-deps: false
+  packages:
+    - bubblewrap-selinux
+    - hardened_malloc
+    - run0edit
+    - dnsconfd-unbound
+
+    # ensure this is present so firewalld can drop caps
+    - libcap-ng-python3
+
+    # missing upstream
+    - openssl
+    - patch
+    - 7zip-standalone-all
+    - 7zip
+    - distrobox
+    - toolbox
+    - podman
+    - nvme-cli
+    - hdparm
+    - wireguard-tools
+    - gettext
+    - rsync
+    - just
+
+    # signing deps
+    - sbsigntools
+
+    # address hardened_malloc incompatibilities
+    - no_rlimit_as
+
+    # For use in unprivileged ujust scripts
+    - python3-inquirer
+
+    # provenance deps
+    - crane
+    - slsa-verifier
+
+    # Virtualization packages
+    - libvirt
+    - libvirt-nss
+    - qemu-device-display-virtio-gpu
+    - qemu-device-display-virtio-vga
+    - qemu-device-usb-host
+    - qemu-device-usb-redirect
+    - qemu-device-usb-smartcard
+    - qemu-kvm-core
+    - qemu-img
+    - qemu-tools
+    - qemu-user
+    - qemu-user-binfmt
+    - virt-install
+    - podman-machine
+    - moby-engine
+    - docker-cli
+    - moby-engine-rootless-extras
+    - containerd
+    - docker-buildx
+    - docker-compose
+replace:
+  - from-repo: copr:copr.fedorainfracloud.org:secureblue:packages
+    packages:
+      # Patched version from https://codeberg.org/HastD/bubblewrap-utils
+      # This removes bwrap's ability to create user namespaces with elevated
+      # capabilities via the --cap-add option:
+      - bubblewrap
+remove:
+  packages:
+    # Remove uncommon or obsolete NetworkManager plugins
+    - NetworkManager-fortisslvpn
+    - NetworkManager-iodine
+    - NetworkManager-l2tp
+    - NetworkManager-libreswan
+    - NetworkManager-pptp
+    - NetworkManager-ssh
+    - NetworkManager-ssh-selinux
+    - NetworkManager-sstp
+    - NetworkManager-strongswan
+    - NetworkManager-vpnc

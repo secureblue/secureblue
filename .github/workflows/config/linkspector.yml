@@ -2,4 +2,4 @@ dirs:
   - .
 useGitIgnore: true
 ignorePatterns:
-  - pattern: '^generate_secureblue_iso.sh$'
+  - pattern: "^generate_secureblue_iso.sh$"

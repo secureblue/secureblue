@@ -1,0 +1,59 @@
+# SPDX-FileCopyrightText: Copyright 2025-2026 The Secureblue Authors
+#
+# SPDX-License-Identifier: Apache-2.0
+
+name: shared-runner-setup
+
+description: Build runner setup
+
+inputs:
+  needs_cosign:
+    description: "Whether to install cosign, otherwise 'false'."
+    required: false
+    default: "false"
+  needs_slsa_crane:
+    description: "Whether to install slsa-verifier and crane, otherwise 'false'."
+    required: false
+    default: "false"
+
+runs:
+  using: composite
+  steps:
+    - name: Optimize build times
+      shell: bash
+      run: |
+        echo 'set man-db/auto-update false' | sudo debconf-communicate
+        sudo dpkg-reconfigure man-db
+        sudo rm -f /var/lib/man-db/auto-update
+        echo 'update_initramfs=no' | sudo tee /etc/initramfs-tools/update-initramfs.conf > /dev/null
+
+    - name: Drop Ubuntu HTTP mirrors and chrome repo
+      shell: bash
+      run: |
+        sudo rm -f /etc/apt/sources.list.d/google-chrome*
+        sudo sed -i '/^http:\/\//d' /etc/apt/apt-mirrors.txt
+        sudo apt-get update
+
+    - name: Install cosign
+      uses: sigstore/cosign-installer@faadad0cce49287aee09b3a48701e75088a2c6ad # v4.0.0
+      if: ${{ inputs.needs_cosign == 'true' }}
+      with:
+        cosign-release: "v2.6.0"
+
+    - name: Install slsa-verifier
+      if: ${{ inputs.needs_slsa_crane == 'true' }}
+      uses: slsa-framework/slsa-verifier/actions/installer@ea584f4502babc6f60d9bc799dbbb13c1caa9ee6 # v2.7.1
+
+    - name: Install crane
+      if: ${{ inputs.needs_slsa_crane == 'true' }}
+      shell: bash
+      run: |
+        # Install crane
+        CRANE_VERSION=v0.20.7
+        CRANE_OS=Linux
+        CRANE_ARCH=x86_64
+          curl -fLsS --retry 5 \
+            -o 'go-containerregistry.tar.gz' "https://github.com/google/go-containerregistry/releases/download/${CRANE_VERSION}/go-containerregistry_${CRANE_OS}_${CRANE_ARCH}.tar.gz" \
+            -o 'provenance.intoto.jsonl' "https://github.com/google/go-containerregistry/releases/download/${CRANE_VERSION}/multiple.intoto.jsonl"
+        slsa-verifier verify-artifact go-containerregistry.tar.gz --provenance-path provenance.intoto.jsonl --source-uri github.com/google/go-containerregistry --source-tag "${CRANE_VERSION}"
+        tar -zxvf go-containerregistry.tar.gz -C /usr/local/bin/ crane

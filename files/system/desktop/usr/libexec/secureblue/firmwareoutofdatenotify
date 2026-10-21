@@ -1,0 +1,9 @@
+#!/usr/bin/bash
+
+# SPDX-FileCopyrightText: Copyright 2026 The Secureblue Authors
+#
+# SPDX-License-Identifier: Apache-2.0
+
+set -euo pipefail
+
+/usr/bin/notify-send -a secureblue -i dialog-warning -u critical "A firmware update is available." "Run <i>ujust update-firmware</i> to resolve this issue."

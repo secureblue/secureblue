@@ -1,6 +1,11 @@
 #!/usr/bin/env bash
 
-set -oue pipefail
+# SPDX-FileCopyrightText: Copyright (c) 2022 Fedora Sway SIG
+# SPDX-FileCopyrightText: Copyright 2025-2026 The Secureblue Authors
+#
+# SPDX-License-Identifier: MIT
+
+set -euo pipefail
 
 rm /etc/sway/environment
 

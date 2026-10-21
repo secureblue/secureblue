@@ -1,28 +1,54 @@
+# SPDX-FileCopyrightText: Copyright 2025-2026 The Secureblue Authors
+#
+# SPDX-License-Identifier: Apache-2.0
+
 modules:
-    - type: script
-      scripts:
-        - installproprietarypackages.sh
-    - type: rpm-ostree
-      install:
-      - heif-pixbuf-loader
-      - ffmpeg
-      - ffmpeg-libs
-      - ffmpegthumbnailer
-      - pipewire-libs-extra
-      - libfdk-aac
-      - gstreamer1-plugins-ugly  
-      remove:
-      - gstreamer1-plugins-ugly-free
-      - fdk-aac-free
-      - ffmpeg-free
-      - libavcodec-free  
-      - libavdevice-free
-      - libavfilter-free
-      - libavformat-free  
-      - libavutil-free  
-      - libpostproc-free  
-      - libswresample-free  
-      - libswscale-free  
-    - type: script
-      scripts:
-        - removeunusedrepos.sh
+  - type: dnf
+    source: ghcr.io/blue-build/modules@sha256:f1273b17987eed439b0feff77bf4b7f1c734e6f77607dc99c9de9d9070555c7a
+    install:
+      install-weak-deps: false
+      packages:
+        - repo: fedora-multimedia
+          packages:
+            - pipewire-libs-extra
+
+  - type: dnf
+    source: ghcr.io/blue-build/modules@sha256:f1273b17987eed439b0feff77bf4b7f1c734e6f77607dc99c9de9d9070555c7a
+    replace:
+      - from-repo: fedora-multimedia
+        skip-unavailable: true
+        packages:
+          - libva
+          - libva-intel-media-driver
+          - mesa-dri-drivers
+          - mesa-filesystem
+          - mesa-libEGL
+          - mesa-libGL
+          - mesa-libgbm
+          - mesa-va-drivers
+          - mesa-vulkan-drivers
+
+  - type: dnf
+    source: ghcr.io/blue-build/modules@sha256:f1273b17987eed439b0feff77bf4b7f1c734e6f77607dc99c9de9d9070555c7a
+    replace:
+      - from-repo: fedora-multimedia
+        skip-unavailable: true
+        packages:
+          - old: ffmpeg-free
+            new: ffmpeg
+          - old: libavcodec-free
+            new: libavcodec
+          - old: libavdevice-free
+            new: libavdevice
+          - old: libavfilter-free
+            new: libavfilter
+          - old: libavformat-free
+            new: libavformat
+          - old: libavutil-free
+            new: libavutil
+          - old: libpostproc-free
+            new: libpostproc
+          - old: libswresample-free
+            new: libswresample
+          - old: libswscale-free
+            new: libswscale

@@ -1,29 +1,40 @@
 #!/usr/bin/env bash
 
-set -oue pipefail
+# SPDX-FileCopyrightText: Copyright 2025-2026 The Secureblue Authors
+#
+# SPDX-License-Identifier: Apache-2.0
 
-rpm-ostree install selinux-policy-devel
+set -euo pipefail
 
-cd ./selinux/trivalent
-bash trivalent.sh
-cd ../..
+selinux_policy_version="$(rpm -q --qf '%{version}-%{release}' selinux-policy)"
+dnf install -y --setopt=install_weak_deps=False --enable-repo=updates-archive \
+    "selinux-policy-devel-${selinux_policy_version}"
 
-cd ./selinux/flatpakfull
-bash flatpakfull.sh
-cd ../..
+policy_modules=(flatpakfull stdmalloc systemsettings)
 
-cd ./selinux/nautilus
-bash nautilus.sh
-cd ../..
+cil_policy_modules=(
+    './selinux/flatpakfull/grant_systemd_flatpak_exec.cil'
+    './selinux/ptrace/container-ptrace.cil'
+    './selinux/sockets/secureblue_audit_sockets.cil'
+    './selinux/sockets/secureblue_deny_alg_sockets.cil'
+    './selinux/sockets/secureblue_deny_ipsec_sockets.cil'
+    './selinux/sockets/secureblue_deny_obscure_sockets.cil'
+    './selinux/sockets/secureblue_deny_packet_radio_sockets.cil'
+    './selinux/sockets/secureblue_socket_utils.cil'
+    './selinux/user_namespace/harden_container_userns.cil'
+    './selinux/user_namespace/harden_userns.cil'
+    './selinux/user_namespace/userns_deny_unconfined_relabels.cil'
+)
 
-semodule -i ./selinux/user_namespace/grant_userns.cil
-semodule -i ./selinux/user_namespace/harden_userns.cil
-semodule -i ./selinux/user_namespace/harden_container_userns.cil
-semodule -i ./selinux/flatpakfull/grant_systemd_flatpak_exec.cil
+for module in "${policy_modules[@]}"; do
+    cd "./selinux/${module}"
+    make -f /usr/share/selinux/devel/Makefile "${module}.pp"
+    cd ../..
+done
 
-semodule -i ./selinux/user_namespace/deny_unconfined_blk_file_relabels.cil
-semodule -i ./selinux/user_namespace/deny_unconfined_chr_file_relabels.cil
-semodule -i ./selinux/user_namespace/deny_unconfined_dir_relabels.cil
-semodule -i ./selinux/user_namespace/deny_unconfined_fifo_file_relabels.cil
-semodule -i ./selinux/user_namespace/deny_unconfined_file_relabels.cil
-semodule -i ./selinux/user_namespace/deny_unconfined_lnk_file_relabels.cil
+# Install at priority 300 to be higher-priority than policies from RPM packages
+# (which are conventionally priority 200) but lower-priority than custom
+# policies set by a local administrator (which default to priority 400).
+semodule -v -X 300 -i ./selinux/*/*.pp "${cil_policy_modules[@]}"
+
+restorecon -FRv /usr

@@ -1,0 +1,24 @@
+#!/bin/bash
+
+# SPDX-FileCopyrightText: Copyright 2025-2026 The Secureblue Authors
+#
+# SPDX-License-Identifier: Apache-2.0
+
+set -euo pipefail
+echo "Notice: This will generate a policy based on your existing connected USB devices."
+# shellcheck disable=SC2016
+run0 sh -c '
+    mkdir -p /var/log/usbguard
+    mkdir -p /etc/usbguard
+    chmod 755 /etc/usbguard
+    groupadd usbguard
+    usermod -aG usbguard "${SUDO_USER}"
+    usbguard generate-policy > /etc/usbguard/rules.conf
+    sed -i "/^IPCAllowedGroups=wheel/s/\$/ usbguard/" /etc/usbguard/usbguard-daemon.conf
+    restorecon -vR /var/log/usbguard
+    systemctl enable --now usbguard.service
+    usbguard add-user "${SUDO_USER}"
+'
+if ! grep -Eq '^IMAGE_ID=.*(securecore|iot)' /usr/lib/os-release; then
+    systemctl enable --user --now usbguard-notifier.service
+fi

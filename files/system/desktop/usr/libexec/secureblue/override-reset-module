@@ -1,0 +1,16 @@
+
+#!/bin/run0
+
+# SPDX-FileCopyrightText: Copyright 2025-2026 The Secureblue Authors
+#
+# SPDX-License-Identifier: Apache-2.0
+
+set -euo pipefail
+MOD_NAME="{{ mod_name }}"
+MOD_FILE="/etc/modprobe.d/99-${MOD_NAME}.conf"
+if [[ -e "${MOD_FILE}" ]]; then
+    rm -f "${MOD_FILE}"
+    echo "The override for ${MOD_NAME} module has been reset. Reboot to take effect."
+else
+    echo "No override found for ${MOD_NAME} module."
+fi

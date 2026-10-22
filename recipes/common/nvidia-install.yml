@@ -33,3 +33,4 @@ modules:
       - remove-nvidia-repos.sh
       - setearlyloading.sh
       - setdrmvariables.sh
+      - setdistroboxnvidiatrue.sh

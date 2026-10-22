@@ -7,8 +7,7 @@ name: build-sealed-image
 permissions: {}
 
 env:
-  # For CoreOS (which has version "testing"), use systemd-boot from F44.
-  IMAGE_VERSION: ${{ inputs.image_version == 'testing' && '44' || inputs.image_version }}
+  IMAGE_VERSION: "45"
 
 on:
   workflow_call:
@@ -23,10 +22,6 @@ on:
         required: true
       base_digest:
         description: "The digest of the base image to seal (e.g. sha256:abc123)."
-        type: string
-        required: true
-      image_version:
-        description: "The Fedora image version used for getting the systemd-boot image, e.g. 44."
         type: string
         required: true
     secrets:

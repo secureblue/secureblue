@@ -313,7 +313,7 @@ install-vpn:
 
         # The lack of quotes around $2 is intentional.
         # shellcheck disable=SC2086
-        if ! run0 sh -c 'sed -Ei "s/^enabled[[:space:]]*=.*/enabled=1/" "/etc/yum.repos.d/$1.repo" && rpm-ostree install -y $2' sh "${REPO_NAME}" "${PACKAGE_NAMES}"; then
+        if ! run0 sh -c 'sed -Ei "s/^enabled[[:space:]]*=.*/enabled=1/" "/usr/share/dnf5/repos.d/$1.repo" && rpm-ostree install -y $2' sh "${REPO_NAME}" "${PACKAGE_NAMES}"; then
             echo "Error: The installation didn't complete successfully, aborting..."
             exit 1
         fi

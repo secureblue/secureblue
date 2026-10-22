@@ -12,7 +12,7 @@ MOD_NAME="${1:?No module name provided}"
 if [[ ! "${MOD_NAME}" =~ ^[A-Za-z0-9][A-Za-z0-9_-]{0,53}[A-Za-z0-9]$ ]]; then
     echo "Module name must start and end with a letter or number," \
          "may only contain letters, numbers, dashes, and underscores," \
-         "and may be at most 55 characters long."
+         "and may be at most 55 characters long." >&2
     exit 1
 fi
 

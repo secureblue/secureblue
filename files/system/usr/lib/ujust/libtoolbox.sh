@@ -130,7 +130,7 @@ function ToolboxAssemble (){
 # ToolboxAssembleList "$HOME/toolbox.ini" noconfirmcreate ubuntu-toolbox-22.04
 function ToolboxAssembleList (){
     # Set defaults
-    local FILE="$1"
+    local FILE="$3"
     local ACTION="create"
     local CHOICE="prompt"
 
@@ -144,9 +144,9 @@ function ToolboxAssembleList (){
     fi
 
     # If a CHOICE is predefined
-    if [[ -n "$3" ]]; then
+    if [[ -n "$1" ]]; then
         # Replace default choice
-        CHOICE="$3"
+        CHOICE="$1"
     fi
 
     # If the choice is "prompt" then ask user what container they want

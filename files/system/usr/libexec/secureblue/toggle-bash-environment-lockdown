@@ -1,11 +1,14 @@
-
-#!/bin/run0
+#!/bin/bash
 
 # SPDX-FileCopyrightText: Copyright 2025-2026 The Secureblue Authors
 #
 # SPDX-License-Identifier: Apache-2.0
 
 set -euo pipefail
+
+skip_approval="${1:-false}"
+apply_for_all_users="${2:-prompt}"
+
 # shellcheck disable=SC1091
 source /usr/lib/ujust/libformatting.sh
 

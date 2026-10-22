@@ -1,12 +1,11 @@
-
-#!/bin/run0
+#!/bin/bash
 
 # SPDX-FileCopyrightText: Copyright 2025-2026 The Secureblue Authors
 #
 # SPDX-License-Identifier: Apache-2.0
 
 set -euo pipefail
-MOD_NAME="{{ mod_name }}"
+MOD_NAME="${1:?No module name provided}"
 MOD_FILE="/etc/modprobe.d/99-${MOD_NAME}.conf"
 if [[ -e "${MOD_FILE}" ]]; then
     echo "${MOD_NAME} module is already enabled."

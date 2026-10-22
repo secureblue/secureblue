@@ -262,4 +262,3 @@ install-vpn:
 # Setup USBGuard
 @setup-usbguard:
     exec /usr/libexec/secureblue/setup-usbguard
-

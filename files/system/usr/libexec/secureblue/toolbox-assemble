@@ -1,4 +1,3 @@
-
 #!/bin/bash
 
 # SPDX-FileCopyrightText: Copyright 2025-2026 The Secureblue Authors
@@ -6,7 +5,7 @@
 # SPDX-License-Identifier: Apache-2.0
 
 if [[ "$(ujust set-container-userns status)" == "disabled" ]]; then
-    echo "Distrobox requires container domain user namespaces to work, which are disabled by default for security reasons."
+    echo "Toolbox requires container domain user namespaces to work, which are disabled by default for security reasons."
     echo "You need to run 'ujust set-container-userns on' to allow this."
     container_userns_now=""
     read -rp "Would you like to run 'ujust set-container-userns on' now? [Y/n] " container_userns_now
@@ -16,7 +15,7 @@ if [[ "$(ujust set-container-userns status)" == "disabled" ]]; then
         ujust set-container-userns on
     fi
 fi
-# Distroboxes are gathered from distrobox.ini, please add them there
+# Toolboxes are gathered from toolbox.ini, please add them there
 # shellcheck disable=SC1091
 source /usr/lib/ujust/ujust.sh
-AssembleList "{{ FILE }}" "{{ ACTION }}" "{{ CONTAINER }}"
+ToolboxAssembleList "$@"

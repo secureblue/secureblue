@@ -104,7 +104,7 @@ function Assemble(){
 # AssembleList "$HOME/distrobox.ini" noconfirmcreate ubuntu
 function AssembleList (){
     # Set defaults
-    FILE="$1"
+    FILE="$3"
     ACTION="create"
     CHOICE="prompt"
 
@@ -115,9 +115,9 @@ function AssembleList (){
     fi
 
     # If a CHOICE is predefined
-    if [[ -n "$3" ]]; then
+    if [[ -n "$1" ]]; then
         # Replace default choice
-        CHOICE="$3"
+        CHOICE="$1"
     fi
 
     # If the choice is "prompt" then ask user what container they want

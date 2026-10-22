@@ -60,3 +60,9 @@ Rebase to: The equivalent image without `-laptop`. For example, for `kinoite-mai
 Rationale: Upstream recommendations have changed and improvements are being made to PPD. Additionally, nvidia optimus configuration has moved to upstream `just` commands.
 
 Rebase to: The equivalent image without `-laptop`. For example, for `kinoite-nvidia-laptop-hardened`, rebase to `kinoite-nvidia-hardened` and reboot.
+
+## zfs
+
+Rationale: ZFS lags behind kernel releases significantly, meaning that images will fail to build up to weeks at a time, leaving users of these images behind on critical kernel fixes. These images also have minimal usage.
+
+Rebase to: The equivalent image without `-zfs`. For example, for `iot-zfs-main-hardened`, rebase to `iot-main-hardened` and reboot.

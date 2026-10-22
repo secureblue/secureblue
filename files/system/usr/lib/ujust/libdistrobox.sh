@@ -101,7 +101,7 @@ function Assemble(){
 ## Parse a distrobox.ini manifest and let user select which container to setup
 # AssembleList prompt create "$HOME/distrobox.ini"
 ## Parse a distrobox.ini manifest and create ubuntu container without confirmation
-# AssembleList ubuntu noconfirmcreate "$HOME/distrobox.ini" 
+# AssembleList ubuntu noconfirmcreate "$HOME/distrobox.ini"
 function AssembleList (){
     # Set defaults
     FILE="$3"

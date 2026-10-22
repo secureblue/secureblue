@@ -125,7 +125,7 @@ function ToolboxAssemble (){
 ## Function to parse a toolbox.ini file and make a selectable list from it
 ########
 ## Parse a toolbox.ini manifest and let user select which container to setup
-# ToolboxAssembleList create "$HOME/toolbox.ini"
+# ToolboxAssembleList prompt create "$HOME/toolbox.ini"
 ## Parse a toolbox.ini manifest and create ubuntu container without confirmation
 # ToolboxAssembleList ubuntu-toolbox-22.04 noconfirmcreate "$HOME/toolbox.ini"
 function ToolboxAssembleList (){

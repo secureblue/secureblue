@@ -4,4 +4,4 @@
 #
 # SPDX-License-Identifier: Apache-2.0
 
-sed -i '/^pull=true$/a nvidia=true' distrobox.ini
+sed -i '/^pull=true$/a nvidia=true' /etc/distrobox/distrobox.ini

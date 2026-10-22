@@ -446,6 +446,7 @@ install-vpn:
 # Setup USBGuard
 setup-usbguard:
     #!/usr/bin/bash
+    set -euo pipefail
     echo "Notice: This will generate a policy based on your existing connected USB devices."
     # shellcheck disable=SC2016
     run0 sh -c '

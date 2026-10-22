@@ -4,7 +4,12 @@
 
 # enable a kernel module that is disabled by modprobe.d (requires restart)
 override-enable-module mod_name:
-    #! /bin/run0 /bin/bash
+    @/usr/bin/run0 /usr/bin/just --justfile /usr/share/ublue-os/justfile _override-enable-module {{ quote(mod_name) }}
+
+[private]
+_override-enable-module mod_name:
+    #!/usr/bin/bash
+    set -euo pipefail
     MOD_NAME="{{ mod_name }}"
     MOD_FILE="/etc/modprobe.d/99-${MOD_NAME}.conf"
     if [[ -e "${MOD_FILE}" ]]; then
@@ -17,7 +22,12 @@ override-enable-module mod_name:
 
 # reset the override by `just override-enable-module`, i.e. disable the module again (requires restart)
 override-reset-module mod_name:
-    #! /bin/run0 /bin/bash
+    @/usr/bin/run0 /usr/bin/just --justfile /usr/share/ublue-os/justfile _override-reset-module {{ quote(mod_name) }}
+
+[private]
+_override-reset-module mod_name:
+    #!/usr/bin/bash
+    set -euo pipefail
     MOD_NAME="{{ mod_name }}"
     MOD_FILE="/etc/modprobe.d/99-${MOD_NAME}.conf"
     if [[ -e "${MOD_FILE}" ]]; then
@@ -29,17 +39,22 @@ override-reset-module mod_name:
 
 # Toggle debug mode (requires restart)
 toggle-debug-mode:
-    #! /bin/run0 /bin/bash
+    @/usr/bin/run0 /usr/bin/just --justfile /usr/share/ublue-os/justfile _toggle_debug_mode
+
+[private]
+_toggle-debug-mode:
+    #!/usr/bin/bash
+    set -euo pipefail
     if test -e /etc/sysctl.d/99-enable-coredump.conf; then
         cp /usr/share/secureblue/etc/security/limits.d/60-disable-coredump.conf /etc/security/limits.d/60-disable-coredump.conf
         cp /usr/share/secureblue/etc/systemd/system.conf.d/60-disable-coredump.conf /etc/systemd/system.conf.d/60-disable-coredump.conf
         cp /usr/share/secureblue/etc/systemd/user.conf.d/60-disable-coredump.conf /etc/systemd/user.conf.d/60-disable-coredump.conf
-        rm /etc/sysctl.d/99-enable-coredump.conf
+        rm -f /etc/sysctl.d/99-enable-coredump.conf
         echo "Debug mode disabled."
     else
-        rm /etc/security/limits.d/60-disable-coredump.conf
-        rm /etc/systemd/system.conf.d/60-disable-coredump.conf
-        rm /etc/systemd/user.conf.d/60-disable-coredump.conf
+        rm -f /etc/security/limits.d/60-disable-coredump.conf
+        rm -f /etc/systemd/system.conf.d/60-disable-coredump.conf
+        rm -f /etc/systemd/user.conf.d/60-disable-coredump.conf
         echo "kernel.core_pattern = |/usr/lib/systemd/systemd-coredump %P %u %g %s %t %c %h" >/etc/sysctl.d/99-enable-coredump.conf
         echo "Debug mode enabled."
         if [[ "$(getsebool deny_ptrace)" == *'--> on' ]]; then
@@ -50,7 +65,11 @@ toggle-debug-mode:
 
 # Toggle bash environment lockdown (mitigates LD_PRELOAD attacks). Use skip_approval to bypass initial prompt, and apply_for_all_users to bypass secondary prompt.
 toggle-bash-environment-lockdown skip_approval="false" apply_for_all_users="prompt":
-    #!/bin/run0 /bin/bash
+    @/usr/bin/run0 /usr/bin/just --justfile /usr/share/ublue-os/justfile _toggle-bash-environment-lockdown {{ quote(skip_approval) }} {{ quote(apply_for_all_usersskip_approval) }}
+
+[private]
+_toggle-bash-environment-lockdown
+    #!/usr/bin/bash
     set -euo pipefail
     # shellcheck disable=SC1091
     source /usr/lib/ujust/libformatting.sh
@@ -200,7 +219,12 @@ toggle-bash-environment-lockdown skip_approval="false" apply_for_all_users="prom
 
 # Toggle MAC Randomization
 toggle-mac-randomization:
-    #! /bin/run0 /bin/bash
+    @/usr/bin/run0 /usr/bin/just --justfile /usr/share/ublue-os/justfile _toggle-mac-randomization
+
+[private]
+_toggle-mac-randomization:
+    #!/usr/bin/bash
+    set -euo pipefail
     RAND_MAC_FILE="/etc/NetworkManager/conf.d/rand_mac.conf"
 
     if test -e "${RAND_MAC_FILE}"; then

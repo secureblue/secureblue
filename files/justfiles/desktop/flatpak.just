@@ -15,6 +15,7 @@
 # Harden Flatpaks further by disabling all permissions by default and rejecting known arbitrary DBus names, applies only to the current user
 flatpak-permissions-lockdown:
     #!/usr/bin/bash
+    set -euo pipefail
     kCommand="flatpak override --user"
     kSharePermissions=("network" "ipc")
     kSocketPermissions=("inherit-wayland-socket" "gpg-agent" "cups" "pcsc" "ssh-auth" "system-bus" "session-bus" "pulseaudio" "fallback-x11" "x11")
@@ -108,6 +109,7 @@ flatpak-permissions-lockdown:
 # Resets Flatpak's global overrides
 flatpak-reset-global-overrides:
     #!/usr/bin/bash
+    set -euo pipefail
     GLOBAL_OVERRIDES="${HOME}/.local/share/flatpak/overrides/global"
     echo "This will undo the harden-flatpak command, the flatpak-permissions-lockdown command, as well as any other global overrides (individual app overrides will not be affected)."
     echo "It will not delete the file, but simply move it from ${GLOBAL_OVERRIDES} to ${GLOBAL_OVERRIDES}.save"

@@ -8,13 +8,11 @@
 
 import sys
 from pathlib import Path
-from typing import Final
-
-
+from typing import TYPE_CHECKING, Final
 
 if TYPE_CHECKING:
     from files.system.usr.libexec.secureblue.shared import sandbox
-    from files.system.usr.libexec.secureblue.shared import (
+    from files.system.usr.libexec.secureblue.shared.utils import (
         CommandUsageError,
         ToggleMode,
         parse_basic_toggle_args,

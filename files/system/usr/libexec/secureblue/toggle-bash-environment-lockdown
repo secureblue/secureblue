@@ -48,20 +48,20 @@ else
 fi
 
 # shellcheck disable=SC2050
-if [[ "{{ skip_approval }}" == "false" ]]; then
+if [[ "${skip_approval}" == "false" ]]; then
     echo "Do you understand?"
     accept=""
     read -r -p "Type ${bold}YES I UNDERSTAND${unbold} and press ${bold}Enter${unbold} to continue: " accept
     if [[ "${accept}" != "YES I UNDERSTAND" ]]; then
         exit
     fi
-elif [[ "{{ skip_approval }}" != "true" ]]; then
+elif [[ "${skip_approval}" != "true" ]]; then
     echo 'Invalid skip_approval argument, only "true", "false", or empty allowed.'
     exit
 fi
 
 # shellcheck disable=SC2050
-if [[ "{{ apply_for_all_users }}" == "prompt" ]]; then
+if [[ "${apply_for_all_users}" == "prompt" ]]; then
     user_list_lookup
     echo "This change can be applied to ${bold}all${unbold} users on this system (${user_list[*]})"
     echo "or only to the user who launched this script (${SUDO_USER})."
@@ -70,9 +70,9 @@ if [[ "{{ apply_for_all_users }}" == "prompt" ]]; then
     if [[ "${user_choice}" != [yY]* ]]; then
         user_list=("${SUDO_USER}")
     fi
-elif [[ "{{ apply_for_all_users }}" == "false" ]]; then
+elif [[ "${apply_for_all_users}" == "false" ]]; then
     user_list=("${SUDO_USER}")
-elif [[ "{{ apply_for_all_users }}" == "true" ]]; then
+elif [[ "${apply_for_all_users}" == "true" ]]; then
     user_list_lookup
 else
     echo 'Invalid apply_for_all_users argument, only "true", "false", or empty allowed.'

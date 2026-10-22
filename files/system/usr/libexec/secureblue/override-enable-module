@@ -6,6 +6,16 @@
 
 set -euo pipefail
 MOD_NAME="${1:?No module name provided}"
+
+# 55 chars max
+# https://github.com/torvalds/linux/blob/master/include/linux/moduleparam.h#L19
+if [[ ! "${MOD_NAME}" =~ ^[A-Za-z0-9][A-Za-z0-9-_]{0,53}[A-Za-z0-9]$ ]]; then
+    echo "Module name must start and end with a letter or number, " \
+         "may only contain letters, numbers, dashes, and underscores, " \
+         "and may be at most 55 characters long."
+    exit 1
+fi
+
 MOD_FILE="/etc/modprobe.d/99-${MOD_NAME}.conf"
 if [[ -e "${MOD_FILE}" ]]; then
     echo "${MOD_NAME} module is already enabled."

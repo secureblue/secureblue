@@ -16,7 +16,7 @@
 [positional-arguments]
 @toggle-bash-environment-lockdown skip_approval="false" apply_for_all_users="prompt":
     exec /usr/bin/run0 /usr/libexec/secureblue/toggle-bash-environment-lockdown "$@"
-   
+
 # Toggle MAC Randomization
 @toggle-mac-randomization:
     exec /usr/bin/run0 /usr/libexec/secureblue/toggle-mac-randomization

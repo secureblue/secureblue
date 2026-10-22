@@ -99,9 +99,9 @@ function Assemble(){
 ## Function to parse a distrobox.ini file and make a selectable list from it
 ########
 ## Parse a distrobox.ini manifest and let user select which container to setup
-# AssembleList "$HOME/distrobox.ini" create
+# AssembleList prompt create "$HOME/distrobox.ini"
 ## Parse a distrobox.ini manifest and create ubuntu container without confirmation
-# AssembleList "$HOME/distrobox.ini" noconfirmcreate ubuntu
+# AssembleList ubuntu noconfirmcreate "$HOME/distrobox.ini" 
 function AssembleList (){
     # Set defaults
     FILE="$3"

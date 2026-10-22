@@ -13,7 +13,7 @@
     exec /usr/bin/python3 -Es /usr/libexec/secureblue/harden_flatpak.py "$@"
 
 # Harden Flatpaks further by disabling all permissions by default and rejecting known arbitrary DBus names, applies only to the current user
-flatpak-permissions-lockdown:
+@flatpak-permissions-lockdown:
     exec /usr/libexec/secureblue/flatpak-permissions-lockdown
 
 # Resets Flatpak's global overrides

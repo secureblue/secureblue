@@ -10,13 +10,25 @@ import sys
 from pathlib import Path
 from typing import Final
 
-from shared import sandbox
-from shared.utils import (
-    CommandUsageError,
-    ToggleMode,
-    parse_basic_toggle_args,
-    print_wrapped,
-)
+
+
+if TYPE_CHECKING:
+    from files.system.usr.libexec.secureblue.shared import sandbox
+    from files.system.usr.libexec.secureblue.shared import (
+        CommandUsageError,
+        ToggleMode,
+        parse_basic_toggle_args,
+        print_wrapped,
+    )
+else:
+    from shared import sandbox
+    from shared.utils import (
+        CommandUsageError,
+        ToggleMode,
+        parse_basic_toggle_args,
+        print_wrapped,
+    )
+
 
 HELP_MESSAGE: Final[str] = """\
 Toggles if always-upgrade-on-boot is allowed.

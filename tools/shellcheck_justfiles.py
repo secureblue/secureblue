@@ -51,7 +51,7 @@ temp_dir = tempfile.mkdtemp(prefix="justfile-tmp-", dir=".")
 recipe_paths = []
 for justfile in justfiles:
     try:
-        recipes = json.loads(command_stdout("just", "-f", justfile, "--dump", "--dump-format", "--json"))["recipes"]
+        recipes = json.loads(command_stdout("just", "-f", justfile, "--dump", "--dump-format", "json"))["recipes"]
     except subprocess.CalledProcessError:
         print(f"Error parsing justfile '{justfile}'")
         sys.exit(1)

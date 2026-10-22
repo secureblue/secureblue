@@ -39,7 +39,7 @@ _override-reset-module mod_name:
 
 # Toggle debug mode (requires restart)
 toggle-debug-mode:
-    @/usr/bin/run0 /usr/bin/just --justfile /usr/share/ublue-os/justfile _toggle_debug_mode
+    @/usr/bin/run0 /usr/bin/just --justfile /usr/share/ublue-os/justfile _toggle-debug-mode
 
 [private]
 _toggle-debug-mode:
@@ -65,10 +65,10 @@ _toggle-debug-mode:
 
 # Toggle bash environment lockdown (mitigates LD_PRELOAD attacks). Use skip_approval to bypass initial prompt, and apply_for_all_users to bypass secondary prompt.
 toggle-bash-environment-lockdown skip_approval="false" apply_for_all_users="prompt":
-    @/usr/bin/run0 /usr/bin/just --justfile /usr/share/ublue-os/justfile _toggle-bash-environment-lockdown {{ quote(skip_approval) }} {{ quote(apply_for_all_usersskip_approval) }}
+    @/usr/bin/run0 /usr/bin/just --justfile /usr/share/ublue-os/justfile _toggle-bash-environment-lockdown {{ quote(skip_approval) }} {{ quote(apply_for_all_users) }}
 
 [private]
-_toggle-bash-environment-lockdown
+_toggle-bash-environment-lockdown skip_approval="false" apply_for_all_users="prompt":
     #!/usr/bin/bash
     set -euo pipefail
     # shellcheck disable=SC1091

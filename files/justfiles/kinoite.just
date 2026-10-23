@@ -4,7 +4,12 @@
 
 # Toggle GHNS (KDE Get New Stuff)
 toggle-ghns:
-    #! /bin/run0 /bin/bash
+    @/usr/bin/run0 /usr/bin/just --justfile /usr/share/ublue-os/justfile _toggle-ghns
+
+[private]
+_toggle-ghns:
+    #!/usr/bin/bash
+    set -euo pipefail
     KDE_GLOBALS_FILE='/etc/xdg/kdeglobals'
     if test -e "${KDE_GLOBALS_FILE}"; then
         if grep -q '^ghns=false' "${KDE_GLOBALS_FILE}"; then

@@ -5,7 +5,7 @@
 # SPDX-License-Identifier: Apache-2.0
 
 if command -v fzf >/dev/null 2>&1; then
-    unset JUST_CHOOSER
+    export JUST_CHOOSER='/usr/bin/fzf --multi'
 else
     export JUST_CHOOSER=/usr/bin/echo
 fi

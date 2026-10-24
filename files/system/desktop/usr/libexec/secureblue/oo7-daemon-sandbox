@@ -1,0 +1,26 @@
+#!/bin/sh -eu
+
+# SPDX-FileCopyrightText: Copyright 2026 The Secureblue Authors
+#
+# SPDX-License-Identifier: Apache-2.0
+
+home_dir=$(realpath -- ~)
+exec /usr/bin/bwrap \
+    --unshare-user \
+    --unshare-net \
+    --unshare-cgroup \
+    --disable-userns \
+    --new-session \
+    --ro-bind / / \
+    --bind-try "${home_dir}" "${home_dir}" \
+    --bind-try "${XDG_RUNTIME_DIR}" "${XDG_RUNTIME_DIR}" \
+    --perms 1777 --tmpfs /tmp \
+    --perms 1777 --tmpfs /var/tmp \
+    --tmpfs /dev \
+    --dev-bind-try /dev/full /dev/full \
+    --dev-bind-try /dev/null /dev/null \
+    --dev-bind-try /dev/random /dev/random \
+    --dev-bind-try /dev/urandom /dev/urandom \
+    --dev-bind-try /dev/zero /dev/zero \
+    -- \
+    /usr/libexec/oo7-daemon

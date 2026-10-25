@@ -10,6 +10,7 @@
         "wayblue-hyprland",
         "wayblue-sway",
         "wayblue-wayfire",
-        "wayblue-river"
+        "wayblue-river",
+        "zfs"
     ]
 }

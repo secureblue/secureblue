@@ -1,0 +1,12 @@
+[Unit]
+Description=Zswap Management Service
+After=local-fs.target zstd.service
+
+[Service]
+Type=oneshot
+RemainAfterExit=yes
+ExecStart=/usr/local/bin/zswap-systemd start
+ExecStop=/usr/local/bin/zswap-systemd stop
+
+[Install]
+WantedBy=multi-user.target

@@ -1243,7 +1243,7 @@ def audit_webcam_module():
     note = None
     try:
         with open(webcam_mod_file, encoding="utf-8") as f:
-            if f.read().strip() == "install uvcvideo /bin/false":
+            if "install uvcvideo /bin/false" in (line.strip() for line in f):
                 if is_module_loaded("uvcvideo"):
                     status = INFO
                     rec = "\n".join(

@@ -55,7 +55,7 @@ toggle-bash-environment-lockdown skip_approval="false":
     # shellcheck disable=SC1091
     source /usr/lib/ujust/libformatting.sh
 
-    user_home="$(getent passwd "${USER}" | cut -d: -f6)"
+    user_home=~
     if [[ ! -d "${user_home}" ]]; then
         echo "User homedir not found."
         exit 1
@@ -138,7 +138,7 @@ toggle-bash-environment-lockdown skip_approval="false":
             install -D -m 700 "${origin_path}" "${env_path}"
         done
 
-        run0 chattr +i -- "${BASH_ENV_FILES[@]}" "${BASH_ENV_DIRS[@]}"
+        run0 chattr -R +i -- "${BASH_ENV_FILES[@]}" "${BASH_ENV_DIRS[@]}"
     fi
 
     echo "${USER}" "${pending_status}."

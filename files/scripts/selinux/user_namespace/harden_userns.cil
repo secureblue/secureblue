@@ -26,5 +26,9 @@
 (typeattribute userns_restricted_domain)
 (typeattributeset userns_restricted_domain (and (domain) (not (userns_privileged_domain))))
 
+(typeattribute userns_restricted_userdomain)
+(typeattributeset userns_restricted_userdomain (and (userdomain) (not (userns_privileged_domain))))
+
 (deny userns_restricted_domain self (user_namespace (create)))
 (deny userns_restricted_domain userns_privileged_domain (process (noatsecure)))
+(deny userns_restricted_userdomain self (cap_userns (sys_admin)))

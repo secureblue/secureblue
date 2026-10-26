@@ -7,6 +7,8 @@
 set -euo pipefail
 
 unset BASH_ENV LD_PRELOAD
+readonly original_path="${PATH:-/usr/local/bin:/usr/bin}"
+export PATH='/usr/bin'
 
 usage() {
     echo 'Usage: with-standard-malloc COMMAND [ARGS...]'
@@ -15,25 +17,27 @@ usage() {
 }
 
 case "${1-}" in
-    ''|--help) usage ;;
-    --) shift ;;
-    *) ;;
+'' | --help) usage ;;
+--) shift ;;
+*) ;;
 esac
 
 if [[ ! -f /etc/ld.so.preload ]]; then
-    exec -- "$@"
+    # shellcheck disable=SC2016
+    exec runcon --type=unconfined_t \
+        -- env PATH="${original_path}" bash -p -c 'exec -- "$0" "$@"' "$@"
 fi
 
 # If running as root, we only need a mount namespace.
-if [[ "$(/usr/bin/id -u)" == 0 ]]; then
+if [[ "$(id -u)" == 0 ]]; then
     # shellcheck disable=SC2016
     inner_script='
     /usr/bin/mount --bind /dev/null /etc/ld.so.preload && \
     exec /usr/bin/runcon --type=unconfined_t \
         -- /usr/bin/bash -p -c '"'"'exec -- "$0" "$@"'"'"' "$0" "$@"
     '
-    exec /usr/bin/unshare --mount \
-        -- /usr/bin/bash -p -c "${inner_script}" "$@"
+    exec unshare --mount \
+        -- env PATH="${original_path}" bash -p -c "${inner_script}" "$@"
 fi
 
 # First, we enter a new mount namespace and user namespace with full
@@ -52,7 +56,7 @@ exec /usr/bin/runcon --type=unconfined_t \
         -- -p -c '"'"'exec -- "$0" "$@"'"'"' "$0" "$@"
 '
 
-exec /usr/bin/unshare \
+exec unshare \
     --mount --propagation=shared \
     --user --map-current-user --map-subids --keep-caps \
-    -- /usr/bin/bash -p -c "${inner_script}" "$@"
+    -- env PATH="${original_path}" bash -p -c "${inner_script}" "$@"

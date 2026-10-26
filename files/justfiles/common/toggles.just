@@ -113,7 +113,7 @@ toggle-bash-environment-lockdown skip_approval="false":
         fi
     done
 
-    if [[ "${#existing_paths[@]} -gt 0 ]]; then
+    if [[ "${#existing_paths[@]}" -gt 0 ]]; then
         run0 chattr -R -i -- "${existing_paths[@]}"
     fi
 
@@ -134,7 +134,7 @@ toggle-bash-environment-lockdown skip_approval="false":
         for env_path in "${BASH_ENV_FILES[@]}"; do
             skel_path="${env_path#"${user_home}/"}"
             origin_path="/etc/skel/${skel_path}"
-            [[ -f "${origin_path}" ]] || origin=/dev/null
+            [[ -f "${origin_path}" ]] || origin_path=/dev/null
             install -D -m 700 "${origin_path}" "${env_path}"
         done
 

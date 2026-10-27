@@ -26,9 +26,14 @@
 (typeattribute userns_restricted_domain)
 (typeattributeset userns_restricted_domain (and (domain) (not (userns_privileged_domain))))
 
-(typeattribute userns_restricted_userdomain)
-(typeattributeset userns_restricted_userdomain (and (userdomain) (not (userns_privileged_domain))))
+;; These are denied by default via the container userns policy,
+;; but permitted here so that they are allowed when the container policy is lifted
+(typeattribute container_userns_join_permitted_domain)
+(typeattributeset container_userns_join_permitted_domain (pasta_t mount_t))
+
+(typeattribute userns_restricted_join_domain)
+(typeattributeset userns_restricted_join_domain (and (userns_restricted_domain) (not (container_userns_join_permitted_domain))))
 
 (deny userns_restricted_domain self (user_namespace (create)))
 (deny userns_restricted_domain userns_privileged_domain (process (noatsecure)))
-(deny userns_restricted_userdomain self (cap_userns (sys_admin)))
+(deny userns_restricted_join_domain self (cap_userns (sys_admin)))

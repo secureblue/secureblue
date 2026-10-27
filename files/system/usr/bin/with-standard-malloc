@@ -25,7 +25,7 @@ esac
 if [[ ! -f /etc/ld.so.preload ]]; then
     # shellcheck disable=SC2016
     exec runcon --type=unconfined_t \
-        -- env PATH="${original_path}" /usr/bin/bash -p -c 'exec -- "$0" "$@"' "$@"
+        -- /usr/bin/env PATH="${original_path}" /usr/bin/bash -p -c 'exec -- "$0" "$@"' "$@"
 fi
 
 # If running as root, we only need a mount namespace.
@@ -37,7 +37,7 @@ if [[ "$(id -u)" == 0 ]]; then
         -- /usr/bin/bash -p -c '"'"'exec -- "$0" "$@"'"'"' "$0" "$@"
     '
     exec unshare --mount \
-        -- env PATH="${original_path}" /usr/bin/bash -p -c "${inner_script}" "$@"
+        -- /usr/bin/env PATH="${original_path}" /usr/bin/bash -p -c "${inner_script}" "$@"
 fi
 
 # First, we enter a new mount namespace and user namespace with full
@@ -59,4 +59,4 @@ exec /usr/bin/runcon --type=unconfined_t \
 exec unshare \
     --mount --propagation=shared \
     --user --map-current-user --map-subids --keep-caps \
-    -- env PATH="${original_path}" /usr/bin/bash -p -c "${inner_script}" "$@"
+    -- /usr/bin/env PATH="${original_path}" /usr/bin/bash -p -c "${inner_script}" "$@"

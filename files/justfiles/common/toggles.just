@@ -14,8 +14,8 @@
 
 # Toggle bash environment lockdown (mitigates LD_PRELOAD attacks). Use skip_approval to bypass initial prompt, and apply_for_all_users to bypass secondary prompt.
 [positional-arguments]
-@toggle-bash-environment-lockdown skip_approval="false" apply_for_all_users="prompt":
-    exec /usr/bin/run0 /usr/libexec/secureblue/toggle-bash-environment-lockdown "$@"
+@toggle-bash-environment-lockdown skip_approval="false":
+    exec /usr/libexec/secureblue/toggle-bash-environment-lockdown "$@"
 
 # Toggle MAC Randomization
 @toggle-mac-randomization:

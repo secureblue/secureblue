@@ -6,6 +6,8 @@
 
 set -euo pipefail
 
+skip_approval="${1:-false}"
+
 # shellcheck disable=SC1091
 source /usr/lib/ujust/libformatting.sh
 

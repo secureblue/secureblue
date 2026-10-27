@@ -12,7 +12,7 @@ run0 sh -c '
     mkdir -p /var/log/usbguard
     mkdir -p /etc/usbguard
     chmod 755 /etc/usbguard
-    groupadd usbguard
+    groupadd -f usbguard
     usermod -aG usbguard "${SUDO_USER}"
     usbguard generate-policy > /etc/usbguard/rules.conf
     sed -i "/^IPCAllowedGroups=wheel/s/\$/ usbguard/" /etc/usbguard/usbguard-daemon.conf

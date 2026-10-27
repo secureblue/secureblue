@@ -36,14 +36,14 @@ else
 fi
 
 # shellcheck disable=SC2050
-if [[ "{{ skip_approval }}" == "false" ]]; then
+if [[ "${skip_approval}" == "false" ]]; then
     echo "Do you understand?"
     accept=""
     read -r -p "Type ${bold}YES I UNDERSTAND${unbold} and press ${bold}Enter${unbold} to continue: " accept
     if [[ "${accept}" != "YES I UNDERSTAND" ]]; then
         exit
     fi
-elif [[ "{{ skip_approval }}" != "true" ]]; then
+elif [[ "${skip_approval}" != "true" ]]; then
     echo 'Invalid skip_approval argument, only "true", "false", or empty allowed.'
     exit
 fi

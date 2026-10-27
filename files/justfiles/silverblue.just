@@ -8,4 +8,4 @@
 
 # Toggle support for using GNOME user extensions
 @toggle-gnome-extensions:
-    exec /usr/bin/run0 /usr/libexec/secureblue/toggle-gnome-extensions
+    exec /usr/libexec/secureblue/toggle-gnome-extensions

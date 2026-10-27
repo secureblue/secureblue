@@ -8,6 +8,7 @@ set -euo pipefail
 echo "Notice: This will generate a policy based on your existing connected USB devices."
 # shellcheck disable=SC2016
 run0 sh -c '
+    set -euo pipefail
     mkdir -p /var/log/usbguard
     mkdir -p /etc/usbguard
     chmod 755 /etc/usbguard

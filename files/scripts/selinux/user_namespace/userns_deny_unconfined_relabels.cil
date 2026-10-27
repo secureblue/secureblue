@@ -35,5 +35,5 @@
 (deny userns_relabel_restricted userns_privileged_file_type (chr_file (relabelfrom relabelto)))
 (deny userns_relabel_restricted userns_privileged_file_type (dir (relabelfrom relabelto)))
 (deny userns_relabel_restricted userns_privileged_file_type (fifo_file (relabelfrom relabelto)))
-(deny userns_relabel_restricted userns_privileged_file_type (file (relabelfrom relabelto)))
+(deny userns_relabel_restricted userns_privileged_file_type (file (create relabelfrom relabelto)))
 (deny userns_relabel_restricted userns_privileged_file_type (lnk_file (relabelfrom relabelto)))

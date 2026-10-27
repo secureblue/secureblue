@@ -35,17 +35,16 @@ else
     echo "${bold}WARNING${unbold} .bashrc, .bash_profile, and more will be unlocked and made editable by non-root users. This represents a security risk (see LD_PRELOAD attacks)"
 fi
 
-# shellcheck disable=SC2050
 if [[ "${skip_approval}" == "false" ]]; then
     echo "Do you understand?"
     accept=""
     read -r -p "Type ${bold}YES I UNDERSTAND${unbold} and press ${bold}Enter${unbold} to continue: " accept
     if [[ "${accept}" != "YES I UNDERSTAND" ]]; then
-        exit
+        exit 0
     fi
 elif [[ "${skip_approval}" != "true" ]]; then
     echo 'Invalid skip_approval argument, only "true", "false", or empty allowed.'
-    exit
+    exit 0
 fi
 
 BASH_ENV_FILES=(

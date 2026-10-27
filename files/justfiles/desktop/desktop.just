@@ -16,3 +16,8 @@
 [positional-arguments]
 @enable-dangerzone:
     exec /usr/bin/python3 -Es /usr/libexec/secureblue/enable_dangerzone.py "$@"
+
+# Enable, disable, or check status of always-upgrade-on-boot
+[positional-arguments]
+@set-always-upgrade-on-boot *args:
+    exec /usr/bin/python3 -Es /usr/libexec/secureblue/set_always_upgrade_on_boot.py "$@"

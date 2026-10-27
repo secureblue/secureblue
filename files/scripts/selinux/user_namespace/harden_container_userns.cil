@@ -8,3 +8,8 @@
 (deny unconfined_domain_type container_domain (process (noatsecure)))
 (deny unconfined_domain_type container_runtime_domain (process (noatsecure)))
 (deny unconfined_domain_type spc_t (process (noatsecure)))
+(deny container_domain self (cap_userns (sys_admin)))
+(deny container_runtime_domain self (cap_userns (sys_admin)))
+(deny spc_t self (cap_userns (sys_admin)))
+(deny mount_t self (cap_userns (sys_admin)))
+(deny pasta_t self (cap_userns (sys_admin)))

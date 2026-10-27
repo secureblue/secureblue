@@ -7,35 +7,23 @@
 set -euo pipefail
 
 skip_approval="${1:-false}"
-apply_for_all_users="${2:-prompt}"
 
 # shellcheck disable=SC1091
 source /usr/lib/ujust/libformatting.sh
 
-# The below function fetches the minimum and maximum UIDS as configured in /etc/login.defs.
-# Any UIDs within this change are true user ids rather than system agents, and therefore
-# should be locked down. The user_string variable uses this fetched UID range to find all
-# existing users and their home directory along with formatting this data for later use.
-# The IFS line simply converts this data into a bash array.
-function user_list_lookup() {
-    uid_min="$(grep -Po '^\s*UID_MIN\s+\K\d+' /etc/login.defs)"
-    uid_max="$(grep -Po '^\s*UID_MAX\s+\K\d+' /etc/login.defs)"
-    user_string="$(getent passwd | awk -F':' -v max="${uid_max}" -v min="${uid_min}" 'max >= $3 && $3 >= min {print $1}' | tr '\n' ',' | sed 's/,*$//')"
-    IFS=',' read -ra user_list <<< "${user_string}"
-}
+user_home=~
+if [[ ! -d "${user_home}" ]]; then
+    echo "User homedir not found."
+    exit 1
+fi
 
-# ${SUDO_USER} is the user who started the script instead of whichever authorized it via polkit
-# or the root home. From there this ${USER_HOME} uses getent to lookup their home directory to
-# later check if they have an existing .bashrc file.
-user_home="$(getent passwd "${SUDO_USER}" | cut -d: -f6)"
 if lsattr "${user_home}/.bashrc" 2>/dev/null | awk '{print $1}' | grep -q 'i'; then
     pending_status="unlocked"
 else
     pending_status="locked"
 fi
 
-# Below variable is created to only call date once and use the same time across the script
-# despite execution time.
+# Below variable is created to only call date once and use the same time across the script despite execution time.
 current_time="$(date | tr ' ' '_')"
 
 if [[ "${pending_status}" == "locked" ]]; then
@@ -56,98 +44,57 @@ if [[ "${skip_approval}" == "false" ]]; then
     fi
 elif [[ "${skip_approval}" != "true" ]]; then
     echo 'Invalid skip_approval argument, only "true", "false", or empty allowed.'
-    exit 1
+    exit 0
 fi
 
-if [[ "${apply_for_all_users}" == "prompt" ]]; then
-    user_list_lookup
-    echo "This change can be applied to ${bold}all${unbold} users on this system (${user_list[*]})"
-    echo "or only to the user who launched this script (${SUDO_USER})."
-    user_choice=""
-    read -r -p "Apply this change to ${bold}all${unbold} users? [y/N] " user_choice
-    if [[ "${user_choice}" != [yY]* ]]; then
-        user_list=("${SUDO_USER}")
-    fi
-elif [[ "${apply_for_all_users}" == "false" ]]; then
-    user_list=("${SUDO_USER}")
-elif [[ "${apply_for_all_users}" == "true" ]]; then
-    user_list_lookup
-else
-    echo 'Invalid apply_for_all_users argument, only "true", "false", or empty allowed.'
-    exit 1
-fi
+BASH_ENV_FILES=(
+    "${user_home}/.bashrc"
+    "${user_home}/.bash_profile"
+    "${user_home}/.profile"
+    "${user_home}/.bash_logout"
+    "${user_home}/.bash_login"
+    "${user_home}/.config/bash_completion"
+)
 
-for user in "${user_list[@]}"; do
-    echo "Applying for user: ${user}"
-    user_home="$(getent passwd "${user}" | awk -F':' '{ print $6}')"
-    [[ -d "${user_home}" ]] || { echo "Variable \${user_home} for ${user} is somehow empty (check your getent passwd entries)"; echo "safely exiting."; exit 1; }
-    user_config="${user_home}/.config"
+BASH_ENV_DIRS=(
+    "${user_home}/.bashrc.d"
+    "${user_home}/.config/environment.d"
+)
 
-    BASH_ENV_FILES=(
-        "${user_home}/.bashrc"
-        "${user_home}/.bash_profile"
-        "${user_home}/.profile"
-        "${user_home}/.bash_logout"
-        "${user_home}/.bash_login"
-        "${user_home}/.bashrc.d/"
-        "${user_config}/bash_completion"
-        "${user_config}/environment.d/"
-    )
-
-    # Purpose of the below block is to actually lock or unlock the current selected user
-    # across the configured BASH_ENV_FILES
-    #    If the script is locking:
-    #        to copy the old env files and directories to folder with the time appended to its name
-    #        remove immutability (to allow the script to overwrite any existing immutable environment files)
-    #        create default or blank copies (deleting the old versions)
-    #        add immutability
-
-    if [[ "${pending_status}" == "locked" ]]; then
-        backup_dest="${user_home}/bash_env_files/${current_time}/"
-        mkdir -p "${backup_dest}"
-
-        for file in "${BASH_ENV_FILES[@]}"; do
-            # skel_file converts "${user_home}/.bashrc" to ".bashrc"
-            skel_file="${file#"${user_home}/"}"
-            if [[ ! -f "${file}" && ! -d "${file}" && -e "${file}" ]]; then
-                echo "Special file detected on absolute filepath (${file}) from BASH_ENV_FILES. It will not be modified."
-            elif [[ -f "${file}" ]]; then
-                chattr -i "${file}"
-                rsync -a --mkpath "${file}" "${backup_dest}${skel_file}"
-                rm "${file}"
-            elif [[ -d "${file}" ]]; then
-                chattr -R -i "${file}"
-                rsync -a --mkpath "${file}" "${backup_dest}${skel_file}"
-                rm -r "${file}"
-            fi
-
-            # Now we create new empty/default files and directories
-            if [[ "${file: -1}" == "/" ]]; then
-                install -D -d -o "${user}" -g "${user}" -m 700 "${file}"
-                chattr +i -R "${file}"
-            elif [[ -f "/etc/skel/${skel_file}" ]]; then
-                install -D -o "${user}" -g "${user}" -m 700 "/etc/skel/${skel_file}" "${file}"
-                chattr +i "${file}"
-            else
-                install -D -o "${user}" -g "${user}" -m 700 /dev/null "${file}"
-                chattr +i "${file}"
-            fi
-        done
-
-        chmod -R 700 "${user_home}/bash_env_files"
-        chown -R "${user}:" "${user_home}/bash_env_files"
-    else
-        for file in "${BASH_ENV_FILES[@]}"; do
-            if [[ ! -f "${file}" && ! -d "${file}" && -e "${file}" ]]; then
-                echo "Special file detected on absolute filepath (${file}) from BASH_ENV_FILES. It will not be modified."
-            elif [[ -f "${file}" ]]; then
-                chattr -i "${file}"
-            elif [[ -d "${file}" ]]; then
-                chattr -R -i "${file}"
-            fi
-        done
+existing_paths=()
+for env_path in "${BASH_ENV_FILES[@]}" "${BASH_ENV_DIRS[@]}"; do
+    if [[ -f "${env_path}" || -d "${env_path}" ]]; then
+        existing_paths+=("${env_path}")
     fi
 done
 
-echo "${user_list[@]}" "${pending_status}."
+if [[ "${#existing_paths[@]}" -gt 0 ]]; then
+    run0 chattr -R -i -- "${existing_paths[@]}"
+fi
+
+if [[ "${pending_status}" == "locked" ]]; then
+    backup_dest="${user_home}/bash_env_files/${current_time}/"
+    mkdir -p "${backup_dest}"
+
+    for env_path in "${BASH_ENV_FILES[@]}" "${BASH_ENV_DIRS[@]}"; do
+        skel_path="${env_path#"${user_home}/"}"
+        backup_file="${backup_dest}${skel_path}"
+        if [[ -e "${env_path}" ]]; then
+            mkdir -p "$(dirname "${backup_file}")"
+            mv "${env_path}" "${backup_file}"
+        fi
+    done
+
+    install -D -d -m 700 "${BASH_ENV_DIRS[@]}"
+    for env_path in "${BASH_ENV_FILES[@]}"; do
+        skel_path="${env_path#"${user_home}/"}"
+        origin_path="/etc/skel/${skel_path}"
+        [[ -f "${origin_path}" ]] || origin_path=/dev/null
+        install -D -m 700 "${origin_path}" "${env_path}"
+    done
+
+    run0 chattr -R +i -- "${BASH_ENV_FILES[@]}" "${BASH_ENV_DIRS[@]}"
+fi
+
+echo "${USER}" "${pending_status}."
 echo "${bold}NOTE${unbold}: until a reboot, any process with an open file descriptor will continue to have the access they had before this script was run."

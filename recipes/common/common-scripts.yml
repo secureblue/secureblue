@@ -13,3 +13,5 @@ scripts:
   - installrar.sh
   - setchronysysconfig.sh
   - container-pubkey-symlinks.sh
+  - disablecountme.sh
+  - mask-nsresourced.sh

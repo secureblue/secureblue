@@ -7,8 +7,6 @@
           (typeattributeset userns_privileged_file_type (bubblewrap_exec_t)))
 (optional container_userns_privileged_file_type
           (typeattributeset userns_privileged_file_type (container_runtime_exec_t docker_exec_t kubelet_exec_t)))
-(optional flatpak_userns_privileged_file_type
-          (typeattributeset userns_privileged_file_type (flatpak_exec_t)))
 (optional flatpak_helper_userns_privileged_file_type
           (typeattributeset userns_privileged_file_type (flatpak_helper_exec_t)))
 (optional passt_userns_privileged_file_type
@@ -35,5 +33,5 @@
 (deny userns_relabel_restricted userns_privileged_file_type (chr_file (relabelfrom relabelto)))
 (deny userns_relabel_restricted userns_privileged_file_type (dir (relabelfrom relabelto)))
 (deny userns_relabel_restricted userns_privileged_file_type (fifo_file (relabelfrom relabelto)))
-(deny userns_relabel_restricted userns_privileged_file_type (file (relabelfrom relabelto)))
+(deny userns_relabel_restricted userns_privileged_file_type (file (create relabelfrom relabelto)))
 (deny userns_relabel_restricted userns_privileged_file_type (lnk_file (relabelfrom relabelto)))

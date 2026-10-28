@@ -15,7 +15,6 @@ system:
 
     # Unconfined rootful services
     - uresourced.service
-    - low-memory-monitor.service
     - thermald.service
 
     - cups.socket

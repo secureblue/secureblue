@@ -35,3 +35,15 @@
 (deny userns_restricted_domain self (user_namespace (create)))
 (deny userns_restricted_domain userns_privileged_domain (process (noatsecure)))
 (deny userns_restricted_join_domain self (cap_userns (sys_admin)))
+
+(constrain (process (transition dyntransition))
+    (or (neq r1 unconfined_r) ;; don't constrain switching out of roles other than unconfined_r
+        (or (eq r2 unconfined_r) ;; do constrain switching into unconfined_r
+            (or (eq t2 install_t) ;; unless switching into install_t
+                (and (eq t1 container_runtime_domain) ;; unless it's the container runtime domain switching into a container domain
+                    (eq t2 (container_domain spc_t)))))))
+
+
+(constrain (process (transition dyntransition))
+    (or (neq t1 (container_domain spc_t)) ;; don't constrain switching out of types other than container domains
+        (eq t2 (container_domain spc_t)))) ;; don't constrain if the target type is a container domain

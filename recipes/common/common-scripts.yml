@@ -10,7 +10,6 @@ scripts:
   - setup-dnsconfd.sh
   - authselect.sh
   - disablegeoclue.sh
-  - removefedoraflatpakremoteservice.sh
   - localization.sh
   - installrar.sh
   - setchronysysconfig.sh

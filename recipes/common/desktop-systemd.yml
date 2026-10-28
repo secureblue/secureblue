@@ -8,8 +8,10 @@ source: ghcr.io/blue-build/modules@sha256:f1273b17987eed439b0feff77bf4b7f1c734e6
 system:
   disabled:
     - alsa-state.service
+    - flatpak-add-fedora-repos.service
     - ModemManager.service
     - bluetooth.service
+    - geoclue.service
 
     # Unconfined rootful services
     - uresourced.service
@@ -70,6 +72,6 @@ system:
 
 user:
   disabled:
-    uresourced.service
+    - uresourced.service
   masked:
-    uresourced.service
+    - uresourced.service

@@ -7,9 +7,7 @@ source: ghcr.io/blue-build/modules@sha256:f1273b17987eed439b0feff77bf4b7f1c734e6
 
 system:
   disabled:
-    - flatpak-add-fedora-repos.service
     - systemd-resolved.service
-    - geoclue.service
 
     - rpm-ostree-countme.timer
     - rpm-ostree-countme.service
@@ -20,24 +18,6 @@ system:
     - systemd-homed-activate.service
     - systemd-homed-firstboot.service
     - systemd-homed.service
-
-    # NFS daemons
-    - gssproxy.service
-    - nfs-blkmap.service
-    - nfs-client.target
-    - nfs-idmapd.service
-    - nfs-mountd.service
-    - nfs-server.service
-    - nfs-utils.service
-    - nfsdcld.service
-    - rpc-gssd.service
-    - rpc-statd-notify.service
-    - rpc-statd.service
-    - rpc_pipefs.target
-    - rpcbind.service
-    - rpcbind.socket
-    - rpcbind.target
-    - var-lib-nfs-rpc_pipefs.mount
 
   masked:
     - systemd-resolved.service

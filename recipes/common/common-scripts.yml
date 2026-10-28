@@ -20,3 +20,4 @@ scripts:
   - setchronysysconfig.sh
   - container-pubkey-symlinks.sh
   - disablecountme.sh
+  - mask-nsresource.sh

@@ -23,7 +23,6 @@ system:
 
     - sshd.service
     - sshd.socket
-    - sshd-unix-local.socket
     - sshd-keygen.target
 
     - sssd.service

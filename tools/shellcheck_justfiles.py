@@ -65,6 +65,12 @@ for justfile in justfiles:
                 recipe_file.write(recipe_script)
             recipe_paths.append(recipe_path)
 
+if not recipe_paths:
+    print("No recipes found")
+    shutil.rmtree(temp_dir)
+    sys.exit(0)
+
+
 result = subprocess.run(["shellcheck", *sys.argv[1:], "--", *recipe_paths], check=False)
 
 shutil.rmtree(temp_dir)

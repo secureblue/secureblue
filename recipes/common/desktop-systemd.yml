@@ -15,7 +15,6 @@ system:
 
     # Unconfined rootful services
     - uresourced.service
-    - thermald.service
 
     - cups.socket
     - cups.service

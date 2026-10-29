@@ -24,24 +24,36 @@ role flatpak_roles types flatpak_t;
 unconfined_domain_noaudit(flatpak_t)
 
 optional_policy(`
+	rtkit_scheduled(flatpak_t)
+')
+
+userdom_tmpfs_filetrans(flatpak_t, { dir fifo_file file lnk_file sock_file })
+userdom_tmp_filetrans_user_tmp(flatpak_t, { dir fifo_file file lnk_file sock_file })
+
+gen_require(`
+	role unconfined_r;
+')
+
+bubblewrap_role(flatpak, flatpak_t, unconfined_r)
+bubblewrap_nnp_domtrans(flatpak, flatpak_t)
+
+optional_policy(`
 	gen_require(`
 		type unconfined_t;
 		type unconfined_trivalent_t;
-		type flatpak_bubblewrap_t;
 		attribute trivalent_domain;
 		role unconfined_r;
 		bool trivalent_exec_flatpaks;
 	')
 
 	flatpak_run(unconfined_t, unconfined_r)
-	bubblewrap_role(flatpak, flatpak_t, unconfined_r)
 
 	# required for trivalent/flatpak clipboard sharing
 	allow trivalent_domain flatpak_t:fifo_file write;
 
 	tunable_policy(`trivalent_exec_flatpaks', `
 		allow trivalent_domain flatpak_t:process2 { nnp_transition nosuid_transition };
-		allow flatpak_bubblewrap_t unconfined_trivalent_t:fifo_file { read write};
-	    flatpak_domtrans(unconfined_trivalent_t)
+		allow flatpak_bubblewrap_t unconfined_trivalent_t:fifo_file { read write };
+		flatpak_domtrans(unconfined_trivalent_t)
 	')
 ')

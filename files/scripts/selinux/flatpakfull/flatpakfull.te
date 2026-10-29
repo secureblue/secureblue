@@ -37,6 +37,8 @@ gen_require(`
 bubblewrap_role(flatpak, flatpak_t, unconfined_r)
 bubblewrap_nnp_domtrans(flatpak, flatpak_t)
 
+flatpak_run(unconfined_t, unconfined_r)
+
 optional_policy(`
 	gen_require(`
 		type unconfined_t;
@@ -45,8 +47,6 @@ optional_policy(`
 		role unconfined_r;
 		bool trivalent_exec_flatpaks;
 	')
-
-	flatpak_run(unconfined_t, unconfined_r)
 
 	# required for trivalent/flatpak clipboard sharing
 	allow trivalent_domain flatpak_t:fifo_file write;

@@ -34,6 +34,7 @@ optional_policy(`
 		role unconfined_r;
 	')
 
+	flatpak_run(unconfined_t, unconfined_r)
 	flatpak_run(unconfined_trivalent_t, unconfined_r)
 
 	# required for trivalent/flatpak integration

@@ -5,17 +5,10 @@
 type: script
 source: ghcr.io/blue-build/modules@sha256:f1273b17987eed439b0feff77bf4b7f1c734e6f77607dc99c9de9d9070555c7a
 scripts:
+  - disablegeoclue.sh
   - install-trivalent.sh
   - installsubresourcefilter.sh
   - install-dangerzone.sh
-  - disablecups.sh
-  - disablesshd.sh
-  - disableavahidaemon.sh
-  - disablealsastate.sh
-  - disablemodemmanager.sh
-  - disablesssd.sh
-  - disableunconfinedrootfulservices.sh
-  - disableiscsidaemons.sh
+  - removefedoraflatpakremoteservice.sh
   - setplymouththemetext.sh
   - setfirewalldefaultzone.sh
-  - maskbluetoothservices.sh

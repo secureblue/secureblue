@@ -1,0 +1,47 @@
+# SPDX-FileCopyrightText: Copyright 2025-2026 The Secureblue Authors
+#
+# SPDX-License-Identifier: Apache-2.0
+
+type: systemd
+source: ghcr.io/blue-build/modules@sha256:f1273b17987eed439b0feff77bf4b7f1c734e6f77607dc99c9de9d9070555c7a
+
+system:
+  disabled:
+    - systemd-resolved.service
+
+    - rpm-ostree-countme.timer
+    - rpm-ostree-countme.service
+
+    # We intentionally don't mask the services, because
+    # some users may want to use it. But we disable it by default
+    # to reduce attack surface, since we don't use it by default.
+    - systemd-homed-activate.service
+    - systemd-homed-firstboot.service
+    - systemd-homed.service
+
+  masked:
+    - systemd-resolved.service
+
+    - rpm-ostree-countme.timer
+    - rpm-ostree-countme.service
+
+    # For more info, see https://blog.nsrun.io/2026/01/15/systemd-vsock-openssh-server/
+    - sshd-vsock.socket
+
+    # NFS daemons
+    - gssproxy.service
+    - nfs-blkmap.service
+    - nfs-client.target
+    - nfs-idmapd.service
+    - nfs-mountd.service
+    - nfs-server.service
+    - nfs-utils.service
+    - nfsdcld.service
+    - rpc-gssd.service
+    - rpc-statd-notify.service
+    - rpc-statd.service
+    - rpc_pipefs.target
+    - rpcbind.service
+    - rpcbind.socket
+    - rpcbind.target
+    - var-lib-nfs-rpc_pipefs.mount

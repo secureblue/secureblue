@@ -11,6 +11,8 @@ modules:
 
   - from-file: common/desktop-packages.yml
 
+  - from-file: common/desktop-systemd.yml
+
   - from-file: common/desktop-scripts.yml
 
   - type: justfiles

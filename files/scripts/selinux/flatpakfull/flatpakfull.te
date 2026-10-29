@@ -21,29 +21,20 @@ application_domain(flatpak_t, flatpak_exec_t)
 
 role flatpak_roles types flatpak_t;
 
-allow flatpak_t self:user_namespace create;
 unconfined_domain_noaudit(flatpak_t)
 
 optional_policy(`
-	rtkit_scheduled(flatpak_t)
-')
-
-optional_policy(`
-	bubblewrap_exec(flatpak_t)
+	bubblewrap_domtrans(unconfined, flatpak_t)
+	bubblewrap_nnp_domtrans(unconfined, flatpak_t)
 ')
 
 optional_policy(`
 	gen_require(`
-		type unconfined_t;
 		attribute trivalent_domain;
 		role unconfined_r;
 	')
 
-	flatpak_run(unconfined_t, unconfined_r)
 	flatpak_run(trivalent_domain, unconfined_r)
-
-	# required for trivalent/flatpak clipboard sharing
-	allow trivalent_domain flatpak_t:fifo_file write;
 
 	# required for trivalent/flatpak integration
 	allow trivalent_domain flatpak_t:process2 { nnp_transition nosuid_transition };

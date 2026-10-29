@@ -16,8 +16,6 @@
           (typeattributeset userns_privileged_domain (passt_t)))
 (optional stdmalloc_userns_privileged_domain
           (typeattributeset userns_privileged_domain (stdmalloc_t)))
-(optional systemsettings_userns_privileged_domain
-          (typeattributeset userns_privileged_domain (systemsettings_t)))
 (optional thumb_userns_privileged_domain
           (typeattributeset userns_privileged_domain (thumb_t)))
 (optional trivalent_userns_privileged_domain

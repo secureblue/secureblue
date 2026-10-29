@@ -38,8 +38,10 @@ system:
 
   masked:
     - alsa-state.service
+    - flatpak-add-fedora-repos.service
     - ModemManager.service
     - bluetooth.service
+    - geoclue.service
 
     # Unconfined rootful services
     - uresourced.service

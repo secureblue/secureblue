@@ -21,7 +21,6 @@ system:
 
   masked:
     - systemd-resolved.service
-    - geoclue.service
 
     - rpm-ostree-countme.timer
     - rpm-ostree-countme.service

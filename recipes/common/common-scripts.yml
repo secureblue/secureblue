@@ -9,7 +9,6 @@ scripts:
   - hardenlogindefs.sh
   - setup-dnsconfd.sh
   - authselect.sh
-  - disablegeoclue.sh
   - localization.sh
   - installrar.sh
   - setchronysysconfig.sh

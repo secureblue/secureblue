@@ -32,6 +32,7 @@ optional_policy(`
 	gen_require(`
 		type unconfined_t;
 		type unconfined_trivalent_t;
+		attribute trivalent_domain;
 		role unconfined_r;
 	')
 

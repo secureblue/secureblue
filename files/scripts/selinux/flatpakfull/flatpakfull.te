@@ -23,6 +23,10 @@ role flatpak_roles types flatpak_t;
 
 unconfined_domain_noaudit(flatpak_t)
 
+
+userdom_tmpfs_filetrans(flatpak_t, { dir fifo_file file lnk_file sock_file })
+userdom_tmp_filetrans_user_tmp(flatpak_t, { dir fifo_file file lnk_file sock_file })
+
 optional_policy(`
 	bubblewrap_domtrans(unconfined, flatpak_t)
 	bubblewrap_nnp_domtrans(unconfined, flatpak_t)

@@ -27,13 +27,16 @@ optional_policy(`
 	rtkit_scheduled(flatpak_t)
 ')
 
+# allow flatpaks to write to tmp fiels/dirs as usr_tmp_t
 userdom_tmpfs_filetrans(flatpak_t, { dir fifo_file file lnk_file sock_file })
 userdom_tmp_filetrans_user_tmp(flatpak_t, { dir fifo_file file lnk_file sock_file })
 
 gen_require(`
+	type unconfined_t;
 	role unconfined_r;
 ')
 
+# run bubblewrap as flatpak_bubblewrap_t
 bubblewrap_role(flatpak, flatpak_t, unconfined_r)
 bubblewrap_nnp_domtrans(flatpak, flatpak_t)
 
@@ -41,7 +44,6 @@ flatpak_run(unconfined_t, unconfined_r)
 
 optional_policy(`
 	gen_require(`
-		type unconfined_t;
 		type unconfined_trivalent_t;
 		attribute trivalent_domain;
 		role unconfined_r;
@@ -51,6 +53,7 @@ optional_policy(`
 	# required for trivalent/flatpak clipboard sharing
 	allow trivalent_domain flatpak_t:fifo_file write;
 
+	# required for trivalent execution of flatpaks
 	tunable_policy(`trivalent_exec_flatpaks', `
 		allow trivalent_domain flatpak_t:process2 { nnp_transition nosuid_transition };
 		allow flatpak_bubblewrap_t unconfined_trivalent_t:fifo_file { read write };

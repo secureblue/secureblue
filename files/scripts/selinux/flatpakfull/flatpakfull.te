@@ -27,7 +27,7 @@ optional_policy(`
 	rtkit_scheduled(flatpak_t)
 ')
 
-# allow flatpaks to write to tmp fiels/dirs as usr_tmp_t
+# flatpak-created tmp and tmpfs files/dirs should be user_tmp_t/user_tmpfs_t
 userdom_tmpfs_filetrans(flatpak_t, { dir fifo_file file lnk_file sock_file })
 userdom_tmp_filetrans_user_tmp(flatpak_t, { dir fifo_file file lnk_file sock_file })
 

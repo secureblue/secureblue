@@ -9,6 +9,5 @@ scripts:
   - install-trivalent.sh
   - installsubresourcefilter.sh
   - install-dangerzone.sh
-  - removefedoraflatpakremoteservice.sh
   - setplymouththemetext.sh
   - setfirewalldefaultzone.sh

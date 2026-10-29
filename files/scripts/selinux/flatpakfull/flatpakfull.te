@@ -30,8 +30,8 @@ optional_policy(`
 
 optional_policy(`
 	gen_require(`
-		attribute unconfined_t;
-		attribute unconfined_trivalent_t;
+		type unconfined_t;
+		type unconfined_trivalent_t;
 		role unconfined_r;
 	')
 

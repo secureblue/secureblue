@@ -34,7 +34,7 @@ optional_policy(`
 		role unconfined_r;
 	')
 
-	flatpak_run(trivalent_domain, unconfined_r)
+	flatpak_run(unconfined_trivalent_t, unconfined_r)
 
 	# required for trivalent/flatpak integration
 	allow trivalent_domain flatpak_t:process2 { nnp_transition nosuid_transition };

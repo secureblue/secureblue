@@ -2,6 +2,7 @@
 ;;
 ;; SPDX-License-Identifier: Apache-2.0 OR MIT
 
-(optional (typeattribute trivalent_restricted_launch)
+(optional trivalent_restricted_launch_domain
+          (typeattribute trivalent_restricted_launch)
           (typeattributeset trivalent_restricted_launch (and (domain) (not (trivalent_domain trivalent_script_domain))))
           (deny trivalent_restricted_launch trivalent_domain (process (transition dyntransition))))

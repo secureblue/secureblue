@@ -35,9 +35,13 @@ gen_require(`
 	type bin_t;
 	type unconfined_t;
 	role unconfined_r;
+	type user_home_t;
+	type usr_t;
 ')
 
 domain_entry_file(flatpak_t, bin_t)
+domain_entry_file(flatpak_t, user_home_t)
+domain_entry_file(flatpak_t, usr_t)
 
 # run bubblewrap as flatpak_bubblewrap_t
 bubblewrap_role(flatpak, flatpak_t, unconfined_r)

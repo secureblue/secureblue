@@ -37,6 +37,13 @@ storage:
               }
             }
           }
+    - path: /etc/containers/registries.d/secureblue.yaml
+      mode: 0644
+      contents:
+        inline: |
+          docker:
+            ghcr.io/secureblue:
+              use-sigstore-attachments: true
     - path: /opt/install_secureblue.sh
       mode: 0755
       contents:
@@ -58,7 +65,7 @@ storage:
           else
             sudo cp /usr/share/secureblue/etc/containers/policy.json /etc/containers/policy.json
             sed -i -e '/\/opt\/install_secureblue.sh/d' /var/home/core/.bash_profile
-            sudo rm -f /opt/install_secureblue.sh /etc/pki/containers/secureblue-2025.pub
+            sudo rm -f /opt/install_secureblue.sh /etc/pki/containers/secureblue-2025.pub /etc/containers/registries.d/secureblue.yaml
             echo "Automatically rebooting in 5 seconds..."
             sleep 5
             sudo systemctl reboot

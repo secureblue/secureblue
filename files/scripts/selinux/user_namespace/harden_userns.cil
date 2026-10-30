@@ -21,11 +21,6 @@
 (optional trivalent_userns_privileged_domain
           (typeattributeset userns_privileged_domain (trivalent_domain trivalent_script_domain)))
 
-(optional trivalent_restricted_launch
-          (typeattribute trivalent_restricted_launch)
-          (typeattributeset trivalent_restricted_launch (and (domain) (not (trivalent_domain trivalent_script_domain)))
-          (deny trivalent_restricted_launch trivalent_domain (process (transition dyntransition))))
-
 (typeattribute userns_restricted_domain)
 (typeattributeset userns_restricted_domain (and (domain) (not (userns_privileged_domain))))
 

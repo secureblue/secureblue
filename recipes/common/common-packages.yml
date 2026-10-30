@@ -43,6 +43,9 @@ install:
     - crane
     - slsa-verifier
 
+    # needed for our password quality dictionary check
+    - cracklib-dicts
+
     # Virtualization packages
     - libvirt
     - libvirt-nss

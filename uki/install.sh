@@ -11,6 +11,104 @@ cd "$(dirname "$0")"
 github_repo_owner="secureblue"
 github_repo_name="secureblue"
 ghcr_tag="uki"
+min_luks_password_length=12
+# System accounts that must never be used as the interactive login user.
+reserved_usernames=(
+    root toor admin administrator
+    bin daemon sys sync games man lp mail news uucp proxy backup list irc gnats
+    nobody systemd-network systemd-timesync systemd-resolve messagebus polkitd
+    rtkit dbus avahi colord sshd chrony nscd sssd tss docker podman
+)
+
+# Prints why a login username is unacceptable; returns 1 if it is.
+# The name ends up in passwd, shadow, group, a sed replacement and a filesystem
+# path, so anything outside a strict character set is both unsafe and invalid.
+username_rejection() {
+    local __name=$1 __reserved
+    if [[ -z "${__name}" ]]; then
+        echo "the username must not be empty"
+        return 1
+    fi
+    if [[ ! "${__name}" =~ ^[a-z_][a-z0-9_-]{0,31}$ ]]; then
+        echo "it must be 1-32 characters of a-z, 0-9, '_' and '-', not starting with a digit"
+        return 1
+    fi
+    for __reserved in "${reserved_usernames[@]}"; do
+        if [[ "${__name}" == "${__reserved}" ]]; then
+            echo "'${__name}' is reserved for a system account"
+            return 1
+        fi
+    done
+    if grep -q "^${__name}:" "${etc_dir}/passwd" "${etc_dir}/shadow" "${etc_dir}/group"; then
+        echo "an account or group named '${__name}' already exists"
+        return 1
+    fi
+    if awk -F: '$3 == 1000 { taken = 1 } END { exit !taken }' \
+        "${etc_dir}/passwd" "${etc_dir}/group"; then
+        echo "user/group ID 1000 is already taken"
+        return 1
+    fi
+}
+
+# Prints why a LUKS password is unacceptable; returns 1 if it is.
+luks_password_rejection() {
+    local __pw=$1
+    if [[ -z "${__pw}" ]]; then
+        echo "the password must not be empty"
+    elif [[ "${__pw}" == *[[:cntrl:]]* ]]; then
+        echo "the password must not contain control characters"
+    elif (( ${#__pw} < min_luks_password_length )); then
+        echo "the password must be at least ${min_luks_password_length} characters long"
+    elif [[ "${__pw}" == "secureblue" ]]; then
+        echo "the password must not be the default login password"
+    else
+        return 0
+    fi
+    return 1
+}
+
+# Canonicalises a disk path and checks that it is an existing whole disk.
+resolve_disk() {
+    local __input=$1 __real
+    [[ -n "${__input}" && "${__input}" =~ ^/[A-Za-z0-9/._+-]+$ ]] || return 1
+    [[ -b "${__input}" ]] || return 1
+    __real=$(readlink -f -- "${__input}")
+    [[ "${__real}" =~ ^/dev/[A-Za-z0-9/._+-]+$ ]] || return 1
+    [[ $(lsblk -dno TYPE -- "${__real}" 2>/dev/null) == "disk" ]] || return 1
+    printf '%s\n' "${__real}"
+}
+
+# Prints the whole disk backing the given device, if there is one.
+parent_disk_of() {
+    local __top
+    __top=$(lsblk -sno NAME -- "$1" 2>/dev/null | tail -n 1) || return 1
+    [[ $(lsblk -dno TYPE -- "/dev/${__top}" 2>/dev/null) == "disk" ]] || return 1
+    printf '%s\n' "${__top}"
+}
+
+# True if the disk, or anything on it, is mounted, used as swap, or held by a
+# stacked device (LVM, md, dm, loop). This also catches the disk we booted from.
+disk_is_in_use() {
+    local __name __src
+    __name=$(basename -- "$1")
+    while IFS= read -r __src; do
+        # findmnt appends the subvolume, e.g. /dev/sda2[/root].
+        __src=${__src%%\[*}
+        [[ -b "${__src}" ]] || continue
+        if [[ $(parent_disk_of "${__src}") == "${__name}" ]]; then
+            return 0
+        fi
+    done < <( { findmnt -rno SOURCE; awk 'NR > 1 { print $1 }' /proc/swaps; } | sort -u )
+    if compgen -G "/sys/class/block/${__name}*/holders/*" > /dev/null; then
+        return 0
+    fi
+    return 1
+}
+
+# The test suite sources this file to exercise the functions above.
+if [[ "${BASH_SOURCE[0]}" != "${0}" ]]; then
+    return 0
+fi
 
 # Check prerequisites.
 if [[ $(id -u) -ne 0 ]]; then
@@ -95,26 +193,45 @@ rm -f "${crane_tarball}"
 
 # Get digest of selected image and verify provenance.
 full_ref=$(crane digest --full-ref "${image_ref}")
+if [[ ! "${full_ref}" =~ ^ghcr\.io/[a-z0-9._/-]+@sha256:[0-9a-f]{64}$ ]]; then
+    echo "crane returned an unexpected image reference: ${full_ref}"
+    exit 1
+fi
 slsa-verifier verify-image --source-uri "github.com/${github_repo_owner}/${github_repo_name}" "${full_ref}"
 
 # Display available block devices and ask the user to select one.
 clear
-lsblk -o name,size,fstype,model,label
+lsblk -o name,size,fstype,model,label,mountpoints
 echo
 echo "Choose a disk to install to, e.g. /dev/vda, /dev/sda or /dev/nvme0n1."
 echo "This will erase the disk."
-read -r -p "Enter disk: " disk
-if [[ ! -b "${disk}" ]] || [[ $(lsblk -ndo TYPE "${disk}") != "disk" ]]; then
-    echo "Invalid disk."
-    exit 1
-fi
-if [[ $(lsblk -o SIZE -bnd "${disk}") -lt 30000000000 ]]; then
-    echo "Disk must have a size of at least 32 GB."
-    exit 1
-fi
+while :; do
+    read -r -p "Enter disk (empty to abort): " disk_input || exit 1
+    if [[ -z "${disk_input}" ]]; then
+        echo "No disk selected."
+        exit 1
+    fi
+    if ! disk=$(resolve_disk "${disk_input}"); then
+        echo "'${disk_input}' is not a whole disk."
+        continue
+    fi
+    if [[ $(lsblk -o SIZE -bnd "${disk}") -lt 34359738368 ]]; then
+        echo "Disk must have a size of at least 32 GiB."
+        continue
+    fi
+    if disk_is_in_use "${disk}"; then
+        echo "${disk} (or one of its partitions) is in use: mounted, used as swap,"
+        echo "or held by LVM/md/dm/loop. Refusing to erase it."
+        continue
+    fi
+    break
+done
 
-read -r -p "This will wipe ${disk}, do you wish to proceed? [y/N] " confirm_wipe
-if [[ ! "${confirm_wipe}" =~ ^[Yy] ]]; then
+lsblk -o name,size,fstype,label,mountpoints "${disk}"
+echo
+echo "This cannot be undone."
+read -r -p "Type the disk name ($(basename -- "${disk}")) to wipe ${disk}, anything else to abort: " confirm_wipe
+if [[ "${confirm_wipe}" != "$(basename -- "${disk}")" ]]; then
     echo "Wipe of ${disk} not confirmed, rerun the script if you wish to pick another disk."
     exit 1
 fi
@@ -123,17 +240,23 @@ fi
 echo
 read -r -p "Would you like to configure disk encryption? [Y/n] " luks
 if [[ ! "${luks}" =~ ^[Nn] ]]; then
-    echo "Choose a LUKS encryption password."
-    read -r -s -p "Password: " password && echo
-    read -r -s -p "Confirm: " password2 && echo
-    if [[ "${password}" == "${password2}" ]]; then
-        keyfile=$(mktemp)
-        printf "%s" "${password}" > "${keyfile}"
-        unset password password2
-    else
-        echo "Passwords do not match."
-        exit 1
-    fi
+    echo "Choose a LUKS encryption password, at least ${min_luks_password_length} characters long."
+    while :; do
+        read -r -s -p "Password: " password || exit 1
+        echo
+        if ! reason=$(luks_password_rejection "${password}"); then
+            echo "Invalid password: ${reason}."
+            continue
+        fi
+        read -r -s -p "Confirm: " password2 || exit 1
+        echo
+        if [[ "${password}" != "${password2}" ]]; then
+            echo "Passwords do not match, try again."
+            continue
+        fi
+        unset password2
+        break
+    done
 fi
 
 # Trap to clean up mounts that we set up later.
@@ -184,8 +307,12 @@ wipefs -a "/dev/disk/by-partuuid/${root_uuid}"
 wipefs -a "/dev/disk/by-partuuid/${esp_uuid}"
 
 if [[ ! "${luks}" =~ ^[Nn] ]]; then
-    cryptsetup luksFormat -q "/dev/disk/by-partuuid/${root_uuid}" "${keyfile}"
-    cryptsetup open "--key-file=${keyfile}" "/dev/disk/by-partuuid/${root_uuid}" root
+    # Feed the password over stdin so that it is never written to disk.
+    printf "%s" "${password}" |
+        cryptsetup luksFormat -q --key-file=- "/dev/disk/by-partuuid/${root_uuid}"
+    printf "%s" "${password}" |
+        cryptsetup open --key-file=- "/dev/disk/by-partuuid/${root_uuid}" root
+    unset password
     mkfs.btrfs /dev/mapper/root
 else
     mkfs.btrfs --force "/dev/disk/by-partuuid/${root_uuid}"
@@ -289,7 +416,14 @@ You should NOT choose a system username, like 'root' or 'admin'.
 Your password will be set to 'secureblue'. You must change it after logging in.
 
 EOF
-read -r -p "Username: " username
+while :; do
+    read -r -p "Username: " username || exit 1
+    if ! reason=$(username_rejection "${username}"); then
+        echo "Invalid username: ${reason}."
+        continue
+    fi
+    break
+done
 # We use a hardcoded password because yescrypt isn't available here, only
 # SHA512, so the user will have to change it themselves after firstrun.
 password=$(openssl passwd -6 "secureblue")
@@ -299,6 +433,10 @@ echo "${username}:${password}:${last_changed}:0:99999:7:::" >> "${etc_dir}/shado
 # Now add the user to the wheel group.
 echo "${username}:x:1000:" >> "${etc_dir}/group"
 sed -i "s/^wheel:x:10:$/&${username}/" "${etc_dir}/group"
+if ! grep -qE "^wheel:x:10:([^,]*,)?${username}(,|$)" "${etc_dir}/group"; then
+    echo "Failed to add ${username} to the wheel group."
+    exit 1
+fi
 # Create their home directory using /etc/skel and set correct permissions.
 var_dir="/mnt/state/os/default/var"
 mkdir -p "${var_dir}/home/${username}/"
@@ -327,11 +465,14 @@ Choose a secure boot option:
    requires an option ROM to work.
 
 EOF
-read -r -p "Choose an option (1 or 2): " secure_boot
-if [[ "${secure_boot}" != "2" ]]; then
-    if [[ "${secure_boot}" != "1" ]]; then
-        echo "Invalid selection; defaulting to shim."
+while :; do
+    read -r -p "Choose an option (1 or 2): " secure_boot || exit 1
+    if [[ "${secure_boot}" == "1" || "${secure_boot}" == "2" ]]; then
+        break
     fi
+    echo "Invalid selection, enter 1 or 2."
+done
+if [[ "${secure_boot}" != "2" ]]; then
     shim_dirs=(/usr/lib/efi/shim/*/EFI)
     if [[ ${#shim_dirs[@]} -ne 1 ]]; then
         echo "Expected only one shim installation, found ${#shim_dirs[@]}."

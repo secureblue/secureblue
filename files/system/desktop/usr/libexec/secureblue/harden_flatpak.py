@@ -54,7 +54,7 @@ def current_override_status(app_id: str, hmalloc_path: str) -> tuple[bool, bool]
     override_dir = os.path.expanduser("~/.local/share/flatpak/overrides")
     host_os_access = False
     ld_preload_set = False
-    host_os_pattern = re.compile(r"filesystems=(?:.*;)?host-os(?::ro)?(?:;.*)?\n")
+    host_os_pattern = re.compile(rf"filesystems=(?:.*;)?{re.escape(hmalloc_path)}:ro(?:;.*)?\n")
     ld_preload_pattern = re.compile(rf"LD_PRELOAD=(?:.*\s)?{re.escape(hmalloc_path)}(?:\s.*)?\n")
     with (
         contextlib.suppress(FileNotFoundError),
@@ -105,7 +105,7 @@ def harden_flatpak_app(app_id: str, hmalloc_path: str) -> None:
         )
 
     if not global_host_os_access:
-        overrides_to_apply.append("--filesystem=host-os:ro")
+        overrides_to_apply.append(f"--filesystem={hmalloc_path}:ro")
 
     if not global_ld_preload:
         overrides_to_apply.append(f"--env=LD_PRELOAD={hmalloc_path}")
@@ -130,7 +130,7 @@ def main() -> int:
 
     if not args.app_id:
         flatpak_override(
-            "--filesystem=host-os:ro",
+            f"--filesystem={hmalloc_path}:ro",
             f"--env=LD_PRELOAD={hmalloc_path}",
             "--env=ELECTRON_OZONE_PLATFORM_HINT=auto",
         )

@@ -24,6 +24,7 @@ cil_policy_modules=(
     './selinux/user_namespace/harden_container_userns.cil'
     './selinux/user_namespace/harden_userns.cil'
     './selinux/user_namespace/userns_deny_unconfined_relabels.cil'
+    './selinux/user_namespace/trivalent_restricted_launch.cil'
 )
 
 for module in "${policy_modules[@]}"; do

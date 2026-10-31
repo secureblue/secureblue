@@ -6,7 +6,7 @@ name: integ-tests
 permissions: {}
 on:
   schedule:
-    - cron: "00 7 * * *" # run at 7:00 UTC every day
+    - cron: "40 7 * * *" # run at 7:40 UTC every day
 
   workflow_dispatch:
 

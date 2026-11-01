@@ -3,8 +3,9 @@ Description=Workaround for missing SELinux module rebuilding in bootc
 
 [Service]
 Type=oneshot
+ConditionPathExists=!/usr/bin/rpm-ostree
 ExecStart=semodule -B
-ExecStart=restorecon -Rv /tmp
+ExecStart=restorecon -R /tmp
 
 [Install]
-WantedBy=multi-user.target
+After=local-fs.target

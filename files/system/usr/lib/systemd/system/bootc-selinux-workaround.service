@@ -8,4 +8,5 @@ ExecStart=semodule -B
 ExecStart=restorecon -R /tmp
 
 [Install]
+WantedBy=multi-user.target
 After=local-fs.target

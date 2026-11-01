@@ -1,12 +1,12 @@
 [Unit]
 Description=Workaround for missing SELinux module rebuilding in bootc
+ConditionPathExists=!/usr/bin/rpm-ostree
+After=local-fs.target
 
 [Service]
 Type=oneshot
-ConditionPathExists=!/usr/bin/rpm-ostree
 ExecStart=semodule -B
 ExecStart=restorecon -R /tmp
 
 [Install]
 WantedBy=multi-user.target
-After=local-fs.target

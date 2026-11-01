@@ -1,0 +1,10 @@
+[Unit]
+Description=Workaround for missing SELinux module rebuilding in bootc
+
+[Service]
+Type=oneshot
+ExecStart=semodule -B
+ExecStart=restorecon -Rv /tmp
+
+[Install]
+WantedBy=multi-user.target

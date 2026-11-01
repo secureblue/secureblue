@@ -13,6 +13,7 @@ is_desktop="false"
 [[ "${IMAGE_NAME}" != *"securecore"* && "${IMAGE_NAME}" != *"iot"* ]] && is_desktop="true"
 nvidia_packages_list+=(
     'nvidia-driver-cuda'
+    'nvidia-driver-libs'
 )
 if [[ "${is_desktop}" == "true" ]]; then
     nvidia_packages_list+=(

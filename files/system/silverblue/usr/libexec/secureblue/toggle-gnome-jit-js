@@ -1,0 +1,17 @@
+#!/bin/bash
+
+# SPDX-FileCopyrightText: Copyright 2025-2026 The Secureblue Authors
+#
+# SPDX-License-Identifier: Apache-2.0
+
+set -euo pipefail
+
+ENV_FILE="/etc/profile.d/gnome-disable-jit.sh"
+if test -e "${ENV_FILE}"; then
+    rm -f "${ENV_FILE}"
+    echo "JIT JavaScript for Gnome and WebkitGTK has been enabled."
+else
+    cp "/usr${ENV_FILE}" "${ENV_FILE}"
+    chmod 644 "${ENV_FILE}"
+    echo "JIT JavaScript for Gnome and WebkitGTK has been disabled."
+fi

@@ -125,12 +125,12 @@ function ToolboxAssemble (){
 ## Function to parse a toolbox.ini file and make a selectable list from it
 ########
 ## Parse a toolbox.ini manifest and let user select which container to setup
-# ToolboxAssembleList "$HOME/toolbox.ini" create
+# ToolboxAssembleList prompt create "$HOME/toolbox.ini"
 ## Parse a toolbox.ini manifest and create ubuntu container without confirmation
-# ToolboxAssembleList "$HOME/toolbox.ini" noconfirmcreate ubuntu-toolbox-22.04
+# ToolboxAssembleList ubuntu-toolbox-22.04 noconfirmcreate "$HOME/toolbox.ini"
 function ToolboxAssembleList (){
     # Set defaults
-    local FILE="$1"
+    local FILE="$3"
     local ACTION="create"
     local CHOICE="prompt"
 
@@ -144,9 +144,9 @@ function ToolboxAssembleList (){
     fi
 
     # If a CHOICE is predefined
-    if [[ -n "$3" ]]; then
+    if [[ -n "$1" ]]; then
         # Replace default choice
-        CHOICE="$3"
+        CHOICE="$1"
     fi
 
     # If the choice is "prompt" then ask user what container they want

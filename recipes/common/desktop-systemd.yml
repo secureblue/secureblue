@@ -1,0 +1,76 @@
+# SPDX-FileCopyrightText: Copyright 2025-2026 The Secureblue Authors
+#
+# SPDX-License-Identifier: Apache-2.0
+
+type: systemd
+source: ghcr.io/blue-build/modules@sha256:f1273b17987eed439b0feff77bf4b7f1c734e6f77607dc99c9de9d9070555c7a
+
+system:
+  disabled:
+    - alsa-state.service
+    - flatpak-add-fedora-repos.service
+    - ModemManager.service
+    - bluetooth.service
+    - geoclue.service
+
+    # Unconfined rootful services
+    - uresourced.service
+
+    - cups.socket
+    - cups.service
+    - cups-browsed.service
+
+    - sshd.service
+    - sshd.socket
+    - sshd-keygen.target
+
+    - sssd.service
+    - sssd-kcm.service
+    - sssd-kcm.socket
+
+    - iscsid.service
+    - iscsid.socket
+    - iscsiuio.service
+    - iscsiuio.socket
+
+    - avahi-daemon.socket
+    - avahi-daemon.service
+
+  masked:
+    - alsa-state.service
+    - flatpak-add-fedora-repos.service
+    - ModemManager.service
+    - bluetooth.service
+    - geoclue.service
+
+    # Unconfined rootful services
+    - uresourced.service
+    - low-memory-monitor.service
+    - thermald.service
+
+    - cups.socket
+    - cups.service
+    - cups-browsed.service
+
+    - sshd.service
+    - sshd.socket
+    - sshd-unix-local.socket
+    - sshd-keygen.target
+
+    - sssd.service
+    - sssd-kcm.service
+    - sssd-kcm.socket
+
+    - iscsid.service
+    - iscsid.socket
+    - iscsiuio.service
+    - iscsiuio.socket
+
+    - avahi-daemon.socket
+    - avahi-daemon.service
+
+user:
+  disabled:
+    - uresourced.service
+  masked:
+    - uresourced.service

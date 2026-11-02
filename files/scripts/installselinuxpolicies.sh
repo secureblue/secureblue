@@ -10,7 +10,7 @@ selinux_policy_version="$(rpm -q --qf '%{version}-%{release}' selinux-policy)"
 dnf install -y --setopt=install_weak_deps=False --enable-repo=updates-archive \
     "selinux-policy-devel-${selinux_policy_version}"
 
-policy_modules=(flatpakfull stdmalloc systemsettings)
+policy_modules=(flatpakfull stdmalloc)
 
 cil_policy_modules=(
     './selinux/flatpakfull/grant_systemd_flatpak_exec.cil'
@@ -24,6 +24,7 @@ cil_policy_modules=(
     './selinux/user_namespace/harden_container_userns.cil'
     './selinux/user_namespace/harden_userns.cil'
     './selinux/user_namespace/userns_deny_unconfined_relabels.cil'
+    './selinux/user_namespace/trivalent_restricted_launch.cil'
 )
 
 for module in "${policy_modules[@]}"; do

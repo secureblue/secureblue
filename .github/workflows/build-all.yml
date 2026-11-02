@@ -8,7 +8,7 @@ permissions: {}
 
 on:
   schedule:
-    - cron: "00 6 * * *" # build at 6:00 UTC every day
+    - cron: "40 5 * * *" # build at 5:40 UTC every day
 
   push:
     branches-ignore: # don't rebuild for dependabot

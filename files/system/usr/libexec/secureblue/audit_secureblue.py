@@ -1128,7 +1128,8 @@ def audit_secureboot():
 def audit_bash_env_lockdown():
     """Ensure the current user's bash environment is locked down."""
     home_dir = Path.home()
-    config_dir = get_config_dir()
+    # lockdown now hardcodes this
+    config_dir = home_dir / ".config"
     bash_env_paths = [
         home_dir / ".bashrc",
         home_dir / ".bash_profile",

@@ -7,16 +7,9 @@ source: ghcr.io/blue-build/modules@sha256:f1273b17987eed439b0feff77bf4b7f1c734e6
 scripts:
   - set-ld-preload.sh
   - hardenlogindefs.sh
-  - disableresolved.sh
   - setup-dnsconfd.sh
   - authselect.sh
-  - disablegeoclue.sh
-  - disablehomed.sh
-  - disable-sshd-vsock.sh
-  - disablenfsdaemons.sh
-  - removefedoraflatpakremoteservice.sh
   - localization.sh
   - installrar.sh
   - setchronysysconfig.sh
   - container-pubkey-symlinks.sh
-  - disablecountme.sh

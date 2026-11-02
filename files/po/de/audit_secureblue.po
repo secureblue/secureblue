@@ -5,7 +5,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-10-19 02:13+0000\n"
+"POT-Creation-Date: 2026-11-02 03:09+0000\n"
 "PO-Revision-Date: 2025-08-05 13:32+0200\n"
 "Last-Translator: MatsG23 <60609373+MatsG23@users.noreply.github.com>\n"
 "Language-Team: German <translation-team-de@lists.sourceforge.net>\n"
@@ -288,7 +288,7 @@ msgid "Ensuring system DNS resolution is secure"
 msgstr "Prüfe auf sichere systemweite DNS-Auflösung"
 
 #: files/system/usr/libexec/secureblue/audit_secureblue.py:543
-#: files/system/usr/libexec/secureblue/audit_secureblue.py:1269
+#: files/system/usr/libexec/secureblue/audit_secureblue.py:1270
 #, python-brace-format
 msgid "Unable to read file {0}."
 msgstr "Datei {0} kann nicht gelesen werden."
@@ -328,11 +328,11 @@ msgid "Automatic system updates are disabled in /etc/rpm-ostreed.conf"
 msgstr ""
 
 #: files/system/usr/libexec/secureblue/audit_secureblue.py:610
-#: files/system/usr/libexec/secureblue/audit_secureblue.py:1159
-#: files/system/usr/libexec/secureblue/audit_secureblue.py:1186
-#: files/system/usr/libexec/secureblue/audit_secureblue.py:1191
-#: files/system/usr/libexec/secureblue/audit_secureblue.py:1208
-#: files/system/usr/libexec/secureblue/audit_secureblue.py:1222
+#: files/system/usr/libexec/secureblue/audit_secureblue.py:1160
+#: files/system/usr/libexec/secureblue/audit_secureblue.py:1187
+#: files/system/usr/libexec/secureblue/audit_secureblue.py:1192
+#: files/system/usr/libexec/secureblue/audit_secureblue.py:1209
+#: files/system/usr/libexec/secureblue/audit_secureblue.py:1223
 msgid "To fix this, run:"
 msgstr "Um dies zu beheben, führe aus:"
 
@@ -456,7 +456,7 @@ msgstr "Xwayland ist für {0} aktiviert."
 
 #: files/system/usr/libexec/secureblue/audit_secureblue.py:877
 #: files/system/usr/libexec/secureblue/audit_secureblue.py:1032
-#: files/system/usr/libexec/secureblue/audit_secureblue.py:1264
+#: files/system/usr/libexec/secureblue/audit_secureblue.py:1265
 msgid "To disable it, run:"
 msgstr "Zum Deaktivieren, führe aus:"
 
@@ -595,147 +595,147 @@ msgstr ""
 msgid "Ensuring secure boot is enabled"
 msgstr "Prüfe auf Secure Boot"
 
-#: files/system/usr/libexec/secureblue/audit_secureblue.py:1156
+#: files/system/usr/libexec/secureblue/audit_secureblue.py:1157
 msgid "Bash environment is not locked down."
 msgstr "Die Bash-Umgebung ist nicht abgesichert."
 
-#: files/system/usr/libexec/secureblue/audit_secureblue.py:1157
+#: files/system/usr/libexec/secureblue/audit_secureblue.py:1158
 msgid "The following files do not appear to be immutable or do not exist:"
 msgstr ""
 "Die folgenden Dateien scheinen nicht schreibgeschützt zu sein oder "
 "existieren nicht:"
 
-#: files/system/usr/libexec/secureblue/audit_secureblue.py:1166
+#: files/system/usr/libexec/secureblue/audit_secureblue.py:1167
 msgid "Ensuring current user's bash environment is locked down"
 msgstr "Prüfe auf abgesicherte Bash-Umgebung"
 
-#: files/system/usr/libexec/secureblue/audit_secureblue.py:1184
+#: files/system/usr/libexec/secureblue/audit_secureblue.py:1185
 msgid "CUPS (the printing service) is enabled."
 msgstr ""
 
-#: files/system/usr/libexec/secureblue/audit_secureblue.py:1189
+#: files/system/usr/libexec/secureblue/audit_secureblue.py:1190
 msgid "CUPS (the printing service) is disabled, but unmasked."
 msgstr ""
 
-#: files/system/usr/libexec/secureblue/audit_secureblue.py:1196
+#: files/system/usr/libexec/secureblue/audit_secureblue.py:1197
 #, python-brace-format
 msgid "CUPS (the printing service) has unexpected status '{0}'."
 msgstr ""
 
-#: files/system/usr/libexec/secureblue/audit_secureblue.py:1202
+#: files/system/usr/libexec/secureblue/audit_secureblue.py:1203
 #, fuzzy, python-brace-format
 msgid "{0} is enabled."
 msgstr "{0} ist nicht aktiviert."
 
-#: files/system/usr/libexec/secureblue/audit_secureblue.py:1216
+#: files/system/usr/libexec/secureblue/audit_secureblue.py:1217
 #, fuzzy, python-brace-format
 msgid "{0} is disabled, but unmasked."
 msgstr "{0} ist deaktiviert."
 
-#: files/system/usr/libexec/secureblue/audit_secureblue.py:1231
+#: files/system/usr/libexec/secureblue/audit_secureblue.py:1232
 #, python-brace-format
 msgid "{0} has unexpected status '{1}'."
 msgstr ""
 
-#: files/system/usr/libexec/secureblue/audit_secureblue.py:1234
+#: files/system/usr/libexec/secureblue/audit_secureblue.py:1235
 #, fuzzy
 msgid "Ensuring printing services are disabled"
 msgstr "Prüfe auf GNOME Nutzer-Erweiterungen"
 
-#: files/system/usr/libexec/secureblue/audit_secureblue.py:1251
+#: files/system/usr/libexec/secureblue/audit_secureblue.py:1252
 #, fuzzy, python-brace-format
 msgid "Webcam module is blacklisted in {0} but is still enabled."
 msgstr "Das Modul {0} ist in {1}, ist aber geladen."
 
-#: files/system/usr/libexec/secureblue/audit_secureblue.py:1254
+#: files/system/usr/libexec/secureblue/audit_secureblue.py:1255
 #, fuzzy
 msgid "To disable it, you must reboot."
 msgstr "Zum Deaktivieren, führe aus:"
 
-#: files/system/usr/libexec/secureblue/audit_secureblue.py:1263
-#: files/system/usr/libexec/secureblue/audit_secureblue.py:1272
+#: files/system/usr/libexec/secureblue/audit_secureblue.py:1264
+#: files/system/usr/libexec/secureblue/audit_secureblue.py:1273
 msgid "Webcam module is enabled."
 msgstr ""
 
-#: files/system/usr/libexec/secureblue/audit_secureblue.py:1274
+#: files/system/usr/libexec/secureblue/audit_secureblue.py:1275
 #: files/system/usr/libexec/secureblue/audit_utils/__init__.py:114
 msgid "Checking whether webcam module is disabled"
 msgstr ""
 
-#: files/system/usr/libexec/secureblue/audit_secureblue.py:1295
+#: files/system/usr/libexec/secureblue/audit_secureblue.py:1296
 #, python-brace-format
 msgid "{0} is configured with an unknown URL."
 msgstr "{0} ist mit einer unbekannten URL konfiguriert."
 
-#: files/system/usr/libexec/secureblue/audit_secureblue.py:1298
+#: files/system/usr/libexec/secureblue/audit_secureblue.py:1299
 #, python-brace-format
 msgid "{0} is not a verified flatpak repository."
 msgstr "{0} ist kein geprüftes Flatpak-Repository."
 
-#: files/system/usr/libexec/secureblue/audit_secureblue.py:1301
+#: files/system/usr/libexec/secureblue/audit_secureblue.py:1302
 #, python-brace-format
 msgid "Auditing flatpak remote {0}"
 msgstr "Prüfe Flatpak Remote {0}"
 
-#: files/system/usr/libexec/secureblue/audit_secureblue.py:1334
+#: files/system/usr/libexec/secureblue/audit_secureblue.py:1335
 #, python-brace-format
 msgid "Auditing {0}"
 msgstr "Prüfe {0}"
 
-#: files/system/usr/libexec/secureblue/audit_secureblue.py:1350
+#: files/system/usr/libexec/secureblue/audit_secureblue.py:1351
 msgid "[Audit process interrupted. Exiting.]"
 msgstr "[Prüfprozess wurde unterbrochen. Abbruch.]"
 
-#: files/system/usr/libexec/secureblue/audit_secureblue.py:1361
-#: files/system/usr/libexec/secureblue/audit_secureblue.py:1380
+#: files/system/usr/libexec/secureblue/audit_secureblue.py:1362
+#: files/system/usr/libexec/secureblue/audit_secureblue.py:1381
 msgid "CAUTION: Some checks skipped due to running as root."
 msgstr ""
 
-#: files/system/usr/libexec/secureblue/audit_secureblue.py:1371
+#: files/system/usr/libexec/secureblue/audit_secureblue.py:1372
 #, python-brace-format
 msgid "*** Error in check '{0}' ***"
 msgstr "*** Fehler in Test '{0}' ***"
 
-#: files/system/usr/libexec/secureblue/audit_secureblue.py:1373
+#: files/system/usr/libexec/secureblue/audit_secureblue.py:1374
 msgid "*** Continuing... ***"
 msgstr "*** Fortfahren... ***"
 
-#: files/system/usr/libexec/secureblue/audit_secureblue.py:1377
+#: files/system/usr/libexec/secureblue/audit_secureblue.py:1378
 #, python-brace-format
 msgid "Use option '{0}' to skip flatpak recommendations."
 msgstr ""
 "Verwende die Option '{0}' um Empfehlungen für Flatpaks zu überspringen."
 
-#: files/system/usr/libexec/secureblue/audit_secureblue.py:1383
+#: files/system/usr/libexec/secureblue/audit_secureblue.py:1384
 msgid "*** WARNING: Unexpected error occurred. ***"
 msgstr "*** WARNUNG: Ein unerwarteter Fehler trat auf. ***"
 
-#: files/system/usr/libexec/secureblue/audit_secureblue.py:1394
+#: files/system/usr/libexec/secureblue/audit_secureblue.py:1395
 msgid "Audit secureblue configuration for security"
 msgstr "Prüft die secureblue Konfiguration auf Sicherheit"
 
-#: files/system/usr/libexec/secureblue/audit_secureblue.py:1399
+#: files/system/usr/libexec/secureblue/audit_secureblue.py:1400
 msgid "usage: "
 msgstr ""
 
-#: files/system/usr/libexec/secureblue/audit_secureblue.py:1400
+#: files/system/usr/libexec/secureblue/audit_secureblue.py:1401
 msgid "options"
 msgstr ""
 
-#: files/system/usr/libexec/secureblue/audit_secureblue.py:1401
+#: files/system/usr/libexec/secureblue/audit_secureblue.py:1402
 msgid "show this help message and exit"
 msgstr ""
 
-#: files/system/usr/libexec/secureblue/audit_secureblue.py:1404
+#: files/system/usr/libexec/secureblue/audit_secureblue.py:1405
 #, fuzzy
 msgid "ignore configuration file"
 msgstr "Konfigurationsdateien anderer Anwendungen"
 
-#: files/system/usr/libexec/secureblue/audit_secureblue.py:1406
+#: files/system/usr/libexec/secureblue/audit_secureblue.py:1407
 msgid "display output as JSON"
 msgstr "Ausgabe als JSON anzeigen"
 
-#: files/system/usr/libexec/secureblue/audit_secureblue.py:1407
+#: files/system/usr/libexec/secureblue/audit_secureblue.py:1408
 msgid "skip categories or individual checks"
 msgstr ""
 

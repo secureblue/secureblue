@@ -45,3 +45,10 @@
 (constrain (process (transition dyntransition))
     (or (neq t1 (container_domain spc_t)) ;; don't constrain switching out of types other than container domains
         (eq t2 (container_domain spc_t)))) ;; don't constrain if the target type is a container domain
+
+;; https://github.com/containers/container-selinux/blob/main/container.te#L778
+(typeattribute non_container_userns_privileged_domain)
+(typeattributeset non_container_userns_privileged_domain (and (userns_privileged_domain) (not (container_domain container_runtime_domain spc_t))))
+(deny non_container_userns_privileged_domain container_ro_file_t (file (entrypoint)))
+(deny non_container_userns_privileged_domain container_var_lib_t (file (entrypoint)))
+(deny non_container_userns_privileged_domain fusefs_t (file (entrypoint)))

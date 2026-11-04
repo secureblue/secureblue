@@ -71,6 +71,7 @@ jobs:
             copr.fedorainfracloud.org:443
             download.copr.fedorainfracloud.org:443
             packages.redhat.com:443
+            copr-pulp-prod.s3.amazonaws.com:443
 
             # Docker installation
             production.cloudflare.docker.com:443

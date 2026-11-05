@@ -7,8 +7,17 @@
 set -euo pipefail
 
 selinux_policy_version="$(rpm -q --qf '%{version}-%{release}' selinux-policy)"
-dnf install -y --setopt=install_weak_deps=False --enable-repo=updates-archive \
+cat >/etc/yum.repos.d/updates-archive-f44.repo <<'EOF'
+[updates-archive-f44]
+baseurl=https://fedoraproject-updates-archive.fedoraproject.org/fedora/44/$basearch/
+enabled=0
+gpgcheck=1
+gpgkey=file:///usr/share/pki/rpm-gpg/RPM-GPG-KEY-fedora-44-primary
+includepkgs=selinux-policy-devel
+EOF
+dnf install -y --setopt=install_weak_deps=False --enable-repo=updates-archive,updates-archive-f44 \
     "selinux-policy-devel-${selinux_policy_version}"
+rm /etc/yum.repos.d/updates-archive-f44.repo
 
 policy_modules=(flatpakfull stdmalloc)
 

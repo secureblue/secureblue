@@ -12,7 +12,7 @@ cat >/etc/yum.repos.d/updates-archive-f44.repo <<'EOF'
 baseurl=https://fedoraproject-updates-archive.fedoraproject.org/fedora/44/$basearch/
 enabled=0
 gpgcheck=1
-gpgkey=file:///etc/pki/rpm-gpg/RPM-GPG-KEY-fedora-44-primary
+gpgkey=file:///usr/share/pki/rpm-gpg/RPM-GPG-KEY-fedora-44-primary
 includepkgs=selinux-policy-devel
 EOF
 dnf install -y --setopt=install_weak_deps=False --enable-repo=updates-archive,updates-archive-f44 \

@@ -45,6 +45,7 @@ from auditor import (
 )
 from shared import kargs_hardening
 from shared.ptrace import YAMA_DOC_URL, PtraceStatus, get_ptrace_status
+from shared.ssh_password_auth import SSHPasswordAuthError, ssh_password_auth_enabled
 from shared.utils import (
     BootcBackend,
     Image,
@@ -183,6 +184,49 @@ def audit_signed_image(state):
             ]
         )
     yield Report(_("Ensuring a signed image is in use"), status, recs=rec)
+
+
+@audit
+@depends_on("audit_signed_image")
+def audit_ssh_password_auth(state):
+    """Ensure SSH password authentication is disabled when sshd may be used."""
+    image = state["image"]
+    sshd_enabled_status = command_stdout("systemctl", "is-enabled", "sshd.service", check=False)
+    should_audit = (image is not None and image.is_server()) or sshd_enabled_status not in (
+        "",
+        "masked",
+        "not-found",
+    )
+    if not should_audit:
+        return
+
+    try:
+        password_auth_enabled = ssh_password_auth_enabled()
+    except SSHPasswordAuthError:
+        yield Report(
+            _("Ensuring SSH password authentication is disabled"),
+            UNKNOWN,
+            notes=[Note(_("Unable to read the effective SSH server configuration."), UNKNOWN)],
+        )
+        return
+    if password_auth_enabled:
+        status = FAIL
+        disable_command = (
+            "$ ujust set-ssh-password-auth off"
+            if image is not None and image.is_server()
+            else "$ /usr/bin/python3 -Es /usr/libexec/secureblue/set_ssh_password_auth.py off"
+        )
+        rec_lines = [
+            _("SSH password authentication is enabled."),
+            _("To disable it, run:"),
+            disable_command,
+        ]
+        rec = "\n".join(rec_lines)
+    else:
+        status = PASS
+        rec = None
+
+    yield Report(_("Ensuring SSH password authentication is disabled"), status, recs=rec)
 
 
 @audit

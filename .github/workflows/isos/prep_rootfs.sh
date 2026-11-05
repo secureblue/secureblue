@@ -35,7 +35,6 @@ jq --arg image_ref "${IMAGE_REF}" \
         {
             "type": "sigstoreSigned",
             "keyPaths": [
-                "/usr/share/pki/containers/secureblue.pub",
                 "/usr/share/pki/containers/secureblue-2025.pub"
             ],
             "signedIdentity": {

@@ -257,7 +257,7 @@ jobs:
           KERNEL_PRIVKEY: ${{ secrets.KERNEL_PRIVKEY }}
         with:
           # renovate: datasource=github-releases depName=blue-build/cli
-          cli_version: v0.9.37
+          cli_version: v0.9.41
           recipe: ${{ inputs.recipe }}
           cosign_private_key: ${{ secrets.SIGNING_SECRET }}
           registry_token: ${{ github.token }}

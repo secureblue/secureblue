@@ -198,7 +198,7 @@ jobs:
           KERNEL_PRIVKEY: ${{ steps.test_keys.outputs.kernel_privkey }}
         with:
           # renovate: datasource=github-releases depName=blue-build/cli
-          cli_version: v0.9.37
+          cli_version: v0.9.41
           recipe: ${{ inputs.recipe }}
           push: false
           registry_token: ${{ github.token }}

@@ -214,3 +214,6 @@ cat > /usr/bin/firefox <<'EOF'
 exec /usr/bin/with-standard-malloc /usr/bin/firefox.bin "$@"
 EOF
 chmod 0755 /usr/bin/firefox
+
+rm /mnt
+mkdir -m 0755 /mnt

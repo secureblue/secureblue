@@ -35,7 +35,6 @@ jq --arg image_ref "${IMAGE_REF}" \
         {
             "type": "sigstoreSigned",
             "keyPaths": [
-                "/usr/share/pki/containers/secureblue.pub",
                 "/usr/share/pki/containers/secureblue-2025.pub"
             ],
             "signedIdentity": {
@@ -43,7 +42,7 @@ jq --arg image_ref "${IMAGE_REF}" \
                 "dockerRepository": $image_ref
             }
         }
-    ]' /etc/containers/policy.json | tee /etc/containers/policy.json.tmp && mv /etc/containers/policy.json.tmp /etc/containers/policy.json
+    ]' /usr/share/containers/policy.json >/etc/containers/policy.json
 
 # Disable suspend/sleep during live environment and initial setup
 # This prevents the system from suspending during installation or first-boot user creation
@@ -142,11 +141,20 @@ echo -e "$ENROLLMENT_PASSWORD\n$ENROLLMENT_PASSWORD" | mokutil --import "$SECURE
 %end
 EOF
 
+# always use image chrony config, overwrite any changes made by anaconda
+tee /usr/share/anaconda/post-scripts/restore-chrony.ks <<'EOF'
+%post
+set -euo pipefail
+cp /usr/share/secureblue/etc/chrony.conf /etc/chrony.conf
+%end
+EOF
+
 # Interactive Kickstart
 tee -a /usr/share/anaconda/interactive-defaults.ks <<EOF
 ostreecontainer --url=${IMAGE_REF}:${IMAGE_TAG} --transport=containers-storage
 %include /usr/share/anaconda/post-scripts/install-configure-upgrade.ks
 %include /usr/share/anaconda/post-scripts/secureboot-enroll-key.ks
+%include /usr/share/anaconda/post-scripts/restore-chrony.ks
 EOF
 
 # Signed Images
@@ -169,7 +177,7 @@ cat >> /usr/share/cockpit/branding/fedora/branding.css << 'EOF'
 }
 EOF
 
-# disable password strength labels
+# disable password strength labels and ntp config section
 cat >> /usr/share/cockpit/branding/fedora/branding.css << 'EOF'
 .anaconda {
     #disk-encryption-password-strength-label {
@@ -177,6 +185,10 @@ cat >> /usr/share/cockpit/branding/fedora/branding.css << 'EOF'
     }
 
     #anaconda-screen-accounts-create-account-password-strength-label {
+        display: none;
+    }
+
+    #anaconda-screen-date-time-configure-ntp {
         display: none;
     }
 }
@@ -194,3 +206,14 @@ cat >> /etc/firefox/policies/policies.json << 'EOF'
   }
 }
 EOF
+
+# Use standard malloc for firefox
+mv /usr/bin/firefox /usr/bin/firefox.bin
+cat > /usr/bin/firefox <<'EOF'
+#!/usr/bin/bash
+exec /usr/bin/with-standard-malloc /usr/bin/firefox.bin "$@"
+EOF
+chmod 0755 /usr/bin/firefox
+
+rm /mnt
+mkdir -m 0755 /mnt

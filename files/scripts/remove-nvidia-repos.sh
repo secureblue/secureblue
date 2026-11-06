@@ -8,6 +8,6 @@ set -euo pipefail
 
 # Nvidia repos only used during build process
 rm -f \
-    /etc/yum.repos.d/negativo17-fedora-nvidia.repo \
-    /etc/yum.repos.d/fedora-nvidia-580.repo \
-    /etc/yum.repos.d/nvidia-container-toolkit.repo
+    /usr/share/dnf5/repos.d/negativo17-fedora-nvidia.repo \
+    /usr/share/dnf5/repos.d/fedora-nvidia-580.repo \
+    /usr/share/dnf5/repos.d/nvidia-container-toolkit.repo

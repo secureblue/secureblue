@@ -64,15 +64,17 @@ def local_key_has_fingerprint(key_path: str, fingerprint: str) -> bool:
     return any(fingerprint == fpr for fpr in gpg_key_fingerprints(key_path))
 
 
-def verify_repo_data(repo_path: str, key_path: str, key_url: str, fingerprint: str) -> bool:
+def verify_repo_data(repo_path: str | None, key_path: str, key_url: str, fingerprint: str) -> bool:
     """Verify consistency of RPM repository data."""
-    print(f"Checking repository {repo_path}")
-
-    print("Verifying repo file points to specified local GPG key... ", end="")
-    if not repo_uses_gpg_key(repo_path=repo_path, key_path=key_path):
-        print("FAILED!")
-        return False
-    print("done.")
+    if repo_path is None:
+        print(f"Checking GPG key {key_path}")
+    else:
+        print(f"Checking GPG key {key_path} for repository {repo_path}")
+        print("Verifying repo file points to specified local GPG key... ", end="")
+        if not repo_uses_gpg_key(repo_path=repo_path, key_path=key_path):
+            print("FAILED!")
+            return False
+        print("done.")
 
     print("Verifying local GPG key matches remote GPG key... ", end="")
     if not local_key_matches_remote_key(key_path=key_path, key_url=key_url):

@@ -8,7 +8,7 @@ name: "Sign systemd-boot"
 permissions: {}
 
 env:
-  FEDORA_RELEASE: "44"
+  FEDORA_RELEASE: "45"
 
 on:
   # This only needs rebuilding for new releases of systemd-boot, e.g. after

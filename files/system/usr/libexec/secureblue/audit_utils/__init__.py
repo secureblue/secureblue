@@ -13,6 +13,7 @@ import os
 import re
 import subprocess
 import textwrap
+from pathlib import Path
 from typing import Final
 
 from auditor import AuditError, Status, gettext_marker
@@ -168,9 +169,15 @@ def analyze_active_container_policy() -> tuple[ContainersPolicyAudit, str]:
     Analyze active containers policy. Returns the results of the analysis and
     the path of the policy file.
     """
-    policy_file = "/etc/containers/policy.json"
-    local_override_file = get_config_dir() / "containers/policy.json"
-    if local_override_file.exists():
-        policy_file = str(local_override_file)
+    distro_policy_file = Path("/usr/share/containers/policy.json")
+    system_policy_file = Path("/etc/containers/policy.json")
+    user_policy_file = get_config_dir() / "containers/policy.json"
 
-    return ContainersPolicyAudit.from_file(policy_file), policy_file
+    if user_policy_file.exists():
+        active_policy_file = user_policy_file
+    elif system_policy_file.exists():
+        active_policy_file = system_policy_file
+    else:
+        active_policy_file = distro_policy_file
+
+    return ContainersPolicyAudit.from_file(active_policy_file), str(active_policy_file)

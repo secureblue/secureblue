@@ -66,7 +66,7 @@ jobs:
         id: iso_build
         env:
           IMAGE_REF: ghcr.io/secureblue/${{ matrix.image }}:latest
-        uses: RoyalOughtness/titanoboa@3d19fdfa8bff13542c0bb92620ed7826f1bbe82c # main
+        uses: RoyalOughtness/titanoboa@609f1b3d51e6abd1f445896cf1e0556de9665690 # main
         with:
           image-ref: ${{ env.IMAGE_REF }}
           hook-post-rootfs: ${{ github.workspace }}/.github/workflows/isos/prep_rootfs.sh

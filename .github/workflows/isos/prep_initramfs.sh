@@ -12,5 +12,6 @@ echo 'install squashfs /sbin/modprobe --ignore-install squashfs' > /etc/modprobe
 echo 'install_items+=" /usr/lib64/libno_rlimit_as.so /etc/ld.so.cache /etc/modprobe.d/zz-squashfs-override.conf "' > /etc/dracut.conf.d/libs.conf
 
 # use Fedora's kernel for the live env
-rm -f /usr/lib/modules/*/initramfs.img
-dnf swap --allowerasing --from-repo=fedora,updates kernel-core kernel -y
+dnf remove kernel-core -y 
+rm -rf /usr/lib/modules/*
+dnf install --repo updates kernel -y 

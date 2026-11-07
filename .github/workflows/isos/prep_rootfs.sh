@@ -19,6 +19,9 @@ dnf install -y secureblue-logos
 dnf reinstall -y polkit
 dnf install -y anaconda-live firefox libblockdev-btrfs libblockdev-btrfs libblockdev-lvm libblockdev-dm
 
+# Remove bazaar from the panel since it's removed from the liveenv, otherwise it shows up as a broken icon
+sed -i '/Bazaar/d' /usr/share/plasma/look-and-feel/org.fedoraproject.fedora.desktop/contents/layouts/org.kde.plasma.desktop-layout.js
+
 systemctl disable --global secureblue-flatpak-setup.service secureblue-flatpak-setup.timer podman-auto-update.timer flatpak-user-update.timer
 systemctl disable rpm-ostreed-automatic.timer rpm-ostree-countme.service rpm-ostree-countme.timer bootloader-update.service
 

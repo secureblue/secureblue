@@ -14,4 +14,4 @@ echo 'install_items+=" /usr/lib64/libno_rlimit_as.so /etc/ld.so.cache /etc/modpr
 # use Fedora's kernel for the live env
 dnf remove kernel-core -y 
 rm -rf /usr/lib/modules/*
-dnf install --repo updates kernel -y 
+dnf install --repo updates kernel kernel-modules-extra virtualbox-guest-additions -y 

@@ -13,4 +13,4 @@ echo 'install_items+=" /usr/lib64/libno_rlimit_as.so /etc/ld.so.cache /etc/modpr
 
 # use Fedora's kernel for the live env
 rm -f /usr/lib/modules/*/initramfs.img
-dnf swap --allowerasing --repo updates kernel-core kernel -y 
+dnf swap --allowerasing --repo updates kernel-core kernel -y

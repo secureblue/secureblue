@@ -51,6 +51,7 @@ from shared.utils import (
     command_stdout,
     command_succeeds,
     get_config_dir,
+    get_selinux_booleans,
     is_module_loaded,
     is_using_vpn,
     loaded_kernel_modules,
@@ -71,6 +72,7 @@ UNKNOWN: Final = Status.UNKNOWN
 CONFIG_FILE: Final[Path] = get_config_dir() / "secureblue/audit.toml"
 
 SKIP_IF_ROOT: Final[str] = "skip-if-root"
+SEBOOL_TRIVALENT_EXEC_FLATPAKS: Final[str] = "trivalent_exec_flatpaks"
 
 
 @audit
@@ -320,6 +322,30 @@ def audit_container_userns(state):
         ]
         recs = "\n".join(rec_lines)
     yield Report(_("Ensuring container user namespace creation disallowed"), status, recs=recs)
+
+
+@audit
+def audit_trivalent_flatpak_exec(state):
+    """Ensure Trivalent cannot execute flatpaks (a confinement escape vector)."""
+    if not state["image"].is_desktop():
+        return
+
+    status = PASS
+    recs = None
+
+    trivalent_exec_flatpaks = SEBOOL_TRIVALENT_EXEC_FLATPAKS in get_selinux_booleans(
+        SEBOOL_TRIVALENT_EXEC_FLATPAKS
+    )
+
+    if trivalent_exec_flatpaks:
+        status = FAIL
+        rec_lines = [
+            _("Trivalent is permitted to execute flatpaks (a confinement escape vector)."),
+            _("To disallow it (which breaks flatpak exec and integration), run:"),
+            "$ run0 -i setsebool -P trivalent_exec_flatpaks off",
+        ]
+        recs = "\n".join(rec_lines)
+    yield Report(_("Ensuring Trivalent cannot execute flatpaks"), status, recs=recs)
 
 
 @audit

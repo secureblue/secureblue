@@ -323,6 +323,7 @@ def audit_container_userns(state):
         recs = "\n".join(rec_lines)
     yield Report(_("Ensuring container user namespace creation disallowed"), status, recs=recs)
 
+
 @audit
 def audit_trivalent_flatpak_exec(state):
     """Ensure trivalent cannot execute flatpaks (a confinement escape vector)."""
@@ -345,6 +346,7 @@ def audit_trivalent_flatpak_exec(state):
         ]
         recs = "\n".join(rec_lines)
     yield Report(_("Ensuring Trivalent cannot execute flatpaks"), status, recs=recs)
+
 
 @audit
 @depends_on("audit_container_userns")

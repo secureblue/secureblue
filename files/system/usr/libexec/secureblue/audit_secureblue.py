@@ -51,6 +51,7 @@ from shared.utils import (
     command_stdout,
     command_succeeds,
     get_config_dir,
+    get_selinux_booleans,
     is_module_loaded,
     is_using_vpn,
     loaded_kernel_modules,
@@ -321,6 +322,23 @@ def audit_container_userns(state):
         recs = "\n".join(rec_lines)
     yield Report(_("Ensuring container user namespace creation disallowed"), status, recs=recs)
 
+@audit
+def audit_trivalent_flatpak_exec(state):
+    """Ensure trivalent cannot exec flatpaks (a confinement escape vector)."""
+    status = PASS
+    recs = None
+
+    SEBOOL_TRIVALENT_EXEC_FLATPAKS: Final[str] = "trivalent_exec_flatpaks"
+    trivalent_exec_flatpaks = SEBOOL_TRIVALENT_EXEC_FLATPAKS in get_selinux_booleans(SEBOOL_TRIVALENT_EXEC_FLATPAKS):
+    if trivalent_exec_flatpaks:
+        status = FAIL
+        rec_lines = [
+            _("Trivalent is permitted to exec flatpaks (a confinement escape vector)."),
+            _("To disallow it, run:"),
+            "$ run0 -i setsebool trivalent_exec_flatpaks off",
+        ]
+        recs = "\n".join(rec_lines)
+    yield Report(_("Ensuring trivalent cannot exec flatpaks"), status, recs=recs)
 
 @audit
 @depends_on("audit_container_userns")

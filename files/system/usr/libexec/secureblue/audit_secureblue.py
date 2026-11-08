@@ -327,6 +327,7 @@ def audit_trivalent_flatpak_exec(state):
     """Ensure trivalent cannot execute flatpaks (a confinement escape vector)."""
     if not state["image"].is_desktop():
         return
+
     status = PASS
     recs = None
 

@@ -329,7 +329,8 @@ def audit_trivalent_flatpak_exec(state):
     recs = None
 
     SEBOOL_TRIVALENT_EXEC_FLATPAKS: Final[str] = "trivalent_exec_flatpaks"
-    trivalent_exec_flatpaks = SEBOOL_TRIVALENT_EXEC_FLATPAKS in get_selinux_booleans(SEBOOL_TRIVALENT_EXEC_FLATPAKS):
+    trivalent_exec_flatpaks = 
+        SEBOOL_TRIVALENT_EXEC_FLATPAKS in get_selinux_booleans(SEBOOL_TRIVALENT_EXEC_FLATPAKS)
     if trivalent_exec_flatpaks:
         status = FAIL
         rec_lines = [

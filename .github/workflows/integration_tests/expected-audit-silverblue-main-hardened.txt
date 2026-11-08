@@ -5,6 +5,7 @@
 {"name":"audit_container_policy","description":"Analyzing container policy","status":"fail","notes":[{"text":"The file /etc/containers/policy.json has been modified.","status":"info"},{"text":"The default container policy is insecure.","status":"fail"}]}
 {"name":"audit_unconfined_userns","description":"Ensuring unconfined user namespace creation disallowed","status":"pass","notes":[]}
 {"name":"audit_container_userns","description":"Ensuring container user namespace creation disallowed","status":"pass","notes":[]}
+{"name":"audit_trivalent_flatpak_exec","description":"Ensuring Trivalent cannot execute flatpaks","status":"fail","notes":[]}
 {"name":"audit_ptrace","description":"Ensuring ptrace is forbidden","status":"pass","notes":[]}
 {"name":"audit_usbguard","description":"Ensuring USBGuard is active","status":"fail","notes":[{"text":"USBGuard is not enabled.","status":"fail"}]}
 {"name":"audit_chronyd","description":"Ensuring chronyd is active","status":"pass","notes":[]}

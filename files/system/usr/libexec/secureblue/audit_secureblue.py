@@ -324,7 +324,9 @@ def audit_container_userns(state):
 
 @audit
 def audit_trivalent_flatpak_exec(state):
-    """Ensure trivalent cannot exec flatpaks (a confinement escape vector)."""
+    """Ensure trivalent cannot execute flatpaks (a confinement escape vector)."""
+    if not state["image"].is_desktop():
+        return
     status = PASS
     recs = None
 
@@ -334,12 +336,12 @@ def audit_trivalent_flatpak_exec(state):
     if trivalent_exec_flatpaks:
         status = FAIL
         rec_lines = [
-            _("Trivalent is permitted to exec flatpaks (a confinement escape vector)."),
-            _("To disallow it, run:"),
+            _("Trivalent is permitted to execute flatpaks (a confinement escape vector)."),
+            _("To disallow it (which breaks flatpak exec and integration), run:"),
             "$ run0 -i setsebool trivalent_exec_flatpaks off",
         ]
         recs = "\n".join(rec_lines)
-    yield Report(_("Ensuring trivalent cannot exec flatpaks"), status, recs=recs)
+    yield Report(_("Ensuring Trivalent cannot execute flatpaks"), status, recs=recs)
 
 @audit
 @depends_on("audit_container_userns")

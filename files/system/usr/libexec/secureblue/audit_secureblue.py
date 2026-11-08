@@ -72,6 +72,7 @@ UNKNOWN: Final = Status.UNKNOWN
 CONFIG_FILE: Final[Path] = get_config_dir() / "secureblue/audit.toml"
 
 SKIP_IF_ROOT: Final[str] = "skip-if-root"
+SEBOOL_TRIVALENT_EXEC_FLATPAKS: Final[str] = "trivalent_exec_flatpaks"
 
 
 @audit
@@ -331,15 +332,16 @@ def audit_trivalent_flatpak_exec(state):
     status = PASS
     recs = None
 
-    SEBOOL_TRIVALENT_EXEC_FLATPAKS: Final[str] = "trivalent_exec_flatpaks"
-    trivalent_exec_flatpaks = 
-        SEBOOL_TRIVALENT_EXEC_FLATPAKS in get_selinux_booleans(SEBOOL_TRIVALENT_EXEC_FLATPAKS)
+    trivalent_exec_flatpaks = SEBOOL_TRIVALENT_EXEC_FLATPAKS in get_selinux_booleans(
+        SEBOOL_TRIVALENT_EXEC_FLATPAKS
+    )
+
     if trivalent_exec_flatpaks:
         status = FAIL
         rec_lines = [
             _("Trivalent is permitted to execute flatpaks (a confinement escape vector)."),
             _("To disallow it (which breaks flatpak exec and integration), run:"),
-            "$ run0 -i setsebool trivalent_exec_flatpaks off",
+            "$ run0 -i setsebool -P trivalent_exec_flatpaks off",
         ]
         recs = "\n".join(rec_lines)
     yield Report(_("Ensuring Trivalent cannot execute flatpaks"), status, recs=recs)

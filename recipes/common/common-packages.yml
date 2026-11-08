@@ -38,6 +38,9 @@ install:
 
     # For use in unprivileged ujust scripts
     - python3-inquirer
+    # Needed for inquirer until this upstream packaging bug is fixed:
+    # https://bugzilla.redhat.com/show_bug.cgi?id=2558503
+    - python3-setuptools
 
     # provenance deps
     - crane

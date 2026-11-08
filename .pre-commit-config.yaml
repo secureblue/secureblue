@@ -45,3 +45,10 @@ repos:
         language: system
         types: [text]
         types_or: [bash, bats, shell]
+
+      - id: sync-runner-endpoints
+        name: Sync runner endpoints
+        description: "Sync runner allowed endpoints for step-security/harden-runner"
+        entry: tools/sync_runner_allowed_endpoints.py
+        language: system
+        files: "\\.github/workflows/.*\\.(txt|ya?ml)$"

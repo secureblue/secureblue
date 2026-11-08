@@ -7,8 +7,7 @@ name: build-sealed-image
 permissions: {}
 
 env:
-  # For CoreOS (which has version "testing"), use systemd-boot from F44.
-  IMAGE_VERSION: ${{ inputs.image_version == 'testing' && '44' || inputs.image_version }}
+  IMAGE_VERSION: "45"
 
 on:
   workflow_call:
@@ -23,10 +22,6 @@ on:
         required: true
       base_digest:
         description: "The digest of the base image to seal (e.g. sha256:abc123)."
-        type: string
-        required: true
-      image_version:
-        description: "The Fedora image version used for getting the systemd-boot image, e.g. 44."
         type: string
         required: true
     secrets:
@@ -56,7 +51,11 @@ jobs:
         uses: step-security/harden-runner@dc2769abcc0fcfbadfc1df54081c1608579ef6b2 # v2.22.2
         with:
           egress-policy: block
+          # Do not edit directly. Instead:
+          # 1. Edit .github/workflows/runner-allowed-endpoints.txt
+          # 2. Run tools/sync_runner_allowed_endpoints.py
           allowed-endpoints: >
+            ##### BEGIN ALLOWED ENDPOINT LIST #####
             # ubuntu packages
             _https._tcp.archive.ubuntu.com:443
             archive.ubuntu.com:443
@@ -93,6 +92,8 @@ jobs:
             # Install packages from our COPR repos
             copr.fedorainfracloud.org:443
             download.copr.fedorainfracloud.org:443
+            packages.redhat.com:443
+            copr-pulp-prod.s3.amazonaws.com:443
 
             # Docker installation
             production.cloudflare.docker.com:443
@@ -192,6 +193,7 @@ jobs:
             yxeix.mm.fcix.net:443
             yycix.mm.fcix.net:443
             ziply.mm.fcix.net:443
+            ##### END ALLOWED ENDPOINT LIST #####
 
       - name: "Free disk space"
         uses: hastd/free-disk-space@68572aeaadb7f76bd408246328e95926323402b5 # v0.1.2

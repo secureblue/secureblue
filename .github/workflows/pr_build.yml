@@ -33,7 +33,11 @@ jobs:
         uses: step-security/harden-runner@dc2769abcc0fcfbadfc1df54081c1608579ef6b2 # v2.22.2
         with:
           egress-policy: block
+          # Do not edit directly. Instead:
+          # 1. Edit .github/workflows/runner-allowed-endpoints.txt
+          # 2. Run tools/sync_runner_allowed_endpoints.py
           allowed-endpoints: >
+            ##### BEGIN ALLOWED ENDPOINT LIST #####
             # ubuntu packages
             _https._tcp.archive.ubuntu.com:443
             archive.ubuntu.com:443
@@ -70,6 +74,8 @@ jobs:
             # Install packages from our COPR repos
             copr.fedorainfracloud.org:443
             download.copr.fedorainfracloud.org:443
+            packages.redhat.com:443
+            copr-pulp-prod.s3.amazonaws.com:443
 
             # Docker installation
             production.cloudflare.docker.com:443
@@ -169,6 +175,7 @@ jobs:
             yxeix.mm.fcix.net:443
             yycix.mm.fcix.net:443
             ziply.mm.fcix.net:443
+            ##### END ALLOWED ENDPOINT LIST #####
 
       - name: Checkout repo
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
@@ -196,7 +203,7 @@ jobs:
           KERNEL_PRIVKEY: ${{ steps.test_keys.outputs.kernel_privkey }}
         with:
           # renovate: datasource=github-releases depName=blue-build/cli
-          cli_version: v0.9.37
+          cli_version: v0.9.41
           recipe: ${{ inputs.recipe }}
           push: false
           registry_token: ${{ github.token }}

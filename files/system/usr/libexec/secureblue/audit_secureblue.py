@@ -326,7 +326,7 @@ def audit_container_userns(state):
 
 @audit
 def audit_trivalent_flatpak_exec(state):
-    """Ensure trivalent cannot execute flatpaks (a confinement escape vector)."""
+    """Ensure Trivalent cannot execute flatpaks (a confinement escape vector)."""
     if not state["image"].is_desktop():
         return
 

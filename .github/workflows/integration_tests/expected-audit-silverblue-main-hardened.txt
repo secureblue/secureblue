@@ -2,7 +2,7 @@
 {"name":"audit_sysctl","description":"Ensuring no sysctl overrides","status":"info","notes":[{"text":"Unable to read some sysctl settings. Run as root for full info.","status":"info"}]}
 {"name":"audit_signed_image","description":"Ensuring a signed image is in use","status":"fail","notes":[]}
 {"name":"audit_modprobe","description":"Ensuring no modprobe overrides","status":"pass","notes":[]}
-{"name":"audit_container_policy","description":"Analyzing container policy","status":"fail","notes":[{"text":"The file /etc/containers/policy.json has been modified.","status":"info"},{"text":"The default container policy is insecure.","status":"fail"}]}
+{"name":"audit_container_policy","description":"Analyzing container policy","status":"fail","notes":[{"text":"Container policy has a system-wide override at /etc/containers/policy.json.","status":"info"},{"text":"The default container policy is insecure.","status":"fail"}]}
 {"name":"audit_unconfined_userns","description":"Ensuring unconfined user namespace creation disallowed","status":"pass","notes":[]}
 {"name":"audit_container_userns","description":"Ensuring container user namespace creation disallowed","status":"pass","notes":[]}
 {"name":"audit_ptrace","description":"Ensuring ptrace is forbidden","status":"pass","notes":[]}

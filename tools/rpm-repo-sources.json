@@ -42,9 +42,9 @@
         "gpgFingerprint": "2596A99EAAB33821893C0A79458CA832957F5868"
     },
     {
-        "localRepo": "files/system/desktop/usr/share/dnf5/repos.d/repo.secureblue.dev.secureblue.repo",
+        "localRepo": "files/system/usr/share/dnf5/repos.d/repo.secureblue.dev.secureblue.repo",
         "repoSource": "https://repo.secureblue.dev/secureblue.repo",
-        "localGpgKey": "files/system/desktop/usr/share/pki/rpm-gpg/secureblue.gpg",
+        "localGpgKey": "files/system/usr/share/pki/rpm-gpg/secureblue.gpg",
         "remoteGpgKey": "https://repo.secureblue.dev/secureblue.gpg",
         "gpgFingerprint": "26B4463ED8F313BC7E3FBDF9D9223AF0F47B3E41"
     },

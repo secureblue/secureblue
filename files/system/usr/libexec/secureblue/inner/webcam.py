@@ -34,12 +34,11 @@ def main() -> int:
             result = subprocess.run(
                 ["/usr/bin/modprobe", *WEBCAM_KMODS], check=False
             )
-            if result.returncode == 0:
-                print("Webcam has been enabled.")
-                return 0
-            else:
+            if result.returncode != 0:
                 print("Failed to load Webcam modules:", result.stderr)
                 return 1
+            print("Webcam has been enabled.")
+            return 0
         case "off":
             with open(WEBCAM_MOD_FILE, "w", encoding="utf8") as fd:
                 fd.write("\n".join([f"install ${kmod} /bin/false" for kmod in WEBCAM_KMODS]))
@@ -47,12 +46,11 @@ def main() -> int:
             result = subprocess.run(
                 ["/usr/bin/modprobe", "-r", *WEBCAM_KMODS], check=False
             )
-            if result.returncode == 0:
-                print("Webcam has been disabled.")
-                return 0
-            else:
+            if result.returncode != 0:
                 print("Failed to unload Webcam modules:", result.stderr)
                 return 1
+            print("Webcam has been disabled.")
+            return 0
         case _:
             print("Invalid inner script argument.")
             return 1

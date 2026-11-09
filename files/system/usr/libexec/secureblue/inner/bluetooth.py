@@ -29,14 +29,13 @@ def main() -> int:
     match mode:
         case "on":
             with open(BLUE_MOD_FILE, "w", encoding="utf8") as fd:
-                fd.write("\n".join([f"install ${kmod} /sbin/modprobe --ignore-install ${kmod}" for kmod in BLUE_KMODS]))
+                fd.write("\n".join([f"install ${kmod} /sbin/modprobe --ignore-install ${kmod}" 
+                                    for kmod in BLUE_KMODS]))
             os.chmod(BLUE_MOD_FILE, 0o644)
             result = subprocess.run(
                 ["/usr/bin/modprobe", *BLUE_KMODS], check=False
             )
-            if result.returncode == 0:
-                print("Bluetooth has been enabled.")
-            else:
+            if result.returncode != 0:
                 print("Failed to load Bluetooth modules:", result.stderr)
                 return 1
             bluetooth_service.unmask()
@@ -49,12 +48,11 @@ def main() -> int:
             result = subprocess.run(
                 ["/usr/bin/modprobe", *BLUE_KMODS], check=False
             )
-            if result.returncode == 0:
-                print("Bluetooth has been disabled.")
-                return 0
-            else:
+            if result.returncode != 0:
                 print("Failed to unload Bluetooth modules:", result.stderr)
-                return 1
+                return 1    
+            print("Bluetooth has been disabled.")
+            return 0
         case _:
             print("Invalid inner script argument.")
             return 1

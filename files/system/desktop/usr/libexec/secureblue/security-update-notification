@@ -13,11 +13,11 @@ timestamp_today="$(date '+%Y%m%d')"
 readonly secureblue_state_dir critical_timestamp_file normal_timestamp_file timestamp_today
 
 recent_critical_notification() {
-    [[ "$(2>/dev/null <"${critical_timestamp_file}")" == "${timestamp_today}" ]]
+    [[ "$(2>/dev/null cat "${critical_timestamp_file}")" == "${timestamp_today}" ]]
 }
 
 recent_normal_notification() {
-    [[ "$(2>/dev/null <"${normal_timestamp_file}")" == "${timestamp_today}" ]]
+    [[ "$(2>/dev/null cat "${normal_timestamp_file}")" == "${timestamp_today}" ]]
 }
 
 write_critical_timestamp() {

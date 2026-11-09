@@ -9,6 +9,7 @@ The sandboxed webcam toggle function
 """
 
 import os
+import subprocess
 import sys
 from typing import Final
 
@@ -35,14 +36,28 @@ def main() -> int:
     match mode:
         case "on":
             os.remove(WEBCAM_MOD_FILE)
-            print("Webcam has been enabled. Reboot for effect.")
-            return 0
+            result = subprocess.run(
+                ["/usr/bin/modprobe", "xxxx"], check=False # can we store all needed modules in a list?
+            )
+            if result.returncode == 0: # do we need this error handling?
+                print("Webcam has been enabled.")
+                return 0
+            else:
+                print("Webcam has been enabled. Reboot for effect.")
+                return 1
         case "off":
             with open(WEBCAM_MOD_FILE, "w", encoding="utf8") as fd:
                 fd.write(WEBCAM_MOD_TEXT)
             os.chmod(WEBCAM_MOD_FILE, 0o644)
-            print("Webcam has been disabled. Reboot for effect.")
-            return 0
+            result = subprocess.run(
+                ["/usr/bin/modprobe", "-r", "xxxx"], check=False
+            )
+            if result.returncode == 0:
+                print("Webcam has been disabled.")
+                return 0
+            else:
+                print("Webcam has been disabled. Reboot for effect.")
+                return 1
         case _:
             print("Invalid inner script argument.")
             return 1

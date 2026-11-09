@@ -13,17 +13,12 @@ import subprocess
 import sys
 from typing import Final
 
+WEBCAM_KMODS: Final[list[str]] = [
+    "ipu-bridge", "ipu3-imgu", "ipu3-cio2",
+    "intel_ipu6", "intel_ipu6_isys", "intel_ipu7",
+    "intel_ipu7_isys", "uvcvideo"
+]
 WEBCAM_MOD_FILE: Final[str] = "/etc/modprobe.d/99-disable-webcam.conf"
-WEBCAM_MOD_TEXT: Final[str] = """
-install ipu-bridge /bin/false
-install ipu3-imgu /bin/false
-install ipu3-cio2 /bin/false
-install intel_ipu6 /bin/false
-install intel_ipu6_isys /bin/false
-install intel_ipu7 /bin/false
-install intel_ipu7_isys /bin/false
-install uvcvideo /bin/false
-"""
 
 
 def main() -> int:
@@ -37,26 +32,26 @@ def main() -> int:
         case "on":
             os.remove(WEBCAM_MOD_FILE)
             result = subprocess.run(
-                ["/usr/bin/modprobe", "xxxx"], check=False # can we store all needed modules in a list?
+                ["/usr/bin/modprobe", *WEBCAM_KMODS], check=False
             )
-            if result.returncode == 0: # do we need this error handling?
+            if result.returncode == 0:
                 print("Webcam has been enabled.")
                 return 0
             else:
-                print("Webcam has been enabled. Reboot for effect.")
+                print("Failed to load Webcam modules:", result.stderr)
                 return 1
         case "off":
             with open(WEBCAM_MOD_FILE, "w", encoding="utf8") as fd:
-                fd.write(WEBCAM_MOD_TEXT)
+                fd.write("\n".join([f"install ${kmod} /bin/false" for kmod in WEBCAM_KMODS]))
             os.chmod(WEBCAM_MOD_FILE, 0o644)
             result = subprocess.run(
-                ["/usr/bin/modprobe", "-r", "xxxx"], check=False
+                ["/usr/bin/modprobe", "-r", *WEBCAM_KMODS], check=False
             )
             if result.returncode == 0:
                 print("Webcam has been disabled.")
                 return 0
             else:
-                print("Webcam has been disabled. Reboot for effect.")
+                print("Failed to unload Webcam modules:", result.stderr)
                 return 1
         case _:
             print("Invalid inner script argument.")

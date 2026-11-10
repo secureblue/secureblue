@@ -8,6 +8,7 @@
 
 # https://docs.kernel.org/admin-guide/kernel-parameters.html
 
+import platform
 from typing import Final
 
 from shared.kargs_hardening import (
@@ -22,7 +23,7 @@ from shared.utils import BootcBackend, ask_yes_no
 
 
 def build_kargs_list(
-    *, disable_32_bit: bool, nosmt: bool, unstable: bool
+    *, disable_32_bit: bool | None, nosmt: bool, unstable: bool
 ) -> tuple[list[str], list[str]]:
     """Build the list of kargs to add and remove."""
     kargs_to_add = []
@@ -34,9 +35,9 @@ def build_kargs_list(
     ):
         kargs_to_add += DEFAULT_KARGS
 
-    if disable_32_bit:
+    if disable_32_bit is True:
         kargs_to_add.append(DISABLE_32_BIT)
-    else:
+    elif disable_32_bit is False:
         kargs_to_remove.append(DISABLE_32_BIT)
 
     if nosmt:
@@ -73,11 +74,13 @@ on some hardware.)
 
 def main() -> None:
     """Main entry point for script."""
-    disable_32_bit = not ask_yes_no(QUESTION_32_BIT)
-    if disable_32_bit:
-        print("Selected: disable 32-bit support.")
-    else:
-        print("Selected: keep 32-bit support.")
+    disable_32_bit = None
+    if platform.machine() == "x86_64":
+        disable_32_bit = not ask_yes_no(QUESTION_32_BIT)
+        if disable_32_bit:
+            print("Selected: disable 32-bit support.")
+        else:
+            print("Selected: keep 32-bit support.")
 
     nosmt = ask_yes_no(QUESTION_NOSMT)
     if nosmt:

@@ -359,7 +359,37 @@ jobs:
           IMAGE: ${{ inputs.image }}
           DIGEST: ${{ needs.uki-sign-sealed-image.outputs.IMAGE_DIGEST }}
 
+  # Generate SLSA v1 level 3 build provenance attestation
   provenance:
+    needs: uki-sign-sealed-image
+    permissions:
+      actions: read # to detect the Github Actions environment
+      contents: read
+      id-token: write # to create OIDC tokens for signing
+    uses: slsa-framework/actions/.github/workflows/attest_actions.yml@v0.2.0 # zizmor: ignore[unpinned-uses]
+    with:
+      build-from-source: false
+      # renovate: datasource=github-releases depName=slsa-framework/attester
+      version: v0.1.1
+      watch-jobs: uki-sign-sealed-image
+      collect-artifacts: false
+      subjects: ${{ needs.uki-sign-sealed-image.outputs.IMAGE_DIGEST }}
+      artifact-name: slsa-provenance-${{ inputs.image }}-uki
+
+  push-attestation:
+    needs: [uki-sign-sealed-image, provenance]
+    permissions:
+      packages: write # to push attestation to GHCR
+    uses: $/.github/workflows/push-provenance.yml
+    with:
+      artifact-name: slsa-provenance-${{ inputs.image }}-uki
+      image-ref: "ghcr.io/${{ github.repository_owner }}/${{ inputs.image }}"
+      digest: ${{ needs.uki-sign-sealed-image.outputs.IMAGE_DIGEST }}
+
+  # Generate SLSA v0.2 provenance attestation. This is only needed for
+  # backwards compatibility with images from before we started generating the
+  # newer SLSA v1 provenance, and can be removed after enough time has passed.
+  old-provenance:
     needs: uki-sign-sealed-image
     permissions:
       actions: read # for detecting the Github Actions environment.

@@ -29,7 +29,7 @@ def main() -> int:
     match mode:
         case "on":
             with open(BLUE_MOD_FILE, "w", encoding="utf8") as fd:
-                fd.write("\n".join([f"install ${kmod} /sbin/modprobe --ignore-install ${kmod}"
+                fd.write("\n".join([f"install {kmod} /sbin/modprobe --ignore-install {kmod}"
                                     for kmod in BLUE_KMODS]))
             os.chmod(BLUE_MOD_FILE, 0o644)
             result = subprocess.run(
@@ -40,6 +40,7 @@ def main() -> int:
                 return 1
             bluetooth_service.unmask()
             bluetooth_service.enable_now()
+            print("Bluetooth has been enabled.")
             return 0
         case "off":
             os.remove(BLUE_MOD_FILE)

@@ -41,7 +41,7 @@ def main() -> int:
             return 0
         case "off":
             with open(WEBCAM_MOD_FILE, "w", encoding="utf8") as fd:
-                fd.write("\n".join([f"install ${kmod} /bin/false" for kmod in WEBCAM_KMODS]))
+                fd.write("\n".join([f"install {kmod} /bin/false" for kmod in WEBCAM_KMODS]))
             os.chmod(WEBCAM_MOD_FILE, 0o644)
             result = subprocess.run(
                 ["/usr/bin/modprobe", "-r", *WEBCAM_KMODS], check=False

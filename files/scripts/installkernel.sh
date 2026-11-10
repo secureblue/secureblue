@@ -36,6 +36,10 @@ dnf --best --repo=secureblue -y download \
     "kernel-modules-${SECUREBLUE_KERNEL_VERSION}" \
     "kernel-modules-core-${SECUREBLUE_KERNEL_VERSION}"
 
+if rpm -q kernel-modules-extra &>/dev/null; then
+    dnf --best --repo=secureblue -y download "kernel-modules-extra-${SECUREBLUE_KERNEL_VERSION}"
+fi
+
 kernel_rpms_found=0
 for kernel_rpm in kernel-[0-9]*."${OS_ARCH}".rpm; do
     (( ++kernel_rpms_found ))
@@ -74,7 +78,7 @@ chmod +x "${VERIFIER_PATH}"
     --param 'expected_branch:live' \
     --param 'trusted_builders:[https://github.com/secureblue/kernel/.github/workflows/kernel-build.yml@refs/heads/live]'
 
-dnf --setopt=localpkg_gpgcheck=True -y install ./kernel-*.rpm
+dnf --setopt=localpkg_gpgcheck=True --disable-repo=secureblue -y install ./kernel-*.rpm
 
 kernel_rpm_sans_prefix_and_suffix=${kernel_rpm_sans_prefix%.rpm}
 VMLINUZ_PATH="/usr/lib/modules/${kernel_rpm_sans_prefix_and_suffix}/vmlinuz"

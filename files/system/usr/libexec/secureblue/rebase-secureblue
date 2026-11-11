@@ -1,10 +1,11 @@
-#!/bin/bash
+#!/usr/bin/bash
 
 # SPDX-FileCopyrightText: Copyright 2025-2026 The Secureblue Authors
 #
 # SPDX-License-Identifier: Apache-2.0
 
 set -euo pipefail
+
 current_image=$(grep VARIANT= /etc/os-release | cut -d'"' -f2)
 if [[ "${current_image}" == 'CoreOS' ]] || [[ "${current_image}" == 'IOT' ]]; then
     image_name=$(grep VARIANT_ID= /etc/os-release | cut -d'=' -f2 | cut -d'-' -f1)
@@ -45,13 +46,13 @@ else
 fi
 image_name+="-hardened"
 if [[ -f "/usr/bin/rpm-ostree" ]]; then
-    full_ref=$(crane digest --full-ref "ghcr.io/secureblue/${image_name}:latest")
-    rebase_command="rpm-ostree rebase ostree-image-signed:docker://ghcr.io/secureblue/${image_name}:latest"
+    image_ref="ghcr.io/secureblue/${image_name}:latest"
+    rebase_command="rpm-ostree rebase 'ostree-image-signed:docker://${image_ref}'"
 else
-    full_ref=$(crane digest --full-ref "ghcr.io/secureblue/${image_name}:uki")
-    rebase_command="run0 -i bootc switch ghcr.io/secureblue/${image_name}:uki"
+    image_ref="ghcr.io/secureblue/${image_name}:uki"
+    rebase_command="run0 -i bootc switch '${image_ref}'"
 fi
-slsa-verifier verify-image --source-uri "github.com/secureblue/secureblue" --source-branch "live" "${full_ref}"
+/usr/libexec/secureblue/verify-provenance "${image_ref}"
 printf "Command to execute:\n%s\n\n" "${rebase_command}"
 read -rp "Proceed? [y/N]: " rebase_proceed
 if [[ "${rebase_proceed}" == [Yy]* ]]; then

@@ -27,7 +27,7 @@ Set or unset the unfiltered Flathub subset.
 
 Usage:
 ujust set-flathub-unfiltered
-    Adds or removes interactively based on the user's preference.
+    Sets interactively based on the user's preference.
 
 ujust set-flathub-unfiltered on
     Sets the unfiltered Flathub subset; does nothing if it is already set.
@@ -36,7 +36,7 @@ ujust set-flathub-unfiltered off
     Sets the verified Flathub subset; does nothing if it is already set.
 
 ujust set-flathub-unfiltered status
-    Reports whether the unfiltered Flathub remote is present on the system.
+    Reports whether the unfiltered Flathub subset is set.
 
 ujust set-flathub-unfiltered --help
     Prints this message.
@@ -95,7 +95,7 @@ def set_remote_filtered() -> None:
     installed_apps = [
         line.split("\t", 1) 
         for line in command_stdout(
-            "flatpak", "list", "--app", "--user". --columns=application,origin"
+            "flatpak", "list", "--app", "--user". "--columns=application,origin"
         ).splitlines()
     ]
 

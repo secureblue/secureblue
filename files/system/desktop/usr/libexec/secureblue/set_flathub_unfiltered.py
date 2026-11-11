@@ -95,7 +95,7 @@ def set_remote_filtered() -> None:
     installed_apps = [
         line.split("\t", 1) 
         for line in command_stdout(
-            "flatpak", "list", "--app", "--user". "--columns=application,origin"
+            "flatpak", "list", "--app", "--user", "--columns=application,origin"
         ).splitlines()
     ]
 

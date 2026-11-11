@@ -48,7 +48,7 @@ def main() -> int:
             os.chmod(WEBCAM_MOD_FILE, 0o644)
             result = subprocess.run(["/usr/bin/modprobe", "-r", *WEBCAM_KMODS], check=False)
             if result.returncode != 0:
-                print("Failed to unload Webcam modules:", result.stderr)
+                print("Failed to unload Webcam modules")
                 return 1
             print("Webcam has been disabled.")
             return 0

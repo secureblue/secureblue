@@ -40,7 +40,7 @@ def main() -> int:
             os.chmod(BLUE_MOD_FILE, 0o644)
             result = subprocess.run(["/usr/bin/modprobe", *BLUE_KMODS], check=False)
             if result.returncode != 0:
-                print("Failed to load Bluetooth modules:", result.stderr)
+                print("Failed to load Bluetooth modules")
                 return 1
             bluetooth_service.unmask()
             bluetooth_service.enable_now()

@@ -23,17 +23,17 @@ command_stdout: Final = utils.command_stdout
 ask_yes_no: Final = utils.ask_yes_no
 
 HELP_MESSAGE: Final[str] = """\
-Add or remove the unfiltered Flathub remote.
+Set or unset the unfiltered Flathub subset.
 
 Usage:
 ujust set-flathub-unfiltered
     Adds or removes interactively based on the user's preference.
 
 ujust set-flathub-unfiltered on
-    Sets the unfiltered Flathub subset; does nothing if it is already present.
+    Sets the unfiltered Flathub subset; does nothing if it is already set.
 
 ujust set-flathub-unfiltered off
-    Sets the verified Flathub subset; does nothing if it is already removed.
+    Sets the verified Flathub subset; does nothing if it is already set.
 
 ujust set-flathub-unfiltered status
     Reports whether the unfiltered Flathub remote is present on the system.
@@ -92,16 +92,18 @@ def set_remote_filtered() -> None:
         print("The Flathub remote subset is already set to verified-only.")
         return
     
-    installed_apps =
-        [line.split("\t", 1) 
-            for line: 
-                in command_stdout("flatpak", "list", "--app", "--user". --columns=application,origin").splitlines()]
+    installed_apps = [
+        line.split("\t", 1) 
+        for line in command_stdout(
+            "flatpak", "list", "--app", "--user". --columns=application,origin"
+        ).splitlines()
+    ]
 
     flathub_installed_apps = [app for app, remote in installed_apps if remote == "flathub"]
-    flathub_installed_verified_apps = [app for app in flathub_installed_apps if not is_verified(app)]
-    if flathub_installed_verified_apps:
+    flathub_installed_unverified_apps = [app for app in flathub_installed_apps if not is_verified(app)]
+    if flathub_installed_unverified_apps:
         print("The following Flathub apps are unverified and will be removed by this action:")
-        for unverified_app in flathub_installed_verified_apps:
+        for unverified_app in flathub_installed_unverified_apps:
             print(f"  - {unverified_app}")
 
         if not ask_yes_no("Proceed?"):
@@ -113,7 +115,7 @@ def set_remote_filtered() -> None:
                 "uninstall",
                 "--user",
                 "-y",
-                *flathub_installed_verified_apps
+                *flathub_installed_unverified_apps
             ], 
             check=True
         )

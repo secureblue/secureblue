@@ -209,7 +209,7 @@ jobs:
         uses: $/.github/workflows/shared-runner-setup
         with:
           needs_cosign: true
-          needs_slsa_crane: true
+          needs_slsa_oras: true
 
       - name: "Log in to registry"
         uses: redhat-actions/podman-login@50c2d9a331bb67c8fdab99b86455fad05e2e3252 # v2.0
@@ -222,9 +222,9 @@ jobs:
         id: base_image_digests
         shell: bash
         run: |
-          SYSTEMD_BOOT_DIGEST=$(crane digest "ghcr.io/${GITHUB_REPOSITORY_OWNER}/systemd-boot:${IMAGE_VERSION}")
+          SYSTEMD_BOOT_DIGEST=$(oras resolve "ghcr.io/${GITHUB_REPOSITORY_OWNER}/systemd-boot:${IMAGE_VERSION}")
           echo "SYSTEMD_BOOT_DIGEST=${SYSTEMD_BOOT_DIGEST}" >> "${GITHUB_OUTPUT}"
-          UKI_ADDONS_DIGEST=$(crane digest "ghcr.io/${GITHUB_REPOSITORY_OWNER}/uki-addons:latest")
+          UKI_ADDONS_DIGEST=$(oras resolve "ghcr.io/${GITHUB_REPOSITORY_OWNER}/uki-addons:latest")
           echo "UKI_ADDONS_DIGEST=${UKI_ADDONS_DIGEST}" >> "${GITHUB_OUTPUT}"
 
       - name: "Verify base images"
@@ -236,12 +236,27 @@ jobs:
           SYSTEMD_BOOT_DIGEST: ${{ steps.base_image_digests.outputs.SYSTEMD_BOOT_DIGEST }}
           UKI_ADDONS_DIGEST: ${{ steps.base_image_digests.outputs.UKI_ADDONS_DIGEST }}
         run: |
-          slsa-verifier verify-image --source-uri "github.com/${GITHUB_REPOSITORY}" "${REPO}/${BASE_IMAGE}@${BASE_IMAGE_DIGEST}"
-          cosign verify --key ./cosign.pub "${REPO}/${BASE_IMAGE}@${BASE_IMAGE_DIGEST}"
-          slsa-verifier verify-image --source-uri "github.com/${GITHUB_REPOSITORY}" "${REPO}/systemd-boot@${SYSTEMD_BOOT_DIGEST}"
-          cosign verify --key ./cosign.pub "${REPO}/systemd-boot@${SYSTEMD_BOOT_DIGEST}"
-          slsa-verifier verify-image --source-uri "github.com/${GITHUB_REPOSITORY}" "${REPO}/uki-addons@${UKI_ADDONS_DIGEST}"
-          cosign verify --key ./cosign.pub "${REPO}/uki-addons@${UKI_ADDONS_DIGEST}"
+          verify_image() {
+            image_name="$1"
+            digest="$2"
+            workflow_file="$3"
+            tempdir=$(mktemp -d)
+            oras pull -o "${tempdir}" "${REPO,,}/${image_name}:${digest/:/-}-provenance"
+            slsa-verifier build "${tempdir}/provenance.intoto.json" \
+              --level 3 \
+              --require-signatures \
+              --signer 'sigstore(identityMatch=regex)::https://token.actions.githubusercontent.com::https://github\.com/slsa-framework/actions/\.github/workflows/attest_actions\.yml@refs/tags/v[0-9]+\.[0-9]+\.[0-9]+' \
+              --subject "${digest}" \
+              --param "expected_source:github.com/${GITHUB_REPOSITORY}" \
+              --param 'expected_branch:live' \
+              --param "trusted_builders:[https://github.com/${GITHUB_REPOSITORY}/.github/workflows/${workflow_file}@refs/heads/live]"
+            cosign verify --key ./cosign.pub "${REPO,,}/${image_name}@${digest}"
+            rm -rf "${tempdir}"
+          }
+
+          verify_image "${BASE_IMAGE}" "${BASE_IMAGE_DIGEST}" 'build-all.yml'
+          verify_image 'systemd-boot' "${SYSTEMD_BOOT_DIGEST}" 'sign-systemd-boot.yml'
+          verify_image 'uki-addons' "${UKI_ADDONS_DIGEST}" 'sign-uki-addons.yml'
 
       - name: "Generate tags"
         id: tags

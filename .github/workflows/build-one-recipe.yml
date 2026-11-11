@@ -258,8 +258,14 @@ jobs:
             exit 1
           fi
 
+      - name: Create digestfile
+        id: digestfile
+        shell: bash
+        run: |
+          echo "digestfile=$(mktemp)" >>"${GITHUB_OUTPUT}"
+
       - name: Build secureblue
-        uses: blue-build/github-action@c295af864f2802fc6aea227507af43d35823db81 # v1.13.0
+        uses: blue-build/github-action@fb86c457fd3d0e13d5e9c1875c6305cf28b09234 # v1.14.0
         env:
           KERNEL_PRIVKEY: ${{ secrets.KERNEL_PRIVKEY }}
         with:
@@ -277,20 +283,49 @@ jobs:
           use_cache: false
           retry_push_count: 3
           verify_install: true
+          digestfile: ${{ steps.digestfile.outputs.digestfile }}
 
-      - name: Install regctl
-        uses: regclient/actions/regctl-installer@dd58ad94f76adb73d8ac1bf75ed25f01545d5b32 # v0.2.0
-
-      - name: Parse image manifest
+      - name: Output image digest
         id: image_manifest_metadata
         shell: bash
         env:
+          DIGESTFILE: ${{ steps.digestfile.outputs.digestfile }}
           FULL_IMAGE_REF: ${{ steps.image_data.outputs.FULL_IMAGE_REF }}
         run: |
-          IMAGE_DIGEST=$(regctl image digest "${FULL_IMAGE_REF}")
+          IMAGE_DIGEST=$(jq -er --arg ref "${FULL_IMAGE_REF}" '.[$ref]' "${DIGESTFILE}")
           echo "IMAGE_DIGEST=${IMAGE_DIGEST}" >> "${GITHUB_OUTPUT}"
 
+  # Generate SLSA v1 level 3 build provenance attestation
   provenance:
+    needs: [bluebuild]
+    permissions:
+      actions: read # to detect the Github Actions environment
+      contents: read
+      id-token: write # to create OIDC tokens for signing
+    uses: slsa-framework/actions/.github/workflows/attest_actions.yml@v0.2.0 # zizmor: ignore[unpinned-uses]
+    with:
+      build-from-source: false
+      # renovate: datasource=github-releases depName=slsa-framework/attester
+      version: v0.1.1
+      watch-jobs: bluebuild
+      collect-artifacts: false
+      subjects: ${{ needs.bluebuild.outputs.IMAGE_DIGEST }}
+      artifact-name: slsa-provenance-${{ needs.bluebuild.outputs.IMAGE_NAME }}
+
+  push-attestation:
+    needs: [bluebuild, provenance]
+    permissions:
+      packages: write # to push attestation to GHCR
+    uses: $/.github/workflows/push-provenance.yml
+    with:
+      artifact-name: slsa-provenance-${{ needs.bluebuild.outputs.IMAGE_NAME }}
+      image-ref: ${{ needs.bluebuild.outputs.FULL_IMAGE_REF }}
+      digest: ${{ needs.bluebuild.outputs.IMAGE_DIGEST }}
+
+  # Generate SLSA v0.2 provenance attestation. This is only needed for
+  # backwards compatibility with images from before we started generating the
+  # newer SLSA v1 provenance, and can be removed after enough time has passed.
+  old-provenance:
     needs: [bluebuild]
     permissions:
       actions: read # for detecting the Github Actions environment.

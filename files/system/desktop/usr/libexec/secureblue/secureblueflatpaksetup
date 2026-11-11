@@ -12,10 +12,10 @@ if [[ ! -f "${in_progress_indicator}" ]]; then
 fi
 touch "${in_progress_indicator}"
 
-flatpak remote-add --if-not-exists --user --subset=verified --title='Flathub Verified' flathub-verified https://dl.flathub.org/repo/flathub.flatpakrepo
+flatpak remote-add --if-not-exists --user --subset=verified flathub https://dl.flathub.org/repo/flathub.flatpakrepo
 ujust harden-flatpak
 
-flatpak install --user -y --noninteractive flathub-verified com.github.tchx84.Flatseal
+flatpak install --user -y --noninteractive flathub com.github.tchx84.Flatseal
 
 notify-send -a 'secureblue' -i 'dialog-information' -u normal 'Flatpak provisioning completed.'
 rm -f "${in_progress_indicator}"

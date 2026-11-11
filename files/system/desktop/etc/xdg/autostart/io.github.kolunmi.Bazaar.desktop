@@ -1,0 +1,6 @@
+[Desktop Entry]
+Type=Application
+Name=Bazaar
+Exec=flatpak run --command=bazaar-daemon io.github.kolunmi.Bazaar --no-window
+NoDisplay=true
+X-GNOME-Autostart-enabled=true

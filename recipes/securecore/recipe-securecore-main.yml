@@ -15,7 +15,7 @@ nushell-version: none
 
 platforms:
   - linux/amd64
-  - linux/arm64
+  #- linux/arm64
 
 modules:
   - from-file: common/common-modules.yml

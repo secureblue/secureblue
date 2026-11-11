@@ -59,7 +59,7 @@ jobs:
         uses: redhat-actions/buildah-build@719e3c40d8af9790c23eca13f7daa339f2867034 # v3.1.0
         with:
           image: "systemd-boot"
-          tags: ${{ env.FEDORA_RELEASE }}
+          tags: "latest ${{ env.FEDORA_RELEASE }}"
           containerfiles: "uki/Containerfile.systemd-boot"
           oci: true
           build-args: |
@@ -80,7 +80,7 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
           image: "systemd-boot"
-          tags: ${{ env.FEDORA_RELEASE }}
+          tags: "latest ${{ env.FEDORA_RELEASE }}"
 
   cosign-systemd-boot:
     needs: uki-sign-systemd-boot
@@ -116,7 +116,35 @@ jobs:
           COSIGN_KEY: ${{ secrets.SIGNING_SECRET }}
           DIGEST: ${{ needs.uki-sign-systemd-boot.outputs.IMAGE_DIGEST }}
 
+  # Generate SLSA v1 level 3 build provenance attestation
   provenance:
+    needs: uki-sign-systemd-boot
+    permissions:
+      actions: read # to detect the Github Actions environment
+      contents: read
+      id-token: write # to create OIDC tokens for signing
+    uses: slsa-framework/actions/.github/workflows/attest_actions.yml@v0.2.0 # zizmor: ignore[unpinned-uses]
+    with:
+      build-from-source: false
+      # renovate: datasource=github-releases depName=slsa-framework/attester
+      version: v0.1.1
+      watch-jobs: uki-sign-systemd-boot
+      collect-artifacts: false
+      subjects: ${{ needs.uki-sign-systemd-boot.outputs.IMAGE_DIGEST }}
+      artifact-name: slsa-provenance
+
+  push-attestation:
+    needs: [uki-sign-systemd-boot, provenance]
+    permissions:
+      packages: write # to push attestation to GHCR
+    uses: $/.github/workflows/push-provenance.yml
+    with:
+      artifact-name: slsa-provenance
+      image-ref: "ghcr.io/${{ github.repository_owner }}/systemd-boot:latest"
+      digest: ${{ needs.uki-sign-systemd-boot.outputs.IMAGE_DIGEST }}
+
+  # Generate SLSA v0.2 provenance attestation
+  old-provenance:
     needs: uki-sign-systemd-boot
     permissions:
       actions: read # for detecting the Github Actions environment.

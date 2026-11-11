@@ -35,7 +35,7 @@ def main() -> int:
                             f"install {kmod} /sbin/modprobe --ignore-install {kmod}"
                             for kmod in BLUE_KMODS
                         ]
-                    )
+                    ) + "\n"
                 )
             os.chmod(BLUE_MOD_FILE, 0o644)
             result = subprocess.run(["/usr/bin/modprobe", *BLUE_KMODS], check=False)

@@ -6,6 +6,7 @@
 
 """Add or remove the unfiltered Flathub remote."""
 
+import json
 import subprocess
 import sys
 from typing import TYPE_CHECKING, Final, assert_never
@@ -19,6 +20,7 @@ CommandUsageError: Final = utils.CommandUsageError
 ToggleMode: Final = utils.ToggleMode
 parse_basic_toggle_args: Final = utils.parse_basic_toggle_args
 command_stdout: Final = utils.command_stdout
+ask_yes_no: Final = utils.ask_yes_no
 
 HELP_MESSAGE: Final[str] = """\
 Add or remove the unfiltered Flathub remote.
@@ -55,38 +57,78 @@ def unfiltered_remote_enabled() -> bool:
     return False
 
 
-def unfiltered_remote_print_status() -> None:
+def print_remote_status() -> None:
     if unfiltered_remote_enabled():
         print("The unfiltered Flathub remote is enabled.")
     else:
         print("The unfiltered Flathub remote is disabled.")
 
 
-def add_unfiltered_remote() -> None:
+def set_remote_unfiltered() -> None:
     if unfiltered_remote_enabled():
-        print("The unfiltered Flathub remote has already been added to the system.")
+        print("The Flathub remote subset is already set to unfiltered.")
         return
 
     subprocess.run(
         [
             "/usr/bin/flatpak",
-            "remote-add",
-            "--if-not-exists",
+            "remote-modify",
             "--user",
+            "--subset=",
             "flathub",
             "https://dl.flathub.org/repo/flathub.flatpakrepo",
         ],
         check=True,
     )
 
+def is_verified(app: str) -> bool:
+    app_verification_info = command_stdout(
+        "curl", "-fLsS", "--retry", "5", f"https://flathub.org/api/v2/verification/{app}/status"
+    )
+    app_verification_info_json = json.loads(app_verification_info)
+    return app_verification_info_json["verified"]
 
-def remove_unfiltered_remote() -> None:
+def set_remote_filtered() -> None:
     if not unfiltered_remote_enabled():
-        print("The unfiltered Flathub remote has already been removed from the system.")
+        print("The Flathub remote subset is already set to verified-only.")
         return
+    
+    installed_apps =
+        [line.split("\t", 1) 
+            for line 
+                in command_stdout("flatpak", "list", "--app", "--columns=application,origin").splitlines()]
 
-    subprocess.run(["/usr/bin/flatpak", "remote-delete", "--user", "flathub"], check=True)
+    flathub_installed_apps = [app for app, remote in installed_apps if origin == "flathub"]
+    flathub_installed_verified_apps = [app for app in flathub_installed_apps if is_verified(app)]
+    if flathub_installed_verified_apps:
+        print("The following Flathub apps are unverified and will be removed by this action:")
+        for unverified_app in flathub_installed_verified_apps
+            print(f"  - {unverified_app}")
 
+        if not ask_yes_no("Proceed?"):
+            return
+        
+        subprocess.run(
+            [
+                "/usr/bin/flatpak",
+                "uninstall",
+                "--user",
+                "-y",
+                *flathub_installed_verified_apps
+            ], 
+            check=True
+        )
+    
+    subprocess.run(
+        [
+            "/usr/bin/flatpak",
+            "remote-modify",
+            "--user",
+            "--subset=verified",
+            "flathub"
+        ],
+        check=True
+    )
 
 def main() -> int:
     try:
@@ -100,11 +142,11 @@ def main() -> int:
     try:
         match mode:
             case ToggleMode.ON:
-                add_unfiltered_remote()
+                set_remote_unfiltered()
             case ToggleMode.OFF:
-                remove_unfiltered_remote()
+                set_remote_filtered()
             case ToggleMode.STATUS:
-                unfiltered_remote_print_status()
+                print_remote_status()
             case ToggleMode.HELP:
                 print(HELP_MESSAGE)
             case _ as unreachable:

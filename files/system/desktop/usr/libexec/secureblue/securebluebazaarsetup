@@ -1,0 +1,29 @@
+#!/usr/bin/bash
+
+# SPDX-FileCopyrightText: Copyright 2025-2026 The Secureblue Authors
+#
+# SPDX-License-Identifier: Apache-2.0
+
+set -euo pipefail
+
+
+FLATPAK_REMOTES=(flatpak remotes --user --columns=name)
+
+if echo "${FLATPAK_REMOTES}" | grep -qx 'flathub'; then
+    flatpak remote-modify --user --subset= flathub
+else
+    flatpak remote-add --if-not-exists --user --subset=verified flathub https://dl.flathub.org/repo/flathub.flatpakrepo
+fi
+
+if echo "${FLATPAK_REMOTES}" | grep -qx 'flathub-verified'; then
+    readarray -t verified_refs < <(flatpak list --user --all --columns=ref,origin | grep 'flathub-verified' | cut -f1)
+    for verified_ref in "${verified_refs[@]}"; do
+        flatpak install --user --reinstall --no-auto-pin -y --noninteractive flathub "${verified_ref}"
+    done
+
+    flatpak remote-delete --user flathub-verified 
+fi
+
+flatpak override --user --filesystem=host-etc:ro io.github.kolunmi.Bazaar
+flatpak install --user --noninteractive flathub io.github.kolunmi.Bazaar -y
+flatpak run --command=gsettings io.github.kolunmi.Bazaar set io.github.kolunmi.Bazaar auto-update true

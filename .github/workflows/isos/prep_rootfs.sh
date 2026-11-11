@@ -14,7 +14,7 @@ IMAGE_REF="ghcr.io/secureblue/${IMAGE_VARIANT_ID}"
 sed -i '/^install squashfs /d' /usr/lib/modprobe.d/secureblue.conf
 
 # https://github.com/ublue-os/bazzite/issues/4126#issuecomment-3980175243
-dnf remove -y google-noto-fonts-all homebrew bazaar
+dnf remove -y google-noto-fonts-all homebrew
 dnf install -y secureblue-logos
 dnf reinstall -y polkit
 dnf install -y anaconda-live firefox libblockdev-btrfs libblockdev-btrfs libblockdev-lvm libblockdev-dm
@@ -22,7 +22,7 @@ dnf install -y anaconda-live firefox libblockdev-btrfs libblockdev-btrfs libbloc
 # Remove bazaar from the panel since it's removed from the liveenv, otherwise it shows up as a broken icon
 sed -i '/Bazaar/d' /usr/share/plasma/look-and-feel/org.fedoraproject.fedora.desktop/contents/layouts/org.kde.plasma.desktop-layout.js
 
-systemctl disable --global secureblue-flatpak-setup.service secureblue-flatpak-setup.timer podman-auto-update.timer flatpak-user-update.timer
+systemctl disable --global secureblue-flatpak-setup.service secureblue-flatpak-setup.timer podman-auto-update.timer
 systemctl disable rpm-ostreed-automatic.timer rpm-ostree-countme.service rpm-ostree-countme.timer bootloader-update.service
 
 rm -f /usr/share/applications/org.mozilla.Firefox.desktop /usr/share/applications/org.mozilla.firefox.desktop /usr/share/applications/firefox.desktop /usr/share/applications/firefox-wayland.desktop /usr/share/applications/firefox-x11.desktop

@@ -9,5 +9,5 @@ gpgkey=file:///usr/share/pki/rpm-gpg/secureblue-copr-pubkey.gpg
 repo_gpgcheck=0
 enabled=1
 enabled_metadata=1
-includepkgs=bazaar*,brew-proxy*,bubblejail,bubblewrap,bubblewrap-selinux,crane*,dangerzone,hardened_malloc,homebrew,krunner-bazaar*,no_rlimit_as*,run0edit,secureblue-logos,slsa-verifier*,trivalent-selinux,trivalent-subresource-filter
+includepkgs=brew-proxy*,bubblejail,bubblewrap,bubblewrap-selinux,crane*,dangerzone,hardened_malloc,homebrew,krunner-bazaar*,no_rlimit_as*,run0edit,secureblue-logos,slsa-verifier*,trivalent-selinux,trivalent-subresource-filter
 auto_import_local_keys=1

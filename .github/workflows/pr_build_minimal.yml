@@ -32,7 +32,7 @@ jobs:
       matrix:
         platform:
           - linux/amd64
-          - linux/arm64
+          #- linux/arm64
     uses: $/.github/workflows/pr_build.yml
     with:
       recipe: general/recipe-silverblue-main.yml

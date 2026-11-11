@@ -80,6 +80,7 @@ def set_remote_unfiltered() -> None:
         check=True,
     )
 
+
 def is_verified(app: str) -> bool:
     app_verification_info = command_stdout(
         "curl", "-fLsS", "--retry", "5", f"https://flathub.org/api/v2/verification/{app}/status"
@@ -87,20 +88,23 @@ def is_verified(app: str) -> bool:
     app_verification_info_json = json.loads(app_verification_info)
     return app_verification_info_json["verified"]
 
+
 def set_remote_filtered() -> None:
     if not unfiltered_remote_enabled():
         print("The Flathub remote subset is already set to verified-only.")
         return
-    
+
     installed_apps = [
-        line.split("\t", 1) 
+        line.split("\t", 1)
         for line in command_stdout(
             "flatpak", "list", "--app", "--user", "--columns=application,origin"
         ).splitlines()
     ]
 
     flathub_installed_apps = [app for app, remote in installed_apps if remote == "flathub"]
-    flathub_installed_unverified_apps = [app for app in flathub_installed_apps if not is_verified(app)]
+    flathub_installed_unverified_apps = [
+        app for app in flathub_installed_apps if not is_verified(app)
+    ]
     if flathub_installed_unverified_apps:
         print("The following Flathub apps are unverified and will be removed by this action:")
         for unverified_app in flathub_installed_unverified_apps:
@@ -108,28 +112,16 @@ def set_remote_filtered() -> None:
 
         if not ask_yes_no("Proceed?"):
             return
-        
+
         subprocess.run(
-            [
-                "/usr/bin/flatpak",
-                "uninstall",
-                "--user",
-                "-y",
-                *flathub_installed_unverified_apps
-            ], 
-            check=True
+            ["/usr/bin/flatpak", "uninstall", "--user", "-y", *flathub_installed_unverified_apps],
+            check=True,
         )
-    
+
     subprocess.run(
-        [
-            "/usr/bin/flatpak",
-            "remote-modify",
-            "--user",
-            "--subset=verified",
-            "flathub"
-        ],
-        check=True
+        ["/usr/bin/flatpak", "remote-modify", "--user", "--subset=verified", "flathub"], check=True
     )
+
 
 def main() -> int:
     try:

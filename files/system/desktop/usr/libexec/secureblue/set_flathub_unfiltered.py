@@ -30,10 +30,10 @@ ujust set-flathub-unfiltered
     Adds or removes interactively based on the user's preference.
 
 ujust set-flathub-unfiltered on
-    Adds the unfiltered Flathub remote; does nothing if it is already present.
+    Sets the unfiltered Flathub subset; does nothing if it is already present.
 
 ujust set-flathub-unfiltered off
-    Removes the unfiltered Flathub remote; does nothing if it is already removed.
+    Sets the verified Flathub subset; does nothing if it is already removed.
 
 ujust set-flathub-unfiltered status
     Reports whether the unfiltered Flathub remote is present on the system.
@@ -76,7 +76,6 @@ def set_remote_unfiltered() -> None:
             "--user",
             "--subset=",
             "flathub",
-            "https://dl.flathub.org/repo/flathub.flatpakrepo",
         ],
         check=True,
     )
@@ -95,14 +94,14 @@ def set_remote_filtered() -> None:
     
     installed_apps =
         [line.split("\t", 1) 
-            for line 
-                in command_stdout("flatpak", "list", "--app", "--columns=application,origin").splitlines()]
+            for line: 
+                in command_stdout("flatpak", "list", "--app", "--user". --columns=application,origin").splitlines()]
 
-    flathub_installed_apps = [app for app, remote in installed_apps if origin == "flathub"]
-    flathub_installed_verified_apps = [app for app in flathub_installed_apps if is_verified(app)]
+    flathub_installed_apps = [app for app, remote in installed_apps if remote == "flathub"]
+    flathub_installed_verified_apps = [app for app in flathub_installed_apps if not is_verified(app)]
     if flathub_installed_verified_apps:
         print("The following Flathub apps are unverified and will be removed by this action:")
-        for unverified_app in flathub_installed_verified_apps
+        for unverified_app in flathub_installed_verified_apps:
             print(f"  - {unverified_app}")
 
         if not ask_yes_no("Proceed?"):

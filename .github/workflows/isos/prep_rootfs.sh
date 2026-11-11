@@ -22,7 +22,7 @@ dnf install -y anaconda-live firefox libblockdev-btrfs libblockdev-btrfs libbloc
 # Remove bazaar from the panel since it's removed from the liveenv, otherwise it shows up as a broken icon
 sed -i '/Bazaar/d' /usr/share/plasma/look-and-feel/org.fedoraproject.fedora.desktop/contents/layouts/org.kde.plasma.desktop-layout.js
 
-systemctl disable --global secureblue-flatpak-setup.service secureblue-flatpak-setup.timer podman-auto-update.timer
+systemctl disable --global secureblue-flatpak-setup.service secureblue-flatpak-setup.timer podman-auto-update.timer secureblue-bazaar-setup.timer secureblue-bazaar-setup.service
 systemctl disable rpm-ostreed-automatic.timer rpm-ostree-countme.service rpm-ostree-countme.timer bootloader-update.service
 
 rm -f /usr/share/applications/org.mozilla.Firefox.desktop /usr/share/applications/org.mozilla.firefox.desktop /usr/share/applications/firefox.desktop /usr/share/applications/firefox-wayland.desktop /usr/share/applications/firefox-x11.desktop

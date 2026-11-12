@@ -11,14 +11,15 @@ shopt -s nullglob
 FEDORA_VERSION="$(rpm -E '%{fedora}')"
 
 # Get latest stable Fedora kernel version and install corresponding secureblue kernel
-KERNEL_VERSION="$(dnf repoquery \
-    --repofrompath="updates-primary,https://dl.fedoraproject.org/pub/fedora/linux/updates/${FEDORA_VERSION}/Everything/${OS_ARCH}/" \
-    --repo 'updates-primary' \
-    --repo 'fedora' \
-    --latest-limit 1 \
-    --arch "${OS_ARCH}" \
-    --queryformat '%{version}-%{release}.%{arch}' \
-    'kernel'
+KERNEL_VERSION="$(
+    dnf repoquery \
+        --repofrompath="updates-primary,https://dl.fedoraproject.org/pub/fedora/linux/updates/${FEDORA_VERSION}/Everything/${OS_ARCH}/" \
+        --repo 'updates-primary' \
+        --repo 'fedora' \
+        --latest-limit 1 \
+        --arch "${OS_ARCH}" \
+        --queryformat '%{version}-%{release}.%{arch}' \
+        'kernel'
 )"
 
 if [[ -z "${KERNEL_VERSION}" ]]; then
@@ -42,10 +43,10 @@ fi
 
 kernel_rpms_found=0
 for kernel_rpm in kernel-[0-9]*."${OS_ARCH}".rpm; do
-    (( ++kernel_rpms_found ))
+    ((++kernel_rpms_found))
 done
 
-if (( kernel_rpms_found == 1 )); then
+if ((kernel_rpms_found == 1)); then
     echo "Kernel RPM: ${kernel_rpm}"
 else
     echo "Number of Kernel RPMs not one, found: ${kernel_rpms_found}"
@@ -54,8 +55,12 @@ fi
 
 kernel_rpm_sans_prefix=${kernel_rpm#kernel-}
 kernel_version=${kernel_rpm_sans_prefix%.fc*."${OS_ARCH}".rpm}
-curl -fLsS --retry 5 -O "https://github.com/secureblue/kernel/releases/download/${kernel_version}/provenance.intoto.json"
 
+provenance_file='provenance.intoto.json'
+curl -fLsS --retry 5 -O "https://github.com/secureblue/kernel/releases/download/${kernel_version}/${provenance_file}"
+
+# Manually installing slsa-verifier from the release is a temporary measure
+# until we ship the new slsa-verifier as an RPM package.
 VERIFIER_VERSION="v0.1.1"
 if [[ "${OS_ARCH}" == x86_64 ]]; then
     VERIFIER_ARCH=amd64
@@ -65,18 +70,20 @@ else
     VERIFIER_SHA256=b46cbbdf75a0ea3a5595b1bb8fc9b3a8c5590f80017d4e7fb0d05fb471229b0d
 fi
 
-VERIFIER_PATH="slsa-verifier-${VERIFIER_VERSION}-linux-${VERIFIER_ARCH}"
-curl -fLsS --retry 5 -O "https://github.com/slsa-framework/verifier/releases/download/${VERIFIER_VERSION}/${VERIFIER_PATH}"
-echo "${VERIFIER_SHA256}  ${VERIFIER_PATH}" | sha256sum --check
-chmod +x "${VERIFIER_PATH}"
+VERIFIER="slsa-verifier-${VERIFIER_VERSION}-linux-${VERIFIER_ARCH}"
+curl -fLsS --retry 5 -O "https://github.com/slsa-framework/verifier/releases/download/${VERIFIER_VERSION}/${VERIFIER}"
+echo "${VERIFIER_SHA256}  ${VERIFIER}" | sha256sum --check
+chmod +x "${VERIFIER}"
 
-"./${VERIFIER_PATH}" build provenance.intoto.json ./kernel-*.rpm \
+"./${VERIFIER}" build "${provenance_file}" ./kernel-*.rpm \
     --level 3 \
     --require-signatures \
     --signer 'sigstore(identityMatch=regex)::https://token.actions.githubusercontent.com::https://github\.com/slsa-framework/actions/\.github/workflows/attest_actions\.yml@refs/tags/v[0-9]+\.[0-9]+\.[0-9]+' \
     --param 'expected_source:github.com/secureblue/kernel' \
     --param 'expected_branch:live' \
     --param 'trusted_builders:[https://github.com/secureblue/kernel/.github/workflows/kernel-build.yml@refs/heads/live]'
+
+rm "${VERIFIER}" "${provenance_file}"
 
 dnf --setopt=localpkg_gpgcheck=True --disable-repo=secureblue -y install ./kernel-*.rpm
 

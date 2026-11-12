@@ -75,7 +75,12 @@ def main() -> int:
         return 1
 
     enabled_by_file = Path(BLUE_MOD_FILE).exists()
-    bluetooth_function = sandbox.SandboxedFunction("bluetooth.py", read_write_paths=[BLUE_MOD_DIR])
+    bluetooth_function = sandbox.SandboxedFunction(
+        "bluetooth.py",
+        read_write_paths=[BLUE_MOD_DIR],
+        remove_sandbox_arguments=["--property=ProtectKernelModules"],
+        allowed_syscalls=["@module"],
+    )
     match mode:
         case "on" | "off":
             target_state_enabled = mode == "on"

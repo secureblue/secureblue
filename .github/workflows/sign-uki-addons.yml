@@ -140,20 +140,3 @@ jobs:
       artifact-name: slsa-provenance
       image-ref: "ghcr.io/${{ github.repository_owner }}/uki-addons:latest"
       digest: ${{ needs.uki-sign-uki-addons.outputs.IMAGE_DIGEST }}
-
-  # Generate SLSA v0.2 provenance attestation
-  old-provenance:
-    needs: uki-sign-uki-addons
-    permissions:
-      actions: read # for detecting the Github Actions environment.
-      id-token: write # for creating OIDC tokens for signing.
-      packages: write # for uploading attestations.
-    # Currently this must be referenced by tag, not by hash:
-    # https://github.com/slsa-framework/slsa-github-generator?tab=readme-ov-file#referencing-slsa-builders-and-generators
-    uses: slsa-framework/slsa-github-generator/.github/workflows/generator_container_slsa3.yml@v2.1.0 # zizmor: ignore[unpinned-uses]
-    with:
-      image: "ghcr.io/${{ github.repository_owner }}/uki-addons"
-      digest: ${{ needs.uki-sign-uki-addons.outputs.IMAGE_DIGEST }}
-      registry-username: ${{ github.actor }}
-    secrets:
-      registry-password: ${{ secrets.GITHUB_TOKEN }}

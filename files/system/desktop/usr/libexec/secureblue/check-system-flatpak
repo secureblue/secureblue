@@ -7,7 +7,7 @@
 set -euo pipefail
 
 SYSTEM_REMOTES=$(flatpak remotes --system --columns=name)
-SYSTEM_HELPER_MASK_STATE=$(systemctl show -p LoadState --value flatpak-system-helper.service)
+SYSTEM_HELPER_MASK_STATE=$(systemctl is-enabled flatpak-system-helper.service)
 
 if [[ -n "${SYSTEM_REMOTES}" && "${SYSTEM_HELPER_MASK_STATE}" == 'masked' ]]; then
     exit 0

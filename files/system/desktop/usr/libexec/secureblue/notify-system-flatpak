@@ -6,4 +6,8 @@
 
 set -euo pipefail
 
-notify-send -a 'secureblue' -i 'dialog-warning' 'System flatpaks detected.' 'Switch to user flatpaks (or unmask flatpak-system-helper).' -u critical
+ACTION=$(notify-send -a 'secureblue' -i 'dialog-warning' 'System flatpaks detected.' 'Switch to user flatpaks or unmask flatpak-system-helper.' --action="open=Open FAQ" -u critical)
+
+if [[ "${ACTION}" = "open" ]]; then
+    xdg-open "https://secureblue.dev/faq#system-flatpaks"
+fi

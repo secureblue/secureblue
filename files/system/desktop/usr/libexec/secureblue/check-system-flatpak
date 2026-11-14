@@ -1,0 +1,12 @@
+#!/usr/bin/bash
+
+# SPDX-FileCopyrightText: Copyright 2026 The Secureblue Authors
+#
+# SPDX-License-Identifier: Apache-2.0
+
+set -euo pipefail
+
+SYSTEM_REMOTES=$(flatpak remotes --system --columns=name)
+SYSTEM_HELPER_MASK_STATE=$(systemctl is-enabled flatpak-system-helper.service || true)
+
+[[ -n "${SYSTEM_REMOTES}" && "${SYSTEM_HELPER_MASK_STATE}" == 'masked' ]]

@@ -333,7 +333,7 @@ jobs:
 
   # Generate SLSA v0.2 provenance attestation. This is only needed for
   # backwards compatibility with images from before we started generating the
-  # newer SLSA v1 provenance, and can be removed after enough time has passed.
+  # newer SLSA v1 provenance, and can be removed after the F46 release.
   old-provenance:
     needs: [bluebuild]
     permissions:

@@ -64,6 +64,23 @@ jobs:
             securecore-zfs-nvidia-open-hardened
           )
 
+          verify_provenance() {
+            local image_ref="$1"
+            local tag="$2"
+            local digest
+            digest=$(oras resolve "${image_ref}:${tag}")
+            echo "Verifying provenance for ${image_ref}@${digest}..."
+            oras pull "${image_ref}:${digest/:/-}-provenance"
+            slsa-verifier build provenance.intoto.json \
+              --level 3 \
+              --require-signatures \
+              --signer 'sigstore(identityMatch=regex)::https://token.actions.githubusercontent.com::https://github\.com/slsa-framework/actions/\.github/workflows/attest_actions\.yml@refs/tags/v[0-9]+\.[0-9]+\.[0-9]+' \
+              --subject "${digest}" \
+              --param 'expected_source:github.com/secureblue/secureblue' \
+              --param 'expected_branch:live' \
+              --param 'trusted_builders:[https://github.com/secureblue/secureblue/.github/workflows/build-all.yml@refs/heads/live]'
+          }
+
           failed_images=()
           for image_name in "${images[@]}"; do
             image_ref="ghcr.io/secureblue/${image_name}"
@@ -71,21 +88,7 @@ jobs:
               if [[ "${tag}" == uki && "${image_name}" =~ -(nvidia|zfs)- ]]; then
                 continue
               fi
-              digest=$(oras resolve "${image_ref}:${tag}")
-              echo "Verifying provenance for ${image_ref}@${digest}..."
-              oras pull "${image_ref}:${digest/:/-}-provenance"
-              set +e
-              slsa-verifier build provenance.intoto.json \
-                --level 3 \
-                --require-signatures \
-                --signer 'sigstore(identityMatch=regex)::https://token.actions.githubusercontent.com::https://github\.com/slsa-framework/actions/\.github/workflows/attest_actions\.yml@refs/tags/v[0-9]+\.[0-9]+\.[0-9]+' \
-                --subject "${digest}" \
-                --param 'expected_source:github.com/secureblue/secureblue' \
-                --param 'expected_branch:live' \
-                --param 'trusted_builders:[https://github.com/secureblue/secureblue/.github/workflows/build-all.yml@refs/heads/live]'
-              status="$?"
-              set -e
-              if [[ "${status}" != 0 ]]; then
+              if ! verify_provenance "${image_ref}" "${tag}"; then
                 failed_images+=("${image_name}:${tag}")
                 echo "FAIL: Provenance verification failed for ${image_name}:${tag}"
               fi

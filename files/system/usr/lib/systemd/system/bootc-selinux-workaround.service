@@ -5,7 +5,7 @@ After=local-fs.target
 
 [Service]
 Type=oneshot
-ExecStart=/usr/libexec/bootc-selinux-workaround.sh
+ExecStart=/usr/libexec/secureblue/bootc-selinux-workaround
 
 [Install]
 WantedBy=multi-user.target

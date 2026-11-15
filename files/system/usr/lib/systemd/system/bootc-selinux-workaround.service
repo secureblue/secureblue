@@ -1,12 +1,16 @@
 [Unit]
 Description=Workaround for missing SELinux module rebuilding in bootc
 ConditionPathExists=!/usr/bin/rpm-ostree
+ConditionPathExists=!/etc/bootc-selinux-workaround-$(/usr/bin/bootc status --booted --format json | /usr/bin/jq -r '.status.booted.image.timestamp').stamp
 After=local-fs.target
 
 [Service]
 Type=oneshot
-ExecStart=semodule -B
-ExecStart=restorecon -R /tmp
+ExecStart=/usr/bin/semodule -B
+ExecStart=/usr/bin/restorecon -R /tmp
+ExecStart=rm /etc/bootc-selinux-workaround-*.stamp
+ExecStart=touch /etc/bootc-selinux-workaround-$(bootc status --booted --format json | jq -r '.status.booted.image.timestamp').stamp
+
 
 [Install]
 WantedBy=multi-user.target

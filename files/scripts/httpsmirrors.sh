@@ -5,7 +5,8 @@
 # SPDX-License-Identifier: Apache-2.0
 
 set -euo pipefail
+shopt -s nullglob
 
-for repo in /etc/yum.repos.d/*.repo; do
-    sed -i 's/metalink?/metalink?protocol=https\&/g' "${repo}"
-done
+sed -i -e 's/metalink?/metalink?protocol=https\&/g' \
+    /usr/share/dnf5/repos.d/*.repo \
+    /etc/yum.repos.d/*.repo

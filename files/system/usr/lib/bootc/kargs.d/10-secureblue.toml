@@ -3,7 +3,6 @@
 # SPDX-License-Identifier: Apache-2.0
 
 kargs = [
-  "amdgpu.iommu_perfopt=0",
   "hash_pointers=always",
   "init_on_alloc=1",
   "init_on_free=1",

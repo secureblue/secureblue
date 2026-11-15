@@ -7,8 +7,7 @@ name: build-sealed-image
 permissions: {}
 
 env:
-  # For CoreOS (which has version "testing"), use systemd-boot from F44.
-  IMAGE_VERSION: ${{ inputs.image_version == 'testing' && '44' || inputs.image_version }}
+  IMAGE_VERSION: "45"
 
 on:
   workflow_call:
@@ -23,10 +22,6 @@ on:
         required: true
       base_digest:
         description: "The digest of the base image to seal (e.g. sha256:abc123)."
-        type: string
-        required: true
-      image_version:
-        description: "The Fedora image version used for getting the systemd-boot image, e.g. 44."
         type: string
         required: true
     secrets:
@@ -53,10 +48,14 @@ jobs:
       packages: write # Needed to publish images
     steps:
       - name: Enable egress auditing
-        uses: step-security/harden-runner@dc2769abcc0fcfbadfc1df54081c1608579ef6b2 # v2.22.2
+        uses: step-security/harden-runner@46b06cea07f9e64621fdf066ba77ac6915163d43 # v2.22.3
         with:
           egress-policy: block
+          # Do not edit directly. Instead:
+          # 1. Edit .github/workflows/runner-allowed-endpoints.txt
+          # 2. Run tools/sync_runner_allowed_endpoints.py
           allowed-endpoints: >
+            ##### BEGIN ALLOWED ENDPOINT LIST #####
             # ubuntu packages
             _https._tcp.archive.ubuntu.com:443
             archive.ubuntu.com:443
@@ -93,6 +92,8 @@ jobs:
             # Install packages from our COPR repos
             copr.fedorainfracloud.org:443
             download.copr.fedorainfracloud.org:443
+            packages.redhat.com:443
+            copr-pulp-prod.s3.amazonaws.com:443
 
             # Docker installation
             production.cloudflare.docker.com:443
@@ -192,6 +193,7 @@ jobs:
             yxeix.mm.fcix.net:443
             yycix.mm.fcix.net:443
             ziply.mm.fcix.net:443
+            ##### END ALLOWED ENDPOINT LIST #####
 
       - name: "Free disk space"
         uses: hastd/free-disk-space@68572aeaadb7f76bd408246328e95926323402b5 # v0.1.2
@@ -207,7 +209,7 @@ jobs:
         uses: $/.github/workflows/shared-runner-setup
         with:
           needs_cosign: true
-          needs_slsa_crane: true
+          needs_slsa_oras: true
 
       - name: "Log in to registry"
         uses: redhat-actions/podman-login@50c2d9a331bb67c8fdab99b86455fad05e2e3252 # v2.0
@@ -220,9 +222,9 @@ jobs:
         id: base_image_digests
         shell: bash
         run: |
-          SYSTEMD_BOOT_DIGEST=$(crane digest "ghcr.io/${GITHUB_REPOSITORY_OWNER}/systemd-boot:${IMAGE_VERSION}")
+          SYSTEMD_BOOT_DIGEST=$(oras resolve "ghcr.io/${GITHUB_REPOSITORY_OWNER}/systemd-boot:${IMAGE_VERSION}")
           echo "SYSTEMD_BOOT_DIGEST=${SYSTEMD_BOOT_DIGEST}" >> "${GITHUB_OUTPUT}"
-          UKI_ADDONS_DIGEST=$(crane digest "ghcr.io/${GITHUB_REPOSITORY_OWNER}/uki-addons:latest")
+          UKI_ADDONS_DIGEST=$(oras resolve "ghcr.io/${GITHUB_REPOSITORY_OWNER}/uki-addons:latest")
           echo "UKI_ADDONS_DIGEST=${UKI_ADDONS_DIGEST}" >> "${GITHUB_OUTPUT}"
 
       - name: "Verify base images"
@@ -234,12 +236,27 @@ jobs:
           SYSTEMD_BOOT_DIGEST: ${{ steps.base_image_digests.outputs.SYSTEMD_BOOT_DIGEST }}
           UKI_ADDONS_DIGEST: ${{ steps.base_image_digests.outputs.UKI_ADDONS_DIGEST }}
         run: |
-          slsa-verifier verify-image --source-uri "github.com/${GITHUB_REPOSITORY}" "${REPO}/${BASE_IMAGE}@${BASE_IMAGE_DIGEST}"
-          cosign verify --key ./cosign.pub "${REPO}/${BASE_IMAGE}@${BASE_IMAGE_DIGEST}"
-          slsa-verifier verify-image --source-uri "github.com/${GITHUB_REPOSITORY}" "${REPO}/systemd-boot@${SYSTEMD_BOOT_DIGEST}"
-          cosign verify --key ./cosign.pub "${REPO}/systemd-boot@${SYSTEMD_BOOT_DIGEST}"
-          slsa-verifier verify-image --source-uri "github.com/${GITHUB_REPOSITORY}" "${REPO}/uki-addons@${UKI_ADDONS_DIGEST}"
-          cosign verify --key ./cosign.pub "${REPO}/uki-addons@${UKI_ADDONS_DIGEST}"
+          verify_image() {
+            image_name="$1"
+            digest="$2"
+            workflow_file="$3"
+            tempdir=$(mktemp -d)
+            oras pull -o "${tempdir}" "${REPO,,}/${image_name}:${digest/:/-}-provenance"
+            slsa-verifier build "${tempdir}/provenance.intoto.json" \
+              --level 3 \
+              --require-signatures \
+              --signer 'sigstore(identityMatch=regex)::https://token.actions.githubusercontent.com::https://github\.com/slsa-framework/actions/\.github/workflows/attest_actions\.yml@refs/tags/v[0-9]+\.[0-9]+\.[0-9]+' \
+              --subject "${digest}" \
+              --param "expected_source:github.com/${GITHUB_REPOSITORY}" \
+              --param 'expected_branch:live' \
+              --param "trusted_builders:[https://github.com/${GITHUB_REPOSITORY}/.github/workflows/${workflow_file}@refs/heads/live]"
+            cosign verify --key ./cosign.pub "${REPO,,}/${image_name}@${digest}"
+            rm -rf "${tempdir}"
+          }
+
+          verify_image "${BASE_IMAGE}" "${BASE_IMAGE_DIGEST}" 'build-all.yml'
+          verify_image 'systemd-boot' "${SYSTEMD_BOOT_DIGEST}" 'sign-systemd-boot.yml'
+          verify_image 'uki-addons' "${UKI_ADDONS_DIGEST}" 'sign-uki-addons.yml'
 
       - name: "Generate tags"
         id: tags
@@ -357,7 +374,37 @@ jobs:
           IMAGE: ${{ inputs.image }}
           DIGEST: ${{ needs.uki-sign-sealed-image.outputs.IMAGE_DIGEST }}
 
+  # Generate SLSA v1 level 3 build provenance attestation
   provenance:
+    needs: uki-sign-sealed-image
+    permissions:
+      actions: read # to detect the Github Actions environment
+      contents: read
+      id-token: write # to create OIDC tokens for signing
+    uses: slsa-framework/actions/.github/workflows/attest_actions.yml@v0.2.0 # zizmor: ignore[unpinned-uses]
+    with:
+      build-from-source: false
+      # renovate: datasource=github-releases depName=slsa-framework/attester
+      version: v0.1.1
+      watch-jobs: uki-sign-sealed-image
+      collect-artifacts: false
+      subjects: ${{ needs.uki-sign-sealed-image.outputs.IMAGE_DIGEST }}
+      artifact-name: slsa-provenance-${{ inputs.image }}-uki
+
+  push-attestation:
+    needs: [uki-sign-sealed-image, provenance]
+    permissions:
+      packages: write # to push attestation to GHCR
+    uses: $/.github/workflows/push-provenance.yml
+    with:
+      artifact-name: slsa-provenance-${{ inputs.image }}-uki
+      image-ref: "ghcr.io/${{ github.repository_owner }}/${{ inputs.image }}"
+      digest: ${{ needs.uki-sign-sealed-image.outputs.IMAGE_DIGEST }}
+
+  # Generate SLSA v0.2 provenance attestation. This is only needed for
+  # backwards compatibility with images from before we started generating the
+  # newer SLSA v1 provenance, and can be removed after enough time has passed.
+  old-provenance:
     needs: uki-sign-sealed-image
     permissions:
       actions: read # for detecting the Github Actions environment.

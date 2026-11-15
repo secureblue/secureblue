@@ -14,12 +14,12 @@ NO_UPDATE_STRING="No update available, booting current deployment"
 plymouth watch-keystroke --keys="qQ" --command "systemctl stop upgrade-on-boot.service" &
 BOOTC_UPGRADE_CHECK_OUTPUT="$(bootc upgrade --check 2>&1)" || true
 
-if grep -q "failed to invoke method OpenImage" <<< "${BOOTC_UPGRADE_CHECK_OUTPUT}"; then
+if grep -q "failed to invoke method OpenImage" <<<"${BOOTC_UPGRADE_CHECK_OUTPUT}"; then
     echo "Failed to check for updates"
     exit 1
 fi
 
-if grep -q "local rpm-ostree modifications" <<< "${BOOTC_UPGRADE_CHECK_OUTPUT}"; then
+if grep -q "local rpm-ostree modifications" <<<"${BOOTC_UPGRADE_CHECK_OUTPUT}"; then
     echo "Using rpm-ostree"
     if ! /usr/libexec/secureblue/system-update-available; then
         echo "${NO_UPDATE_STRING}"
@@ -27,32 +27,31 @@ if grep -q "local rpm-ostree modifications" <<< "${BOOTC_UPGRADE_CHECK_OUTPUT}";
     fi
 
     plymouth message --text="Staging update... ${CANCEL_STRING}"
-    if ! /usr/libexec/secureblue/verify-provenance.sh; then
+    if ! /usr/libexec/secureblue/verify-provenance; then
         echo "${PROVENANCE_FAILURE_STRING}"
         exit 1
     fi
 
     rpm-ostree upgrade
     RPM_OSTREE_EXIT=$?
-    if (( RPM_OSTREE_EXIT != 0 )); then
+    if ((RPM_OSTREE_EXIT != 0)); then
         echo "${UPDATE_FAILURE_STRING}"
         plymouth message --text="${UPDATE_FAILURE_STRING}"
         exit 1
     fi
 else
     echo "Using bootc"
-    if grep -q "No changes" <<< "${BOOTC_UPGRADE_CHECK_OUTPUT}"; then
+    if grep -q "No changes" <<<"${BOOTC_UPGRADE_CHECK_OUTPUT}"; then
         echo "${NO_UPDATE_STRING}"
         exit 0
     fi
 
-    if ! /usr/libexec/secureblue/verify-provenance.sh; then
+    if ! /usr/libexec/secureblue/verify-provenance; then
         echo "${PROVENANCE_FAILURE_STRING}"
         exit 1
     fi
 
     COMPOSEFS=$(bootc status --json | jq -r '.status.booted.composefs != null')
-
 
     # https://github.com/bootc-dev/bootc/issues/2484
     # https://github.com/bootc-dev/bootc/blob/main/crates/lib/src/bootc_composefs/progress.rs#L119
@@ -73,24 +72,24 @@ else
             type=$(echo "${line}" | jq -r '.type // empty')
             echo "Type: ${type}"
             case "${type}" in
-                ProgressBytes)
-                    bytes=$(echo "${line}" | jq -r '.bytes')
-                    bytes_total=$(echo "${line}" | jq -r '.bytesTotal')
-                    percent=$(( 100 * bytes / bytes_total ))
-                    echo "Percent: ${percent}"
-                    if (( percent >= 100 )); then
-                        plymouth change-mode --boot-up
-                        plymouth message --text="${DEPLOYING_STRING}"
-                    else
-                        plymouth system-update --progress="${percent}"
-                    fi
-                    ;;
-                ProgressSteps)
+            ProgressBytes)
+                bytes=$(echo "${line}" | jq -r '.bytes')
+                bytes_total=$(echo "${line}" | jq -r '.bytesTotal')
+                percent=$((100 * bytes / bytes_total))
+                echo "Percent: ${percent}"
+                if ((percent >= 100)); then
                     plymouth change-mode --boot-up
                     plymouth message --text="${DEPLOYING_STRING}"
-                    ;;
+                else
+                    plymouth system-update --progress="${percent}"
+                fi
+                ;;
+            ProgressSteps)
+                plymouth change-mode --boot-up
+                plymouth message --text="${DEPLOYING_STRING}"
+                ;;
             esac
-        done < "${BOOTC_OUTPUT}" &
+        done <"${BOOTC_OUTPUT}" &
 
         bootc upgrade --quiet --progress-fd 3 3>"${BOOTC_OUTPUT}"
         BOOTC_EXIT=$?
@@ -98,14 +97,14 @@ else
     fi
 
     echo "bootc exited with: ${BOOTC_EXIT}"
-    if (( BOOTC_EXIT != 0 )); then
+    if ((BOOTC_EXIT != 0)); then
         echo "${UPDATE_FAILURE_STRING}"
         plymouth message --text="${UPDATE_FAILURE_STRING}"
         exit 1
     fi
 fi
 
-if bootc status --json | jq -e '.status.staged != null' > /dev/null 2>&1; then
+if bootc status --json | jq -e '.status.staged != null' >/dev/null 2>&1; then
     echo "New deployment staged, rebooting"
     plymouth message --text="Update complete. Rebooting..."
     systemctl reboot

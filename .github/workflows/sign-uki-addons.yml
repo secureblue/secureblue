@@ -6,7 +6,7 @@
 name: "Sign UKI addons"
 
 env:
-  FEDORA_RELEASE: "44"
+  FEDORA_RELEASE: "45"
 
 on:
   # This only needs changing when the kargs change.
@@ -114,18 +114,29 @@ jobs:
           COSIGN_KEY: ${{ secrets.SIGNING_SECRET }}
           DIGEST: ${{ needs.uki-sign-uki-addons.outputs.IMAGE_DIGEST }}
 
+  # Generate SLSA v1 level 3 build provenance attestation
   provenance:
     needs: uki-sign-uki-addons
     permissions:
-      actions: read # for detecting the Github Actions environment.
-      id-token: write # for creating OIDC tokens for signing.
-      packages: write # for uploading attestations.
-    # Currently this must be referenced by tag, not by hash:
-    # https://github.com/slsa-framework/slsa-github-generator?tab=readme-ov-file#referencing-slsa-builders-and-generators
-    uses: slsa-framework/slsa-github-generator/.github/workflows/generator_container_slsa3.yml@v2.1.0 # zizmor: ignore[unpinned-uses]
+      actions: read # to detect the Github Actions environment
+      contents: read
+      id-token: write # to create OIDC tokens for signing
+    uses: slsa-framework/actions/.github/workflows/attest_actions.yml@v0.2.0 # zizmor: ignore[unpinned-uses]
     with:
-      image: "ghcr.io/${{ github.repository_owner }}/uki-addons"
+      build-from-source: false
+      # renovate: datasource=github-releases depName=slsa-framework/attester
+      version: v0.1.1
+      watch-jobs: uki-sign-uki-addons
+      collect-artifacts: false
+      subjects: ${{ needs.uki-sign-uki-addons.outputs.IMAGE_DIGEST }}
+      artifact-name: slsa-provenance
+
+  push-attestation:
+    needs: [uki-sign-uki-addons, provenance]
+    permissions:
+      packages: write # to push attestation to GHCR
+    uses: $/.github/workflows/push-provenance.yml
+    with:
+      artifact-name: slsa-provenance
+      image-ref: "ghcr.io/${{ github.repository_owner }}/uki-addons:latest"
       digest: ${{ needs.uki-sign-uki-addons.outputs.IMAGE_DIGEST }}
-      registry-username: ${{ github.actor }}
-    secrets:
-      registry-password: ${{ secrets.GITHUB_TOKEN }}

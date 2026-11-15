@@ -103,7 +103,8 @@
                     "ipv6": [
                         "dns+tls://[2620:fe::fe]#dns.quad9.net",
                         "dns+tls://[2620:fe::9]#dns.quad9.net"
-                    ]
+                    ],
+                    "https": "https://dns.quad9.net/dns-query"
                 },
                 {
                     "serverDescription": "Secured w/ECS: Malware blocking, DNSSEC Validation, ECS enabled",
@@ -114,7 +115,8 @@
                     "ipv6": [
                         "dns+tls://[2620:fe::11]#dns11.quad9.net",
                         "dns+tls://[2620:fe::fe:11]#dns11.quad9.net"
-                    ]
+                    ],
+                    "https": "https://dns11.quad9.net/dns-query"
                 },
                 {
                     "serverDescription": "Unsecured: No Malware blocking, DNSSEC validation",
@@ -125,7 +127,8 @@
                     "ipv6": [
                         "dns+tls://[2620:fe::10]#dns10.quad9.net",
                         "dns+tls://[2620:fe::fe:10]#dns10.quad9.net"
-                    ]
+                    ],
+                    "https": "https://dns10.quad9.net/dns-query"
                 }
             ]
         }

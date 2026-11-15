@@ -15,7 +15,7 @@ from shared.utils import BootcBackend
 
 def main() -> int:
     try:
-        run(["/usr/libexec/secureblue/verify-provenance.sh"], check=True)
+        run(["/usr/libexec/secureblue/verify-provenance"], check=True)
 
         if BootcBackend.from_running() == BootcBackend.OSTREE:
             run(["/usr/bin/rpm-ostree", "upgrade"], check=True)

@@ -14,13 +14,13 @@ repos:
         exclude: "^\\.github/workflows/config/linkspector\\.yml$"
 
   - repo: https://github.com/astral-sh/ruff-pre-commit
-    rev: 38bfb07c0c64c304f47eb52090f8288150c77730 # v0.17.1
+    rev: 25bcf95026b96e2dd3c0aec3090c3d6ef6ca2e6c # v0.17.3
     hooks:
       - id: ruff-check
       - id: ruff-format
 
   - repo: https://github.com/astral-sh/ty-pre-commit
-    rev: 033aa05ea3f6f5f7cd39bcb6a31fd66f6efbed2f # v0.0.89
+    rev: 18b2b8bb1b9b90d2d21283756e89b07fc9c747bf # v0.0.95
     hooks:
       - id: ty
         args: [--isolated]
@@ -45,3 +45,10 @@ repos:
         language: system
         types: [text]
         types_or: [bash, bats, shell]
+
+      - id: sync-runner-endpoints
+        name: Sync runner endpoints
+        description: "Sync runner allowed endpoints for step-security/harden-runner"
+        entry: tools/sync_runner_allowed_endpoints.py
+        language: system
+        files: "\\.github/workflows/.*\\.(txt|ya?ml)$"

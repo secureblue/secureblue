@@ -72,16 +72,31 @@
             ],
             "registry.access.redhat.com": [
                 {
-                    "type": "signedBy",
-                    "keyType": "GPGKeys",
-                    "keyPath": "/etc/pki/rpm-gpg/RPM-GPG-KEY-redhat-release"
+                    "type": "sigstoreSigned",
+                    "keyPath": "/etc/pki/sigstore/SIGSTORE-redhat-release3",
+                    "rekorPublicKeyPath": "/etc/pki/sigstore/REKOR-signing-key",
+                    "signedIdentity": {
+                        "type": "matchRepoDigestOrExact"
+                    }
                 }
             ],
             "registry.redhat.io": [
                 {
-                    "type": "signedBy",
-                    "keyType": "GPGKeys",
-                    "keyPath": "/etc/pki/rpm-gpg/RPM-GPG-KEY-redhat-release"
+                    "type": "sigstoreSigned",
+                    "keyPath": "/etc/pki/sigstore/SIGSTORE-redhat-release3",
+                    "rekorPublicKeyPath": "/etc/pki/sigstore/REKOR-signing-key",
+                    "signedIdentity": {
+                        "type": "matchRepoDigestOrExact"
+                    }
+                }
+            ],
+            "registry.opensuse.org": [
+                {
+                    "type": "sigstoreSigned",
+                    "keyPath": "/usr/share/pki/containers/opensuse-container-key-2018.pem",
+                    "signedIdentity": {
+                        "type": "matchRepository"
+                    }
                 }
             ],
             "quay.io/toolbx-images": [

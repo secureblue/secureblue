@@ -4,7 +4,7 @@
 
 modules:
   - type: dnf
-    source: ghcr.io/blue-build/modules@sha256:f1273b17987eed439b0feff77bf4b7f1c734e6f77607dc99c9de9d9070555c7a
+    source: ghcr.io/blue-build/modules@sha256:bb9eddf80d21f7dbe9514ed9e1e0ba052a33d4e2c72b940916cd0d5fee7b0f94
     install:
       install-weak-deps: false
       packages:
@@ -14,7 +14,7 @@ modules:
         - policycoreutils-python-utils
 
   - type: files
-    source: ghcr.io/blue-build/modules@sha256:f1273b17987eed439b0feff77bf4b7f1c734e6f77607dc99c9de9d9070555c7a
+    source: ghcr.io/blue-build/modules@sha256:bb9eddf80d21f7dbe9514ed9e1e0ba052a33d4e2c72b940916cd0d5fee7b0f94
     files:
       - source: system/securecore
         destination: /

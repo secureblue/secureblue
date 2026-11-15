@@ -1,0 +1,70 @@
+#!/usr/bin/bash
+
+# SPDX-FileCopyrightText: Copyright 2025-2026 The Secureblue Authors
+#
+# SPDX-License-Identifier: Apache-2.0
+
+set -euo pipefail
+
+PATH=/usr/bin
+export HOME=${HOME:-~}
+
+image_ref="${1-}"
+
+if [[ -z "${image_ref}" ]]; then
+    if [[ -f "/usr/bin/rpm-ostree" ]]; then
+        image_ref=$(rpm-ostree status --booted --json | jq -cr '.deployments[0]."container-image-reference"')
+        image_ref=${image_ref#*:}
+        image_ref=${image_ref#docker://}
+    else
+        image_ref=$(jq -r '.status.booted.image.image.image' /run/bootc/status.json)
+    fi
+fi
+
+case "${image_ref}" in
+ghcr.io/secureblue/*)
+    expected_source='https://github.com/secureblue/secureblue'
+    ;;
+*)
+    printf 'WARNING: Unknown image reference "%s"; unable to check provenance.\n' "${image_ref}"
+    exit 1
+    ;;
+esac
+
+if [[ "${image_ref}" == *@sha256:* ]]; then
+    digest="sha256:${image_ref##*@sha256:}"
+    image_ref="${image_ref%@sha256:*}"
+else
+    digest=$(oras resolve "${image_ref}")
+fi
+
+printf 'Verifying SLSA v1 Level 3 build provenance for:\n  %s\n' "${image_ref}"
+
+image_tag="${image_ref##*:}"
+case "${image_tag}" in
+latest | latest-uki | uki)
+    branch='live'
+    ;;
+br-*)
+    branch="${image_tag%-uki}"
+    branch="${branch#br-}"
+    branch="${branch%-*}"
+    ;;
+*)
+    printf 'WARNING: Unknown image tag "%s"; unable to check provenance.\n' "${image_tag}"
+    exit 1
+    ;;
+esac
+printf 'Expected source: %s@refs/heads/%s\n' "${expected_source}" "${branch}"
+
+tempdir=$(mktemp -d)
+trap 'rm -rf "${tempdir}"' EXIT
+oras pull -o "${tempdir}" "${image_ref%:*}:${digest/:/-}-provenance"
+slsa-verifier build "${tempdir}/provenance.intoto.json" \
+    --level 3 \
+    --require-signatures \
+    --signer 'sigstore(identityMatch=regex)::https://token.actions.githubusercontent.com::https://github\.com/slsa-framework/actions/\.github/workflows/attest_actions\.yml@refs/tags/v[0-9]+\.[0-9]+\.[0-9]+' \
+    --subject "${digest}" \
+    --param "expected_source:${expected_source}" \
+    --param "expected_branch:${branch}" \
+    --param "trusted_builders:[${expected_source}/.github/workflows/build-all.yml@refs/heads/${branch}]"

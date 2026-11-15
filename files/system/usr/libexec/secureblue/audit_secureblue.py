@@ -51,6 +51,7 @@ from shared.utils import (
     command_stdout,
     command_succeeds,
     get_config_dir,
+    get_selinux_booleans,
     is_module_loaded,
     is_using_vpn,
     loaded_kernel_modules,
@@ -71,6 +72,7 @@ UNKNOWN: Final = Status.UNKNOWN
 CONFIG_FILE: Final[Path] = get_config_dir() / "secureblue/audit.toml"
 
 SKIP_IF_ROOT: Final[str] = "skip-if-root"
+SEBOOL_TRIVALENT_EXEC_FLATPAKS: Final[str] = "trivalent_exec_flatpaks"
 
 
 @audit
@@ -223,22 +225,33 @@ def audit_container_policy():
     """Check for modifications to container policy."""
     status = PASS
     notes = []
-    system_policy_file = "/etc/containers/policy.json"
-    if not filecmp.cmp(f"/usr/share/secureblue{system_policy_file}", system_policy_file):
-        status = status.downgrade_to(INFO)
-        notes.append(Note(_("The file {0} has been modified.").format(system_policy_file), INFO))
-
+    rec = None
     policy_audit, policy_path = analyze_active_container_policy()
 
-    if policy_path != str(system_policy_file):
+    if policy_path == "/usr/share/containers/policy.json":
+        pass
+    elif policy_path == "/etc/containers/policy.json":
         status = status.downgrade_to(INFO)
-        notes.append(
-            Note(_("Container policy has a local override at {0}.").format(policy_path), INFO)
+        message = _("Container policy has a system-wide override at {0}.").format(policy_path)
+        notes.append(Note(message, INFO))
+        rec = "\n".join(
+            [
+                message,
+                _("To restore the default container policy, run:"),
+                "$ run0 -i rm /etc/containers/policy.json",
+            ]
         )
-    elif status == PASS:
-        # No need to parse the policy, it's unmodified.
-        yield Report(_("Analyzing container policy"), PASS)
-        return
+    else:
+        status = status.downgrade_to(INFO)
+        message = _("Container policy has a local override at {0}.").format(policy_path)
+        notes.append(Note(message, INFO))
+        rec = "\n".join(
+            [
+                message,
+                _("To restore the default container policy, run:"),
+                f"$ rm '{policy_path}'",
+            ]
+        )
 
     if not policy_audit.default_secure:
         status = status.downgrade_to(FAIL)
@@ -273,7 +286,7 @@ def audit_container_policy():
             )
         )
 
-    yield Report(_("Analyzing container policy"), status, notes=notes)
+    yield Report(_("Analyzing container policy"), status, notes=notes, recs=rec)
 
 
 @audit
@@ -309,6 +322,30 @@ def audit_container_userns(state):
         ]
         recs = "\n".join(rec_lines)
     yield Report(_("Ensuring container user namespace creation disallowed"), status, recs=recs)
+
+
+@audit
+def audit_trivalent_flatpak_exec(state):
+    """Ensure Trivalent cannot execute flatpaks (a confinement escape vector)."""
+    if not state["image"].is_desktop():
+        return
+
+    status = PASS
+    recs = None
+
+    trivalent_exec_flatpaks = SEBOOL_TRIVALENT_EXEC_FLATPAKS in get_selinux_booleans(
+        SEBOOL_TRIVALENT_EXEC_FLATPAKS
+    )
+
+    if trivalent_exec_flatpaks:
+        status = FAIL
+        rec_lines = [
+            _("Trivalent is permitted to execute flatpaks (a confinement escape vector)."),
+            _("To disallow it (which breaks flatpak exec and integration), run:"),
+            "$ run0 -i setsebool -P trivalent_exec_flatpaks off",
+        ]
+        recs = "\n".join(rec_lines)
+    yield Report(_("Ensuring Trivalent cannot execute flatpaks"), status, recs=recs)
 
 
 @audit

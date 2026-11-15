@@ -26,8 +26,6 @@ on:
         value: ${{ jobs.bluebuild.outputs.IMAGE_NAME }}
       IMAGE_TAG:
         value: ${{ jobs.bluebuild.outputs.IMAGE_TAG }}
-      IMAGE_VERSION:
-        value: ${{ jobs.bluebuild.outputs.IMAGE_VERSION }}
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}-${{ inputs.recipe }}
@@ -43,17 +41,20 @@ jobs:
       IMAGE_NAME: ${{ steps.image_data.outputs.IMAGE_NAME }}
       IMAGE_DIGEST: ${{ steps.image_manifest_metadata.outputs.IMAGE_DIGEST }}
       IMAGE_TAG: ${{ steps.image_data.outputs.IMAGE_TAG }}
-      IMAGE_VERSION: ${{ steps.image_data.outputs.BASE_IMAGE_VERSION }}
     permissions:
       contents: read # Needed to pull the repo for the build
       packages: write # Needed to publish images
       id-token: write # Needed for token generation for signing
     steps:
       - name: Enable egress auditing
-        uses: step-security/harden-runner@dc2769abcc0fcfbadfc1df54081c1608579ef6b2 # v2.22.2
+        uses: step-security/harden-runner@46b06cea07f9e64621fdf066ba77ac6915163d43 # v2.22.3
         with:
           egress-policy: block
+          # Do not edit directly. Instead:
+          # 1. Edit .github/workflows/runner-allowed-endpoints.txt
+          # 2. Run tools/sync_runner_allowed_endpoints.py
           allowed-endpoints: >
+            ##### BEGIN ALLOWED ENDPOINT LIST #####
             # ubuntu packages
             _https._tcp.archive.ubuntu.com:443
             archive.ubuntu.com:443
@@ -90,6 +91,8 @@ jobs:
             # Install packages from our COPR repos
             copr.fedorainfracloud.org:443
             download.copr.fedorainfracloud.org:443
+            packages.redhat.com:443
+            copr-pulp-prod.s3.amazonaws.com:443
 
             # Docker installation
             production.cloudflare.docker.com:443
@@ -189,6 +192,7 @@ jobs:
             yxeix.mm.fcix.net:443
             yycix.mm.fcix.net:443
             ziply.mm.fcix.net:443
+            ##### END ALLOWED ENDPOINT LIST #####
 
       - name: Checkout repo
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
@@ -210,8 +214,8 @@ jobs:
 
           case "$GITHUB_REF" in
             refs/heads/"$DEFAULT_BRANCH") image_tag='latest' ;;
-            refs/pull/*) image_tag="pr-${PR_EVENT_NUMBER}-44" ;;
-            *) image_tag="br-${GITHUB_REF_NAME}-44" ;;
+            refs/pull/*) image_tag="pr-${PR_EVENT_NUMBER}-45" ;;
+            *) image_tag="br-${GITHUB_REF_NAME}-45" ;;
           esac
           echo "IMAGE_TAG=${image_tag}" >> "${GITHUB_OUTPUT}"
           FULL_IMAGE_REF="ghcr.io/${GITHUB_REPOSITORY_OWNER,,}/${IMAGE_NAME}:${image_tag}"
@@ -222,7 +226,7 @@ jobs:
         uses: $/.github/workflows/shared-runner-setup
         with:
           needs_cosign: ${{ steps.image_data.outputs.IMAGE_NAME != 'securecore-main-hardened' && steps.image_data.outputs.IMAGE_NAME != 'iot-main-hardened' }}
-          needs_slsa_crane: ${{ startsWith(steps.image_data.outputs.BASE_IMAGE, format('ghcr.io/{0}/', github.repository_owner)) }}
+          needs_slsa_oras: ${{ startsWith(steps.image_data.outputs.BASE_IMAGE, format('ghcr.io/{0}/', github.repository_owner)) }}
 
       - name: Verify base image provenance
         shell: bash
@@ -231,10 +235,19 @@ jobs:
           BASE_IMAGE_VERSION: ${{ steps.image_data.outputs.BASE_IMAGE_VERSION }}
           BASE_IMAGE: ${{ steps.image_data.outputs.BASE_IMAGE }}
         run: |
-          DIGEST=$(crane digest "${BASE_IMAGE}:${BASE_IMAGE_VERSION}")
-          slsa-verifier verify-image --source-uri "github.com/${GITHUB_REPOSITORY}" "${BASE_IMAGE}:${BASE_IMAGE_VERSION}@${DIGEST}"
+          tempdir=$(mktemp -d)
+          DIGEST=$(oras resolve "${BASE_IMAGE}:${BASE_IMAGE_VERSION}")
+          oras pull -o "${tempdir}" "${BASE_IMAGE}:${DIGEST/:/-}-provenance"
+          slsa-verifier build "${tempdir}/provenance.intoto.json" \
+            --level 3 \
+            --require-signatures \
+            --signer 'sigstore(identityMatch=regex)::https://token.actions.githubusercontent.com::https://github\.com/slsa-framework/actions/\.github/workflows/attest_actions\.yml@refs/tags/v[0-9]+\.[0-9]+\.[0-9]+' \
+            --subject "${DIGEST}" \
+            --param "expected_source:github.com/${GITHUB_REPOSITORY}" \
+            --param 'expected_branch:live' \
+            --param "trusted_builders:[https://github.com/${GITHUB_REPOSITORY}/.github/workflows/build-all.yml@refs/heads/live]"
           # remove slsa-verifier so that it can be successfully reinstalled later by bluebuild
-          rm -rf ~/.slsa/
+          rm -rf ~/.slsa/ "${tempdir}"
 
       - name: Verify base image signature
         shell: bash
@@ -254,12 +267,19 @@ jobs:
             exit 1
           fi
 
+      - name: Create digestfile
+        id: digestfile
+        shell: bash
+        run: |
+          echo "digestfile=$(mktemp)" >>"${GITHUB_OUTPUT}"
+
       - name: Build secureblue
-        uses: blue-build/github-action@c295af864f2802fc6aea227507af43d35823db81 # v1.13.0
+        uses: blue-build/github-action@fb86c457fd3d0e13d5e9c1875c6305cf28b09234 # v1.14.0
         env:
           KERNEL_PRIVKEY: ${{ secrets.KERNEL_PRIVKEY }}
         with:
-          cli_version: v0.9.37
+          # renovate: datasource=github-releases depName=blue-build/cli
+          cli_version: v0.9.41
           recipe: ${{ inputs.recipe }}
           cosign_private_key: ${{ secrets.SIGNING_SECRET }}
           registry_token: ${{ github.token }}
@@ -272,20 +292,49 @@ jobs:
           use_cache: false
           retry_push_count: 3
           verify_install: true
+          digestfile: ${{ steps.digestfile.outputs.digestfile }}
 
-      - name: Install regctl
-        uses: regclient/actions/regctl-installer@dd58ad94f76adb73d8ac1bf75ed25f01545d5b32 # v0.2.0
-
-      - name: Parse image manifest
+      - name: Output image digest
         id: image_manifest_metadata
         shell: bash
         env:
+          DIGESTFILE: ${{ steps.digestfile.outputs.digestfile }}
           FULL_IMAGE_REF: ${{ steps.image_data.outputs.FULL_IMAGE_REF }}
         run: |
-          IMAGE_DIGEST=$(regctl image digest "${FULL_IMAGE_REF}")
+          IMAGE_DIGEST=$(jq -er --arg ref "${FULL_IMAGE_REF}" '.[$ref]' "${DIGESTFILE}")
           echo "IMAGE_DIGEST=${IMAGE_DIGEST}" >> "${GITHUB_OUTPUT}"
 
+  # Generate SLSA v1 level 3 build provenance attestation
   provenance:
+    needs: [bluebuild]
+    permissions:
+      actions: read # to detect the Github Actions environment
+      contents: read
+      id-token: write # to create OIDC tokens for signing
+    uses: slsa-framework/actions/.github/workflows/attest_actions.yml@v0.2.0 # zizmor: ignore[unpinned-uses]
+    with:
+      build-from-source: false
+      # renovate: datasource=github-releases depName=slsa-framework/attester
+      version: v0.1.1
+      watch-jobs: bluebuild
+      collect-artifacts: false
+      subjects: ${{ needs.bluebuild.outputs.IMAGE_DIGEST }}
+      artifact-name: slsa-provenance-${{ needs.bluebuild.outputs.IMAGE_NAME }}
+
+  push-attestation:
+    needs: [bluebuild, provenance]
+    permissions:
+      packages: write # to push attestation to GHCR
+    uses: $/.github/workflows/push-provenance.yml
+    with:
+      artifact-name: slsa-provenance-${{ needs.bluebuild.outputs.IMAGE_NAME }}
+      image-ref: ${{ needs.bluebuild.outputs.FULL_IMAGE_REF }}
+      digest: ${{ needs.bluebuild.outputs.IMAGE_DIGEST }}
+
+  # Generate SLSA v0.2 provenance attestation. This is only needed for
+  # backwards compatibility with images from before we started generating the
+  # newer SLSA v1 provenance, and can be removed after enough time has passed.
+  old-provenance:
     needs: [bluebuild]
     permissions:
       actions: read # for detecting the Github Actions environment.

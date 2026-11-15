@@ -29,7 +29,6 @@ def main() -> int:
     if result.returncode != 0:
         print("useradd has failed.")
         return 1
-    print("Note passwd will give a bad password warning, this is a known bug and expected.")
     result = subprocess.run(
         ["/usr/sbin/passwd", new_username],
         check=False,

@@ -929,14 +929,20 @@ def audit_thumbnailing(state):
     match state["image"]:
         case Image.SILVERBLUE:
             de = _("GNOME")
-            # show-image-thumbnails controls all thumbnailing
-            thumbnail_gsetting_output = command_stdout(
+            nautilus_thumbnails = command_stdout(
                 "/usr/bin/gsettings",
                 "get",
                 "org.gnome.nautilus.preferences",
                 "show-image-thumbnails",
             )
-            thumbnailing_disabled = thumbnail_gsetting_output == "'never'"
+
+            gnome_thumbnails = command_stdout(
+                "/usr/bin/gsettings",
+                "get",
+                "org.gnome.desktop.thumbnailers",
+                "disable-all",
+            )
+            thumbnailing_disabled = nautilus_thumbnails == "'never'" and gnome_thumbnails == "true"
         case Image.KINOITE:
             de = _("KDE Plasma")
             config_dir = get_config_dir()

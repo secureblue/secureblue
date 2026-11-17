@@ -10,7 +10,6 @@ The sandboxed bluetooth toggle function
 
 import os
 import sys
-from pathlib import Path
 from typing import Final
 
 from shared.utils import SystemdService
@@ -18,9 +17,6 @@ from shared.utils import SystemdService
 BLUE_MOD_FILE: Final[str] = "/etc/modprobe.d/99-bluetooth.conf"
 BLUE_MOD_TEXT: Final[str] = """install bluetooth /sbin/modprobe --ignore-install bluetooth
 install btusb /sbin/modprobe --ignore-install btusb
-"""
-BLUE_SYSCTL_FILE: Final[str] = "/etc/sysctl.d/99-bluetooth.conf"
-BLUE_SYSCTL_TEXT: Final[str] = """crypto.af_alg_restrict = 1
 """
 
 
@@ -36,16 +32,12 @@ def main() -> int:
             with open(BLUE_MOD_FILE, "w", encoding="utf8") as fd:
                 fd.write(BLUE_MOD_TEXT)
             os.chmod(BLUE_MOD_FILE, 0o644)
-            with open(BLUE_SYSCTL_FILE, "w", encoding="utf8") as fd:
-                fd.write(BLUE_SYSCTL_TEXT)
-            os.chmod(BLUE_SYSCTL_FILE, 0o644)
             bluetooth_service.unmask()
             bluetooth_service.enable_now()
             print("Bluetooth has been enabled. Reboot for effect.")
             return 0
         case "off":
             os.remove(BLUE_MOD_FILE)
-            Path(BLUE_SYSCTL_FILE).unlink(missing_ok=True)
             bluetooth_service.disable_now()
             bluetooth_service.mask()
             print("Bluetooth has been disabled. Reboot for effect.")

@@ -212,10 +212,13 @@ def _check_dangerous_dirs(
             continue
         perm = filesystem_perms[canon_path]
 
+        state.arbitrary_permissions |= dir_check.arbitrary_permissions
+        if state.name in ARBITRARY_PERMISSIONS_EXPECTED:
+            continue
+
         if perm.is_aliased:
             dir_check = dataclass_replace(dir_check, permission=perm.aliased_path)
         state.update(note=dir_check.note(state.name), rec=dir_check.recommendation(state.name))
-        state.arbitrary_permissions |= dir_check.arbitrary_permissions
 
 
 def check_fs_permissions(state: FlatpakPermissionsState, perms: Permissions) -> None:

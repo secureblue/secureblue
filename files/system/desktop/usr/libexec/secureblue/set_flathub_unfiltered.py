@@ -4,7 +4,7 @@
 #
 # SPDX-License-Identifier: Apache-2.0
 
-"""Add or remove the unfiltered Flathub remote."""
+"""Set or unset the unfiltered Flathub subset."""
 
 import json
 import subprocess

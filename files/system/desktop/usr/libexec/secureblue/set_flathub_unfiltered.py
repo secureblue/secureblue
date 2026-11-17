@@ -22,6 +22,8 @@ parse_basic_toggle_args: Final = utils.parse_basic_toggle_args
 command_stdout: Final = utils.command_stdout
 ask_yes_no: Final = utils.ask_yes_no
 
+BAZAAR_APPID: Final[str] = "io.github.kolunmi.Bazaar"
+
 HELP_MESSAGE: Final[str] = """\
 Set or unset the unfiltered Flathub subset.
 
@@ -57,6 +59,22 @@ def unfiltered_remote_enabled() -> bool:
     return False
 
 
+def set_bazaar_verified_filter(value: str) -> None:
+    subprocess.run(
+        [
+            "/usr/bin/flatpak",
+            "run",
+            "--command=gsettings",
+            BAZAAR_APPID,
+            "set",
+            BAZAAR_APPID,
+            "show-only-verified",
+            value,
+        ],
+        check=False
+    )
+
+
 def print_remote_status() -> None:
     if unfiltered_remote_enabled():
         print("The unfiltered Flathub remote subset is enabled.")
@@ -79,6 +97,7 @@ def set_remote_unfiltered() -> None:
         ],
         check=True,
     )
+    set_bazaar_verified_filter("false")
 
 
 def is_verified(app: str) -> bool:
@@ -121,6 +140,7 @@ def set_remote_filtered() -> None:
     subprocess.run(
         ["/usr/bin/flatpak", "remote-modify", "--user", "--subset=verified", "flathub"], check=True
     )
+    set_bazaar_verified_filter("true")
 
 
 def main() -> int:

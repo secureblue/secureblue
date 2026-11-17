@@ -22,4 +22,7 @@ fi
 flatpak override --user --filesystem=host-etc:ro --share=network --talk-name=org.freedesktop.Flatpak io.github.kolunmi.Bazaar
 flatpak install --user --noninteractive flathub io.github.kolunmi.Bazaar -y
 flatpak run --command=gsettings io.github.kolunmi.Bazaar set io.github.kolunmi.Bazaar auto-update true
+if flatpak remotes --user --columns=name,subset | grep -qx 'flathub[[:space:]]verified'; then
+    flatpak run --command=gsettings io.github.kolunmi.Bazaar set io.github.kolunmi.Bazaar show-only-verified true
+fi
 systemctl --user start app-io.github.kolunmi.Bazaar@autostart.service

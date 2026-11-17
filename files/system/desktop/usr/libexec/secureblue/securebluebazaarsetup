@@ -19,6 +19,6 @@ if echo "${FLATPAK_REMOTES}" | grep -qx 'flathub-verified'; then
     flatpak remote-delete --user flathub-verified || true
 fi
 
-flatpak override --user --filesystem=host-etc:ro io.github.kolunmi.Bazaar
+flatpak override --user --filesystem=host-etc:ro --share=network --talk-name=org.freedesktop.Flatpak io.github.kolunmi.Bazaar
 flatpak install --user --noninteractive flathub io.github.kolunmi.Bazaar -y
 flatpak run --command=gsettings io.github.kolunmi.Bazaar set io.github.kolunmi.Bazaar auto-update true

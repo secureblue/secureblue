@@ -718,32 +718,6 @@ def audit_flatpak_auto_update():
     """Ensure flatpak automatic updates are enabled."""
     if not command_succeeds("command", "-v", "flatpak"):
         return
-    status = PASS
-    note = None
-    rec = None
-    if not command_succeeds(
-        "systemctl", "--global", "is-enabled", "--quiet", "flatpak-user-update.timer"
-    ):
-        status = FAIL
-        note = Note(_("{0} is not enabled globally.").format("flatpak-user-update.timer"), FAIL)
-        rec_lines = [
-            note.text,
-            _("To enable it, run:"),
-            "$ systemctl enable --global --now flatpak-user-update.timer",
-        ]
-        rec = "\n".join(rec_lines)
-    elif command_succeeds(
-        "systemctl", "--user", "is-failed", "--quiet", "flatpak-user-update.service"
-    ):
-        status = status.downgrade_to(WARN)
-        note = Note(_("{0} has failed to run.").format("flatpak-user-update.service"), WARN)
-
-    yield Report(
-        _("Ensuring {0} is enabled globally").format("flatpak-user-update.timer"),
-        status,
-        notes=note,
-        recs=rec,
-    )
 
     status = PASS
     note = None

@@ -22,3 +22,4 @@ fi
 flatpak override --user --filesystem=host-etc:ro --share=network --talk-name=org.freedesktop.Flatpak io.github.kolunmi.Bazaar
 flatpak install --user --noninteractive flathub io.github.kolunmi.Bazaar -y
 flatpak run --command=gsettings io.github.kolunmi.Bazaar set io.github.kolunmi.Bazaar auto-update true
+systemctl --user start app-io.github.kolunmi.Bazaar@autostart.service

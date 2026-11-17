@@ -59,9 +59,9 @@ def unfiltered_remote_enabled() -> bool:
 
 def print_remote_status() -> None:
     if unfiltered_remote_enabled():
-        print("The unfiltered Flathub remote is enabled.")
+        print("The unfiltered Flathub remote subset is enabled.")
     else:
-        print("The unfiltered Flathub remote is disabled.")
+        print("The unfiltered Flathub remote subset is disabled.")
 
 
 def set_remote_unfiltered() -> None:
@@ -126,7 +126,7 @@ def set_remote_filtered() -> None:
 def main() -> int:
     try:
         mode = parse_basic_toggle_args(
-            prompt="Would you like to have the unfiltered Flathub remote available?"
+            prompt="Would you like to have the unfiltered Flathub remote subset available?"
         )
     except CommandUsageError as e:
         print(f"Usage error: {e}. See usage with --help.")

@@ -48,7 +48,7 @@ jobs:
       packages: write # Needed to publish images
     steps:
       - name: Enable egress auditing
-        uses: step-security/harden-runner@46b06cea07f9e64621fdf066ba77ac6915163d43 # v2.22.3
+        uses: step-security/harden-runner@1d88384fd173af6ecb012dfd0264a306b711241a # v2.22.4
         with:
           egress-policy: block
           # Do not edit directly. Instead:
@@ -154,6 +154,7 @@ jobs:
             ix-denver.mm.fcix.net:443
             lesnet.mm.fcix.net:443
             lolhost.mm.fcix.net:443
+            mirror.acm.umn.edu:443
             mirror.cpsc.ucalgary.ca:443
             mirror.csclub.uwaterloo.ca:443
             mirror.cs.princeton.edu:443
@@ -403,7 +404,7 @@ jobs:
 
   # Generate SLSA v0.2 provenance attestation. This is only needed for
   # backwards compatibility with images from before we started generating the
-  # newer SLSA v1 provenance, and can be removed after enough time has passed.
+  # newer SLSA v1 provenance, and can be removed after the F46 release.
   old-provenance:
     needs: uki-sign-sealed-image
     permissions:

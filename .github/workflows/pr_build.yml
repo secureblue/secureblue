@@ -30,7 +30,7 @@ jobs:
 
     steps:
       - name: Enable egress auditing
-        uses: step-security/harden-runner@46b06cea07f9e64621fdf066ba77ac6915163d43 # v2.22.3
+        uses: step-security/harden-runner@1d88384fd173af6ecb012dfd0264a306b711241a # v2.22.4
         with:
           egress-policy: block
           # Do not edit directly. Instead:
@@ -136,6 +136,7 @@ jobs:
             ix-denver.mm.fcix.net:443
             lesnet.mm.fcix.net:443
             lolhost.mm.fcix.net:443
+            mirror.acm.umn.edu:443
             mirror.cpsc.ucalgary.ca:443
             mirror.csclub.uwaterloo.ca:443
             mirror.cs.princeton.edu:443
@@ -198,7 +199,7 @@ jobs:
           } >> "${GITHUB_OUTPUT}"
 
       - name: Build secureblue
-        uses: blue-build/github-action@c295af864f2802fc6aea227507af43d35823db81 # v1.13.0
+        uses: blue-build/github-action@fb86c457fd3d0e13d5e9c1875c6305cf28b09234 # v1.14.0
         env:
           KERNEL_PRIVKEY: ${{ steps.test_keys.outputs.kernel_privkey }}
         with:

@@ -15,6 +15,7 @@ import filecmp
 import getpass
 import glob
 import os
+import platform
 import signal
 import subprocess
 import sys
@@ -88,7 +89,8 @@ def audit_kargs():
     kargs_expected: dict[str, tuple[Status, str | None]] = dict.fromkeys(
         kargs_hardening.DEFAULT_KARGS, (FAIL, None)
     )
-    kargs_expected[kargs_hardening.DISABLE_32_BIT] = (WARN, _("32-bit support"))
+    if platform.machine() == "x86_64":
+        kargs_expected[kargs_hardening.DISABLE_32_BIT] = (WARN, _("32-bit support"))
     kargs_expected[kargs_hardening.FORCE_NOSMT] = (WARN, _("force-disable SMT"))
     kargs_expected.update(dict.fromkeys(kargs_hardening.UNSTABLE_KARGS, (WARN, _("unstable"))))
 
@@ -927,14 +929,20 @@ def audit_thumbnailing(state):
     match state["image"]:
         case Image.SILVERBLUE:
             de = _("GNOME")
-            # show-image-thumbnails controls all thumbnailing
-            thumbnail_gsetting_output = command_stdout(
+            nautilus_thumbnails = command_stdout(
                 "/usr/bin/gsettings",
                 "get",
                 "org.gnome.nautilus.preferences",
                 "show-image-thumbnails",
             )
-            thumbnailing_disabled = thumbnail_gsetting_output == "'never'"
+
+            gnome_thumbnails = command_stdout(
+                "/usr/bin/gsettings",
+                "get",
+                "org.gnome.desktop.thumbnailers",
+                "disable-all",
+            )
+            thumbnailing_disabled = nautilus_thumbnails == "'never'" and gnome_thumbnails == "true"
         case Image.KINOITE:
             de = _("KDE Plasma")
             config_dir = get_config_dir()

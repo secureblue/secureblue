@@ -1,0 +1,16 @@
+#!/usr/bin/bash
+# SPDX-FileCopyrightText: Copyright 2025-2026 The Secureblue Authors
+#
+# SPDX-License-Identifier: Apache-2.0
+
+set -euo pipefail
+
+PATH=/usr/bin
+VERITY_HASH=$(bootc status --booted --format json | jq -r '.status.booted.composefs.verity')
+
+if ! [[ -e /var/lib/secureblue/bootc-selinux-workaround-"${VERITY_HASH}".stamp ]]; then
+    rm -f /var/lib/secureblue/bootc-selinux-workaround-*.stamp
+    semodule -B
+    restorecon -R /tmp
+    touch /var/lib/secureblue/bootc-selinux-workaround-"${VERITY_HASH}".stamp
+fi

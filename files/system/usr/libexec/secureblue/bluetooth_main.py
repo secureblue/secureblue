@@ -42,6 +42,7 @@ ujust set-bluetooth-modules --help
 
 BLUE_MOD_DIR: Final[str] = "/etc/modprobe.d"
 BLUE_MOD_FILE: Final[str] = f"{BLUE_MOD_DIR}/99-bluetooth.conf"
+BLUE_SYSCTL_DIR: Final[str] = "/etc/sysctl.d"
 
 
 def print_status(enabled_by_file: bool) -> None:
@@ -75,7 +76,9 @@ def main() -> int:
         return 1
 
     enabled_by_file = Path(BLUE_MOD_FILE).exists()
-    bluetooth_function = sandbox.SandboxedFunction("bluetooth.py", read_write_paths=[BLUE_MOD_DIR])
+    bluetooth_function = sandbox.SandboxedFunction(
+        "bluetooth.py", read_write_paths=[BLUE_MOD_DIR, BLUE_SYSCTL_DIR]
+    )
     match mode:
         case "on" | "off":
             target_state_enabled = mode == "on"

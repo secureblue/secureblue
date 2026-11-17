@@ -1363,34 +1363,49 @@ async def audit_flatpak_permissions(state):
 
 @audit
 @categorize("flatpak", SKIP_IF_ROOT)
-async def audit_bazaar_flatpak_auto_update():
-    """Ensure Bazaar is running and has auto-updates enabled"""
+def audit_bazaar_flatpak_auto_update():
+    """Ensure Bazaar is running and has auto-updates enabled."""
     if not command_succeeds("command", "-v", "flatpak"):
         return
 
     status = PASS
-    rec = None
-    note = None
+    recs = []
+    notes = []
     bazaar_running = BAZAAR_APPID in command_stdout(
         "flatpak", "ps", "--columns=application"
     ).splitlines()
     auto_update_enabled = command_stdout(
-        "flatpak", "run", "--command=gsettings", BAZAAR_APPID, "get", BAZAAR_APPID, "auto-update", check=False
-    ) == "true"
+        "flatpak",
+        "run",
+        "--command=gsettings",
+        BAZAAR_APPID,
+        "get",
+        BAZAAR_APPID,
+        "auto-update",
+        check=False
+    )
+    == "true"
 
-    note_string = ""
-    rec_fail_lines = []
     if not auto_update_enabled:
-        status = FAIL
-        note_string += "The auto-update setting must be enabled in Bazaar for Flatpaks to be automatically updated."
-        rec_fail_lines.append("To resolve this, run:")
-        rec_fail_lines.append(f"$ flatpak run --command=gsettings {BAZAAR_APPID} set {BAZAAR_APPID} auto-update true")
+        note_string = _("The auto-update setting must be enabled in Bazaar for Flatpaks to be automatically updated."
+        notes.append(Note(note_string, FAIL))
+        rec_lines = [
+            note_string,
+            _("To resolve this, run:"),
+            f"$ flatpak run --command=gsettings {BAZAAR_APPID} set {BAZAAR_APPID} auto-update true"
+        ]
 
+    if not bazaar_running:
         status = FAIL
-        note_string += "Bazaar must be running for Flatpaks to be automatically updated."
+        note_string = _("Bazaar must be running for Flatpaks to be automatically updated."
+        notes.append(Note(note_string, FAIL))
+        rec_lines = [
+            note_string,
+            _("To resolve this, start Bazaar and ensure that Bazaar is configured to start on boot.")
+        ]
 
     if status == FAIL:
-        note = Note(_(note_string), FAIL)
+        notes.append(Note(note_string), FAIL)
         rec_lines = [
             note.text,
             ...rec_fail_lines
@@ -1398,10 +1413,10 @@ async def audit_bazaar_flatpak_auto_update():
         recs.append("\n".join(rec_lines))
 
     yield Report(
-        _("Ensure Bazaar is running and has auto-updates enabled"),
+        _("Ensuring Bazaar is running and has auto-updates enabled"),
         status,
-        notes=note,
-        recs=rec,
+        notes=notes,
+        recs=recs,
     )
 
 

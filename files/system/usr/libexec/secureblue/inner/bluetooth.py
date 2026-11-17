@@ -22,7 +22,7 @@ install btusb /sbin/modprobe --ignore-install btusb
 BLUE_SYSCTL_FILE: Final[str] = "/etc/sysctl.d/99-bluetooth.conf"
 BLUE_SYSCTL_TEXT: Final[str] = """crypto.af_alg_restrict = 1
 """
- 
+
 
 def main() -> int:
     """Set or remove the bluetooth module override"""

@@ -74,6 +74,7 @@ CONFIG_FILE: Final[Path] = get_config_dir() / "secureblue/audit.toml"
 
 SKIP_IF_ROOT: Final[str] = "skip-if-root"
 SEBOOL_TRIVALENT_EXEC_FLATPAKS: Final[str] = "trivalent_exec_flatpaks"
+BAZAAR_APPID: Final[str] = "io.github.kolunmi.Bazaar"
 
 
 @audit
@@ -1358,6 +1359,54 @@ async def audit_flatpak_permissions(state):
             notes=flatpak_permissions_state.notes,
             recs=flatpak_permissions_state.recs,
         )
+
+
+@audit
+@categorize("flatpak", SKIP_IF_ROOT)
+async def audit_bazaar_flatpak_auto_update():
+    """Ensure Bazaar is running and has auto-updates enabled"""
+    if not command_succeeds("command", "-v", "flatpak"):
+        return
+
+    status = PASS
+    rec = None
+    note = None
+    bazaar_running = BAZAAR_APPID in command_stdout(
+        "flatpak", "ps", "--columns=application"
+    ).splitlines()
+    auto_update_enabled = command_stdout(
+        "flatpak", "run", "--command=gsettings", BAZAAR_APPID, "get", BAZAAR_APPID, "auto-update", check=False
+    ) == "true"
+    
+    note_string = ""
+    rec_fail_lines = []
+    if not auto_update_enabled:
+        status = FAIL
+        note_string += "The auto-update setting must be enabled in Bazaar for Flatpaks to be automatically updated."
+        rec_fail_lines.append("To resolve this, run:")
+        rec_fail_lines.append(f"$ flatpak run --command=gsettings {BAZAAR_APPID} set {BAZAAR_APPID} auto-update true")
+
+    if not bazaar_running
+        status = FAIL
+        note_string += "Bazaar must be running for Flatpaks to be automatically updated."
+
+    if status == FAIL:
+        note = NOTE(_(note_string), FAIL)
+        rec_lines = [
+            note.text,
+            ...rec_fail_lines
+        ]
+
+    rec_lines = [
+        note.text
+    ]
+
+    yield Report(
+        _("Ensure Bazaar is running and has auto-updates enabled"),
+        status,
+        notes=note,
+        recs=rec,
+    )
 
 
 ###############################################################################

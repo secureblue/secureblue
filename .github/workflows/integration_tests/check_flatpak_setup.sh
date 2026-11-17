@@ -52,7 +52,7 @@ sleep 20
 for service in "${services_to_check[@]}"; do
     systemd_service_name="secureblue-${service}-setup.service"
     state=$(systemctl --user show "${systemd_service_name}" --property=ActiveState | sed 's/^ActiveState=//')
-
+    job=$(systemctl --user show "${systemd_service_name}" --property=Job | sed 's/^Job=//')
     config_dir=${XDG_CONFIG_HOME:-"${HOME}/.config"}
     stamp_file="${config_dir}/secureblue/secureblue-${service}-setup.stamp"
     if [[ -e "${stamp_file}" ]]; then
@@ -64,7 +64,7 @@ for service in "${services_to_check[@]}"; do
         if [[ "${service}" = 'bazaar' ]]; then
             check-installed-flatpaks
         fi
-    elif [[ "${state}" = 'activating' ]] || [[ "${state}" = 'active' ]]; then
+    elif [[ "${state}" = 'activating' ]] || [[ "${state}" = 'active' ]] || [[ -n "${job}" ]]; then
         echo "${systemd_service_name} is currently running."
     elif [[ "${state}" = 'failed' ]]; then
         test-fail "${systemd_service_name} is in a failed state."

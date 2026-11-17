@@ -1385,7 +1385,7 @@ async def audit_bazaar_flatpak_auto_update():
         note_string += "The auto-update setting must be enabled in Bazaar for Flatpaks to be automatically updated."
         rec_fail_lines.append("To resolve this, run:")
         rec_fail_lines.append(f"$ flatpak run --command=gsettings {BAZAAR_APPID} set {BAZAAR_APPID} auto-update true")
-:
+
         status = FAIL
         note_string += "Bazaar must be running for Flatpaks to be automatically updated."
 

@@ -6,10 +6,7 @@
 
 set -euo pipefail
 
-flatpak_service_name="secureblue-flatpak-setup.service"
-flatpak_timer_name="secureblue-flatpak-setup.timer"
-bazaar_service_name="secureblue-bazaar-setup.service"
-bazaar_timer_name="secureblue-bazaar-setup.timer"
+services_to_check=("bazaar" "flatpak")
 
 test-fail() {
     echo "Test failed: $1"
@@ -42,7 +39,7 @@ check-installed-flatpaks() {
 
 for timer in "${flatpak_timer_name}" "${bazaar_timer_name}"; do
     if ! systemctl --user is-enabled --quiet "${timer}"; then
-        test-fail "${flatpak_timer_name} is not enabled."
+        test-fail "${timer} is not enabled."
     fi
 done
 
@@ -50,19 +47,23 @@ done
 sleep 20
 
 
-for service_name in "${flatpak_service_name}" "${bazaar_timer_name}"; do
-    state=$(systemctl --user show "${service_name}" --property=ActiveState | sed 's/^ActiveState=//')
+for service in services_to_check; do
+    systemd_service_name="secureblue-${service}-setup.service"
+    state=$(systemctl --user show "${systemd_service_name}" --property=ActiveState | sed 's/^ActiveState=//')
 
     config_dir=${XDG_CONFIG_HOME:-"${HOME}/.config"}
-    if [[ -e "${config_dir}/secureblue/secureblue-flatpak-setup.stamp" ]]; then
-        echo "${service_name} has successfully completed."
-        check-flatpak-remotes
-        check-installed-flatpaks
+    stamp_file="${config_dir}/secureblue/secureblue-${service}-setup.stamp"
+    if [[ -e "${stamp_file}" ]]; then
+        echo "${systemd_service_name} has successfully completed."
+        if [[ "${service}" = 'flatpak' ]]; then
+            check-flatpak-remotes
+            check-installed-flatpaks
+        fi
     elif [[ "${state}" = 'activating' ]] || [[ "${state}" = 'active' ]]; then
-        echo "${service_name} is currently running."
+        echo "${systemd_service_name} is currently running."
     elif [[ "${state}" = 'failed' ]]; then
-        test-fail "${service_name} is in a failed state."
+        test-fail "${systemd_service_name} is in a failed state."
     else
-        test-fail "${service_name} is enabled, but has not started for some reason."
+        test-fail "${systemd_service_name} is enabled, but has not started for some reason."
     fi
 done

@@ -47,18 +47,18 @@ if [[ "${valid}" -ne 1 ]]; then
     echo "Invalid image."
     exit 1
 fi
-image_ref="ghcr.io/${github_repo_owner}/${ghcr_image}:${ghcr_tag}"
+image_ref="ghcr.io/${github_repo_owner,,}/${ghcr_image}:${ghcr_tag}"
 
 # The CoreOS installer has a permissive container policy by default. We modify
 # it to verify the cosign signature of the selected image.
 mkdir -p /etc/pki/containers
 cp ../cosign.pub /etc/pki/containers/secureblue.pub
-cat > /etc/containers/policy.json << EOF
+cat >/etc/containers/policy.json <<EOF
 {
     "default": [{"type": "reject"}],
     "transports": {
         "docker": {
-            "ghcr.io/${github_repo_owner}": [
+            "ghcr.io/${github_repo_owner,,}": [
                 {
                     "type": "sigstoreSigned",
                     "keyPath": "/etc/pki/containers/secureblue.pub",
@@ -69,33 +69,48 @@ cat > /etc/containers/policy.json << EOF
     }
 }
 EOF
-cat > /etc/containers/registries.d/secureblue.yaml << EOF
+cat >/etc/containers/registries.d/secureblue.yaml <<EOF
 docker:
-  ghcr.io/${github_repo_owner}:
+  ghcr.io/${github_repo_owner,,}:
     use-sigstore-attachments: true
 EOF
 
-# Get slsa-verifier.
-slsa_verifier_version="2.7.1"
-slsa_verifier_sha256="946dbec729094195e88ef78e1734324a27869f03e2c6bd2f61cbc06bd5350339"
-crane_version="0.21.7"
-crane_sha256="1a57bc98207fa1c0d04bf760699099e26f8383499bfd55b99c1b919a928a7230"
-curl -fLsS -o /usr/local/bin/slsa-verifier \
-    "https://github.com/slsa-framework/slsa-verifier/releases/download/v${slsa_verifier_version}/slsa-verifier-linux-amd64"
-echo "${slsa_verifier_sha256}  /usr/local/bin/slsa-verifier" | sha256sum -c -
-chmod +x /usr/local/bin/slsa-verifier
+verifier_tmpdir=$(mktemp -d)
+pushd "${verifier_tmpdir}"
 
-# Get crane.
-crane_tarball=$(mktemp)
-curl -fLsS -o "${crane_tarball}" \
-    "https://github.com/google/go-containerregistry/releases/download/v${crane_version}/go-containerregistry_Linux_x86_64.tar.gz"
-echo "${crane_sha256}  ${crane_tarball}" | sha256sum -c -
-tar -xzf "${crane_tarball}" -C /usr/local/bin crane
-rm -f "${crane_tarball}"
+# Get slsa-verifier.
+verifier_version='v0.1.1'
+verifier_sha256='7053bb00052a64c77dbba4400636fd22d336c1b10aba9aac1db44744b9efba31'
+curl -fLsS --retry 5 -o slsa-verifier \
+    "https://github.com/slsa-framework/verifier/releases/download/${verifier_version}/slsa-verifier-${verifier_version}-linux-amd64"
+echo "${verifier_sha256}  slsa-verifier" | sha256sum -c -
+chmod +x slsa-verifier
+
+# Get ORAS.
+oras_version='1.3.6'
+oras_sha256='66fb0ad7206f3f6fa77ed5b552049d364ccf4b50b1684554f731f76302b52ca0'
+oras_tarball="oras_${oras_version}_linux_amd64.tar.gz"
+curl -fLsS --retry 5 \
+    -O "https://github.com/oras-project/oras/releases/download/v${oras_version}/${oras_tarball}"
+echo "${oras_sha256}  ${oras_tarball}" | sha256sum -c -
+tar -xzf "${oras_tarball}"
+chmod +x oras
 
 # Get digest of selected image and verify provenance.
-full_ref=$(crane digest --full-ref "${image_ref}")
-slsa-verifier verify-image --source-uri "github.com/${github_repo_owner}/${github_repo_name}" "${full_ref}"
+image_digest=$(./oras resolve "${image_ref}")
+full_ref="${image_ref%:*}@${image_digest}"
+./oras pull "${image_ref%:*}:${image_digest/:/-}-provenance"
+./slsa-verifier build provenance.intoto.json \
+    --level 3 \
+    --require-signatures \
+    --signer 'sigstore(identityMatch=regex)::https://token.actions.githubusercontent.com::https://github\.com/slsa-framework/actions/\.github/workflows/attest_actions\.yml@refs/tags/v[0-9]+\.[0-9]+\.[0-9]+' \
+    --subject "${image_digest}" \
+    --param "expected_source:github.com/${github_repo_owner}/${github_repo_name}" \
+    --param 'expected_branch:live' \
+    --param "trusted_builders:[https://github.com/${github_repo_owner}/${github_repo_name}/.github/workflows/build-all.yml@refs/heads/live]"
+
+popd
+rm -rf "${verifier_tmpdir}"
 
 # Display available block devices and ask the user to select one.
 clear
@@ -128,7 +143,7 @@ if [[ ! "${luks}" =~ ^[Nn] ]]; then
     read -r -s -p "Confirm: " password2 && echo
     if [[ "${password}" == "${password2}" ]]; then
         keyfile=$(mktemp)
-        printf "%s" "${password}" > "${keyfile}"
+        printf "%s" "${password}" >"${keyfile}"
         unset password password2
     else
         echo "Passwords do not match."
@@ -243,10 +258,10 @@ podman run --rm --privileged --pid=host --ipc=host \
     -v /etc/containers/policy.json:/etc/containers/policy.json:ro \
     "${full_ref}" \
     bootc install to-filesystem \
-        "--source-imgref=registry:${full_ref}" \
-        "--target-imgref=${image_ref}" \
-        --bootloader=systemd --composefs-backend --skip-finalize \
-        /run/host/mnt/
+    "--source-imgref=registry:${full_ref}" \
+    "--target-imgref=${image_ref}" \
+    --bootloader=systemd --composefs-backend --skip-finalize \
+    /run/host/mnt/
 
 # Configure systemd-boot on the target system to give a GRUB-like menu to select
 # the desired bootc deployment (e.g. for rollback).
@@ -262,7 +277,7 @@ if [[ ${#etc_dirs[@]} -ne 1 ]]; then
 fi
 etc_dir=${etc_dirs[0]}
 escaped_esp="$(systemd-escape -p "/dev/disk/by-partuuid/${esp_uuid}")"
-cat > "${etc_dir}/systemd/system/boot.mount" << EOF
+cat >"${etc_dir}/systemd/system/boot.mount" <<EOF
 [Unit]
 Description=EFI System Partition
 Requires=systemd-fsck@${escaped_esp}.service
@@ -283,7 +298,7 @@ ln -s /etc/systemd/system/boot.mount "${etc_dir}/systemd/system/local-fs.target.
 
 # Create the login user on the target system.
 clear
-cat << EOF
+cat <<EOF
 Enter the details of your login account. It will be added to the wheel group.
 You should NOT choose a system username, like 'root' or 'admin'.
 Your password will be set to 'secureblue'. You must change it after logging in.
@@ -293,11 +308,11 @@ read -r -p "Username: " username
 # We use a hardcoded password because yescrypt isn't available here, only
 # SHA512, so the user will have to change it themselves after firstrun.
 password=$(openssl passwd -6 "secureblue")
-last_changed=$(( $(date +%s) / 86400 ))
-echo "${username}:x:1000:1000:${username}:/var/home/${username}:/bin/bash" >> "${etc_dir}/passwd"
-echo "${username}:${password}:${last_changed}:0:99999:7:::" >> "${etc_dir}/shadow"
+last_changed=$(($(date +%s) / 86400))
+echo "${username}:x:1000:1000:${username}:/var/home/${username}:/bin/bash" >>"${etc_dir}/passwd"
+echo "${username}:${password}:${last_changed}:0:99999:7:::" >>"${etc_dir}/shadow"
 # Now add the user to the wheel group.
-echo "${username}:x:1000:" >> "${etc_dir}/group"
+echo "${username}:x:1000:" >>"${etc_dir}/group"
 sed -i "s/^wheel:x:10:$/&${username}/" "${etc_dir}/group"
 # Create their home directory using /etc/skel and set correct permissions.
 var_dir="/mnt/state/os/default/var"
@@ -313,7 +328,7 @@ chcon -R "unconfined_u:object_r:virt_home_t:s0" "${var_dir}/home/${username}/.co
 
 # Optionally install shim.
 clear
-cat << 'EOF'
+cat <<'EOF'
 Choose a secure boot option:
 
 1. shim - Safe for all devices.
@@ -351,7 +366,7 @@ if [[ "${secure_boot}" != "2" ]]; then
     rmdir /mnt/boot/EFI/systemd
     # systemd-boot was signed with the secureblue MOK, so that needs to be
     # imported before first boot.
-    printf "secureblue\nsecureblue\n" | mokutil --import keys/db/db.der > /dev/null
+    printf "secureblue\nsecureblue\n" | mokutil --import keys/db/db.der >/dev/null
 fi
 
 # Everything succeeded, so clean up now to delete /mnt/tmp before firstrun.
@@ -359,7 +374,7 @@ cleanup
 
 # Display instructions and reboot the system.
 clear
-cat << EOF
+cat <<EOF
 Installation is finished.
 
 Username: ${username}
@@ -367,13 +382,13 @@ Password: secureblue
 
 EOF
 if [[ "${secure_boot}" == "1" ]]; then
-cat << EOF
+    cat <<EOF
 When the system reboots, you need to choose "Enroll MOK" and enter "secureblue"
 as the password.
 
 EOF
 else
-cat << 'EOF'
+    cat <<'EOF'
 After logging in, you must run `ujust enroll-secure-boot-keys` to finish setting
 up secure boot.
 

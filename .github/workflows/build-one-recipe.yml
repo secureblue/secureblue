@@ -47,7 +47,7 @@ jobs:
       id-token: write # Needed for token generation for signing
     steps:
       - name: Enable egress auditing
-        uses: step-security/harden-runner@46b06cea07f9e64621fdf066ba77ac6915163d43 # v2.22.3
+        uses: step-security/harden-runner@1d88384fd173af6ecb012dfd0264a306b711241a # v2.22.4
         with:
           egress-policy: block
           # Do not edit directly. Instead:
@@ -153,6 +153,7 @@ jobs:
             ix-denver.mm.fcix.net:443
             lesnet.mm.fcix.net:443
             lolhost.mm.fcix.net:443
+            mirror.acm.umn.edu:443
             mirror.cpsc.ucalgary.ca:443
             mirror.csclub.uwaterloo.ca:443
             mirror.cs.princeton.edu:443
@@ -226,7 +227,7 @@ jobs:
         uses: $/.github/workflows/shared-runner-setup
         with:
           needs_cosign: ${{ steps.image_data.outputs.IMAGE_NAME != 'securecore-main-hardened' && steps.image_data.outputs.IMAGE_NAME != 'iot-main-hardened' }}
-          needs_slsa_crane: ${{ startsWith(steps.image_data.outputs.BASE_IMAGE, format('ghcr.io/{0}/', github.repository_owner)) }}
+          needs_slsa_oras: ${{ startsWith(steps.image_data.outputs.BASE_IMAGE, format('ghcr.io/{0}/', github.repository_owner)) }}
 
       - name: Verify base image provenance
         shell: bash
@@ -235,10 +236,19 @@ jobs:
           BASE_IMAGE_VERSION: ${{ steps.image_data.outputs.BASE_IMAGE_VERSION }}
           BASE_IMAGE: ${{ steps.image_data.outputs.BASE_IMAGE }}
         run: |
-          DIGEST=$(crane digest "${BASE_IMAGE}:${BASE_IMAGE_VERSION}")
-          slsa-verifier verify-image --source-uri "github.com/${GITHUB_REPOSITORY}" "${BASE_IMAGE}:${BASE_IMAGE_VERSION}@${DIGEST}"
+          tempdir=$(mktemp -d)
+          DIGEST=$(oras resolve "${BASE_IMAGE}:${BASE_IMAGE_VERSION}")
+          oras pull -o "${tempdir}" "${BASE_IMAGE}:${DIGEST/:/-}-provenance"
+          slsa-verifier build "${tempdir}/provenance.intoto.json" \
+            --level 3 \
+            --require-signatures \
+            --signer 'sigstore(identityMatch=regex)::https://token.actions.githubusercontent.com::https://github\.com/slsa-framework/actions/\.github/workflows/attest_actions\.yml@refs/tags/v[0-9]+\.[0-9]+\.[0-9]+' \
+            --subject "${DIGEST}" \
+            --param "expected_source:github.com/${GITHUB_REPOSITORY}" \
+            --param 'expected_branch:live' \
+            --param "trusted_builders:[https://github.com/${GITHUB_REPOSITORY}/.github/workflows/build-all.yml@refs/heads/live]"
           # remove slsa-verifier so that it can be successfully reinstalled later by bluebuild
-          rm -rf ~/.slsa/
+          rm -rf ~/.slsa/ "${tempdir}"
 
       - name: Verify base image signature
         shell: bash
@@ -324,7 +334,7 @@ jobs:
 
   # Generate SLSA v0.2 provenance attestation. This is only needed for
   # backwards compatibility with images from before we started generating the
-  # newer SLSA v1 provenance, and can be removed after enough time has passed.
+  # newer SLSA v1 provenance, and can be removed after the F46 release.
   old-provenance:
     needs: [bluebuild]
     permissions:

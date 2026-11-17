@@ -97,6 +97,7 @@ irltoolkit.mm.fcix.net:443
 ix-denver.mm.fcix.net:443
 lesnet.mm.fcix.net:443
 lolhost.mm.fcix.net:443
+mirror.acm.umn.edu:443
 mirror.cpsc.ucalgary.ca:443
 mirror.csclub.uwaterloo.ca:443
 mirror.cs.princeton.edu:443

@@ -2,6 +2,7 @@
 #
 # SPDX-License-Identifier: Apache-2.0
 
+enable secureblue-check-system-flatpak.timer
 enable secureblue-firmware-check.timer
 enable secureblue-bazaar-setup.timer
 enable secureblue-flatpak-setup.timer

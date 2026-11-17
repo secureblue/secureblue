@@ -43,10 +43,8 @@ install:
     - python3-setuptools
 
     # provenance deps
-    - crane
-    # Temporarily pin the old version of slsa-verifier until all secureblue
-    # tooling that uses it is ready to be switched to the new version.
-    - slsa-verifier-2.7.1
+    - oras
+    - slsa-verifier
 
     # needed for our password quality dictionary check
     - cracklib-dicts

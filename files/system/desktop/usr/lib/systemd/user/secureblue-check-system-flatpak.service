@@ -1,0 +1,11 @@
+[Unit]
+Description=secureblue check system flatpak
+Wants=dbus.service
+After=dbus.service
+ConditionUser=!@system
+ConditionPathIsDirectory=/var/home/%u
+
+[Service]
+Type=oneshot
+ExecCondition=/usr/libexec/secureblue/check-system-flatpak
+ExecStart=/usr/libexec/secureblue/notify-system-flatpak

@@ -1,0 +1,16 @@
+# SPDX-FileCopyrightText: Copyright 2025-2026 The Secureblue Authors
+#
+# SPDX-License-Identifier: Apache-2.0
+
+[Unit]
+Description=Workaround for missing SELinux module rebuilding in bootc
+ConditionKernelCommandLine=composefs
+After=local-fs.target
+Before=systemd-user-sessions.service
+
+[Service]
+Type=oneshot
+ExecStart=/usr/libexec/secureblue/bootc-selinux-workaround
+
+[Install]
+WantedBy=multi-user.target

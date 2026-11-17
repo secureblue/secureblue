@@ -71,7 +71,7 @@ def set_bazaar_verified_filter(value: str) -> None:
             "show-only-verified",
             value,
         ],
-        check=False
+        check=False,
     )
 
 

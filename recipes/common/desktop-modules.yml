@@ -4,7 +4,7 @@
 
 modules:
   - type: files
-    source: ghcr.io/blue-build/modules@sha256:bb9eddf80d21f7dbe9514ed9e1e0ba052a33d4e2c72b940916cd0d5fee7b0f94
+    source: ghcr.io/blue-build/modules@sha256:5087b21811f9dcb28c750a64459dced3e241e3e94ec9a3793613ea3b88474c89
     files:
       - source: system/desktop
         destination: /
@@ -16,7 +16,7 @@ modules:
   - from-file: common/desktop-scripts.yml
 
   - type: justfiles
-    source: ghcr.io/blue-build/modules@sha256:bb9eddf80d21f7dbe9514ed9e1e0ba052a33d4e2c72b940916cd0d5fee7b0f94
+    source: ghcr.io/blue-build/modules@sha256:5087b21811f9dcb28c750a64459dced3e241e3e94ec9a3793613ea3b88474c89
     validate: true
     include:
       - desktop

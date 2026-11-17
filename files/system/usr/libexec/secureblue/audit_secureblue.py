@@ -1371,9 +1371,9 @@ def audit_bazaar_flatpak_auto_update():
     status = PASS
     recs = []
     notes = []
-    bazaar_running = BAZAAR_APPID in command_stdout(
-        "flatpak", "ps", "--columns=application"
-    ).splitlines()
+    bazaar_running = (
+        BAZAAR_APPID in command_stdout("flatpak", "ps", "--columns=application").splitlines()
+    )
     auto_update_enabled = (
         command_stdout(
             "flatpak",
@@ -1383,7 +1383,7 @@ def audit_bazaar_flatpak_auto_update():
             "get",
             BAZAAR_APPID,
             "auto-update",
-            check=False
+            check=False,
         )
         == "true"
     )
@@ -1397,7 +1397,7 @@ def audit_bazaar_flatpak_auto_update():
         rec_lines = [
             note_string,
             _("To resolve this, run:"),
-            f"$ flatpak run --command=gsettings {BAZAAR_APPID} set {BAZAAR_APPID} auto-update true"
+            f"$ flatpak run --command=gsettings {BAZAAR_APPID} set {BAZAAR_APPID} auto-update true",
         ]
         recs.append("\n".join(rec_lines))
 
@@ -1407,7 +1407,9 @@ def audit_bazaar_flatpak_auto_update():
         notes.append(Note(note_string, FAIL))
         rec_lines = [
             note_string,
-            _("To resolve this, start Bazaar and ensure that Bazaar is configured to start on boot.")
+            _(
+                "To resolve this, start Bazaar and ensure that Bazaar is configured to start on boot."
+            ),
         ]
         recs.append("\n".join(rec_lines))
 

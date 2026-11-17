@@ -1377,7 +1377,7 @@ async def audit_bazaar_flatpak_auto_update():
     auto_update_enabled = command_stdout(
         "flatpak", "run", "--command=gsettings", BAZAAR_APPID, "get", BAZAAR_APPID, "auto-update", check=False
     ) == "true"
-    
+
     note_string = ""
     rec_fail_lines = []
     if not auto_update_enabled:
@@ -1385,21 +1385,17 @@ async def audit_bazaar_flatpak_auto_update():
         note_string += "The auto-update setting must be enabled in Bazaar for Flatpaks to be automatically updated."
         rec_fail_lines.append("To resolve this, run:")
         rec_fail_lines.append(f"$ flatpak run --command=gsettings {BAZAAR_APPID} set {BAZAAR_APPID} auto-update true")
-
-    if not bazaar_running
+:
         status = FAIL
         note_string += "Bazaar must be running for Flatpaks to be automatically updated."
 
     if status == FAIL:
-        note = NOTE(_(note_string), FAIL)
+        note = Note(_(note_string), FAIL)
         rec_lines = [
             note.text,
             ...rec_fail_lines
         ]
-
-    rec_lines = [
-        note.text
-    ]
+        recs.append("\n".join(rec_lines))
 
     yield Report(
         _("Ensure Bazaar is running and has auto-updates enabled"),

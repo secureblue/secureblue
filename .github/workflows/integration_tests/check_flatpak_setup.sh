@@ -11,8 +11,9 @@ services_to_check=("bazaar" "flatpak")
 test-fail() {
     echo "Test failed: $1"
     echo "Service status:"
-    systemctl --user status --full "${flatpak_service_name}" || true
-    systemctl --user status --full "${bazaar_service_name}" || true
+    for service in "${services_to_check[@]}"; do
+        systemctl --user status --full "secureblue-${service}-setup.service" || true
+    done
     exit 1
 }
 
@@ -37,9 +38,10 @@ check-installed-flatpaks() {
     fi
 }
 
-for timer in "${flatpak_timer_name}" "${bazaar_timer_name}"; do
-    if ! systemctl --user is-enabled --quiet "${timer}"; then
-        test-fail "${timer} is not enabled."
+for service in "${services_to_check[@]}"; do
+    systemd_timer_name="secureblue-${service}-setup.timer"
+    if ! systemctl --user is-enabled --quiet "${systemd_timer_name}"; then
+        test-fail "${systemd_timer_name} is not enabled."
     fi
 done
 
@@ -47,7 +49,7 @@ done
 sleep 20
 
 
-for service in services_to_check; do
+for service in "${services_to_check[@]}"; do
     systemd_service_name="secureblue-${service}-setup.service"
     state=$(systemctl --user show "${systemd_service_name}" --property=ActiveState | sed 's/^ActiveState=//')
 
@@ -57,6 +59,9 @@ for service in services_to_check; do
         echo "${systemd_service_name} has successfully completed."
         if [[ "${service}" = 'flatpak' ]]; then
             check-flatpak-remotes
+        fi
+
+        if [[ "${service}" = 'bazaar' ]]; then
             check-installed-flatpaks
         fi
     elif [[ "${state}" = 'activating' ]] || [[ "${state}" = 'active' ]]; then

@@ -6,7 +6,6 @@
 
 set -euo pipefail
 
-
 in_progress_indicator=~/.cache/secureblue-bazaar-setup-in-progress
 if [[ ! -f "${in_progress_indicator}" ]]; then
     notify-send -a 'secureblue' -i 'dialog-information' -u normal 'Provisioning Bazaar flatpak, please wait...'

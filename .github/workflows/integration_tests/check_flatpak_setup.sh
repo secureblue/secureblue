@@ -38,10 +38,9 @@ check-installed-flatpaks() {
     fi
 }
 
-for service in "${services_to_check[@]}"; do
-    systemd_timer_name="secureblue-${service}-setup.timer"
-    if ! systemctl --user is-enabled --quiet "${systemd_timer_name}"; then
-        test-fail "${systemd_timer_name} is not enabled."
+for unit in secureblue-bazaar-setup.service secureblue-flatpak-setup.timer; do
+    if ! systemctl --user is-enabled --quiet "${unit}"; then
+        test-fail "${unit} is not enabled."
     fi
 done
 
@@ -54,6 +53,9 @@ for service in "${services_to_check[@]}"; do
     state=$(systemctl --user show "${systemd_service_name}" --property=ActiveState | sed 's/^ActiveState=//')
     job=$(systemctl --user show "${systemd_service_name}" --property=Job | sed 's/^Job=//')
     config_dir=${XDG_CONFIG_HOME:-"${HOME}/.config"}
+    if [[ "${service}" = 'bazaar' ]]; then
+        config_dir=${XDG_STATE_HOME:-"${HOME}/.local/state"}
+    fi
     stamp_file="${config_dir}/secureblue/secureblue-${service}-setup.stamp"
     if [[ -e "${stamp_file}" ]]; then
         echo "${systemd_service_name} has successfully completed."

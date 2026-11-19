@@ -715,36 +715,6 @@ def audit_podman_global_auto_update(state):
 
 
 @audit
-def audit_flatpak_auto_update():
-    """Ensure flatpak automatic updates are enabled."""
-    if not command_succeeds("command", "-v", "flatpak"):
-        return
-
-    status = PASS
-    note = None
-    rec = None
-    if not command_succeeds("systemctl", "is-enabled", "--quiet", "flatpak-system-update.timer"):
-        status = FAIL
-        note = Note(_("{0} is not enabled.").format("flatpak-system-update.timer"), FAIL)
-        rec_lines = [
-            note.text,
-            _("To enable it, run:"),
-            "$ systemctl enable --now flatpak-system-update.timer",
-        ]
-        rec = "\n".join(rec_lines)
-    elif command_succeeds("systemctl", "is-failed", "--quiet", "flatpak-system-update.service"):
-        status = status.downgrade_to(WARN)
-        note = Note(_("{0} has failed to run.").format("flatpak-system-update.service"), WARN)
-
-    yield Report(
-        _("Ensuring {0} is enabled").format("flatpak-system-update.timer"),
-        status,
-        notes=note,
-        recs=rec,
-    )
-
-
-@audit
 def audit_brew_auto_update():
     """Ensure Homebrew automatic updates are enabled."""
     if not command_succeeds("command", "-v", "brew"):
@@ -1323,48 +1293,9 @@ def audit_flatpak_remotes():
 
 
 @audit
-@depends_on("audit_modprobe", "audit_ptrace")
-@categorize("flatpak", SKIP_IF_ROOT)
-async def audit_flatpak_permissions(state):
-    """Audit flatpak permissions."""
-    if not command_succeeds("command", "-v", "flatpak"):
-        return
-
-    flatpaks = []
-    for line in command_stdout(
-        "flatpak", "list", "--app", "--columns=application,branch"
-    ).splitlines():
-        if not line:
-            continue
-        name, version = line.split("\t")
-        flatpaks.append((name, version))
-    flatpaks.sort()
-
-    tasks = {}
-    for name, version in flatpaks:
-        coro = get_flatpak_permissions(name, version)
-        tasks[(name, version)] = asyncio.create_task(coro, name=str((name, version)))
-    # Yield flatpak permission reports in lexicographical order
-    for name, version in flatpaks:
-        perms_text = await tasks[(name, version)]
-        perms = parse_flatpak_permissions(perms_text)
-        flatpak_permissions_state = check_flatpak_permissions(
-            name, perms, state["bluetooth_loaded"], state["ptrace_allowed"]
-        )
-        display_name = name if version == "stable" else f"{name} ({version})"
-        report_text = _("Auditing {0}").format(display_name)
-        yield Report(
-            report_text,
-            flatpak_permissions_state.status,
-            notes=flatpak_permissions_state.notes,
-            recs=flatpak_permissions_state.recs,
-        )
-
-
-@audit
 @categorize("flatpak", SKIP_IF_ROOT)
 def audit_bazaar_flatpak_auto_update():
-    """Ensure Bazaar is running and has auto-updates enabled."""
+    """Ensure Bazaar is running and has automatic updates enabled."""
     if not command_succeeds("command", "-v", "flatpak"):
         return
 
@@ -1408,17 +1339,56 @@ def audit_bazaar_flatpak_auto_update():
         rec_lines = [
             note_string,
             _(
-                "To resolve this, start Bazaar and ensure that Bazaar is configured to start on boot."
+                "To resolve this, start Bazaar and ensure that Bazaar's daemon is configured to start on boot."
             ),
         ]
         recs.append("\n".join(rec_lines))
 
     yield Report(
-        _("Ensuring Bazaar is running and has auto-updates enabled"),
+        _("Ensuring Bazaar is running and has automatic updates enabled"),
         status,
         notes=notes,
         recs=recs,
     )
+
+
+@audit
+@depends_on("audit_modprobe", "audit_ptrace")
+@categorize("flatpak", SKIP_IF_ROOT)
+async def audit_flatpak_permissions(state):
+    """Audit flatpak permissions."""
+    if not command_succeeds("command", "-v", "flatpak"):
+        return
+
+    flatpaks = []
+    for line in command_stdout(
+        "flatpak", "list", "--app", "--columns=application,branch"
+    ).splitlines():
+        if not line:
+            continue
+        name, version = line.split("\t")
+        flatpaks.append((name, version))
+    flatpaks.sort()
+
+    tasks = {}
+    for name, version in flatpaks:
+        coro = get_flatpak_permissions(name, version)
+        tasks[(name, version)] = asyncio.create_task(coro, name=str((name, version)))
+    # Yield flatpak permission reports in lexicographical order
+    for name, version in flatpaks:
+        perms_text = await tasks[(name, version)]
+        perms = parse_flatpak_permissions(perms_text)
+        flatpak_permissions_state = check_flatpak_permissions(
+            name, perms, state["bluetooth_loaded"], state["ptrace_allowed"]
+        )
+        display_name = name if version == "stable" else f"{name} ({version})"
+        report_text = _("Auditing {0}").format(display_name)
+        yield Report(
+            report_text,
+            flatpak_permissions_state.status,
+            notes=flatpak_permissions_state.notes,
+            recs=flatpak_permissions_state.recs,
+        )
 
 
 ###############################################################################

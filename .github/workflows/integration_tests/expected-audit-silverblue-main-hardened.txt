@@ -14,7 +14,6 @@
 {"name":"audit_update_timer","description":"Ensuring automatic system updates are enabled","status":"pass","notes":[]}
 {"name":"audit_podman_auto_update","description":"Ensuring podman-auto-update.timer is enabled","status":"pass","notes":[]}
 {"name":"audit_podman_global_auto_update","description":"Ensuring podman-auto-update.timer is enabled globally","status":"pass","notes":[]}
-{"name":"audit_flatpak_auto_update","description":"Ensuring flatpak-system-update.timer is enabled","status":"pass","notes":[]}
 {"name":"audit_groups","description":"Ensuring user is not a member of the wheel group","status":"fail","notes":[]}
 {"name":"audit_groups","description":"Checking if user is in groups with security implications","status":"pass","notes":[]}
 {"name":"audit_xwayland","description":"Ensuring Xwayland is disabled for GNOME","status":"pass","notes":[]}

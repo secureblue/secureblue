@@ -9,6 +9,7 @@
 import json
 import subprocess
 import sys
+import urllib.request
 from typing import TYPE_CHECKING, Final, assert_never
 
 if TYPE_CHECKING:
@@ -59,7 +60,8 @@ def unfiltered_remote_enabled() -> bool:
     return False
 
 
-def set_bazaar_verified_filter(value: str) -> None:
+def set_bazaar_verified_filter(verified: bool) -> None:
+    value = "true" if verified else "false"
     subprocess.run(
         [
             "/usr/bin/flatpak",
@@ -97,14 +99,14 @@ def set_remote_unfiltered() -> None:
         ],
         check=True,
     )
-    set_bazaar_verified_filter("false")
+    set_bazaar_verified_filter(False)
 
 
 def is_verified(app: str) -> bool:
-    app_verification_info = command_stdout(
-        "curl", "-fLsS", "--retry", "5", f"https://flathub.org/api/v2/verification/{app}/status"
-    )
-    app_verification_info_json = json.loads(app_verification_info)
+    app_verification_info = urllib.request.urlopen(
+        f"https://flathub.org/api/v2/verification/{app}/status"
+     )
+    app_verification_info_json = json.load(app_verification_info)
     return app_verification_info_json["verified"]
 
 
@@ -140,7 +142,7 @@ def set_remote_filtered() -> None:
     subprocess.run(
         ["/usr/bin/flatpak", "remote-modify", "--user", "--subset=verified", "flathub"], check=True
     )
-    set_bazaar_verified_filter("true")
+    set_bazaar_verified_filter(True)
 
 
 def main() -> int:
@@ -164,7 +166,7 @@ def main() -> int:
                 print(HELP_MESSAGE)
             case _ as unreachable:
                 assert_never(unreachable)
-    except subprocess.CalledProcessError:
+    except subprocess.CalledProcessError, OSError:
         print("An unexpected error occurred.")
         return 1
 

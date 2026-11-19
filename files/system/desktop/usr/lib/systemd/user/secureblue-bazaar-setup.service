@@ -1,16 +1,19 @@
 [Unit]
 Description=secureblue bazaar setup
-Wants=network-online.target
+Wants=network-online.target secureblue-flatpak-setup.service
 After=network-online.target secureblue-flatpak-setup.service
 ConditionUser=!@system
 ConditionPathIsDirectory=/var/home/%u
-ConditionPathExists=!%E/secureblue/secureblue-bazaar-setup.stamp
+ConditionPathExists=!%S/secureblue/secureblue-bazaar-setup.stamp
 
 [Service]
 Type=oneshot
-ExecStart=/usr/libexec/secureblue/securebluebazaarsetup
-ExecStartPost=/bin/bash -c 'cfg="${XDG_CONFIG_HOME:-"$HOME/.config"}/secureblue"; mkdir -p "$cfg" && touch "$cfg/secureblue-bazaar-setup.stamp"'
+ExecStart=/usr/libexec/secureblue/secureblue-bazaar-setup
+ExecStartPost=/usr/bin/touch %S/secureblue/secureblue-bazaar-setup.stamp
 Restart=on-failure
 RestartSec=30s
 RestartMaxDelaySec=1800s
 RestartSteps=10
+
+[Install]
+WantedBy=default.target

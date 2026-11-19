@@ -25,4 +25,4 @@ flatpak run --command=gsettings io.github.kolunmi.Bazaar set io.github.kolunmi.B
 if flatpak remotes --user --columns=name,subset | grep -Eqx 'flathub[[:blank:]]+verified'; then
     flatpak run --command=gsettings io.github.kolunmi.Bazaar set io.github.kolunmi.Bazaar show-only-verified true
 fi
-systemctl --user start app-io.github.kolunmi.Bazaar@autostart.service
+systemctl --user start --no-block app-io.github.kolunmi.Bazaar@autostart.service

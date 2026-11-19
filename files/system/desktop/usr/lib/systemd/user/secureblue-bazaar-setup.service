@@ -14,6 +14,3 @@ Restart=on-failure
 RestartSec=30s
 RestartMaxDelaySec=1800s
 RestartSteps=10
-
-[Install]
-WantedBy=default.target

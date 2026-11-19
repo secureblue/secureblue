@@ -1339,7 +1339,7 @@ def audit_bazaar_flatpak_auto_update():
         rec_lines = [
             note_string,
             _(
-                "To resolve this, start Bazaar and ensure that Bazaar's daemon is configured to start on boot."
+                "To resolve this, start Bazaar and ensure that Bazaar's daemon is set to start on boot."
             ),
         ]
         recs.append("\n".join(rec_lines))

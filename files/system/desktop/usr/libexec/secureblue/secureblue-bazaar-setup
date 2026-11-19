@@ -6,6 +6,13 @@
 
 set -euo pipefail
 
+
+in_progress_indicator=~/.cache/secureblue-bazaar-setup-in-progress
+if [[ ! -f "${in_progress_indicator}" ]]; then
+    notify-send -a 'secureblue' -i 'dialog-information' -u normal 'Provisioning Bazaar flatpak, please wait...'
+fi
+touch "${in_progress_indicator}"
+
 FLATPAK_REMOTES=$(flatpak remotes --user --columns=name)
 
 flatpak remote-add --if-not-exists --user --subset=verified flathub https://dl.flathub.org/repo/flathub.flatpakrepo
@@ -26,3 +33,6 @@ if flatpak remotes --user --columns=name,subset | grep -Eqx 'flathub[[:blank:]]+
     flatpak run --command=gsettings io.github.kolunmi.Bazaar set io.github.kolunmi.Bazaar show-only-verified true
 fi
 systemctl --user start --no-block app-io.github.kolunmi.Bazaar@autostart.service
+
+notify-send -a 'secureblue' -i 'dialog-information' -u normal 'Bazaar provisioning completed.'
+rm -f "${in_progress_indicator}"

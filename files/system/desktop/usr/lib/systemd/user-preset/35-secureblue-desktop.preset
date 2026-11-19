@@ -5,7 +5,7 @@
 enable secureblue-check-system-flatpak.timer
 enable secureblue-firmware-check.timer
 enable secureblue-bazaar-setup.timer
-enable secureblue-flatpak-setup.timer
+enable secureblue-flatpak-setup.service
 enable secureblue-key-enrollment-verification.timer
 enable secureblue-update-verification.timer
 enable security-update-notification.path

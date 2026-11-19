@@ -105,7 +105,7 @@ def set_remote_unfiltered() -> None:
 def is_verified(app: str) -> bool:
     app_verification_info = urllib.request.urlopen(
         f"https://flathub.org/api/v2/verification/{app}/status"
-     )
+    )
     app_verification_info_json = json.load(app_verification_info)
     return app_verification_info_json["verified"]
 

@@ -39,7 +39,7 @@ jobs:
 
     steps:
       - name: Free disk space
-        uses: hastd/free-disk-space@68572aeaadb7f76bd408246328e95926323402b5 # v0.1.2
+        uses: hastd/free-disk-space@v0.1.2
         with:
           skip-if-available: "64G"
 
@@ -50,7 +50,7 @@ jobs:
           sudo apt-get install rclone
 
       - name: Checkout
-        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        uses: actions/checkout@v7.0.1
         with:
           persist-credentials: false
 
@@ -66,7 +66,7 @@ jobs:
         id: iso_build
         env:
           IMAGE_REF: ghcr.io/secureblue/${{ matrix.image }}:latest
-        uses: RoyalOughtness/titanoboa@609f1b3d51e6abd1f445896cf1e0556de9665690 # main
+        uses: RoyalOughtness/titanoboa@main
         with:
           image-ref: ${{ env.IMAGE_REF }}
           hook-post-rootfs: ${{ github.workspace }}/.github/workflows/isos/prep_rootfs.sh
@@ -143,7 +143,7 @@ jobs:
           echo "output-directory=${TARGET_OUTPUT_DIRECTORY}" >> ${GITHUB_OUTPUT}
 
       - name: Upload ISO and Checksum to Job Artifacts
-        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        uses: actions/upload-artifact@v7.0.2
         with:
           path: ${{ steps.rename.outputs.output-directory }}
           name: ${{ matrix.image }}

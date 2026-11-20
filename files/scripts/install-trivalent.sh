@@ -7,13 +7,9 @@
 set -euo pipefail
 shopt -s nullglob
 
-dnf install python3-dnf -y
-
 secureblue_gpg_key_path="$(dnf repo info secureblue --json | jq -r '.[0].gpg_key.[0]')"
 rpmkeys --import "${secureblue_gpg_key_path}"
 
-# Package signatures are NOT being checked at this stage,
-# see https://github.com/rpm-software-management/dnf5/issues/1985
 dnf --best --repo=secureblue -y download trivalent
 
 trivalent_rpms_found=0

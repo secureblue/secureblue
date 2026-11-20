@@ -7,7 +7,7 @@
 set -euo pipefail
 kCommand="flatpak override --user"
 kSharePermissions=("network" "ipc")
-kSocketPermissions=("inherit-wayland-socket" "gpg-agent" "cups" "pcsc" "ssh-auth" "system-bus" "session-bus" "pulseaudio" "fallback-x11" "x11")
+kSocketPermissions=("inherit-wayland-socket" "gpg-agent" "cups" "pcsc" "ssh-auth" "system-bus" "session-bus" "pulseaudio" "x11" "fallback-x11")
 kDevicePermissions=("all" "shm" "kvm" "input" "usb")
 kFeaturePermissions=("per-app-dev-shm" "canbus" "bluetooth" "multiarch" "devel")
 kFilesystemPermissions=("home" "host-etc" "host")

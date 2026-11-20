@@ -27,3 +27,6 @@ show-image-thumbnails='never'
 
 [org.gnome.desktop.thumbnailers]
 disable-all=true
+
+[org.gnome.desktop.search-providers]
+enabled=['io.github.kolunmi.Bazaar.desktop']

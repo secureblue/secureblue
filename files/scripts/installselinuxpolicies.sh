@@ -19,7 +19,7 @@ dnf install -y --setopt=install_weak_deps=False --enable-repo=updates-archive,up
     "selinux-policy-devel-${selinux_policy_version}"
 rm /etc/yum.repos.d/updates-archive-f44.repo
 
-policy_modules=(flatpakfull stdmalloc)
+policy_modules=(flatpakfull)
 
 cil_policy_modules=(
     './selinux/flatpakfull/grant_systemd_flatpak_exec.cil'

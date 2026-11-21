@@ -38,9 +38,10 @@ check-installed-flatpaks() {
     fi
 }
 
-for unit in secureblue-bazaar-setup.timer secureblue-flatpak-setup.timer; do
-    if ! systemctl --user is-enabled --quiet "${unit}"; then
-        test-fail "${unit} is not enabled."
+for service in "${services_to_check[@]}"; do
+    timer="secureblue-${service}-setup.timer"
+    if ! systemctl --user is-enabled --quiet "${timer}"; then
+        test-fail "${timer} is not enabled."
     fi
 done
 

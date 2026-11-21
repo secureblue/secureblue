@@ -18,7 +18,6 @@ install:
     - wl-clipboard
     - alsa-firmware
     - fzf
-    - bazaar
     - homebrew
     - brew-proxy
     - brew-proxy-selinux

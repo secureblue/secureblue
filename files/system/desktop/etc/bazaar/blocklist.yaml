@@ -43,8 +43,6 @@ blocklists:
       - org.netsurf_browser.NetSurf
 
       # Other apps.
-      ## We ship the RPM.
-      - io.github.kolunmi.Bazaar
       # Uses an internal browser
       - net.codelogistics.webapps
       # Appears to only support flatpaked browsers

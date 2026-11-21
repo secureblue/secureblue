@@ -75,7 +75,12 @@ def main() -> int:
         return 1
 
     disabled_by_file = Path(WEBCAM_MOD_FILE).exists()
-    webcam_function = sandbox.SandboxedFunction("webcam.py", read_write_paths=[WEBCAM_MOD_DIR])
+    webcam_function = sandbox.SandboxedFunction(
+        "webcam.py",
+        read_write_paths=[WEBCAM_MOD_DIR],
+        remove_sandbox_arguments=["--property=ProtectKernelModules"],
+        allowed_syscalls=["@module"],
+    )
     match mode:
         case "on" | "off":
             target_state_enabled = mode == "on"

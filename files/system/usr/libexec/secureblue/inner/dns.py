@@ -84,7 +84,6 @@ def set_resolver(resolver: DNSResolver) -> None:
             DNSResolver.RESOLVED.service.disable()
 
             # NetworkManager needs to be told to use dnsconfd.
-            DNSCONFD_CONF_PATH.parent.mkdir(parents=True, exist_ok=True)
             DNSCONFD_MANAGER_PATH.write_text("[main]\ndns=dnsconfd\n", encoding="utf-8")
             DNSCONFD_MANAGER_PATH.chmod(0o644)
             # resolv.conf needs to be a real file owned by dnsconfd:root.
@@ -99,6 +98,8 @@ def set_resolver(resolver: DNSResolver) -> None:
         case DNSResolver.RESOLVED:
             DNSResolver.UNBOUND.service.disable()
             DNSResolver.UNBOUND.service.mask()
+            SystemdService("unbound.socket").disable_now()
+            SystemdService("unbound-control.socket").disable_now()
 
             DNSCONFD_MANAGER_PATH.unlink(missing_ok=True)
             # systemd-resolved is implicitly detected by NetworkManager based on
@@ -165,6 +166,7 @@ def set_dnssec_enabled(should_validate: bool) -> None:
         DNSCONFD_CONF_PATH.unlink(missing_ok=True)
         return
 
+    DNSCONFD_CONF_PATH.parent.mkdir(parents=True, exist_ok=True)
     DNSCONFD_CONF_PATH.write_text("dnssec_enabled: yes\n", encoding="utf-8")
     DNSCONFD_CONF_PATH.chmod(0o644)
 

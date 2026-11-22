@@ -38,6 +38,7 @@
         {
             matchDepNames: ["quay.io/coreos/chunkah"],
             groupName: "chunkah",
+            minimumReleaseAgeBehaviour: "timestamp-optional",
         },
     ],
 }

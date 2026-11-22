@@ -29,6 +29,7 @@ install:
     - gettext
     - rsync
     - just
+    - unar
 
     # signing deps
     - sbsigntools

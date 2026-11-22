@@ -46,7 +46,7 @@ RUN --mount=type=bind,from=scripts,src=/,target=/run/scripts \
 # Rechunk container image to ensure that we compute the correct composefs hash
 # - Use more layers (128)
 # - Ignore legacy ostree folders
-FROM quay.io/coreos/chunkah AS chunkah
+FROM quay.io/coreos/chunkah@sha256:71e593421c5de7dcc7c8c5c50e98d3bac572055a76f399f61a491d123c20a523 AS chunkah
 RUN --mount=from=rootfs,src=/,target=/chunkah,ro \
     --mount=type=bind,target=/run/src,rw \
         chunkah build \

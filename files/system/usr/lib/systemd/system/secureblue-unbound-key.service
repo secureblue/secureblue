@@ -17,6 +17,7 @@ RequiresMountsFor=/etc
 
 [Service]
 Type=oneshot
+User=unbound
 ExecCondition=/usr/bin/test ! -e /var/lib/unbound/root.key
 ExecStartPre=/usr/bin/mkdir -p /var/lib/unbound
 ExecStart=/usr/bin/cp /etc/unbound/dnssec-root.key /var/lib/unbound/root.key

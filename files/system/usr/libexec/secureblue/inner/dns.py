@@ -19,7 +19,7 @@ from typing import Final
 
 from shared.utils import SystemdService
 
-DNSCONFD_CONF_PATH: Final[Path] = Path("/etc/dnsconfd.conf")
+DNSCONFD_CONF_PATH: Final[Path] = Path("/etc/dnsconfd/conf.d/secureblue-dnssec.conf")
 DNSCONFD_MANAGER_PATH: Final[Path] = Path("/etc/NetworkManager/conf.d/dnsconfd.conf")
 NM_GLOBALDNS_CONF_PATH: Final[Path] = Path("/etc/NetworkManager/conf.d/global-dns.conf")
 RESOLVCONF_PATH: Final[Path] = Path("/etc/resolv.conf")
@@ -84,6 +84,7 @@ def set_resolver(resolver: DNSResolver) -> None:
             DNSResolver.RESOLVED.service.disable()
 
             # NetworkManager needs to be told to use dnsconfd.
+            DNSCONFD_CONF_PATH.parent.mkdir(parents=True, exist_ok=True)
             DNSCONFD_MANAGER_PATH.write_text("[main]\ndns=dnsconfd\n", encoding="utf-8")
             DNSCONFD_MANAGER_PATH.chmod(0o644)
             # resolv.conf needs to be a real file owned by dnsconfd:root.
@@ -92,17 +93,12 @@ def set_resolver(resolver: DNSResolver) -> None:
             RESOLVCONF_PATH.chmod(0o644)
             dnsconfd_uid = pwd.getpwnam("dnsconfd").pw_uid  # For unprivileged dnsconfd.
             os.chown(RESOLVCONF_PATH, uid=dnsconfd_uid, gid=0)  # gid 0 is default behavior.
-
-            SystemdService("unbound.socket").enable_now()
-            SystemdService("unbound-control.socket").enable_now()
             DNSResolver.UNBOUND.service.unmask()
             DNSResolver.UNBOUND.service.enable()
 
         case DNSResolver.RESOLVED:
             DNSResolver.UNBOUND.service.disable()
             DNSResolver.UNBOUND.service.mask()
-            SystemdService("unbound.socket").disable_now()
-            SystemdService("unbound-control.socket").disable_now()
 
             DNSCONFD_MANAGER_PATH.unlink(missing_ok=True)
             # systemd-resolved is implicitly detected by NetworkManager based on

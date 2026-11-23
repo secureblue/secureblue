@@ -238,20 +238,36 @@ jobs:
           UKI_ADDONS_DIGEST: ${{ steps.base_image_digests.outputs.UKI_ADDONS_DIGEST }}
         run: |
           verify_image() {
-            image_name="$1"
-            digest="$2"
-            workflow_file="$3"
+            local image_name="$1"
+            local image_digest="$2"
+            local workflow_file="$3"
+            local tempdir
             tempdir=$(mktemp -d)
-            oras pull -o "${tempdir}" "${REPO,,}/${image_name}:${digest/:/-}-provenance"
+            local referrers
+            referrers=$(
+              oras discover --format json \
+                --artifact-type 'application/vnd.in-toto.provenance+dsse' \
+                "${REPO,,}/${image_name}@${image_digest}"
+            ) || return 1
+            local provenance_digest
+            provenance_digest=$(jq -r '.referrers[].digest' <<<"${referrers}")
+            if [[ -z "${provenance_digest}" ]]; then
+              echo "Provenance not found for ${REPO,,}/${image_name}@${image_digest}"
+              return 1
+            elif [[ "${provenance_digest}" == *$'\n'* ]]; then
+              echo "More than one provenance artifact found for ${REPO,,}/${image_name}@${image_digest}"
+              return 1
+            fi
+            oras pull -o "${tempdir}" "${REPO,,}/${image_name}@${provenance_digest}" || return 1
             slsa-verifier build "${tempdir}/provenance.intoto.json" \
               --level 3 \
               --require-signatures \
               --signer 'sigstore(identityMatch=regex)::https://token.actions.githubusercontent.com::https://github\.com/slsa-framework/actions/\.github/workflows/attest_actions\.yml@refs/tags/v[0-9]+\.[0-9]+\.[0-9]+' \
-              --subject "${digest}" \
+              --subject "${image_digest}" \
               --param "expected_source:github.com/${GITHUB_REPOSITORY}" \
               --param 'expected_branch:live' \
               --param "trusted_builders:[https://github.com/${GITHUB_REPOSITORY}/.github/workflows/${workflow_file}@refs/heads/live]"
-            cosign verify --key ./cosign.pub "${REPO,,}/${image_name}@${digest}"
+            cosign verify --key ./cosign.pub "${REPO,,}/${image_name}@${image_digest}"
             rm -rf "${tempdir}"
           }
 

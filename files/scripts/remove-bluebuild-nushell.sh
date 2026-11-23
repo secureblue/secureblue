@@ -7,4 +7,3 @@
 set -euo pipefail
 
 rm -rf /usr/libexec/bluebuild
-

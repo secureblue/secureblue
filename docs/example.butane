@@ -67,7 +67,8 @@ storage:
             sudo rm -f /opt/install_secureblue.sh \
                 /etc/pki/containers/secureblue-2025.pub \
                 /etc/containers/policy.json \
-                /etc/containers/registries.d/secureblue.yaml
+                /etc/containers/registries.d/secureblue.yaml \
+                /etc/systemd/system/rpm-ostreed.service.d/coreos-containers-policy.conf
             echo "Automatically rebooting in 5 seconds..."
             sleep 5
             sudo systemctl reboot

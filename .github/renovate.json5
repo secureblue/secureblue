@@ -15,8 +15,8 @@
         {
             customType: "regex",
             managerFilePatterns: [
-		"recipes/**/recipe-*.yml"
-	    ],
+                "recipes/**/recipe-*.yml"
+            ],
             matchStrings: [
                 'nushell-version: "(?<currentValue>[a-z0-9.]+)@(?<currentDigest>sha256:[a-f0-9]+)"',
             ],

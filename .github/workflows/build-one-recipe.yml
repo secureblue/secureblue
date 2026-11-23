@@ -313,6 +313,7 @@ jobs:
           maximize_build_space: true
           squash: true
           chunkah: ${{ inputs.rechunk }}
+          build_opts: --chunkah-version v0.7.1@sha256:71e593421c5de7dcc7c8c5c50e98d3bac572055a76f399f61a491d123c20a523
           max_layers: 128
           skip_checkout: true
           use_cache: false

@@ -21,6 +21,18 @@
             depNameTemplate: "ghcr.io/blue-build/nushell-image",
             datasourceTemplate: "docker",
         },
+        {
+            customType: "regex",
+            managerFilePatterns: [
+                ".github/workflows/*.yaml",
+                ".github/workflows/*.yml",
+            ],
+            matchStrings: [
+                "--chunkah-version (?<currentValue>v[0-9.]+)@(?<currentDigest>sha256:[a-f0-9]+)",
+            ],
+            depNameTemplate: "quay.io/coreos/chunkah",
+            datasourceTemplate: "docker",
+        },
     ],
     packageRules: [
         {
@@ -35,6 +47,11 @@
         {
             matchDepNames: ["ghcr.io/blue-build/nushell-image"],
             groupName: "BlueBuild nushell image",
+            minimumReleaseAgeBehaviour: "timestamp-optional",
+        },
+        {
+            matchDepNames: ["quay.io/coreos/chunkah"],
+            groupName: "chunkah",
             minimumReleaseAgeBehaviour: "timestamp-optional",
         },
     ],

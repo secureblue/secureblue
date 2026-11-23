@@ -74,6 +74,7 @@ CONFIG_FILE: Final[Path] = get_config_dir() / "secureblue/audit.toml"
 
 SKIP_IF_ROOT: Final[str] = "skip-if-root"
 SEBOOL_TRIVALENT_EXEC_FLATPAKS: Final[str] = "trivalent_exec_flatpaks"
+BAZAAR_APPID: Final[str] = "io.github.kolunmi.Bazaar"
 
 
 @audit
@@ -714,62 +715,6 @@ def audit_podman_global_auto_update(state):
 
 
 @audit
-def audit_flatpak_auto_update():
-    """Ensure flatpak automatic updates are enabled."""
-    if not command_succeeds("command", "-v", "flatpak"):
-        return
-    status = PASS
-    note = None
-    rec = None
-    if not command_succeeds(
-        "systemctl", "--global", "is-enabled", "--quiet", "flatpak-user-update.timer"
-    ):
-        status = FAIL
-        note = Note(_("{0} is not enabled globally.").format("flatpak-user-update.timer"), FAIL)
-        rec_lines = [
-            note.text,
-            _("To enable it, run:"),
-            "$ systemctl enable --global --now flatpak-user-update.timer",
-        ]
-        rec = "\n".join(rec_lines)
-    elif command_succeeds(
-        "systemctl", "--user", "is-failed", "--quiet", "flatpak-user-update.service"
-    ):
-        status = status.downgrade_to(WARN)
-        note = Note(_("{0} has failed to run.").format("flatpak-user-update.service"), WARN)
-
-    yield Report(
-        _("Ensuring {0} is enabled globally").format("flatpak-user-update.timer"),
-        status,
-        notes=note,
-        recs=rec,
-    )
-
-    status = PASS
-    note = None
-    rec = None
-    if not command_succeeds("systemctl", "is-enabled", "--quiet", "flatpak-system-update.timer"):
-        status = FAIL
-        note = Note(_("{0} is not enabled.").format("flatpak-system-update.timer"), FAIL)
-        rec_lines = [
-            note.text,
-            _("To enable it, run:"),
-            "$ systemctl enable --now flatpak-system-update.timer",
-        ]
-        rec = "\n".join(rec_lines)
-    elif command_succeeds("systemctl", "is-failed", "--quiet", "flatpak-system-update.service"):
-        status = status.downgrade_to(WARN)
-        note = Note(_("{0} has failed to run.").format("flatpak-system-update.service"), WARN)
-
-    yield Report(
-        _("Ensuring {0} is enabled").format("flatpak-system-update.timer"),
-        status,
-        notes=note,
-        recs=rec,
-    )
-
-
-@audit
 def audit_brew_auto_update():
     """Ensure Homebrew automatic updates are enabled."""
     if not command_succeeds("command", "-v", "brew"):
@@ -1345,6 +1290,66 @@ def audit_flatpak_remotes():
         else:
             status = PASS
         yield Report(_("Auditing flatpak remote {0}").format(name), status, notes=note)
+
+
+@audit
+@categorize("flatpak", SKIP_IF_ROOT)
+def audit_bazaar_flatpak_auto_update():
+    """Ensure Bazaar is running and has automatic updates enabled."""
+    if not command_succeeds("command", "-v", "flatpak"):
+        return
+
+    status = PASS
+    recs = []
+    notes = []
+    bazaar_running = (
+        BAZAAR_APPID in command_stdout("flatpak", "ps", "--columns=application").splitlines()
+    )
+    auto_update_enabled = (
+        command_stdout(
+            "flatpak",
+            "run",
+            "--command=gsettings",
+            BAZAAR_APPID,
+            "get",
+            BAZAAR_APPID,
+            "auto-update",
+            check=False,
+        )
+        == "true"
+    )
+
+    if not auto_update_enabled:
+        status = FAIL
+        note_string = _(
+            "The auto-update setting must be enabled in Bazaar for Flatpaks to be automatically updated."
+        )
+        notes.append(Note(note_string, FAIL))
+        rec_lines = [
+            note_string,
+            _("To resolve this, run:"),
+            f"$ flatpak run --command=gsettings {BAZAAR_APPID} set {BAZAAR_APPID} auto-update true",
+        ]
+        recs.append("\n".join(rec_lines))
+
+    if not bazaar_running:
+        status = FAIL
+        note_string = _("Bazaar must be running for Flatpaks to be automatically updated.")
+        notes.append(Note(note_string, FAIL))
+        rec_lines = [
+            note_string,
+            _(
+                "To resolve this, start Bazaar and ensure that Bazaar's daemon is set to start on boot."
+            ),
+        ]
+        recs.append("\n".join(rec_lines))
+
+    yield Report(
+        _("Ensuring Bazaar is running and has automatic updates enabled"),
+        status,
+        notes=notes,
+        recs=recs,
+    )
 
 
 @audit

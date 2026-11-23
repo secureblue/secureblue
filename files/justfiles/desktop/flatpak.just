@@ -2,7 +2,7 @@
 #
 # SPDX-License-Identifier: Apache-2.0
 
-# Add or remove the unfiltered Flathub remote.
+# Set or unset the unfiltered Flathub subset.
 [positional-arguments]
 @set-flathub-unfiltered *args:
     exec /usr/bin/python3 -Es /usr/libexec/secureblue/set_flathub_unfiltered.py "$@"

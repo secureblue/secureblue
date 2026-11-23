@@ -64,5 +64,11 @@ jobs:
           FULL_IMAGE_REF: ${{ inputs.image-ref }}
           IMAGE_DIGEST: ${{ inputs.digest }}
         run: |
-          artifact_ref="${FULL_IMAGE_REF%:*}:${IMAGE_DIGEST/:/-}-provenance"
-          oras push "${artifact_ref}" provenance.intoto.json:application/vnd.dsse.envelope.v1+json
+          image_repo="${FULL_IMAGE_REF%:*}"
+          provenance_digest=$(
+            oras attach --artifact-type 'application/vnd.in-toto.provenance+dsse' \
+              --format go-template --template '{{.digest}}' \
+              "${image_repo}@${IMAGE_DIGEST}" \
+              'provenance.intoto.json:application/vnd.dsse.envelope.v1+json'
+          )
+          oras tag "${image_repo}@${provenance_digest}" "${IMAGE_DIGEST/:/-}-provenance"

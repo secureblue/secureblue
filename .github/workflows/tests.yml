@@ -27,13 +27,13 @@ jobs:
     name: Install Bats and run tests
     steps:
       - name: Checkout repo
-        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        uses: actions/checkout@v7.0.1
         with:
           persist-credentials: false
 
       - name: Setup Bats and bats libs
         id: setup-bats
-        uses: bats-core/bats-action@3566550e0f594451ac0f58fcbfdeca93aa29a45e # 4.1.0
+        uses: bats-core/bats-action@4.1.0
         with:
           support-path: "${{ github.workspace }}/.bats/bats-support"
           assert-path: "${{ github.workspace }}/.bats/bats-assert"

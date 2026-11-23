@@ -10,7 +10,6 @@ scripts:
   - setup-dnsconfd.sh
   - authselect.sh
   - localization.sh
-  - installrar.sh
   - setchronysysconfig.sh
   - container-pubkey-symlinks.sh
   - mask-nsresourced.sh

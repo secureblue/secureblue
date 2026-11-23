@@ -1,0 +1,12 @@
+[Unit]
+Description=Migrates dnsconfd conf to new config location
+ConditionPathExists=/etc/dnsconfd.conf
+Before=dnsconfd.service
+
+[Service]
+Type=oneshot
+ExecStartPre=/usr/bin/mkdir -p /etc/dnsconfd/conf.d
+ExecStart=/usr/bin/mv -Z /etc/dnsconfd.conf /etc/dnsconfd/conf.d/secureblue-dnssec.conf
+
+[Install]
+WantedBy=dnsconfd.service

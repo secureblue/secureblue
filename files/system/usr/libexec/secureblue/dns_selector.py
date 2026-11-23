@@ -23,7 +23,7 @@ from shared.utils import ask_option, ask_yes_no, interruptible_ask
 
 RESET: Final[str] = "\033[0m"
 BOLD: Final[str] = "\033[1m"
-DNSCONFD_CONF_PATH: Final[Path] = Path("/etc/dnsconfd.conf")
+DNSCONFD_CONF_PATH: Final[Path] = Path("/etc/dnsconfd/conf.d/secureblue-dnssec.conf")
 NM_GLOBALDNS_CONF_PATH: Final[Path] = Path("/etc/NetworkManager/conf.d/global-dns.conf")
 RESOLVCONF_PATH: Final[Path] = Path("/etc/resolv.conf")
 TRIVALENT_POLICY_PATH: Final[Path] = Path(

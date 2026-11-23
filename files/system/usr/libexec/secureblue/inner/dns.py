@@ -19,7 +19,7 @@ from typing import Final
 
 from shared.utils import SystemdService
 
-DNSCONFD_CONF_PATH: Final[Path] = Path("/etc/dnsconfd.conf")
+DNSCONFD_CONF_PATH: Final[Path] = Path("/etc/dnsconfd/conf.d/secureblue-dnssec.conf")
 DNSCONFD_MANAGER_PATH: Final[Path] = Path("/etc/NetworkManager/conf.d/dnsconfd.conf")
 NM_GLOBALDNS_CONF_PATH: Final[Path] = Path("/etc/NetworkManager/conf.d/global-dns.conf")
 RESOLVCONF_PATH: Final[Path] = Path("/etc/resolv.conf")
@@ -92,9 +92,6 @@ def set_resolver(resolver: DNSResolver) -> None:
             RESOLVCONF_PATH.chmod(0o644)
             dnsconfd_uid = pwd.getpwnam("dnsconfd").pw_uid  # For unprivileged dnsconfd.
             os.chown(RESOLVCONF_PATH, uid=dnsconfd_uid, gid=0)  # gid 0 is default behavior.
-
-            SystemdService("unbound.socket").enable_now()
-            SystemdService("unbound-control.socket").enable_now()
             DNSResolver.UNBOUND.service.unmask()
             DNSResolver.UNBOUND.service.enable()
 
@@ -169,6 +166,7 @@ def set_dnssec_enabled(should_validate: bool) -> None:
         DNSCONFD_CONF_PATH.unlink(missing_ok=True)
         return
 
+    DNSCONFD_CONF_PATH.parent.mkdir(parents=True, exist_ok=True)
     DNSCONFD_CONF_PATH.write_text("dnssec_enabled: yes\n", encoding="utf-8")
     DNSCONFD_CONF_PATH.chmod(0o644)
 

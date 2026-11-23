@@ -17,3 +17,4 @@ modules:
       - check-selinux-fcontext.sh
       - libdnf5-clear-history.sh
       - backupetc.sh
+      - remove-bluebuild-nushell.sh

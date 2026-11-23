@@ -274,6 +274,31 @@ jobs:
         run: |
           echo "digestfile=$(mktemp)" >>"${GITHUB_OUTPUT}"
 
+      - name: Check nushell image signature
+        shell: bash
+        run: |
+          set -euo pipefail
+          echo "-----BEGIN PUBLIC KEY-----
+          MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEwiwNFTt7vkELWV5ttX3RE7/VZcnM
+          Wmd8+TQgP+OJ5Ip213jT6xa+8uxjDhjtRWIVa89iV+zLbbvZbMvpNW0Xmw==
+          -----END PUBLIC KEY-----" > /tmp/blue-build-nushell-image.pub
+
+          jq --arg image_registry "ghcr.io/blue-build/nushell-image" \
+              '.transports.docker |=
+              { $image_registry: [
+                  {
+                      "type": "sigstoreSigned",
+                      "keyPaths": [
+                        "/tmp/blue-build-nushell-image.pub"
+                      ],
+                      "signedIdentity": {
+                          "type": "matchRepository"
+                      }
+                  }
+              ] } + .' /etc/containers/policy.json \
+              >/tmp/policy.json
+          sudo cp /tmp/policy.json /etc/containers/policy.json
+
       - name: Build secureblue
         uses: blue-build/github-action@fb86c457fd3d0e13d5e9c1875c6305cf28b09234 # v1.14.0
         env:

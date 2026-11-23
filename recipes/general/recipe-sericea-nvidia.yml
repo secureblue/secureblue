@@ -11,7 +11,8 @@ base-image: ghcr.io/secureblue/sericea-main-hardened
 image-version: latest
 
 cosign-version: none
-nushell-version: none
+nushell-version: "default@sha256:cc8e2a552602d2ac3bc7a98e162bb68588d8e39fc50b2f5f2e0ca92db4d25cea"
+blue-build-tag: none
 
 platforms:
   - linux/amd64

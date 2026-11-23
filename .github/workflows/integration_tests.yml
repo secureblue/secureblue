@@ -28,12 +28,12 @@ jobs:
 
     steps:
       - name: Checkout repo
-        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        uses: actions/checkout@v7.0.1
         with:
           persist-credentials: false
 
       - name: Run integration tests
-        uses: secureblue/bootc-integration-test-action@afbb75078fb54e470ab8bab5876586cf435bea41 # v0.0.11
+        uses: secureblue/bootc-integration-test-action@v0.0.11
         with:
           registry: ghcr.io/${{ github.repository_owner }}
           image: silverblue-main-hardened

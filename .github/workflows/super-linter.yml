@@ -24,13 +24,13 @@ jobs:
       contents: read # to clone the repository
 
     steps:
-      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: actions/checkout@v7.0.1
         with:
           fetch-depth: 0
           persist-credentials: false
 
       - name: Super-linter
-        uses: super-linter/super-linter@2da136927bd4a73596db63044b504547c62cb854 # v9.0.0
+        uses: super-linter/super-linter@v9.0.0
         env:
           LINTER_RULES_PATH: .
           ENABLE_GITHUB_PULL_REQUEST_SUMMARY_COMMENT: false

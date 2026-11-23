@@ -5,7 +5,7 @@
 name: Automod
 
 on:
-  issue_comment:
+  issue_comment: # zizmor: ignore[dangerous-triggers]
     types: [created, edited]
 
 permissions: {}
@@ -22,6 +22,6 @@ jobs:
       issues: write # delete spam
     steps:
       - name: Comment filter
-        uses: DecimalTurn/Comment-Filter@8ddca60fc5cd00e942836e49fe4eaab70cb6f075 # v0.2.3
+        uses: DecimalTurn/Comment-Filter@v0.2.3
         with:
           exclude-contributors: true

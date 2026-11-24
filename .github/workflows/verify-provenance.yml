@@ -37,6 +37,7 @@ jobs:
       - name: Verify provenance
         shell: bash
         run: |
+          set -euo pipefail
           images=(
             silverblue-main-hardened
             silverblue-nvidia-hardened
@@ -70,10 +71,39 @@ jobs:
             local tempdir
             tempdir=$(mktemp -d)
             trap 'rm -rf "${tempdir}"' RETURN
+
+            local referrers
+            referrers=$(
+              oras discover --format json \
+                --artifact-type 'application/vnd.in-toto.provenance+dsse' \
+                "${image_ref}:${tag}"
+            ) || return 1
+
             local digest
-            digest=$(oras resolve "${image_ref}:${tag}") || return 1
+            digest=$(jq -er '.digest' <<<"${referrers}") || return 1
+
+            local provenance_digest
+            provenance_digest=$(jq -er '.referrers[].digest' <<<"${referrers}") || return 1
+            if [[ -z "${provenance_digest}" ]]; then
+              echo "Provenance not found for ${image_ref}@${digest}"
+              return 1
+            elif [[ "${provenance_digest}" == *$'\n'* ]]; then
+              echo "More than one provenance artifact found for ${image_ref}@${digest}"
+              return 1
+            fi
+
+            # Confirm that provenance can also be pulled by tag
+            local prov_by_tag="${image_ref}:${digest/:/-}-provenance"
+            local prov_tag_digest
+            prov_tag_digest=$(oras resolve "${prov_by_tag}") \
+              || { echo "Unable to resolve provenance by tag: ${prov_by_tag}"; return 1; }
+            if [[ "${prov_tag_digest}" != "${provenance_digest}" ]]; then
+              echo "Provenance digest mismatch for ${prov_by_tag}"
+              return 1
+            fi
+
             echo "Verifying provenance for ${image_ref}@${digest}..."
-            oras pull -o "${tempdir}" "${image_ref}:${digest/:/-}-provenance" || return 1
+            oras pull -o "${tempdir}" "${image_ref}@${provenance_digest}" || return 1
             slsa-verifier build "${tempdir}/provenance.intoto.json" \
               --level 3 \
               --require-signatures \

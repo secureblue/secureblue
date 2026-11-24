@@ -12,6 +12,18 @@
                 "#\\s?renovate: datasource=(?<datasource>\\S+) depName=(?<depName>\\S+)( extractVersion=(?<extractVersion>\\S+))?\\s*[\\w-]+:\\s*(?<currentValue>\\S+)",
             ],
         },
+        {
+            customType: "regex",
+            managerFilePatterns: [
+                ".github/workflows/*.yaml",
+                ".github/workflows/*.yml",
+            ],
+            matchStrings: [
+                "--chunkah-version (?<currentValue>v[0-9.]+)@(?<currentDigest>sha256:[a-f0-9]+)",
+            ],
+            depNameTemplate: "quay.io/coreos/chunkah",
+            datasourceTemplate: "docker",
+        },
     ],
     packageRules: [
         {
@@ -22,6 +34,11 @@
                 ".github/workflows/**.yaml",
                 ".github/workflows/**.yml",
             ],
+        },
+        {
+            matchDepNames: ["quay.io/coreos/chunkah"],
+            groupName: "chunkah",
+            minimumReleaseAgeBehaviour: "timestamp-optional",
         },
     ],
 }

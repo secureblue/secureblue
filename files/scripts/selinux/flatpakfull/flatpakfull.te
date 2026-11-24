@@ -39,9 +39,7 @@ gen_require(`
 	type usr_t;
 ')
 
-domain_entry_file(flatpak_t, bin_t)
-domain_entry_file(flatpak_t, user_home_t)
-domain_entry_file(flatpak_t, usr_t)
+allow flatpak_t { bin_t user_home_t usr_t }:file { entrypoint lock mmap_exec_file_perms };
 
 # run bubblewrap as flatpak_bubblewrap_t
 bubblewrap_role(flatpak, flatpak_t, unconfined_r)

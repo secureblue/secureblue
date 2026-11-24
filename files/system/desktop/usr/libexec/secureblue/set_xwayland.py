@@ -26,12 +26,14 @@ XWAYLAND_OVERRIDE_FILES: Final[dict[Image, str]] = {
     Image.SILVERBLUE: "/etc/systemd/user/org.gnome.Shell@user.service.d/override.conf",
     Image.KINOITE: "/etc/systemd/user/plasma-kwin_wayland.service.d/override.conf",
     Image.SERICEA: "/etc/sway/config.d/99-noxwayland.conf",
+    Image.COSMIC: "/etc/environment.d/99-noxwayland.conf",
 }
 
 DE_NAMES: Final[dict[Image, str]] = {
     Image.SILVERBLUE: "GNOME",
     Image.KINOITE: "KDE Plasma",
     Image.SERICEA: "Sway",
+    Image.COSMIC: "Cosmic",
 }
 
 HELP_MESSAGE: Final[str] = """\

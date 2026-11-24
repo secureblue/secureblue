@@ -248,7 +248,7 @@ def is_rpm_package_installed(name: str) -> bool:
     # slow to import and causes CI issues, so only import here
     import rpm  # noqa: PLC0415
 
-    ts = rpm.TransactionSet()  # ty: ignore[unresolved-attribute]
+    ts = rpm.TransactionSet()  # ty: ignore[missing-attribute]
     matches = ts.dbMatch("name", name)
     return len(matches) > 0
 

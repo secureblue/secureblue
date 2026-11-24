@@ -97,9 +97,22 @@ tar -xzf "${oras_tarball}"
 chmod +x oras
 
 # Get digest of selected image and verify provenance.
-image_digest=$(./oras resolve "${image_ref}")
+referrers=$(
+    ./oras discover --format json \
+        --artifact-type 'application/vnd.in-toto.provenance+dsse' \
+        "${image_ref}"
+)
+image_digest=$(jq -er '.digest' <<<"${referrers}")
 full_ref="${image_ref%:*}@${image_digest}"
-./oras pull "${image_ref%:*}:${image_digest/:/-}-provenance"
+provenance_digest=$(jq -r '.referrers[].digest' <<<"${referrers}")
+if [[ -z "${provenance_digest}" ]]; then
+    echo "Provenance not found for ${full_ref}"
+    exit 1
+elif [[ "${provenance_digest}" == *$'\n'* ]]; then
+    echo "More than one provenance artifact found for ${full_ref}"
+    exit 1
+fi
+./oras pull "${image_ref%:*}@${provenance_digest}"
 ./slsa-verifier build provenance.intoto.json \
     --level 3 \
     --require-signatures \

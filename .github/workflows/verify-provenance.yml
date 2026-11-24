@@ -73,21 +73,21 @@ jobs:
                 "${image_ref}:${tag}"
             ) || return 1
 
-            local digest
-            digest=$(jq -er '.digest' <<<"${referrers}") || return 1
+            local image_digest
+            image_digest=$(jq -er '.digest' <<<"${referrers}") || return 1
 
             local provenance_digest
             provenance_digest=$(jq -er '.referrers[].digest' <<<"${referrers}") || return 1
             if [[ -z "${provenance_digest}" ]]; then
-              echo "Provenance not found for ${image_ref}@${digest}"
+              echo "Provenance not found for ${image_ref}@${image_digest}"
               return 1
             elif [[ "${provenance_digest}" == *$'\n'* ]]; then
-              echo "More than one provenance artifact found for ${image_ref}@${digest}"
+              echo "More than one provenance artifact found for ${image_ref}@${image_digest}"
               return 1
             fi
 
             # Confirm that provenance can also be pulled by tag
-            local prov_by_tag="${image_ref}:${digest/:/-}-provenance"
+            local prov_by_tag="${image_ref}:${image_digest/:/-}-provenance"
             local prov_tag_digest
             prov_tag_digest=$(oras resolve "${prov_by_tag}") \
               || { echo "Unable to resolve provenance by tag: ${prov_by_tag}"; return 1; }
@@ -96,13 +96,13 @@ jobs:
               return 1
             fi
 
-            echo "Verifying provenance for ${image_ref}@${digest}..."
+            echo "Verifying provenance for ${image_ref}@${image_digest}..."
             oras pull -o "${tempdir}" "${image_ref}@${provenance_digest}" || return 1
             slsa-verifier build "${tempdir}/provenance.intoto.json" \
               --level 3 \
               --require-signatures \
               --signer 'sigstore(identityMatch=regex)::https://token.actions.githubusercontent.com::https://github\.com/slsa-framework/actions/\.github/workflows/attest_actions\.yml@refs/tags/v[0-9]+\.[0-9]+\.[0-9]+' \
-              --subject "${digest}" \
+              --subject "${image_digest}" \
               --param 'expected_source:github.com/secureblue/secureblue' \
               --param 'expected_branch:live' \
               --param 'trusted_builders:[https://github.com/secureblue/secureblue/.github/workflows/build-all.yml@refs/heads/live]'

@@ -237,13 +237,26 @@ jobs:
           BASE_IMAGE: ${{ steps.image_data.outputs.BASE_IMAGE }}
         run: |
           tempdir=$(mktemp -d)
-          DIGEST=$(oras resolve "${BASE_IMAGE}:${BASE_IMAGE_VERSION}")
-          oras pull -o "${tempdir}" "${BASE_IMAGE}:${DIGEST/:/-}-provenance"
+          referrers=$(
+            oras discover --format json \
+              --artifact-type 'application/vnd.in-toto.provenance+dsse' \
+              "${BASE_IMAGE}:${BASE_IMAGE_VERSION}"
+          )
+          image_digest=$(jq -er '.digest' <<<"${referrers}")
+          provenance_digest=$(jq -r '.referrers[].digest' <<<"${referrers}")
+          if [[ -z "${provenance_digest}" ]]; then
+            echo "Provenance not found for ${BASE_IMAGE}@${image_digest}"
+            exit 1
+          elif [[ "${provenance_digest}" == *$'\n'* ]]; then
+            echo "More than one provenance artifact found for ${BASE_IMAGE}@${image_digest}"
+            exit 1
+          fi
+          oras pull -o "${tempdir}" "${BASE_IMAGE}@${provenance_digest}"
           slsa-verifier build "${tempdir}/provenance.intoto.json" \
             --level 3 \
             --require-signatures \
             --signer 'sigstore(identityMatch=regex)::https://token.actions.githubusercontent.com::https://github\.com/slsa-framework/actions/\.github/workflows/attest_actions\.yml@refs/tags/v[0-9]+\.[0-9]+\.[0-9]+' \
-            --subject "${DIGEST}" \
+            --subject "${image_digest}" \
             --param "expected_source:github.com/${GITHUB_REPOSITORY}" \
             --param 'expected_branch:live' \
             --param "trusted_builders:[https://github.com/${GITHUB_REPOSITORY}/.github/workflows/build-all.yml@refs/heads/live]"

@@ -14,7 +14,7 @@ touch "${in_progress_indicator}"
 
 FLATPAK_REMOTES=$(flatpak remotes --user --columns=name)
 
-flatpak remote-add --if-not-exists --user --subset=verified flathub https://dl.flathub.org/repo/flathub.flatpakrepo
+flatpak remote-add --if-not-exists --user --subset=verified flathub /usr/share/secureblue/flathub.flatpakrepo
 
 if grep -Fqx 'flathub-verified' <<<"${FLATPAK_REMOTES}"; then
     readarray -t verified_refs < <(flatpak list --user --all --columns=ref,origin | awk '$2 == "flathub-verified" { print $1 }')

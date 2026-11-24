@@ -12,7 +12,7 @@ if [[ ! -f "${in_progress_indicator}" ]]; then
 fi
 touch "${in_progress_indicator}"
 
-flatpak remote-add --if-not-exists --user --subset=verified flathub https://dl.flathub.org/repo/flathub.flatpakrepo
+flatpak remote-add --if-not-exists --user --subset=verified flathub /usr/share/secureblue/flathub.flatpakrepo
 ujust harden-flatpak
 
 flatpak install --user -y --noninteractive flathub com.github.tchx84.Flatseal

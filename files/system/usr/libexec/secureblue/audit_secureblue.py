@@ -772,7 +772,24 @@ def audit_groups():
 
     username = getpass.getuser()
     known_groups = (username, "brewadmin", "usbguard", "wheel")
-    dangerous_groups = ("docker", "libvirt", "lxd")
+    root_equivalent_groups = ("docker", "libvirt", "lxd")
+    dangerous_groups = {
+        "systemd-journal": [
+            _("This group allows the user to read system and kernel logs."),
+            _("This might make it easier to exploit kernel vulnerabilities."),
+        ],
+        "linuxbrew": [
+            _("This group allows the user to modify the Homebrew installation."),
+        ],
+        "input": [
+            _("This group allows the user to read and inject input events."),
+            _(
+                "This includes reading passwords typed anywhere, "
+                "including admin passwords into polkit prompts."
+            ),
+        ],
+    }
+
     status = PASS
     notes = []
     recs = []
@@ -780,7 +797,7 @@ def audit_groups():
         remove_group_cmd = f"$ run0 -i usermod -rG {group} {username}"
         if group in known_groups:
             continue
-        elif group in dangerous_groups:
+        elif group in root_equivalent_groups:
             status = status.downgrade_to(FAIL)
             note = Note(_("The current user is in the group '{0}'.").format(group), FAIL)
             notes.append(note)
@@ -791,28 +808,15 @@ def audit_groups():
                 remove_group_cmd,
             ]
             recs.append("\n".join(rec_lines))
-        elif group == "systemd-journal":
+        elif group in dangerous_groups:
             status = status.downgrade_to(WARN)
             note = Note(_("The current user is in the group '{0}'.").format(group), WARN)
             notes.append(note)
-            rec_lines = [
-                note.text,
-                _("This group allows the user to read system and kernel logs."),
-                _("This might make it easier to exploit kernel vulnerabilities."),
-                _("To remove the user from this group, run:"),
-                remove_group_cmd,
-            ]
-            recs.append("\n".join(rec_lines))
-        elif group == "linuxbrew":
-            status = status.downgrade_to(WARN)
-            note = Note(_("The current user is in the group '{0}'.").format(group), WARN)
-            notes.append(note)
-            rec_lines = [
-                note.text,
-                _("This group allows the user to modify the Homebrew installation."),
-                _("To remove the user from this group, run:"),
-                remove_group_cmd,
-            ]
+            rec_lines = (
+                [note.text]
+                + dangerous_groups[group]
+                + [_("To remove the user from this group, run:"), remove_group_cmd]
+            )
             recs.append("\n".join(rec_lines))
         else:
             status = status.downgrade_to(WARN)

@@ -22,7 +22,6 @@ on:
       - "modules/**"
       - "recipes/**"
       - "!**nvidia**"
-      - "!**zfs**"
       - "!**.md"
 
 # Cancels running workflows if a new workflow run for

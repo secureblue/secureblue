@@ -54,15 +54,9 @@ jobs:
             iot-main-hardened
             iot-nvidia-hardened
             iot-nvidia-open-hardened
-            iot-zfs-main-hardened
-            iot-zfs-nvidia-hardened
-            iot-zfs-nvidia-open-hardened
             securecore-main-hardened
             securecore-nvidia-hardened
             securecore-nvidia-open-hardened
-            securecore-zfs-main-hardened
-            securecore-zfs-nvidia-hardened
-            securecore-zfs-nvidia-open-hardened
           )
 
           verify_provenance() {
@@ -118,7 +112,7 @@ jobs:
           for image_name in "${images[@]}"; do
             image_ref="ghcr.io/secureblue/${image_name}"
             for tag in latest uki; do
-              if [[ "${tag}" == uki && "${image_name}" =~ -(nvidia|zfs)- ]]; then
+              if [[ "${tag}" == uki && "${image_name}" =~ -nvidia- ]]; then
                 continue
               fi
               if ! verify_provenance "${image_ref}" "${tag}"; then

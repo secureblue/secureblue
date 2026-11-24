@@ -6,4 +6,5 @@ gpgcheck=1
 repo_gpgcheck=1
 # gpgkey=https://repo.secureblue.dev/secureblue.gpg
 gpgkey=file:///usr/share/pki/rpm-gpg/secureblue.gpg
+includepkgs=trivalent,trivalent-qt6-ui,kernel,kernel-core,kernel-modules,kernel-modules-core,kernel-modules-extra,kernel-devel,kernel-devel-matched,kernel-uki-virt,kernel-uki-virt-addons
 auto_import_local_keys=1

@@ -55,10 +55,6 @@ if [[ "${image_name}" == *-nvidia-* ]]; then
     justfiles+=(files/justfiles/nvidia/*.just)
 fi
 
-if [[ "${image_name}" == *-zfs-* ]]; then
-    cp -a files/system/zfs/* sysext-tmp
-fi
-
 for justfile_src in "${justfiles[@]}"; do
     justfile_dest="/usr/share/bluebuild/${justfile_src#files/}"
     install -Dp -m 0644 "${justfile_src}" "sysext-tmp${justfile_dest}"

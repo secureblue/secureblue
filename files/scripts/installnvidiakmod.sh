@@ -18,7 +18,7 @@ fi
 
 KERNEL_VERSION="$(rpm -q 'kernel' --queryformat '%{VERSION}-%{RELEASE}.%{ARCH}')"
 
-dnf install -y --setopt=install_weak_deps=False "kernel-devel-matched-${KERNEL_VERSION}"
+./installkerneldevel.sh
 
 dnf install -y --setopt=install_weak_deps=False akmods gcc-c++
 
@@ -40,8 +40,6 @@ modinfo /usr/lib/modules/"${KERNEL_VERSION}"/extra/nvidia/nvidia{,-drm,-modeset,
 
 # View license information
 modinfo -l /usr/lib/modules/"${KERNEL_VERSION}"/extra/nvidia/nvidia{,-drm,-modeset,-peermem,-uvm}.ko.xz
-
-./signmodules.sh "nvidia"
 
 systemctl disable akmods-keygen@akmods-keygen.service
 systemctl mask akmods-keygen@akmods-keygen.service

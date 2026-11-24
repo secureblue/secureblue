@@ -45,6 +45,6 @@ slsa-verifier build "${provenance_file}" "${trivalent_rpm}" \
 rm "${provenance_file}"
 
 # Forcing GPG check for packages installed outside of a repository
-dnf --setopt=localpkg_gpgcheck=True --setopt=install_weak_deps=False -y install "${trivalent_rpm}"
+dnf --setopt=localpkg_gpgcheck=True --setopt=install_weak_deps=False --disable-repo=secureblue -y install "${trivalent_rpm}"
 
 sed -i 's/org\.mozilla\.firefox\.desktop/trivalent.desktop/' /usr/share/applications/mimeapps.list

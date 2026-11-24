@@ -2,5 +2,8 @@
 useDefault = true
 
 [allowlist]
-description = "Test key"
-paths = ['''\.github/workflows/private_key\.priv\.test$''']
+description = "Test key, flathub pubkey"
+paths = [
+    '''\.github/workflows/private_key\.priv\.test$''',
+    '''files/system/desktop/usr/share/secureblue/flathub\.flatpakrepo$''',
+]

@@ -32,10 +32,8 @@ ghcr.io/secureblue/*)
 esac
 
 if [[ "${image_ref}" == *@sha256:* ]]; then
-    digest="sha256:${image_ref##*@sha256:}"
+    image_digest="sha256:${image_ref##*@sha256:}"
     image_ref="${image_ref%@sha256:*}"
-else
-    digest=$(oras resolve "${image_ref}")
 fi
 
 printf 'Verifying SLSA v1 Level 3 build provenance for:\n  %s\n' "${image_ref}"
@@ -57,14 +55,38 @@ br-*)
 esac
 printf 'Expected source: %s@refs/heads/%s\n' "${expected_source}" "${branch}"
 
+# Get digest of attached SLSA provenance artifact
+referrers=$(
+    oras discover --format json \
+        --artifact-type 'application/vnd.in-toto.provenance+dsse' \
+        "${image_ref}${image_digest:+"@${image_digest}"}"
+)
+if [[ -z "${image_digest-}" ]]; then
+    image_digest=$(jq -er '.digest' <<<"${referrers}")
+fi
+readarray -t provenance_digests < <(jq -r '.referrers[].digest' <<<"${referrers}")
+case "${#provenance_digests[@]}" in
+0)
+    printf 'FAIL: Provenance not found for %s@%s\n' "${image_ref}" "${image_digest}"
+    exit 1
+    ;;
+1)
+    ;;
+*)
+    printf 'WARN: Multiple provenance artifacts found for %s@%s\n' "${image_ref}" "${image_digest}"
+    printf '(will verify only the first provenance artifact)\n'
+    ;;
+esac
+provenance_digest="${provenance_digests[0]}"
+
 tempdir=$(mktemp -d)
 trap 'rm -rf "${tempdir}"' EXIT
-oras pull -o "${tempdir}" "${image_ref%:*}:${digest/:/-}-provenance"
+oras pull -o "${tempdir}" "${image_ref%:*}@${provenance_digest}"
 slsa-verifier build "${tempdir}/provenance.intoto.json" \
     --level 3 \
     --require-signatures \
     --signer 'sigstore(identityMatch=regex)::https://token.actions.githubusercontent.com::https://github\.com/slsa-framework/actions/\.github/workflows/attest_actions\.yml@refs/tags/v[0-9]+\.[0-9]+\.[0-9]+' \
-    --subject "${digest}" \
+    --subject "${image_digest}" \
     --param "expected_source:${expected_source}" \
     --param "expected_branch:${branch}" \
     --param "trusted_builders:[${expected_source}/.github/workflows/build-all.yml@refs/heads/${branch}]"

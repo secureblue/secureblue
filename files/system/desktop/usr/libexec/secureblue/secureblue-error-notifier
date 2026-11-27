@@ -1,0 +1,62 @@
+#!/usr/bin/env bash
+
+# SPDX-FileCopyrightText: Copyright 2026 The Secureblue Authors
+#
+# SPDX-License-Identifier: Apache-2.0
+
+# takes the combined args of secureblue-bug-report and notify-send
+# duplicating pre-set notify-send args will work
+
+set -euox pipefail
+
+declare -r script_dir="$(dirname "$0")"
+declare -a args=()
+declare -A report_args=()
+declare summary="" body=""
+
+declare no_report_match
+declare -r is_option="-" # options always start with -
+while (( $# > 0 )); do
+	if [[ ("${1:0:1}" == "${is_option}") || ("${args[-1]:0:1}" == "${is_option}") ]]; then
+		source "${script_dir}/inner/bug-report-args"
+		if [[ "${no_report_match}" == "true" ]]; then args+=("$1"); fi
+		shift
+		continue
+	fi
+
+	if [[ -z "${summary}" ]]; then
+		summary="$1"
+	else
+		body="$1"
+		shift
+		args+=("$@")
+		break
+	fi
+
+	shift
+	continue
+done
+
+if [[ -z "${summary}" ]]; then
+	summary="An unknown error occurred"
+fi
+
+if [[ -n "${body}" ]]; then
+	body+="<br>"
+fi
+
+result=$(
+	/usr/bin/notify-send \
+	--wait \
+	--urgency=critical \
+	--icon="dialog-error" \
+	--app-name="secureblue" \
+	--action="report=Report issue" \
+	"${args[@]}" \
+	"${summary}" \
+	"${body}Please click the button below to report this issue on GitHub."
+)
+
+if [[ "${result}" == "report" ]]; then
+	source "${script_dir}/secureblue-bug-report"
+fi

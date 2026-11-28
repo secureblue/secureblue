@@ -2,3 +2,13 @@ yaml-blocklist-paths:
   - /run/host/etc/bazaar/blocklist.yaml
 curated-config-paths:
   - /run/host/etc/bazaar/curated.yaml
+hooks:
+  - id: rebuild-flatpak-caches
+    when: after-transaction
+    shell: |
+      if [[ "${BAZAAR_HOOK_STAGE}" == 'action' ]]; then
+        flatpak-spawn --host /usr/share/flatpak/triggers/gtk-icon-cache.trigger ~/.local/share/flatpak
+        flatpak-spawn --host /usr/share/flatpak/triggers/desktop-database.trigger ~/.local/share/flatpak
+        flatpak-spawn --host /usr/share/flatpak/triggers/mime-database.trigger ~/.local/share/flatpak
+      fi
+      echo ok

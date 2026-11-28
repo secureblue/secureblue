@@ -48,7 +48,7 @@ jobs:
       packages: write # Needed to publish images
     steps:
       - name: Enable egress auditing
-        uses: step-security/harden-runner@46b06cea07f9e64621fdf066ba77ac6915163d43 # v2.22.3
+        uses: step-security/harden-runner@1d88384fd173af6ecb012dfd0264a306b711241a # v2.22.4
         with:
           egress-policy: block
           # Do not edit directly. Instead:
@@ -154,6 +154,7 @@ jobs:
             ix-denver.mm.fcix.net:443
             lesnet.mm.fcix.net:443
             lolhost.mm.fcix.net:443
+            mirror.acm.umn.edu:443
             mirror.cpsc.ucalgary.ca:443
             mirror.csclub.uwaterloo.ca:443
             mirror.cs.princeton.edu:443
@@ -237,20 +238,36 @@ jobs:
           UKI_ADDONS_DIGEST: ${{ steps.base_image_digests.outputs.UKI_ADDONS_DIGEST }}
         run: |
           verify_image() {
-            image_name="$1"
-            digest="$2"
-            workflow_file="$3"
+            local image_name="$1"
+            local image_digest="$2"
+            local workflow_file="$3"
+            local tempdir
             tempdir=$(mktemp -d)
-            oras pull -o "${tempdir}" "${REPO,,}/${image_name}:${digest/:/-}-provenance"
+            local referrers
+            referrers=$(
+              oras discover --format json \
+                --artifact-type 'application/vnd.in-toto.provenance+dsse' \
+                "${REPO,,}/${image_name}@${image_digest}"
+            ) || return 1
+            local provenance_digest
+            provenance_digest=$(jq -r '.referrers[].digest' <<<"${referrers}")
+            if [[ -z "${provenance_digest}" ]]; then
+              echo "Provenance not found for ${REPO,,}/${image_name}@${image_digest}"
+              return 1
+            elif [[ "${provenance_digest}" == *$'\n'* ]]; then
+              echo "More than one provenance artifact found for ${REPO,,}/${image_name}@${image_digest}"
+              return 1
+            fi
+            oras pull -o "${tempdir}" "${REPO,,}/${image_name}@${provenance_digest}" || return 1
             slsa-verifier build "${tempdir}/provenance.intoto.json" \
               --level 3 \
               --require-signatures \
               --signer 'sigstore(identityMatch=regex)::https://token.actions.githubusercontent.com::https://github\.com/slsa-framework/actions/\.github/workflows/attest_actions\.yml@refs/tags/v[0-9]+\.[0-9]+\.[0-9]+' \
-              --subject "${digest}" \
+              --subject "${image_digest}" \
               --param "expected_source:github.com/${GITHUB_REPOSITORY}" \
               --param 'expected_branch:live' \
               --param "trusted_builders:[https://github.com/${GITHUB_REPOSITORY}/.github/workflows/${workflow_file}@refs/heads/live]"
-            cosign verify --key ./cosign.pub "${REPO,,}/${image_name}@${digest}"
+            cosign verify --key ./cosign.pub "${REPO,,}/${image_name}@${image_digest}"
             rm -rf "${tempdir}"
           }
 
@@ -403,7 +420,7 @@ jobs:
 
   # Generate SLSA v0.2 provenance attestation. This is only needed for
   # backwards compatibility with images from before we started generating the
-  # newer SLSA v1 provenance, and can be removed after enough time has passed.
+  # newer SLSA v1 provenance, and can be removed after the F46 release.
   old-provenance:
     needs: uki-sign-sealed-image
     permissions:

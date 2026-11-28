@@ -15,6 +15,7 @@ import filecmp
 import getpass
 import glob
 import os
+import platform
 import signal
 import subprocess
 import sys
@@ -73,6 +74,7 @@ CONFIG_FILE: Final[Path] = get_config_dir() / "secureblue/audit.toml"
 
 SKIP_IF_ROOT: Final[str] = "skip-if-root"
 SEBOOL_TRIVALENT_EXEC_FLATPAKS: Final[str] = "trivalent_exec_flatpaks"
+BAZAAR_APPID: Final[str] = "io.github.kolunmi.Bazaar"
 
 
 @audit
@@ -88,7 +90,8 @@ def audit_kargs():
     kargs_expected: dict[str, tuple[Status, str | None]] = dict.fromkeys(
         kargs_hardening.DEFAULT_KARGS, (FAIL, None)
     )
-    kargs_expected[kargs_hardening.DISABLE_32_BIT] = (WARN, _("32-bit support"))
+    if platform.machine() == "x86_64":
+        kargs_expected[kargs_hardening.DISABLE_32_BIT] = (WARN, _("32-bit support"))
     kargs_expected[kargs_hardening.FORCE_NOSMT] = (WARN, _("force-disable SMT"))
     kargs_expected.update(dict.fromkeys(kargs_hardening.UNSTABLE_KARGS, (WARN, _("unstable"))))
 
@@ -712,62 +715,6 @@ def audit_podman_global_auto_update(state):
 
 
 @audit
-def audit_flatpak_auto_update():
-    """Ensure flatpak automatic updates are enabled."""
-    if not command_succeeds("command", "-v", "flatpak"):
-        return
-    status = PASS
-    note = None
-    rec = None
-    if not command_succeeds(
-        "systemctl", "--global", "is-enabled", "--quiet", "flatpak-user-update.timer"
-    ):
-        status = FAIL
-        note = Note(_("{0} is not enabled globally.").format("flatpak-user-update.timer"), FAIL)
-        rec_lines = [
-            note.text,
-            _("To enable it, run:"),
-            "$ systemctl enable --global --now flatpak-user-update.timer",
-        ]
-        rec = "\n".join(rec_lines)
-    elif command_succeeds(
-        "systemctl", "--user", "is-failed", "--quiet", "flatpak-user-update.service"
-    ):
-        status = status.downgrade_to(WARN)
-        note = Note(_("{0} has failed to run.").format("flatpak-user-update.service"), WARN)
-
-    yield Report(
-        _("Ensuring {0} is enabled globally").format("flatpak-user-update.timer"),
-        status,
-        notes=note,
-        recs=rec,
-    )
-
-    status = PASS
-    note = None
-    rec = None
-    if not command_succeeds("systemctl", "is-enabled", "--quiet", "flatpak-system-update.timer"):
-        status = FAIL
-        note = Note(_("{0} is not enabled.").format("flatpak-system-update.timer"), FAIL)
-        rec_lines = [
-            note.text,
-            _("To enable it, run:"),
-            "$ systemctl enable --now flatpak-system-update.timer",
-        ]
-        rec = "\n".join(rec_lines)
-    elif command_succeeds("systemctl", "is-failed", "--quiet", "flatpak-system-update.service"):
-        status = status.downgrade_to(WARN)
-        note = Note(_("{0} has failed to run.").format("flatpak-system-update.service"), WARN)
-
-    yield Report(
-        _("Ensuring {0} is enabled").format("flatpak-system-update.timer"),
-        status,
-        notes=note,
-        recs=rec,
-    )
-
-
-@audit
 def audit_brew_auto_update():
     """Ensure Homebrew automatic updates are enabled."""
     if not command_succeeds("command", "-v", "brew"):
@@ -825,7 +772,24 @@ def audit_groups():
 
     username = getpass.getuser()
     known_groups = (username, "brewadmin", "usbguard", "wheel")
-    dangerous_groups = ("docker", "libvirt", "lxd")
+    root_equivalent_groups = ("docker", "libvirt", "lxd")
+    dangerous_groups = {
+        "systemd-journal": [
+            _("This group allows the user to read system and kernel logs."),
+            _("This might make it easier to exploit kernel vulnerabilities."),
+        ],
+        "linuxbrew": [
+            _("This group allows the user to modify the Homebrew installation."),
+        ],
+        "input": [
+            _("This group allows the user to read and inject input events."),
+            _(
+                "This includes reading passwords typed anywhere, "
+                "including admin passwords into polkit prompts."
+            ),
+        ],
+    }
+
     status = PASS
     notes = []
     recs = []
@@ -833,7 +797,7 @@ def audit_groups():
         remove_group_cmd = f"$ run0 -i usermod -rG {group} {username}"
         if group in known_groups:
             continue
-        elif group in dangerous_groups:
+        elif group in root_equivalent_groups:
             status = status.downgrade_to(FAIL)
             note = Note(_("The current user is in the group '{0}'.").format(group), FAIL)
             notes.append(note)
@@ -844,28 +808,15 @@ def audit_groups():
                 remove_group_cmd,
             ]
             recs.append("\n".join(rec_lines))
-        elif group == "systemd-journal":
+        elif group in dangerous_groups:
             status = status.downgrade_to(WARN)
             note = Note(_("The current user is in the group '{0}'.").format(group), WARN)
             notes.append(note)
-            rec_lines = [
-                note.text,
-                _("This group allows the user to read system and kernel logs."),
-                _("This might make it easier to exploit kernel vulnerabilities."),
-                _("To remove the user from this group, run:"),
-                remove_group_cmd,
-            ]
-            recs.append("\n".join(rec_lines))
-        elif group == "linuxbrew":
-            status = status.downgrade_to(WARN)
-            note = Note(_("The current user is in the group '{0}'.").format(group), WARN)
-            notes.append(note)
-            rec_lines = [
-                note.text,
-                _("This group allows the user to modify the Homebrew installation."),
-                _("To remove the user from this group, run:"),
-                remove_group_cmd,
-            ]
+            rec_lines = (
+                [note.text]
+                + dangerous_groups[group]
+                + [_("To remove the user from this group, run:"), remove_group_cmd]
+            )
             recs.append("\n".join(rec_lines))
         else:
             status = status.downgrade_to(WARN)
@@ -927,14 +878,20 @@ def audit_thumbnailing(state):
     match state["image"]:
         case Image.SILVERBLUE:
             de = _("GNOME")
-            # show-image-thumbnails controls all thumbnailing
-            thumbnail_gsetting_output = command_stdout(
+            nautilus_thumbnails = command_stdout(
                 "/usr/bin/gsettings",
                 "get",
                 "org.gnome.nautilus.preferences",
                 "show-image-thumbnails",
             )
-            thumbnailing_disabled = thumbnail_gsetting_output == "'never'"
+
+            gnome_thumbnails = command_stdout(
+                "/usr/bin/gsettings",
+                "get",
+                "org.gnome.desktop.thumbnailers",
+                "disable-all",
+            )
+            thumbnailing_disabled = nautilus_thumbnails == "'never'" and gnome_thumbnails == "true"
         case Image.KINOITE:
             de = _("KDE Plasma")
             config_dir = get_config_dir()
@@ -1337,6 +1294,66 @@ def audit_flatpak_remotes():
         else:
             status = PASS
         yield Report(_("Auditing flatpak remote {0}").format(name), status, notes=note)
+
+
+@audit
+@categorize("flatpak", SKIP_IF_ROOT)
+def audit_bazaar_flatpak_auto_update():
+    """Ensure Bazaar is running and has automatic updates enabled."""
+    if not command_succeeds("command", "-v", "flatpak"):
+        return
+
+    status = PASS
+    recs = []
+    notes = []
+    bazaar_running = (
+        BAZAAR_APPID in command_stdout("flatpak", "ps", "--columns=application").splitlines()
+    )
+    auto_update_enabled = (
+        command_stdout(
+            "flatpak",
+            "run",
+            "--command=gsettings",
+            BAZAAR_APPID,
+            "get",
+            BAZAAR_APPID,
+            "auto-update",
+            check=False,
+        )
+        == "true"
+    )
+
+    if not auto_update_enabled:
+        status = FAIL
+        note_string = _(
+            "The auto-update setting must be enabled in Bazaar for Flatpaks to be automatically updated."
+        )
+        notes.append(Note(note_string, FAIL))
+        rec_lines = [
+            note_string,
+            _("To resolve this, run:"),
+            f"$ flatpak run --command=gsettings {BAZAAR_APPID} set {BAZAAR_APPID} auto-update true",
+        ]
+        recs.append("\n".join(rec_lines))
+
+    if not bazaar_running:
+        status = FAIL
+        note_string = _("Bazaar must be running for Flatpaks to be automatically updated.")
+        notes.append(Note(note_string, FAIL))
+        rec_lines = [
+            note_string,
+            _(
+                "To resolve this, start Bazaar and ensure that Bazaar's daemon is set to start on boot."
+            ),
+        ]
+        recs.append("\n".join(rec_lines))
+
+    yield Report(
+        _("Ensuring Bazaar is running and has automatic updates enabled"),
+        status,
+        notes=notes,
+        recs=recs,
+    )
 
 
 @audit

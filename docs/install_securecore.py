@@ -18,7 +18,7 @@ FILES_TO_REMOVE: list[str] = [
     "/etc/containers/registries.d/secureblue.yaml",
     "/etc/pki/containers/secureblue-2025.pub",
     "/etc/systemd/system/rpm-ostreed.service.d/coreos-containers-policy.conf",
-    "/opt/install_secureblue.sh",
+    "/opt/install_secureblue.py",
     "/root/akmods-secureblue.der",
 ]
 

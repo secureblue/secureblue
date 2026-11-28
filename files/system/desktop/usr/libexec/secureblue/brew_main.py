@@ -43,7 +43,12 @@ ujust set-brew --help
 
 BREW_TOGGLE_FUNCTION: Final[sandbox.SandboxedFunction] = sandbox.SandboxedFunction(
     "brew.py",
-    read_write_paths=["/home/linuxbrew", "/etc/tmpfiles.d", "/etc/profile.d"],
+    read_write_paths=[
+        "/home/linuxbrew",
+        "/etc/tmpfiles.d",
+        "/etc/profile.d",
+        "/etc/bash_completion.d/",
+    ],
     capabilities=["CAP_CHOWN", "CAP_DAC_OVERRIDE", "CAP_FOWNER"],
     allowed_syscalls=["@chown"],
     remove_sandbox_arguments=["--property=ProcSubset="],  # needed for systemd-tmpfiles

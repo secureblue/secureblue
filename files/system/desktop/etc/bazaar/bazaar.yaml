@@ -12,4 +12,3 @@ hooks:
         flatpak-spawn --host /usr/share/flatpak/triggers/mime-database.trigger ~/.local/share/flatpak
       fi
       echo ok
-  

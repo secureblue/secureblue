@@ -18,7 +18,7 @@ from typing import Final
 LINUXBREW_HOME: Final[str] = "/home/linuxbrew"
 TMPFILES_OVERRIDE: Final[str] = "/etc/tmpfiles.d/homebrew.conf"
 BREW_PROFILE_FILE: Final[str] = "/etc/profile.d/brew.sh"
-BREW_PROFILE_COMPLETIONS_FILE: Final[str] = "/etc/profile.d/brew-bash-completions.sh"
+BREW_PROFILE_COMPLETIONS_FILE: Final[str] = "/etc/bash_completion.d/brew-bash-completions.sh"
 BREW_SYSTEMD_UNITS: Final[list[str]] = [
     "brew-update.service",
     "brew-update.timer",

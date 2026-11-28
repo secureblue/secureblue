@@ -71,7 +71,7 @@ storage:
       contents:
         source: https://raw.githubusercontent.com/secureblue/secureblue/refs/heads/live/docs/install_securecore.py
         verification:
-          hash: sha256-bd9019213819a22b97f669b8d29a12aebdda8f98a74380782cfacf80b5f7c9c0
+          hash: sha256-d4e9fecc78767e9cce26657868c2868534061e33a067d4d130d9740b462b8062
 
     - path: /var/home/core/.bash_profile
       overwrite: false
